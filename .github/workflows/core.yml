@@ -12,3 +12,4 @@ jobs:
         with:
           arguments: test
           build-root-directory: core
+          wrapper-directory: core
