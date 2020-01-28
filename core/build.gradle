@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'io.quarkus'
+    id 'jacoco'
 }
 
 repositories {
@@ -41,3 +42,13 @@ java {
     targetCompatibility = JavaVersion.VERSION_13
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
