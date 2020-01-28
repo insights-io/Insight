@@ -1,0 +1,14 @@
+FROM gradle:6.1.1-jdk13 as build
+
+COPY . /src
+WORKDIR /src
+
+RUN ./gradlew quarkusBuild --uber-jar
+
+FROM adoptopenjdk:13-jre-hotspot
+
+COPY --from=build /src/build/core-1.0-SNAPSHOT-runner.jar /usr/app/
+
+WORKDIR /usr/app/
+
+CMD ["java", "-jar", "core-1.0-SNAPSHOT-runner.jar"]
