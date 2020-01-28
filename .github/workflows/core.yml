@@ -6,9 +6,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-java@v1
-      with:
-        java-version: 13
-    - uses: eskatos/gradle-command-action@v1
-      with:
-        arguments: test
-        build-root-directory: core
+        with:
+          java-version: 13
+      - uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: test
+          build-root-directory: core
