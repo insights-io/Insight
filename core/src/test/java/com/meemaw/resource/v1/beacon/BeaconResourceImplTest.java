@@ -2,18 +2,11 @@ package com.meemaw.resource.v1.beacon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.mappers.JacksonMapper;
-import com.meemaw.model.beacon.Beacon;
-import com.meemaw.model.beacon.BeaconDTO;
-import com.meemaw.rest.response.DataResponse;
 import com.meemaw.testcontainers.Postgres;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
@@ -25,27 +18,10 @@ import static com.meemaw.matcher.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 
-@Testcontainers
+@Postgres
 @QuarkusTest
 @Tag("integration")
 public class BeaconResourceImplTest {
-
-    @Container
-    public static PostgreSQLContainer DATABASE = Postgres.testContainer();
-
-    @BeforeAll
-    public static void init() throws URISyntaxException, IOException {
-        Path sqlFolder = Path.of(BeaconResourceImplTest.class.getResource(
-                "/sql").toURI());
-
-        Files.walk(sqlFolder).filter(path -> !Files.isDirectory(path)).forEach(path -> {
-            try {
-                Postgres.client(DATABASE).query(Files.readString(path)).toCompletableFuture().join();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-    }
 
     @Test
     public void postBeacon_shouldThrowError_whenUnsupportedMediaType() {
