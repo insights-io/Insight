@@ -21,8 +21,8 @@ public class PageResourceImpl implements PageResource {
 
 
     @Override
-    public CompletionStage<Response> page(PageDTO pageDTO) {
-        Page page = Page.from(pageDTO);
+    public CompletionStage<Response> page(PageDTO payload) {
+        Page page = Page.from(payload);
         return pageService.process(page).thenApply(DataResponse::ok);
     }
 }

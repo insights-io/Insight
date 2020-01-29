@@ -15,8 +15,8 @@ public class BeaconResourceImpl implements BeaconResource {
     BeaconService beaconService;
 
     @Override
-    public CompletionStage<Response> beacon(BeaconDTO beaconDTO) {
-        Beacon beacon = Beacon.from(beaconDTO);
+    public CompletionStage<Response> beacon(BeaconDTO payload) {
+        Beacon beacon = Beacon.from(payload);
         return beaconService.process(beacon).thenApply(DataResponse::ok);
     }
 }

@@ -37,7 +37,7 @@ public class PageResourceImplTest {
                 .then()
                 .statusCode(400)
                 .body(sameJson("{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation " +
-                        "Error\",\"errors\":{\"page\":\"Payload may not be blank\"}}}"));
+                        "Error\",\"errors\":{\"arg0\":\"Payload may not be blank\"}}}"));
     }
 
     @Test

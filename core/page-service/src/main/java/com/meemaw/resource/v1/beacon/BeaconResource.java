@@ -21,5 +21,5 @@ public interface BeaconResource {
 
     @POST
     CompletionStage<Response> beacon(@NotNull(message = "Payload may not be blank")
-                                     @Valid BeaconDTO beacon);
+                                     @Valid BeaconDTO payload);
 }
