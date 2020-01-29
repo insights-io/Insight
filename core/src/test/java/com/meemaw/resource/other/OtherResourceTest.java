@@ -1,4 +1,4 @@
-package com.meemaw.resource.chore;
+package com.meemaw.resource.other;
 
 
 import com.meemaw.resource.v1.page.PageResource;
@@ -13,7 +13,7 @@ import static io.restassured.RestAssured.given;
 
 @QuarkusTest
 @Tag("integration")
-public class ChoreResourceTest {
+public class OtherResourceTest {
 
     @Test
     public void postPath_shouldThrowError_whenPathNotFound() {
