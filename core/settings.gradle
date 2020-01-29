@@ -4,8 +4,12 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
     plugins {
-      id 'io.quarkus' version "${quarkusPluginVersion}"
+        id 'io.quarkus' version "${quarkusPluginVersion}"
     }
 }
-rootProject.name='core'
+
+include 'page-service'
+
+rootProject.name = 'core'

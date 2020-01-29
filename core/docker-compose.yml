@@ -4,7 +4,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: src/main/docker/Dockerfile.jvm
+      dockerfile: page-service/src/main/docker/Dockerfile.jvm
     ports:
       - '8080:${PORT:-8080}'
     depends_on:

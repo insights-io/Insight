@@ -1,7 +1,6 @@
 package com.meemaw.model.page;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 public class Page {

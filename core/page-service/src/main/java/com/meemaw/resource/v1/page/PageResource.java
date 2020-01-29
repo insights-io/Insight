@@ -1,6 +1,5 @@
 package com.meemaw.resource.v1.page;
 
-import com.meemaw.model.beacon.BeaconDTO;
 import com.meemaw.model.page.PageDTO;
 
 import javax.validation.Valid;
@@ -21,5 +20,5 @@ public interface PageResource {
     String PATH = "v1/page";
 
     @POST
-    CompletionStage<Response> page(@NotNull(message = "Payload may not be blank") @Valid PageDTO page);
+    CompletionStage<Response> page(@NotNull(message = "Payload may not be blank") @Valid PageDTO payload);
 }

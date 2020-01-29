@@ -40,7 +40,7 @@ public class BeaconResourceImplTest {
                 .then()
                 .statusCode(400)
                 .body(sameJson("{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation " +
-                        "Error\",\"errors\":{\"beacon\":\"Payload may not be blank\"}}}"));
+                        "Error\",\"errors\":{\"arg0\":\"Payload may not be blank\"}}}"));
     }
 
     @Test
