@@ -12,4 +12,4 @@ pluginManagement {
 
 include 'page-service'
 
-rootProject.name = 'core'
+rootProject.name = 'backend'
