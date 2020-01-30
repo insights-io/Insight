@@ -1,0 +1,24 @@
+{
+  "name": "@insight/bios",
+  "version": "0.0.1",
+  "description": "Insight tracking BIOS",
+  "source": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
+  "repository": "https://github.com/Meemaw/insight",
+  "author": "Meemaw <ematej.snuderl@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "jest --verbose --runInBand",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {}
+}

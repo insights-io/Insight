@@ -1,0 +1,21 @@
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: lerna bootstrap, lint and unit test
+        run: |
+          npx lerna bootstrap
+          yarn lint
+          yarn test --coverage
+        env:
+          CI: true
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: client
