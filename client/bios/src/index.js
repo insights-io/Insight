@@ -1,27 +1,24 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable func-names */
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-underscore-dangle */
-window._is_debug = false;
-window._is_host = 'insight.com';
-window._is_script = 'cdn.insight.com/s/is.js';
-window._is_org = '<ORG>';
-window._is_namespace = 'IS';
+window._i_debug = !1;
+window._i_host = 'insight.com';
+window._i_script = 'cdn.insight.com/s/is.js';
+window._i_org = '<ORG>';
+window._i_ns = 'IS';
 
-((win, doc, namespace) => {
+((win, doc, namespace, scriptTag) => {
   if (namespace in win) {
-    if (win.console && win.console.log) {
-      win.console.log(
-        'Insight namespace conflict. Please set window["_is_namespace"].'
-      );
+    const { console } = win;
+    if (console && console.log) {
+      console.log('Insight namespace conflict. Please set window["_i_ns"].');
     }
     return;
   }
 
-  const scriptElement = doc.createElement('script');
+  const scriptElement = doc.createElement(scriptTag);
   scriptElement.async = true;
   scriptElement.crossOrigin = 'anonymous';
-  scriptElement.src = `https://${window._is_script}`;
-  const firstScript = doc.getElementsByTagName('script')[0];
+  scriptElement.src = `https://${window._i_script}`;
+  const firstScript = doc.getElementsByTagName(scriptTag)[0];
   firstScript.parentNode.insertBefore(scriptElement, firstScript);
-})(window, document, window._is_namespace);
+})(window, document, window._i_ns, 'script');
