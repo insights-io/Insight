@@ -15,7 +15,7 @@
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "pretest": "yarn build",
-    "test": "ts-node src/script.spec.ts",
+    "test": "ts-node src/*.spec.ts",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"

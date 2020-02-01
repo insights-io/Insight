@@ -15,6 +15,7 @@ declare global {
   }
 }
 
+// test that correct values are injected into the window object and script is loaded
 (async () => {
   const browser = await playwright.chromium.launch();
   const context = await browser.newContext();
