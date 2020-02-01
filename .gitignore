@@ -37,3 +37,4 @@ gradle-app.setting
 # npm
 node_modules
 coverage
+dist
