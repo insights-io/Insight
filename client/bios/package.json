@@ -13,9 +13,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c rollup.config.ts",
+    "build": "rollup -c rollup.config.js",
     "pretest": "yarn build",
-    "test": "ts-node src/script.spec.ts",
+    "test": "ts-node src/*.spec.ts",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"
@@ -24,6 +24,7 @@
   "devDependencies": {
     "playwright": "^0.10.0",
     "rollup": "^1.31.0",
+    "rollup-plugin-prettier": "^0.6.0",
     "rollup-plugin-terser": "^5.2.0",
     "ts-node": "^8.6.2"
   },

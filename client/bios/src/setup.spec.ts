@@ -7,14 +7,15 @@ import assert from 'assert';
 
 declare global {
   interface Window {
-    _is_host: string;
-    _is_script: string;
-    _is_debug: boolean;
-    _is_org: string;
-    _is_namespace: string;
+    _i_host: string;
+    _i_script: string;
+    _i_debug: boolean;
+    _i_org: string;
+    _i_ns: string;
   }
 }
 
+// test that correct values are injected into the window object and script is loaded
 (async () => {
   const browser = await playwright.chromium.launch();
   const context = await browser.newContext();
@@ -29,11 +30,11 @@ declare global {
 
   const windowResult = await page.evaluate(win => {
     return {
-      host: win._is_host,
-      script: win._is_script,
-      debug: win._is_debug,
-      org: win._is_org,
-      namespace: win._is_namespace,
+      host: win._i_host,
+      script: win._i_script,
+      debug: win._i_debug,
+      org: win._i_org,
+      namespace: win._i_ns,
     };
   }, windowHandle);
 
