@@ -2,6 +2,7 @@ on:
   push:
     paths:
       - 'client/**'
+      - '.github/workflows/client.yml'
 
 jobs:
   test:

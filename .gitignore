@@ -39,3 +39,10 @@ node_modules
 coverage
 dist
 yarn-error.log
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
