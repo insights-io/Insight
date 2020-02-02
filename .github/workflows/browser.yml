@@ -1,11 +1,11 @@
 on:
   push:
     paths:
-      - 'client/**'
-      - '.github/workflows/client.yml'
+      - 'browser/**'
+      - '.github/workflows/browser.yml'
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -31,4 +31,4 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: client
+          flags: browser

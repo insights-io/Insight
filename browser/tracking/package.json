@@ -1,0 +1,20 @@
+{
+  "name": "@insight/browser-tracking",
+  "version": "0.0.1",
+  "description": "Insight browser tracking script",
+  "source": "src/index.ts",
+  "repository": "https://github.com/Meemaw/insight",
+  "author": "Meemaw <ematej.snuderl@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^3.0.0"
+  },
+  "peerDependencies": {}
+}

@@ -1,17 +1,11 @@
 {
-  "name": "@insight/bios",
+  "name": "@insight/browser-bootstrap",
   "version": "0.0.1",
-  "description": "Insight tracking BIOS",
+  "description": "Insight browser bootstrap script",
   "source": "src/index.ts",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "typings": "./dist/index.d.ts",
   "repository": "https://github.com/Meemaw/insight",
   "author": "Meemaw <ematej.snuderl@gmail.com>",
   "license": "MIT",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "pretest": "yarn build",
