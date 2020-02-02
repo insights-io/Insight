@@ -5,7 +5,8 @@ on:
       - '.github/workflows/browser.yml'
 
 jobs:
-  tests:
+  lint_test_build:
+    name: Lint, Test & Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -32,3 +33,33 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: browser
+      - name: build
+        run: |
+          yarn build
+      - uses: actions/upload-artifact@v1
+        with:
+          name: s
+          path: browser/tracking/dist
+
+  deploy:
+    name: Deploy scripts to CDN
+    runs-on: ubuntu-latest
+    needs: [lint_test_build]
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@v1
+        with:
+          name: s
+          path: deployment/s
+      - name: Prepare files for deployment
+        run: |
+          mv deployment/s/insight.js.gz deployment/s/insight.js
+      - uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --follow-symlinks --delete --content-encoding gzip
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: 'deployment'

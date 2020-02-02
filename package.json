@@ -9,6 +9,7 @@
   },
   "scripts": {
     "bootstrap": "lerna bootstrap --use-workspaces",
+    "build": "lerna run --stream --concurrency 1 --sort build",
     "test": "lerna run --stream --concurrency 1 --sort test",
     "test:coverage": "yarn test -- -- --coverage",
     "lint": "lerna run --stream --concurrency 1 lint"
