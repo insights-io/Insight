@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation 'org.apache.logging.log4j:log4j-core:2.13.1'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.6.2'
+    implementation 'org.apache.kafka:kafka-clients:2.5.0'
+    implementation project(":events:model")
+
+    testImplementation project(':shared:testing-utils')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.meemaw.search.search-indexer.SearchIndexerRunner'
+        // https://stackoverflow.com/questions/53049346/is-log4j2-compatible-with-java-11
+        attributes 'Multi-Release': true
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

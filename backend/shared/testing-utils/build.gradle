@@ -1,0 +1,20 @@
+plugins {
+    id 'java-library'
+    id 'io.quarkus'
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-reactive-pg-client'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.6.2'
+
+    api 'org.awaitility:awaitility:4.0.2'
+    api 'io.quarkus:quarkus-junit5'
+    api 'io.rest-assured:rest-assured'
+    api 'org.skyscreamer:jsonassert:1.5.0'
+    api 'org.testcontainers:testcontainers:1.13.0'
+    api 'org.testcontainers:junit-jupiter:1.13.0'
+    api 'org.testcontainers:postgresql:1.13.0'
+    api 'org.testcontainers:kafka:1.13.0'
+    api "org.testcontainers:elasticsearch:1.13.0"
+    implementation project(":shared:rest-api")
+}

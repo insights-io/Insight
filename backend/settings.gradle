@@ -7,9 +7,18 @@ pluginManagement {
 
     plugins {
         id 'io.quarkus' version "${quarkusPluginVersion}"
+        id "io.freefair.lombok" version "5.0.0-rc2"
     }
 }
 
-include 'page-service'
-
 rootProject.name = 'backend'
+
+include ':shared:rest-api'
+include ':shared:testing-utils'
+include ':events:model'
+include ':events:search-indexer'
+include ':events:api'
+include ':auth:sidecar'
+include ':auth:api'
+include ':beacon:api'
+include ':session:api'

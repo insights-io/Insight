@@ -1,0 +1,20 @@
+{
+  "e": [
+    {
+      "t": 62171,
+      "e": 3,
+      "a": [
+        "http://localhost:3002/_next/static/webpack/e07dcef65f82a25c7ded.hot-update.json",
+        "resource",
+        62417.66500007361,
+        8.584999945014715
+      ]
+    },
+    {
+      "t": 62172,
+      "e": 1,
+      "a": ["http://localhost:8080"]
+    }
+  ],
+  "s": 3
+}

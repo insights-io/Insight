@@ -1,0 +1,79 @@
+on:
+  push:
+    paths:
+      - '.github/workflows/frontend:browser:bootstrap.yml'
+      - 'frontend/browser/bootstrap/**'
+      - 'jest.config.js'
+      - 'lerna.json'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'yarn.lock'
+
+env:
+  CI: true
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  unit_tests_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install libgbm-dev xvfb
+      - name: Install dependencies and run tests
+        run: |
+          yarn install --frozen-lockfile
+          xvfb-run --auto-servernum yarn workspace @insight/browser-bootstrap test --coverage
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: frontend:browser:bootstrap
+      - name: build
+        run: |
+          yarn workspace @insight/browser-bootstrap build
+      - name: Prepare files for deployment
+        run: |
+          mv frontend/browser/bootstrap/dist/insight.js.gz frontend/browser/bootstrap/dist/insight.js
+      - uses: actions/upload-artifact@v1
+        with:
+          name: b
+          path: frontend/browser/bootstrap/dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [unit_tests_build]
+    # if: github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@v1
+        with:
+          name: b
+          path: deployment/b
+      - uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --follow-symlinks --content-encoding gzip
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          SOURCE_DIR: 'deployment'
+      - uses: chetan/invalidate-cloudfront-action@master
+        env:
+          PATHS: '/b/*'
+          DISTRIBUTION: ${{ secrets.AWS_CF_DISTRIBUTION_ID }}

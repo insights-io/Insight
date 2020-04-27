@@ -46,3 +46,18 @@ yarn-error.log
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+# Next.js
+.next
+
+# Environment files
+.env
+
+# Artifacts
+artifacts
+
+# Storybook
+storybook-static
+
+# cli
+cli

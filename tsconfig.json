@@ -5,6 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "allowJs": false,
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "jsx": "preserve"
   }
 }

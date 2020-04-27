@@ -1,0 +1,52 @@
+{
+  "name": "@insight/try",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "Insight try",
+  "license": "MIT",
+  "author": "Meemaw <ematej.snuderl@gmail.com>",
+  "homepage": "https://github.com/Meemaw/insight#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meemaw/insight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Meemaw/insight/issues"
+  },
+  "scripts": {
+    "dev": "next -p 3002",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest --env=jest-environment-jsdom-sixteen",
+    "test:e2e": "testcafe chrome e2e/specs",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'",
+    "prettier:fix": "yarn prettier --write",
+    "storybook": "start-storybook",
+    "storybook:build": "build-storybook",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
+    "pretest": "yarn workspace @insight/storybook build",
+    "prebuild": "yarn workspace @insight/storybook build"
+  },
+  "dependencies": {
+    "baseui": "^9.69.0",
+    "next": "^9.3.1",
+    "react": "16.12.0",
+    "react-dom": "16.12.0",
+    "react-hook-form": "^5.2.0",
+    "styletron-engine-atomic": "^1.4.6",
+    "styletron-react": "^5.2.7"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^9.3.1",
+    "@testing-library/jest-dom": "^5.5.0",
+    "@testing-library/testcafe": "^4.0.0",
+    "@types/react": "^16.9.24",
+    "@types/react-dom": "^16.9.5",
+    "@types/styletron-engine-atomic": "^1.1.0",
+    "@types/styletron-react": "^5.0.2"
+  }
+}

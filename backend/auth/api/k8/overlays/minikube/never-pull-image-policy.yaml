@@ -1,0 +1,13 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: auth
+spec:
+  template:
+    spec:
+      containers:
+        - image: eu.gcr.io/insight/api
+          name: api
+          imagePullPolicy: Never

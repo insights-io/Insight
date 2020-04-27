@@ -1,0 +1,15 @@
+plugins {
+    id 'io.quarkus'
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-undertow-websockets'
+    implementation 'io.quarkus:quarkus-smallrye-openapi'
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+    implementation 'io.quarkus:quarkus-reactive-pg-client'
+    implementation 'io.quarkus:quarkus-smallrye-health'
+    implementation project(":events:model")
+    implementation project(':auth:sidecar')
+
+    testImplementation project(':shared:testing-utils')
+}

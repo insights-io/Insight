@@ -1,0 +1,32 @@
+{
+  "name": "@insight/browser-bootstrap",
+  "private": true,
+  "description": "Insight browser bootstrap script",
+  "version": "0.0.0-development",
+  "source": "src/index.ts",
+  "license": "MIT",
+  "author": "Meemaw <ematej.snuderl@gmail.com>",
+  "homepage": "https://github.com/Meemaw/insight#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meemaw/insight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Meemaw/insight/issues"
+  },
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "pretest": "yarn build",
+    "test": "jest",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'"
+  },
+  "devDependencies": {
+    "playwright": "^0.13.0",
+    "rollup": "^2.6.0",
+    "rollup-plugin-prettier": "^2.0.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "ts-node": "^8.8.2"
+  }
+}

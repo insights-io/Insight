@@ -1,8 +1,15 @@
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - 'infrastructure/**'
+      - '.vscode/**'
+      - '.gitignore'
+      - 'README.md'
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@master
       - uses: actions/cache@v1
@@ -13,12 +20,17 @@ jobs:
             ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
-          java-version: 13
+          java-version: 14
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: test jacocoTestReport
           build-root-directory: backend
           wrapper-directory: backend
+      - uses: actions/upload-artifact@v2-preview
+        if: failure()
+        with:
+          name: test-reports
+          path: backend/**/build/reports/**
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
