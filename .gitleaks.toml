@@ -1,0 +1,4 @@
+title = "gitleaks config"
+[whitelist]
+	description = "Whitelisted files"
+	file = 'yarn.lock'
