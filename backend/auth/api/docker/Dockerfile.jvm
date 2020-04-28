@@ -3,11 +3,11 @@ FROM gradle:6.3.0-jdk13 as build
 COPY . /backend
 WORKDIR /backend
 
-RUN ./gradlew auth-service:quarkusBuild --uber-jar
+RUN ./gradlew auth:api:quarkusBuild --uber-jar
 
 FROM adoptopenjdk:13-jre-hotspot
 
-COPY --from=build /backend/auth-service/build/auth-service-1.0-runner.jar /usr/app/service-runner.jar
+COPY --from=build /backend/auth/api/build/api-1.0-runner.jar /usr/app/service-runner.jar
 
 WORKDIR /usr/app/
 

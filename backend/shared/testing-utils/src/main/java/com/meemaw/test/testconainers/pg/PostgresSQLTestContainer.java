@@ -1,12 +1,12 @@
 package com.meemaw.test.testconainers.pg;
 
+import com.meemaw.test.project.ProjectUtils;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.PoolOptions;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -48,15 +48,17 @@ public class PostgresSQLTestContainer extends PostgreSQLContainer<PostgresSQLTes
     return PgPool.pool(connectOptions, poolOptions);
   }
 
+  public int getPort() {
+    return getMappedPort(PORT);
+  }
 
   public String getDatasourceURL() {
-    int mappedPort = getMappedPort(PORT);
+    int mappedPort = getPort();
     return String.format("vertx-reactive:postgresql://%s:%d/%s", HOST, mappedPort, DATABASE_NAME);
   }
 
   public void applyMigrations() {
-    String projectPath = System.getProperty("user.dir");
-    Path migrationsSqlPath = Paths.get(projectPath, "migrations", "sql");
+    Path migrationsSqlPath = ProjectUtils.getFromModule("migrations", "sql");
     log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
 
     try {

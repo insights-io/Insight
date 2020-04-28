@@ -11,10 +11,10 @@ dependencies {
     api 'io.quarkus:quarkus-junit5'
     api 'io.rest-assured:rest-assured'
     api 'org.skyscreamer:jsonassert:1.5.0'
-    api 'org.testcontainers:testcontainers:1.13.0'
-    api 'org.testcontainers:junit-jupiter:1.13.0'
-    api 'org.testcontainers:postgresql:1.13.0'
-    api 'org.testcontainers:kafka:1.13.0'
-    api "org.testcontainers:elasticsearch:1.13.0"
-    implementation project(":shared:rest-api")
+    api 'org.testcontainers:testcontainers:1.14.1'
+    api 'org.testcontainers:junit-jupiter:1.14.1'
+    api 'org.testcontainers:postgresql:1.14.1'
+    api 'org.testcontainers:kafka:1.14.1'
+    api 'org.testcontainers:elasticsearch:1.14.1'
+    implementation project(':shared:rest-api')
 }

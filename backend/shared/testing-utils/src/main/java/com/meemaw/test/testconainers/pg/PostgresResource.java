@@ -8,6 +8,10 @@ public class PostgresResource implements QuarkusTestResourceLifecycleManager {
 
   private static final PostgresSQLTestContainer POSTGRES = PostgresSQLTestContainer.newInstance();
 
+  public static PostgresSQLTestContainer getInstance() {
+    return POSTGRES;
+  }
+
   @Override
   public Map<String, String> start() {
     POSTGRES.start();

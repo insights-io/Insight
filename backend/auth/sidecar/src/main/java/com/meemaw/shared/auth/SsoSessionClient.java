@@ -23,6 +23,9 @@ public class SsoSessionClient {
   @ConfigProperty(name = "service.auth.host")
   String AUTH_SERVICE_HOST;
 
+  @ConfigProperty(name = "service.auth.port", defaultValue = "8080")
+  int AUTH_SERVICE_PORT;
+
   @Inject
   private Vertx vertx;
 
@@ -37,7 +40,7 @@ public class SsoSessionClient {
   }
 
   public Uni<Optional<AuthUser>> session(String sessionId) {
-    return webClient.get(8080, AUTH_SERVICE_HOST, "/v1/sso/session")
+    return webClient.get(AUTH_SERVICE_PORT, AUTH_SERVICE_HOST, "/v1/sso/session")
         .addQueryParam("id", sessionId)
         .send()
         .map(response -> {

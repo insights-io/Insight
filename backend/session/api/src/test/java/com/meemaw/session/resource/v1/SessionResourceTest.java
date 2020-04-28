@@ -11,6 +11,8 @@ import com.meemaw.session.model.PageIdentity;
 import com.meemaw.shared.auth.SsoSession;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.testconainers.pg.PostgresResource;
+import com.meemaw.test.testconainers.service.AuthApiResource;
+import com.meemaw.test.testconainers.service.AuthApiTestContainer;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 @QuarkusTestResource(PostgresResource.class)
+// @QuarkusTestResource(AuthApiResource.class)
 public class SessionResourceTest {
 
   @Inject
