@@ -70,7 +70,7 @@ public class SignupServiceImpl implements SignupService {
             })
             .thenCompose(x -> transaction.commit())
             .thenApply(x -> {
-              log.info("signup complete email={} userId={} org={}", email,
+              log.info("Signup complete email={} userId={} org={}", email,
                   signupRequest.getUserId(),
                   signupRequest.getOrg());
               return signupRequest;

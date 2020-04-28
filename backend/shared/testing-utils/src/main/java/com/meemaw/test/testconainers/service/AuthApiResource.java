@@ -13,16 +13,16 @@ public class AuthApiResource implements QuarkusTestResourceLifecycleManager {
 
   @Override
   public Map<String, String> start() {
-    getInstance().start();
+    AUTH_API.start();
     return Map.of(
         "service.auth.host",
-        getInstance().getContainerIpAddress(),
+        AUTH_API.getContainerIpAddress(),
         "service.auth.port",
-        String.valueOf(getInstance().getPort()));
+        String.valueOf(AUTH_API.getPort()));
   }
 
   @Override
   public void stop() {
-    getInstance().stop();
+    AUTH_API.stop();
   }
 }

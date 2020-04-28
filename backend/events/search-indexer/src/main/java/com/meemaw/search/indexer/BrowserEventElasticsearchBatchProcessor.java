@@ -1,6 +1,6 @@
 package com.meemaw.search.indexer;
 
-import com.meemaw.shared.event.model.AbstractBrowserEvent;
+import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;

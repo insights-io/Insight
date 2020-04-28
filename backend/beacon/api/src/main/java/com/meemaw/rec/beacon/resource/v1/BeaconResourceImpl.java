@@ -31,7 +31,11 @@ public class BeaconResourceImpl implements BeaconResource {
   Validator validator;
 
   @Override
-  public CompletionStage<Response> textBeacon(UUID sessionID, UUID userID, UUID pageID,
+  public CompletionStage<Response> textBeacon(
+      String orgID,
+      UUID sessionID,
+      UUID userID,
+      UUID pageID,
       String payload) {
     BeaconDTO beaconDTO;
     try {
@@ -48,13 +52,17 @@ public class BeaconResourceImpl implements BeaconResource {
       throw new ConstraintViolationException(constraintViolations);
     }
 
-    return beacon(sessionID, userID, pageID, beaconDTO);
+    return beacon(orgID, sessionID, userID, pageID, beaconDTO);
   }
 
 
-  private CompletionStage<Response> beacon(UUID sessionID, UUID userID, UUID pageID,
+  private CompletionStage<Response> beacon(
+      String orgID,
+      UUID sessionID,
+      UUID userID,
+      UUID pageID,
       BeaconDTO beaconDTO) {
-    return beaconService.process(sessionID, userID, pageID, Beacon.from(beaconDTO))
+    return beaconService.process(orgID, sessionID, userID, pageID, Beacon.from(beaconDTO))
         .subscribeAsCompletionStage()
         .thenApply(nothing -> Response.noContent().build());
   }

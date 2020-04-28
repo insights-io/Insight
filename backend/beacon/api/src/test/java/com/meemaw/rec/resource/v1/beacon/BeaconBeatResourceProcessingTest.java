@@ -5,11 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.meemaw.rec.beacon.resource.v1.BeaconResource;
-import com.meemaw.shared.event.EventsChannel;
-import com.meemaw.shared.event.model.AbstractBrowserEvent;
-import com.meemaw.shared.event.model.AbstractBrowserEventBatch;
+import com.meemaw.events.stream.EventsStream;
+import com.meemaw.events.model.external.BrowserEvent;
 import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.test.testconainers.kafka.KafkaResource;
+import com.meemaw.test.testconainers.kafka.KafkaTestResource;
 import com.meemaw.test.testconainers.pg.Postgres;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -34,24 +33,26 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 
 @Postgres
-@QuarkusTestResource(KafkaResource.class)
+@QuarkusTestResource(KafkaTestResource.class)
 @QuarkusTest
 @Tag("integration")
 public class BeaconBeatResourceProcessingTest {
 
-  private static List<AbstractBrowserEventBatch> events;
-  private static List<AbstractBrowserEvent> unloadEvents;
+  private static final String ORG_ID = "org123";
+
+  private static List<BrowserEvent<?>> events;
+  private static List<BrowserEvent<?>> unloadEvents;
 
   @Inject
   PgPool pgPool;
 
-  @Incoming(EventsChannel.ALL)
-  public void process(AbstractBrowserEventBatch batch) {
-    events.add(batch);
+  @Incoming(EventsStream.ALL)
+  public void process(BrowserEvent<?> event) {
+    events.add(event);
   }
 
-  @Incoming(EventsChannel.UNLOAD)
-  public void processUnloadEvent(AbstractBrowserEvent event) {
+  @Incoming(EventsStream.UNLOAD)
+  public void processUnloadEvent(BrowserEvent<?> event) {
     unloadEvents.add(event);
   }
 
@@ -62,14 +63,14 @@ public class BeaconBeatResourceProcessingTest {
     unloadEvents = new ArrayList<>();
   }
 
-  private static final String INSERT_PAGE_RAW_SQL = "INSERT INTO rec.page (id, uid, session_id, organization, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
+  private static final String INSERT_PAGE_RAW_SQL = "INSERT INTO rec.page (id, uid, session_id, org_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
 
   protected Uni<Void> insertPage(UUID pageId, UUID uid, UUID sessionId) {
     Tuple values = Tuple.newInstance(io.vertx.sqlclient.Tuple.of(
         pageId,
         uid,
         sessionId,
-        "testOrganization",
+        ORG_ID,
         "testDocType",
         "testURL",
         "testReferrer",
@@ -107,14 +108,20 @@ public class BeaconBeatResourceProcessingTest {
         .queryParam("SessionID", sessionID)
         .queryParam("UserID", uid)
         .queryParam("PageID", pageID)
+        .queryParam("OrgID", ORG_ID)
         .body(payload)
         .post(BeaconResource.PATH + "/beat")
         .then()
         .statusCode(204);
 
-    assertEquals(382, events.get(0).getEvents().size());
-    assertEquals(pageID, events.get(0).getPageId());
+    assertEquals(382, events.size());
     assertEquals(0, unloadEvents.size());
+    events.forEach(e -> {
+      assertEquals(pageID, e.getPageId());
+      assertEquals(sessionID, e.getSessionID());
+      assertEquals(uid, e.getUid());
+      assertEquals(ORG_ID, e.getOrgID());
+    });
   }
 
   @ParameterizedTest
@@ -137,14 +144,17 @@ public class BeaconBeatResourceProcessingTest {
           .queryParam("SessionID", sessionID)
           .queryParam("UserID", uid)
           .queryParam("PageID", pageID)
+          .queryParam("OrgID", ORG_ID)
           .body(payload)
           .post(BeaconResource.PATH + "/beat")
           .then()
           .statusCode(204);
 
       assertEquals(i + 1, events.size());
-      assertEquals(1, events.get(i).getEvents().size());
       assertEquals(pageID, events.get(i).getPageId());
+      assertEquals(sessionID, events.get(i).getSessionID());
+      assertEquals(ORG_ID, events.get(i).getOrgID());
+      assertEquals(uid, events.get(i).getUid());
     }
 
     assertEquals(0, unloadEvents.size());
@@ -171,15 +181,26 @@ public class BeaconBeatResourceProcessingTest {
         .queryParam("SessionID", sessionID)
         .queryParam("UserID", uid)
         .queryParam("PageID", pageID)
+        .queryParam("OrgID", ORG_ID)
         .body(payload)
         .post(BeaconResource.PATH + "/beat")
         .then()
         .statusCode(204);
 
-    assertEquals(pageID, events.get(0).getPageId());
-    assertEquals(1, events.size());
-    assertEquals(2, events.get(0).getEvents().size());
+    assertEquals(2, events.size());
     assertEquals(1, unloadEvents.size());
+    events.forEach(e -> {
+      assertEquals(pageID, e.getPageId());
+      assertEquals(sessionID, e.getSessionID());
+      assertEquals(uid, e.getUid());
+      assertEquals(ORG_ID, e.getOrgID());
+    });
+    unloadEvents.forEach(e -> {
+      assertEquals(pageID, e.getPageId());
+      assertEquals(sessionID, e.getSessionID());
+      assertEquals(uid, e.getUid());
+      assertEquals(ORG_ID, e.getOrgID());
+    });
 
     Instant pageEnd = getPageEnd(pageID).await().indefinitely();
     // was in last second

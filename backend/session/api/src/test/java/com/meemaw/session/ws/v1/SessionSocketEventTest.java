@@ -3,9 +3,9 @@ package com.meemaw.session.ws.v1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.shared.event.EventsChannel;
-import com.meemaw.shared.event.model.AbstractBrowserEvent;
-import com.meemaw.test.testconainers.kafka.KafkaResource;
+import com.meemaw.events.stream.EventsStream;
+import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.test.testconainers.kafka.KafkaTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.concurrent.TimeUnit;
@@ -18,11 +18,11 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @Tag("integration")
-@QuarkusTestResource(KafkaResource.class)
+@QuarkusTestResource(KafkaTestResource.class)
 public class SessionSocketEventTest extends AbstractSessionSocketTest {
 
   @Inject
-  @Channel(EventsChannel.UNLOAD)
+  @Channel(EventsStream.UNLOAD)
   Emitter<AbstractBrowserEvent> emitter;
 
   @Inject

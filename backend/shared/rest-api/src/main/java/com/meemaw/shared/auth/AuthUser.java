@@ -9,4 +9,6 @@ public interface AuthUser {
   String getOrg();
 
   UserRole getRole();
+
+
 }

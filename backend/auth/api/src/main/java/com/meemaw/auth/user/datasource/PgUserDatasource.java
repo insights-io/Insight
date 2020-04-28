@@ -1,6 +1,7 @@
 package com.meemaw.auth.user.datasource;
 
 import com.meemaw.auth.signup.model.SignupRequest;
+import com.meemaw.shared.auth.Organization;
 import com.meemaw.shared.auth.UserDTO;
 import com.meemaw.shared.auth.UserRole;
 import com.meemaw.shared.pg.PgError;
@@ -18,7 +19,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 
 @ApplicationScoped
 @Slf4j
@@ -82,22 +82,22 @@ public class PgUserDatasource implements UserDatasource {
 
   public CompletionStage<SignupRequest> createOrganization(Transaction transaction,
       SignupRequest signupRequest) {
-    String org = RandomStringUtils.randomAlphanumeric(6);
-    Tuple values = Tuple.of(org);
+    String orgID = Organization.identifier();
+    Tuple values = Tuple.of(orgID);
 
     return transaction.preparedQuery(INSERT_ORG_RAW_SQL, values)
-        .thenApply(pgRowSet -> signupRequest.org(org))
+        .thenApply(pgRowSet -> signupRequest.org(orgID))
         .exceptionally(throwable -> {
           Throwable cause = throwable.getCause();
           if (cause instanceof PgException) {
             PgException pgException = (PgException) cause;
             if (pgException.getCode().equals(PgError.UNIQUE_VIOLATION.getCode())) {
-              log.error("Organization already exists org={}", org);
+              log.error("Organization already exists orgID={}", orgID);
               throw Boom.status(Response.Status.CONFLICT).message("Organization already exists")
                   .exception();
             }
           }
-          log.error("Failed to create organization org={}", org, throwable);
+          log.error("Failed to create organization orgID={}", orgID, throwable);
           throw new DatabaseException();
         });
   }

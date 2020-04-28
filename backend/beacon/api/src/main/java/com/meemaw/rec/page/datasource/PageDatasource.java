@@ -9,16 +9,18 @@ public interface PageDatasource {
 
 
   /**
+   * @param orgID
    * @param sessionID
    * @param uid
    * @param pageID
    * @return boolean indicating if page exists
    */
-  Uni<Boolean> pageExists(UUID sessionID, UUID uid, UUID pageID);
+  Uni<Boolean> pageExists(String orgID, UUID sessionID, UUID uid, UUID pageID);
 
   /**
+   * @param orgID
    * @param pageId
    * @return time of page end if page found
    */
-  Uni<Optional<Instant>> pageEnd(UUID pageId);
+  Uni<Optional<Instant>> pageEnd(String orgID, UUID pageId);
 }

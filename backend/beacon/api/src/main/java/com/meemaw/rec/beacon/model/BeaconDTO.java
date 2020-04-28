@@ -1,8 +1,8 @@
 package com.meemaw.rec.beacon.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meemaw.shared.event.model.Recorded;
-import com.meemaw.shared.event.model.AbstractBrowserEvent;
+import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.model.Recorded;
 import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;

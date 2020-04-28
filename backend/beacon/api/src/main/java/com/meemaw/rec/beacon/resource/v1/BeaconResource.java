@@ -1,7 +1,10 @@
 package com.meemaw.rec.beacon.resource.v1;
 
+import com.meemaw.shared.auth.Organization;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,9 +21,15 @@ public interface BeaconResource {
   @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
   @Path("/beat")
   CompletionStage<Response> textBeacon(
+      @NotNull(message = "OrgID required") @Size(min = Organization.ORG_ID_LENGTH, max = Organization.ORG_ID_LENGTH)
+      @QueryParam("OrgID") String orgID,
+      @NotNull(message = "SessionID required")
       @QueryParam("SessionID") UUID sessionID,
+      @NotNull(message = "UserID required")
       @QueryParam("UserID") UUID userID,
+      @NotNull(message = "pageID required")
       @QueryParam("PageID") UUID pageID,
       String payload);
+
 
 }

@@ -10,8 +10,4 @@ public class KafkaTestContainer extends KafkaContainer {
     super(CONFLUENT_PLATFORM_VERSION);
   }
 
-  public static KafkaTestContainer newInstance() {
-    return new KafkaTestContainer();
-  }
-
 }

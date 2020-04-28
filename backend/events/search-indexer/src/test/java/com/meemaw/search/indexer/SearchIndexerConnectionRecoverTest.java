@@ -4,7 +4,7 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.meemaw.shared.event.model.AbstractBrowserEvent;
+import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestContainer;
 import com.meemaw.test.testconainers.kafka.Kafka;
 import java.io.IOException;

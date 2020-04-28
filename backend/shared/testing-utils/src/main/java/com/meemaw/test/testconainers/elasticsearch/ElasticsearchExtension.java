@@ -1,5 +1,7 @@
 package com.meemaw.test.testconainers.elasticsearch;
 
+import java.util.Collections;
+import java.util.Map;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -15,8 +17,21 @@ public class ElasticsearchExtension implements BeforeAllCallback {
   @Override
   public void beforeAll(ExtensionContext context) {
     if (!ELASTICSEARCH.isRunning()) {
-      ELASTICSEARCH.start();
+      start(ELASTICSEARCH).forEach(System::setProperty);
     }
+  }
+
+  public static Map<String, String> start() {
+    return start(ELASTICSEARCH);
+  }
+
+  public static Map<String, String> start(ElasticsearchTestContainer elasticsearch) {
+    elasticsearch.start();
+    return Collections.emptyMap();
+  }
+
+  public static void stop() {
+    ELASTICSEARCH.stop();
   }
 
 

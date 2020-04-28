@@ -1,8 +1,8 @@
 package com.meemaw.search.indexer;
 
-import com.meemaw.shared.processor.BatchProcessor;
-import com.meemaw.shared.processor.BatchProcessorFailureCallback;
-import com.meemaw.shared.processor.ProcessorUnavailableException;
+import com.meemaw.events.stream.processor.BatchProcessor;
+import com.meemaw.events.stream.processor.BatchProcessorFailureCallback;
+import com.meemaw.events.stream.processor.ProcessorUnavailableException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;

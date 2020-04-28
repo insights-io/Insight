@@ -1,9 +1,9 @@
 package com.meemaw.search.indexer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.meemaw.shared.event.EventsChannel;
-import com.meemaw.shared.kafka.event.serialization.BrowserEventSerializer;
-import com.meemaw.shared.event.model.AbstractBrowserEvent;
+import com.meemaw.events.stream.EventsStream;
+import com.meemaw.shared.kafka.event.serialization.AbstractBrowserEventSerializer;
+import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchExtension;
 import com.meemaw.test.testconainers.kafka.KafkaExtension;
@@ -65,14 +65,14 @@ public abstract class AbstractSearchIndexerTest {
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
         KafkaExtension.getInstance().getBootstrapServers());
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, BrowserEventSerializer.class.getName());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AbstractBrowserEventSerializer.class.getName());
     return new KafkaProducer<>(props);
   }
 
   protected Collection<ProducerRecord<String, AbstractBrowserEvent>> kafkaRecords(
       Collection<AbstractBrowserEvent> batch) {
     return batch.stream()
-        .map(event -> new ProducerRecord<String, AbstractBrowserEvent>(EventsChannel.ALL, event))
+        .map(event -> new ProducerRecord<String, AbstractBrowserEvent>(EventsStream.ALL, event))
         .collect(Collectors.toList());
   }
 

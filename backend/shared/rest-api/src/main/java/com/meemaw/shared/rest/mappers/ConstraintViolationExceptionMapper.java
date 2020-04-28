@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path.Node;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -20,7 +21,7 @@ public class ConstraintViolationExceptionMapper implements
         exception.getConstraintViolations().stream().collect(
             Collectors.toMap(
                 v -> StreamSupport.stream(v.getPropertyPath().spliterator(), false)
-                    .reduce((first, second) -> second).orElse(null).toString(),
+                    .reduce((first, second) -> second).map(Node::getName).orElse(null),
                 ConstraintViolation::getMessage));
 
     return Boom.status(Response.Status.BAD_REQUEST)

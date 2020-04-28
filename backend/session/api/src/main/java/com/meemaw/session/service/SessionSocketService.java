@@ -1,7 +1,7 @@
 package com.meemaw.session.service;
 
-import com.meemaw.shared.event.EventsChannel;
-import com.meemaw.shared.event.model.BrowserUnloadEvent;
+import com.meemaw.events.stream.EventsStream;
+import com.meemaw.events.model.internal.BrowserUnloadEvent;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +48,7 @@ public class SessionSocketService {
     });
   }
 
-  @Incoming(EventsChannel.UNLOAD)
+  @Incoming(EventsStream.UNLOAD)
   public void process(BrowserUnloadEvent event) {
     log.info("Notifying sockets about page end {}", event);
     sessions.values().forEach(session -> sendText(session, "PAGE END"));
