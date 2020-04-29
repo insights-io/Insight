@@ -26,7 +26,7 @@ class Backend implements Connected {
     sessionApiBaseURL: string,
     orgID: string
   ) {
-    this.beaconURL = `${recordingApiBaseURL}/v1/beacon/beat?orgID=${orgID}`;
+    this.beaconURL = `${recordingApiBaseURL}/v1/beacon/beat?OrgID=${orgID}`;
     this.pageURL = `${sessionApiBaseURL}/v1/sessions`;
     this.beaconSeq = 0;
 

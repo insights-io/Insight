@@ -33,6 +33,9 @@ services:
     depends_on:
       - beacon-api-migrations
       - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
+      - POSTGRES_HOST=db
   beacon-api-migrations:
     build:
       context: ../beacon/api/migrations
@@ -55,6 +58,7 @@ services:
       - session-api-migrations
       - kafka
     environment:
+      - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
   session-api-migrations:
     build:

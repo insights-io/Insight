@@ -1,27 +1,31 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-underscore-dangle */
 import path from 'path';
 import { createServer, Server } from 'http';
 import fs from 'fs';
 
-import playwright from 'playwright';
+import { chromium, Response, Page } from 'playwright';
 
 const SERVE_PORT = 5000;
 const I_ORG = 'test-1';
 const I_HOST = `localhost:${SERVE_PORT}`;
+// const beaconServiceBaseURL = 'http://localhost:8081';
+const sessionServiceBaseURL = 'http://localhost:8082';
 
 // TODO: resuse shared types
 type PageResponse = {
   data: { uid: string; sessionId: string; pageId: string };
 };
 
-const parsePageResponse = (response: playwright.Response) => {
+const parsePageResponse = (response: Response) => {
   return response.body().then<PageResponse>((b) => JSON.parse(String(b)));
 };
 
-const setupPage = async (page: playwright.Page) => {
+const responseRequestHeaders = (response: Response) => {
+  return response.request().headers() as Record<string, string>;
+};
+
+const setupPage = async (page: Page) => {
   await page.goto(`http://${I_HOST}`);
   await page.evaluate(
     ({ orgID, host }) => {
@@ -36,7 +40,7 @@ const setupPage = async (page: playwright.Page) => {
 };
 
 const BROWSERS = [
-  { name: 'chromium', instance: playwright.chromium },
+  { name: 'chromium', instance: chromium },
   // Make it work in CI { name: 'firefox', instance: playwright.firefox },
   // Make it work in CI { name: 'webkit', instance: playwright.webkit },
 ];
@@ -45,13 +49,16 @@ describe('tracking script', () => {
   let server: Server;
 
   beforeAll(() => {
-    jest.setTimeout(30000);
+    jest.setTimeout(60000);
     const pagePath = path.join(process.cwd(), 'templates', 'index.html');
     const pageContents = String(fs.readFileSync(pagePath));
     server = createServer((_req, res) => {
       res.write(pageContents);
       res.end();
-    }).listen(SERVE_PORT, () => console.log('Server up'));
+    }).listen(SERVE_PORT, () =>
+      // eslint-disable-next-line no-console
+      console.log(`Server running on port ${SERVE_PORT}...`)
+    );
   });
 
   afterAll(() => {
@@ -66,23 +73,21 @@ describe('tracking script', () => {
 
       await setupPage(page);
 
-      const response = await page.waitForResponse(
-        async (resp: playwright.Response) => {
-          const request = resp.request();
-          const headers = request.headers() as Record<string, string>;
-          return (
-            resp.url() === 'http://localhost:8082/v1/sessions' &&
-            resp.status() === 200 &&
-            request.method() === 'POST' &&
-            headers['content-type'] === 'application/json' &&
-            request.resourceType() === 'fetch'
-          );
-        }
+      const pageResponse = await page.waitForResponse(
+        (resp: Response) =>
+          resp.url() === `${sessionServiceBaseURL}/v1/sessions`
       );
+
+      const pageRequest = pageResponse.request();
+      const pageRequestHeaders = responseRequestHeaders(pageResponse);
+      expect(pageResponse.status()).toEqual(200);
+      expect(pageRequest.method()).toEqual('POST');
+      expect(pageRequestHeaders['content-type']).toEqual('application/json');
+      expect(pageRequest.resourceType()).toEqual('fetch');
 
       const {
         data: { sessionId, uid },
-      } = await parsePageResponse(response);
+      } = await parsePageResponse(pageResponse);
 
       const { cookie, localStorage } = await page.evaluate(() => {
         return {
@@ -99,6 +104,39 @@ describe('tracking script', () => {
       expect(localStorage).toEqual(
         JSON.stringify({ [storageKey]: encodedIdentity })
       );
+
+      await page.click('button[data-testid="first-button"]');
+
+      /*
+      const beaconResponse = await page.waitForResponse(
+        (resp: playwright.Response) =>
+          resp.url() ===
+          `${beaconServiceBaseURL}/v1/beacon/beat?OrgID=${I_ORG}&SessionID=${sessionId}&UserID=${uid}&PageID=${pageId}`
+      );
+
+      const beaconRequest = beaconResponse.request();
+      const beaconRequestHeaders = responseRequestHeaders(beaconResponse);
+
+      const postData = JSON.parse(beaconRequest.postData() || '') as {
+        e: { t: number; e: number; a: (string | number)[] }[];
+        s: number;
+      };
+
+      // MOUSEMOVE event
+      expect(postData.e.find((e) => e.e === 5)?.a).toEqual([
+        61,
+        60,
+        '<BUTTON',
+        ':data-testid',
+        'first-button',
+      ]);
+      expect(postData.s).toEqual(1);
+      expect(beaconResponse.status()).toEqual(204);
+      expect(beaconRequest.method()).toEqual('POST');
+      expect(beaconRequestHeaders['content-type']).toEqual('application/json');
+      expect(beaconRequest.resourceType()).toEqual('fetch');
+
+      */
 
       await browser.close();
     });

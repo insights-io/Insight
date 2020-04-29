@@ -3,11 +3,11 @@ FROM gradle:6.2.2-jdk13 as build
 COPY . /backend
 WORKDIR /backend
 
-RUN ./gradlew recording-service:quarkusBuild --uber-jar
+RUN ./gradlew beacon:api:quarkusBuild --uber-jar
 
 FROM adoptopenjdk:14-jre-hotspot
 
-COPY --from=build /backend/recording-service/build/recording-service-1.0-runner.jar /usr/app/service-runner.jar
+COPY --from=build /backend/beacon/api/build/api-1.0-runner.jar /usr/app/service-runner.jar
 
 WORKDIR /usr/app/
 

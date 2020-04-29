@@ -1,12 +1,12 @@
 package com.meemaw.rec.beacon.service;
 
-import com.meemaw.rec.beacon.datasource.BeaconDatasource;
-import com.meemaw.rec.beacon.model.Beacon;
-import com.meemaw.rec.page.datasource.PageDatasource;
-import com.meemaw.events.stream.EventsStream;
 import com.meemaw.events.model.external.BrowserEvent;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.model.internal.BrowserUnloadEvent;
+import com.meemaw.events.stream.EventsStream;
+import com.meemaw.rec.beacon.datasource.BeaconDatasource;
+import com.meemaw.rec.beacon.model.Beacon;
+import com.meemaw.rec.page.datasource.PageDatasource;
 import com.meemaw.shared.rest.response.Boom;
 import io.smallrye.mutiny.Uni;
 import java.util.ArrayList;
@@ -82,7 +82,6 @@ public class BeaconService {
       if (maybeUnloadEvent instanceof BrowserUnloadEvent) {
         operations.add(pageEnd(orgID, pageID));
         operations.add(sendEvent(unloadEventsEmitter, identify, maybeUnloadEvent));
-        ;
       }
 
       return Uni.combine().all().unis(operations).combinedWith(nothing -> null);

@@ -4,9 +4,10 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.meemaw.rec.beacon.resource.v1.BeaconResource;
-import com.meemaw.events.stream.EventsStream;
 import com.meemaw.events.model.external.BrowserEvent;
+import com.meemaw.events.stream.EventsStream;
+import com.meemaw.rec.beacon.resource.v1.BeaconResource;
+import com.meemaw.shared.auth.Organization;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.test.testconainers.kafka.KafkaTestResource;
 import com.meemaw.test.testconainers.pg.Postgres;
@@ -38,7 +39,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 @Tag("integration")
 public class BeaconBeatResourceProcessingTest {
 
-  private static final String ORG_ID = "org123";
+  private static final String ORG_ID = Organization.identifier();
 
   private static List<BrowserEvent<?>> events;
   private static List<BrowserEvent<?>> unloadEvents;
