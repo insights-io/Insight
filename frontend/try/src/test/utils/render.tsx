@@ -27,6 +27,7 @@ const render = <Props, T, S extends StoryConfiguration<T>>(
   const reload = sandbox.stub();
 
   const router: NextRouter = {
+    basePath: pathname,
     route,
     pathname,
     query,

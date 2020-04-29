@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: '13.x'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -50,10 +50,10 @@ jobs:
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
-          docker-compose -f backend/local-test-services/docker-compose.yml up auth-service 2>&1 | tee $ARTIFACTS_PATH/docker.log &
+          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: '13.x'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
