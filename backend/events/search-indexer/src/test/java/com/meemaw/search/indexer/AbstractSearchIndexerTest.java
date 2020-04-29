@@ -1,9 +1,9 @@
 package com.meemaw.search.indexer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.meemaw.events.stream.EventsStream;
-import com.meemaw.shared.kafka.event.serialization.AbstractBrowserEventSerializer;
+import com.meemaw.events.model.external.serialization.BrowserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.stream.EventsStream;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchExtension;
 import com.meemaw.test.testconainers.kafka.KafkaExtension;
@@ -65,7 +65,7 @@ public abstract class AbstractSearchIndexerTest {
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
         KafkaExtension.getInstance().getBootstrapServers());
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AbstractBrowserEventSerializer.class.getName());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, BrowserEventSerializer.class.getName());
     return new KafkaProducer<>(props);
   }
 

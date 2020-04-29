@@ -1,11 +1,11 @@
 package com.meemaw.search.indexer;
 
-import com.meemaw.events.stream.EventsStream;
+import com.meemaw.events.model.external.serialization.BrowserEventDeserializer;
+import com.meemaw.events.model.external.serialization.BrowserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.stream.EventsStream;
 import com.meemaw.events.stream.kafka.KafkaSourcedBatchProcessor;
 import com.meemaw.events.stream.kafka.RetryQueueStandaloneKafkaConsumer;
-import com.meemaw.shared.kafka.event.serialization.AbstractBrowserEventDeserializer;
-import com.meemaw.shared.kafka.event.serialization.AbstractBrowserEventSerializer;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -58,7 +58,7 @@ public class SearchIndexer {
     producerProperties
         .put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     producerProperties
-        .put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AbstractBrowserEventSerializer.class.getName());
+        .put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, BrowserEventSerializer.class.getName());
     return producerProperties;
   }
 
@@ -69,7 +69,7 @@ public class SearchIndexer {
     consumerProps
         .put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-        AbstractBrowserEventDeserializer.class.getName());
+        BrowserEventDeserializer.class.getName());
     consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     return consumerProps;

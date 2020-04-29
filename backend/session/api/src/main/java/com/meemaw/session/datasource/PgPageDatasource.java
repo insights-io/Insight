@@ -22,7 +22,7 @@ public class PgPageDatasource implements PageDatasource {
   @Inject
   PgPool pgPool;
 
-  private static final String SELECT_LINK_DEVICE_SESSION_RAW_SQL = "SELECT session_id FROM rec.page WHERE organization = $1 AND uid = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
+  private static final String SELECT_LINK_DEVICE_SESSION_RAW_SQL = "SELECT session_id FROM rec.page WHERE org_id = $1 AND uid = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
 
   public Uni<Optional<UUID>> findUserSessionLink(String orgId, UUID uid) {
     Tuple values = Tuple.of(orgId, uid);
@@ -42,14 +42,14 @@ public class PgPageDatasource implements PageDatasource {
     return Optional.of(iterator.next().getUUID(0));
   }
 
-  private static final String INSERT_PAGE_RAW_SQL = "INSERT INTO rec.page (id, uid, session_id, organization, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
+  private static final String INSERT_PAGE_RAW_SQL = "INSERT INTO rec.page (id, uid, session_id, org_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
 
   public Uni<PageIdentity> insertPage(UUID pageId, UUID uid, UUID sessionId, Page page) {
     Tuple values = Tuple.newInstance(io.vertx.sqlclient.Tuple.of(
         pageId,
         uid,
         sessionId,
-        page.getOrganization(),
+        page.getOrgID(),
         page.getDoctype(),
         page.getUrl(),
         page.getReferrer(),

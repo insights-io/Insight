@@ -21,7 +21,6 @@ public class PageDTO {
   @NotNull(message = "may not be null")
   String url;
 
-  @NotNull(message = "may not be null")
   String referrer;
 
   @NotNull(message = "may not be null")

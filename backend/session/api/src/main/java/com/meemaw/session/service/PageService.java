@@ -21,20 +21,21 @@ public class PageService {
     UUID pageId = UUID.randomUUID();
 
     UUID uid = Optional.ofNullable(page.getUid()).orElseGet(UUID::randomUUID);
-    String org = page.getOrganization();
+    String orgID = page.getOrgID();
 
     // unrecognized device; start a new session
     if (uid != page.getUid()) {
       UUID sessionId = UUID.randomUUID();
-      log.info("Generating new session {} uid {} pageId {} org {}", sessionId, uid, pageId, org);
+      log.info("Generating new sessionID={} uid={} pageID={} orgID={}", sessionId, uid, pageId,
+          orgID);
       return pageDatasource.insertPage(pageId, uid, sessionId, page);
     }
 
     // recognized device; try to link it with an existing session
-    return pageDatasource.findUserSessionLink(org, uid).onItem().produceUni(
+    return pageDatasource.findUserSessionLink(orgID, uid).onItem().produceUni(
         maybeSessionId -> {
           UUID sessionId = maybeSessionId.orElseGet(() -> {
-            log.info("Could not link session for uid {}, pageId {} org {}", uid, pageId, org);
+            log.info("Could not link session for uid={}, pageID={} orgID={}", uid, pageId, orgID);
             return UUID.randomUUID();
           });
           return pageDatasource.insertPage(pageId, uid, sessionId, page);

@@ -2,33 +2,37 @@ package com.meemaw.session.model;
 
 import java.util.Objects;
 import java.util.UUID;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 
-@Getter
+@Value
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Page {
 
-  private final String organization;
-  private final UUID uid;
-  private final String doctype;
-  private final String url;
-  private final String referrer;
-  private final int height;
-  private final int width;
-  private final int screenHeight;
-  private final int screenWidth;
-  private final long compiledTimestamp;
+  String orgID;
+  UUID uid;
+  String doctype;
+  String url;
+  String referrer;
+  int height;
+  int width;
+  int screenHeight;
+  int screenWidth;
+  long compiledTimestamp;
 
-  private Page(PageDTO dto) {
-    this.organization = dto.getOrgId();
-    this.uid = dto.getUid();
-    this.doctype = dto.getDoctype();
-    this.url = dto.getUrl();
-    this.referrer = dto.getReferrer();
-    this.height = dto.getHeight();
-    this.width = dto.getWidth();
-    this.screenHeight = dto.getScreenHeight();
-    this.screenWidth = dto.getScreenWidth();
-    this.compiledTimestamp = dto.getCompiledTs();
+  Page(PageDTO dto) {
+    this(dto.getOrgId(),
+        dto.getUid(),
+        dto.getDoctype(),
+        dto.getUrl(),
+        dto.getReferrer(),
+        dto.getHeight(),
+        dto.getWidth(),
+        dto.getScreenHeight(),
+        dto.getScreenWidth(),
+        dto.getCompiledTs());
+
   }
 
   public static Page from(PageDTO dto) {

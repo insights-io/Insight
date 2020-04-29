@@ -5,7 +5,7 @@ WORKDIR /backend
 
 RUN ./gradlew recording-service:quarkusBuild --uber-jar
 
-FROM adoptopenjdk:13-jre-hotspot
+FROM adoptopenjdk:14-jre-hotspot
 
 COPY --from=build /backend/recording-service/build/recording-service-1.0-runner.jar /usr/app/service-runner.jar
 

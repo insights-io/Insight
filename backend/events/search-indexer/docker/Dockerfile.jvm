@@ -5,7 +5,7 @@ WORKDIR /backend
 
 RUN ./gradlew search:indexer:jar
 
-FROM adoptopenjdk:13-jre-hotspot
+FROM adoptopenjdk:14-jre-hotspot
 
 COPY --from=build /backend/search/indexer/build/libs/indexer-1.0.jar /usr/app/search-indexer.jar
 

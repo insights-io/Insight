@@ -21,8 +21,12 @@ class Backend implements Connected {
   private beaconURL: string;
   private beaconSeq: number;
 
-  constructor(recordingApiBaseURL: string, sessionApiBaseURL: string) {
-    this.beaconURL = `${recordingApiBaseURL}/v1/beacon/beat`;
+  constructor(
+    recordingApiBaseURL: string,
+    sessionApiBaseURL: string,
+    orgID: string
+  ) {
+    this.beaconURL = `${recordingApiBaseURL}/v1/beacon/beat?orgID=${orgID}`;
     this.pageURL = `${sessionApiBaseURL}/v1/sessions`;
     this.beaconSeq = 0;
 
@@ -59,7 +63,7 @@ class Backend implements Connected {
 
   public connect = (identity: PageIdentity) => {
     const { sessionId, uid, pageId } = identity;
-    this.beaconURL = `${this.beaconURL}?SessionID=${sessionId}&UserID=${uid}&PageID=${pageId}`;
+    this.beaconURL = `${this.beaconURL}&SessionID=${sessionId}&UserID=${uid}&PageID=${pageId}`;
   };
 
   private _sendEvents = (transport: BaseTransport, e: BrowserEvent[]) => {

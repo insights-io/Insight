@@ -16,11 +16,15 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.js",
+    "test": "jest",
+    "pretest": "yarn build",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"
   },
   "devDependencies": {
+    "playwright": "^0.15.0",
+    "rollup": "^2.7.3",
     "@rollup/plugin-typescript": "3.1.1",
     "rollup-plugin-gzip": "^2.4.0"
   }
