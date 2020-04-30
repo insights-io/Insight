@@ -23,7 +23,7 @@ jobs:
           java-version: 14
       - uses: eskatos/gradle-command-action@v1
         with:
-          arguments: test jacocoTestReport
+          arguments: test --continue jacocoTestReport
           build-root-directory: backend
           wrapper-directory: backend
       - uses: actions/upload-artifact@v2-preview
