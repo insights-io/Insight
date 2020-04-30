@@ -1,5 +1,6 @@
 import React from 'react';
-import PasswordApi, { PasswordResetRequestBase } from 'api/password';
+import { PasswordResetRequest } from '@insight/types';
+import PasswordApi from 'api/password';
 import { GetServerSideProps } from 'next';
 import InvalidPasswordResetRequest from 'modules/auth/components/InvalidPasswordResetRequest';
 import PasswordReset from 'modules/auth/components/PasswordReset';
@@ -8,7 +9,7 @@ type NonExistingPasswordResetRequest = {
   exists: false;
 };
 
-type ExistingPasswordResetRequest = PasswordResetRequestBase & {
+type ExistingPasswordResetRequest = PasswordResetRequest & {
   exists: true;
 };
 

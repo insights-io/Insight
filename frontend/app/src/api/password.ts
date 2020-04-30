@@ -1,16 +1,11 @@
 import ky from 'ky-universal';
+import {
+  DataResponse,
+  PasswordReset,
+  PasswordResetRequest,
+} from '@insight/types';
 
-import { baseURL, DataResponse } from './base';
-
-export type PasswordResetRequestBase = {
-  email: string;
-  token: string;
-  org: string;
-};
-
-export type PasswordResetRequestDTO = PasswordResetRequestBase & {
-  password: string;
-};
+import { baseURL } from './base';
 
 const PasswordApi = {
   forgot: (email: string) => {
@@ -18,12 +13,12 @@ const PasswordApi = {
       .post(`${baseURL}/v1/password/forgot`, { json: { email } })
       .json<DataResponse<boolean>>();
   },
-  reset: (json: PasswordResetRequestDTO) => {
+  reset: (json: PasswordReset) => {
     return ky
       .post(`${baseURL}/v1/password/reset`, { json, credentials: 'include' })
       .json<DataResponse<boolean>>();
   },
-  resetExists: (searchParams: PasswordResetRequestBase) => {
+  resetExists: (searchParams: PasswordResetRequest) => {
     return ky
       .get(`${baseURL}/v1/password/reset/exists`, { searchParams })
       .json<DataResponse<boolean>>();

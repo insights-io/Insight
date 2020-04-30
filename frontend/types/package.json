@@ -1,11 +1,13 @@
 {
-  "name": "@insight/browser-tracking",
-  "private": true,
+  "name": "@insight/types",
   "version": "0.0.0-development",
-  "description": "Insight browser tracking script",
+  "private": true,
   "source": "src/index.ts",
-  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
   "author": "Meemaw <ematej.snuderl@gmail.com>",
+  "license": "MIT",
   "homepage": "https://github.com/Meemaw/insight#readme",
   "repository": {
     "type": "git",
@@ -15,18 +17,11 @@
     "url": "https://github.com/Meemaw/insight/issues"
   },
   "scripts": {
-    "build": "rollup -c rollup.config.js",
-    "test": "jest",
-    "pretest": "yarn lerna run build --scope=@insight/browser-tracking --include-filtered-dependencies --concurrency 2",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"
   },
-  "devDependencies": {
-    "@insight/types": "0.0.0-development",
-    "playwright": "^0.15.0",
-    "rollup": "^2.7.3",
-    "@rollup/plugin-typescript": "3.1.1",
-    "rollup-plugin-gzip": "^2.4.0"
-  }
+  "devDependencies": {},
+  "dependencies": {}
 }

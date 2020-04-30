@@ -34,7 +34,7 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/storybook build
+          yarn workspace @insight/app prebuild
           yarn workspace @insight/app storybook:build
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3

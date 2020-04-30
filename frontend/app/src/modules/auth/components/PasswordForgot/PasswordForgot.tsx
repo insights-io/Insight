@@ -5,7 +5,7 @@ import { Button } from 'baseui/button';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
-import { APIError, APIErrorDataResponse } from 'api';
+import { APIError, APIErrorDataResponse } from '@insight/types';
 import { useForm } from 'react-hook-form';
 import PasswordApi from 'api/password';
 import { createInputOverrides } from 'shared/styles/input';

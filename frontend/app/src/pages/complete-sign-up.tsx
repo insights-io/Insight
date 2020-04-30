@@ -1,11 +1,12 @@
 import React from 'react';
 import { NextPageContext } from 'next';
 import Router from 'next/router';
-import SignupApi, { SignupRequestDTO } from 'api/signup';
+import { SignupRequest } from '@insight/types';
+import SignupApi from 'api/signup';
 import SignupComplete from 'modules/auth/components/SignupComplete';
 
 type Props = {
-  signupRequest: SignupRequestDTO;
+  signupRequest: SignupRequest;
 };
 
 const SignupCompletePage = ({ signupRequest }: Props) => {

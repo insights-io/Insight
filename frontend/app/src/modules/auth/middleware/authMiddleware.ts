@@ -4,7 +4,7 @@ import { NextPageContext } from 'next';
 import nextCookie from 'next-cookies';
 import Router from 'next/router';
 import SsoApi from 'api/sso';
-import { UserDTO, DataResponse } from 'api';
+import { UserDTO, DataResponse } from '@insight/types';
 import { isServer } from 'shared/utils/next';
 
 const authMiddleware = async (ctx: NextPageContext) => {

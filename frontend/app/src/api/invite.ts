@@ -1,23 +1,7 @@
 import ky from 'ky-universal';
+import { DataResponse, TeamInvite, UserRole } from '@insight/types';
 
-import { DataResponse, baseURL } from './base';
-
-export type UserDTO = {
-  id: string;
-  email: string;
-  role: string;
-};
-
-export type UserRole = 'ADMIN' | 'STANDARD';
-
-export type TeamInvite = {
-  token: string;
-  email: string;
-  org: string;
-  creator: string;
-  role: UserRole;
-  createdAt: number;
-};
+import { baseURL } from './base';
 
 const InviteApi = {
   list: () => {

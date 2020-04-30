@@ -1,7 +1,7 @@
 import React from 'react';
-import { SignupRequestDTO } from 'api';
+import { SignupRequest } from '@insight/types';
 
-type Props = SignupRequestDTO;
+type Props = SignupRequest;
 
 const SignupComplete = (_props: Props) => {
   return <div>Hello world</div>;

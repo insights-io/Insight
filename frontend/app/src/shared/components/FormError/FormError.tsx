@@ -1,7 +1,7 @@
 import React from 'react';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
-import { APIError } from 'api';
+import { APIError } from '@insight/types';
 import { useStyletron } from 'baseui';
 
 type Props = {

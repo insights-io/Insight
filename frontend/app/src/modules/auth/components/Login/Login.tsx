@@ -9,7 +9,7 @@ import { Button } from 'baseui/button';
 import { createInputOverrides } from 'shared/styles/input';
 import SsoApi from 'api/sso';
 import { useRouter } from 'next/router';
-import { APIError, APIErrorDataResponse } from 'api';
+import { APIError, APIErrorDataResponse } from '@insight/types';
 import Divider from 'shared/components/Divider';
 import { baseURL as apiBaseUrl } from 'api/base';
 import Link from 'next/link';

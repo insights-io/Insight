@@ -27,9 +27,8 @@
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
-    "snapshot": "build-storybook && percy-storybook --widths=320,1280",
-    "pretest": "yarn workspace @insight/storybook build",
-    "prebuild": "yarn workspace @insight/storybook build"
+    "pretest": "yarn prebuild",
+    "prebuild": "yarn workspace @insight/storybook build && yarn workspace @insight/types build"
   },
   "dependencies": {
     "baseui": "^9.73.1",
@@ -48,6 +47,7 @@
   },
   "devDependencies": {
     "@insight/storybook": "0.0.0-development",
+    "@insight/types": "0.0.0-development",
     "@next/bundle-analyzer": "^9.3.6",
     "@types/react": "^16.9.24",
     "@types/react-dom": "^16.9.5",

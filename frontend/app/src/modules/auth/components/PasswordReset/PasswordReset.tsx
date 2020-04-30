@@ -8,7 +8,11 @@ import { useForm } from 'react-hook-form';
 import { Button } from 'baseui/button';
 import { createInputOverrides } from 'shared/styles/input';
 import { useRouter } from 'next/router';
-import { APIError, APIErrorDataResponse, PasswordResetRequestBase } from 'api';
+import {
+  APIError,
+  APIErrorDataResponse,
+  PasswordResetRequest,
+} from '@insight/types';
 import Link from 'next/link';
 import PasswordApi from 'api/password';
 import FormError from 'shared/components/FormError';
@@ -17,7 +21,7 @@ import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 
 import AuthPageLayout from '../PageLayout';
 
-type Props = PasswordResetRequestBase;
+type Props = PasswordResetRequest;
 
 type FormData = {
   email: string;

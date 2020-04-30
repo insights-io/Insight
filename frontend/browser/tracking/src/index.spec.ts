@@ -4,6 +4,7 @@ import path from 'path';
 import { createServer, Server } from 'http';
 import fs from 'fs';
 
+import { CreatePageResponse } from '@insight/types';
 import { chromium, Response, Page } from 'playwright';
 
 const SERVE_PORT = 5000;
@@ -12,13 +13,8 @@ const I_HOST = `localhost:${SERVE_PORT}`;
 // const beaconServiceBaseURL = 'http://localhost:8081';
 const sessionServiceBaseURL = 'http://localhost:8082';
 
-// TODO: resuse shared types
-type PageResponse = {
-  data: { uid: string; sessionId: string; pageId: string };
-};
-
 const parsePageResponse = (response: Response) => {
-  return response.body().then<PageResponse>((b) => JSON.parse(String(b)));
+  return response.body().then<CreatePageResponse>((b) => JSON.parse(String(b)));
 };
 
 const responseRequestHeaders = (response: Response) => {

@@ -1,20 +1,14 @@
 import ky from 'ky-universal';
+import { DataResponse, SignupRequest, Signup } from '@insight/types';
 
-import { PasswordResetRequestBase } from './password';
-import { baseURL, DataResponse } from './base';
-
-export type SignupRequestDTO = PasswordResetRequestBase;
-
-export type CompleteSignupRequestDTO = SignupRequestDTO & {
-  password: string;
-};
+import { baseURL } from './base';
 
 const SignupApi = {
-  verify: (json: SignupRequestDTO) => {
+  verify: (json: SignupRequest) => {
     const url = `${baseURL}/v1/signup/verify`;
     return ky.post(url, { json }).json<DataResponse<boolean>>();
   },
-  complete: (json: CompleteSignupRequestDTO) => {
+  complete: (json: Signup) => {
     return ky
       .post(`${baseURL}/v1/signup/complete`, { json })
       .json<DataResponse<boolean>>();

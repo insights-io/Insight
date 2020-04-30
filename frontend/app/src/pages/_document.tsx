@@ -28,6 +28,7 @@ class InsightDocument extends Document<Props> {
         </StyletronProvider>
       ),
     });
+
     const stylesheets = (styletron as Server).getStylesheets() || [];
     return { ...page, stylesheets };
   }
@@ -41,7 +42,7 @@ class InsightDocument extends Document<Props> {
       const n = t.createElement(e);
       n.async = true;
       n.crossOrigin = 'anonymous';
-      n.src = 'https://d1l87tz7sw1x04.cloudfront.net/s/insight.js';
+      n.src = 'https://d1l87tz7sw1x04.cloudfront.net/s/development.insight.js';
       const o = t.getElementsByTagName(e)[0];
       o.parentNode.insertBefore(n, o);
     })(window, document, 'script');
