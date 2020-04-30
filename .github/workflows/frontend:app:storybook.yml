@@ -13,6 +13,7 @@ on:
 
 env:
   CI: true
+  TARGET_FOLDER_PREFIX: app/storybook
 
 jobs:
   pr-deploy-storybook:
@@ -41,11 +42,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: frontend/app/storybook-static
-          TARGET_FOLDER: app:storybook:${{ env.GITHUB_HEAD_REF_SLUG }}
+          TARGET_FOLDER: ${{ env.TARGET_FOLDER_PREFIX }}/${{ env.GITHUB_HEAD_REF_SLUG }}
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: 'Storybook preview of frontend/app available at https://meemaw.github.io/Insight/app:storybook:${{ env.GITHUB_HEAD_REF_SLUG }}! 🚀'
+          msg: 'Storybook preview of frontend/app available at https://meemaw.github.io/Insight/${{ env.TARGET_FOLDER_PREFIX }}/${{ env.GITHUB_HEAD_REF_SLUG }}! 🚀'
           check_for_duplicate_msg: false

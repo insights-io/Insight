@@ -1,10 +1,8 @@
 on:
   push:
-    paths-ignore:
-      - 'infrastructure/**'
-      - '.vscode/**'
-      - '.gitignore'
-      - 'README.md'
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
 
 jobs:
   test:
