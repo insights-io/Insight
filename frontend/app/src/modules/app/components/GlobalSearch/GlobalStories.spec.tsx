@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, blurElement, focusElement } from 'test/utils';
+import { render } from 'test/utils';
 import { waitFor } from '@testing-library/react';
+import { blurElement, focusElement } from '@insight/testing';
 
 import { Base } from './GlobalSearch.stories';
 

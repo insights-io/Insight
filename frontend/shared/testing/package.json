@@ -1,5 +1,5 @@
 {
-  "name": "@insight/storybook",
+  "name": "@insight/testing",
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
@@ -17,7 +17,7 @@
     "url": "https://github.com/Meemaw/insight/issues"
   },
   "scripts": {
-    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"
@@ -25,10 +25,5 @@
   "devDependencies": {
     "@insight/types": "0.0.0-development"
   },
-  "dependencies": {
-    "@storybook/addon-actions": "^5.3.18",
-    "@storybook/addon-knobs": "^5.3.18",
-    "@storybook/preset-typescript": "^3.0.0",
-    "@storybook/react": "^5.3.18"
-  }
+  "peerDependencies": {}
 }

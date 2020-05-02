@@ -1,7 +1,6 @@
 import React from 'react';
-import { configureStory } from '@insight/storybook';
+import { configureStory, mockApiError } from '@insight/storybook';
 import SsoApi from 'api/sso';
-import { mockApiError } from 'test/utils/error';
 
 import Login from './Login';
 

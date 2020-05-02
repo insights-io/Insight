@@ -49,6 +49,7 @@ yarn-error.log
 
 # Next.js
 .next
+out
 
 # Environment files
 .env

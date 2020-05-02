@@ -5,8 +5,7 @@ import { RouterContext } from 'next/dist/next-server/lib/router-context';
 import { NextRouter } from 'next/router';
 import { BaseRouter } from 'next/dist/next-server/lib/router/router';
 import AppProviders from 'shared/containers/AppProviders';
-
-import sandbox from './sandbox';
+import { sandbox } from '@insight/testing';
 
 type RenderOptions = Partial<BaseRouter> & {};
 

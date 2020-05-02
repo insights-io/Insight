@@ -23,6 +23,7 @@ export default makeDecorator({
       pathname: '/',
       query: {},
       asPath: '/',
+      basePath: '/',
       push: (...args: unknown[]) => {
         action('push')(args);
         return Promise.resolve(true);

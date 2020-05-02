@@ -1,4 +1,4 @@
-import { PasswordResetRequest } from 'password';
+import { PasswordResetRequest } from './password';
 
 export type SignupRequest = PasswordResetRequest;
 

@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, clickElement, typeText, sandbox } from 'test/utils';
+import { render } from 'test/utils';
 import { waitFor } from '@testing-library/react';
+import { clickElement, typeText, sandbox } from '@insight/testing';
 
 import { Base } from './SignUpForm.stories';
 

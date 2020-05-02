@@ -1,4 +1,4 @@
-import { DataResponse } from 'api';
+import { DataResponse } from './api';
 
 type SessionID = string;
 type PageID = string;

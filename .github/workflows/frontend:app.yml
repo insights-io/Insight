@@ -4,6 +4,7 @@ on:
       - '.github/workflows/frontend:app.yml'
       - 'backend/**'
       - 'frontend/app/**'
+      - 'frontend/shared/**'
       - 'jest.config.js'
       - 'lerna.json'
       - 'package.json'

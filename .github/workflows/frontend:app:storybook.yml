@@ -3,8 +3,8 @@ on:
     branches: [master]
     paths:
       - '.github/workflows/frontend:app:storybook.yml'
-      - 'frontend/shared/storybook/**'
       - 'frontend/app/**'
+      - 'frontend/shared/**'
       - 'jest.config.js'
       - 'lerna.json'
       - 'package.json'

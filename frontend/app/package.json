@@ -27,11 +27,11 @@
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
-    "pretest": "yarn prebuild",
-    "prebuild": "yarn workspace @insight/storybook build && yarn workspace @insight/types build"
+    "pretest": "yarn prebuild && yarn workspace @insight/testing build",
+    "prebuild": "yarn workspace @insight/types build && yarn workspace @insight/storybook build"
   },
   "dependencies": {
-    "baseui": "^9.73.1",
+    "baseui": "^9.73.2",
     "formik": "^2.1.4",
     "ky": "^0.19.1",
     "ky-universal": "^0.6.0",
@@ -39,20 +39,21 @@
     "next-cookies": "^2.0.3",
     "react": "16.12.0",
     "react-dom": "16.12.0",
-    "react-hook-form": "^5.3.1",
+    "react-hook-form": "^5.6.1",
     "styletron-engine-atomic": "^1.4.6",
     "styletron-react": "^5.2.7",
     "swr": "^0.2.0",
-    "yup": "^0.28.4"
+    "yup": "^0.28.5"
   },
   "devDependencies": {
     "@insight/storybook": "0.0.0-development",
+    "@insight/testing": "0.0.0-development",
     "@insight/types": "0.0.0-development",
     "@next/bundle-analyzer": "^9.3.6",
     "@types/react": "^16.9.24",
     "@types/react-dom": "^16.9.5",
     "@types/uuid": "^7.0.3",
     "@types/yup": "^0.28.0",
-    "uuid": "^7.0.2"
+    "uuid": "^8.0.0"
   }
 }
