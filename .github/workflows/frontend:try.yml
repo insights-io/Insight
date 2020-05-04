@@ -73,7 +73,9 @@ jobs:
           path: ${{ github.workspace }}/frontend/try/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
       - name: frontend/try | build
-        run: yarn workspace @insight/try build
+        run: |
+          yarn workspace @insight/testing build
+          yarn workspace @insight/try build
       - name: frontend/try | start
         run: |
           yarn workspace @insight/try start 2>&1 | tee $ARTIFACTS_PATH/serve.log &
