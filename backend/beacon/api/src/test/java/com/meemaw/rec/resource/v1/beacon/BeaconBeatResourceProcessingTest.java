@@ -9,9 +9,8 @@ import com.meemaw.events.stream.EventsStream;
 import com.meemaw.rec.beacon.resource.v1.BeaconResource;
 import com.meemaw.shared.auth.Organization;
 import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.test.testconainers.kafka.KafkaTestResource;
+import com.meemaw.test.testconainers.kafka.Kafka;
 import com.meemaw.test.testconainers.pg.Postgres;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
@@ -34,7 +33,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 
 @Postgres
-@QuarkusTestResource(KafkaTestResource.class)
+@Kafka
 @QuarkusTest
 @Tag("integration")
 public class BeaconBeatResourceProcessingTest {

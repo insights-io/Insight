@@ -14,12 +14,11 @@ import Backend from 'backend';
 import { PageResponse } from 'backend/types';
 import Identity from 'identity';
 import { MILLIS_IN_SECOND } from 'time';
+import type { InsightWindow } from 'types';
 
 declare global {
-  interface Window {
-    _i_org: string;
-    _i_host: string;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface Window extends InsightWindow {}
 }
 
 ((window, location, compiledTs) => {

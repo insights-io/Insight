@@ -2,6 +2,7 @@ package com.meemaw.test.testconainers.pg;
 
 import java.util.Collections;
 import java.util.Map;
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <p>
  * USAGE: {@link com.meemaw.test.testconainers.pg.Postgres}
  */
-public class PostgresExtension implements BeforeAllCallback {
+public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
 
   private static final PostgresTestContainer POSTGRES = PostgresTestContainer.newInstance();
 
@@ -22,6 +23,13 @@ public class PostgresExtension implements BeforeAllCallback {
   public void beforeAll(ExtensionContext context) {
     if (!POSTGRES.isRunning()) {
       start(POSTGRES).forEach(System::setProperty);
+    }
+  }
+
+  @Override
+  public void afterAll(ExtensionContext extensionContext) {
+    if (POSTGRES.isRunning()) {
+      stop();
     }
   }
 
@@ -38,4 +46,6 @@ public class PostgresExtension implements BeforeAllCallback {
     postgres.applyMigrations();
     return Collections.singletonMap("quarkus.datasource.url", postgres.getDatasourceURL());
   }
+
+
 }

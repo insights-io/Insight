@@ -6,6 +6,12 @@ import fs from 'fs';
 
 import { CreatePageResponse } from '@insight/types';
 import { chromium, Response, Page } from 'playwright';
+import type { InsightWindow } from 'types';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface Window extends InsightWindow {}
+}
 
 const SERVE_PORT = 5000;
 const I_ORG = 'test-1';
