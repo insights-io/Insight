@@ -5,29 +5,29 @@
 
 **Monorepo for Insight related services and applications.**
 
-Frontend related code processes are managed by [Lerna](https://github.com/lerna/lerna) and [Yarn Workspaces](https://yarnpkg.com/lang/en/docs/workspaces/).
-Backend related code processes are managed by [Gradle](http://gradle.org/).
-Infrastructure as a code is managed by [Terraform](https://www.terraform.io/).
-CI/CD is done using [Github Actions](https://github.com/features/actions).
+- [frontend](frontend) related code is managed by [Lerna](https://github.com/lerna/lerna) and [Yarn Workspaces](https://yarnpkg.com/lang/en/docs/workspaces/)
+- [backend](backend) related code is managed by [Gradle](http://gradle.org/)
+- [infrastructure](infrastructure) as a code is managed by [Terraform](https://www.terraform.io/)
+- [CI/CD](.github/workflows) is managed using [Github Actions](https://github.com/features/actions)
 
 ## Development
 
 **Clone the repo**
 
 ```sh
-➜ git clone https://github.com/Meemaw/insight
+➜ git clone git@github.com:Meemaw/Insight.git
 ```
 
 ### Frontend
 
-All code related to frontend is located inside [./frontend](./frontend) folder.
+It is recommended to use VSCode for frontend development.
 
 #### Local development
 
 **Boostrap projects**
 
 ```sh
-➜ npx lerna bootstrap
+➜ yarn
 ```
 
 **Run unit tests**
@@ -38,8 +38,14 @@ All code related to frontend is located inside [./frontend](./frontend) folder.
 
 ### Backend
 
-All code related to backend is located inside [./backend](./backend) folder.
+It is recommended to use InteliJ IDEA for backend (Java) development.
 
-### Infrastructure
+#### Local development
 
-All code related to infrastructure is located inside [./infrastructure](./infrastructure) folder.
+Make sure you are in the [backend](backend) folder before executing gradle commands.
+
+**Run unit tests**
+
+```sh
+➜ ./gradlew test --continue jacocoTestReport
+```
