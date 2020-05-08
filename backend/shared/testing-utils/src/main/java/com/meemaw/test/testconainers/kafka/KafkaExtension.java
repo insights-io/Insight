@@ -2,11 +2,10 @@ package com.meemaw.test.testconainers.kafka;
 
 import java.util.Collections;
 import java.util.Map;
-import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
+public class KafkaExtension implements BeforeAllCallback {
 
   private static final KafkaTestContainer KAFKA = new KafkaTestContainer();
 
@@ -16,16 +15,7 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
 
   @Override
   public void beforeAll(ExtensionContext context) {
-    if (!KAFKA.isRunning()) {
-      start(KAFKA).forEach(System::setProperty);
-    }
-  }
-
-  @Override
-  public void afterAll(ExtensionContext extensionContext) {
-    if (KAFKA.isRunning()) {
-      stop();
-    }
+    start(KAFKA).forEach(System::setProperty);
   }
 
   public static Map<String, String> start() {
@@ -33,7 +23,9 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
   }
 
   public static Map<String, String> start(KafkaTestContainer kafka) {
-    kafka.start();
+    if (!KAFKA.isRunning()) {
+      kafka.start();
+    }
     return Collections.singletonMap("kafka.bootstrap.servers", kafka.getBootstrapServers());
   }
 

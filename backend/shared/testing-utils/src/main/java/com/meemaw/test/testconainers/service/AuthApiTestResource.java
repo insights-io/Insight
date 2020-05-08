@@ -3,7 +3,13 @@ package com.meemaw.test.testconainers.service;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.util.Map;
 
-public class AuthApiResource implements QuarkusTestResourceLifecycleManager {
+/**
+ * Quarkus compatible test resource.
+ *
+ * <p>
+ * USAGE: @QuarkusTestResource(AuthApiTestResource.class)
+ */
+public class AuthApiTestResource implements QuarkusTestResourceLifecycleManager {
 
   private static final AuthApiTestContainer AUTH_API = AuthApiTestContainer.newInstance();
 

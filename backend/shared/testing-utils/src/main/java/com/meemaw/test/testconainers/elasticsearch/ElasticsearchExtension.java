@@ -16,9 +16,7 @@ public class ElasticsearchExtension implements BeforeAllCallback {
 
   @Override
   public void beforeAll(ExtensionContext context) {
-    if (!ELASTICSEARCH.isRunning()) {
-      start(ELASTICSEARCH).forEach(System::setProperty);
-    }
+    start(ELASTICSEARCH).forEach(System::setProperty);
   }
 
   public static Map<String, String> start() {
@@ -26,13 +24,14 @@ public class ElasticsearchExtension implements BeforeAllCallback {
   }
 
   public static Map<String, String> start(ElasticsearchTestContainer elasticsearch) {
-    elasticsearch.start();
+    if (!ELASTICSEARCH.isRunning()) {
+      elasticsearch.start();
+    }
     return Collections.emptyMap();
   }
 
   public static void stop() {
     ELASTICSEARCH.stop();
   }
-
 
 }

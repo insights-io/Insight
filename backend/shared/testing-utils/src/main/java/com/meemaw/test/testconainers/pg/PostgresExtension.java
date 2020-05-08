@@ -2,7 +2,6 @@ package com.meemaw.test.testconainers.pg;
 
 import java.util.Collections;
 import java.util.Map;
-import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <p>
  * USAGE: {@link com.meemaw.test.testconainers.pg.Postgres}
  */
-public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
+public class PostgresExtension implements BeforeAllCallback {
 
   private static final PostgresTestContainer POSTGRES = PostgresTestContainer.newInstance();
 
@@ -21,16 +20,7 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
 
   @Override
   public void beforeAll(ExtensionContext context) {
-    if (!POSTGRES.isRunning()) {
-      start(POSTGRES).forEach(System::setProperty);
-    }
-  }
-
-  @Override
-  public void afterAll(ExtensionContext extensionContext) {
-    if (POSTGRES.isRunning()) {
-      stop();
-    }
+    start(POSTGRES).forEach(System::setProperty);
   }
 
   public static void stop() {
@@ -42,8 +32,10 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
   }
 
   public static Map<String, String> start(PostgresTestContainer postgres) {
-    postgres.start();
-    postgres.applyMigrations();
+    if (!POSTGRES.isRunning()) {
+      postgres.start();
+      postgres.applyMigrations();
+    }
     return Collections.singletonMap("quarkus.datasource.url", postgres.getDatasourceURL());
   }
 
