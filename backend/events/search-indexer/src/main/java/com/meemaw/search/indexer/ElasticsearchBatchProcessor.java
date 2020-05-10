@@ -17,11 +17,13 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.rest.RestStatus;
 
 @Slf4j
 public abstract class ElasticsearchBatchProcessor<V> implements BatchProcessor<V> {
 
+  private static final TimeValue FLUSH_INTERVAL = TimeValue.timeValueSeconds(5);
   private static final String INTERNAL_SERVER_ERROR = RestStatus.INTERNAL_SERVER_ERROR.name();
   private static final String SERVICE_UNAVAILABLE = RestStatus.SERVICE_UNAVAILABLE.name();
 
@@ -77,6 +79,7 @@ public abstract class ElasticsearchBatchProcessor<V> implements BatchProcessor<V
             }
 
             if (failures.size() > 0) {
+              log.info("onFailure.execute count: {}", failures.size(), cause);
               onFailure.execute(failures, cause);
             }
           }
@@ -88,7 +91,7 @@ public abstract class ElasticsearchBatchProcessor<V> implements BatchProcessor<V
             values.clear();
           }
         }
-    ).build();
+    ).setFlushInterval(FLUSH_INTERVAL).build();
   }
 
   @Override
@@ -112,11 +115,13 @@ public abstract class ElasticsearchBatchProcessor<V> implements BatchProcessor<V
 
   @Override
   public void close() {
+    log.info("Closing ...");
     processor.close();
   }
 
   @Override
   public void flush() {
+    log.info("Flushing ...");
     processor.flush();
   }
 }

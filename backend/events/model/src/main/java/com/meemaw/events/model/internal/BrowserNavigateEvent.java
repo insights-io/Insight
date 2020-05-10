@@ -1,6 +1,5 @@
 package com.meemaw.events.model.internal;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class BrowserNavigateEvent extends AbstractBrowserEvent {
@@ -15,11 +14,14 @@ public class BrowserNavigateEvent extends AbstractBrowserEvent {
 
   @Override
   public Map<String, Object> index() {
-    Map<String, Object> index = new HashMap<>(4);
-    index.put("type", BrowserEventTypeConstants.NAVIGATE);
-    index.put("timestamp", timestamp);
-    index.put("location", getLocation());
-    index.put("title", getTitle());
-    return index;
+    return Map.of(
+        "type",
+        BrowserEventTypeConstants.NAVIGATE,
+        "timestamp",
+        timestamp,
+        "location",
+        getLocation(),
+        "title",
+        getTitle());
   }
 }

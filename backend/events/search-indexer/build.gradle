@@ -13,6 +13,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperty "java.util.logging.manager", "org.apache.logging.log4j.LogManager"
 }
 
 jar {

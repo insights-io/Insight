@@ -1,6 +1,5 @@
 package com.meemaw.events.model.internal;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class BrowserPerformanceEvent extends AbstractBrowserEvent {
@@ -33,13 +32,18 @@ public class BrowserPerformanceEvent extends AbstractBrowserEvent {
 
   @Override
   public Map<String, Object> index() {
-    Map<String, Object> index = new HashMap<>(6);
-    index.put("type", BrowserEventTypeConstants.PERFORMANCE);
-    index.put("timestamp", timestamp);
-    index.put("name", getName());
-    index.put("entryType", getEntryType());
-    index.put("startTime", getStartTime());
-    index.put("duration", getDuration());
-    return index;
+    return Map.of(
+        "type",
+        BrowserEventTypeConstants.PERFORMANCE,
+        "timestamp",
+        timestamp,
+        "name",
+        getName(),
+        "entryType",
+        getEntryType(),
+        "startTime",
+        getStartTime(),
+        "duration",
+        getDuration());
   }
 }

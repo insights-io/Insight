@@ -1,12 +1,18 @@
 [
   {
-    "t": 62171,
-    "e": 3,
-    "a": [
-      "http://localhost:3002/_next/static/webpack/e07dcef65f82a25c7ded.hot-update.json",
-      "resource",
-      62417.66500007361,
-      8.584999945014715
-    ]
+    "event": {
+      "t": 62171,
+      "e": 3,
+      "a": [
+        "http://localhost:3002/_next/static/webpack/e07dcef65f82a25c7ded.hot-update.json",
+        "resource",
+        62417.66500007361,
+        8.584999945014715
+      ]
+    },
+    "orgID": "org123",
+    "pageId": "d274c40c-357b-4357-8359-f33aed7b86df",
+    "sessionID": "02737f08-28ba-47c4-9c13-5a2b6a133a9a",
+    "uid": "14671e07-9081-4009-8752-a4d896c620c8"
   }
 ]

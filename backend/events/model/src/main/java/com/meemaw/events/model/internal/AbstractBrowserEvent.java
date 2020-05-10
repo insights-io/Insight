@@ -8,29 +8,23 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meemaw.events.model.Recorded;
-import com.meemaw.events.model.external.BrowserEvent;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.ToString;
 
-
 @ToString(callSuper = true)
-@JsonTypeInfo(
-    use = Id.NAME,
-    property = "e",
-    defaultImpl = AbstractBrowserEvent.class)
+@JsonTypeInfo(use = Id.NAME, property = "e", defaultImpl = AbstractBrowserEvent.class)
 @JsonSubTypes({
-    @Type(value = BrowserNavigateEvent.class, name = BrowserEventTypeConstants.NAVIGATE),
-    @Type(value = BrowserUnloadEvent.class, name = BrowserEventTypeConstants.UNLOAD),
-    @Type(value = BrowserResizeEvent.class, name = BrowserEventTypeConstants.RESIZE),
-    @Type(value = BrowserPerformanceEvent.class, name = BrowserEventTypeConstants.PERFORMANCE),
-    @Type(value = BrowserClickEvent.class, name = BrowserEventTypeConstants.CLICK),
-    @Type(value = BrowserMouseMoveEvent.class, name = BrowserEventTypeConstants.MOUSEMOVE),
-    @Type(value = BrowserMouseDownEvent.class, name = BrowserEventTypeConstants.MOUSEDOWN),
-    @Type(value = BrowserMouseUpEvent.class, name = BrowserEventTypeConstants.MOUSEUP),
-    @Type(value = BrowserLoadEvent.class, name = BrowserEventTypeConstants.LOAD),
+  @Type(value = BrowserNavigateEvent.class, name = BrowserEventTypeConstants.NAVIGATE),
+  @Type(value = BrowserUnloadEvent.class, name = BrowserEventTypeConstants.UNLOAD),
+  @Type(value = BrowserResizeEvent.class, name = BrowserEventTypeConstants.RESIZE),
+  @Type(value = BrowserPerformanceEvent.class, name = BrowserEventTypeConstants.PERFORMANCE),
+  @Type(value = BrowserClickEvent.class, name = BrowserEventTypeConstants.CLICK),
+  @Type(value = BrowserMouseMoveEvent.class, name = BrowserEventTypeConstants.MOUSEMOVE),
+  @Type(value = BrowserMouseDownEvent.class, name = BrowserEventTypeConstants.MOUSEDOWN),
+  @Type(value = BrowserMouseUpEvent.class, name = BrowserEventTypeConstants.MOUSEUP),
+  @Type(value = BrowserLoadEvent.class, name = BrowserEventTypeConstants.LOAD),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractBrowserEvent extends Recorded {
@@ -40,11 +34,5 @@ public abstract class AbstractBrowserEvent extends Recorded {
   List<Object> args;
 
   @JsonIgnore
-  public BrowserEvent identified(UUID pageId) {
-    return BrowserEvent.builder().event(this).pageId(pageId).build();
-  }
-
-  @JsonIgnore
   public abstract Map<String, Object> index();
-
 }

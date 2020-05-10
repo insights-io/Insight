@@ -1,6 +1,5 @@
 package com.meemaw.events.model.internal;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class BrowserResizeEvent extends AbstractBrowserEvent {
@@ -15,11 +14,14 @@ public class BrowserResizeEvent extends AbstractBrowserEvent {
 
   @Override
   public Map<String, Object> index() {
-    Map<String, Object> index = new HashMap<>(4);
-    index.put("type", BrowserEventTypeConstants.RESIZE);
-    index.put("timestamp", timestamp);
-    index.put("innerWidth", getInnerWidth());
-    index.put("innerHeight", getInnerHeight());
-    return index;
+    return Map.of(
+        "type",
+        BrowserEventTypeConstants.RESIZE,
+        "timestamp",
+        timestamp,
+        "innerWidth",
+        getInnerWidth(),
+        "innerHeight",
+        getInnerHeight());
   }
 }

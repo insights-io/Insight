@@ -18,22 +18,10 @@ public class KafkaSourcedBatchProcessor<K, V> {
   private final BatchProcessor<V> processor;
 
   public KafkaSourcedBatchProcessor(
-      RetryQueueStandaloneKafkaConsumer<K, V> consumer,
-      BatchProcessor<V> processor) {
+      RetryQueueStandaloneKafkaConsumer<K, V> consumer, BatchProcessor<V> processor) {
     this.consumer = Objects.requireNonNull(consumer);
     this.processor = Objects.requireNonNull(processor);
     this.processor.onFailure(this::handleFailures);
-  }
-
-  public void handleFailures(Collection<V> failures, Throwable cause) {
-    log.error("Handling {} failures", failures.size(), cause);
-    consumer.sendToRetryQueue(failures);
-  }
-
-  public void shutdown() {
-    log.info("Shutting down ...");
-    processor.shutdown();
-    consumer.shutdown();
   }
 
   public void start() {
@@ -42,8 +30,11 @@ public class KafkaSourcedBatchProcessor<K, V> {
       startPolling();
     } catch (WakeupException ex) {
       log.error("Failed to wakeup consumer", ex);
+    } catch (Exception ex) {
+      log.error("Unexpected exception", ex);
     } finally {
       consumer.close();
+      processor.close();
     }
   }
 
@@ -99,8 +90,18 @@ public class KafkaSourcedBatchProcessor<K, V> {
         consumer.sendToDeadLetterQueue(batchingFailures);
       }
 
-      processor.flush();
       consumer.commit(partitions);
     }
+  }
+
+  public void shutdown() {
+    log.info("Shutting down ...");
+    processor.shutdown();
+    consumer.shutdown();
+  }
+
+  public void handleFailures(Collection<V> failures, Throwable cause) {
+    log.info("Handling {} failures", failures.size(), cause);
+    consumer.sendToRetryQueue(failures);
   }
 }

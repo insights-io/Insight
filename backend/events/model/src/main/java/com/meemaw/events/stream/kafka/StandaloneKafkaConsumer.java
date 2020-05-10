@@ -14,15 +14,15 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 
 @Slf4j
-public class StandaloneKafkaConsumer<K, V> implements
-    StandaloneConsumer<ConsumerRecords<K, V>, Set<TopicPartition>, Map<TopicPartition, OffsetAndMetadata>> {
+public class StandaloneKafkaConsumer<K, V>
+    implements StandaloneConsumer<
+        ConsumerRecords<K, V>, Set<TopicPartition>, Map<TopicPartition, OffsetAndMetadata>> {
 
   private final KafkaConsumer<K, V> consumer;
   private final StandaloneKafkaCommitCallback commitCallback;
 
   public StandaloneKafkaConsumer(
-      KafkaConsumer<K, V> consumer,
-      StandaloneKafkaCommitCallback commitCallback) {
+      KafkaConsumer<K, V> consumer, StandaloneKafkaCommitCallback commitCallback) {
     this.consumer = Objects.requireNonNull(consumer);
     this.commitCallback = Objects.requireNonNull(commitCallback);
   }
@@ -55,16 +55,21 @@ public class StandaloneKafkaConsumer<K, V> implements
 
   @Override
   public void shutdown() {
-    commitCallback.getPartitionOffsetMap()
-        .forEach((topicPartition, offset)
-            -> log.info("Offset position during the shutdown: partition : {}, offset : {}",
-            topicPartition.partition(),
-            offset.offset()));
+    log.info("Shutting down ...");
+    commitCallback
+        .getPartitionOffsetMap()
+        .forEach(
+            (topicPartition, offset) ->
+                log.info(
+                    "Offset position during the shutdown: partition : {}, offset : {}",
+                    topicPartition.partition(),
+                    offset.offset()));
     consumer.wakeup();
   }
 
   @Override
   public void close() {
+    log.info("Closing ...");
     consumer.close();
   }
 }
