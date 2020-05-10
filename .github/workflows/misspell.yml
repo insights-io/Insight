@@ -1,17 +1,13 @@
 name: misspell
-
 on:
-  - push
+  - pull_request
 
 jobs:
-  build:
+  misspell:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-      - uses: sobolevn/misspell-fixer-action@master
-      - uses: peter-evans/create-pull-request@v2.4.4
+      - uses: reviewdog/action-misspell@v1
         with:
+          locale: 'US'
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Fixes by misspell-fixer'
-          title: 'Typos fix by misspell-fixer'

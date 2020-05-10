@@ -24,7 +24,7 @@ jobs:
           arguments: test --continue jacocoTestReport
           build-root-directory: backend
           wrapper-directory: backend
-      - uses: actions/upload-artifact@v2-preview
+      - uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: test-reports
