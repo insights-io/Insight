@@ -3,5 +3,18 @@
   "files.insertFinalNewline": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
+  },
+  "java.checkstyle.configuration": "${workspaceFolder}/backend/.checkstyle.xml",
+  "java.checkstyle.version": "8.32",
+  "[java]": {
+    "editor.formatOnSave": false
+  },
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "\\.java$",
+        "cmd": "google-java-format --replace ${file}"
+      }
+    ]
   }
 }

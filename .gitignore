@@ -5,7 +5,11 @@
 bin/
 
 # IntelliJ
-.idea
+**/.idea/**
+!backend/.idea/checkstyle-idea.xml
+!backend/.idea/google-java-format.xml
+!backend/.idea/saveactions_settings.xml
+
 *.ipr
 *.iml
 *.iws

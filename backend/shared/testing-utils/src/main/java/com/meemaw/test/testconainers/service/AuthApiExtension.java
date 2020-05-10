@@ -6,8 +6,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * JUnit5 compatible test resource.
- * <p>
- * USAGE: {@link com.meemaw.test.testconainers.service.AuthApi}
+ *
+ * <p>USAGE: {@link com.meemaw.test.testconainers.service.AuthApi}
  */
 public class AuthApiExtension implements BeforeAllCallback {
 
@@ -40,5 +40,4 @@ public class AuthApiExtension implements BeforeAllCallback {
         "service.auth.port",
         String.valueOf(AUTH_API.getPort()));
   }
-
 }
