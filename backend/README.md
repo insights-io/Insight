@@ -5,7 +5,7 @@
 We are using [minikube](https://minikube.sigs.k8s.io/) to run Kubernetes locally.
 This helps us test our services in Kubernetes environment before they are pushed into Cloud.
 
-### (One time) setup 
+### (One time) setup
 
 ```shell script
 brew install minikube
@@ -26,11 +26,11 @@ kubectl apply -f auth-service/manifests.yaml
 
 https://github.com/coreos/kube-prometheus
 
-````shell script
+```shell script
 git clone https://github.com/coreos/kube-prometheus
 cd kube-prometheus
-# Create the namespace and CRDs, and then wait for them to be availble before creating the remaining resources
+# Create the namespace and CRDs, and then wait for them to be available before creating the remaining resources
 kubectl create -f manifests/setup
 until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
 kubectl create -f manifests/
-````
+```
