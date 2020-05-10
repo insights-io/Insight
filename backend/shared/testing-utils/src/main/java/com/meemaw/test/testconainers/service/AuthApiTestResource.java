@@ -11,24 +11,13 @@ import java.util.Map;
  */
 public class AuthApiTestResource implements QuarkusTestResourceLifecycleManager {
 
-  private static final AuthApiTestContainer AUTH_API = AuthApiTestContainer.newInstance();
-
-  public static AuthApiTestContainer getInstance() {
-    return AUTH_API;
-  }
-
   @Override
   public Map<String, String> start() {
-    AUTH_API.start();
-    return Map.of(
-        "service.auth.host",
-        AUTH_API.getContainerIpAddress(),
-        "service.auth.port",
-        String.valueOf(AUTH_API.getPort()));
+    return AuthApiExtension.start();
   }
 
   @Override
   public void stop() {
-    AUTH_API.stop();
+    AuthApiExtension.stop();
   }
 }

@@ -11,6 +11,7 @@ import com.meemaw.session.model.PageIdentity;
 import com.meemaw.shared.auth.SsoSession;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.meemaw.test.testconainers.service.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -25,11 +26,10 @@ import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 @QuarkusTest
 @Tag("integration")
 @QuarkusTestResource(PostgresTestResource.class)
-// @QuarkusTestResource(AuthApiResource.class)
+@QuarkusTestResource(AuthApiTestResource.class)
 public class SessionResourceTest {
 
   @Inject
@@ -63,7 +63,7 @@ public class SessionResourceTest {
         .then()
         .statusCode(400)
         .body(sameJson(
-            "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"doctype\":\"may not be null\",\"referrer\":\"may not be null\",\"orgId\":\"may not be null\",\"url\":\"may not be null\"}}}"));
+            "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"doctype\":\"may not be null\",\"orgId\":\"may not be null\",\"url\":\"may not be null\"}}}"));
   }
 
   @Test
@@ -173,7 +173,6 @@ public class SessionResourceTest {
   }
 
 
-  // TODO: this test requires auth service to be running
   @Test
   public void countPages_shouldThrowError_whenInvalidSessionId() {
     given()

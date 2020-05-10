@@ -3,7 +3,7 @@ FROM gradle:6.3.0-jdk13 as build
 COPY . /backend
 WORKDIR /backend
 
-RUN ./gradlew session:api:quarkusBuild --uber-jar
+RUN gradle session:api:quarkusBuild --uber-jar --info
 
 FROM adoptopenjdk:14-jre-hotspot
 
