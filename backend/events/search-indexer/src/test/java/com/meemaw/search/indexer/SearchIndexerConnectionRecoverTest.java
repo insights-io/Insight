@@ -22,6 +22,7 @@ import org.elasticsearch.client.Node;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Kafka
@@ -30,6 +31,7 @@ public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTes
   ElasticsearchTestContainer elasticsearchTestContainer = ElasticsearchTestContainer.newInstance();
 
   @Test
+  @Disabled
   public void canRecoverAfterConnectionRefused() throws IOException, URISyntaxException {
     // setup Kafka
     KafkaProducer<String, AbstractBrowserEvent> producer = configureProducer();

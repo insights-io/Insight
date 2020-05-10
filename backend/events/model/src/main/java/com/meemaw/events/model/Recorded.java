@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public abstract class Recorded {
 
   @Getter

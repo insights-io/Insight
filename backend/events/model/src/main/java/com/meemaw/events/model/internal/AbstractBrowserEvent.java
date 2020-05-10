@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 
-@ToString
+@ToString(callSuper = true)
 @JsonTypeInfo(
     use = Id.NAME,
     property = "e",

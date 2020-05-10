@@ -15,6 +15,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Elasticsearch
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
 
   @Test
+  @Disabled
   public void indexBatches() throws IOException, URISyntaxException {
     // setup ElasticSearch
     RestHighLevelClient client = ElasticsearchExtension.getInstance().restHighLevelClient();

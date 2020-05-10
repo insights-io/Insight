@@ -38,5 +38,6 @@ subprojects {
 
     test {
         finalizedBy(tasks.jacocoTestReport)
+        systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
     }
 }

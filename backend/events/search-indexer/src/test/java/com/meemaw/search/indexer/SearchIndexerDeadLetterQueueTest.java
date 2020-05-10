@@ -1,12 +1,9 @@
 package com.meemaw.search.indexer;
 
-import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.with;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
-import com.meemaw.events.stream.EventsStream;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.stream.EventsStream;
 import com.meemaw.test.testconainers.kafka.Kafka;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +15,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Kafka
@@ -25,6 +23,7 @@ public class SearchIndexerDeadLetterQueueTest extends AbstractSearchIndexerTest 
 
 
   @Test
+  @Disabled
   public void shouldWriteToDlqAfterRetryQuotaExceeded() throws InterruptedException {
     // Configure Kafka
     KafkaProducer<String, AbstractBrowserEvent> producer = configureProducer();
