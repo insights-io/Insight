@@ -6,19 +6,17 @@ import java.util.Map;
 /**
  * Quarkus compatible test resource.
  *
- * <p>
- * USAGE: @QuarkusTestResource(PostgresTestResource.class)
+ * <p>USAGE: @QuarkusTestResource(PostgresTestResource.class)
  */
 public class PostgresTestResource implements QuarkusTestResourceLifecycleManager {
 
   @Override
   public Map<String, String> start() {
-    return PostgresExtension.start();
+    return PostgresTestExtension.start();
   }
 
   @Override
   public void stop() {
-    PostgresExtension.stop();
+    PostgresTestExtension.stop();
   }
-
 }

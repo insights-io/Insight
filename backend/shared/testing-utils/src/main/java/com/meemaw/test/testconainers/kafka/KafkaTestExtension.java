@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 @Slf4j
-public class KafkaExtension implements BeforeAllCallback {
+public class KafkaTestExtension implements BeforeAllCallback {
 
   private static final KafkaTestContainer KAFKA = KafkaTestContainer.newInstance();
 

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 @Slf4j
-public class ElasticsearchExtension implements BeforeAllCallback {
+public class ElasticsearchTestExtension implements BeforeAllCallback {
 
   private static final ElasticsearchTestContainer ELASTICSEARCH =
       ElasticsearchTestContainer.newInstance();

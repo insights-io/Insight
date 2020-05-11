@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <p>USAGE: {@link AuthApi}
  */
 @Slf4j
-public class AuthApiExtension implements BeforeAllCallback {
+public class AuthApiTestExtension implements BeforeAllCallback {
 
   private static final AuthApiTestContainer AUTH_API = AuthApiTestContainer.newInstance();
 

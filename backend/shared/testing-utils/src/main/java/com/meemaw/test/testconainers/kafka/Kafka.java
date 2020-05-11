@@ -13,7 +13,5 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
-@ExtendWith(KafkaExtension.class)
-public @interface Kafka {
-
-}
+@ExtendWith(KafkaTestExtension.class)
+public @interface Kafka {}

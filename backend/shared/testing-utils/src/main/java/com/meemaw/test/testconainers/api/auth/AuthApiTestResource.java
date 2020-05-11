@@ -12,11 +12,11 @@ public class AuthApiTestResource implements QuarkusTestResourceLifecycleManager 
 
   @Override
   public Map<String, String> start() {
-    return AuthApiExtension.start();
+    return AuthApiTestExtension.start();
   }
 
   @Override
   public void stop() {
-    AuthApiExtension.stop();
+    AuthApiTestExtension.stop();
   }
 }

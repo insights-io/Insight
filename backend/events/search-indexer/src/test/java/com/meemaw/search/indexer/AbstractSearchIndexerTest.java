@@ -6,8 +6,8 @@ import com.meemaw.events.model.external.serialization.UserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.testconainers.elasticsearch.ElasticsearchExtension;
-import com.meemaw.test.testconainers.kafka.KafkaExtension;
+import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
+import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -44,8 +44,8 @@ public abstract class AbstractSearchIndexerTest {
       new SearchRequest().indices(EventIndex.NAME);
 
   protected SearchIndexer spawnIndexer(String bootstrapServers, RestHighLevelClient client) {
-    SearchIndexer searchIndexer = new SearchIndexer(RETRY_QUEUE, DEAD_LETTER_QUEUE,
-        bootstrapServers, client);
+    SearchIndexer searchIndexer =
+        new SearchIndexer(RETRY_QUEUE, DEAD_LETTER_QUEUE, bootstrapServers, client);
     CompletableFuture.runAsync(searchIndexer::start);
     return searchIndexer;
   }
@@ -56,15 +56,15 @@ public abstract class AbstractSearchIndexerTest {
 
   protected SearchIndexer spawnIndexer() {
     return spawnIndexer(
-        KafkaExtension.getInstance().getBootstrapServers(),
-        ElasticsearchExtension.getInstance().getHttpHost());
+        KafkaTestExtension.getInstance().getBootstrapServers(),
+        ElasticsearchTestExtension.getInstance().getHttpHost());
   }
 
   protected KafkaProducer<String, UserEvent<AbstractBrowserEvent>> configureProducer() {
     Properties props = new Properties();
     props.put(
         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-        KafkaExtension.getInstance().getBootstrapServers());
+        KafkaTestExtension.getInstance().getBootstrapServers());
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, UserEventSerializer.class.getName());
     return new KafkaProducer<>(props);
@@ -87,14 +87,13 @@ public abstract class AbstractSearchIndexerTest {
             Path.of(Objects.requireNonNull(getClass().getClassLoader().getResource(path)).toURI()));
 
     Collection<UserEvent<AbstractBrowserEvent>> batch =
-        JacksonMapper.get().readValue(payload, new TypeReference<>() {
-        });
+        JacksonMapper.get().readValue(payload, new TypeReference<>() {});
 
     return kafkaRecords(batch);
   }
 
   protected String bootstrapServers() {
-    return KafkaExtension.getInstance().getBootstrapServers();
+    return KafkaTestExtension.getInstance().getBootstrapServers();
   }
 
   protected CreateIndexResponse createIndex(RestHighLevelClient client) throws IOException {

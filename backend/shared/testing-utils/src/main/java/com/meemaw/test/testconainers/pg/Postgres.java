@@ -1,6 +1,5 @@
 package com.meemaw.test.testconainers.pg;
 
-
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -14,7 +13,5 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
-@ExtendWith(PostgresExtension.class)
-public @interface Postgres {
-
-}
+@ExtendWith(PostgresTestExtension.class)
+public @interface Postgres {}

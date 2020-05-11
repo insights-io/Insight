@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <p>USAGE: {@link com.meemaw.test.testconainers.pg.Postgres}
  */
 @Slf4j
-public class PostgresExtension implements BeforeAllCallback {
+public class PostgresTestExtension implements BeforeAllCallback {
 
   private static final PostgresTestContainer POSTGRES = PostgresTestContainer.newInstance();
 

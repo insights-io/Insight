@@ -6,18 +6,17 @@ import java.util.Map;
 /**
  * Quarkus compatible test resource.
  *
- * <p>
- * USAGE: @QuarkusTestResource(ElasticsearchTestResource.class)
+ * <p>USAGE: @QuarkusTestResource(ElasticsearchTestResource.class)
  */
 public class ElasticsearchTestResource implements QuarkusTestResourceLifecycleManager {
 
   @Override
   public Map<String, String> start() {
-    return ElasticsearchExtension.start();
+    return ElasticsearchTestExtension.start();
   }
 
   @Override
   public void stop() {
-    ElasticsearchExtension.stop();
+    ElasticsearchTestExtension.stop();
   }
 }

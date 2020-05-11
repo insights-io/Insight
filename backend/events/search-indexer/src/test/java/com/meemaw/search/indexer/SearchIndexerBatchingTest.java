@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.meemaw.events.model.external.UserEvent;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.test.testconainers.elasticsearch.Elasticsearch;
-import com.meemaw.test.testconainers.elasticsearch.ElasticsearchExtension;
+import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.Kafka;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,12 +28,12 @@ import org.junit.jupiter.api.Test;
 public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
 
   private static final List<SearchIndexer> searchIndexers = new LinkedList<>();
-  private static final RestHighLevelClient client = ElasticsearchExtension.getInstance()
-      .restHighLevelClient();
+  private static final RestHighLevelClient client =
+      ElasticsearchTestExtension.getInstance().restHighLevelClient();
 
   @AfterEach
   public void cleanup() throws IOException {
-    ElasticsearchExtension.getInstance().cleanup();
+    ElasticsearchTestExtension.getInstance().cleanup();
     searchIndexers.forEach(SearchIndexer::shutdown);
   }
 
