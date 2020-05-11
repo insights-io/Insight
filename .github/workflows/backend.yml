@@ -24,6 +24,8 @@ jobs:
           arguments: test --continue jacocoTestReport
           build-root-directory: backend
           wrapper-directory: backend
+        env:
+          DOCKER_BUILDKIT: 1
       - uses: actions/upload-artifact@v2
         if: failure()
         with:

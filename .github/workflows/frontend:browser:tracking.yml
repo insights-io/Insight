@@ -27,6 +27,9 @@ jobs:
         run: |
           mkdir -p $ARTIFACTS_PATH
           docker-compose -f backend/local-test-services/docker-compose.yml up beacon-api session-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
+        env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
       - uses: actions/setup-node@v1
         with:
           node-version: '13.x'
