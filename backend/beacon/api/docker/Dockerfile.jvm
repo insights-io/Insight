@@ -3,7 +3,7 @@ FROM gradle:6.4.0-jdk14 as build
 COPY . /backend
 WORKDIR /backend
 
-RUN ./gradlew beacon:api:quarkusBuild --uber-jar
+RUN gradle beacon:api:quarkusBuild --uber-jar
 
 FROM adoptopenjdk:14-jre-hotspot
 

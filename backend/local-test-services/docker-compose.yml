@@ -11,6 +11,7 @@ services:
       - LOG_LEVEL=INFO
       - POSTGRES_HOST=db
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - JAEGER_AGENT_HOST=jaeger:6831
     depends_on:
       - auth-api-migrations
   auth-api-migrations:
@@ -38,6 +39,7 @@ services:
       - LOG_LEVEL=INFO
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
+      - JAEGER_AGENT_HOST=jaeger:6831
   beacon-api-migrations:
     build:
       context: ../beacon/api/migrations
@@ -63,6 +65,7 @@ services:
       - LOG_LEVEL=INFO
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
+      - JAEGER_AGENT_HOST=jaeger:6831
   session-api-migrations:
     build:
       context: ../session/api/migrations
@@ -111,7 +114,7 @@ services:
       LOG_DIR: /tmp/logs
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
     ports:
       - '9200:9200'
       - '9300:9300'
@@ -121,7 +124,7 @@ services:
     networks:
       - elk
   logstash:
-    image: docker.elastic.co/logstash/logstash:7.6.1
+    image: docker.elastic.co/logstash/logstash:7.6.2
     volumes:
       - source: $HOME/pipelines
         target: /usr/share/logstash/pipeline
@@ -135,13 +138,23 @@ services:
     depends_on:
       - elasticsearch
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.6.1
+    image: docker.elastic.co/kibana/kibana:7.6.2
     ports:
       - '5601:5601'
     networks:
       - elk
     depends_on:
       - elasticsearch
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.17.1
+    ports:
+      - '5775:5775/udp'
+      - '6831:6831/udp'
+      - '6832:6832/udp'
+      - '5778:5778'
+      - 16686:16686
+      - 14268:14268
 
 networks:
   elk:
