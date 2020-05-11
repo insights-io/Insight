@@ -3,14 +3,15 @@ name: reviewdog
 on:
   pull_request:
     paths:
-      - '**/*.sh'
-      - '.github/workflows/shellcheck.yml'
+      - '**/*.yml'
+      - '**/*.yaml'
+      - '.github/workflows/yamllint.yml'
 
 jobs:
-  shellcheck:
+  yamllint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: reviewdog/action-shellcheck@v1
+      - uses: reviewdog/action-yamllint@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
