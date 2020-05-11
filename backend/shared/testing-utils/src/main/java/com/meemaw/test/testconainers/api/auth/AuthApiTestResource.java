@@ -1,4 +1,4 @@
-package com.meemaw.test.testconainers.service;
+package com.meemaw.test.testconainers.api.auth;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.util.Map;

@@ -1,6 +1,5 @@
 package com.meemaw.test.testconainers.kafka;
 
-import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestContainer;
 import org.testcontainers.containers.KafkaContainer;
 
 public class KafkaTestContainer extends KafkaContainer {
@@ -14,5 +13,4 @@ public class KafkaTestContainer extends KafkaContainer {
   public static KafkaTestContainer newInstance() {
     return new KafkaTestContainer();
   }
-
 }

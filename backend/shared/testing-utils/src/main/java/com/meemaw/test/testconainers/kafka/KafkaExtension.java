@@ -2,9 +2,11 @@ package com.meemaw.test.testconainers.kafka;
 
 import java.util.Collections;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+@Slf4j
 public class KafkaExtension implements BeforeAllCallback {
 
   private static final KafkaTestContainer KAFKA = KafkaTestContainer.newInstance();
@@ -22,16 +24,20 @@ public class KafkaExtension implements BeforeAllCallback {
     return start(KAFKA);
   }
 
+  /**
+   * @param kafka
+   * @return
+   */
   public static Map<String, String> start(KafkaTestContainer kafka) {
     if (!KAFKA.isRunning()) {
+      log.info("Starting kafka container ...");
       kafka.start();
     }
+    log.info("Connecting to kafka bootstrap.servers={}", kafka.getBootstrapServers());
     return Collections.singletonMap("kafka.bootstrap.servers", kafka.getBootstrapServers());
   }
 
   public static void stop() {
     KAFKA.stop();
   }
-
-
 }

@@ -1,4 +1,4 @@
-package com.meemaw.test.testconainers.service;
+package com.meemaw.test.testconainers.api.auth;
 
 import com.meemaw.test.project.ProjectUtils;
 import java.io.BufferedReader;
@@ -29,10 +29,10 @@ public class AuthApiTestContainer extends GenericContainer<AuthApiTestContainer>
   private static String dockerImage() {
     Path dockerfile = ProjectUtils.getFromBackend("auth", "api", "docker", "Dockerfile.jvm");
     Path context = ProjectUtils.backendPath();
-    String imageName = "authapi-test";
+    String imageName = "auth-api-test";
 
     log.info(
-        "Building auth api dockerfile {} context {} imageName {}",
+        "Building auth api dockerfile={} context={} imageName={}",
         dockerfile.toString(),
         context.toAbsolutePath(),
         imageName);
@@ -58,11 +58,11 @@ public class AuthApiTestContainer extends GenericContainer<AuthApiTestContainer>
         if (line == null) {
           break;
         }
-        System.out.println(line);
+        log.info(line);
       }
 
       if (p.waitFor() > 0) {
-        throw new Exception("Failtedo to build auth api");
+        throw new Exception("failed to build auth api");
       }
 
       return imageName;

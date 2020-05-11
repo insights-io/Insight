@@ -37,12 +37,13 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   }
 
   public static PgPool client(PostgreSQLContainer<PostgresTestContainer> container) {
-    PgConnectOptions connectOptions = new PgConnectOptions()
-        .setPort(container.getMappedPort(PORT))
-        .setHost(HOST)
-        .setDatabase(container.getDatabaseName())
-        .setUser(container.getUsername())
-        .setPassword(container.getPassword());
+    PgConnectOptions connectOptions =
+        new PgConnectOptions()
+            .setPort(container.getMappedPort(PORT))
+            .setHost(HOST)
+            .setDatabase(container.getDatabaseName())
+            .setUser(container.getUsername())
+            .setPassword(container.getPassword());
 
     PoolOptions poolOptions = new PoolOptions().setMaxSize(5);
     return PgPool.pool(connectOptions, poolOptions);
@@ -52,32 +53,45 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     return getMappedPort(PORT);
   }
 
+  public String getHost() {
+    return String.format("%s:%d", HOST, getPort());
+  }
+
   public String getDatasourceURL() {
-    int mappedPort = getPort();
-    return String.format("vertx-reactive:postgresql://%s:%d/%s", HOST, mappedPort, DATABASE_NAME);
+    return String.format("vertx-reactive:postgresql://%s/%s", getHost(), DATABASE_NAME);
   }
 
   public void applyMigrations() {
-    Path migrationsSqlPath = ProjectUtils.getFromModule("migrations", "sql");
+    Path moduleMigrationsSqlPath = ProjectUtils.getFromModule("migrations", "sql");
+    applyMigrations(moduleMigrationsSqlPath);
+  }
+
+  public void applyMigrations(Path migrationsSqlPath) {
+    if (!Files.exists(migrationsSqlPath)) {
+      log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
+      return;
+    }
+
     log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
-
     try {
-      Files.walk(migrationsSqlPath).filter(path -> !Files.isDirectory(path)).forEach(path -> {
-        log.info("Applying migration {}", path);
-        try {
-          client()
-              .query(Files.readString(path))
-              .await()
-              .indefinitely();
+      Files.walk(migrationsSqlPath)
+          .filter(path -> !Files.isDirectory(path))
+          .forEach(
+              path -> {
+                log.info("Applying migration {}", path);
+                try {
+                  client().query(Files.readString(path)).await().indefinitely();
 
-        } catch (IOException ex) {
-          log.error("Failed to apply migration {}", migrationsSqlPath, ex);
-          throw new RuntimeException(ex);
-        }
-      });
+                } catch (IOException ex) {
+                  log.error("Failed to apply migration {}", migrationsSqlPath, ex);
+                  throw new RuntimeException(ex);
+                }
+              });
     } catch (IOException ex) {
-      log.error("Something went wrong while applying migrations from {}",
-          migrationsSqlPath.toAbsolutePath(), ex);
+      log.error(
+          "Something went wrong while applying migrations from {}",
+          migrationsSqlPath.toAbsolutePath(),
+          ex);
       throw new RuntimeException(ex);
     }
   }

@@ -1,4 +1,4 @@
-package com.meemaw.test.testconainers.service;
+package com.meemaw.test.testconainers.api.auth;
 
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 /**
  * JUnit5 compatible test resource.
  *
- * <p>USAGE: {@link com.meemaw.test.testconainers.service.AuthApi}
+ * <p>USAGE: {@link AuthApi}
  */
 @Slf4j
 public class AuthApiExtension implements BeforeAllCallback {
@@ -38,8 +38,10 @@ public class AuthApiExtension implements BeforeAllCallback {
    */
   public static Map<String, String> start(AuthApiTestContainer authApi) {
     if (!authApi.isRunning()) {
+      log.info("Starting auth api container ...");
       authApi.start();
     }
+    log.info("Connecting to auth api on port {}", authApi.getPort());
     return Map.of(
         "service.auth.host",
         AUTH_API.getContainerIpAddress(),
