@@ -1,7 +1,7 @@
 package com.meemaw.session.service;
 
-import com.meemaw.events.stream.EventsStream;
 import com.meemaw.events.model.internal.BrowserUnloadEvent;
+import com.meemaw.events.stream.EventsStream;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,14 +38,21 @@ public class SessionSocketService {
 
   private void sendText(Session session, String text) {
     String sessionId = session.getId();
-    session.getAsyncRemote().sendText(text, sendResult -> {
-      if (sendResult.getException() != null) {
-        log.error("Failed to send text {} to client {}", text, sessionId,
-            sendResult.getException());
-      } else {
-        log.trace("Text {} sent to client {}", text, sessionId);
-      }
-    });
+    session
+        .getAsyncRemote()
+        .sendText(
+            text,
+            sendResult -> {
+              if (sendResult.getException() != null) {
+                log.error(
+                    "Failed to send text {} to client {}",
+                    text,
+                    sessionId,
+                    sendResult.getException());
+              } else {
+                log.trace("Text {} sent to client {}", text, sessionId);
+              }
+            });
   }
 
   @Incoming(EventsStream.UNLOAD)
@@ -53,5 +60,4 @@ public class SessionSocketService {
     log.info("Notifying sockets about page end {}", event);
     sessions.values().forEach(session -> sendText(session, "PAGE END"));
   }
-
 }

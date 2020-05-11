@@ -1,8 +1,8 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
 
-CREATE SCHEMA IF NOT EXISTS rec;
+CREATE SCHEMA IF NOT EXISTS session;
 
-CREATE TABLE IF NOT EXISTS rec.page
+CREATE TABLE IF NOT EXISTS session.page
 (
     id                 UUID        NOT NULL,
     uid                UUID        NOT NULL,

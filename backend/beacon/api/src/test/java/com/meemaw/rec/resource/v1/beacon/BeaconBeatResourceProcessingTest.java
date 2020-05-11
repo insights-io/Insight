@@ -89,7 +89,7 @@ public class BeaconBeatResourceProcessingTest {
         .onFailure()
         .invoke(
             throwable -> {
-              throw new DatabaseException();
+              throw new DatabaseException(throwable);
             });
   }
 

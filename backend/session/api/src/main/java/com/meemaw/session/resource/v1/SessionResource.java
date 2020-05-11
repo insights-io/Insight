@@ -1,7 +1,9 @@
 package com.meemaw.session.resource.v1;
 
-import com.meemaw.session.model.PageDTO;
+import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.shared.auth.CookieAuth;
+import com.meemaw.shared.validation.OrganizationId;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -9,7 +11,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -21,10 +25,18 @@ public interface SessionResource {
   String PATH = "/v1/sessions";
 
   @POST
-  CompletionStage<Response> page(@NotNull(message = "Payload is required") @Valid PageDTO payload);
+  CompletionStage<Response> page(
+      @NotNull(message = "Payload is required") @Valid CreatePageDTO payload);
 
   @GET
   @CookieAuth
   CompletionStage<Response> count();
 
+  // TODO: this should be authenticated
+  @GET
+  @Path("{SessionID}/pages/{PageID}")
+  CompletionStage<Response> get(
+      @PathParam("SessionID") UUID sessionID,
+      @PathParam("PageID") UUID pageID,
+      @OrganizationId @QueryParam("orgID") String orgID);
 }

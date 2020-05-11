@@ -31,12 +31,21 @@ public class AuthApiTestContainer extends GenericContainer<AuthApiTestContainer>
     Path context = ProjectUtils.backendPath();
     String imageName = "authapi-test";
 
-    System.out.println("Dockerfile: " + dockerfile.toString());
-    System.out.println("Context: " + context.toAbsolutePath());
+    log.info(
+        "Building auth api dockerfile {} context {} imageName {}",
+        dockerfile.toString(),
+        context.toAbsolutePath(),
+        imageName);
 
-    ProcessBuilder builder = new ProcessBuilder(
-        "docker", "build", "-f", dockerfile.toString(),
-        "-t", imageName, context.toAbsolutePath().toString());
+    ProcessBuilder builder =
+        new ProcessBuilder(
+            "docker",
+            "build",
+            "-f",
+            dockerfile.toString(),
+            "-t",
+            imageName,
+            context.toAbsolutePath().toString());
     builder.redirectErrorStream(true);
     Process p;
     try {

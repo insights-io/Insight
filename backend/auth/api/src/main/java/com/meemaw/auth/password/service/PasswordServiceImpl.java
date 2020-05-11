@@ -6,8 +6,8 @@ import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.signup.datasource.SignupDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.shared.auth.UserDTO;
 import com.meemaw.auth.user.model.UserWithHashedPasswordDTO;
+import com.meemaw.shared.auth.UserDTO;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.response.Boom;
@@ -24,74 +24,76 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 
-
 @ApplicationScoped
 @Slf4j
 public class PasswordServiceImpl implements PasswordService {
 
-  @Inject
-  PasswordDatasource passwordDatasource;
+  @Inject PasswordDatasource passwordDatasource;
 
-  @Inject
-  PasswordResetDatasource passwordResetDatasource;
+  @Inject PasswordResetDatasource passwordResetDatasource;
 
-  @Inject
-  UserDatasource userDatasource;
+  @Inject UserDatasource userDatasource;
 
-  @Inject
-  SignupDatasource signupDatasource;
+  @Inject SignupDatasource signupDatasource;
 
   @ResourcePath("password/reset")
   Template passwordResetTemplate;
 
-  @Inject
-  ReactiveMailer mailer;
+  @Inject ReactiveMailer mailer;
 
-  @Inject
-  PgPool pgPool;
+  @Inject PgPool pgPool;
 
   private static final String FROM_SUPPORT = "Insight Support <support@insight.com>";
 
   public CompletionStage<UserDTO> verifyPassword(String email, String password) {
-    return passwordDatasource.findUserWithPassword(email)
-        .thenApply(maybeUserWithPasswordHash -> {
-          UserWithHashedPasswordDTO withPassword = maybeUserWithPasswordHash.orElseThrow(() -> {
-            log.info("User {} not found", email);
-            throw new BoomException(Boom.badRequest().message("Invalid email or password"));
-          });
+    return passwordDatasource
+        .findUserWithPassword(email)
+        .thenApply(
+            maybeUserWithPasswordHash -> {
+              UserWithHashedPasswordDTO withPassword =
+                  maybeUserWithPasswordHash.orElseThrow(
+                      () -> {
+                        log.info("User {} not found", email);
+                        throw new BoomException(
+                            Boom.badRequest().message("Invalid email or password"));
+                      });
 
-          String hashedPassword = withPassword.getPassword();
-          if (hashedPassword == null) {
-            log.info("Could not associate password with user={}", email);
-            throw Boom.badRequest().message("Invalid email or password").exception();
-          }
+              String hashedPassword = withPassword.getPassword();
+              if (hashedPassword == null) {
+                log.info("Could not associate password with user={}", email);
+                throw Boom.badRequest().message("Invalid email or password").exception();
+              }
 
-          if (!BCrypt.checkpw(password, hashedPassword)) {
-            throw Boom.badRequest().message("Invalid email or password").exception();
-          }
+              if (!BCrypt.checkpw(password, hashedPassword)) {
+                throw Boom.badRequest().message("Invalid email or password").exception();
+              }
 
-          return withPassword.user();
-        }).exceptionally(throwable -> {
-          Throwable cause = throwable.getCause();
-          if (cause instanceof BoomException) {
-            throw (BoomException) cause;
-          }
-          log.error("Failed to retrieve user with password hash", throwable);
-          throw new DatabaseException();
-        });
+              return withPassword.user();
+            })
+        .exceptionally(
+            throwable -> {
+              Throwable cause = throwable.getCause();
+              if (cause instanceof BoomException) {
+                throw (BoomException) cause;
+              }
+              log.error("Failed to retrieve user with password hash", throwable);
+              throw new DatabaseException(throwable);
+            });
   }
-
 
   @Override
   public CompletionStage<Boolean> forgot(String email) {
-    return userDatasource.findUser(email)
-        .thenApply(maybeUser -> maybeUser.orElseThrow(() -> {
-          log.info("User {} not found", email);
-          throw new BoomException(Boom.notFound().message("User not found"));
-        }))
+    return userDatasource
+        .findUser(email)
+        .thenApply(
+            maybeUser ->
+                maybeUser.orElseThrow(
+                    () -> {
+                      log.info("User {} not found", email);
+                      throw new BoomException(Boom.notFound().message("User not found"));
+                    }))
         .thenCompose(this::forgot);
   }
-
 
   private CompletionStage<Boolean> forgot(UserDTO userDTO) {
     return pgPool.begin().thenCompose(transaction -> forgotTransactional(transaction, userDTO));
@@ -102,13 +104,23 @@ public class PasswordServiceImpl implements PasswordService {
     String org = userDTO.getOrg();
     UUID userId = userDTO.getId();
 
-    return passwordResetDatasource.create(transaction, email, userId, org)
-        .thenApply(passwordResetRequest -> sendPasswordResetEmail(passwordResetRequest)
-            .exceptionally(throwable -> {
-              transaction.rollback();
-              log.error("Failed to send password reset email={} org={}", email, org, throwable);
-              throw Boom.serverError().message("Failed to send password reset email").exception();
-            }))
+    return passwordResetDatasource
+        .create(transaction, email, userId, org)
+        .thenApply(
+            passwordResetRequest ->
+                sendPasswordResetEmail(passwordResetRequest)
+                    .exceptionally(
+                        throwable -> {
+                          transaction.rollback();
+                          log.error(
+                              "Failed to send password reset email={} org={}",
+                              email,
+                              org,
+                              throwable);
+                          throw Boom.serverError()
+                              .message("Failed to send password reset email")
+                              .exception();
+                        }))
         .thenApply(nothing -> transaction.commit())
         .thenApply(nothing -> true);
   }
@@ -125,10 +137,11 @@ public class PasswordServiceImpl implements PasswordService {
         .data("token", token)
         .renderAsync()
         .thenCompose(
-            html -> mailer.send(Mail.withHtml(email, subject, html).setFrom(FROM_SUPPORT))
-                .subscribeAsCompletionStage());
+            html ->
+                mailer
+                    .send(Mail.withHtml(email, subject, html).setFrom(FROM_SUPPORT))
+                    .subscribeAsCompletionStage());
   }
-
 
   @Override
   public CompletionStage<Boolean> reset(PasswordResetRequestDTO passwordResetRequestDTO) {
@@ -136,16 +149,21 @@ public class PasswordServiceImpl implements PasswordService {
     String email = passwordResetRequestDTO.getEmail();
     String org = passwordResetRequestDTO.getOrg();
     String password = passwordResetRequestDTO.getPassword();
-    return passwordResetDatasource.find(token, email, org)
-        .thenApply(maybePasswordRequest -> maybePasswordRequest.orElseThrow(() -> {
-          log.info("Password reset request not found email={}", email);
-          throw new BoomException(Boom.notFound().message("Password reset request not found"));
-        }))
+    return passwordResetDatasource
+        .find(token, email, org)
+        .thenApply(
+            maybePasswordRequest ->
+                maybePasswordRequest.orElseThrow(
+                    () -> {
+                      log.info("Password reset request not found email={}", email);
+                      throw new BoomException(
+                          Boom.notFound().message("Password reset request not found"));
+                    }))
         .thenCompose(passwordResetRequest -> reset(passwordResetRequest, password));
   }
 
-  private CompletionStage<Boolean> reset(PasswordResetRequest passwordResetRequest,
-      String newPassword) {
+  private CompletionStage<Boolean> reset(
+      PasswordResetRequest passwordResetRequest, String newPassword) {
     UUID token = passwordResetRequest.getToken();
     String email = passwordResetRequest.getEmail();
     String org = passwordResetRequest.getOrg();
@@ -156,26 +174,31 @@ public class PasswordServiceImpl implements PasswordService {
       throw Boom.badRequest().message("Password reset request expired").exception();
     }
 
-    return pgPool.begin().thenCompose(
-        transaction -> passwordResetDatasource.delete(transaction, token, email, org)
-            .thenCompose(deleted -> signupDatasource.delete(transaction, email, org, userId))
-            .thenCompose(deleted -> create(transaction, userId, email, org, newPassword))
-            .thenCompose(created -> transaction.commit())
-            .thenApply(nothing -> true));
+    return pgPool
+        .begin()
+        .thenCompose(
+            transaction ->
+                passwordResetDatasource
+                    .delete(transaction, token, email, org)
+                    .thenCompose(
+                        deleted -> signupDatasource.delete(transaction, email, org, userId))
+                    .thenCompose(deleted -> create(transaction, userId, email, org, newPassword))
+                    .thenCompose(created -> transaction.commit())
+                    .thenApply(nothing -> true));
   }
 
-
-  public CompletionStage<Boolean> create(Transaction transaction, UUID userId, String email,
-      String org,
-      String password) {
+  public CompletionStage<Boolean> create(
+      Transaction transaction, UUID userId, String email, String org, String password) {
     log.info("Storing password email={} userId={} org={}", email, userId, org);
     String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(13));
 
-    return passwordDatasource.create(transaction, userId, hashedPassword)
-        .thenApply(x -> {
-          log.info("Password stored email={} userId={} org={}", email, userId, org);
-          return true;
-        });
+    return passwordDatasource
+        .create(transaction, userId, hashedPassword)
+        .thenApply(
+            x -> {
+              log.info("Password stored email={} userId={} org={}", email, userId, org);
+              return true;
+            });
   }
 
   @Override

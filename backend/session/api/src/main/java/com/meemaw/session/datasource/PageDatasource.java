@@ -1,5 +1,6 @@
 package com.meemaw.session.datasource;
 
+import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.Page;
 import com.meemaw.session.model.PageIdentity;
 import io.smallrye.mutiny.Uni;
@@ -22,11 +23,16 @@ public interface PageDatasource {
    * @param page
    * @return newly created Page
    */
-  Uni<PageIdentity> insertPage(UUID pageId, UUID uid, UUID sessionId, Page page);
+  Uni<PageIdentity> insertPage(UUID pageId, UUID uid, UUID sessionId, CreatePageDTO page);
 
-  /**
-   * @return number of currently active pages
-   */
+  /** @return number of currently active pages */
   Uni<Integer> activePageCount();
 
+  /**
+   * @param pageID
+   * @param sessionID
+   * @param orgID
+   * @return
+   */
+  Uni<Optional<Page>> getPage(UUID pageID, UUID sessionID, String orgID);
 }

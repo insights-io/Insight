@@ -6,8 +6,7 @@ import java.util.Map;
 /**
  * Quarkus compatible test resource.
  *
- * <p>
- * USAGE: @QuarkusTestResource(AuthApiTestResource.class)
+ * <p>USAGE: @QuarkusTestResource(AuthApiTestResource.class)
  */
 public class AuthApiTestResource implements QuarkusTestResourceLifecycleManager {
 

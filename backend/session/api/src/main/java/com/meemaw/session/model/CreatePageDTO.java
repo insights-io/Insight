@@ -1,5 +1,6 @@
 package com.meemaw.session.model;
 
+import com.meemaw.shared.validation.OrganizationId;
 import java.util.UUID;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -11,10 +12,9 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class PageDTO {
+public class CreatePageDTO {
 
-  @NotNull(message = "may not be null")
-  String orgId;
+  @OrganizationId String orgId;
 
   UUID uid;
 
@@ -45,5 +45,4 @@ public class PageDTO {
   @NotNull(message = "may not be null")
   @Min(message = "must be non negative", value = 0)
   long compiledTs;
-
 }

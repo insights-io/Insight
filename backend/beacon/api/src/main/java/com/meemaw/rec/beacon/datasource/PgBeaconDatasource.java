@@ -17,13 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PgBeaconDatasource implements BeaconDatasource {
 
-  @Inject
-  PgPool pgPool;
+  @Inject PgPool pgPool;
 
-  @Inject
-  ObjectMapper objectMapper;
+  @Inject ObjectMapper objectMapper;
 
-  private static final String INSERT_BEACON_RAW_SQL = "INSERT INTO rec.beacon (timestamp, sequence, events) VALUES($1, $2, $3)";
+  private static final String INSERT_BEACON_RAW_SQL =
+      "INSERT INTO rec.beacon (timestamp, sequence, events) VALUES($1, $2, $3)";
 
   @Override
   public Uni<Void> store(Beacon beacon) {
@@ -31,17 +30,21 @@ public class PgBeaconDatasource implements BeaconDatasource {
     try {
       jsonEvents = objectMapper.writeValueAsString(beacon.getEvents());
     } catch (JsonProcessingException ex) {
-      throw Boom.status(MissingStatus.UNPROCESSABLE_ENTITY).message(ex.getOriginalMessage())
+      throw Boom.status(MissingStatus.UNPROCESSABLE_ENTITY)
+          .message(ex.getOriginalMessage())
           .exception();
     }
     Tuple values = Tuple.of(beacon.getTimestamp(), beacon.getSequence(), jsonEvents);
-    return pgPool.preparedQuery(INSERT_BEACON_RAW_SQL, values)
+    return pgPool
+        .preparedQuery(INSERT_BEACON_RAW_SQL, values)
         .onItem()
         .ignore()
         .andContinueWithNull()
-        .onFailure().invoke(throwable -> {
-          log.error("Failed to store beacon", throwable);
-          throw new DatabaseException();
-        });
+        .onFailure()
+        .invoke(
+            throwable -> {
+              log.error("Failed to store beacon", throwable);
+              throw new DatabaseException(throwable);
+            });
   }
 }

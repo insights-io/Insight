@@ -1,15 +1,15 @@
 package com.meemaw.session.model;
 
-import java.util.Objects;
 import java.util.UUID;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 @Value
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class Page {
 
+  UUID id;
+  UUID sessionID;
   String orgID;
   UUID uid;
   String doctype;
@@ -20,22 +20,4 @@ public class Page {
   int screenHeight;
   int screenWidth;
   long compiledTimestamp;
-
-  Page(PageDTO dto) {
-    this(dto.getOrgId(),
-        dto.getUid(),
-        dto.getDoctype(),
-        dto.getUrl(),
-        dto.getReferrer(),
-        dto.getHeight(),
-        dto.getWidth(),
-        dto.getScreenHeight(),
-        dto.getScreenWidth(),
-        dto.getCompiledTs());
-
-  }
-
-  public static Page from(PageDTO dto) {
-    return new Page(Objects.requireNonNull(dto));
-  }
 }
