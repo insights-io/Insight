@@ -8,6 +8,12 @@ import java.util.List;
 import org.testcontainers.containers.GenericContainer;
 
 public enum Api {
+  SESSION {
+    @Override
+    public Collection<GenericContainer<?>> dependencies() {
+      return List.of(PostgresTestExtension.getInstance());
+    }
+  },
   AUTH {
     @Override
     public Collection<GenericContainer<?>> dependencies() {
