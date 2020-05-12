@@ -15,6 +15,10 @@ public class JacksonObjectMapperCustomizer implements ObjectMapperCustomizer {
     configure(mapper);
   }
 
+  /**
+   * @param mapper
+   * @return
+   */
   public static ObjectMapper configure(ObjectMapper mapper) {
     mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

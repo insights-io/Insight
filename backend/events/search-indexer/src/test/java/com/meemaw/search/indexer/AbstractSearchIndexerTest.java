@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.meemaw.events.model.external.UserEvent;
 import com.meemaw.events.model.external.serialization.UserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.stream.EventsStream;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
@@ -14,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -37,27 +38,34 @@ import org.elasticsearch.client.indices.CreateIndexResponse;
 @Slf4j
 public abstract class AbstractSearchIndexerTest {
 
-  protected static final String RETRY_QUEUE = "retry-queue-0";
-  protected static final String DEAD_LETTER_QUEUE = "dead-letter-queue";
+  protected final List<SearchIndexer> searchIndexers = new LinkedList<>();
+
+  protected static final String SOURCE_TOPIC_NAME = "test-events";
+  protected static final String RETRY_TOPIC_NAME = "test-events-0";
+  protected static final String DEAD_LETTER_TOPIC_NAME = "test-events-dql";
 
   protected static final SearchRequest SEARCH_REQUEST =
       new SearchRequest().indices(EventIndex.NAME);
 
-  protected SearchIndexer spawnIndexer(String bootstrapServers, RestHighLevelClient client) {
+  protected SearchIndexer spawnIndexer(RestHighLevelClient client) {
     SearchIndexer searchIndexer =
-        new SearchIndexer(RETRY_QUEUE, DEAD_LETTER_QUEUE, bootstrapServers, client);
+        new SearchIndexer(
+            SOURCE_TOPIC_NAME,
+            RETRY_TOPIC_NAME,
+            DEAD_LETTER_TOPIC_NAME,
+            KafkaTestExtension.getInstance().getBootstrapServers(),
+            client);
     CompletableFuture.runAsync(searchIndexer::start);
+    searchIndexers.add(searchIndexer);
     return searchIndexer;
   }
 
-  protected SearchIndexer spawnIndexer(String bootstrapServers, HttpHost... hosts) {
-    return spawnIndexer(bootstrapServers, new RestHighLevelClient(RestClient.builder(hosts)));
+  protected SearchIndexer spawnIndexer(HttpHost... hosts) {
+    return spawnIndexer(new RestHighLevelClient(RestClient.builder(hosts)));
   }
 
   protected SearchIndexer spawnIndexer() {
-    return spawnIndexer(
-        KafkaTestExtension.getInstance().getBootstrapServers(),
-        ElasticsearchTestExtension.getInstance().getHttpHost());
+    return spawnIndexer(ElasticsearchTestExtension.getInstance().getHttpHost());
   }
 
   protected KafkaProducer<String, UserEvent<AbstractBrowserEvent>> configureProducer() {
@@ -76,7 +84,7 @@ public abstract class AbstractSearchIndexerTest {
         .map(
             event ->
                 new ProducerRecord<String, UserEvent<AbstractBrowserEvent>>(
-                    EventsStream.ALL, event))
+                    SOURCE_TOPIC_NAME, event))
         .collect(Collectors.toList());
   }
 
@@ -90,10 +98,6 @@ public abstract class AbstractSearchIndexerTest {
         JacksonMapper.get().readValue(payload, new TypeReference<>() {});
 
     return kafkaRecords(batch);
-  }
-
-  protected String bootstrapServers() {
-    return KafkaTestExtension.getInstance().getBootstrapServers();
   }
 
   protected CreateIndexResponse createIndex(RestHighLevelClient client) throws IOException {
@@ -144,7 +148,8 @@ public abstract class AbstractSearchIndexerTest {
   }
 
   private KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> eventsConsumer(String topicName) {
-    Properties properties = SearchIndexer.consumerProperties(bootstrapServers());
+    Properties properties =
+        SearchIndexer.consumerProperties(KafkaTestExtension.getInstance().getBootstrapServers());
     KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> consumer =
         new KafkaConsumer<>(properties);
     consumer.subscribe(Collections.singletonList(topicName));
@@ -152,10 +157,10 @@ public abstract class AbstractSearchIndexerTest {
   }
 
   protected KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> retryQueueConsumer() {
-    return eventsConsumer(RETRY_QUEUE);
+    return eventsConsumer(RETRY_TOPIC_NAME);
   }
 
   protected KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> deadLetterQueueConsumer() {
-    return eventsConsumer(DEAD_LETTER_QUEUE);
+    return eventsConsumer(DEAD_LETTER_TOPIC_NAME);
   }
 }

@@ -7,7 +7,7 @@ pluginManagement {
 
     plugins {
         id 'io.quarkus' version "${quarkusPluginVersion}"
-        id "io.freefair.lombok" version "5.0.0-rc2"
+        id "io.freefair.lombok" version "5.0.1"
     }
 }
 
@@ -18,7 +18,9 @@ include ':shared:testing-utils'
 include ':events:model'
 include ':events:search-indexer'
 include ':events:api'
-include ':auth:sidecar'
-include ':auth:api'
+include ':auth:auth-model'
+include ':auth:auth-cookie'
+include ':auth:auth-sidecar'
+include ':auth:auth-api'
 include ':beacon:api'
 include ':session:api'

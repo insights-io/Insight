@@ -1,8 +1,8 @@
 package com.meemaw.session.resource.v1;
 
+import com.meemaw.auth.organization.model.validation.OrganizationId;
+import com.meemaw.auth.sso.cookie.CookieAuth;
 import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.shared.auth.CookieAuth;
-import com.meemaw.shared.validation.OrganizationId;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

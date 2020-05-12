@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 @QuarkusTestResource(PostgresTestResource.class)
-@QuarkusTestResource(AuthApiTestResource.class)
 public class SessionResourceTest {
 
   @Inject ObjectMapper objectMapper;

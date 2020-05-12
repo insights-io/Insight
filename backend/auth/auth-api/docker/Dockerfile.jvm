@@ -1,0 +1,14 @@
+FROM gradle:6.4.0-jdk14 as build
+
+COPY . /backend
+WORKDIR /backend
+
+RUN gradle auth:auth-api:quarkusBuild --uber-jar
+
+FROM adoptopenjdk:14-jre-hotspot
+
+COPY --from=build /backend/auth/auth-api/build/auth-api-1.0-runner.jar /usr/app/service-runner.jar
+
+WORKDIR /usr/app/
+
+CMD ["java", "-jar", "service-runner.jar"]

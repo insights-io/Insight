@@ -4,7 +4,7 @@ services:
   auth-api:
     build:
       context: ..
-      dockerfile: auth/api/docker/Dockerfile.jvm
+      dockerfile: auth/auth-api/docker/Dockerfile.jvm
     ports:
       - '${AUTH_SERVICE_PORT:-8080}:8080'
     environment:
@@ -16,7 +16,7 @@ services:
       - auth-api-migrations
   auth-api-migrations:
     build:
-      context: ../auth/api/migrations
+      context: ../auth/auth-api/migrations
       dockerfile: Dockerfile
     depends_on:
       - db

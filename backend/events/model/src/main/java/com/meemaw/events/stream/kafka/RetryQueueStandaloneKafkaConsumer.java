@@ -15,43 +15,52 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 public class RetryQueueStandaloneKafkaConsumer<K, V> extends StandaloneKafkaConsumer<K, V> {
 
   private final KafkaProducer<K, V> producer;
-  private final String retryQueue;
-  private final String deadLetterQueue;
+  private final String retryTopicName;
+  private final String deadLetterTopicName;
 
   public RetryQueueStandaloneKafkaConsumer(
       Properties consumerProperties,
       Properties producerProperties,
-      String topic,
-      String retryQueue,
-      String deadLetterQueue) {
-    super(new KafkaConsumer<>(Objects.requireNonNull(consumerProperties)),
+      String sourceTopicName,
+      String retryTopicName,
+      String deadLetterTopicName) {
+    super(
+        new KafkaConsumer<>(Objects.requireNonNull(consumerProperties)),
         new StandaloneKafkaCommitCallback());
-    subscribe(Collections.singletonList(topic));
+    subscribe(Collections.singletonList(sourceTopicName));
     this.producer = new KafkaProducer<>(Objects.requireNonNull(producerProperties));
-    this.retryQueue = Objects.requireNonNull(retryQueue);
-    this.deadLetterQueue = Objects.requireNonNull(deadLetterQueue);
+    this.retryTopicName = Objects.requireNonNull(retryTopicName);
+    this.deadLetterTopicName = Objects.requireNonNull(deadLetterTopicName);
   }
 
   public Future<RecordMetadata> sendToRetryQueue(V value) {
-    ProducerRecord<K, V> record = new ProducerRecord<>(retryQueue, value);
-    return producer.send(record, (metadata, ex) -> {
-      if (ex != null) {
-        log.error("Failed to send record {} to retry queue {}", record, retryQueue, ex);
-      } else {
-        log.info("Written record {} to retry queue {}", record, retryQueue);
-      }
-    });
+    ProducerRecord<K, V> record = new ProducerRecord<>(retryTopicName, value);
+    return producer.send(
+        record,
+        (metadata, ex) -> {
+          if (ex != null) {
+            log.error("Failed to send record {} to retry topic {}", record, retryTopicName, ex);
+          } else {
+            log.info("Written record {} to retry topic {}", record, retryTopicName);
+          }
+        });
   }
 
   public Future<RecordMetadata> sendToDeadLetterQueue(V value) {
-    ProducerRecord<K, V> record = new ProducerRecord<>(deadLetterQueue, value);
-    return producer.send(record, (metadata, ex) -> {
-      if (ex != null) {
-        log.error("Failed to send record {} to dead letter queue {}", record, deadLetterQueue, ex);
-      } else {
-        log.info("Written record {} to dead letter queue {}", record, deadLetterQueue);
-      }
-    });
+    ProducerRecord<K, V> record = new ProducerRecord<>(deadLetterTopicName, value);
+    return producer.send(
+        record,
+        (metadata, ex) -> {
+          if (ex != null) {
+            log.error(
+                "Failed to send record {} to dead letter queue {}",
+                record,
+                deadLetterTopicName,
+                ex);
+          } else {
+            log.info("Written record {} to dead letter queue {}", record, deadLetterTopicName);
+          }
+        });
   }
 
   public void sendToRetryQueue(Collection<V> values) {
@@ -61,5 +70,4 @@ public class RetryQueueStandaloneKafkaConsumer<K, V> extends StandaloneKafkaCons
   public void sendToDeadLetterQueue(Collection<V> values) {
     values.forEach(this::sendToDeadLetterQueue);
   }
-
 }

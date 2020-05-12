@@ -4,7 +4,6 @@ import com.meemaw.events.model.external.UserEvent;
 import com.meemaw.events.model.external.serialization.UserEventDeserializer;
 import com.meemaw.events.model.external.serialization.UserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.stream.EventsStream;
 import com.meemaw.events.stream.kafka.KafkaSourcedBatchProcessor;
 import com.meemaw.events.stream.kafka.RetryQueueStandaloneKafkaConsumer;
 import java.util.Properties;
@@ -22,9 +21,17 @@ public class SearchIndexer {
 
   private final KafkaSourcedBatchProcessor<String, UserEvent<AbstractBrowserEvent>> processor;
 
+  /**
+   * @param sourceTopicName
+   * @param retryTopicName
+   * @param deadLetterTopicName
+   * @param bootstrapServers
+   * @param client
+   */
   public SearchIndexer(
-      String retryQueue,
-      String deadLetterQueue,
+      String sourceTopicName,
+      String retryTopicName,
+      String deadLetterTopicName,
       String bootstrapServers,
       RestHighLevelClient client) {
     Properties consumerProps = SearchIndexer.consumerProperties(bootstrapServers);
@@ -33,7 +40,11 @@ public class SearchIndexer {
     this.processor =
         new KafkaSourcedBatchProcessor<>(
             new RetryQueueStandaloneKafkaConsumer<>(
-                consumerProps, producerProperties, EventsStream.ALL, retryQueue, deadLetterQueue),
+                consumerProps,
+                producerProperties,
+                sourceTopicName,
+                retryTopicName,
+                deadLetterTopicName),
             new BrowserEventElasticsearchBatchProcessor(client));
   }
 

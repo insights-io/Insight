@@ -1,6 +1,6 @@
 package com.meemaw.session.model;
 
-import com.meemaw.shared.validation.OrganizationId;
+import com.meemaw.auth.organization.model.validation.OrganizationId;
 import java.util.UUID;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

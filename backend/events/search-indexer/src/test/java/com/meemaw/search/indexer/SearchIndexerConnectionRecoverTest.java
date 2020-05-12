@@ -12,8 +12,6 @@ import com.meemaw.test.testconainers.kafka.Kafka;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,12 +28,11 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-@Elasticsearch
 @Kafka
+@Elasticsearch
 @Slf4j
 public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTest {
 
-  private static final List<SearchIndexer> searchIndexers = new LinkedList<>();
   private static final RestHighLevelClient client =
       new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 10000, "http")));
 
@@ -54,10 +51,10 @@ public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTes
 
     writeSmallBatch(producer);
 
-    searchIndexers.add(spawnIndexer(bootstrapServers(), client));
+    spawnIndexer(client);
 
     await()
-        .atMost(60, TimeUnit.SECONDS)
+        .atMost(30, TimeUnit.SECONDS)
         .until(
             () -> {
               ConsumerRecords<String, UserEvent<AbstractBrowserEvent>> records =
@@ -82,7 +79,7 @@ public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTes
         0, client.search(SEARCH_REQUEST, RequestOptions.DEFAULT).getHits().getTotalHits().value);
 
     with()
-        .atMost(15, TimeUnit.SECONDS)
+        .atMost(30, TimeUnit.SECONDS)
         .until(
             () -> {
               SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);

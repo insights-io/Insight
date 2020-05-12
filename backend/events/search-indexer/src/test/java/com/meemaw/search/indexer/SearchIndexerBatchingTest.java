@@ -11,8 +11,6 @@ import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.Kafka;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -22,12 +20,11 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-@Elasticsearch
 @Kafka
+@Elasticsearch
 @Slf4j
 public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
 
-  private static final List<SearchIndexer> searchIndexers = new LinkedList<>();
   private static final RestHighLevelClient client =
       ElasticsearchTestExtension.getInstance().restHighLevelClient();
 
@@ -47,7 +44,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
     writeSmallBatch(producer);
     writeLargeBatch(producer);
 
-    searchIndexers.add(spawnIndexer());
+    spawnIndexer();
 
     // initially nothing is indexed
     assertEquals(
@@ -55,7 +52,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
 
     // should index records that were created earlier
     await()
-        .atMost(15, TimeUnit.SECONDS)
+        .atMost(30, TimeUnit.SECONDS)
         .until(
             () -> {
               SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);
@@ -77,7 +74,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
 
     // spawn a few more indexers
     for (int i = 0; i < 5; i++) {
-      searchIndexers.add(spawnIndexer());
+      spawnIndexer();
     }
 
     // spawn many more batches
@@ -88,7 +85,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
 
     // should index live events only once
     with()
-        .atMost(15, TimeUnit.SECONDS)
+        .atMost(30, TimeUnit.SECONDS)
         .until(
             () -> {
               SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);

@@ -3,7 +3,9 @@ package com.meemaw.session.resource.v1;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.shared.auth.SsoSession;
+import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @Tag("integration")
+@QuarkusTestResource(AuthApiTestResource.class)
 public class SessionResourceValidationTest {
 
   @Test

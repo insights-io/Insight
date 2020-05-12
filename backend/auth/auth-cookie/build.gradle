@@ -1,0 +1,12 @@
+plugins {
+    id 'java-library'
+    id 'io.quarkus'
+}
+
+dependencies {
+    api project(":auth:auth-model")
+    compileOnly project(":shared:rest-api")
+
+    testImplementation project(":shared:rest-api")
+    testImplementation project(":shared:testing-utils")
+}

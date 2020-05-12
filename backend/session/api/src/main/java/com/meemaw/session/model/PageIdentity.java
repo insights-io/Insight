@@ -15,11 +15,14 @@ public class PageIdentity {
   UUID sessionId;
   UUID pageId;
 
+  /**
+   * @param uid
+   * @param sessionId
+   * @param pageId
+   */
   public PageIdentity(UUID uid, UUID sessionId, UUID pageId) {
     this.uid = uid;
     this.sessionId = sessionId;
     this.pageId = pageId;
   }
-
-
 }

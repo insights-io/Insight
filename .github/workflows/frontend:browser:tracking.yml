@@ -60,7 +60,7 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: frontend:browser:tracking
+          flags: frontend
       - name: Prepare files for deployment
         run: |
           mv frontend/browser/tracking/dist/insight.js.gz frontend/browser/tracking/dist/insight.js

@@ -22,15 +22,20 @@ public enum Api {
   };
 
   public String imageName() {
-    return String.format("%s-test-api", name().toLowerCase());
+    return String.format("%s-test", fullName());
   }
 
   public Path dockerfile() {
-    return ProjectUtils.getFromBackend(name().toLowerCase(), "api", "docker", "Dockerfile.jvm");
+    return ProjectUtils.getFromBackend(
+        name().toLowerCase(), fullName(), "docker", "Dockerfile.jvm");
   }
 
   public Path migrations() {
-    return ProjectUtils.getFromBackend(name().toLowerCase(), "api", "migrations", "sql");
+    return ProjectUtils.getFromBackend(name().toLowerCase(), fullName(), "migrations", "sql");
+  }
+
+  public String fullName() {
+    return String.format("%s-api", name().toLowerCase());
   }
 
   public abstract Collection<GenericContainer<?>> dependencies();

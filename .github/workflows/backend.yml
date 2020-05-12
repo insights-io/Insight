@@ -34,5 +34,5 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: backend/page-service/build/reports/jacoco/test/jacocoTestReport.xml
+          file: backend/**/build/reports/jacoco/test/jacocoTestReport.xml
           flags: backend

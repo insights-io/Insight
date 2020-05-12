@@ -28,15 +28,16 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
 
   @Override
   public void start() {
-    dependencies.forEach(
-        container -> {
-          container.start();
-          if (container instanceof PostgresTestContainer) {
-            PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
-            postgresTestContainer.applyMigrations(api.migrations());
-            withEnv("POSTGRES_HOST", postgresTestContainer.getHost());
-          }
-        });
+    api.dependencies()
+        .forEach(
+            container -> {
+              container.start();
+              if (container instanceof PostgresTestContainer) {
+                PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
+                postgresTestContainer.applyMigrations(api.migrations());
+                withEnv("POSTGRES_HOST", postgresTestContainer.getHost());
+              }
+            });
     super.start();
   }
 

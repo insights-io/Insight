@@ -1,6 +1,6 @@
 package com.meemaw.rec.beacon.resource.v1;
 
-import com.meemaw.shared.validation.OrganizationId;
+import com.meemaw.auth.organization.model.validation.OrganizationId;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.NotNull;
