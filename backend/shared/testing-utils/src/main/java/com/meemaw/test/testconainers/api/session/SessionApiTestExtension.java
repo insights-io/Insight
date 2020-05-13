@@ -33,19 +33,15 @@ public class SessionApiTestExtension implements BeforeAllCallback {
   }
 
   /**
-   * @param sessionAPI
+   * @param sessionApi
    * @return map of system properties
    */
-  public static Map<String, String> start(SessionApiTestContainer sessionAPI) {
-    if (!sessionAPI.isRunning()) {
+  public static Map<String, String> start(SessionApiTestContainer sessionApi) {
+    if (!sessionApi.isRunning()) {
       log.info("Starting session api container ...");
-      sessionAPI.start();
+      sessionApi.start();
     }
-    log.info("Connecting to session api on port {}", sessionAPI.getPort());
-    return Map.of(
-        "service.session.host",
-        sessionAPI.getContainerIpAddress(),
-        "service.session.port",
-        String.valueOf(sessionAPI.getPort()));
+    log.info("Connecting to session api on {}", sessionApi.getBaseURI());
+    return Map.of("session-resource/mp-rest/url", sessionApi.getBaseURI());
   }
 }

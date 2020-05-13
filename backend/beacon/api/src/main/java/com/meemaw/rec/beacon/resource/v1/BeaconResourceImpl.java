@@ -21,30 +21,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BeaconResourceImpl implements BeaconResource {
 
-  @Inject
-  BeaconService beaconService;
+  @Inject BeaconService beaconService;
 
-  @Inject
-  ObjectMapper objectMapper;
+  @Inject ObjectMapper objectMapper;
 
-  @Inject
-  Validator validator;
+  @Inject Validator validator;
 
   @Override
   public CompletionStage<Response> textBeacon(
-      String orgID,
-      UUID sessionID,
-      UUID userID,
-      UUID pageID,
-      String payload) {
+      String orgID, UUID sessionID, UUID userID, UUID pageID, String payload) {
     BeaconDTO beaconDTO;
     try {
       beaconDTO = objectMapper.readValue(payload, BeaconDTO.class);
     } catch (JsonProcessingException ex) {
       log.error("Failed to serialize beacon", ex);
-      return CompletableFuture.completedFuture(Boom.status(MissingStatus.UNPROCESSABLE_ENTITY)
-          .message(ex.getOriginalMessage())
-          .response());
+      return CompletableFuture.completedFuture(
+          Boom.status(MissingStatus.UNPROCESSABLE_ENTITY)
+              .message(ex.getOriginalMessage())
+              .response());
     }
 
     Set<ConstraintViolation<BeaconDTO>> constraintViolations = validator.validate(beaconDTO);
@@ -55,15 +49,10 @@ public class BeaconResourceImpl implements BeaconResource {
     return beacon(orgID, sessionID, userID, pageID, beaconDTO);
   }
 
-
   private CompletionStage<Response> beacon(
-      String orgID,
-      UUID sessionID,
-      UUID userID,
-      UUID pageID,
-      BeaconDTO beaconDTO) {
-    return beaconService.process(orgID, sessionID, userID, pageID, Beacon.from(beaconDTO))
-        .subscribeAsCompletionStage()
+      String orgID, UUID sessionID, UUID userID, UUID pageID, BeaconDTO beaconDTO) {
+    return beaconService
+        .process(orgID, sessionID, userID, pageID, Beacon.from(beaconDTO))
         .thenApply(nothing -> Response.noContent().build());
   }
 }

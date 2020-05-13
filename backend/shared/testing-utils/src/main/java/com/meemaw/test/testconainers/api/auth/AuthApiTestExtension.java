@@ -41,7 +41,7 @@ public class AuthApiTestExtension implements BeforeAllCallback {
       log.info("Starting auth api container ...");
       authApi.start();
     }
-    log.info("Connecting to auth api on port {}", authApi.getBaseURL());
-    return Map.of("sso-resource/mp-rest/url", authApi.getBaseURL());
+    log.info("Connecting to auth api on port {}", authApi.getBaseURI());
+    return Map.of("sso-resource/mp-rest/url", authApi.getBaseURI());
   }
 }

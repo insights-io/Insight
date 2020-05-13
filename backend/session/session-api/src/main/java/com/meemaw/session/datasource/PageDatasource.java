@@ -1,7 +1,7 @@
 package com.meemaw.session.datasource;
 
 import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.session.model.Page;
+import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import io.smallrye.mutiny.Uni;
 import java.util.Optional;
@@ -34,5 +34,5 @@ public interface PageDatasource {
    * @param orgID
    * @return
    */
-  Uni<Optional<Page>> getPage(UUID pageID, UUID sessionID, String orgID);
+  Uni<Optional<PageDTO>> getPage(UUID pageID, UUID sessionID, String orgID);
 }

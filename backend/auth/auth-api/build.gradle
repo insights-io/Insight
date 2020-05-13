@@ -3,11 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-smallrye-openapi'
     implementation 'io.quarkus:quarkus-hibernate-validator'
     implementation 'io.quarkus:quarkus-reactive-pg-client'
-    implementation 'io.quarkus:quarkus-smallrye-health'
-    implementation 'io.quarkus:quarkus-smallrye-opentracing'
     implementation 'io.quarkus:quarkus-mailer'
     implementation 'io.smallrye.reactive:smallrye-axle-web-client'
     implementation 'org.mindrot:jbcrypt:0.4'

@@ -19,6 +19,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 @Slf4j
 public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature {
@@ -65,6 +66,9 @@ public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature
       boolean isSecure = ctx.getUriInfo().getAbsolutePath().toString().startsWith("https");
       ctx.setSecurityContext(new InsightSecurityContext(authUser, isSecure));
       principal.as(authUser);
+      MDC.put("user.id", authUser.getId().toString());
+      MDC.put("user.org", authUser.getOrg());
+      MDC.put("user.role", authUser.getRole().toString());
     }
   }
 }

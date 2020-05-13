@@ -1,7 +1,7 @@
 package com.meemaw.session.datasource;
 
 import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.session.model.Page;
+import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import io.smallrye.mutiny.Uni;
@@ -15,12 +15,16 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 @Slf4j
 public class PgPageDatasource implements PageDatasource {
 
   @Inject PgPool pgPool;
+
+  @ConfigProperty(name = "quarkus.datasource.url")
+  String DATASOURCE_URL;
 
   private static final String SELECT_LINK_DEVICE_SESSION_RAW_SQL =
       "SELECT session_id FROM session.page WHERE org_id = $1 AND uid = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
@@ -97,7 +101,7 @@ public class PgPageDatasource implements PageDatasource {
       "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND org_id=$3;";
 
   @Override
-  public Uni<Optional<Page>> getPage(UUID pageID, UUID sessionID, String orgID) {
+  public Uni<Optional<PageDTO>> getPage(UUID pageID, UUID sessionID, String orgID) {
     Tuple values = Tuple.of(pageID, sessionID, orgID);
     return pgPool
         .preparedQuery(SELECT_PAGE_RAW_SWL, values)
@@ -107,7 +111,7 @@ public class PgPageDatasource implements PageDatasource {
                 return null;
               }
               Row row = rowSet.iterator().next();
-              return new Page(
+              return new PageDTO(
                   row.getUUID("id"),
                   row.getUUID("session_id"),
                   row.getString("org_id"),
@@ -125,7 +129,8 @@ public class PgPageDatasource implements PageDatasource {
         .onFailure()
         .invoke(
             throwable -> {
-              log.error("Failed to get page id={}", pageID);
+              log.error(
+                  "Failed to get page id={} datasourceURL={}", pageID, DATASOURCE_URL, throwable);
               throw new DatabaseException(throwable);
             });
   }

@@ -5,7 +5,7 @@ import static io.restassured.RestAssured.given;
 
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.rec.beacon.resource.v1.BeaconResource;
-import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.meemaw.test.testconainers.api.session.SessionApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-@QuarkusTestResource(PostgresTestResource.class)
+@QuarkusTestResource(SessionApiTestResource.class)
 @QuarkusTest
 @Tag("integration")
 public class BeaconBeatResourceValidationTest {

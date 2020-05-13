@@ -2,7 +2,7 @@ package com.meemaw.session.service;
 
 import com.meemaw.session.datasource.PageDatasource;
 import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.session.model.Page;
+import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import io.smallrye.mutiny.Uni;
 import java.util.Optional;
@@ -59,7 +59,7 @@ public class PageService {
     return pageDatasource.activePageCount();
   }
 
-  public Uni<Optional<Page>> getPage(UUID pageID, UUID sessionID, String orgID) {
+  public Uni<Optional<PageDTO>> getPage(UUID pageID, UUID sessionID, String orgID) {
     return pageDatasource.getPage(pageID, sessionID, orgID);
   }
 }

@@ -9,6 +9,7 @@ dependencies {
     api project(":shared:rest-api")
     api project(":auth:auth-model")
     api project(":auth:auth-cookie")
+    implementation 'io.quarkus:quarkus-rest-client'
     implementation project(":auth:auth-api-contracts")
 
     testImplementation project(":shared:testing-utils")

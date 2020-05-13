@@ -1,4 +1,5 @@
 plugins {
+    id 'java-library'
     id 'io.quarkus'
 }
 
@@ -8,7 +9,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-rest-client'
     implementation project(":auth:auth-model")
     implementation project(":auth:auth-cookie")
-    implementation project(":session:session-model")
+    api project(":session:session-model")
 
     testImplementation project(":shared:testing-utils")
 }

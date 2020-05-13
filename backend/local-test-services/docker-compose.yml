@@ -33,24 +33,13 @@ services:
     ports:
       - '${BEACON_SERVICE_PORT:-8081}:8080'
     depends_on:
-      - beacon-api-migrations
+      - session-api
       - kafka
     environment:
       - LOG_LEVEL=INFO
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
-  beacon-api-migrations:
-    build:
-      context: ../beacon/api/migrations
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_DB=${POSTGRES_DB:-postgres}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
 
   session-api:
     build:
@@ -59,8 +48,8 @@ services:
     ports:
       - '${SESSION_SERVICE_PORT:-8082}:8080'
     depends_on:
-      - session-api-migrations
       - kafka
+      - session-api-migrations
     environment:
       - LOG_LEVEL=INFO
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092

@@ -8,13 +8,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 @Slf4j
 public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestContainer> {
 
+  public static final String NETWORK_ALIAS = "db";
+
   private static final String DOCKER_TAG = "postgres:11.6";
-  private static final String HOST = "localhost";
   private static final String DATABASE_NAME = "postgres";
   private static final String USERNAME = "postgres";
   private static final String PASSWORD = "postgres";
@@ -24,8 +26,11 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     super(DOCKER_TAG);
   }
 
+  /** @return */
   public static PostgresTestContainer newInstance() {
     return new PostgresTestContainer()
+        .withNetwork(Network.SHARED)
+        .withNetworkAliases(NETWORK_ALIAS)
         .withDatabaseName(DATABASE_NAME)
         .withUsername(USERNAME)
         .withPassword(PASSWORD)
@@ -36,11 +41,15 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     return PostgresTestContainer.client(this);
   }
 
-  public static PgPool client(PostgreSQLContainer<PostgresTestContainer> container) {
+  /**
+   * @param container
+   * @return
+   */
+  public static PgPool client(PostgresTestContainer container) {
     PgConnectOptions connectOptions =
         new PgConnectOptions()
-            .setPort(container.getMappedPort(PORT))
-            .setHost(HOST)
+            .setPort(container.getPort())
+            .setHost(container.getContainerIpAddress())
             .setDatabase(container.getDatabaseName())
             .setUser(container.getUsername())
             .setPassword(container.getPassword());
@@ -53,12 +62,25 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     return getMappedPort(PORT);
   }
 
-  public String getHost() {
-    return String.format("%s:%d", HOST, getPort());
+  public String getHost(String host) {
+    return String.format("%s:%d", host, getPort());
   }
 
+  public String getHost() {
+    return getHost(getContainerIpAddress());
+  }
+
+  /** @return */
   public String getDatasourceURL() {
-    return String.format("vertx-reactive:postgresql://%s/%s", getHost(), DATABASE_NAME);
+    return getDatasourceURL(getHost());
+  }
+
+  /**
+   * @param host
+   * @return
+   */
+  public String getDatasourceURL(String host) {
+    return String.format("vertx-reactive:postgresql://%s/%s", host, DATABASE_NAME);
   }
 
   public void applyMigrations() {
@@ -66,6 +88,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     applyMigrations(moduleMigrationsSqlPath);
   }
 
+  /** @param migrationsSqlPath */
   public void applyMigrations(Path migrationsSqlPath) {
     if (!Files.exists(migrationsSqlPath)) {
       log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());

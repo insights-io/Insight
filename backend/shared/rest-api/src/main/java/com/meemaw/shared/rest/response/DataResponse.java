@@ -12,9 +12,9 @@ import lombok.Value;
 public class DataResponse<T> {
 
   T data;
-  Boom error;
+  Boom<?> error;
 
-  public DataResponse(T data, Boom error) {
+  public DataResponse(T data, Boom<?> error) {
     this.data = data;
     this.error = error;
   }
@@ -35,7 +35,7 @@ public class DataResponse<T> {
     return DataResponse.data(data).builder(200);
   }
 
-  public static <T> DataResponse<T> error(Boom error) {
+  public static <T> DataResponse<T> error(Boom<?> error) {
     return new DataResponse<T>(null, Objects.requireNonNull(error));
   }
 
@@ -43,8 +43,10 @@ public class DataResponse<T> {
     return Response.status(statusCode).entity(this).type(MediaType.APPLICATION_JSON);
   }
 
+  /** @return */
   public Response.ResponseBuilder builder() {
-    return Response.status(Objects.requireNonNull(error).getStatusCode()).entity(this)
+    return Response.status(Objects.requireNonNull(error).getStatusCode())
+        .entity(this)
         .type(MediaType.APPLICATION_JSON);
   }
 
@@ -55,5 +57,4 @@ public class DataResponse<T> {
   public Response response(Response.Status status) {
     return response(status.getStatusCode());
   }
-
 }

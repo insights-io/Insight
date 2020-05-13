@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 @Slf4j
@@ -21,8 +22,9 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   /** @param api */
   public AbstractApiTestContainer(Api api) {
     super(buildDockerImage(Objects.requireNonNull(api)));
-    withExposedPorts(PORT);
-    waitingFor(Wait.forHttp("/health").forStatusCode(200));
+    withExposedPorts(PORT)
+        .waitingFor(Wait.forHttp("/health").forStatusCode(200))
+        .withNetwork(Network.SHARED);
     this.api = api;
   }
 
@@ -35,13 +37,13 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
               if (container instanceof PostgresTestContainer) {
                 PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
                 postgresTestContainer.applyMigrations(api.migrations());
-                withEnv("POSTGRES_HOST", postgresTestContainer.getHost());
+                withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
               }
             });
     super.start();
   }
 
-  public String getBaseURL() {
+  public String getBaseURI() {
     return String.format("http://%s:%s", getContainerIpAddress(), getPort());
   }
 
