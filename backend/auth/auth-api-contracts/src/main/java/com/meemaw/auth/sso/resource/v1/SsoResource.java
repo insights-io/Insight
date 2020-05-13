@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.resource.v1;
 
+import com.meemas.shared.validation.Password;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.shared.validation.Password;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -16,8 +16,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path(SsoResource.PATH)
+@RegisterRestClient(configKey = "sso-resource")
 public interface SsoResource {
 
   String PATH = "v1/sso";

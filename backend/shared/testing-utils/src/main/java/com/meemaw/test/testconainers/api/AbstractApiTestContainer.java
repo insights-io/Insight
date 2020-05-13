@@ -41,6 +41,10 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     super.start();
   }
 
+  public String getBaseURL() {
+    return String.format("http://%s:%s", getContainerIpAddress(), getPort());
+  }
+
   public int getPort() {
     return getMappedPort(PORT);
   }

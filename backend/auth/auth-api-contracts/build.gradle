@@ -1,0 +1,13 @@
+plugins {
+    id 'io.quarkus'
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation project(":auth:auth-model")
+    implementation project(":shared:rest")
+
+    testImplementation project(":shared:testing-utils")
+}

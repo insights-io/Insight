@@ -13,6 +13,7 @@ pluginManagement {
 
 rootProject.name = 'backend'
 
+include ':shared:rest'
 include ':shared:rest-api'
 include ':shared:testing-utils'
 include ':events:model'
@@ -21,6 +22,7 @@ include ':events:api'
 include ':auth:auth-model'
 include ':auth:auth-cookie'
 include ':auth:auth-sidecar'
+include ':auth:auth-api-contracts'
 include ':auth:auth-api'
 include ':beacon:api'
 include ':session:session-api'

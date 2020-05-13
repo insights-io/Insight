@@ -24,5 +24,4 @@ public interface SsoGoogleResource {
       @NotBlank(message = "state is required") @QueryParam("state") String state,
       @NotBlank(message = "code is required") @QueryParam("code") String code,
       @CookieParam("state") String sessionState);
-
 }
