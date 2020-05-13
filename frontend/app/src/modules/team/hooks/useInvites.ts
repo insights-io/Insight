@@ -8,7 +8,7 @@ const EMPTY_LIST: TeamInvite[] = [];
 
 const useInvites = () => {
   const { data } = useSWR(cacheKey, InviteApi.list);
-  const invites = useMemo(() => data?.data ?? EMPTY_LIST, [data]);
+  const invites = useMemo(() => data?.data ?? EMPTY_LIST, [data?.data]);
 
   const deleteInvite = useCallback(
     async (token: string, email: string) => {
