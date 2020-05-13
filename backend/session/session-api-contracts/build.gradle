@@ -4,9 +4,11 @@ plugins {
 
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
-    implementation 'io.quarkus:quarkus-hibernate-validator'
     implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'org.apache.commons:commons-text:1.8'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation project(":auth:auth-model")
+    implementation project(":auth:auth-cookie")
+    implementation project(":session:session-model")
 
     testImplementation project(":shared:testing-utils")
 }

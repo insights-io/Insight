@@ -11,6 +11,8 @@ dependencies {
     implementation 'io.quarkus:quarkus-smallrye-opentracing'
     implementation project(":events:model")
     implementation project(':auth:auth-sidecar')
+    implementation project(':session:session-model')
+    implementation project(':session:session-api-contracts')
 
     testImplementation project(':shared:testing-utils')
 }
