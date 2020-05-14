@@ -1,23 +1,5 @@
 import { fireEvent } from '@testing-library/react';
 
-export const typeText = <T extends Element>(el: T, value: string) => {
-  fireEvent.change(el, { target: { value } });
-};
-
-export const focusElement = <T extends Element>(el: T) => {
-  fireEvent.focus(el);
-};
-
-// tries to mimic the browser click, which actually focuses the DOM element -- https://github.com/testing-library/react-testing-library/issues/276
-export const clickElement = <T extends Element>(el: T) => {
-  fireEvent.click(el);
-  focusElement(el);
-};
-
-export const blurElement = <T extends Element>(el: T) => {
-  fireEvent.blur(el);
-};
-
 type FireKeyDownEventOptions<EL> = {
   el: EL;
   key: string;

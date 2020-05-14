@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from 'test/utils';
 import { waitFor } from '@testing-library/react';
-import { clickElement, typeText, sandbox } from '@insight/testing';
+import { sandbox } from '@insight/testing';
+import userEvent from '@testing-library/user-event';
 
 import { Base, InvalidPassword } from './Login.stories';
 
@@ -19,20 +20,22 @@ describe('<Login />', () => {
     const passwordInput = getByPlaceholderText('Password');
     const submitButton = getByText('Sign in');
 
-    clickElement(submitButton);
+    userEvent.click(submitButton);
     expect((await findAllByText('Required')).length).toEqual(2);
 
-    typeText(emailInput, 'invalid');
-    typeText(passwordInput, 'short');
+    userEvent.type(emailInput, 'invalid');
+    userEvent.type(passwordInput, 'short');
 
-    clickElement(submitButton);
+    userEvent.click(submitButton);
     await findByText('Please enter a valid email address');
     await findByText('Password must be at least 8 characters long');
 
-    typeText(emailInput, 'user@example.com');
-    typeText(passwordInput, 'veryHardPassword');
+    userEvent.clear(emailInput);
+    userEvent.type(emailInput, 'user@example.com');
+    userEvent.clear(passwordInput);
+    userEvent.type(passwordInput, 'veryHardPassword');
 
-    clickElement(submitButton);
+    userEvent.click(submitButton);
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(
@@ -53,9 +56,9 @@ describe('<Login />', () => {
     const passwordInput = getByPlaceholderText('Password');
     const submitButton = getByText('Sign in');
 
-    typeText(emailInput, 'user@example.com');
-    typeText(passwordInput, 'veryHardPassword');
-    clickElement(submitButton);
+    userEvent.type(emailInput, 'user@example.com');
+    userEvent.type(passwordInput, 'veryHardPassword');
+    userEvent.click(submitButton);
 
     await findByText('Invalid email or password');
     sandbox.assert.calledWithExactly(

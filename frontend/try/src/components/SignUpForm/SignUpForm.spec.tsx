@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from 'test/utils';
 import { waitFor } from '@testing-library/react';
-import { clickElement, typeText, sandbox } from '@insight/testing';
+import { sandbox } from '@insight/testing';
+import userEvent from '@testing-library/user-event';
 
 import { Base } from './SignUpForm.stories';
 
@@ -22,23 +23,25 @@ describe('<SignUpForm />', () => {
     const emailInput = getByPlaceholderText('Email');
     const passwordInput = getByPlaceholderText('Password');
 
-    clickElement(submitButton);
+    userEvent.click(submitButton);
     expect((await findAllByText('Required')).length).toEqual(5);
 
-    typeText(firstNameInput, 'Joe');
-    typeText(lastNameInput, 'Makarena');
-    typeText(companyInput, 'Insight');
-    typeText(emailInput, 'random');
-    typeText(passwordInput, 'short');
+    userEvent.type(firstNameInput, 'Joe');
+    userEvent.type(lastNameInput, 'Makarena');
+    userEvent.type(companyInput, 'Insight');
+    userEvent.type(emailInput, 'random');
+    userEvent.type(passwordInput, 'short');
 
-    clickElement(submitButton);
+    userEvent.click(submitButton);
     await findByText('Invalid email address');
     await findByText('Password must be at least 8 characters long');
 
-    typeText(emailInput, 'user@example.com');
-    typeText(passwordInput, 'veryHardPassword');
+    userEvent.clear(emailInput);
+    userEvent.type(emailInput, 'user@example.com');
+    userEvent.clear(passwordInput);
+    userEvent.type(passwordInput, 'veryHardPassword');
 
-    clickElement(submitButton);
+    userEvent.click(submitButton);
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(onSubmit, {
@@ -52,9 +55,9 @@ describe('<SignUpForm />', () => {
 
     // can also include phone nume
     const phoneNumberInput = getByPlaceholderText('Phone number');
-    typeText(phoneNumberInput, '51222333');
+    userEvent.type(phoneNumberInput, '51222333');
 
-    clickElement(submitButton);
+    userEvent.click(submitButton);
     await waitFor(() => {
       sandbox.assert.calledWithExactly(onSubmit, {
         firstName: 'Joe',

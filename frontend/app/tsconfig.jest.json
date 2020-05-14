@@ -2,6 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react",
-    "allowJs": true
+    "allowJs": true // @insight/testing
   }
 }
