@@ -40,7 +40,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
-      - SESSION_SERVICE_BASE_URL=http://session-api
+      - SESSION_SERVICE_BASE_URL=http://session-api:8080
 
   session-api:
     build:
