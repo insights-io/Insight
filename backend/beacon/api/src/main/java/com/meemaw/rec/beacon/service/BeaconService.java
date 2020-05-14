@@ -10,12 +10,12 @@ import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.smallrye.mutiny.Uni;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
@@ -52,6 +52,7 @@ public class BeaconService {
               if (throwable.getCause() instanceof WebApplicationException) {
                 return ((WebApplicationException) (throwable.getCause())).getResponse();
               }
+              log.error("Unexpected exception", throwable);
               throw Boom.serverError().message(throwable.getMessage()).exception();
             })
         .thenApply(
@@ -81,6 +82,8 @@ public class BeaconService {
     MDC.put("uid", uid.toString());
     MDC.put("pageID", pageID.toString());
     MDC.put("sessionID", sessionID.toString());
+    MDC.put("beacon.sequence", String.valueOf(beacon.getSequence()));
+    MDC.put("beacon.timestamp", String.valueOf(beacon.getTimestamp()));
 
     Function<AbstractBrowserEvent, UserEvent<?>> identify =
         (event) ->
@@ -99,25 +102,25 @@ public class BeaconService {
                 log.warn("Unlinked beacon");
                 throw Boom.badRequest().message("Unlinked beacon").exception();
               }
+              log.info("Sending {} beacon events", beacon.getEvents().size());
 
               List<AbstractBrowserEvent> events = beacon.getEvents();
-              List<Uni<Void>> operations =
-                  new LinkedList<>() {
-                    {
-                      addAll(
-                          events.stream()
-                              .map(event -> sendEvent(eventsEmitter, identify, event))
-                              .collect(Collectors.toList()));
-                    }
-                  };
+              Stream<Uni<Void>> operations =
+                  events.stream().map(event -> sendEvent(eventsEmitter, identify, event));
 
               // BrowserUnloadEvent always comes last!
               AbstractBrowserEvent maybeUnloadEvent = events.get(events.size() - 1);
               if (maybeUnloadEvent instanceof BrowserUnloadEvent) {
-                operations.add(sendEvent(unloadEventsEmitter, identify, maybeUnloadEvent));
+                operations =
+                    Stream.concat(
+                        operations,
+                        Stream.of(sendEvent(unloadEventsEmitter, identify, maybeUnloadEvent)));
               }
 
-              return Uni.combine().all().unis(operations).combinedWith(nothing -> null);
+              return Uni.combine()
+                  .all()
+                  .unis(operations.collect(Collectors.toList()))
+                  .combinedWith(nothing -> null);
             });
   }
 
