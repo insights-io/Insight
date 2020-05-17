@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'io.freefair.lombok'
+    id 'checkstyle'
 }
 
 allprojects {
@@ -15,6 +16,11 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'io.freefair.lombok'
+    apply plugin: "checkstyle"
+
     java {
         sourceCompatibility = JavaVersion.VERSION_14
         targetCompatibility = JavaVersion.VERSION_14
@@ -29,9 +35,9 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 
-    apply plugin: 'java'
-    apply plugin: 'jacoco'
-    apply plugin: 'io.freefair.lombok'
+    dependencies {
+        implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    }
 
     jacocoTestReport {
         reports {
@@ -45,5 +51,20 @@ subprojects {
         finalizedBy(tasks.jacocoTestReport)
         systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
         testLogging.showStandardStreams = true
+    }
+
+    checkstyle {
+        toolVersion = '8.32'
+        configFile = rootProject.file('.checkstyle.xml')
+        configProperties = [
+                'checkstyle.cache.file': "${buildDir}/checkstyle.cache",
+        ]
+    }
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled true
+        html.enabled false
     }
 }

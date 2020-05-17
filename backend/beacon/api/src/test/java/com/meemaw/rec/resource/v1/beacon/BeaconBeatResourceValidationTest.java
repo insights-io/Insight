@@ -33,7 +33,7 @@ public class BeaconBeatResourceValidationTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"arg3\":\"pageID required\",\"arg2\":\"UserID required\",\"arg1\":\"SessionID required\",\"arg0\":\"Organization ID is required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"pageID\":\"pageID required\",\"userID\":\"UserID required\",\"sessionID\":\"SessionID required\",\"orgID\":\"Organization ID is required\"}}}"));
   }
 
   @ParameterizedTest
@@ -139,6 +139,6 @@ public class BeaconBeatResourceValidationTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"arg0\":\"Organization ID must be 6 characters long\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"orgID\":\"Organization ID must be 6 characters long\"}}}"));
   }
 }

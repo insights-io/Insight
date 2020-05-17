@@ -12,7 +12,7 @@ public interface PageDatasource {
   /**
    * @param orgId
    * @param uid
-   * @return optionally linked sessionID that has been a ctive in the last 30 minutes
+   * @return optionally linked sessionID that has been active in the last 30 minutes
    */
   Uni<Optional<UUID>> findUserSessionLink(String orgId, UUID uid);
 

@@ -1,6 +1,5 @@
 package com.meemaw.auth.sso.resource.v1.google;
 
-
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static io.restassured.config.RedirectConfig.redirectConfig;
@@ -17,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 
 @QuarkusTest
 @Tag("integration")
@@ -36,30 +34,31 @@ public class SsoGoogleResourceImplTest {
         .get(SsoGoogleResource.PATH + "/signin")
         .then()
         .statusCode(400)
-        .body(sameJson(
-            "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"arg0\":\"dest is required\"}}}"));
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"destination\":\"dest is required\"}}}"));
   }
 
   @Test
   public void google_signin_should_start_flow_by_redirecting_to_google() {
-    String oauth2CallbackURL = URLEncoder
-        .encode(oauth2CallbackURI.toString(), StandardCharsets.UTF_8);
+    String oauth2CallbackURL =
+        URLEncoder.encode(oauth2CallbackURI.toString(), StandardCharsets.UTF_8);
 
     String expectedLocationBase =
-        "https://accounts.google.com/o/oauth2/auth?client_id=" + GOOGLE_OAUTH_CLIENT_ID
-            + "&redirect_uri=" + oauth2CallbackURL
+        "https://accounts.google.com/o/oauth2/auth?client_id="
+            + GOOGLE_OAUTH_CLIENT_ID
+            + "&redirect_uri="
+            + oauth2CallbackURL
             + "&response_type=code&scope=openid+email+profile&state=";
 
-    Response response = given()
-        .config(newConfig().redirect(redirectConfig().followRedirects(false)))
-        .when()
-        .queryParam("dest", "/test")
-        .get(SsoGoogleResource.PATH + "/signin");
+    Response response =
+        given()
+            .config(newConfig().redirect(redirectConfig().followRedirects(false)))
+            .when()
+            .queryParam("dest", "/test")
+            .get(SsoGoogleResource.PATH + "/signin");
 
-    response
-        .then()
-        .statusCode(302)
-        .header("Location", startsWith(expectedLocationBase));
+    response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = state.substring(26);
@@ -74,8 +73,9 @@ public class SsoGoogleResourceImplTest {
         .get(SsoGoogleResource.PATH + "/oauth2callback")
         .then()
         .statusCode(400)
-        .body(sameJson(
-            "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"arg1\":\"code is required\",\"arg0\":\"state is required\"}}}"));
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"code\":\"code is required\",\"state\":\"state is required\"}}}"));
   }
 
   @Test
@@ -89,8 +89,9 @@ public class SsoGoogleResourceImplTest {
         .get(SsoGoogleResource.PATH + "/oauth2callback")
         .then()
         .statusCode(400)
-        .body(sameJson(
-            "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"invalid_grant. Malformed auth code.\"}}"));
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"invalid_grant. Malformed auth code.\"}}"));
   }
 
   @Test
@@ -99,15 +100,17 @@ public class SsoGoogleResourceImplTest {
 
     given()
         .when()
-        .queryParam("code",
+        .queryParam(
+            "code",
             "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
         .queryParam("state", state)
         .cookie("state", state)
         .get(SsoGoogleResource.PATH + "/oauth2callback")
         .then()
         .statusCode(400)
-        .body(sameJson(
-            "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"invalid_grant. Bad Request\"}}"));
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"invalid_grant. Bad Request\"}}"));
   }
 
   @Test
@@ -116,14 +119,15 @@ public class SsoGoogleResourceImplTest {
 
     given()
         .when()
-        .queryParam("code",
+        .queryParam(
+            "code",
             "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
         .queryParam("state", state)
         .get(SsoGoogleResource.PATH + "/oauth2callback")
         .then()
         .statusCode(401)
-        .body(sameJson(
-            "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Invalid state parameter\"}}"));
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Invalid state parameter\"}}"));
   }
-
 }

@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    api enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     api 'io.quarkus:quarkus-resteasy'
     api 'io.quarkus:quarkus-resteasy-jackson'
     api 'io.quarkus:quarkus-smallrye-metrics'

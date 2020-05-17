@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    api enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     api 'io.smallrye.reactive:smallrye-mutiny-vertx-web-client'
     api project(":shared:rest-api")
     api project(":auth:auth-model")
