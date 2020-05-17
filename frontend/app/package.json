@@ -50,7 +50,7 @@
     "@insight/testing": "0.0.0-development",
     "@insight/types": "0.0.0-development",
     "@next/bundle-analyzer": "9.4.0",
-    "@types/react": "16.9.34",
+    "@types/react": "16.9.35",
     "@types/react-dom": "16.9.7",
     "@types/uuid": "7.0.3",
     "@types/yup": "0.28.3",
