@@ -31,29 +31,29 @@
     "prebuild": "yarn workspace @insight/types build && yarn workspace @insight/storybook build"
   },
   "dependencies": {
-    "baseui": "^9.75.0",
-    "formik": "^2.1.4",
-    "ky": "^0.19.1",
-    "ky-universal": "^0.6.0",
-    "next": "^9.4.0",
-    "next-cookies": "^2.0.3",
+    "baseui": "9.75.0",
+    "formik": "2.1.4",
+    "ky": "0.19.1",
+    "ky-universal": "0.6.0",
+    "next": "9.4.0",
+    "next-cookies": "2.0.3",
     "react": "16.12.0",
     "react-dom": "16.12.0",
-    "react-hook-form": "^5.7.2",
-    "styletron-engine-atomic": "^1.4.6",
-    "styletron-react": "^5.2.7",
-    "swr": "^0.2.0",
-    "yup": "^0.28.5"
+    "react-hook-form": "5.7.2",
+    "styletron-engine-atomic": "1.4.6",
+    "styletron-react": "5.2.7",
+    "swr": "0.2.0",
+    "yup": "0.28.5"
   },
   "devDependencies": {
     "@insight/storybook": "0.0.0-development",
     "@insight/testing": "0.0.0-development",
     "@insight/types": "0.0.0-development",
-    "@next/bundle-analyzer": "^9.4.0",
-    "@types/react": "^16.9.24",
-    "@types/react-dom": "^16.9.5",
-    "@types/uuid": "^7.0.3",
-    "@types/yup": "^0.28.3",
-    "uuid": "^8.0.0"
+    "@next/bundle-analyzer": "9.4.0",
+    "@types/react": "16.9.34",
+    "@types/react-dom": "16.9.7",
+    "@types/uuid": "7.0.3",
+    "@types/yup": "0.28.3",
+    "uuid": "8.0.0"
   }
 }
