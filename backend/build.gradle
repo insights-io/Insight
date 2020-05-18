@@ -65,6 +65,7 @@ subprojects {
 
     pmd {
         consoleOutput = true
+        ignoreFailures = true
         toolVersion = "6.23.0"
         ruleSets = []
         ruleSetFiles = rootProject.files("config/pmd/ruleset.xml")

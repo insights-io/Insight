@@ -24,11 +24,22 @@ jobs:
           arguments: pmdMain pmdTest --parallel --continue
           build-root-directory: backend
           wrapper-directory: backend
-      - uses: actions/upload-artifact@v2
-        if: failure()
+      - name: Merge reports
+        run: |
+          sudo apt-get install zsh
+          zsh ./backend/config/pmd/merge_reports.sh
+      - name: Setup reviewdog
+        run: |
+          mkdir -p $HOME/bin && curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh| sh -s -- -b $HOME/bin
+          echo ::add-path::$HOME/bin
+      - uses: actions/setup-python@v2
         with:
-          name: test-reports
-          path: backend/**/build/reports/pmd/**
+          python-version: 3.8
+      - name: Run reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat report.xml | python3 backend/config/pmd/pmd2efm.py | reviewdog -efm="%f:%l:%c: %m" -reporter=github-pr-check
 
   checkstyle:
     runs-on: ubuntu-latest
