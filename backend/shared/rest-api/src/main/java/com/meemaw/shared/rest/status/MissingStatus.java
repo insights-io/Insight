@@ -15,13 +15,13 @@ public enum MissingStatus implements StatusType {
    */
   UNPROCESSABLE_ENTITY(422, "Unprocessable Entity");
 
+  private final int statusCode;
+  private final String reasonPhrase;
+  private final Family family;
+
   MissingStatus(int code, String reasonPhrase) {
     this.statusCode = code;
     this.reasonPhrase = reasonPhrase;
     this.family = Family.familyOf(code);
   }
-
-  private final int statusCode;
-  private final String reasonPhrase;
-  private final Family family;
 }

@@ -17,6 +17,7 @@ public class SearchIndexerRunner {
     String deadLetterQueue =
         Optional.ofNullable(System.getenv("RETRY_QUEUE")).orElse("events-dead-letter-queue");
 
+    // TODO: client should be created in SearchIndexer
     RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(elasticsearchHosts));
 
     log.info("elasticsearchHosts: {}", elasticsearchHosts);

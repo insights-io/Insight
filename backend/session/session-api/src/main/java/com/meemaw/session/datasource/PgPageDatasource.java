@@ -24,11 +24,21 @@ public class PgPageDatasource implements PageDatasource {
   @Inject PgPool pgPool;
 
   @ConfigProperty(name = "quarkus.datasource.url")
-  String DATASOURCE_URL;
+  String datasourceURL;
 
   private static final String SELECT_LINK_DEVICE_SESSION_RAW_SQL =
       "SELECT session_id FROM session.page WHERE org_id = $1 AND uid = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
 
+  private static final String INSERT_PAGE_RAW_SQL =
+      "INSERT INTO session.page (id, uid, session_id, org_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
+
+  private static final String SELECT_ACTIVE_PAGE_COUNT =
+      "SELECT COUNT(*) FROM session.page WHERE page_end IS NULL;";
+
+  private static final String SELECT_PAGE_RAW_SWL =
+      "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND org_id=$3;";
+
+  @Override
   public Uni<Optional<UUID>> findUserSessionLink(String orgId, UUID uid) {
     Tuple values = Tuple.of(orgId, uid);
     return pgPool
@@ -50,9 +60,7 @@ public class PgPageDatasource implements PageDatasource {
     return Optional.of(iterator.next().getUUID(0));
   }
 
-  private static final String INSERT_PAGE_RAW_SQL =
-      "INSERT INTO session.page (id, uid, session_id, org_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
-
+  @Override
   public Uni<PageIdentity> insertPage(UUID pageId, UUID uid, UUID sessionId, CreatePageDTO page) {
     Tuple values =
         Tuple.newInstance(
@@ -81,9 +89,6 @@ public class PgPageDatasource implements PageDatasource {
             });
   }
 
-  private static final String SELECT_ACTIVE_PAGE_COUNT =
-      "SELECT COUNT(*) FROM session.page WHERE page_end IS NULL;";
-
   @Override
   public Uni<Integer> activePageCount() {
     return pgPool
@@ -96,9 +101,6 @@ public class PgPageDatasource implements PageDatasource {
               throw new DatabaseException(throwable);
             });
   }
-
-  private static final String SELECT_PAGE_RAW_SWL =
-      "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND org_id=$3;";
 
   @Override
   public Uni<Optional<PageDTO>> getPage(UUID pageID, UUID sessionID, String orgID) {
@@ -130,7 +132,7 @@ public class PgPageDatasource implements PageDatasource {
         .invoke(
             throwable -> {
               log.error(
-                  "Failed to get page id={} datasourceURL={}", pageID, DATASOURCE_URL, throwable);
+                  "Failed to get page id={} datasourceURL={}", pageID, datasourceURL, throwable);
               throw new DatabaseException(throwable);
             });
   }

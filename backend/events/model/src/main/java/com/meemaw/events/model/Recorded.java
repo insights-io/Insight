@@ -14,5 +14,4 @@ public abstract class Recorded {
   @NotNull(message = "t may not be null")
   @Min(message = "t must be non negative", value = 0)
   protected int timestamp;
-
 }

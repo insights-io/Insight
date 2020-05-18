@@ -30,7 +30,7 @@ jobs:
         if: failure()
         with:
           name: test-reports
-          path: backend/**/build/reports/**
+          path: backend/**/build/reports/tests/**
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

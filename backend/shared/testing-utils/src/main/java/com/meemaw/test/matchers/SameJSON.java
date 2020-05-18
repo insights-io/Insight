@@ -12,10 +12,11 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 
 public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
 
-  private String expected;
-  private JSONCompareMode compareMode;
+  private final String expected;
+  private final JSONCompareMode compareMode;
 
   public SameJSON(String expected, JSONCompareMode compareMode) {
+    super();
     this.expected = expected;
     this.compareMode = compareMode;
   }
@@ -56,5 +57,4 @@ public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
   public static void assertEquals(String expected, String actual) throws JSONException {
     assertEquals(expected, actual, JSONCompareMode.STRICT);
   }
-
 }

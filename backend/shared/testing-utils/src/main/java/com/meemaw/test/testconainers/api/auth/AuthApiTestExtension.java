@@ -33,8 +33,8 @@ public class AuthApiTestExtension implements BeforeAllCallback {
   }
 
   /**
-   * @param authApi
-   * @return map of system properties
+   * @param authApi auth api
+   * @return map of system properties to be applied
    */
   public static Map<String, String> start(AuthApiTestContainer authApi) {
     if (!authApi.isRunning()) {

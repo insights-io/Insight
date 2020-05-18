@@ -18,40 +18,44 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PgPasswordResetDatasource implements PasswordResetDatasource {
 
-  @Inject
-  PgPool pgPool;
+  @Inject PgPool pgPool;
 
-  private static final String DELETE_RAW_SQL = "DELETE FROM auth.password_reset_request WHERE token = $1 AND email = $2 AND org = $3";
+  private static final String DELETE_RAW_SQL =
+      "DELETE FROM auth.password_reset_request WHERE token = $1 AND email = $2 AND org = $3";
+
+  private static final String FIND_RAW_SQL =
+      "SELECT * FROM auth.password_reset_request WHERE token = $1 AND email = $2 AND org = $3";
+
+  private static final String CREATE_RAW_SQL =
+      "INSERT INTO auth.password_reset_request(email, user_id, org) VALUES($1, $2, $3) RETURNING token, created_at";
 
   @Override
-  public CompletionStage<Boolean> delete(Transaction transaction, UUID token, String email,
-      String org) {
+  public CompletionStage<Boolean> delete(
+      Transaction transaction, UUID token, String email, String org) {
     Tuple values = Tuple.of(token, email, org);
     return transaction.preparedQuery(DELETE_RAW_SQL, values).thenApply(pgRowSet -> true);
   }
 
-  private static final String FIND_RAW_SQL = "SELECT * FROM auth.password_reset_request WHERE token = $1 AND email = $2 AND org = $3";
-
   @Override
-  public CompletionStage<Optional<PasswordResetRequest>> find(UUID token, String email,
-      String org) {
+  public CompletionStage<Optional<PasswordResetRequest>> find(
+      UUID token, String email, String org) {
     Tuple values = Tuple.of(token, email, org);
     return pgPool.preparedQuery(FIND_RAW_SQL, values).thenApply(this::resetRequestFromRowSet);
   }
 
-  private static final String CREATE_RAW_SQL = "INSERT INTO auth.password_reset_request(email, user_id, org) VALUES($1, $2, $3) RETURNING token, created_at";
-
   @Override
-  public CompletionStage<PasswordResetRequest> create(Transaction transaction, String email,
-      UUID userId, String org) {
+  public CompletionStage<PasswordResetRequest> create(
+      Transaction transaction, String email, UUID userId, String org) {
     Tuple values = Tuple.of(email, userId, org);
-    return transaction.preparedQuery(CREATE_RAW_SQL, values)
-        .thenApply(pgRowSet -> {
-          Row row = pgRowSet.iterator().next();
-          UUID token = row.getUUID("token");
-          OffsetDateTime createdAt = row.getOffsetDateTime("created_at");
-          return new PasswordResetRequest(token, userId, email, org, createdAt);
-        });
+    return transaction
+        .preparedQuery(CREATE_RAW_SQL, values)
+        .thenApply(
+            pgRowSet -> {
+              Row row = pgRowSet.iterator().next();
+              UUID token = row.getUUID("token");
+              OffsetDateTime createdAt = row.getOffsetDateTime("created_at");
+              return new PasswordResetRequest(token, userId, email, org, createdAt);
+            });
   }
 
   @Override
@@ -65,5 +69,4 @@ public class PgPasswordResetDatasource implements PasswordResetDatasource {
     }
     return Optional.of(PasswordResetRequest.fromSqlRow(rowSet.iterator().next()));
   }
-
 }

@@ -143,6 +143,14 @@ public class PasswordResourceImplTest {
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
   }
 
+  /**
+   * Initializes a password forgot request flow and throws is it is not successful.
+   *
+   * @param email address
+   * @param objectMapper object mapper
+   * @return password forgot request response
+   * @throws JsonProcessingException if failed to serialize password forgot request
+   */
   public static Response passwordForgot(String email, ObjectMapper objectMapper)
       throws JsonProcessingException {
     String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(email));

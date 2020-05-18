@@ -10,15 +10,14 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 
-@ServerEndpoint(value = SessionSocketImpl.PATH)
+@ServerEndpoint(SessionSocketImpl.PATH)
 @ApplicationScoped
 @Slf4j
 public class SessionSocketImpl {
 
   public static final String PATH = "/v1/sessions";
 
-  @Inject
-  SessionSocketService sessionSocketService;
+  @Inject SessionSocketService sessionSocketService;
 
   @OnOpen
   public void onOpen(Session session) {
@@ -34,5 +33,4 @@ public class SessionSocketImpl {
   public void onError(Session session, Throwable throwable) {
     sessionSocketService.onError(session, throwable);
   }
-
 }

@@ -23,17 +23,17 @@ public class PgPasswordDatasource implements PasswordDatasource {
   private static final String CREATE_RAW_SQL =
       "INSERT INTO auth.password(user_id, hash) VALUES($1, $2) RETURNING *";
 
+  private static final String FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL =
+      "SELECT auth.user.id, auth.user.email, auth.user.org, auth.user.role, auth.password.hash"
+          + " FROM auth.user LEFT JOIN auth.password ON auth.user.id = auth.password.user_id"
+          + " WHERE email = $1 ORDER BY auth.password.created_at DESC LIMIT 1";
+
   @Override
   public CompletionStage<Boolean> create(
       Transaction transaction, UUID userId, String hashedPassword) {
     Tuple values = Tuple.of(userId, hashedPassword);
     return transaction.preparedQuery(CREATE_RAW_SQL, values).thenApply(pgRowSet -> true);
   }
-
-  private static final String FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL =
-      "SELECT auth.user.id, auth.user.email, auth.user.org, auth.user.role, auth.password.hash"
-          + " FROM auth.user LEFT JOIN auth.password ON auth.user.id = auth.password.user_id"
-          + " WHERE email = $1 ORDER BY auth.password.created_at DESC LIMIT 1";
 
   @Override
   public CompletionStage<Optional<UserWithHashedPasswordDTO>> findUserWithPassword(String email) {

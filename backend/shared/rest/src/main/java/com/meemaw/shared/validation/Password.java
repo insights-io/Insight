@@ -1,4 +1,4 @@
-package com.meemas.shared.validation;
+package com.meemaw.shared.validation;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -17,9 +17,12 @@ import javax.validation.constraints.Size;
 @Constraint(validatedBy = {})
 public @interface Password {
 
+  /** @return error message */
   String message() default "Password is invalid";
 
+  /** @return groups */
   Class<?>[] groups() default {};
 
+  /** @return payload */
   Class<? extends Payload>[] payload() default {};
 }

@@ -10,8 +10,8 @@ import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
 @Slf4j
-public class StandaloneKafkaCommitCallback implements OffsetCommitCallback,
-    ConsumerRebalanceListener {
+public class StandaloneKafkaCommitCallback
+    implements OffsetCommitCallback, ConsumerRebalanceListener {
 
   private final Map<TopicPartition, OffsetAndMetadata> partitionOffsetMap;
 
@@ -23,20 +23,26 @@ public class StandaloneKafkaCommitCallback implements OffsetCommitCallback,
   public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception exception) {
     String thread = Thread.currentThread().getName();
     if (exception == null) {
-      offsets.forEach((topicPartition, offsetAndMetadata) -> {
-        partitionOffsetMap.computeIfPresent(topicPartition, (k, v) -> offsetAndMetadata);
-        log.info(
-            "onComplete(): offset position during commit for consumerId : {}, partition : {}, offset : {}",
-            thread, topicPartition.partition(), offsetAndMetadata.offset());
-      });
+      offsets.forEach(
+          (topicPartition, offsetAndMetadata) -> {
+            partitionOffsetMap.computeIfPresent(topicPartition, (k, v) -> offsetAndMetadata);
+            log.info(
+                "onComplete(): offset position during commit for consumerId : {}, partition : {}, offset : {}",
+                thread,
+                topicPartition.partition(),
+                offsetAndMetadata.offset());
+          });
     } else {
-      offsets.forEach((topicPartition, offsetAndMetadata) ->
-          log.error(
-              "onComplete(): offset position during commit when exception != null:  error: {}, " +
-                  "consumerId : {}, partition : {}, offset : {}",
-              exception.getMessage(), thread, topicPartition.partition(),
-              offsetAndMetadata.offset(), exception)
-      );
+      offsets.forEach(
+          (topicPartition, offsetAndMetadata) ->
+              log.error(
+                  "onComplete(): offset position during commit when exception != null:  error: {}, "
+                      + "consumerId : {}, partition : {}, offset : {}",
+                  exception.getMessage(),
+                  thread,
+                  topicPartition.partition(),
+                  offsetAndMetadata.offset(),
+                  exception));
     }
   }
 

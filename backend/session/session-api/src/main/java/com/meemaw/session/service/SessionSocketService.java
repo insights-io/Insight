@@ -43,14 +43,14 @@ public class SessionSocketService {
         .sendText(
             text,
             sendResult -> {
-              if (sendResult.getException() != null) {
+              if (sendResult.getException() == null) {
+                log.trace("Text {} sent to client {}", text, sessionId);
+              } else {
                 log.error(
                     "Failed to send text {} to client {}",
                     text,
                     sessionId,
                     sendResult.getException());
-              } else {
-                log.trace("Text {} sent to client {}", text, sessionId);
               }
             });
   }

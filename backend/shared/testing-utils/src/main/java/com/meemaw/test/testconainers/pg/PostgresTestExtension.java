@@ -34,8 +34,11 @@ public class PostgresTestExtension implements BeforeAllCallback {
   }
 
   /**
-   * @param postgres
-   * @return
+   * Optionally starts a postgres test container (if it is not already running) and applies
+   * migrations to it.
+   *
+   * @param postgres test container
+   * @return map of system properties to be applied
    */
   public static Map<String, String> start(PostgresTestContainer postgres) {
     if (!POSTGRES.isRunning()) {

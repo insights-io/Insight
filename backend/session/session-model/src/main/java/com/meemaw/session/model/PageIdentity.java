@@ -16,9 +16,9 @@ public class PageIdentity {
   UUID pageId;
 
   /**
-   * @param uid
-   * @param sessionId
-   * @param pageId
+   * @param uid user id
+   * @param sessionId session id
+   * @param pageId page id
    */
   public PageIdentity(UUID uid, UUID sessionId, UUID pageId) {
     this.uid = uid;

@@ -147,8 +147,6 @@ public class BeaconBeatResourceProcessingTest {
     assertEquals(0, unloadEvents.size());
   }
 
-  private static final String GET_PAGE_END_RAW_SQL = "SELECT page_end FROM rec.page WHERE id = $1;";
-
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
   public void shouldEndPageOnUnloadEvent(String contentType)

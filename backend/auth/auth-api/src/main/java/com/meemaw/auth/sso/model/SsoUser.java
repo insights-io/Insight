@@ -20,11 +20,12 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   UserRole role;
   String org;
 
-  public SsoUser(UserDTO userDTO) {
-    this.id = userDTO.getId();
-    this.email = userDTO.getEmail();
-    this.role = userDTO.getRole();
-    this.org = userDTO.getOrg();
+  /** @param user dto */
+  public SsoUser(UserDTO user) {
+    this.id = user.getId();
+    this.email = user.getEmail();
+    this.role = user.getRole();
+    this.org = user.getOrg();
   }
 
   @Override
@@ -57,6 +58,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     return new UserDTO(id, email, role, org);
   }
 
+  @Override
   public String getOrg() {
     return org;
   }

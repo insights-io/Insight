@@ -36,7 +36,7 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 
 @Slf4j
-public abstract class AbstractSearchIndexerTest {
+public class AbstractSearchIndexerTest {
 
   protected final List<SearchIndexer> searchIndexers = new LinkedList<>();
 
@@ -92,7 +92,10 @@ public abstract class AbstractSearchIndexerTest {
       String path) throws IOException, URISyntaxException {
     String payload =
         Files.readString(
-            Path.of(Objects.requireNonNull(getClass().getClassLoader().getResource(path)).toURI()));
+            Path.of(
+                Objects.requireNonNull(
+                        Thread.currentThread().getContextClassLoader().getResource(path))
+                    .toURI()));
 
     Collection<UserEvent<AbstractBrowserEvent>> batch =
         JacksonMapper.get().readValue(payload, new TypeReference<>() {});

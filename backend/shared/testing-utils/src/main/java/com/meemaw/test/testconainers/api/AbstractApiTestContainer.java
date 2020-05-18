@@ -3,6 +3,7 @@ package com.meemaw.test.testconainers.api;
 import com.meemaw.test.project.ProjectUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestContainer;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -73,26 +74,27 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
             imageName,
             context.toAbsolutePath().toString());
     builder.redirectErrorStream(true);
-    Process p;
+    Process process;
     try {
-      p = builder.start();
+      process = builder.start();
 
-      BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
       String line;
       while (true) {
-        line = r.readLine();
+        line = reader.readLine();
         if (line == null) {
           break;
         }
         log.info(line);
       }
 
-      if (p.waitFor() > 0) {
-        throw new Exception(String.format("failed to build %s api", api.name().toLowerCase()));
+      if (process.waitFor() > 0) {
+        throw new RuntimeException(
+            String.format("failed to build %s api", api.name().toLowerCase()));
       }
 
       return imageName;
-    } catch (Exception ex) {
+    } catch (IOException | InterruptedException ex) {
       throw new RuntimeException(ex);
     }
   }

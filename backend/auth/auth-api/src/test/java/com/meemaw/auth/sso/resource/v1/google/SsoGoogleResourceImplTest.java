@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 public class SsoGoogleResourceImplTest {
 
   @ConfigProperty(name = "google.oauth.client.id")
-  String GOOGLE_OAUTH_CLIENT_ID;
+  String googleOauthClientId;
 
   @TestHTTPResource(SsoGoogleResource.PATH + "/oauth2callback")
   URI oauth2CallbackURI;
@@ -46,7 +46,7 @@ public class SsoGoogleResourceImplTest {
 
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="
-            + GOOGLE_OAUTH_CLIENT_ID
+            + googleOauthClientId
             + "&redirect_uri="
             + oauth2CallbackURL
             + "&response_type=code&scope=openid+email+profile&state=";

@@ -9,10 +9,10 @@ import javax.ws.rs.core.Response.StatusType;
 public class Boom<T> {
 
   @JsonProperty("statusCode")
-  private int statusCode;
+  private final int statusCode;
 
   @JsonProperty("reason")
-  private String reason;
+  private final String reason;
 
   @JsonProperty("message")
   private String message;
@@ -35,7 +35,6 @@ public class Boom<T> {
     this.errors = errors;
     return this;
   }
-
 
   public static <T> Boom<T> status(int statusCode) {
     return new Boom<>(Status.fromStatusCode(statusCode));
@@ -69,6 +68,10 @@ public class Boom<T> {
     return new BoomException(this);
   }
 
+  public BoomException exception(Throwable throwable) {
+    return new BoomException(throwable, this);
+  }
+
   public static <T> Boom<T> badRequest() {
     return Boom.status(Status.BAD_REQUEST);
   }
@@ -80,5 +83,4 @@ public class Boom<T> {
   public static <T> Boom<T> serverError() {
     return Boom.status(Status.INTERNAL_SERVER_ERROR);
   }
-
 }

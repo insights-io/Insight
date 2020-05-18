@@ -29,6 +29,12 @@ public class PgUserDatasource implements UserDatasource {
   private static final String INSERT_USER_RAW_SQL =
       "INSERT INTO auth.user(email, org, role) VALUES($1, $2, $3) RETURNING id";
 
+  private static final String FIND_USER_BY_EMAIL_RAW_SQL =
+      "SELECT * FROM auth.user WHERE email = $1";
+
+  private static final String INSERT_ORG_RAW_SQL = "INSERT INTO auth.org(id) VALUES($1)";
+
+  @Override
   public CompletionStage<UUID> createUser(
       Transaction transaction, String email, String org, UserRole role) {
     Tuple values = Tuple.of(email, org, role.toString());
@@ -52,9 +58,6 @@ public class PgUserDatasource implements UserDatasource {
             });
   }
 
-  private static final String FIND_USER_BY_EMAIL_RAW_SQL =
-      "SELECT * FROM auth.user WHERE email = $1";
-
   @Override
   public CompletionStage<Optional<UserDTO>> findUser(String email) {
     Tuple values = Tuple.of(email);
@@ -75,6 +78,7 @@ public class PgUserDatasource implements UserDatasource {
             });
   }
 
+  @Override
   public CompletionStage<SignupRequest> createUser(
       Transaction transaction, SignupRequest signupRequest) {
     String email = signupRequest.email();
@@ -82,8 +86,7 @@ public class PgUserDatasource implements UserDatasource {
     return createUser(transaction, email, org, UserRole.ADMIN).thenApply(signupRequest::userId);
   }
 
-  private static final String INSERT_ORG_RAW_SQL = "INSERT INTO auth.org(id) VALUES($1)";
-
+  @Override
   public CompletionStage<SignupRequest> createOrganization(
       Transaction transaction, SignupRequest signupRequest) {
     String orgID = Organization.identifier();

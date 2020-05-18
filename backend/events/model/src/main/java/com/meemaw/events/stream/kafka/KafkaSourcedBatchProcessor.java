@@ -12,6 +12,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 
 @Slf4j
+@SuppressWarnings("PMD.AvoidCatchingGenericException")
 public class KafkaSourcedBatchProcessor<K, V> {
 
   private final RetryQueueStandaloneKafkaConsumer<K, V> consumer;
@@ -30,6 +31,7 @@ public class KafkaSourcedBatchProcessor<K, V> {
       startPolling();
     } catch (WakeupException ex) {
       log.error("Failed to wakeup consumer", ex);
+
     } catch (Exception ex) {
       log.error("Unexpected exception", ex);
     } finally {
@@ -56,8 +58,8 @@ public class KafkaSourcedBatchProcessor<K, V> {
         int partition = record.partition();
         long offset = record.offset();
         V value = record.value();
-        log.debug("received record: partition: {}, offset: {}, value: {}", partition, offset,
-            value);
+        log.debug(
+            "received record: partition: {}, offset: {}, value: {}", partition, offset, value);
 
         if (isFirstRecordInPool) {
           isFirstRecordInPool = false;

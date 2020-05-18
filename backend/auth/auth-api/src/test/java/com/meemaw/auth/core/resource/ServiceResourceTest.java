@@ -16,11 +16,13 @@ public class ServiceResourceTest {
   @Test
   public void random_path_should_fail() {
     given()
-        .when().post("/" + UUID.randomUUID())
+        .when()
+        .post("/" + UUID.randomUUID())
         .then()
         .statusCode(404)
-        .body(sameJson("{\"error\":{\"message\":\"Resource Not Found\",\"reason\":\"Not Found\"," +
-            "\"statusCode\":404}}"));
+        .body(
+            sameJson(
+                "{\"error\":{\"message\":\"Resource Not Found\",\"reason\":\"Not Found\",\"statusCode\":404}}"));
   }
 
   @Test
@@ -30,7 +32,8 @@ public class ServiceResourceTest {
         .get(SignupResource.PATH)
         .then()
         .statusCode(405)
-        .body(sameJson(
-            "{\"error\":{\"message\":\"Method Not Allowed\",\"reason\":\"Method Not Allowed\",\"statusCode\":405}}"));
+        .body(
+            sameJson(
+                "{\"error\":{\"message\":\"Method Not Allowed\",\"reason\":\"Method Not Allowed\",\"statusCode\":405}}"));
   }
 }

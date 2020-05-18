@@ -38,10 +38,10 @@ public class RetryQueueStandaloneKafkaConsumer<K, V> extends StandaloneKafkaCons
     return producer.send(
         record,
         (metadata, ex) -> {
-          if (ex != null) {
-            log.error("Failed to send record {} to retry topic {}", record, retryTopicName, ex);
-          } else {
+          if (ex == null) {
             log.info("Written record {} to retry topic {}", record, retryTopicName);
+          } else {
+            log.error("Failed to send record {} to retry topic {}", record, retryTopicName, ex);
           }
         });
   }
@@ -51,14 +51,14 @@ public class RetryQueueStandaloneKafkaConsumer<K, V> extends StandaloneKafkaCons
     return producer.send(
         record,
         (metadata, ex) -> {
-          if (ex != null) {
+          if (ex == null) {
+            log.info("Written record {} to dead letter queue {}", record, deadLetterTopicName);
+          } else {
             log.error(
                 "Failed to send record {} to dead letter queue {}",
                 record,
                 deadLetterTopicName,
                 ex);
-          } else {
-            log.info("Written record {} to dead letter queue {}", record, deadLetterTopicName);
           }
         });
   }

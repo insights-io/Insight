@@ -32,23 +32,29 @@ public class HazelcastSsoDatasource implements SsoDatasource {
     sessions = hazelcastProvider.getInstance().getMap(SESSION_MAP_NAME);
   }
 
-  public CompletionStage<String> createSession(UserDTO userDTO) {
+  /**
+   * @param user dto
+   * @return session id
+   */
+  @Override
+  public CompletionStage<String> createSession(UserDTO user) {
     String sessionId = SsoSession.newIdentifier();
     return sessions
         .setAsync(
             sessionId,
-            new SsoUser(userDTO),
+            new SsoUser(user),
             SsoSession.TTL,
             TimeUnit.SECONDS,
             SsoSession.MAX_IDLE,
             TimeUnit.SECONDS)
         .thenApply(
             x -> {
-              log.info("Session id={} created for userId={}", sessionId, userDTO.getId());
+              log.info("Session id={} created for userId={}", sessionId, user.getId());
               return sessionId;
             });
   }
 
+  @Override
   public CompletionStage<Optional<SsoUser>> findSession(String sessionId) {
     return sessions.getAsync(sessionId).thenApply(Optional::ofNullable);
   }

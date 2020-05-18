@@ -24,10 +24,22 @@ public class PgSignupDatasource implements SignupDatasource {
   private static final String INSERT_SIGNUP_RAW_SQL =
       "INSERT INTO auth.signup(user_email, org, user_id) VALUES($1, $2, $3) RETURNING token, created_at";
 
-  public CompletionStage<SignupRequestDTO> create(Transaction transaction, UserDTO userDTO) {
-    String email = userDTO.getEmail();
-    String org = userDTO.getOrg();
-    UUID userId = userDTO.getId();
+  private static final String FIND_SIGNUP_RAW_SQL =
+      "SELECT * FROM auth.signup WHERE user_email = $1 AND org = $2 AND token = $3";
+
+  private static final String DELETE_SIGNUP_RAW_SQL =
+      "DELETE FROM auth.signup WHERE user_email = $1 AND org = $2 AND user_id = $3";
+
+  /**
+   * @param transaction transaction
+   * @param user dto
+   * @return created sign up request
+   */
+  @Override
+  public CompletionStage<SignupRequestDTO> create(Transaction transaction, UserDTO user) {
+    String email = user.getEmail();
+    String org = user.getOrg();
+    UUID userId = user.getId();
     Tuple values = Tuple.of(email, org, userId);
 
     return transaction
@@ -51,6 +63,13 @@ public class PgSignupDatasource implements SignupDatasource {
             });
   }
 
+  /**
+   * @param email address
+   * @param org is
+   * @param token from sign up request
+   * @return boolean indicating if sign up request exists
+   */
+  @Override
   public CompletionStage<Boolean> exists(String email, String org, UUID token) {
     return find(email, org, token)
         .thenApply(Optional::isPresent)
@@ -66,9 +85,13 @@ public class PgSignupDatasource implements SignupDatasource {
             });
   }
 
-  private static final String FIND_SIGNUP_RAW_SQL =
-      "SELECT * FROM auth.signup WHERE user_email = $1 AND org = $2 AND token = $3";
-
+  /**
+   * @param email address
+   * @param org id
+   * @param token from sign up request
+   * @return maybe sign up request
+   */
+  @Override
   public CompletionStage<Optional<SignupRequestDTO>> find(String email, String org, UUID token) {
     Tuple values = Tuple.of(email, org, token);
     return pgPool
@@ -89,12 +112,17 @@ public class PgSignupDatasource implements SignupDatasource {
             });
   }
 
-  private static final String DELETE_SIGNUP_RAW_SQL =
-      "DELETE FROM auth.signup WHERE user_email = $1 AND org = $2 AND user_id = $3";
-
+  /**
+   * @param transaction transaction
+   * @param email address
+   * @param org id
+   * @param user id
+   * @return boolean indicating if sign up request was deleted
+   */
+  @Override
   public CompletionStage<Boolean> delete(
-      Transaction transaction, String email, String orgId, UUID userId) {
-    Tuple values = Tuple.of(email, orgId, userId);
+      Transaction transaction, String email, String org, UUID user) {
+    Tuple values = Tuple.of(email, org, user);
     return transaction.preparedQuery(DELETE_SIGNUP_RAW_SQL, values).thenApply(pgRowSet -> true);
   }
 }

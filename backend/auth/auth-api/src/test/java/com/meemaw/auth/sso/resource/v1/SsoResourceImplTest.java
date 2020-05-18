@@ -230,12 +230,28 @@ public class SsoResourceImplTest {
         .cookie(SsoSession.COOKIE_NAME, "");
   }
 
+  /**
+   * Sign up and then login with the provided credentials (assert it is successful).
+   *
+   * @param mailbox mailbox
+   * @param objectMapper object mapper
+   * @param email address
+   * @param password from user
+   * @return session id
+   */
   public static String signupAndLogin(
       MockMailbox mailbox, ObjectMapper objectMapper, String email, String password) {
     SignupResourceImplTest.signup(mailbox, objectMapper, email, password);
     return SsoResourceImplTest.login(email, password);
   }
 
+  /**
+   * Log in with provided credentials (assert is is successful).
+   *
+   * @param email address
+   * @param password from the user
+   * @return session id
+   */
   public static String login(String email, String password) {
     Response response =
         given()

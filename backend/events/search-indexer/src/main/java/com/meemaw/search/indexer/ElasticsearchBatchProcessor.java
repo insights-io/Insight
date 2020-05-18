@@ -32,66 +32,74 @@ public abstract class ElasticsearchBatchProcessor<V> implements BatchProcessor<V
   private BatchProcessorFailureCallback<V> onFailure;
 
   public ElasticsearchBatchProcessor(RestHighLevelClient client) {
-    this.processor = createProcessor(Objects.requireNonNull(client));
+    this.processor = createProcessor(client);
     this.values = new HashMap<>();
   }
 
   private BulkProcessor createProcessor(RestHighLevelClient client) {
     return BulkProcessor.builder(
-        (request, bulkListener) -> client.bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
-        new Listener() {
-          @Override
-          public void beforeBulk(long executionId, BulkRequest request) {
-            log.info("beforeBulk: executionId={}, numberOfActions={}, estimatedSizeInBytes={}",
-                executionId,
-                request.numberOfActions(),
-                request.estimatedSizeInBytes());
-          }
+            (request, bulkListener) ->
+                client.bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
+            new Listener() {
+              @Override
+              public void beforeBulk(long executionId, BulkRequest request) {
+                log.info(
+                    "beforeBulk: executionId={}, numberOfActions={}, estimatedSizeInBytes={}",
+                    executionId,
+                    request.numberOfActions(),
+                    request.estimatedSizeInBytes());
+              }
 
-          @Override
-          public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-            long tookMillis = response.getIngestTookInMillis();
-            if (!response.hasFailures()) {
-              log.info("afterBulk: successfully processed executionId={} after {}ms", executionId,
-                  tookMillis);
-            }
+              @Override
+              public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
+                long tookMillis = response.getIngestTookInMillis();
+                if (!response.hasFailures()) {
+                  log.info(
+                      "afterBulk: successfully processed executionId={} after {}ms",
+                      executionId,
+                      tookMillis);
+                }
 
-            Throwable cause = null;
-            Collection<V> failures = new LinkedList<>();
+                Throwable cause = null;
+                Collection<V> failures = new LinkedList<>();
 
-            for (BulkItemResponse bulkItemResponse : response) {
-              String id = bulkItemResponse.getId();
-              int itemId = bulkItemResponse.getItemId();
-              if (bulkItemResponse.isFailed()) {
-                failures.add(values.get(id));
-                String errorMessage = bulkItemResponse.getFailure().getMessage();
-                String restResponse = bulkItemResponse.getFailure().getStatus().name();
+                for (BulkItemResponse bulkItemResponse : response) {
+                  String id = bulkItemResponse.getId();
+                  int itemId = bulkItemResponse.getItemId();
+                  if (bulkItemResponse.isFailed()) {
+                    failures.add(values.get(id));
+                    String errorMessage = bulkItemResponse.getFailure().getMessage();
+                    String restResponse = bulkItemResponse.getFailure().getStatus().name();
 
-                log.error("Failed Message #{}, REST response:{}; errorMessage:{}",
-                    itemId, restResponse, errorMessage);
+                    log.error(
+                        "Failed Message #{}, REST response:{}; errorMessage:{}",
+                        itemId,
+                        restResponse,
+                        errorMessage);
 
-                if (SERVICE_UNAVAILABLE.equals(restResponse) || INTERNAL_SERVER_ERROR
-                    .equals(restResponse)) {
-                  cause = new ProcessorUnavailableException(restResponse);
+                    if (SERVICE_UNAVAILABLE.equals(restResponse)
+                        || INTERNAL_SERVER_ERROR.equals(restResponse)) {
+                      cause = new ProcessorUnavailableException(restResponse);
+                    }
+                  }
+                  values.remove(id);
+                }
+
+                if (failures.size() > 0) {
+                  log.info("onFailure.execute count: {}", failures.size(), cause);
+                  onFailure.execute(failures, cause);
                 }
               }
-              values.remove(id);
-            }
 
-            if (failures.size() > 0) {
-              log.info("onFailure.execute count: {}", failures.size(), cause);
-              onFailure.execute(failures, cause);
-            }
-          }
-
-          @Override
-          public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-            log.info("afterBulk: failed executionId={}", executionId, failure);
-            onFailure.execute(values.values(), failure);
-            values.clear();
-          }
-        }
-    ).setFlushInterval(FLUSH_INTERVAL).build();
+              @Override
+              public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
+                log.info("afterBulk: failed executionId={}", executionId, failure);
+                onFailure.execute(values.values(), failure);
+                values.clear();
+              }
+            })
+        .setFlushInterval(FLUSH_INTERVAL)
+        .build();
   }
 
   @Override

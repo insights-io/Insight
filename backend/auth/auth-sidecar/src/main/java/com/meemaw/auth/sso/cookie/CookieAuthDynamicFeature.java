@@ -10,6 +10,7 @@ import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -34,13 +35,13 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
           .thenApply(
               response -> {
                 int statusCode = response.getStatus();
-                if (statusCode == 200) {
+                if (statusCode == Status.OK.getStatusCode()) {
                   DataResponse<UserDTO> dataResponse = response.readEntity(new GenericType<>() {});
                   return Optional.of(dataResponse.getData());
                 }
 
                 // session not found
-                if (statusCode == 204) {
+                if (statusCode == Status.NO_CONTENT.getStatusCode()) {
                   return Optional.empty();
                 }
 

@@ -45,6 +45,12 @@ public class PasswordServiceImpl implements PasswordService {
 
   private static final String FROM_SUPPORT = "Insight Support <support@insight.com>";
 
+  /**
+   * @param email user's email
+   * @param password user's password
+   * @return user associated with the provided credentials
+   */
+  @Override
   public CompletionStage<UserDTO> verifyPassword(String email, String password) {
     return passwordDatasource
         .findUserWithPassword(email)
@@ -167,12 +173,13 @@ public class PasswordServiceImpl implements PasswordService {
     UUID token = passwordResetRequest.getToken();
     String email = passwordResetRequest.getEmail();
     String org = passwordResetRequest.getOrg();
-    UUID userId = passwordResetRequest.getUserId();
 
     if (passwordResetRequest.hasExpired()) {
       log.info("Password reset request expired email={} org={} token={}", email, org, token);
       throw Boom.badRequest().message("Password reset request expired").exception();
     }
+
+    UUID userId = passwordResetRequest.getUserId();
 
     return pgPool
         .begin()
@@ -187,6 +194,15 @@ public class PasswordServiceImpl implements PasswordService {
                     .thenApply(nothing -> true));
   }
 
+  /**
+   * @param transaction transaction
+   * @param userId user's id
+   * @param email user's email
+   * @param org user's organization
+   * @param password user's password
+   * @return boolean indicating if user was successfully created
+   */
+  @Override
   public CompletionStage<Boolean> create(
       Transaction transaction, UUID userId, String email, String org, String password) {
     log.info("Storing password email={} userId={} org={}", email, userId, org);

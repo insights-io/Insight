@@ -45,13 +45,18 @@ public class InviteResourceImplTest {
 
   @Inject ObjectMapper objectMapper;
 
+  private static String sessionId;
+
   @BeforeEach
   void init() {
     mailbox.clear();
   }
 
-  private static String sessionId;
-
+  /**
+   * Signs up and logins with a test user if necessary.
+   *
+   * @return session id of the logged in test user
+   */
   public String getSessionId() {
     if (sessionId == null) {
       String email = "org_invite_test@gmail.com";

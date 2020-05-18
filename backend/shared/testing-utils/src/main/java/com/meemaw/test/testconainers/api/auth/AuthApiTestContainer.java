@@ -12,7 +12,7 @@ public class AuthApiTestContainer extends AbstractApiTestContainer<AuthApiTestCo
     super(Api.AUTH);
   }
 
-  /** @return */
+  /** @return auth api test container */
   public static AuthApiTestContainer newInstance() {
     return new AuthApiTestContainer().withLogConsumer(new Slf4jLogConsumer(log));
   }

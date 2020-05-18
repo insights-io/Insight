@@ -42,7 +42,7 @@ public class BeaconResourceImpl implements BeaconResource {
     }
 
     Set<ConstraintViolation<BeaconDTO>> constraintViolations = validator.validate(beaconDTO);
-    if (constraintViolations.size() > 0) {
+    if (!constraintViolations.isEmpty()) {
       throw new ConstraintViolationException(constraintViolations);
     }
 

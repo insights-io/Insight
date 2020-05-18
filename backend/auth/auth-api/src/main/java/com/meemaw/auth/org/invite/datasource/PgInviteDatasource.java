@@ -33,6 +33,17 @@ public class PgInviteDatasource implements InviteDatasource {
   private static final String FIND_INVITE_RAW_SQL =
       "SELECT * FROM auth.invite WHERE user_email = $1 AND org = $2 AND token = $3";
 
+  private static final String FIND_ALL_INVITES_RAW_SQL = "SELECT * FROM auth.invite WHERE org = $1";
+
+  private static final String DELETE_INVITE_RAW_SQL =
+      "DELETE FROM auth.invite WHERE token = $1 AND org = $2";
+
+  private static final String DELETE_ALL_INVITES_RAW_SQL =
+      "DELETE FROM auth.invite WHERE user_email = $1 AND org = $2";
+
+  private static final String CREATE_INVITE_RAW_SQL =
+      "INSERT INTO auth.invite(creator, user_email, org, role) VALUES($1, $2, $3, $4) RETURNING token, created_at";
+
   @Override
   public CompletionStage<Optional<InviteDTO>> find(String email, String org, UUID token) {
     return pgPool
@@ -48,8 +59,6 @@ public class PgInviteDatasource implements InviteDatasource {
         .thenApply(this::inviteFromRowSet);
   }
 
-  private static final String FIND_ALL_INVITES_RAW_SQL = "SELECT * FROM auth.invite WHERE org = $1";
-
   @Override
   public CompletionStage<List<InviteDTO>> findAll(String org) {
     return pgPool
@@ -61,17 +70,11 @@ public class PgInviteDatasource implements InviteDatasource {
                     .collect(Collectors.toList()));
   }
 
-  private static final String DELETE_INVITE_RAW_SQL =
-      "DELETE FROM auth.invite WHERE token = $1 AND org = $2";
-
   @Override
   public CompletionStage<Boolean> delete(UUID token, String org) {
     Tuple values = Tuple.of(token, org);
     return pgPool.preparedQuery(DELETE_INVITE_RAW_SQL, values).thenApply(pgRowSet -> true);
   }
-
-  private static final String DELETE_ALL_INVITES_RAW_SQL =
-      "DELETE FROM auth.invite WHERE user_email = $1 AND org = $2";
 
   @Override
   public CompletionStage<Boolean> deleteAll(Transaction transaction, String email, String org) {
@@ -80,9 +83,6 @@ public class PgInviteDatasource implements InviteDatasource {
         .preparedQuery(DELETE_ALL_INVITES_RAW_SQL, values)
         .thenApply(pgRowSet -> true);
   }
-
-  private static final String CREATE_INVITE_RAW_SQL =
-      "INSERT INTO auth.invite(creator, user_email, org, role) VALUES($1, $2, $3, $4) RETURNING token, created_at";
 
   @Override
   public CompletionStage<InviteDTO> create(

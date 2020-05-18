@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * If test is annotated with {@link io.quarkus.test.junit.QuarkusTest} use {@link
- * AuthApiTestResource}
+ * com.meemaw.test.testconainers.api.auth.AuthApiTestResource}.
  */
 @Target({TYPE})
 @Retention(RUNTIME)
