@@ -23,7 +23,7 @@
     "prettier": "prettier -l 'src/**/*'"
   },
   "devDependencies": {
-    "playwright": "0.15.0",
+    "playwright": "0.18.0",
     "rollup": "2.7.6",
     "rollup-plugin-gzip": "2.4.0",
     "rollup-plugin-prettier": "2.0.0",
