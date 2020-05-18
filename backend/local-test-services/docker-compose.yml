@@ -104,7 +104,7 @@ services:
       LOG_DIR: /tmp/logs
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
     ports:
       - '9200:9200'
       - '9300:9300'
@@ -114,7 +114,7 @@ services:
     networks:
       - elk
   logstash:
-    image: docker.elastic.co/logstash/logstash:7.6.2
+    image: docker.elastic.co/logstash/logstash:7.7.0
     volumes:
       - source: $HOME/pipelines
         target: /usr/share/logstash/pipeline
@@ -128,7 +128,7 @@ services:
     depends_on:
       - elasticsearch
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.6.2
+    image: docker.elastic.co/kibana/kibana:7.7.0
     ports:
       - '5601:5601'
     networks:

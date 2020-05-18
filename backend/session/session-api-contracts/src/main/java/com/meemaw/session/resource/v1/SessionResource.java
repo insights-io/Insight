@@ -41,4 +41,9 @@ public interface SessionResource {
       @PathParam("SessionID") UUID sessionID,
       @PathParam("PageID") UUID pageID,
       @OrganizationId @QueryParam("orgID") String orgID);
+
+  // TODO: this should be authenticated
+  @GET
+  @Path("search")
+  CompletionStage<Response> search();
 }

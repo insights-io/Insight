@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-resteasy'
+    api "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
+
+    testImplementation project(":shared:testing-utils")
+}

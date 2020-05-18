@@ -14,6 +14,7 @@ pluginManagement {
 rootProject.name = 'backend'
 
 include ':shared:rest'
+include ':shared:rest-elasticsearch'
 include ':shared:rest-api'
 include ':shared:testing-utils'
 include ':events:model'

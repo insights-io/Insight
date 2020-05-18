@@ -7,6 +7,7 @@ dependencies {
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
     implementation "org.apache.kafka:kafka-clients:${kafkaVersion}"
     implementation project(":events:model")
+    implementation project(":shared:rest-elasticsearch")
 
     testImplementation project(':shared:testing-utils')
 }

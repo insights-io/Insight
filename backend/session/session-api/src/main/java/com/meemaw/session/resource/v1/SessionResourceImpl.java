@@ -3,6 +3,7 @@ package com.meemaw.session.resource.v1;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.service.PageService;
+import com.meemaw.session.service.SessionSearchService;
 import com.meemaw.session.service.SessionSocketService;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -18,6 +19,8 @@ public class SessionResourceImpl implements SessionResource {
   @Inject PageService pageService;
 
   @Inject SessionSocketService sessionSocketService;
+
+  @Inject SessionSearchService sessionSearchService;
 
   @Override
   public CompletionStage<Response> page(CreatePageDTO page) {
@@ -46,5 +49,10 @@ public class SessionResourceImpl implements SessionResource {
               PageDTO page = maybePage.orElseThrow(() -> Boom.notFound().exception());
               return DataResponse.ok(page);
             });
+  }
+
+  @Override
+  public CompletionStage<Response> search() {
+    return sessionSearchService.search().thenApply(DataResponse::ok);
   }
 }
