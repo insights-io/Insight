@@ -1,7 +1,14 @@
 FROM gradle:6.4.0-jdk14 as build
 
-COPY . /backend
 WORKDIR /backend
+
+COPY gradle.properties settings.gradle build.gradle /backend/
+COPY auth/auth-api/ /backend/auth/auth-api/
+COPY auth/auth-api-contracts/ /backend/auth/auth-api-contracts/
+COPY auth/auth-model/ /backend/auth/auth-model/
+COPY auth/auth-cookie/ /backend/auth/auth-cookie/
+COPY shared/rest-api/ /backend/shared/rest-api/
+COPY shared/rest/ /backend/shared/rest/
 
 RUN gradle auth:auth-api:quarkusBuild --uber-jar
 
