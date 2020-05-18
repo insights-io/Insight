@@ -78,7 +78,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
 
   kafka:
-    image: strimzi/kafka:0.11.3-kafka-2.1.0
+    image: strimzi/kafka:0.17.0-kafka-2.4.0
     command:
       [
         'sh',
@@ -95,7 +95,7 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
   zookeeper:
-    image: strimzi/kafka:0.11.3-kafka-2.1.0
+    image: strimzi/kafka:0.17.0-kafka-2.4.0
     command:
       ['sh', '-c', 'bin/zookeeper-server-start.sh config/zookeeper.properties']
     ports:
