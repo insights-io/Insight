@@ -22,7 +22,6 @@ public class PageService {
    * @return
    */
   public Uni<PageIdentity> process(CreatePageDTO createPageDTO) {
-
     UUID pageId = UUID.randomUUID();
     UUID uid = Optional.ofNullable(createPageDTO.getUid()).orElseGet(UUID::randomUUID);
     String orgID = createPageDTO.getOrgId();

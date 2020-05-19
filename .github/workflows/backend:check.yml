@@ -25,9 +25,7 @@ jobs:
           build-root-directory: backend
           wrapper-directory: backend
       - name: Merge reports
-        run: |
-          sudo apt-get install zsh
-          zsh ./backend/config/pmd/merge_reports.sh
+        run: ./backend/config/pmd/merge_reports.sh
       - name: Setup reviewdog
         run: |
           mkdir -p $HOME/bin && curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh| sh -s -- -b $HOME/bin
@@ -60,11 +58,7 @@ jobs:
           build-root-directory: backend
           wrapper-directory: backend
       - name: Merge reports
-        run: |
-          sudo apt-get install zsh
-          head -n 2 backend/auth/auth-api/build/reports/checkstyle/main.xml > report.xml
-          zsh -c 'for file in backend/**/build/reports/checkstyle/main.xml;do;cat "$file" | tail -n +3 | sed "$ d" >> report.xml;done'
-          tail -n 1 backend/auth/auth-api/build/reports/checkstyle/main.xml >> report.xml
+        run: ./backend/config/checkstyle/merge_reports.sh
       - name: Setup reviewdog
         run: |
           mkdir -p $HOME/bin && curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh| sh -s -- -b $HOME/bin
