@@ -7,7 +7,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-reactive-pg-client'
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
 
-    api 'org.awaitility:awaitility:4.0.2'
+    api 'org.awaitility:awaitility:4.0.3'
     api 'io.quarkus:quarkus-junit5'
     api 'io.quarkus:quarkus-jackson'
     api 'io.rest-assured:rest-assured'
