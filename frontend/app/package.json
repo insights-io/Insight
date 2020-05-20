@@ -42,7 +42,7 @@
     "react-hook-form": "5.7.2",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7",
-    "swr": "0.2.0"
+    "swr": "0.2.1"
   },
   "devDependencies": {
     "@insight/storybook": "0.0.0-development",
