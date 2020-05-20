@@ -4,6 +4,7 @@ plugins {
     id 'io.freefair.lombok'
     id 'checkstyle'
     id 'pmd'
+    id 'com.github.spotbugs'
 }
 
 allprojects {
@@ -20,8 +21,9 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
     apply plugin: 'io.freefair.lombok'
-    apply plugin: "checkstyle"
+    apply plugin: 'checkstyle'
     apply plugin: 'pmd'
+    apply plugin: 'com.github.spotbugs'
 
     java {
         sourceCompatibility = JavaVersion.VERSION_14
@@ -69,6 +71,10 @@ subprojects {
         toolVersion = "6.23.0"
         ruleSets = []
         ruleSetFiles = rootProject.files("config/pmd/ruleset.xml")
+    }
+
+    spotbugs {
+        ignoreFailures = true
     }
 }
 
