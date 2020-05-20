@@ -27,8 +27,8 @@
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
-    "pretest": "yarn prebuild && yarn workspace @insight/testing build",
-    "prebuild": "yarn workspace @insight/types build && yarn workspace @insight/storybook build"
+    "pretest": "yarn prebuild",
+    "prebuild": "yarn workspace @insight/types build && yarn workspace @insight/storybook build && yarn workspace @insight/testing build"
   },
   "dependencies": {
     "baseui": "9.78.0",
