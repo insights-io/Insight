@@ -29,14 +29,14 @@
   },
   "dependencies": {
     "baseui": "9.78.0",
-    "next": "9.4.1",
+    "next": "9.4.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "9.4.1",
+    "@next/bundle-analyzer": "9.4.2",
     "@types/react": "16.9.35",
     "@types/react-dom": "16.9.8",
     "@types/styletron-engine-atomic": "1.1.0",
