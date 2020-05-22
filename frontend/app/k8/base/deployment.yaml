@@ -2,15 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beacon-api
-  namespace: recording
+  name: app
   labels:
-    team: beacon
+    team: frontend
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: beacon-api
+      app: app
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -21,37 +20,34 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
       labels:
-        app: beacon-api
-        team: beacon
+        app: app
+        team: frontend
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: eu.gcr.io/insight/beacon-api
-          name: beacon-api
-          env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: PLAINTEXT://kafka:9092
+        - image: eu.gcr.io/insight/app
+          name: app
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
               name: http
               protocol: TCP
           resources:
             requests:
               cpu: 500m
-              memory: 500Mi
+              memory: 1000Mi
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 1000Mi
           livenessProbe:
             httpGet:
-              path: /health/live
-              port: 8080
+              path: /
+              port: 3000
             initialDelaySeconds: 60
             periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /health/ready
-              port: 8080
+              path: /
+              port: 3000
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 1

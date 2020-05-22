@@ -4,3 +4,4 @@ resources:
   - secrets.yaml
 patchesStrategicMerge:
   - never-pull-image-policy.yaml
+  - single-replica.yaml

@@ -30,3 +30,15 @@ nb-configuration.xml
 # Gradle
 .gradle/
 build/
+
+# Infra
+tiltfile
+**/k8/
+local-test-services/
+
+#Markdown
+*.md
+
+.run
+
+**Dockerfile*

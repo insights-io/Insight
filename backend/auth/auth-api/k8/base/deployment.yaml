@@ -3,11 +3,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-api
-  namespace: auth
+  namespace: recording
   labels:
     team: auth
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: auth-api
@@ -49,17 +49,19 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: password
+            - name: POSTGRES_HOST
+              value: postgres-postgresql
           ports:
             - containerPort: 8080
               name: http
               protocol: TCP
           resources:
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 500m
+              memory: 500Mi
             limits:
-              cpu: 200m
-              memory: 200Mi
+              cpu: 1000m
+              memory: 1000Mi
           livenessProbe:
             httpGet:
               path: /health/live

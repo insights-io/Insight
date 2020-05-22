@@ -2,17 +2,17 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: auth-api
-  namespace: auth
+  name: session-api
+  namespace: recording
   labels:
-    team: auth
+    team: session
 spec:
   maxReplicas: 10
   minReplicas: 2
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: auth-api
+    name: session-api
   metrics:
     - type: Resource
       resource:

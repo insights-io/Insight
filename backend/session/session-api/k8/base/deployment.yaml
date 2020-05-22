@@ -2,15 +2,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beacon-api
+  name: session-api
   namespace: recording
   labels:
-    team: beacon
+    team: session
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: beacon-api
+      app: session-api
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -21,16 +21,26 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
       labels:
-        app: beacon-api
-        team: beacon
+        app: session-api
+        team: session
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: eu.gcr.io/insight/beacon-api
-          name: beacon-api
+        - image: eu.gcr.io/insight/session-api
+          name: session-api
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
           ports:
             - containerPort: 8080
               name: http

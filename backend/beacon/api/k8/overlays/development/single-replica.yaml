@@ -1,0 +1,17 @@
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: beacon-api
+  namespace: recording
+spec:
+  maxReplicas: 1
+  minReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beacon-api
+  namespace: recording
+spec:
+  replicas: 1

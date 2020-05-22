@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: auth-api-migrations
+  namespace: recording
+  labels:
+    team: auth
+spec:
+  template:
+    spec:
+      containers:
+        - image: eu.gcr.io/insight/auth-api-migrations
+          name: auth-api-migrations
+          imagePullPolicy: Never # kustomize this
+          env:
+            - name: POSTGRES_HOST
+              value: postgres-postgresql
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
+          resources:
+            requests:
+              cpu: 200m
+              memory: 200Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+      restartPolicy: Never
