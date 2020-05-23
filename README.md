@@ -27,7 +27,7 @@ It is recommended to use VSCode for frontend development.
 **Boostrap projects**
 
 ```sh
-➜ yarn
+➜ yarn install --frozen-lockfile
 ```
 
 **Run unit tests**

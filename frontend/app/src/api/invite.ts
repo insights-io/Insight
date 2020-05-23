@@ -1,15 +1,15 @@
 import ky from 'ky-universal';
 import { DataResponse, TeamInvite, UserRole } from '@insight/types';
 
-import { baseURL } from './base';
+import { authApiBaseURL } from './base';
 
 const InviteApi = {
-  list: () => {
+  list: (baseURL = authApiBaseURL) => {
     return ky
       .get(`${baseURL}/v1/org/invites`, { credentials: 'include' })
       .json<DataResponse<TeamInvite[]>>();
   },
-  delete: (token: string, email: string) => {
+  delete: (token: string, email: string, baseURL = authApiBaseURL) => {
     return ky
       .delete(`${baseURL}/v1/org/invites/${token}`, {
         json: { email },
@@ -17,7 +17,7 @@ const InviteApi = {
       })
       .json<DataResponse<boolean>>();
   },
-  create: (role: UserRole, email: string) => {
+  create: (role: UserRole, email: string, baseURL = authApiBaseURL) => {
     return ky
       .post(`${baseURL}/v1/org/invites`, {
         json: { email, role },
@@ -25,7 +25,7 @@ const InviteApi = {
       })
       .json<DataResponse<TeamInvite>>();
   },
-  resend: (email: string) => {
+  resend: (email: string, baseURL = authApiBaseURL) => {
     return ky
       .post(`${baseURL}/v1/org/invites/send`, {
         json: { email },

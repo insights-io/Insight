@@ -1,9 +1,9 @@
 import ky from 'ky-universal';
 
-import { baseURL } from './base';
+import { authApiBaseURL } from './base';
 
 const SsoApi = {
-  login: (email: string, password: string) => {
+  login: (email: string, password: string, baseURL = authApiBaseURL) => {
     const body = new URLSearchParams();
     body.set('email', email);
     body.set('password', password);
@@ -11,15 +11,15 @@ const SsoApi = {
       .post(`${baseURL}/v1/sso/login`, { body, credentials: 'include' })
       .json();
   },
-  session: (sessionId: string) => {
+  session: (sessionId: string, baseURL = authApiBaseURL) => {
     return ky.get(`${baseURL}/v1/sso/session`, {
       searchParams: { id: sessionId },
     });
   },
-  me: () => {
+  me: (baseURL = authApiBaseURL) => {
     return ky.get(`${baseURL}/v1/sso/me`, { credentials: 'include' });
   },
-  logout: () => {
+  logout: (baseURL = authApiBaseURL) => {
     return ky.post(`${baseURL}/v1/sso/logout`, { credentials: 'include' });
   },
 };

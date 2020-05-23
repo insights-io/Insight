@@ -24,4 +24,4 @@ docker_build('eu.gcr.io/insight/beacon-api', '..', {}, '../beacon/api/docker/Doc
 
 k8s_yaml(kustomize('../../frontend/app/k8/overlays/development'))
 k8s_resource('app', port_forwards=3000, resource_deps=['auth-api', 'session-api', 'beacon-api'])
-docker_build('eu.gcr.io/insight/app', '../..', {'auth_api_base_url': 'http://auth-api.recording.svc.cluster.local', 'session_api_base_url': 'http://session-api.recording.svc.cluster.local'}, '../../frontend/app/docker/Dockerfile')
+docker_build('eu.gcr.io/insight/app', '../..', {'auth_api_server_base_url': 'http://auth-api.recording.svc.cluster.local'}, '../../frontend/app/docker/Dockerfile')

@@ -7,6 +7,7 @@ import SsoApi from 'api/sso';
 import { UserDTO, DataResponse } from '@insight/types';
 import { isServer } from 'shared/utils/next';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const authMiddleware = async (ctx: NextPageContext) => {
   const { pathname } = ctx;
   const { SessionId } = nextCookie(ctx);
@@ -29,7 +30,10 @@ const authMiddleware = async (ctx: NextPageContext) => {
     return undefined;
   }
 
-  const response = await SsoApi.session(SessionId);
+  const response = await SsoApi.session(
+    SessionId,
+    process.env.AUTH_API_BASE_URL
+  );
   if (response.status === 204) {
     const setCookie = response.headers.get('set-cookie');
     return redirectToLogin({ 'set-cookie': setCookie || undefined });

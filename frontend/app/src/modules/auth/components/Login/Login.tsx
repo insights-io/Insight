@@ -11,7 +11,7 @@ import SsoApi from 'api/sso';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import Divider from 'shared/components/Divider';
-import { baseURL as apiBaseUrl } from 'api/base';
+import { authApiBaseURL } from 'api/base';
 import Link from 'next/link';
 import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
@@ -57,7 +57,7 @@ const Login = () => {
       </Head>
 
       <a
-        href={`${apiBaseUrl}/v1/sso/google/signin?dest=${dest}`}
+        href={`${authApiBaseURL}/v1/sso/google/signin?dest=${dest}`}
         style={{ textDecoration: 'none' }}
       >
         <Button

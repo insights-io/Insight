@@ -1,3 +1,2 @@
-export const baseURL = process.env.AUTH_API_BASE_URL || 'http://localhost:8080';
-export const sessionServiceBaseURL =
-  process.env.SESSION_API_BASE_URL || 'http://localhost:8082';
+export const authApiBaseURL =
+  process.env.NEXT_PUBLIC_AUTH_API_BASE_URL || 'http://localhost:8080';
