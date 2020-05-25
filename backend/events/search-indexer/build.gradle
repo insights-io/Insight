@@ -17,14 +17,18 @@ test {
     systemProperty "java.util.logging.manager", "org.apache.logging.log4j.LogManager"
 }
 
+configurations.runtimeClasspath.getAllDependencies().withType(ProjectDependency).each {
+    jar.dependsOn(it.getDependencyProject().getTasksByName("jar", true))
+}
+
 jar {
     manifest {
-        attributes 'Main-Class': 'com.meemaw.search.search-indexer.SearchIndexerRunner'
+        attributes 'Main-Class': 'com.meemaw.events.search.indexer.SearchIndexerRunner'
         // https://stackoverflow.com/questions/53049346/is-log4j2-compatible-with-java-11
         attributes 'Multi-Release': true
     }
 
     from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
 }

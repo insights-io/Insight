@@ -1,4 +1,4 @@
-package com.meemaw.search.indexer;
+package com.meemaw.events.search.indexer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.meemaw.events.model.external.UserEvent;

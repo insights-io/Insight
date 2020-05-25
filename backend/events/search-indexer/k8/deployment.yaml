@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-indexer
+  namespace: recording
+  labels:
+    team: beacon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search-indexer
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: search-indexer
+        team: beacon
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - image: eu.gcr.io/insight/search-indexer
+          name: search-indexer
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: PLAINTEXT://kafka:9092
+            - name: ELASTICSEARCH_HOSTS
+              value: elasticsearch-master:9200
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500Mi
+            limits:
+              cpu: 1000m
+              memory: 1000Mi

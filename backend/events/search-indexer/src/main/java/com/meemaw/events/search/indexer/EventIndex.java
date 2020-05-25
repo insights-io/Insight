@@ -1,4 +1,4 @@
-package com.meemaw.search.indexer;
+package com.meemaw.events.search.indexer;
 
 import lombok.experimental.UtilityClass;
 

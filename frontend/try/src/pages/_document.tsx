@@ -38,7 +38,7 @@ class InsightDocument extends Document<Props> {
       __html: `((s, t, e) => {
       s._i_debug = !1;
       s._i_host = 'insight.com';
-      s._i_org = '<ORG>';
+      s._i_org = 'try123';
       s._i_ns = 'IS';
       const n = t.createElement(e);
       n.async = true;

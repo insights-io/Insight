@@ -13,11 +13,13 @@ declare global {
   interface Window extends InsightWindow {}
 }
 
-const SERVE_PORT = 5000;
+const SERVE_PORT = process.env.SERVE_PORT || 5000;
 const I_ORG = 'test-1';
 const I_HOST = `localhost:${SERVE_PORT}`;
-const beaconServiceBaseURL = 'http://localhost:8081';
-const sessionServiceBaseURL = 'http://localhost:8082';
+const beaconApiBaseURL =
+  process.env.BEACON_API_BASE_URL || 'http://localhost:8081';
+const sessionApiBaseURL =
+  process.env.SESSION_API_BASE_URL || 'http://localhost:8082';
 
 const parsePageResponse = (response: Response) => {
   return response.body().then<CreatePageResponse>((b) => JSON.parse(String(b)));
@@ -76,8 +78,7 @@ describe('tracking script', () => {
       await setupPage(page);
 
       const pageResponse = await page.waitForResponse(
-        (resp: Response) =>
-          resp.url() === `${sessionServiceBaseURL}/v1/sessions`
+        (resp: Response) => resp.url() === `${sessionApiBaseURL}/v1/sessions`
       );
 
       const pageRequest = pageResponse.request();
@@ -112,7 +113,7 @@ describe('tracking script', () => {
       const beaconResponse = await page.waitForResponse(
         (resp: Response) =>
           resp.url() ===
-          `${beaconServiceBaseURL}/v1/beacon/beat?OrgID=${I_ORG}&SessionID=${sessionId}&UserID=${uid}&PageID=${pageId}`
+          `${beaconApiBaseURL}/v1/beacon/beat?OrgID=${I_ORG}&SessionID=${sessionId}&UserID=${uid}&PageID=${pageId}`
       );
 
       const beaconRequest = beaconResponse.request();

@@ -1,4 +1,4 @@
-package com.meemaw.search.indexer;
+package com.meemaw.events.search.indexer;
 
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;

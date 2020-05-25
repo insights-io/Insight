@@ -1,4 +1,4 @@
-package com.meemaw.search.indexer;
+package com.meemaw.events.search.indexer;
 
 import com.meemaw.events.model.external.UserEvent;
 import com.meemaw.events.model.external.serialization.UserEventDeserializer;

@@ -1,13 +1,15 @@
 FROM gradle:6.4.1-jdk14 as build
 
-COPY . /backend
+COPY build.gradle lombok.config gradle.properties settings.gradle /backend/
+COPY shared /backend/shared
+COPY events /backend/events
 WORKDIR /backend
 
-RUN gradle search:indexer:jar
+RUN gradle --no-daemon events:search-indexer:jar
 
 FROM adoptopenjdk:14-jre-hotspot
 
-COPY --from=build /backend/search/indexer/build/libs/indexer-1.0.jar /usr/app/search-indexer.jar
+COPY --from=build /backend/events/search-indexer/build/libs/search-indexer-1.0.jar /usr/app/search-indexer.jar
 
 WORKDIR /usr/app/
 

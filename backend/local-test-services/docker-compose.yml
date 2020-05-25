@@ -68,6 +68,18 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
 
+  search-indexer:
+    build:
+      context: ..
+      dockerfile: events/search-indexer/docker/Dockerfile.jvm
+    depends_on:
+      - kafka
+      - elasticsearch
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
+
+  # Postgres
   db:
     image: postgres:11
     ports:
@@ -77,6 +89,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
 
+  # Kafka
   kafka:
     image: strimzi/kafka:0.18.0-kafka-2.4.0
     command:
@@ -103,6 +116,7 @@ services:
     environment:
       LOG_DIR: /tmp/logs
 
+  # Elk
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
     ports:
@@ -111,31 +125,14 @@ services:
     environment:
       ES_JAVA_OPTS: '-Xms512m -Xmx512m'
       discovery.type: single-node
-    networks:
-      - elk
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.7.0
-    volumes:
-      - source: $HOME/pipelines
-        target: /usr/share/logstash/pipeline
-        type: bind
-    ports:
-      - '12201:12201/udp'
-      - '5000:5000'
-      - '9600:9600'
-    networks:
-      - elk
-    depends_on:
-      - elasticsearch
   kibana:
     image: docker.elastic.co/kibana/kibana:7.7.0
     ports:
       - '5601:5601'
-    networks:
-      - elk
     depends_on:
       - elasticsearch
 
+  # Tracing
   jaeger:
     image: jaegertracing/all-in-one:1.18.0
     ports:
@@ -145,7 +142,3 @@ services:
       - '5778:5778'
       - 16686:16686
       - 14268:14268
-
-networks:
-  elk:
-    driver: bridge

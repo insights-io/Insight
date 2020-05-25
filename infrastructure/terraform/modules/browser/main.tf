@@ -1,5 +1,6 @@
 locals {
   s3_static_origin_id = "${var.bucket_name}-origin"
+  allowed_methods     = ["GET", "HEAD"]
 }
 
 resource "aws_s3_bucket" "static" {
@@ -8,7 +9,7 @@ resource "aws_s3_bucket" "static" {
   acl    = "private"
 
   cors_rule {
-    allowed_methods = ["GET"]
+    allowed_methods = local.allowed_methods
     allowed_origins = ["*"]
     allowed_headers = ["*"]
     max_age_seconds = 3000
@@ -36,8 +37,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   comment             = "${var.bucket_name} (Managed by Terraform)"
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
+    allowed_methods  = local.allowed_methods
+    cached_methods   = local.allowed_methods
     target_origin_id = local.s3_static_origin_id
 
     forwarded_values {
