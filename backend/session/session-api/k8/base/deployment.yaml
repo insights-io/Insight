@@ -41,6 +41,8 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: password
+            - name: POSTGRES_HOST
+              value: postgres-postgresql
           ports:
             - containerPort: 8080
               name: http

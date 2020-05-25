@@ -11,3 +11,5 @@ artifacts
 coverage
 out
 storybook-static
+
+**/dist/
