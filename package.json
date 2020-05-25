@@ -42,7 +42,7 @@
     "husky": "4.2.5",
     "jest": "26.0.1",
     "jest-environment-jsdom-sixteen": "1.0.3",
-    "lerna": "3.21.0",
+    "lerna": "3.22.0",
     "prettier": "2.0.5",
     "pretty-quick": "2.0.1",
     "sinon": "9.0.2",
