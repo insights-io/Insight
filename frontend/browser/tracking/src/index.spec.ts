@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-underscore-dangle */
 import path from 'path';
 import { createServer, Server } from 'http';

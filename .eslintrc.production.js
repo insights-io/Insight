@@ -9,6 +9,7 @@ module.exports = {
     'testing-library',
     'lodash',
     'testcafe',
+    '@typescript-eslint',
   ],
   extends: [
     'eslint:recommended',
@@ -60,7 +61,7 @@ module.exports = {
     'lines-between-class-members': ['off'],
     'jsx-a11y/anchor-is-valid': ['off'],
 
-    '@typescript-eslint/explicit-function-return-type': ['off'],
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-unused-vars': [
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

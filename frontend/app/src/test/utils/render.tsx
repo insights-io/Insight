@@ -7,7 +7,7 @@ import { BaseRouter } from 'next/dist/next-server/lib/router/router';
 import AppProviders from 'shared/containers/AppProviders';
 import { sandbox } from '@insight/testing';
 
-type RenderOptions = Partial<BaseRouter> & {};
+type RenderOptions = Partial<BaseRouter>;
 
 type RenderableComponent<
   Props,

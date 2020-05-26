@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/camelcase */
 import path from 'path';
 
 import { terser } from 'rollup-plugin-terser';

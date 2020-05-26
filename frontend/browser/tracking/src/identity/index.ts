@@ -1,7 +1,7 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-console */
 /* eslint-disable lodash/prefer-lodash-typecheck */
 /* eslint-disable no-restricted-globals */
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-underscore-dangle */
 
 import { PageIdentity } from 'backend/types';

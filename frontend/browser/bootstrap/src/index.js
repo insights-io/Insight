@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-underscore-dangle */
 
 ((window, doc, scriptTag) => {
