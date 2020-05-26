@@ -1,7 +1,19 @@
 FROM gradle:6.4.1-jdk14 as build
 
-COPY . /backend
 WORKDIR /backend
+
+COPY gradle.properties settings.gradle build.gradle /backend/
+COPY session/session-model/ /backend/session/session-model/
+COPY session/session-api-contracts/ /backend/session/session-api-contracts/
+COPY session/session-api/ /backend/session/session-api/
+COPY auth/auth-model/ /backend/auth/auth-model/
+COPY auth/auth-cookie/ /backend/auth/auth-cookie/
+COPY auth/auth-sidecar/ /backend/auth/auth-sidecar/
+COPY auth/auth-api-contracts/ /backend/auth/auth-api-contracts/
+COPY events/model/ /backend/events/model/
+COPY shared/rest/ /backend/shared/rest/
+COPY shared/rest-elasticsearch/ /backend/shared/rest-elasticsearch/
+COPY shared/rest-api/ /backend/shared/rest-api/
 
 RUN gradle session:session-api:quarkusBuild --uber-jar
 

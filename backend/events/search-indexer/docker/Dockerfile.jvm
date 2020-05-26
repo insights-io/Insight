@@ -1,8 +1,8 @@
 FROM gradle:6.4.1-jdk14 as build
 
 COPY build.gradle lombok.config gradle.properties settings.gradle /backend/
-COPY shared /backend/shared
-COPY events /backend/events
+COPY shared/rest-elasticsearch /backend/shared/rest-elasticsearch
+COPY events/model /backend/events/model
 WORKDIR /backend
 
 RUN gradle --no-daemon events:search-indexer:jar
