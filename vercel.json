@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "public": false,
+  "github": {
+    "enabled": false
+  },
+  "builds": [
+    { "src": "frontend/app/package.json", "use": "@now/next" },
+    { "src": "frontend/try/package.json", "use": "@now/next" }
+  ],
+  "rewrites": [
+    { "source": "/try/(.*)", "destination": "/frontend/try/$1" },
+    { "source": "/(.*)", "destination": "/frontend/app/$1" }
+  ]
+}

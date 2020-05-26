@@ -20,7 +20,7 @@ const ErrorPage = ({ statusCode }: Props) => {
 ErrorPage.getInitialProps = (context: NextPageContext) => {
   let statusCode: number | undefined;
 
-  if (isServer(context)) {
+  if (isServer(context) && context.res.writeHead) {
     statusCode = context.res.statusCode;
     if (statusCode === 404) {
       context.res.writeHead(302, { Location: '/' });
