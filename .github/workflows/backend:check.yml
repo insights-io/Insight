@@ -9,7 +9,7 @@ jobs:
   spotbugs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
@@ -40,7 +40,7 @@ jobs:
   pmd:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
@@ -73,7 +73,7 @@ jobs:
   checkstyle:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
