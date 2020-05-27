@@ -1,0 +1,20 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: auth-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  tls:
+    - hosts:
+        - auth-api.minikube.snuderls.eu
+      secretName: auth1-api-tls
+  rules:
+    - host: auth-api.minikube.snuderls.eu
+      http:
+        paths:
+          - backend:
+              serviceName: auth-api
+              servicePort: 80

@@ -3,9 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: beacon-api
-  namespace: recording
-  labels:
-    team: beacon
 spec:
   replicas: 2
   selector:
