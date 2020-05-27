@@ -49,9 +49,9 @@ jobs:
         run: |
           yarn workspace @insight/browser-bootstrap build
       - name: Prepare files for deployment
-        run: |
-          mv frontend/browser/bootstrap/dist/insight.js.gz frontend/browser/bootstrap/dist/insight.js
-      - uses: actions/upload-artifact@v1
+        run: find ./ -name "*.js.gz" -exec sh -c 'mv $0 `basename "$0" .js.gz`.js' '{}' \;
+        working-directory: frontend/browser/bootstrap/dist
+      - uses: actions/upload-artifact@v2
         with:
           name: b
           path: frontend/browser/bootstrap/dist
@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v2
         with:
           name: b
           path: deployment/b

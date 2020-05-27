@@ -52,7 +52,7 @@ jobs:
           node_modules/wait-on/bin/wait-on http-get://localhost:8081/health/ready --timeout 180000
           node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 180000
           xvfb-run --auto-servernum yarn workspace @insight/browser-tracking test --coverage --forceExit
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: artifacts
@@ -62,10 +62,9 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: frontend
       - name: Prepare files for deployment
-        run: |
-          mv frontend/browser/tracking/dist/insight.js.gz frontend/browser/tracking/dist/insight.js
-          mv frontend/browser/tracking/dist/development.insight.js.gz frontend/browser/tracking/dist/development.insight.js
-      - uses: actions/upload-artifact@v1
+        run: find ./ -name "*.js.gz" -exec sh -c 'mv $0 `basename "$0" .js.gz`.js' '{}' \;
+        working-directory: frontend/browser/tracking/dist
+      - uses: actions/upload-artifact@v2
         with:
           name: s
           path: frontend/browser/tracking/dist
@@ -77,7 +76,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v2
         with:
           name: s
           path: deployment/s

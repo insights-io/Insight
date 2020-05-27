@@ -10,7 +10,7 @@
   const scriptElement = doc.createElement(scriptTag);
   scriptElement.async = true;
   scriptElement.crossOrigin = 'anonymous';
-  scriptElement.src = 'https://d2c0kshu2rj5p.cloudfront.net/s/insight.js';
+  scriptElement.src = process.env.TRACKING_SCRIPT;
   const firstScript = doc.getElementsByTagName(scriptTag)[0];
   firstScript.parentNode.insertBefore(scriptElement, firstScript);
 })(window, document, 'script');

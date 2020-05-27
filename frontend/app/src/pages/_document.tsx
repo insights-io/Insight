@@ -14,14 +14,17 @@ import {
   STYLETRON_HYDRATE_CLASSNAME,
 } from 'shared/styles/styletron';
 import { Server, Sheet } from 'styletron-engine-atomic';
+import ky from 'ky-universal';
+import { RenderPageResult } from 'next/dist/next-server/lib/utils';
 
-type Props = {
+type Props = RenderPageResult & {
   stylesheets: Sheet[];
+  bootstrapScript: string;
 };
 
 class InsightDocument extends Document<Props> {
-  static async getInitialProps(ctx: DocumentContext) {
-    const page = ctx.renderPage({
+  static async getInitialProps(ctx: DocumentContext): Promise<Props> {
+    const page = await ctx.renderPage({
       enhanceApp: (App) => (props) => (
         <StyletronProvider value={styletron}>
           <App {...props} />
@@ -30,24 +33,13 @@ class InsightDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    return { ...page, stylesheets };
-  }
+    const bootstrapScript = await ky(
+      process.env.BOOTSTRAP_SCRIPT ||
+        'https://d1l87tz7sw1x04.cloudfront.net/b/development.insight.js'
+    ).text();
 
-  getInsightScript = () => {
-    return `((s, t, e) => {
-      s._i_debug = !1;
-      s._i_host = 'insight.com';
-      s._i_org = '<ORG>';
-      s._i_ns = 'IS';
-      const n = t.createElement(e);
-      n.async = true;
-      n.crossOrigin = 'anonymous';
-      n.src = 'https://d1l87tz7sw1x04.cloudfront.net/s/development.insight.js';
-      const o = t.getElementsByTagName(e)[0];
-      o.parentNode.insertBefore(n, o);
-    })(window, document, 'script');
-    `;
-  };
+    return { ...page, stylesheets, bootstrapScript };
+  }
 
   render() {
     return (
@@ -73,7 +65,7 @@ class InsightDocument extends Document<Props> {
           ))}
 
           <script
-            dangerouslySetInnerHTML={{ __html: this.getInsightScript() }}
+            dangerouslySetInnerHTML={{ __html: this.props.bootstrapScript }}
           />
         </Head>
 
