@@ -27,10 +27,10 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
       - uses: actions/upload-artifact@v2
-        if: failure()
+        if: always()
         with:
           name: test-reports
-          path: backend/**/build/reports/tests/**
+          path: backend/build/reports/allTests
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

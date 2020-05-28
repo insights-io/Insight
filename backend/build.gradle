@@ -17,6 +17,13 @@ allprojects {
     version '1.0'
 }
 
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/allTests")
+    // Include the results from the `test` task in all subprojects
+    reportOn subprojects.collect { it.tasks.withType(Test) }
+}
+
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
@@ -52,7 +59,7 @@ subprojects {
     }
 
     test {
-        finalizedBy(tasks.jacocoTestReport)
+        finalizedBy(tasks.jacocoTestReport, rootProject.tasks.testReport)
         systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
         testLogging.showStandardStreams = true
     }
