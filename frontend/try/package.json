@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "baseui": "9.80.0",
-    "next": "9.4.3",
+    "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-hook-form": "5.7.2",
@@ -41,7 +41,7 @@
     "styletron-react": "5.2.7"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "9.4.3",
+    "@next/bundle-analyzer": "9.4.4",
     "@types/react": "16.9.35",
     "@types/react-dom": "16.9.8",
     "@types/styletron-engine-atomic": "1.1.0",
