@@ -28,7 +28,7 @@ public class SsoGoogleResourceImplTest {
   URI oauth2CallbackURI;
 
   @Test
-  public void google_signin_should_fail_when_no_dest() {
+  public void google_signIn_should_fail_when_no_dest() {
     given()
         .when()
         .get(SsoGoogleResource.PATH + "/signin")
@@ -36,11 +36,38 @@ public class SsoGoogleResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"destination\":\"dest is required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"destination\":\"Required\"}}}"));
   }
 
   @Test
-  public void google_signin_should_start_flow_by_redirecting_to_google() {
+  public void google_signIn_should_fail_when_no_referer() {
+    given()
+        .when()
+        .queryParam("dest", "/test")
+        .get(SsoGoogleResource.PATH + "/signin")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"referer required\"}}"));
+  }
+
+  @Test
+  public void google_signIn_should_fail_when_malformed_referer() {
+    given()
+        .header("referer", "malformed")
+        .when()
+        .queryParam("dest", "/test")
+        .get(SsoGoogleResource.PATH + "/signin")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"no protocol: malformed\"}}"));
+  }
+
+  @Test
+  public void google_signIn_should_start_flow_by_redirecting_to_google() {
     String oauth2CallbackURL =
         URLEncoder.encode(oauth2CallbackURI.toString(), StandardCharsets.UTF_8);
 
@@ -51,19 +78,21 @@ public class SsoGoogleResourceImplTest {
             + oauth2CallbackURL
             + "&response_type=code&scope=openid+email+profile&state=";
 
+    String referer = "http://localhost:3000";
+    String dest = "/test";
     Response response =
         given()
+            .header("referer", referer)
             .config(newConfig().redirect(redirectConfig().followRedirects(false)))
             .when()
-            .queryParam("dest", "/test")
+            .queryParam("dest", dest)
             .get(SsoGoogleResource.PATH + "/signin");
 
     response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = state.substring(26);
-
-    assertEquals("%2Ftest", destination);
+    assertEquals(URLEncoder.encode(referer + dest, StandardCharsets.UTF_8), destination);
   }
 
   @Test
@@ -75,7 +104,7 @@ public class SsoGoogleResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"code\":\"code is required\",\"state\":\"state is required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"code\":\"Required\",\"state\":\"Required\"}}}"));
   }
 
   @Test

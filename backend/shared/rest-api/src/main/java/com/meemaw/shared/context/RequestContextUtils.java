@@ -3,16 +3,16 @@ package com.meemaw.shared.context;
 import java.util.Optional;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceInfo;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
-public class RequestContextUtils {
+public final class RequestContextUtils {
+
+  private RequestContextUtils() {}
 
   /**
    * @param resourceInfo resource info
    * @return maybe full resource path
    */
-  public Optional<String> getResourcePath(ResourceInfo resourceInfo) {
+  public static Optional<String> getResourcePath(ResourceInfo resourceInfo) {
     if (resourceInfo == null) {
       return Optional.empty();
     }

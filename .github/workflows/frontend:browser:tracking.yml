@@ -1,3 +1,4 @@
+---
 on:
   push:
     paths:
@@ -22,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
@@ -75,7 +76,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
           name: s

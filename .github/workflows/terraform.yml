@@ -1,3 +1,4 @@
+---
 on:
   push:
     paths:
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: hashicorp/terraform-github-actions@master
         with:
           tf_actions_version: 0.12.20

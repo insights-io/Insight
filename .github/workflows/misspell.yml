@@ -1,3 +1,4 @@
+---
 name: misspell
 on:
   - pull_request
