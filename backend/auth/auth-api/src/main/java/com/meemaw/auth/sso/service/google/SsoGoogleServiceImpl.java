@@ -42,10 +42,10 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
   private static final String TOKEN_INFO_SERVER_URL = "https://oauth2.googleapis.com/tokeninfo";
 
   @ConfigProperty(name = "google.oauth.client.id")
-  String googleOauthClientId;
+  String googleOAuthClientId;
 
   @ConfigProperty(name = "google.oauth.client.secret")
-  String googleOauthClientSecret;
+  String googleOAuthClientSecret;
 
   @Inject ObjectMapper objectMapper;
 
@@ -63,7 +63,7 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
   @Override
   public URI buildAuthorizationURI(String state, String redirectURI) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
-        .queryParam("client_id", googleOauthClientId)
+        .queryParam("client_id", googleOAuthClientId)
         .queryParam("redirect_uri", redirectURI)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)
@@ -96,8 +96,7 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
             userInfo -> {
               String destination = sessionState.substring(26);
               String email = userInfo.getEmail();
-              String location =
-                  "http://localhost:3000" + URLDecoder.decode(destination, StandardCharsets.UTF_8);
+              String location = URLDecoder.decode(destination, StandardCharsets.UTF_8);
 
               log.info("Google oauth2callback redirecting {} to {}", email, location);
               return ssoService
@@ -109,17 +108,17 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
   /**
    * Exchange authorization code for the access token and ID token.
    *
-   * @param code
-   * @param redirectURI
-   * @return
+   * @param code google authorization code
+   * @param redirectURI server oauth2callback redirect URL
+   * @return GoogleTokenResponse
    */
   private CompletionStage<GoogleTokenResponse> exchangeCode(String code, String redirectURI) {
     return webClient
         .postAbs(TOKEN_SERVER_URL)
         .addQueryParam("grant_type", "authorization_code")
         .addQueryParam("code", code)
-        .addQueryParam("client_id", googleOauthClientId)
-        .addQueryParam("client_secret", googleOauthClientSecret)
+        .addQueryParam("client_id", googleOAuthClientId)
+        .addQueryParam("client_secret", googleOAuthClientSecret)
         .addQueryParam("redirect_uri", redirectURI)
         .putHeader("Content-Length", "0")
         .send()

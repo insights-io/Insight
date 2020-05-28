@@ -16,12 +16,12 @@ public interface SsoGoogleResource {
 
   @GET
   @Path("signin")
-  Response signin(@NotBlank(message = "dest is required") @QueryParam("dest") String destination);
+  Response signIn(@NotBlank(message = "Required") @QueryParam("dest") String destination);
 
   @GET
   @Path("oauth2callback")
   CompletionStage<Response> oauth2callback(
-      @NotBlank(message = "state is required") @QueryParam("state") String state,
-      @NotBlank(message = "code is required") @QueryParam("code") String code,
+      @NotBlank(message = "Required") @QueryParam("state") String state,
+      @NotBlank(message = "Required") @QueryParam("code") String code,
       @CookieParam("state") String sessionState);
 }
