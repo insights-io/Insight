@@ -18,12 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SsoGoogleResourceImpl implements SsoGoogleResource {
 
+  private static final String GOOGLE_OAUTH2_CALLBACK_PATH =
+      SsoGoogleResource.PATH + "/" + SsoGoogleResource.OAUTH2_CALLBACK_PATH;
+
   @Inject SsoGoogleService ssoGoogleService;
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
   private String getRedirectUri() {
-    return info.getBaseUri() + SsoGoogleResource.PATH + "/oauth2callback";
+    return RequestUtils.getServerBaseURL(info, request) + GOOGLE_OAUTH2_CALLBACK_PATH;
   }
 
   @Override

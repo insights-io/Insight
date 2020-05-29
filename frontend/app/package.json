@@ -31,7 +31,7 @@
     "prebuild": "yarn workspace @insight/types build && yarn workspace @insight/storybook build && yarn workspace @insight/testing build"
   },
   "dependencies": {
-    "baseui": "9.80.0",
+    "baseui": "9.80.1",
     "formik": "2.1.4",
     "ky": "0.20.0",
     "ky-universal": "0.7.0",
