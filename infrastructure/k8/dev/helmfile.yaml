@@ -26,3 +26,14 @@ releases:
     namespace: recording
     values:
       - es.yaml
+  - name: fluentbit
+    chart: stable/fluent-bit
+    namespace: recording
+    values:
+      - fluentbit.yaml
+  - name: kibana
+    chart: elastic/kibana
+    namespace: recording
+    values:
+      - kibana.yaml
+
