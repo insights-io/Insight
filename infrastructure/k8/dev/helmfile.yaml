@@ -36,4 +36,9 @@ releases:
     namespace: recording
     values:
       - kibana.yaml
+  - name: oauth2-proxy
+    chart: stable/oauth2-proxy
+    namespace: recording
+    values:
+      - oauth-proxy.yaml
 

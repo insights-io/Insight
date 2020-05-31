@@ -1,3 +1,14 @@
-service:
-    type: NodePort
-    nodePort: "30000"
+ingress:
+  enabled: true
+  tls:
+    - hosts:
+      - kibana.dev.snuderls.eu
+      secretName: kibana-tls
+  hosts:
+    - kibana.dev.snuderls.eu
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-url: "https://auth.dev.snuderls.eu/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://auth.dev.snuderls.eu/oauth2/start?rd=https://$host$request_uri"
+

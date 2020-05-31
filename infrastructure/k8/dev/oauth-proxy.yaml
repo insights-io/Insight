@@ -1,0 +1,20 @@
+config:
+  existingSecret: oauth2-proxy-creds3
+
+extraArgs:
+  whitelist-domain: .dev.snuderls.eu
+  cookie-domain: .dev.snuderls.eu
+  provider: github
+  github-org: meemaw-corp
+
+ingress:
+  enabled: true
+  path: /
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - auth.dev.snuderls.eu
+  tls:
+    - hosts:
+        - auth.dev.snuderls.eu
+      secretName: auth-dev-tls
