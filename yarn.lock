@@ -3146,10 +3146,10 @@
     "@testing-library/dom" "^7.2.2"
     "@types/testing-library__react" "^10.0.1"
 
-"@testing-library/testcafe@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/testcafe/-/testcafe-4.1.0.tgz#6222130fde56ca14eeb675fb5e837e4eb8b49568"
-  integrity sha512-jOG5XlRnkq3P9lXbxAo4dXv4jYmmleHO3JADUNsXSU/dRwNyfdklBHjKsQ2wuYUj9AdUA1VlnS7RJ0m/xtL+HQ==
+"@testing-library/testcafe@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/testcafe/-/testcafe-4.2.0.tgz#ddc09b2606c1fd7c53b1294ce5fd55c09aa0e90b"
+  integrity sha512-JsiBfoZ3pp0LnRGIOKihxL2ZQ6ll7tiJkkAP9FWbNEhYiWPSdmTi5V9H3WpaztRjHz0BOQDbefz6QSvuMJDdPA==
   dependencies:
     "@testing-library/dom" "^7.2.2"
 
