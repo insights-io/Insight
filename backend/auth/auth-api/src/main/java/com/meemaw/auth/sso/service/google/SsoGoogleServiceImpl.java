@@ -7,6 +7,7 @@ import com.meemaw.auth.sso.model.google.GoogleErrorResponse;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.service.SsoService;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.axle.core.Vertx;
 import io.vertx.axle.core.buffer.Buffer;
@@ -94,14 +95,20 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
         .thenCompose(this::userInfo)
         .thenCompose(
             userInfo -> {
-              String destination = sessionState.substring(26);
               String email = userInfo.getEmail();
-              String location = URLDecoder.decode(destination, StandardCharsets.UTF_8);
+              String location =
+                  URLDecoder.decode(sessionState.substring(26), StandardCharsets.UTF_8);
+              String cookieDomain = RequestUtils.parseCookieDomain(location);
 
-              log.info("Google oauth2callback redirecting {} to {}", email, location);
+              log.info(
+                  "Google oauth2callback redirecting {} to {} on {}",
+                  email,
+                  location,
+                  cookieDomain);
+
               return ssoService
                   .socialLogin(email)
-                  .thenApply(sessionId -> new SsoSocialLogin(sessionId, location));
+                  .thenApply(sessionId -> new SsoSocialLogin(sessionId, location, cookieDomain));
             });
   }
 

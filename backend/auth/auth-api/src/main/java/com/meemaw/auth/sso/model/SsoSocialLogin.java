@@ -9,5 +9,5 @@ public class SsoSocialLogin {
 
   String sessionId;
   String Location;
-
+  String cookieDomain;
 }

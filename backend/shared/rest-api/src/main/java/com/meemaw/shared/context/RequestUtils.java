@@ -9,7 +9,28 @@ import javax.ws.rs.core.UriInfo;
 
 public final class RequestUtils {
 
+  private static final int DOMAIN_MIN_PARTS = 2;
+
   private RequestUtils() {}
+
+  /**
+   * Extracts referer URL from http server request if present.
+   *
+   * @param request http server request
+   * @return Optional URL
+   * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
+   */
+  public static Optional<URL> parseRefererURL(HttpServerRequest request) {
+    return Optional.ofNullable(request.getHeader("referer"))
+        .map(
+            referer -> {
+              try {
+                return new URL(referer);
+              } catch (MalformedURLException e) {
+                throw Boom.badRequest().message(e.getMessage()).exception(e);
+              }
+            });
+  }
 
   /**
    * Extracts referer base URL from http server request if present.
@@ -19,16 +40,7 @@ public final class RequestUtils {
    * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
    */
   public static Optional<String> parseRefererBaseURL(HttpServerRequest request) {
-    return Optional.ofNullable(request.getHeader("referer"))
-        .map(
-            referer -> {
-              try {
-                return new URL(referer);
-              } catch (MalformedURLException e) {
-                throw Boom.badRequest().message(e.getMessage()).exception(e);
-              }
-            })
-        .map(RequestUtils::parseBaseURL);
+    return parseRefererURL(request).map(RequestUtils::parseBaseURL);
   }
 
   /**
@@ -61,5 +73,33 @@ public final class RequestUtils {
       return proto + "://" + host;
     }
     return info.getBaseUri().toString();
+  }
+
+  /**
+   * Parses top level domain of given URL.
+   *
+   * @param url associated with the http request
+   * @return Optional String top level domain
+   */
+  public static Optional<String> parseTLD(String url) {
+    try {
+      String[] parts = new URL(url).getHost().split("\\.");
+      if (parts.length < DOMAIN_MIN_PARTS) {
+        return Optional.empty();
+      }
+      return Optional.of(String.join(".", parts[parts.length - 2], parts[parts.length - 1]));
+    } catch (MalformedURLException e) {
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Parses top level cookie domain of a given URL.
+   *
+   * @param url associated with the http request
+   * @return String cookie domain if present else null
+   */
+  public static String parseCookieDomain(String url) {
+    return parseTLD(url).orElse(null);
   }
 }

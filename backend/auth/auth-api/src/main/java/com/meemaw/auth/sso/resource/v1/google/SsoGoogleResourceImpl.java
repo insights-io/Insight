@@ -49,9 +49,11 @@ public class SsoGoogleResourceImpl implements SsoGoogleResource {
             ssoSocialLogin -> {
               String Location = ssoSocialLogin.getLocation();
               String SessionId = ssoSocialLogin.getSessionId();
+              String cookieDomain = ssoSocialLogin.getCookieDomain();
+
               return Response.status(Status.FOUND)
                   .header("Location", Location)
-                  .cookie(SsoSession.cookie(SessionId))
+                  .cookie(SsoSession.cookie(SessionId, cookieDomain))
                   .build();
             });
   }

@@ -23,7 +23,6 @@ task testReport(type: TestReport) {
     reportOn subprojects.collect { it.tasks.withType(Test) }
 }
 
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'

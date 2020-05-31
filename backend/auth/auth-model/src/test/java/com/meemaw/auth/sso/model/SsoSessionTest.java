@@ -14,6 +14,6 @@ public class SsoSessionTest {
   @Test
   public void ssoSessionCookie_should_be_correctly_named() {
     String sessionId = SsoSession.newIdentifier();
-    assertEquals(SsoSession.COOKIE_NAME, SsoSession.cookie(sessionId).getName());
+    assertEquals(SsoSession.COOKIE_NAME, SsoSession.cookie(sessionId, null).getName());
   }
 }

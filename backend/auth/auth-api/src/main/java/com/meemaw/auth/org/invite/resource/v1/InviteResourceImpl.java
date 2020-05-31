@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 public class InviteResourceImpl implements InviteResource {
 
   @Inject InsightPrincipal principal;
-
   @Inject InviteService inviteService;
 
   @Override

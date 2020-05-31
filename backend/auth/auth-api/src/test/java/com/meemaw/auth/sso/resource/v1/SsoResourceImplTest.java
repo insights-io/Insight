@@ -29,9 +29,7 @@ import org.junit.jupiter.api.Test;
 public class SsoResourceImplTest {
 
   @Inject MockMailbox mailbox;
-
   @Inject UserDatasource userDatasource;
-
   @Inject ObjectMapper objectMapper;
 
   @BeforeEach
