@@ -28,7 +28,7 @@
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
-    "baseui": "9.80.2",
+    "baseui": "9.81.0",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",

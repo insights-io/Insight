@@ -5602,10 +5602,10 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-baseui@9.80.2:
-  version "9.80.2"
-  resolved "https://registry.yarnpkg.com/baseui/-/baseui-9.80.2.tgz#d85bd2a3a9c60c90024e6fc6d9020dfe44cba42d"
-  integrity sha512-9ZfyoVTaCoCvmbKvAfIpntQIh9si2Ll7ONYbXDaOLXqGEODItZ9VPdZkT0pkOTOlQ9+HveV2fG3bFdd250uIag==
+baseui@9.81.0:
+  version "9.81.0"
+  resolved "https://registry.yarnpkg.com/baseui/-/baseui-9.81.0.tgz#b42a8cb25d201b1815c0bfa116db0b57b86c824b"
+  integrity sha512-EzHv3Ey4ujjO37DVrRqaSlFkugfHkYld/SuJMqrq2nIy/hd9IYne6FrIe0CAFuzLXSYInEnbN+08vfBAIrBOVQ==
   dependencies:
     "@date-io/date-fns" "^2.4.0"
     card-validator "^6.2.0"
