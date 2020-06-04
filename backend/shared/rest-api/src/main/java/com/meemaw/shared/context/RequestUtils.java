@@ -20,16 +20,8 @@ public final class RequestUtils {
    * @return Optional URL
    * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
    */
-  public static Optional<URL> parseRefererURL(HttpServerRequest request) {
-    return Optional.ofNullable(request.getHeader("referer"))
-        .map(
-            referer -> {
-              try {
-                return new URL(referer);
-              } catch (MalformedURLException e) {
-                throw Boom.badRequest().message(e.getMessage()).exception(e);
-              }
-            });
+  public static Optional<URL> sneakyParseRefererURL(HttpServerRequest request) {
+    return Optional.ofNullable(request.getHeader("referer")).map(RequestUtils::sneakyURL);
   }
 
   /**
@@ -40,11 +32,30 @@ public final class RequestUtils {
    * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
    */
   public static Optional<String> parseRefererBaseURL(HttpServerRequest request) {
-    return parseRefererURL(request).map(RequestUtils::parseBaseURL);
+    return sneakyParseRefererURL(request).map(RequestUtils::parseBaseURL);
+  }
+
+  public static String sneakyParseBaseURL(String url) {
+    return parseBaseURL(sneakyURL(url));
   }
 
   /**
-   * Parse base URL from an URL.
+   * Parses URL with caught checked exception.
+   *
+   * @param url http request url
+   * @return URL
+   * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
+   */
+  private static URL sneakyURL(String url) {
+    try {
+      return new URL(url);
+    } catch (MalformedURLException e) {
+      throw Boom.badRequest().message(e.getMessage()).exception(e);
+    }
+  }
+
+  /**
+   * Parse base URL.
    *
    * @param url URL
    * @return String base url
@@ -68,11 +79,23 @@ public final class RequestUtils {
   public static String getServerBaseURL(UriInfo info, HttpServerRequest request) {
     String proto = request.getHeader("X-Forwarded-Proto");
     String host = request.getHeader("X-Forwarded-Host");
+    return getServerBaseURL(info, proto, host);
+  }
 
-    if (proto != null && host != null) {
-      return proto + "://" + host;
+  /**
+   * Returns server base URL as seen from outer World. In cases when service is behind an Ingress, *
+   * X-Forwarded-* headers are used.
+   *
+   * @param info uri info
+   * @param forwardedProto String X-Forwarded-Proto header
+   * @param forwardedHost String X-Forwarded-Host header
+   * @return server base URL
+   */
+  public static String getServerBaseURL(UriInfo info, String forwardedProto, String forwardedHost) {
+    if (forwardedProto != null && forwardedHost != null) {
+      return forwardedProto + "://" + forwardedHost;
     }
-    return info.getBaseUri().toString();
+    return info.getBaseUri().toString().replaceAll("/$", "");
   }
 
   /**

@@ -8,9 +8,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
-import com.meemaw.auth.signup.resource.v1.SignupResourceImplTest;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
@@ -35,6 +35,15 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class PasswordResourceImplTest {
 
+  public static final String PASSWORD_FORGOT_PATH =
+      String.join("/", PasswordResource.PATH, "password_forgot");
+
+  public static final String PASSWORD_RESET_PATH_TEMPLATE =
+      String.join("/", PasswordResource.PATH, "password_reset", "%s");
+
+  public static final String PASSWORD_RESET_EXISTS_PATH_TEMPLATE =
+      String.join("/", PasswordResource.PATH, "password_reset", "%s", "exists");
+
   @Inject MockMailbox mailbox;
 
   @Inject ObjectMapper objectMapper;
@@ -45,11 +54,22 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void forgot_should_fail_when_invalid_contentType() {
+  public void password_reset_exists_should_fail_when_random_token() {
+
+    given()
+        .when()
+        .get(String.format(PASSWORD_RESET_EXISTS_PATH_TEMPLATE, UUID.randomUUID()))
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":false}"));
+  }
+
+  @Test
+  public void password_forgot_should_fail_when_invalid_contentType() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
-        .post(PasswordResource.PATH + "/forgot")
+        .post(PASSWORD_FORGOT_PATH)
         .then()
         .statusCode(415)
         .body(
@@ -58,25 +78,25 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void forgot_should_fail_when_no_payload() {
+  public void password_forgot_should_fail_when_no_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .post(PasswordResource.PATH + "/forgot")
+        .post(PASSWORD_FORGOT_PATH)
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"passwordForgotRequestDTO\":\"Payload is required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
   }
 
   @Test
-  public void forgot_should_fail_when_empty_payload() {
+  public void passsword_forgot_should_fail_when_empty_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body("{}")
-        .post(PasswordResource.PATH + "/forgot")
+        .post(PASSWORD_FORGOT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -85,14 +105,14 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void forgot_should_fail_when_empty_email() throws JsonProcessingException {
+  public void password_forgot_should_fail_when_empty_email() throws JsonProcessingException {
     String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(""));
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
-        .post(PasswordResource.PATH + "/forgot")
+        .post(PASSWORD_FORGOT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -101,14 +121,14 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void forgot_should_fail_on_invalid_email() throws JsonProcessingException {
+  public void password_forgot_should_fail_on_invalid_email() throws JsonProcessingException {
     String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO("notEmail"));
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
-        .post(PasswordResource.PATH + "/forgot")
+        .post(PASSWORD_FORGOT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -117,7 +137,8 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void forgot_should_fail_on_missing_email() throws JsonProcessingException {
+  public void password_forgot_should_succeed_on_missing_email_to_not_leak_users()
+      throws JsonProcessingException {
     String payload =
         objectMapper.writeValueAsString(new PasswordForgotRequestDTO("missing@test.com"));
 
@@ -125,19 +146,17 @@ public class PasswordResourceImplTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
-        .post(PasswordResource.PATH + "/forgot")
+        .post(PASSWORD_FORGOT_PATH)
         .then()
-        .statusCode(404)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"User not found\"}}"));
+        .statusCode(201)
+        .body(sameJson("{\"data\":true}"));
   }
 
   @Test
-  public void forgot_should_send_email_on_existing_user() throws JsonProcessingException {
+  public void password_forgot_should_send_email_on_existing_user() throws JsonProcessingException {
     String email = "test-forgot-password-flow@gmail.com";
     String password = "superHardPassword";
-    SignupResourceImplTest.signup(mailbox, objectMapper, email, password);
+    SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
     // can trigger the forgot flow multiple times!!
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
@@ -160,7 +179,7 @@ public class PasswordResourceImplTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .body(payload)
-            .post(PasswordResource.PATH + "/forgot");
+            .post(PASSWORD_FORGOT_PATH);
 
     response.then().statusCode(201).body(sameJson("{\"data\":true}"));
 
@@ -172,7 +191,7 @@ public class PasswordResourceImplTest {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
-        .post(PasswordResource.PATH + "/reset")
+        .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, UUID.randomUUID()))
         .then()
         .statusCode(415)
         .body(
@@ -181,62 +200,57 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void reset_should_fail_when_no_payload() {
+  public void password_reset_should_fail_when_no_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .post(PasswordResource.PATH + "/reset")
+        .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, UUID.randomUUID()))
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"passwordResetRequestDTO\":\"Payload is required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
   }
 
   @Test
-  public void reset_should_fail_when_empty_payload() {
+  public void password_reset_should_fail_when_empty_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body("{}")
-        .post(PasswordResource.PATH + "/reset")
+        .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, UUID.randomUUID()))
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Required\",\"org\":\"Required\",\"email\":\"Required\",\"token\":\"Required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Required\"}}}"));
   }
 
   @Test
-  public void reset_should_fail_when_invalid_payload() throws JsonProcessingException {
-    String payload =
-        objectMapper.writeValueAsString(
-            new PasswordResetRequestDTO("email", "org", UUID.randomUUID(), "pass"));
+  public void password_reset_should_fail_when_invalid_payload() throws JsonProcessingException {
+    String payload = objectMapper.writeValueAsString(new PasswordResetRequestDTO("pass"));
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
-        .post(PasswordResource.PATH + "/reset")
+        .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, UUID.randomUUID()))
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Password must be at least 8 characters long\",\"email\":\"must be a well-formed email address\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Password must be at least 8 characters long\"}}}"));
   }
 
   @Test
-  public void reset_should_fail_when_missing_payload() throws JsonProcessingException {
-    String payload =
-        objectMapper.writeValueAsString(
-            new PasswordResetRequestDTO(
-                "isEmail@gmail.com", "org", UUID.randomUUID(), "passLongEnough"));
+  public void password_reset_should_fail_when_missing_payload() throws JsonProcessingException {
+    String payload = objectMapper.writeValueAsString(new PasswordResetRequestDTO("passLongEnough"));
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
-        .post(PasswordResource.PATH + "/reset")
+        .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, UUID.randomUUID()))
         .then()
         .statusCode(404)
         .body(
@@ -245,48 +259,23 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void reset_exists_should_fail_when_no_payload() {
-    given()
-        .when()
-        .get(PasswordResource.PATH + "/reset/exists")
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"token\":\"token is required\",\"org\":\"org is required\",\"email\":\"email is required\"}}}"));
-  }
-
-  @Test
-  public void reset_exists_should_return_false_when_missing_params() {
-    given()
-        .when()
-        .queryParam("email", "test@gmail.com")
-        .queryParam("org", "random")
-        .queryParam("token", "4f113105-94d9-4470-8621-0e633fa4697")
-        .get(PasswordResource.PATH + "/reset/exists")
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":false}"));
-  }
-
-  @Test
-  public void reset_flow_should_succeed_after_signup() throws JsonProcessingException {
-    String signupEmail = "reset-password-flow@gmail.com";
+  public void password_reset_flow_should_succeed_after_sign_up() throws JsonProcessingException {
+    String signUpEmail = "reset-password-flow@gmail.com";
     String oldPassword = "superHardPassword";
-    SignupResourceImplTest.signup(mailbox, objectMapper, signupEmail, oldPassword);
-    PasswordResourceImplTest.passwordForgot(signupEmail, objectMapper);
+    SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, signUpEmail, oldPassword);
+    PasswordResourceImplTest.passwordForgot(signUpEmail, objectMapper);
 
     // login with "oldPassword" should succeed
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("email", signupEmail)
+        .param("email", signUpEmail)
         .param("password", oldPassword)
         .post(SsoResource.PATH + "/login")
         .then()
         .statusCode(204);
 
-    List<Mail> sent = mailbox.getMessagesSentTo(signupEmail);
+    List<Mail> sent = mailbox.getMessagesSentTo(signUpEmail);
     assertEquals(2, sent.size());
     Mail actual = sent.get(1);
     assertEquals("Insight Support <support@insight.com>", actual.getFrom());
@@ -295,40 +284,30 @@ public class PasswordResourceImplTest {
     Elements link = doc.select("a");
     String passwordForgotLink = link.attr("href");
 
-    Matcher orgMatcher = Pattern.compile("^.*orgId=(.*)&.*$").matcher(passwordForgotLink);
-    orgMatcher.matches();
-    String orgId = orgMatcher.group(1);
-
     Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(passwordForgotLink);
     tokenMatcher.matches();
     String token = tokenMatcher.group(1);
 
-    Matcher emailMatcher = Pattern.compile("^.*email=(.*\\.com).*$").matcher(passwordForgotLink);
-    emailMatcher.matches();
-    String email = emailMatcher.group(1);
+    assertEquals(passwordForgotLink, "http://localhost:8081/password-reset?token=" + token);
 
     // reset request should exist
     given()
         .when()
-        .queryParam("email", email)
-        .queryParam("org", orgId)
-        .queryParam("token", token)
-        .get(PasswordResource.PATH + "/reset/exists")
+        .get(String.format(PASSWORD_RESET_EXISTS_PATH_TEMPLATE, token))
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":true}"));
 
     String newPassword = "superDuperNewFancyPassword";
     String resetPasswordPayload =
-        objectMapper.writeValueAsString(
-            new PasswordResetRequestDTO(email, orgId, UUID.fromString(token), newPassword));
+        objectMapper.writeValueAsString(new PasswordResetRequestDTO(newPassword));
 
     // successful reset should login the user
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(resetPasswordPayload)
-        .post(PasswordResource.PATH + "/reset")
+        .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token))
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME);
@@ -337,7 +316,7 @@ public class PasswordResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("email", signupEmail)
+        .param("email", signUpEmail)
         .param("password", oldPassword)
         .post(SsoResource.PATH + "/login")
         .then()
@@ -350,19 +329,19 @@ public class PasswordResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("email", signupEmail)
+        .param("email", signUpEmail)
         .param("password", newPassword)
         .post(SsoResource.PATH + "/login")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME);
 
-    // trying to do the rest with same params again should fail
+    // trying to do reset with same token again should fail
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(resetPasswordPayload)
-        .post(PasswordResource.PATH + "/reset")
+        .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token))
         .then()
         .statusCode(404)
         .body(

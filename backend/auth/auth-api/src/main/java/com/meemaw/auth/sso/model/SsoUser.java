@@ -7,6 +7,7 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,13 +20,21 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   String email;
   UserRole role;
   String org;
+  String fullName;
+  OffsetDateTime createdAt;
 
-  /** @param user dto */
-  public SsoUser(UserDTO user) {
+  /**
+   * Create a SsoUser from an existing AuthUser.
+   *
+   * @param user AuthUser
+   */
+  public SsoUser(AuthUser user) {
     this.id = user.getId();
     this.email = user.getEmail();
     this.role = user.getRole();
     this.org = user.getOrg();
+    this.fullName = user.getFullName();
+    this.createdAt = user.getCreatedAt();
   }
 
   @Override
@@ -44,6 +53,8 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     out.writeUTF(this.email);
     out.writeUTF(this.role.toString());
     out.writeUTF(this.org);
+    out.writeUTF(this.fullName);
+    out.writeObject(this.createdAt);
   }
 
   @Override
@@ -52,10 +63,12 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.email = in.readUTF();
     this.role = UserRole.valueOf(in.readUTF());
     this.org = in.readUTF();
+    this.fullName = in.readUTF();
+    this.createdAt = in.readObject();
   }
 
-  public UserDTO dto() {
-    return new UserDTO(id, email, role, org);
+  public AuthUser dto() {
+    return new UserDTO(id, email, fullName, role, org, createdAt);
   }
 
   @Override

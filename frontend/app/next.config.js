@@ -11,4 +11,7 @@ module.exports = withBundleAnalyzer({
     SESSION_API_BASE_URL: process.env.SESSION_API_BASE_URL,
   },
   webpack: (config, _config) => config,
+  experimental: {
+    optionalCatchAll: true,
+  },
 });

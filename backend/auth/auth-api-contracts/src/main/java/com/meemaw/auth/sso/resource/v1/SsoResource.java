@@ -22,7 +22,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterRestClient(configKey = "sso-resource")
 public interface SsoResource {
 
-  String PATH = "v1/sso";
+  String PATH = "/v1/sso";
 
   @POST
   @Path("login")
@@ -46,7 +46,9 @@ public interface SsoResource {
   @GET
   @Path("me")
   @Produces(MediaType.APPLICATION_JSON)
-  CompletionStage<Response> me(
+  default CompletionStage<Response> me(
       @NotNull(message = "SessionId may not be blank") @CookieParam(SsoSession.COOKIE_NAME)
-          String sessionId);
+          String sessionId) {
+    return session(sessionId);
+  }
 }

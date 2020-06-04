@@ -101,7 +101,7 @@ const PasswordForgot = () => {
               $style={{ width: '100%' }}
               isLoading={isSubmitting}
             >
-              Sign in
+              Reset password
             </Button>
 
             {formError && <FormError error={formError} />}

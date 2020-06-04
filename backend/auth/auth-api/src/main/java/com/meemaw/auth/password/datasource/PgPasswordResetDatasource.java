@@ -21,52 +21,58 @@ public class PgPasswordResetDatasource implements PasswordResetDatasource {
   @Inject PgPool pgPool;
 
   private static final String DELETE_RAW_SQL =
-      "DELETE FROM auth.password_reset_request WHERE token = $1 AND email = $2 AND org = $3";
+      "DELETE FROM auth.password_reset_request WHERE token = $1";
 
   private static final String FIND_RAW_SQL =
-      "SELECT * FROM auth.password_reset_request WHERE token = $1 AND email = $2 AND org = $3";
+      "SELECT * FROM auth.password_reset_request WHERE token = $1";
 
   private static final String CREATE_RAW_SQL =
-      "INSERT INTO auth.password_reset_request(email, user_id, org) VALUES($1, $2, $3) RETURNING token, created_at";
+      "INSERT INTO auth.password_reset_request(email, user_id) VALUES($1, $2) RETURNING token, created_at";
 
   @Override
-  public CompletionStage<Boolean> delete(
-      Transaction transaction, UUID token, String email, String org) {
-    Tuple values = Tuple.of(token, email, org);
-    return transaction.preparedQuery(DELETE_RAW_SQL, values).thenApply(pgRowSet -> true);
+  public CompletionStage<Boolean> deletePasswordResetRequest(UUID token, Transaction transaction) {
+    return transaction.preparedQuery(DELETE_RAW_SQL, Tuple.of(token)).thenApply(pgRowSet -> true);
   }
 
   @Override
-  public CompletionStage<Optional<PasswordResetRequest>> find(
-      UUID token, String email, String org) {
-    Tuple values = Tuple.of(token, email, org);
-    return pgPool.preparedQuery(FIND_RAW_SQL, values).thenApply(this::resetRequestFromRowSet);
+  public CompletionStage<Optional<PasswordResetRequest>> findPasswordResetRequest(UUID token) {
+    return pgPool
+        .preparedQuery(FIND_RAW_SQL, Tuple.of(token))
+        .thenApply(this::mapMaybePasswordResetRequest);
   }
 
   @Override
-  public CompletionStage<PasswordResetRequest> create(
-      Transaction transaction, String email, UUID userId, String org) {
-    Tuple values = Tuple.of(email, userId, org);
+  public CompletionStage<PasswordResetRequest> createPasswordResetRequest(
+      String email, UUID userId, Transaction transaction) {
     return transaction
-        .preparedQuery(CREATE_RAW_SQL, values)
+        .preparedQuery(CREATE_RAW_SQL, Tuple.of(email, userId))
         .thenApply(
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();
               UUID token = row.getUUID("token");
               OffsetDateTime createdAt = row.getOffsetDateTime("created_at");
-              return new PasswordResetRequest(token, userId, email, org, createdAt);
+              return new PasswordResetRequest(token, userId, email, createdAt);
             });
   }
 
-  @Override
-  public CompletionStage<Boolean> exists(String email, String org, UUID token) {
-    return find(token, email, org).thenApply(Optional::isPresent);
-  }
-
-  private Optional<PasswordResetRequest> resetRequestFromRowSet(RowSet<Row> rowSet) {
+  private Optional<PasswordResetRequest> mapMaybePasswordResetRequest(RowSet<Row> rowSet) {
     if (!rowSet.iterator().hasNext()) {
       return Optional.empty();
     }
-    return Optional.of(PasswordResetRequest.fromSqlRow(rowSet.iterator().next()));
+    return Optional.of(mapPasswordResetRequest(rowSet.iterator().next()));
+  }
+
+  /**
+   * Map SQL row to PasswordResetRequest.
+   *
+   * @param row SQL row
+   * @return mapped PasswordResetRequest
+   */
+  public static PasswordResetRequest mapPasswordResetRequest(Row row) {
+    return new PasswordResetRequest(
+        row.getUUID("token"),
+        row.getUUID("user_id"),
+        row.getString("email"),
+        row.getOffsetDateTime("created_at"));
   }
 }

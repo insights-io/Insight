@@ -1,22 +1,40 @@
 package com.meemaw.auth.user.datasource;
 
-import com.meemaw.auth.signup.model.SignupRequest;
-import com.meemaw.auth.user.model.UserDTO;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
 import io.vertx.axle.sqlclient.Transaction;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
 public interface UserDatasource {
 
-  CompletionStage<UUID> createUser(
-      Transaction transaction, String email, String org, UserRole role);
+  /**
+   * Create a new user.
+   *
+   * @param email String email address
+   * @param fullName String full name
+   * @param organizationId String organization id
+   * @param role UserRole user role
+   * @param transaction Transaction context
+   * @return newly created AuthUser
+   */
+  CompletionStage<AuthUser> createUser(
+      String email, String fullName, String organizationId, UserRole role, Transaction transaction);
 
-  CompletionStage<Optional<UserDTO>> findUser(String email);
+  /**
+   * Find user by email address.
+   *
+   * @param email String email address.
+   * @return maybe AuthUser
+   */
+  CompletionStage<Optional<AuthUser>> findUser(String email);
 
-  CompletionStage<SignupRequest> createUser(Transaction transaction, SignupRequest signupRequest);
-
-  CompletionStage<SignupRequest> createOrganization(
-      Transaction transaction, SignupRequest signupRequest);
+  /**
+   * Find user by email address.
+   *
+   * @param email String email address
+   * @param transaction Transaction context
+   * @return maybe AuthUser
+   */
+  CompletionStage<Optional<AuthUser>> findUser(String email, Transaction transaction);
 }

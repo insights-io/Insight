@@ -1,7 +1,7 @@
-import { PasswordResetRequest } from './password';
-
-export type SignupRequest = PasswordResetRequest;
-
-export type Signup = SignupRequest & {
+export type SignUpFormDTO = {
+  fullName: string;
+  company: string;
+  email: string;
   password: string;
+  phoneNumber?: string;
 };

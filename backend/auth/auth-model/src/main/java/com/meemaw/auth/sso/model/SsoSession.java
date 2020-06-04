@@ -1,6 +1,7 @@
 package com.meemaw.auth.sso.model;
 
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class SsoSession {
@@ -33,5 +34,9 @@ public class SsoSession {
 
   public static String newIdentifier() {
     return RandomStringUtils.randomAlphanumeric(SIZE);
+  }
+
+  public static Response cookieResponse(String sessionId, String cookieDomain) {
+    return Response.noContent().cookie(SsoSession.cookie(sessionId, cookieDomain)).build();
   }
 }

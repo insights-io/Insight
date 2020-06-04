@@ -16,7 +16,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   public static final String NETWORK_ALIAS = "db";
 
-  private static final String DOCKER_TAG = "postgres:11.6";
+  private static final String DOCKER_TAG = "postgres:12.3";
   private static final String DATABASE_NAME = "postgres";
   private static final String USERNAME = "postgres";
   private static final String PASSWORD = "postgres";
@@ -104,7 +104,6 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
                 log.info("Applying migration {}", path);
                 try {
                   client().query(Files.readString(path)).await().indefinitely();
-
                 } catch (IOException ex) {
                   log.error("Failed to apply migration {}", migrationsSqlPath, ex);
                   throw new RuntimeException(ex);

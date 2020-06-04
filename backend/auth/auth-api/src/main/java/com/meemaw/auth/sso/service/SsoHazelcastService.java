@@ -1,11 +1,11 @@
 package com.meemaw.auth.sso.service;
 
 import com.meemaw.auth.password.service.PasswordService;
-import com.meemaw.auth.signup.service.SignupService;
+import com.meemaw.auth.signup.service.SignUpServiceImpl;
 import com.meemaw.auth.sso.datasource.SsoDatasource;
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.auth.user.model.UserDTO;
+import com.meemaw.auth.user.model.AuthUser;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -18,20 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 public class SsoHazelcastService implements SsoService {
 
   @Inject SsoDatasource ssoDatasource;
-
   @Inject PasswordService passwordService;
-
   @Inject UserDatasource userDatasource;
-
-  @Inject SignupService signupService;
+  @Inject SignUpServiceImpl signUpService;
 
   @Override
-  public CompletionStage<String> createSession(UserDTO user) {
+  public CompletionStage<String> createSession(AuthUser user) {
     return ssoDatasource.createSession(user);
   }
 
   @Override
-  public CompletionStage<Optional<UserDTO>> findSession(String sessionId) {
+  public CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
     return ssoDatasource
         .findSession(sessionId)
         .thenApply(maybeSsoUser -> maybeSsoUser.map(SsoUser::dto));
@@ -48,11 +45,11 @@ public class SsoHazelcastService implements SsoService {
   }
 
   @Override
-  public CompletionStage<String> socialLogin(String email) {
-    return socialFindOrCreateUser(email).thenCompose(this::createSession);
+  public CompletionStage<String> socialLogin(String email, String fullName) {
+    return socialFindOrSignUpUser(email, fullName).thenCompose(this::createSession);
   }
 
-  private CompletionStage<UserDTO> socialFindOrCreateUser(String email) {
+  private CompletionStage<AuthUser> socialFindOrSignUpUser(String email, String fullName) {
     return userDatasource
         .findUser(email)
         .thenCompose(
@@ -60,8 +57,7 @@ public class SsoHazelcastService implements SsoService {
               if (maybeUser.isPresent()) {
                 return CompletableFuture.completedFuture(maybeUser.get());
               }
-              log.info("Social login new SSO user email={}", email);
-              return signupService.createOrganization(email);
+              return signUpService.socialSignUp(email, fullName);
             });
   }
 }

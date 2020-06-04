@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    implementation 'io.quarkus:quarkus-mailer'
     implementation 'io.quarkus:quarkus-reactive-pg-client'
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
 
@@ -12,10 +13,12 @@ dependencies {
     api 'io.quarkus:quarkus-jackson'
     api 'io.rest-assured:rest-assured'
     api 'org.skyscreamer:jsonassert:1.5.0'
-    api 'org.testcontainers:testcontainers:1.14.1'
-    api 'org.testcontainers:junit-jupiter:1.14.1'
-    api 'org.testcontainers:postgresql:1.14.1'
-    api 'org.testcontainers:kafka:1.14.1'
-    api 'org.testcontainers:elasticsearch:1.14.1'
+    api "org.testcontainers:testcontainers:${testconainersVersion}"
+    api "org.testcontainers:junit-jupiter:${testconainersVersion}"
+    api "org.testcontainers:postgresql:${testconainersVersion}"
+    api "org.testcontainers:kafka:${testconainersVersion}"
+    api "org.testcontainers:elasticsearch:${testconainersVersion}"
     implementation project(':shared:rest-api')
+    implementation project(':auth:auth-api-contracts')
+
 }

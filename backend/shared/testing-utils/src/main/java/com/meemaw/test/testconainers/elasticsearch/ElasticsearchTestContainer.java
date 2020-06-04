@@ -16,7 +16,7 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
-  private static final String DOCKER_TAG = "docker.elastic.co/elasticsearch/elasticsearch:7.7.0";
+  private static final String DOCKER_TAG = "docker.elastic.co/elasticsearch/elasticsearch:7.7.1";
 
   private ElasticsearchTestContainer() {
     super(DOCKER_TAG);

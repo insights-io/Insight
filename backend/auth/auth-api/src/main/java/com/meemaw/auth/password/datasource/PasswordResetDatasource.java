@@ -8,12 +8,31 @@ import java.util.concurrent.CompletionStage;
 
 public interface PasswordResetDatasource {
 
-  CompletionStage<Boolean> delete(Transaction transaction, UUID token, String email, String org);
+  /**
+   * Delete password reset request by confirmation token.
+   *
+   * @param token UUID confirmation token
+   * @param transaction Transaction context
+   * @return Boolean indicating successful deletion
+   */
+  CompletionStage<Boolean> deletePasswordResetRequest(UUID token, Transaction transaction);
 
-  CompletionStage<Optional<PasswordResetRequest>> find(UUID token, String email, String org);
+  /**
+   * Find password reset request by confirmation token.
+   *
+   * @param token UUID confirmation token
+   * @return maybe PasswordResetRequest
+   */
+  CompletionStage<Optional<PasswordResetRequest>> findPasswordResetRequest(UUID token);
 
-  CompletionStage<PasswordResetRequest> create(Transaction transaction, String email, UUID userId,
-      String org);
-
-  CompletionStage<Boolean> exists(String email, String org, UUID token);
+  /**
+   * Create password reset request.
+   *
+   * @param email String email address
+   * @param userId UUID user id
+   * @param transaction Transaction context
+   * @return newly created PasswordResetRequest
+   */
+  CompletionStage<PasswordResetRequest> createPasswordResetRequest(
+      String email, UUID userId, Transaction transaction);
 }

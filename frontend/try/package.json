@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "baseui": "9.81.1",
+    "ky": "0.20.0",
+    "ky-universal": "0.7.0",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
