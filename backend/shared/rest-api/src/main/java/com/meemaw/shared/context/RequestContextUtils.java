@@ -2,6 +2,7 @@ package com.meemaw.shared.context;
 
 import java.util.Optional;
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 
 public final class RequestContextUtils {
@@ -31,5 +32,18 @@ public final class RequestContextUtils {
 
               return String.join("/", resourcePath, methodPath);
             });
+  }
+
+  /**
+   * Returns server base URL as seen from outer World. In cases when service is behind an Ingress,
+   * X-Forwarded-* headers are used.
+   *
+   * @param context ContainerRequestContext
+   * @return server base URL
+   */
+  public static String getServerBaseURL(ContainerRequestContext context) {
+    String proto = context.getHeaderString("X-Forwarded-Proto");
+    String host = context.getHeaderString("X-Forwarded-Host");
+    return RequestUtils.getServerBaseURL(context.getUriInfo(), proto, host);
   }
 }

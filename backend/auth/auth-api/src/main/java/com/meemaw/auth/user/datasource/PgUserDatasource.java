@@ -1,23 +1,18 @@
 package com.meemaw.auth.user.datasource;
 
-import com.meemaw.auth.organization.model.Organization;
-import com.meemaw.auth.signup.model.SignupRequest;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
-import com.meemaw.shared.pg.PgError;
 import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.shared.rest.response.Boom;
 import io.vertx.axle.pgclient.PgPool;
 import io.vertx.axle.sqlclient.Row;
+import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
-import io.vertx.pgclient.PgException;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
@@ -26,89 +21,74 @@ public class PgUserDatasource implements UserDatasource {
 
   @Inject PgPool pgPool;
 
-  private static final String INSERT_USER_RAW_SQL =
-      "INSERT INTO auth.user(email, org, role) VALUES($1, $2, $3) RETURNING id";
+  private static final String CREATE_USER_RAW_SQL =
+      "INSERT INTO auth.user(email, full_name, org_id, role) VALUES($1, $2, $3, $4) RETURNING id, created_at";
 
   private static final String FIND_USER_BY_EMAIL_RAW_SQL =
       "SELECT * FROM auth.user WHERE email = $1";
 
-  private static final String INSERT_ORG_RAW_SQL = "INSERT INTO auth.org(id) VALUES($1)";
-
   @Override
-  public CompletionStage<UUID> createUser(
-      Transaction transaction, String email, String org, UserRole role) {
-    Tuple values = Tuple.of(email, org, role.toString());
+  public CompletionStage<AuthUser> createUser(
+      String email, String fullName, String org, UserRole role, Transaction transaction) {
     return transaction
-        .preparedQuery(INSERT_USER_RAW_SQL, values)
-        .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID("id"))
-        .exceptionally(
-            throwable -> {
-              Throwable cause = throwable.getCause();
-              if (cause instanceof PgException) {
-                PgException pgException = (PgException) cause;
-                if (pgException.getCode().equals(PgError.UNIQUE_VIOLATION.getCode())) {
-                  log.error("Email already exists email={} org={}", email, org);
-                  throw Boom.status(Response.Status.CONFLICT)
-                      .message("Email already exists")
-                      .exception();
-                }
-              }
-              log.error("Failed to create user email={} org={}", email, org, throwable);
-              throw new DatabaseException(throwable);
-            });
-  }
-
-  @Override
-  public CompletionStage<Optional<UserDTO>> findUser(String email) {
-    Tuple values = Tuple.of(email);
-    return pgPool
-        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL, values)
+        .preparedQuery(CREATE_USER_RAW_SQL, Tuple.of(email, fullName, org, role.toString()))
         .thenApply(
             pgRowSet -> {
-              if (!pgRowSet.iterator().hasNext()) {
-                return Optional.empty();
-              }
               Row row = pgRowSet.iterator().next();
-              return Optional.of(
+              AuthUser user =
                   new UserDTO(
                       row.getUUID("id"),
-                      row.getString("email"),
-                      UserRole.valueOf(row.getString("role")),
-                      row.getString("org")));
-            });
+                      email,
+                      fullName,
+                      role,
+                      org,
+                      row.getOffsetDateTime("created_at"));
+              return user;
+            })
+        .exceptionally(this::onCreateUserException);
+  }
+
+  private AuthUser onCreateUserException(Throwable throwable) {
+    log.error("Failed to create user", throwable);
+    throw new DatabaseException(throwable);
   }
 
   @Override
-  public CompletionStage<SignupRequest> createUser(
-      Transaction transaction, SignupRequest signupRequest) {
-    String email = signupRequest.email();
-    String org = signupRequest.org();
-    return createUser(transaction, email, org, UserRole.ADMIN).thenApply(signupRequest::userId);
+  public CompletionStage<Optional<AuthUser>> findUser(String email) {
+    return pgPool
+        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL, Tuple.of(email))
+        .thenApply(this::onFindUser)
+        .exceptionally(this::onFindUserException);
   }
 
   @Override
-  public CompletionStage<SignupRequest> createOrganization(
-      Transaction transaction, SignupRequest signupRequest) {
-    String orgID = Organization.identifier();
-    Tuple values = Tuple.of(orgID);
-
+  public CompletionStage<Optional<AuthUser>> findUser(String email, Transaction transaction) {
     return transaction
-        .preparedQuery(INSERT_ORG_RAW_SQL, values)
-        .thenApply(pgRowSet -> signupRequest.org(orgID))
-        .exceptionally(
-            throwable -> {
-              Throwable cause = throwable.getCause();
-              if (cause instanceof PgException) {
-                PgException pgException = (PgException) cause;
-                if (pgException.getCode().equals(PgError.UNIQUE_VIOLATION.getCode())) {
-                  log.error("Organization already exists orgID={}", orgID);
-                  throw Boom.status(Response.Status.CONFLICT)
-                      .message("Organization already exists")
-                      .exception();
-                }
-              }
-              log.error("Failed to create organization orgID={}", orgID, throwable);
-              throw new DatabaseException(throwable);
-            });
+        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL, Tuple.of(email))
+        .thenApply(this::onFindUser)
+        .exceptionally(this::onFindUserException);
+  }
+
+  private Optional<AuthUser> onFindUserException(Throwable throwable) {
+    log.error("Failed to find user", throwable);
+    throw new DatabaseException(throwable);
+  }
+
+  private Optional<AuthUser> onFindUser(RowSet<Row> pgRowSet) {
+    if (!pgRowSet.iterator().hasNext()) {
+      return Optional.empty();
+    }
+    Row row = pgRowSet.iterator().next();
+    return Optional.of(mapUserDTO(row));
+  }
+
+  private AuthUser mapUserDTO(Row row) {
+    return new UserDTO(
+        row.getUUID("id"),
+        row.getString("email"),
+        row.getString("full_name"),
+        UserRole.valueOf(row.getString("role")),
+        row.getString("org_id"),
+        row.getOffsetDateTime("created_at"));
   }
 }

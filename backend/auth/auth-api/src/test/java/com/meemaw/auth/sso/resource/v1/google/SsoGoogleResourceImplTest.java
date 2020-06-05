@@ -2,17 +2,25 @@ package com.meemaw.auth.sso.resource.v1.google;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
-import static io.restassured.config.RedirectConfig.redirectConfig;
-import static io.restassured.config.RestAssuredConfig.newConfig;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
+import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
+import com.meemaw.auth.sso.service.google.SsoGoogleClient;
+import com.meemaw.auth.sso.service.google.SsoGoogleService;
+import com.meemaw.test.setup.RestAssuredUtils;
 import io.quarkus.test.common.http.TestHTTPResource;
+import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -21,6 +29,9 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class SsoGoogleResourceImplTest {
 
+  @Inject SsoGoogleClient ssoGoogleClient;
+  @Inject SsoGoogleService ssoGoogleService;
+
   @ConfigProperty(name = "google.oauth.client.id")
   String googleOauthClientId;
 
@@ -28,7 +39,7 @@ public class SsoGoogleResourceImplTest {
   URI oauth2CallbackURI;
 
   @Test
-  public void google_signIn_should_fail_when_no_dest() {
+  public void google_sign_in_should_fail_when_no_dest() {
     given()
         .when()
         .get(SsoGoogleResource.PATH + "/signin")
@@ -40,7 +51,7 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_signIn_should_fail_when_no_referer() {
+  public void google_sign_in_should_fail_when_no_referer() {
     given()
         .when()
         .queryParam("dest", "/test")
@@ -53,7 +64,7 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_signIn_should_fail_when_malformed_referer() {
+  public void google_sign_in_should_fail_when_malformed_referer() {
     given()
         .header("referer", "malformed")
         .when()
@@ -67,7 +78,7 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_signIn_should_use_x_forwarded_headers_when_present() {
+  public void google_sign_in_should_use_x_forwarded_headers_when_present() {
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
     String oAuth2CallbackURL =
@@ -93,7 +104,7 @@ public class SsoGoogleResourceImplTest {
             .header("referer", referer)
             .header("X-Forwarded-Proto", forwardedProto)
             .header("X-Forwarded-Host", forwardedHost)
-            .config(newConfig().redirect(redirectConfig().followRedirects(false)))
+            .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .queryParam("dest", dest)
             .get(SsoGoogleResource.PATH + "/signin");
@@ -106,7 +117,7 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_signIn_should_start_flow_by_redirecting_to_google() {
+  public void google_sign_in_should_start_flow_by_redirecting_to_google() {
     String oauth2CallbackURL =
         URLEncoder.encode(oauth2CallbackURI.toString(), StandardCharsets.UTF_8);
 
@@ -122,7 +133,7 @@ public class SsoGoogleResourceImplTest {
     Response response =
         given()
             .header("referer", referer)
-            .config(newConfig().redirect(redirectConfig().followRedirects(false)))
+            .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .queryParam("dest", dest)
             .get(SsoGoogleResource.PATH + "/signin");
@@ -138,7 +149,7 @@ public class SsoGoogleResourceImplTest {
   public void google_oauth2callback_should_fail_when_no_params() {
     given()
         .when()
-        .get(SsoGoogleResource.PATH + "/oauth2callback")
+        .get(oauth2CallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -154,7 +165,7 @@ public class SsoGoogleResourceImplTest {
         .queryParam("code", "random")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(SsoGoogleResource.PATH + "/oauth2callback")
+        .get(oauth2CallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -173,7 +184,7 @@ public class SsoGoogleResourceImplTest {
             "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(SsoGoogleResource.PATH + "/oauth2callback")
+        .get(oauth2CallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -191,11 +202,44 @@ public class SsoGoogleResourceImplTest {
             "code",
             "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
         .queryParam("state", state)
-        .get(SsoGoogleResource.PATH + "/oauth2callback")
+        .get(oauth2CallbackURI)
         .then()
         .statusCode(401)
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Invalid state parameter\"}}"));
+  }
+
+  @Test
+  public void google_oauth2callback_should_succeed_and_login() {
+    QuarkusMock.installMockForInstance(new MockedSsoGoogleClient(), ssoGoogleClient);
+    String state = ssoGoogleService.secureState("http://localhost:3000/my_path");
+
+    given()
+        .when()
+        .config(RestAssuredUtils.dontFollowRedirects())
+        .queryParam("code", "any")
+        .queryParam("state", state)
+        .cookie("state", state)
+        .get(oauth2CallbackURI)
+        .then()
+        .statusCode(302)
+        .header("Location", "http://localhost:3000/my_path")
+        .cookie(SsoSession.COOKIE_NAME);
+  }
+
+  private static class MockedSsoGoogleClient extends SsoGoogleClient {
+
+    @Override
+    public CompletionStage<GoogleTokenResponse> codeExchange(String code, String redirectURI) {
+      return CompletableFuture.completedStage(new GoogleTokenResponse("", "", "", "", ""));
+    }
+
+    @Override
+    public CompletionStage<GoogleUserInfoResponse> userInfo(GoogleTokenResponse token) {
+      return CompletableFuture.completedStage(
+          new GoogleUserInfoResponse(
+              "marko.novak+social@gmail.com", "", "", "Matej Šnuderl", "", true, "", ""));
+    }
   }
 }

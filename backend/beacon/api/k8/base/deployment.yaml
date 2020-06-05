@@ -26,6 +26,8 @@ spec:
         - image: eu.gcr.io/insight/beacon-api
           name: beacon-api
           env:
+            - name: LOG_JSON
+              value: true
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
             - name: SESSION_SERVICE_BASE_URL

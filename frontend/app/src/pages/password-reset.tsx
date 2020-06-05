@@ -1,5 +1,4 @@
 import React from 'react';
-import { PasswordResetRequest } from '@insight/types';
 import PasswordApi from 'api/password';
 import { GetServerSideProps } from 'next';
 import InvalidPasswordResetRequest from 'modules/auth/components/InvalidPasswordResetRequest';
@@ -9,7 +8,8 @@ type NonExistingPasswordResetRequest = {
   exists: false;
 };
 
-type ExistingPasswordResetRequest = PasswordResetRequest & {
+type ExistingPasswordResetRequest = {
+  token: string;
   exists: true;
 };
 
@@ -26,26 +26,25 @@ const PasswordResetPage = (props: Props) => {
     return <InvalidPasswordResetRequest />;
   }
 
-  const { email, token, org } = props;
-  return <PasswordReset email={email} token={token} org={org} />;
+  const { token } = props;
+  return <PasswordReset token={token} />;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const { email: emailQuery, orgId: orgQuery, token: tokenQuery } = ctx.query;
+  const token = ctx.query.token as string | undefined;
 
-  if (!emailQuery || !orgQuery || !tokenQuery) {
+  if (!token) {
     return { props: { exists: false } };
   }
 
-  const email = emailQuery as string;
-  const token = tokenQuery as string;
-  const org = orgQuery as string;
-
-  const response = await PasswordApi.resetExists({ email, token, org });
+  const response = await PasswordApi.resetExists(
+    token,
+    process.env.AUTH_API_BASE_URL
+  );
   if (response.data === false) {
     return { props: { exists: false } };
   }
-  return { props: { exists: true, email, token, org } };
+  return { props: { exists: true, token } };
 };
 
 export default PasswordResetPage;

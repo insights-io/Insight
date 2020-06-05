@@ -5,18 +5,18 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.signup.resource.v1.SignupResource;
-import com.meemaw.auth.signup.resource.v1.SignupResourceImplTest;
+import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
+import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.auth.user.model.UserDTO;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.DataResponse;
+import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.Cookie;
-import io.restassured.response.Response;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +29,7 @@ import org.junit.jupiter.api.Test;
 public class SsoResourceImplTest {
 
   @Inject MockMailbox mailbox;
-
   @Inject UserDatasource userDatasource;
-
   @Inject ObjectMapper objectMapper;
 
   @BeforeEach
@@ -96,20 +94,22 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_user_with_unfinished_signup() {
-    String signupEmail = "login-no-complete@gmail.com";
+  public void login_should_fail_when_user_with_unfinished_signUp() throws JsonProcessingException {
+    SignUpRequestDTO signUpRequestDTO =
+        SsoTestSetupUtils.signUpRequestMock("login-no-complete@gmail.com", "password123");
+
     given()
         .when()
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("email", signupEmail)
-        .post(SignupResource.PATH)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(JacksonMapper.get().writeValueAsString(signUpRequestDTO))
+        .post(SignUpResource.PATH)
         .then()
-        .statusCode(200);
+        .statusCode(204);
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("email", signupEmail)
+        .param("email", signUpRequestDTO.getEmail())
         .param("password", "superFancyPassword")
         .post(SsoResource.PATH + "/login")
         .then()
@@ -196,11 +196,9 @@ public class SsoResourceImplTest {
   public void sso_flow_should_work_with_registered_user() throws JsonProcessingException {
     String email = "sso_flow_test@gmail.com";
     String password = "sso_flow_test_password";
+    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
 
-    SignupResourceImplTest.signup(mailbox, objectMapper, email, password);
-    String sessionId = login(email, password);
-
-    UserDTO userDTO = userDatasource.findUser(email).toCompletableFuture().join().orElseThrow();
+    AuthUser authUser = userDatasource.findUser(email).toCompletableFuture().join().orElseThrow();
 
     // should be able to get session by id
     given()
@@ -209,7 +207,7 @@ public class SsoResourceImplTest {
         .get(SsoResource.PATH + "/session")
         .then()
         .statusCode(200)
-        .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(userDTO))));
+        .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(authUser))));
 
     // should be able to get session via cookie
     given()
@@ -218,7 +216,7 @@ public class SsoResourceImplTest {
         .get(SsoResource.PATH + "/me")
         .then()
         .statusCode(200)
-        .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(userDTO))));
+        .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(authUser))));
 
     // should be able to logout
     given()
@@ -228,41 +226,5 @@ public class SsoResourceImplTest {
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
-  }
-
-  /**
-   * Sign up and then login with the provided credentials (assert it is successful).
-   *
-   * @param mailbox mailbox
-   * @param objectMapper object mapper
-   * @param email address
-   * @param password from user
-   * @return session id
-   */
-  public static String signupAndLogin(
-      MockMailbox mailbox, ObjectMapper objectMapper, String email, String password) {
-    SignupResourceImplTest.signup(mailbox, objectMapper, email, password);
-    return SsoResourceImplTest.login(email, password);
-  }
-
-  /**
-   * Log in with provided credentials (assert is is successful).
-   *
-   * @param email address
-   * @param password from the user
-   * @return session id
-   */
-  public static String login(String email, String password) {
-    Response response =
-        given()
-            .when()
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("email", email)
-            .param("password", password)
-            .post(SsoResource.PATH + "/login");
-
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
-    Cookie cookie = response.getDetailedCookie(SsoSession.COOKIE_NAME);
-    return cookie.getValue();
   }
 }

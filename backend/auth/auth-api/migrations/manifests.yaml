@@ -12,8 +12,9 @@ spec:
       containers:
         - image: eu.gcr.io/insight/auth-api-migrations
           name: auth-api-migrations
-          imagePullPolicy: Never # kustomize this
           env:
+            - name: LOG_JSON
+              value: true
             - name: POSTGRES_HOST
               value: postgres-postgresql
             - name: POSTGRES_USER

@@ -1,56 +1,22 @@
 import React from 'react';
 import Head from 'next/head';
 import { useStyletron } from 'baseui';
-import { H5, H6, Paragraph3 } from 'baseui/typography';
+import { H5, Paragraph3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
-import { Button, SHAPE } from 'baseui/button';
 import SignUpForm from 'components/SignUpForm';
 import config from 'shared/config';
+import Topbar from 'components/Topbar';
+import { SignupApi } from 'api/signup';
 
 const GetStarted = () => {
-  const [css, theme] = useStyletron();
+  const [_css, theme] = useStyletron();
 
   return (
     <Block display="flex" flexDirection="column" height="100%">
       <Head>
         <title>Insight | Sign up</title>
       </Head>
-      <nav
-        className={css({
-          padding: theme.sizing.scale600,
-          borderBottom: `1px solid ${theme.colors.primary200}`,
-        })}
-      >
-        <Block display="flex" justifyContent="space-between">
-          <H6 margin={0}>Insight</H6>
-          <Block>
-            <a
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-              }}
-              href={config.helpBaseURL}
-              className={css({
-                marginRight: theme.sizing.scale600,
-                textDecoration: 'none',
-              })}
-            >
-              <Button shape={SHAPE.pill} size="compact" kind="minimal">
-                Help
-              </Button>
-            </a>
-
-            <a
-              href={config.appBaseURL}
-              className={css({ textDecoration: 'none' })}
-            >
-              <Button shape={SHAPE.pill} size="compact" kind="minimal">
-                Log in
-              </Button>
-            </a>
-          </Block>
-        </Block>
-      </nav>
+      <Topbar appBaseURL={config.appBaseURL} helpBaseURL={config.helpBaseURL} />
       <Block height="100%" padding={theme.sizing.scale600}>
         <Block
           width="100%"
@@ -77,9 +43,7 @@ const GetStarted = () => {
             </Paragraph3>
           </Block>
 
-          <SignUpForm
-            onSubmit={() => new Promise((resolve) => setTimeout(resolve, 200))}
-          />
+          <SignUpForm onSubmit={SignupApi.signup} />
         </Block>
       </Block>
     </Block>

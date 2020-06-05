@@ -3,7 +3,7 @@ package com.meemaw.auth.core.resource;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.auth.signup.resource.v1.SignupResource;
+import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.UUID;
 import org.junit.jupiter.api.Tag;
@@ -29,7 +29,7 @@ public class ServiceResourceTest {
   public void invalid_method_should_fail() {
     given()
         .when()
-        .get(SignupResource.PATH)
+        .get(SignUpResource.PATH)
         .then()
         .statusCode(405)
         .body(

@@ -1,17 +1,16 @@
 import ky from 'ky-universal';
-import { DataResponse, SignupRequest, Signup } from '@insight/types';
+import { DataResponse } from '@insight/types';
 
 import { authApiBaseURL } from './base';
 
 const SignupApi = {
-  verify: (json: SignupRequest, baseURL = authApiBaseURL) => {
-    const url = `${baseURL}/v1/signup/verify`;
-    return ky.post(url, { json }).json<DataResponse<boolean>>();
-  },
-  complete: (json: Signup, baseURL = authApiBaseURL) => {
+  verify: (token: string, baseURL = authApiBaseURL) => {
     return ky
-      .post(`${baseURL}/v1/signup/complete`, { json })
+      .get(`${baseURL}/v1/signup/${token}/valid`)
       .json<DataResponse<boolean>>();
+  },
+  complete: (token: string, baseURL = authApiBaseURL) => {
+    return ky.post(`${baseURL}/v1/signup/${token}/complete`);
   },
 };
 

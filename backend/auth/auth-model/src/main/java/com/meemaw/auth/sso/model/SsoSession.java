@@ -1,6 +1,7 @@
 package com.meemaw.auth.sso.model;
 
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class SsoSession {
@@ -19,19 +20,23 @@ public class SsoSession {
   // Number of characters in cookie
   public static final int SIZE = 50;
 
-  public static NewCookie cookie(String sessionId) {
-    return newCookie(sessionId, TTL);
+  public static NewCookie cookie(String sessionId, String domain) {
+    return newCookie(sessionId, domain, TTL);
   }
 
-  public static NewCookie clearCookie() {
-    return newCookie(null, 0);
+  public static NewCookie clearCookie(String domain) {
+    return newCookie(null, domain, 0);
   }
 
-  private static NewCookie newCookie(String sessionId, int maxAge) {
-    return new NewCookie(COOKIE_NAME, sessionId, COOKIE_PATH, null, null, maxAge, false);
+  private static NewCookie newCookie(String sessionId, String domain, int maxAge) {
+    return new NewCookie(COOKIE_NAME, sessionId, COOKIE_PATH, domain, null, maxAge, false);
   }
 
   public static String newIdentifier() {
     return RandomStringUtils.randomAlphanumeric(SIZE);
+  }
+
+  public static Response cookieResponse(String sessionId, String cookieDomain) {
+    return Response.noContent().cookie(SsoSession.cookie(sessionId, cookieDomain)).build();
   }
 }

@@ -1,14 +1,19 @@
 package com.meemaw.auth.organization.model;
 
-import lombok.experimental.UtilityClass;
+import java.time.OffsetDateTime;
 import org.apache.commons.lang3.RandomStringUtils;
 
-@UtilityClass
-public class Organization {
+public interface Organization {
 
-  public final int ORG_ID_LENGTH = 6;
+  int ORG_ID_LENGTH = 6;
 
-  public String identifier() {
+  String getId();
+
+  String getName();
+
+  OffsetDateTime getCreatedAt();
+
+  static String identifier() {
     return RandomStringUtils.randomAlphanumeric(ORG_ID_LENGTH);
   }
 }

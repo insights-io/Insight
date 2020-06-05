@@ -31,14 +31,15 @@ public class SsoGoogleResourceImpl implements SsoGoogleResource {
 
   @Override
   public Response signIn(String destinationPath) {
+    String serverRedirectURI = getRedirectUri();
     String refererBaseURL =
         RequestUtils.parseRefererBaseURL(request)
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
 
     String state = ssoGoogleService.secureState(refererBaseURL + destinationPath);
-    URI Location = ssoGoogleService.buildAuthorizationURI(state, getRedirectUri());
+    URI location = ssoGoogleService.buildAuthorizationURI(state, serverRedirectURI);
     NewCookie sessionCookie = new NewCookie("state", state);
-    return Response.status(Status.FOUND).cookie(sessionCookie).header("Location", Location).build();
+    return Response.status(Status.FOUND).cookie(sessionCookie).header("Location", location).build();
   }
 
   @Override
@@ -47,11 +48,13 @@ public class SsoGoogleResourceImpl implements SsoGoogleResource {
         .oauth2callback(state, sessionState, code, getRedirectUri())
         .thenApply(
             ssoSocialLogin -> {
-              String Location = ssoSocialLogin.getLocation();
-              String SessionId = ssoSocialLogin.getSessionId();
+              String location = ssoSocialLogin.getLocation();
+              String sessionId = ssoSocialLogin.getSessionId();
+              String cookieDomain = ssoSocialLogin.getCookieDomain();
+
               return Response.status(Status.FOUND)
-                  .header("Location", Location)
-                  .cookie(SsoSession.cookie(SessionId))
+                  .header("Location", location)
+                  .cookie(SsoSession.cookie(sessionId, cookieDomain))
                   .build();
             });
   }

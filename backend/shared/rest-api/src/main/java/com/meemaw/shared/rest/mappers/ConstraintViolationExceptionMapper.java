@@ -12,17 +12,21 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class ConstraintViolationExceptionMapper implements
-    ExceptionMapper<ConstraintViolationException> {
+public class ConstraintViolationExceptionMapper
+    implements ExceptionMapper<ConstraintViolationException> {
 
   @Override
   public Response toResponse(ConstraintViolationException exception) {
     Map<String, String> errors =
-        exception.getConstraintViolations().stream().collect(
-            Collectors.toMap(
-                v -> StreamSupport.stream(v.getPropertyPath().spliterator(), false)
-                    .reduce((first, second) -> second).map(Node::getName).orElse(null),
-                ConstraintViolation::getMessage));
+        exception.getConstraintViolations().stream()
+            .collect(
+                Collectors.toMap(
+                    v ->
+                        StreamSupport.stream(v.getPropertyPath().spliterator(), false)
+                            .reduce((first, second) -> second)
+                            .map(Node::getName)
+                            .orElse(null),
+                    ConstraintViolation::getMessage));
 
     return Boom.status(Response.Status.BAD_REQUEST)
         .message("Validation Error")

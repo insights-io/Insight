@@ -5,15 +5,13 @@ import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -22,23 +20,20 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public interface PasswordResource {
 
-  String PATH = "v1/password";
+  String PATH = "/v1";
 
   @POST
-  @Path("forgot")
-  CompletionStage<Response> forgot(
-      @NotNull(message = "Payload is required") @Valid PasswordForgotRequestDTO passwordForgotRequestDTO);
+  @Path("password_forgot")
+  CompletionStage<Response> forgotPassword(
+      @NotNull(message = "Required") @Valid PasswordForgotRequestDTO body);
 
   @POST
-  @Path("reset")
-  CompletionStage<Response> reset(
-      @NotNull(message = "Payload is required") @Valid PasswordResetRequestDTO passwordResetRequestDTO);
+  @Path("password_reset/{token}")
+  CompletionStage<Response> resetPassword(
+      @PathParam("token") UUID token,
+      @NotNull(message = "Required") @Valid PasswordResetRequestDTO body);
 
   @GET
-  @Path("reset/exists")
-  CompletionStage<Response> resetRequestExists(
-      @NotBlank(message = "email is required") @Email @QueryParam("email") String email,
-      @NotBlank(message = "org is required") @QueryParam("org") String org,
-      @NotNull(message = "token is required") @QueryParam("token") UUID token);
-
+  @Path("password_reset/{token}/exists")
+  CompletionStage<Response> passwordResetRequestExists(@PathParam("token") UUID token);
 }

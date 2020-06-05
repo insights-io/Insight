@@ -8,7 +8,7 @@ import { Base } from './SignUpForm.stories';
 
 describe('<SignUpForm />', () => {
   test('User can signup in normal flow', async () => {
-    const onSubmit = sandbox.stub().resolves(undefined);
+    const onSubmit = sandbox.stub().resolves(Promise.resolve());
 
     const {
       getByPlaceholderText,
@@ -17,36 +17,33 @@ describe('<SignUpForm />', () => {
       findAllByText,
     } = render(<Base onSubmit={onSubmit} />);
     const submitButton = getByText('Get started');
-    const firstNameInput = getByPlaceholderText('First name');
-    const lastNameInput = getByPlaceholderText('Last name');
+    const firstNameInput = getByPlaceholderText('Full name');
     const companyInput = getByPlaceholderText('Company');
     const emailInput = getByPlaceholderText('Email');
     const passwordInput = getByPlaceholderText('Password');
 
     userEvent.click(submitButton);
-    expect((await findAllByText('Required')).length).toEqual(5);
+    expect((await findAllByText('Required')).length).toEqual(4);
 
-    userEvent.type(firstNameInput, 'Joe');
-    userEvent.type(lastNameInput, 'Makarena');
-    userEvent.type(companyInput, 'Insight');
-    userEvent.type(emailInput, 'random');
-    userEvent.type(passwordInput, 'short');
+    await userEvent.type(firstNameInput, 'Joe Makarena');
+    await userEvent.type(companyInput, 'Insight');
+    await userEvent.type(emailInput, 'random');
+    await userEvent.type(passwordInput, 'short');
 
     userEvent.click(submitButton);
     await findByText('Invalid email address');
     await findByText('Password must be at least 8 characters long');
 
     userEvent.clear(emailInput);
-    userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(emailInput, 'user@example.com');
     userEvent.clear(passwordInput);
-    userEvent.type(passwordInput, 'veryHardPassword');
+    await userEvent.type(passwordInput, 'veryHardPassword');
 
     userEvent.click(submitButton);
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(onSubmit, {
-        firstName: 'Joe',
-        lastName: 'Makarena',
+        fullName: 'Joe Makarena',
         company: 'Insight',
         email: 'user@example.com',
         password: 'veryHardPassword',
@@ -55,13 +52,12 @@ describe('<SignUpForm />', () => {
 
     // can also include phone nume
     const phoneNumberInput = getByPlaceholderText('Phone number');
-    userEvent.type(phoneNumberInput, '51222333');
+    await userEvent.type(phoneNumberInput, '51222333');
 
     userEvent.click(submitButton);
     await waitFor(() => {
       sandbox.assert.calledWithExactly(onSubmit, {
-        firstName: 'Joe',
-        lastName: 'Makarena',
+        fullName: 'Joe Makarena',
         company: 'Insight',
         email: 'user@example.com',
         password: 'veryHardPassword',

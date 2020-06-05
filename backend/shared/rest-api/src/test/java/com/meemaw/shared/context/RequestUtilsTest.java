@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 public class RequestUtilsTest {
@@ -15,5 +16,15 @@ public class RequestUtilsTest {
 
     URL withNoPort = new URL("https://google.com/login?dest=%2F");
     assertEquals("https://google.com", RequestUtils.parseBaseURL(withNoPort));
+  }
+
+  @Test
+  public void should_parse_tld() {
+    assertEquals(Optional.of("insight.io"), RequestUtils.parseTLD("http://app.insight.io"));
+    assertEquals(Optional.of("insight.io"), RequestUtils.parseTLD("https://app.insight.io"));
+    assertEquals(Optional.of("insight.io"), RequestUtils.parseTLD("https://insight.io"));
+    assertEquals(Optional.empty(), RequestUtils.parseTLD("app"));
+    assertEquals(Optional.empty(), RequestUtils.parseTLD("http://localhost:3000"));
+    assertEquals(Optional.empty(), RequestUtils.parseTLD(""));
   }
 }

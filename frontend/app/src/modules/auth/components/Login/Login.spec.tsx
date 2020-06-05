@@ -23,17 +23,17 @@ describe('<Login />', () => {
     userEvent.click(submitButton);
     expect((await findAllByText('Required')).length).toEqual(2);
 
-    userEvent.type(emailInput, 'invalid');
-    userEvent.type(passwordInput, 'short');
+    await userEvent.type(emailInput, 'invalid');
+    await userEvent.type(passwordInput, 'short');
 
     userEvent.click(submitButton);
     await findByText('Please enter a valid email address');
     await findByText('Password must be at least 8 characters long');
 
     userEvent.clear(emailInput);
-    userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(emailInput, 'user@example.com');
     userEvent.clear(passwordInput);
-    userEvent.type(passwordInput, 'veryHardPassword');
+    await userEvent.type(passwordInput, 'veryHardPassword');
 
     userEvent.click(submitButton);
 
@@ -56,8 +56,8 @@ describe('<Login />', () => {
     const passwordInput = getByPlaceholderText('Password');
     const submitButton = getByText('Sign in');
 
-    userEvent.type(emailInput, 'user@example.com');
-    userEvent.type(passwordInput, 'veryHardPassword');
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'veryHardPassword');
     userEvent.click(submitButton);
 
     await findByText('Invalid email or password');

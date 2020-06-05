@@ -1,6 +1,5 @@
-package com.meemaw.auth.sso.core;
+package com.meemaw.auth.sso.cookie;
 
-import com.meemaw.auth.sso.cookie.AbstractCookieAuthDynamicFeature;
 import com.meemaw.auth.sso.datasource.SsoDatasource;
 import com.meemaw.auth.sso.model.SsoUser;
 import java.util.Optional;

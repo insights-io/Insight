@@ -1,13 +1,12 @@
 package com.meemaw.auth.password.service;
 
+import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.auth.password.datasource.PasswordResetDatasource;
 import com.meemaw.auth.password.model.PasswordResetRequest;
-import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
-import com.meemaw.auth.signup.datasource.SignupDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.auth.user.model.UserDTO;
-import com.meemaw.auth.user.model.UserWithHashedPasswordDTO;
+import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserWithHashedPassword;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.response.Boom;
@@ -17,7 +16,9 @@ import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
 import io.vertx.axle.pgclient.PgPool;
 import io.vertx.axle.sqlclient.Transaction;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,34 +30,22 @@ import org.mindrot.jbcrypt.BCrypt;
 public class PasswordServiceImpl implements PasswordService {
 
   @Inject PasswordDatasource passwordDatasource;
-
   @Inject PasswordResetDatasource passwordResetDatasource;
-
   @Inject UserDatasource userDatasource;
-
-  @Inject SignupDatasource signupDatasource;
-
-  @ResourcePath("password/reset")
-  Template passwordResetTemplate;
-
   @Inject ReactiveMailer mailer;
-
   @Inject PgPool pgPool;
 
-  private static final String FROM_SUPPORT = "Insight Support <support@insight.com>";
+  @ResourcePath("password/password_reset")
+  Template passwordResetTemplate;
 
-  /**
-   * @param email user's email
-   * @param password user's password
-   * @return user associated with the provided credentials
-   */
   @Override
-  public CompletionStage<UserDTO> verifyPassword(String email, String password) {
+  public CompletionStage<AuthUser> verifyPassword(String email, String password) {
+    log.info("[verifyPassword]: request for email: {}", email);
     return passwordDatasource
         .findUserWithPassword(email)
         .thenApply(
             maybeUserWithPasswordHash -> {
-              UserWithHashedPasswordDTO withPassword =
+              UserWithHashedPassword withPassword =
                   maybeUserWithPasswordHash.orElseThrow(
                       () -> {
                         log.info("User {} not found", email);
@@ -88,33 +77,43 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
-  public CompletionStage<Boolean> forgot(String email) {
+  public CompletionStage<Optional<AuthUser>> forgotPassword(
+      String email, String passwordResetBaseURL) {
+    log.info("[forgotPassword]: request for email: {}", email);
+    String passwordResetURL = String.join("/", passwordResetBaseURL, "password-reset");
+
     return userDatasource
         .findUser(email)
-        .thenApply(
-            maybeUser ->
-                maybeUser.orElseThrow(
-                    () -> {
-                      log.info("User {} not found", email);
-                      throw new BoomException(Boom.notFound().message("User not found"));
-                    }))
-        .thenCompose(this::forgot);
+        .thenCompose(
+            maybeUser -> {
+              // Don't leak that email is in use
+              if (maybeUser.isEmpty()) {
+                log.info("[forgotPassword]: no user associated with email: {}", email);
+                return CompletableFuture.completedStage(maybeUser);
+              }
+
+              return this.forgotPassword(maybeUser.get(), passwordResetURL)
+                  .thenApply(ignores -> maybeUser);
+            });
   }
 
-  private CompletionStage<Boolean> forgot(UserDTO userDTO) {
-    return pgPool.begin().thenCompose(transaction -> forgotTransactional(transaction, userDTO));
+  private CompletionStage<AuthUser> forgotPassword(AuthUser authUser, String passwordResetURL) {
+    return pgPool
+        .begin()
+        .thenCompose(transaction -> forgotPassword(authUser, passwordResetURL, transaction));
   }
 
-  private CompletionStage<Boolean> forgotTransactional(Transaction transaction, UserDTO userDTO) {
-    String email = userDTO.getEmail();
-    String org = userDTO.getOrg();
-    UUID userId = userDTO.getId();
+  private CompletionStage<AuthUser> forgotPassword(
+      AuthUser authUser, String passwordResetURL, Transaction transaction) {
+    String email = authUser.getEmail();
+    String org = authUser.getOrg();
+    UUID userId = authUser.getId();
 
     return passwordResetDatasource
-        .create(transaction, email, userId, org)
+        .createPasswordResetRequest(email, userId, transaction)
         .thenApply(
             passwordResetRequest ->
-                sendPasswordResetEmail(passwordResetRequest)
+                sendPasswordResetEmail(passwordResetRequest, passwordResetURL)
                     .exceptionally(
                         throwable -> {
                           transaction.rollback();
@@ -128,97 +127,75 @@ public class PasswordServiceImpl implements PasswordService {
                               .exception();
                         }))
         .thenApply(nothing -> transaction.commit())
-        .thenApply(nothing -> true);
+        .thenApply(nothing -> authUser);
   }
 
-  private CompletionStage<Void> sendPasswordResetEmail(PasswordResetRequest passwordResetRequest) {
+  private CompletionStage<Void> sendPasswordResetEmail(
+      PasswordResetRequest passwordResetRequest, String passwordResetURL) {
     String email = passwordResetRequest.getEmail();
     UUID token = passwordResetRequest.getToken();
-    String org = passwordResetRequest.getOrg();
     String subject = "Reset your Insight password";
 
     return passwordResetTemplate
         .data("email", email)
-        .data("orgId", org)
         .data("token", token)
+        .data("passwordResetURL", passwordResetURL)
         .renderAsync()
         .thenCompose(
             html ->
                 mailer
-                    .send(Mail.withHtml(email, subject, html).setFrom(FROM_SUPPORT))
+                    .send(
+                        Mail.withHtml(email, subject, html).setFrom(MailingConstants.FROM_SUPPORT))
                     .subscribeAsCompletionStage());
   }
 
   @Override
-  public CompletionStage<Boolean> reset(PasswordResetRequestDTO passwordResetRequestDTO) {
-    UUID token = passwordResetRequestDTO.getToken();
-    String email = passwordResetRequestDTO.getEmail();
-    String org = passwordResetRequestDTO.getOrg();
-    String password = passwordResetRequestDTO.getPassword();
+  public CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password) {
+    log.info("[resetPassword]: request with token: {}", token);
     return passwordResetDatasource
-        .find(token, email, org)
+        .findPasswordResetRequest(token)
         .thenApply(
             maybePasswordRequest ->
                 maybePasswordRequest.orElseThrow(
                     () -> {
-                      log.info("Password reset request not found email={}", email);
                       throw new BoomException(
                           Boom.notFound().message("Password reset request not found"));
                     }))
         .thenCompose(passwordResetRequest -> reset(passwordResetRequest, password));
   }
 
-  private CompletionStage<Boolean> reset(
-      PasswordResetRequest passwordResetRequest, String newPassword) {
-    UUID token = passwordResetRequest.getToken();
-    String email = passwordResetRequest.getEmail();
-    String org = passwordResetRequest.getOrg();
-
-    if (passwordResetRequest.hasExpired()) {
-      log.info("Password reset request expired email={} org={} token={}", email, org, token);
+  private CompletionStage<PasswordResetRequest> reset(
+      PasswordResetRequest request, String password) {
+    if (request.hasExpired()) {
       throw Boom.badRequest().message("Password reset request expired").exception();
     }
-
-    UUID userId = passwordResetRequest.getUserId();
 
     return pgPool
         .begin()
         .thenCompose(
             transaction ->
                 passwordResetDatasource
-                    .delete(transaction, token, email, org)
+                    .deletePasswordResetRequest(request.getToken(), transaction)
                     .thenCompose(
-                        deleted -> signupDatasource.delete(transaction, email, org, userId))
-                    .thenCompose(deleted -> create(transaction, userId, email, org, newPassword))
+                        deleted ->
+                            createPassword(
+                                request.getUserId(), request.getEmail(), password, transaction))
                     .thenCompose(created -> transaction.commit())
-                    .thenApply(nothing -> true));
+                    .thenApply(nothing -> request));
   }
 
-  /**
-   * @param transaction transaction
-   * @param userId user's id
-   * @param email user's email
-   * @param org user's organization
-   * @param password user's password
-   * @return boolean indicating if user was successfully created
-   */
   @Override
-  public CompletionStage<Boolean> create(
-      Transaction transaction, UUID userId, String email, String org, String password) {
-    log.info("Storing password email={} userId={} org={}", email, userId, org);
-    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(13));
-
+  public CompletionStage<Boolean> createPassword(
+      UUID userId, String email, String password, Transaction transaction) {
+    log.info("[createPassword]: request for email: {}", email);
     return passwordDatasource
-        .create(transaction, userId, hashedPassword)
-        .thenApply(
-            x -> {
-              log.info("Password stored email={} userId={} org={}", email, userId, org);
-              return true;
-            });
+        .storePassword(userId, hashPassword(password), transaction)
+        .thenApply(x -> true);
   }
 
   @Override
-  public CompletionStage<Boolean> resetRequestExists(String email, String org, UUID token) {
-    return passwordResetDatasource.exists(email, org, token);
+  public CompletionStage<Boolean> passwordResetRequestExists(UUID token) {
+    log.info("[passwordResetRequestExists]: request for token: {}", token);
+    return passwordResetDatasource.findPasswordResetRequest(token).thenApply(Optional::isPresent);
   }
 }

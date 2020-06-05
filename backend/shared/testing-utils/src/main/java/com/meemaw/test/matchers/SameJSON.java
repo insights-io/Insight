@@ -42,7 +42,7 @@ public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
   }
 
   public static Matcher<String> sameJson(String expected) {
-    return sameJson(expected, JSONCompareMode.STRICT);
+    return sameJson(expected, JSONCompareMode.NON_EXTENSIBLE);
   }
 
   public static Matcher<String> sameJson(String expected, JSONCompareMode compareMode) {
@@ -55,6 +55,6 @@ public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
   }
 
   public static void assertEquals(String expected, String actual) throws JSONException {
-    assertEquals(expected, actual, JSONCompareMode.STRICT);
+    assertEquals(expected, actual, JSONCompareMode.NON_EXTENSIBLE);
   }
 }
