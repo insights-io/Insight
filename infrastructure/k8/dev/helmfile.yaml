@@ -21,7 +21,7 @@ releases:
     namespace: recording
     values:
       - kafka.yaml
-  - name: es2
+  - name: es3
     chart: elastic/elasticsearch
     namespace: recording
     values:

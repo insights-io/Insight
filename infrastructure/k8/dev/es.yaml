@@ -20,6 +20,6 @@ volumeClaimTemplate:
   storageClassName: 'local-path'
   resources:
     requests:
-      storage: 100M
+      storage: 1000M
 
 replicas: 1

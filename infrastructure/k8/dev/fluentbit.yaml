@@ -2,14 +2,18 @@ backend:
   type: es
   es:
     host: elasticsearch-master
+    time_key: "@time"
+
+input:
+  tail:
+    parser: cri-2 # k3s, should be docker on minikube
 
 parsers:
   enabled: true
-  json:
-    - name: json
-      extraEntries: |-
-       Time_Key    time
-       Time_Format %Y-%m-%dT%H:%M:%S.%L
-       Time_Keep   On
-       Decode_Field_As escaped_utf8 log do_next
-       Decode_Field_As json log
+  regex:
+    - name: cri-2
+      # Identical to cri default, expect extracted message is called log, so it works with mergeKeys
+      regex: '^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$'
+      timeKey: time
+      timeFormat: '%Y-%m-%dT%H:%M:%S.%L%z'
+
