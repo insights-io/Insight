@@ -1,4 +1,14 @@
 ---
+environments:
+  default:
+    values:
+      - ./default.yaml
+    missingFileHandler: Error
+  production:
+    values:
+      - ./production.yaml
+    missingFileHandler: Error
+
 repositories:
   # To use official "stable" charts a.k.a https://github.com/helm/charts/tree/master/stable
   - name: stable
@@ -13,16 +23,22 @@ repositories:
 releases:
   - name: postgres
     chart: bitnami/postgresql
-    namespace: recording
+    namespace: { { requiredEnv "namespace" } }
     values:
       - postgres.yaml
   - name: kafka
     chart: bitnami/kafka
-    namespace: recording
+    namespace: { { requiredEnv "namespace" } }
     values:
       - kafka.yaml
-  - name: es2
+  - name: es3
     chart: elastic/elasticsearch
-    namespace: recording
+    namespace: { { requiredEnv "namespace" } }
     values:
       - es.yaml
+  - name: letsencrypt
+    chart: ./letsencrypt
+    namespace: cert-manager
+    values:
+      - apiKey: { { .Values.cfApiKey } }
+      - email: { { .Values.cfEmail } }

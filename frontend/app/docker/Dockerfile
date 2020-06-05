@@ -2,10 +2,10 @@ FROM node:14-alpine as build
 
 WORKDIR /src
 
-ARG auth_api_client_base_url=http://localhost:8080
+ARG auth_api_client_base_url=https://auth-api.minikube.snuderls.eu
 ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_client_base_url
 
-ARG auth_api_server_base_url=http://localhost:8080
+ARG auth_api_server_base_url=https://auth-api.minikube.snuderls.eu
 ENV AUTH_API_BASE_URL=$auth_api_server_base_url
 
 COPY package.json yarn.lock tsconfig.json /src/
