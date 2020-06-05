@@ -1,2 +1,11 @@
 cfEmail: a@b.c
 cfApiKey: apikey
+
+# Minikube ip
+infraDomain: 192.168.39.112.xip.io
+appNamespace: recording
+infraNamespace: infra
+
+fluentbitParser: docker
+
+oauthExistingSecret: nil

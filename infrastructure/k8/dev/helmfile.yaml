@@ -1,14 +1,4 @@
 ---
-environments:
-  default:
-    values:
-      - ./default.yaml
-    missingFileHandler: Error
-  production:
-    values:
-      - ./production.yaml
-    missingFileHandler: Error
-
 repositories:
   # To use official "stable" charts a.k.a https://github.com/helm/charts/tree/master/stable
   - name: stable
@@ -19,26 +9,75 @@ repositories:
     url: https://jaegertracing.github.io/helm-charts
   - name: elastic
     url: https://helm.elastic.co
+  - name: kubernetes-dashboard
+    url: https://kubernetes.github.io/dashboard/
+
+
+helmfiles:
+ {{ if eq .Environment.Name "production" }}- path: "./releases/cert-manager.yaml"{{ end }}
+
 
 releases:
   - name: postgres
     chart: bitnami/postgresql
-    namespace: { { requiredEnv "namespace" } }
+    namespace: {{ .Values.appNamespace }}
     values:
       - postgres.yaml
   - name: kafka
     chart: bitnami/kafka
-    namespace: { { requiredEnv "namespace" } }
+    namespace: {{ .Values.appNamespace }}
     values:
       - kafka.yaml
   - name: es3
     chart: elastic/elasticsearch
-    namespace: { { requiredEnv "namespace" } }
+    namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
-  - name: letsencrypt
-    chart: ./letsencrypt
-    namespace: cert-manager
+  - name: fluentbit
+    chart: stable/fluent-bit
+    namespace: {{ .Values.infraNamespace }}
     values:
-      - apiKey: { { .Values.cfApiKey } }
-      - email: { { .Values.cfEmail } }
+      - fluentbit.yaml
+      - backend:
+          es:
+            host: "elasticsearch-master.{{ .Values.appNamespace }}"
+      - input:
+          tail:
+            parser: {{ .Values.fluentbitParser }}
+  - name: kibana
+    chart: elastic/kibana
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - kibana.yaml
+      - elasticsearchHosts: "http://elasticsearch-master.{{ .Values.appNamespace }}:9200"
+      - ingress:
+          tls:
+            - hosts:
+              - "kibana.{{ .Values.infraDomain }}"
+          hosts:
+              - "kibana.{{ .Values.infraDomain }}"
+
+  - name: dashboard
+    chart: kubernetes-dashboard/kubernetes-dashboard
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - dashboard.yaml
+  {{ if eq .Environment.Name "production" }}
+  - name: oauth2-proxy
+    chart: stable/oauth2-proxy
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - oauth-proxy.yaml
+      - config:
+          existingSecret: {{ .Values.oauthExistingSecret }}
+  {{ end }}
+
+environments:
+  default:
+    values:
+      - ./default.yaml
+    missingFileHandler: Error
+  production:
+    values:
+      - ./production.yaml
+    missingFileHandler: Error
