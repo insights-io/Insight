@@ -8,4 +8,6 @@ infraNamespace: infra
 
 fluentbitParser: docker
 
-oauthExistingSecret: nil
+ingressAnnotations:
+  cert-manager.io/cluster-issuer: letsencrypt
+  kubernetes.io/ingress.class: nginx

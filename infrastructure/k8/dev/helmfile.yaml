@@ -54,15 +54,27 @@ releases:
           tls:
             - hosts:
               - "kibana.{{ .Values.infraDomain }}"
+              secretName: kibana-tls
           hosts:
-              - "kibana.{{ .Values.infraDomain }}"
-
+            - "kibana.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotations | indent 12 }}
   - name: dashboard
     chart: kubernetes-dashboard/kubernetes-dashboard
     namespace: {{ .Values.infraNamespace }}
     values:
       - dashboard.yaml
-  {{ if eq .Environment.Name "production" }}
+      - ingress:
+          tls:
+            - hosts:
+              - "dashboard.{{ .Values.infraDomain }}"
+              secretName: dashboard-tls
+          hosts:
+            - "dashboard.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotations | indent 12 }}
+
+{{ if eq .Environment.Name "production" }}
   - name: oauth2-proxy
     chart: stable/oauth2-proxy
     namespace: {{ .Values.infraNamespace }}
@@ -70,7 +82,7 @@ releases:
       - oauth-proxy.yaml
       - config:
           existingSecret: {{ .Values.oauthExistingSecret }}
-  {{ end }}
+{{ end }}
 
 environments:
   default:
