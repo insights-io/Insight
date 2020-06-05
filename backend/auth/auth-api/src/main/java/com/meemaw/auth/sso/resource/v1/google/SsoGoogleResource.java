@@ -13,13 +13,14 @@ import javax.ws.rs.core.Response;
 public interface SsoGoogleResource {
 
   String PATH = SsoResource.PATH + "/google";
+  String OAUTH2_CALLBACK_PATH = "oauth2callback";
 
   @GET
   @Path("signin")
   Response signIn(@NotBlank(message = "Required") @QueryParam("dest") String destination);
 
   @GET
-  @Path("oauth2callback")
+  @Path(OAUTH2_CALLBACK_PATH)
   CompletionStage<Response> oauth2callback(
       @NotBlank(message = "Required") @QueryParam("state") String state,
       @NotBlank(message = "Required") @QueryParam("code") String code,

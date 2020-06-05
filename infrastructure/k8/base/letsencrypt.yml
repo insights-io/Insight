@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5,7 +6,7 @@ metadata:
   namespace: cert-manager
 type: Opaque
 stringData:
-  api-token: <cf api token>
+  api-token: <CLOUDFLARE_API_TOKEN>
 ---
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer

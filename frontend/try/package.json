@@ -32,7 +32,7 @@
     "prebuild": "yarn workspace @insight/types build && yarn workspace @insight/storybook build && yarn workspace @insight/testing build"
   },
   "dependencies": {
-    "baseui": "9.80.0",
+    "baseui": "9.80.1",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
