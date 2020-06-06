@@ -4,3 +4,5 @@ rules:
   truthy:
     allowed-values: ['true', 'false', 'on']
   line-length: disable
+ignore: |
+  helmfile.yaml
