@@ -8,6 +8,9 @@ extraArgs:
   cookie-domain: .dev.snuderls.eu
   provider: github
   github-org: meemaw-corp
+  pass-user-headers: true
+  pass-authorization-header: true
+  set-xauthrequest: true
 
 ingress:
   enabled: true

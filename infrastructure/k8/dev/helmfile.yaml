@@ -74,6 +74,46 @@ releases:
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
 
+  - name: prometheus
+    chart: stable/prometheus-operator
+    namespace: monitoring
+    values:
+      - prometheus.yaml
+      - prometheus:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "prometheus.{{ .Values.infraDomain }}"
+                secretName: prometheus-tls
+            hosts:
+              - "prometheus.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+      - alertmanager:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "alertmanager.{{ .Values.infraDomain }}"
+                secretName: alertmanager-tls
+            hosts:
+              - "alertmanager.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+      - grafana:
+          adminPassword: password
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "grafana.{{ .Values.infraDomain }}"
+                secretName: grafana-tls
+            hosts:
+              - "grafana.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+
 {{ if eq .Environment.Name "production" }}
   - name: oauth2-proxy
     chart: stable/oauth2-proxy
