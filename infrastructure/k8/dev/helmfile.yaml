@@ -114,6 +114,26 @@ releases:
             annotations:
 {{ toYaml .Values.ingressAnnotations | indent 14 }}
 
+  - name: jaeger
+    chart: jaegertracing/jaeger
+    namespace: monitoring
+    values:
+      - jaeger.yaml
+      - storage:
+          elasticsearch:
+            host: "elasticsearch-master.{{ .Values.appNamespace }}"
+      - query:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "tracing.{{ .Values.infraDomain }}"
+                secretName: tracing-tls
+            hosts:
+              - "tracing.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+
 {{ if eq .Environment.Name "production" }}
   - name: oauth2-proxy
     chart: stable/oauth2-proxy
