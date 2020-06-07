@@ -91,7 +91,7 @@ jobs:
           mkdir -p $ARTIFACTS_PATH/videos
           xvfb-run --server-args="-screen 0 1280x720x24" yarn workspace @insight/try test:e2e
       - uses: actions/upload-artifact@v2
-        if: failure()
+        if: always()
         with:
           name: artifacts
           path: frontend/try/artifacts

@@ -1,26 +1,28 @@
 import {
   getByText,
-  getByPlaceholderText,
   queryByText,
   getAllByText,
 } from '@testing-library/testcafe';
 
-import { getLocation } from '../utils';
+import {
+  emailInput,
+  passwordInput,
+  signInButton,
+  getLocation,
+  forgotPasswordButton,
+} from '../utils';
 import config from '../config';
 
-fixture('/login').page(config.baseURL);
+fixture('/login').page(config.appBaseURL);
 
 test('Login form should be validated both client & server side', async (t) => {
-  const signInButton = getByText('Sign in');
-  const emailInput = getByPlaceholderText('Email');
-  const passwordInput = getByPlaceholderText('Password');
   const invalidEmailErrorMessage = 'Please enter a valid email address';
   const passwordTooShortErrorMessage =
     'Password must be at least 8 characters long';
 
   await t
     .expect(getLocation())
-    .eql(`${config.baseURL}/login?dest=%2F`)
+    .eql(`${config.appBaseURL}/login?dest=%2F`)
     .click(signInButton)
     .expect(getAllByText('Required').count)
     .eql(2, 'Both fields should be required')
@@ -50,10 +52,10 @@ test('Login form should be validated both client & server side', async (t) => {
 
 test('Can navigate forth and back to /password/forgot', async (t) => {
   await t
-    .click(getByText('Forgot?'))
+    .click(forgotPasswordButton)
     .expect(getLocation())
-    .eql(`${config.baseURL}/password-forgot`)
+    .eql(`${config.appBaseURL}/password-forgot`)
     .click(getByText('Remember password?'))
     .expect(getLocation())
-    .eql(`${config.baseURL}/login`);
+    .eql(`${config.appBaseURL}/login`);
 });
