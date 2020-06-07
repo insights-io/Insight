@@ -1,4 +1,4 @@
-package com.meemaw.auth.core.resource.health;
+package com.meemaw.rec.core.resource.health;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
@@ -20,7 +20,7 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"Reactive PostgreSQL connection health check\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
   }
 
   @Test
@@ -44,6 +44,6 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"Reactive PostgreSQL connection health check\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
   }
 }

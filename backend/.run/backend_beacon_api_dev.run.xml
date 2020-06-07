@@ -2,7 +2,7 @@
   <configuration default="false" name="backend:beacon:api:dev" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/beacon/api" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/beacon/beacon-api" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="" />
       <option name="taskDescriptions">

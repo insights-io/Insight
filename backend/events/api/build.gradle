@@ -6,7 +6,6 @@ dependencies {
     implementation 'io.quarkus:quarkus-undertow-websockets'
     implementation 'io.quarkus:quarkus-smallrye-openapi'
     implementation 'io.quarkus:quarkus-hibernate-validator'
-    implementation 'io.quarkus:quarkus-reactive-pg-client'
     implementation project(":events:model")
     implementation project(':auth:auth-sidecar')
 

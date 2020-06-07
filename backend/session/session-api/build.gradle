@@ -15,3 +15,7 @@ dependencies {
 
     testImplementation project(':shared:testing-utils')
 }
+
+configurations {
+    all*.exclude group: 'io.smallrye.reactive', module: 'smallrye-reactive-streams-operators'
+}

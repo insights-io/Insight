@@ -18,9 +18,9 @@ k8s_yaml('../session/session-api/migrations/manifests.yaml')
 k8s_resource('session-api-migrations')
 docker_build('eu.gcr.io/insight/session-api-migrations', '../session/session-api/migrations', {})
 
-k8s_yaml(kustomize('../beacon/api/k8/overlays/development'))
+k8s_yaml(kustomize('../beacon/beacon-api/k8/overlays/development'))
 k8s_resource('beacon-api', port_forwards=8081, resource_deps=['session-api'])
-docker_build('eu.gcr.io/insight/beacon-api', '..', {}, '../beacon/api/docker/Dockerfile.jvm')
+docker_build('eu.gcr.io/insight/beacon-api', '..', {}, '../beacon/beacon-api/docker/Dockerfile.jvm')
 
 k8s_yaml(kustomize('../events/search-indexer/k8'))
 k8s_resource('search-indexer')

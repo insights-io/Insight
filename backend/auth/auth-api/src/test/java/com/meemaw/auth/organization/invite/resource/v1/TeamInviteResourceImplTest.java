@@ -354,6 +354,7 @@ public class TeamInviteResourceImplTest {
 
     // Invite the user
     given()
+        .header("referer", "https://www.insight.io")
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
@@ -376,10 +377,11 @@ public class TeamInviteResourceImplTest {
     tokenMatcher.matches();
     String token = tokenMatcher.group(1);
 
-    assertEquals(acceptInviteUrl, "http://localhost:8081/accept-invite?token=" + token);
+    assertEquals(acceptInviteUrl, "https://www.insight.io/accept-invite?token=" + token);
 
     // resend the invite email
     given()
+        .header("referer", "https://www.insight.io")
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
@@ -390,6 +392,6 @@ public class TeamInviteResourceImplTest {
 
     assertEquals(2, mailbox.getMessagesSentTo(invitedUserEmail).size());
     acceptInviteUrl = Jsoup.parse(sent.get(1).getHtml()).select("a").attr("href");
-    assertEquals(acceptInviteUrl, "http://localhost:8081/accept-invite?token=" + token);
+    assertEquals(acceptInviteUrl, "https://www.insight.io/accept-invite?token=" + token);
   }
 }

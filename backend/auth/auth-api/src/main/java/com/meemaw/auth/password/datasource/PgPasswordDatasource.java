@@ -32,14 +32,16 @@ public class PgPasswordDatasource implements PasswordDatasource {
   public CompletionStage<Boolean> storePassword(
       UUID userId, String hashedPassword, Transaction transaction) {
     return transaction
-        .preparedQuery(INSERT_PASSWORD_RAW_SQL, Tuple.of(userId, hashedPassword))
+        .preparedQuery(INSERT_PASSWORD_RAW_SQL)
+        .execute(Tuple.of(userId, hashedPassword))
         .thenApply(pgRowSet -> true);
   }
 
   @Override
   public CompletionStage<Optional<UserWithHashedPassword>> findUserWithPassword(String email) {
     return pgPool
-        .preparedQuery(FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL, Tuple.of(email))
+        .preparedQuery(FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL)
+        .execute(Tuple.of(email))
         .thenApply(this::userWithPasswordFromRowSet);
   }
 
