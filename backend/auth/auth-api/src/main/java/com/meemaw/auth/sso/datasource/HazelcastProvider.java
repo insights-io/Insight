@@ -21,6 +21,7 @@ public class HazelcastProvider {
    */
   public HazelcastInstance getInstance() {
     if (instance == null) {
+      log.info("Initializing HazelcastInstance");
       instance = Hazelcast.newHazelcastInstance(new XmlConfigBuilder().build());
     }
     return instance;

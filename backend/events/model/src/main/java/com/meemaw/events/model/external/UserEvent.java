@@ -18,17 +18,17 @@ public class UserEvent<T extends AbstractBrowserEvent> {
 
   T event;
   UUID pageId;
-  UUID sessionID;
-  UUID uid;
-  String orgID;
+  UUID sessionId;
+  UUID deviceId;
+  String organizationId;
 
   public Map<String, Object> index() {
     Map<String, Object> eventIndex = event.index();
     Map<String, Object> index = new HashMap<>(4 + eventIndex.size());
-    index.put("pageId", pageId.toString());
-    index.put("sessionID", sessionID.toString());
-    index.put("uid", uid.toString());
-    index.put("orgID", orgID);
+    index.put("page.id", pageId.toString());
+    index.put("session.id", sessionId.toString());
+    index.put("device.id", deviceId.toString());
+    index.put("organization.id", organizationId);
     index.putAll(eventIndex);
     return index;
   }

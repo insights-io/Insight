@@ -35,7 +35,6 @@ public class SsoGoogleResourceImpl implements SsoGoogleResource {
     String refererBaseURL =
         RequestUtils.parseRefererBaseURL(request)
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
-
     String state = ssoGoogleService.secureState(refererBaseURL + destinationPath);
     URI location = ssoGoogleService.buildAuthorizationURI(state, serverRedirectURI);
     NewCookie sessionCookie = new NewCookie("state", state);

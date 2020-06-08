@@ -2,8 +2,12 @@
 /* eslint-disable no-console */
 import { BrowserEvent } from 'event';
 import { Connected } from 'identity/types';
+import {
+  CreatePageResponse,
+  PageIdentity,
+  CreatePageDTO,
+} from '@insight/types';
 
-import { PageDTO, PageResponse, PageIdentity } from './types';
 import { BeaconTransport } from './transports/beacon';
 import {
   BaseTransport,
@@ -24,9 +28,9 @@ class Backend implements Connected {
   constructor(
     recordingApiBaseURL: string,
     sessionApiBaseURL: string,
-    orgID: string
+    organizationId: string
   ) {
-    this.beaconURL = `${recordingApiBaseURL}/v1/beacon/beat?OrgID=${orgID}`;
+    this.beaconURL = `${recordingApiBaseURL}/v1/beacon/beat?organizationId=${organizationId}`;
     this.pageURL = `${sessionApiBaseURL}/v1/sessions`;
     this.beaconSeq = 0;
 
@@ -62,8 +66,8 @@ class Backend implements Connected {
   };
 
   public connect = (identity: PageIdentity) => {
-    const { sessionId, uid, pageId } = identity;
-    this.beaconURL = `${this.beaconURL}&SessionID=${sessionId}&UserID=${uid}&PageID=${pageId}`;
+    const { sessionId, deviceId, pageId } = identity;
+    this.beaconURL = `${this.beaconURL}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`;
   };
 
   private _sendEvents = (transport: BaseTransport, e: BrowserEvent[]) => {
@@ -71,9 +75,9 @@ class Backend implements Connected {
     return transport.sendEvents(this.beaconURL, { e, s: this.beaconSeq });
   };
 
-  public page = (pageDTO: PageDTO) => {
+  public page = (pageDTO: CreatePageDTO) => {
     return this.requestResponseTransport
-      .post<PageResponse>(this.pageURL, JSON.stringify(pageDTO))
+      .post<CreatePageResponse>(this.pageURL, JSON.stringify(pageDTO))
       .then((response) => response.json);
   };
 }

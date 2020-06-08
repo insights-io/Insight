@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.model.InsightSecurityContext;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestContextUtils;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.Map;
 import java.util.Optional;
@@ -67,9 +68,10 @@ public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature
       boolean isSecure = RequestContextUtils.getServerBaseURL(ctx).startsWith("https");
       ctx.setSecurityContext(new InsightSecurityContext(authUser, isSecure));
       principal.user(authUser);
-      MDC.put("user.id", authUser.getId().toString());
-      MDC.put("user.org", authUser.getOrg());
-      MDC.put("user.role", authUser.getRole().toString());
+      MDC.put(LoggingConstants.USER_ID, authUser.getId().toString());
+      MDC.put(LoggingConstants.USER_ROLE, authUser.getRole().toString());
+      MDC.put(LoggingConstants.ORGANIZATION_ID, authUser.getOrg());
+      MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
       log.debug("Successfully authenticated");
     }
   }

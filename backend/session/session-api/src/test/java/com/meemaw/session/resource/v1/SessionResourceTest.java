@@ -48,22 +48,22 @@ public class SessionResourceTest {
             .as(new TypeRef<>() {});
 
     PageIdentity pageIdentity = dataResponse.getData();
-    UUID uid = pageIdentity.getUid();
+    UUID deviceId = pageIdentity.getDeviceId();
     UUID sessionId = pageIdentity.getSessionId();
     UUID pageId = pageIdentity.getPageId();
 
     given()
         .when()
-        .queryParam("orgID", "RC6GTT")
+        .queryParam("organizationId", "RC6GTT")
         .get(String.format("%s/%s/pages/%s", SessionResource.PATH, sessionId, pageId))
         .then()
         .statusCode(200)
-        .body("data.orgID", is("RC6GTT"))
-        .body("data.uid", is(uid.toString()))
-        .body("data.sessionID", is(sessionId.toString()));
+        .body("data.organizationId", is("RC6GTT"))
+        .body("data.deviceId", is(deviceId.toString()))
+        .body("data.sessionId", is(sessionId.toString()));
 
     ObjectNode nextPageNode = objectMapper.readValue(payload, ObjectNode.class);
-    nextPageNode.put("uid", uid.toString());
+    nextPageNode.put("deviceId", deviceId.toString());
 
     dataResponse =
         given()
@@ -77,7 +77,7 @@ public class SessionResourceTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals(dataResponse.getData().getUid(), uid);
+    assertEquals(dataResponse.getData().getDeviceId(), deviceId);
     assertEquals(dataResponse.getData().getSessionId(), sessionId);
     assertNotEquals(dataResponse.getData().getPageId(), pageId);
   }
@@ -99,7 +99,7 @@ public class SessionResourceTest {
             .as(new TypeRef<>() {});
 
     PageIdentity pageIdentity = dataResponse.getData();
-    UUID uid = pageIdentity.getUid();
+    UUID deviceId = pageIdentity.getDeviceId();
     UUID sessionId = pageIdentity.getSessionId();
     UUID pageId = pageIdentity.getPageId();
 
@@ -115,7 +115,7 @@ public class SessionResourceTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertNotEquals(dataResponse.getData().getUid(), uid);
+    assertNotEquals(dataResponse.getData().getDeviceId(), deviceId);
     assertNotEquals(dataResponse.getData().getSessionId(), sessionId);
     assertNotEquals(dataResponse.getData().getPageId(), pageId);
   }

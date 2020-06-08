@@ -22,18 +22,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 @Tag("integration")
 public class BeaconBeatResourceValidationTest {
 
+  private static final String BEACON_RESOURCE_BEAT_PATH = BeaconResource.PATH + "/beat";
+
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
   public void postBeacon_shouldThrowError_whenNoQueryParams(String contentType) {
     given()
         .when()
         .contentType(contentType)
-        .post(BeaconResource.PATH + "/beat")
+        .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Organization ID is required\",\"sessionID\":\"SessionID required\",\"pageId\":\"pageID required\",\"userId\":\"UserID required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Required\",\"sessionId\":\"Required\",\"pageId\":\"Required\",\"deviceId\":\"Required\"}}}"));
   }
 
   @ParameterizedTest
@@ -42,11 +44,11 @@ public class BeaconBeatResourceValidationTest {
     given()
         .when()
         .contentType(contentType)
-        .queryParam("UserID", UUID.randomUUID().toString())
-        .queryParam("SessionID", UUID.randomUUID().toString())
-        .queryParam("PageID", UUID.randomUUID().toString())
-        .queryParam("OrgID", Organization.identifier())
-        .post(BeaconResource.PATH + "/beat")
+        .queryParam("deviceId", UUID.randomUUID().toString())
+        .queryParam("sessionId", UUID.randomUUID().toString())
+        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("organizationId", Organization.identifier())
+        .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
         .statusCode(422)
         .body(
@@ -60,12 +62,12 @@ public class BeaconBeatResourceValidationTest {
     given()
         .when()
         .contentType(contentType)
-        .queryParam("UserID", UUID.randomUUID().toString())
-        .queryParam("SessionID", UUID.randomUUID().toString())
-        .queryParam("PageID", UUID.randomUUID().toString())
-        .queryParam("OrgID", Organization.identifier())
+        .queryParam("deviceId", UUID.randomUUID().toString())
+        .queryParam("sessionId", UUID.randomUUID().toString())
+        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("organizationId", Organization.identifier())
         .body("{}")
-        .post(BeaconResource.PATH + "/beat")
+        .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -77,18 +79,18 @@ public class BeaconBeatResourceValidationTest {
   @ValueSource(strings = {"application/json", "text/plain"})
   public void postBeacon_shouldThrowError_whenNoEvents(String contentType)
       throws IOException, URISyntaxException {
-    String payload =
+    String body =
         Files.readString(Path.of(getClass().getResource("/beacon/noEvents.json").toURI()));
 
     given()
         .when()
         .contentType(contentType)
-        .queryParam("UserID", UUID.randomUUID().toString())
-        .queryParam("SessionID", UUID.randomUUID().toString())
-        .queryParam("PageID", UUID.randomUUID().toString())
-        .queryParam("OrgID", Organization.identifier())
-        .body(payload)
-        .post(BeaconResource.PATH + "/beat")
+        .queryParam("deviceId", UUID.randomUUID().toString())
+        .queryParam("sessionId", UUID.randomUUID().toString())
+        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("organizationId", Organization.identifier())
+        .body(body)
+        .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -100,18 +102,17 @@ public class BeaconBeatResourceValidationTest {
   @ValueSource(strings = {"application/json", "text/plain"})
   public void postBeaconAsJson_shouldThrowError_whenUnlinkedBeacon(String contentType)
       throws IOException, URISyntaxException {
-    String payload =
-        Files.readString(Path.of(getClass().getResource("/beacon/initial.json").toURI()));
+    String body = Files.readString(Path.of(getClass().getResource("/beacon/initial.json").toURI()));
 
     given()
         .when()
         .contentType(contentType)
-        .queryParam("UserID", UUID.randomUUID().toString())
-        .queryParam("SessionID", UUID.randomUUID().toString())
-        .queryParam("PageID", UUID.randomUUID().toString())
-        .queryParam("OrgID", Organization.identifier())
-        .body(payload)
-        .post(BeaconResource.PATH + "/beat")
+        .queryParam("deviceId", UUID.randomUUID().toString())
+        .queryParam("sessionId", UUID.randomUUID().toString())
+        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("organizationId", Organization.identifier())
+        .body(body)
+        .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -123,22 +124,21 @@ public class BeaconBeatResourceValidationTest {
   @ValueSource(strings = {"application/json", "text/plain"})
   public void postBeaconAsJson_shouldThrowError_invalid_organizationId_length(String contentType)
       throws IOException, URISyntaxException {
-    String payload =
-        Files.readString(Path.of(getClass().getResource("/beacon/initial.json").toURI()));
+    String body = Files.readString(Path.of(getClass().getResource("/beacon/initial.json").toURI()));
 
     given()
         .when()
         .contentType(contentType)
-        .queryParam("UserID", UUID.randomUUID().toString())
-        .queryParam("SessionID", UUID.randomUUID().toString())
-        .queryParam("PageID", UUID.randomUUID().toString())
-        .queryParam("OrgID", UUID.randomUUID().toString())
-        .body(payload)
-        .post(BeaconResource.PATH + "/beat")
+        .queryParam("deviceId", UUID.randomUUID().toString())
+        .queryParam("sessionId", UUID.randomUUID().toString())
+        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("organizationId", UUID.randomUUID().toString())
+        .body(body)
+        .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Organization ID must be 6 characters long\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Has to be 6 characters long\"}}}"));
   }
 }

@@ -6,6 +6,7 @@ import fs from 'fs';
 import { CreatePageResponse } from '@insight/types';
 import { chromium, Response, Page } from 'playwright';
 import type { InsightWindow } from 'types';
+import Identity from 'identity';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -13,7 +14,7 @@ declare global {
 }
 
 const SERVE_PORT = process.env.SERVE_PORT || 5000;
-const I_ORG = 'test-1';
+const I_ORGANIZATION = 'test-1';
 const I_HOST = `localhost:${SERVE_PORT}`;
 const beaconApiBaseURL =
   process.env.BEACON_API_BASE_URL || 'http://localhost:8081';
@@ -31,11 +32,11 @@ const responseRequestHeaders = (response: Response) => {
 const setupPage = async (page: Page) => {
   await page.goto(`http://${I_HOST}`);
   await page.evaluate(
-    ({ orgID, host }) => {
-      window._i_org = orgID;
+    ({ organizationId, host }) => {
+      window._i_org = organizationId;
       window._i_host = host;
     },
-    { orgID: I_ORG, host: I_HOST }
+    { organizationId: I_ORGANIZATION, host: I_HOST }
   );
 
   const insightScript = path.join(process.cwd(), 'dist', 'local.insight.js');
@@ -88,7 +89,7 @@ describe('tracking script', () => {
       expect(pageRequest.resourceType()).toEqual('fetch');
 
       const {
-        data: { sessionId, uid, pageId },
+        data: { sessionId, deviceId, pageId },
       } = await parsePageResponse(pageResponse);
 
       const { cookie, localStorage } = await page.evaluate(() => {
@@ -99,12 +100,11 @@ describe('tracking script', () => {
       });
 
       const expiresSeconds = cookie.split('/')[1];
-      const encodedIdentity = `${I_HOST}#${I_ORG}#${uid}:${sessionId}/${expiresSeconds}`;
+      const encodedIdentity = `${I_HOST}#${I_ORGANIZATION}#${deviceId}:${sessionId}/${expiresSeconds}`;
 
-      const storageKey = '_is_uid';
-      expect(cookie).toEqual(`${storageKey}=${encodedIdentity}`);
+      expect(cookie).toEqual(`${Identity.storageKey}=${encodedIdentity}`);
       expect(localStorage).toEqual(
-        JSON.stringify({ [storageKey]: encodedIdentity })
+        JSON.stringify({ [Identity.storageKey]: encodedIdentity })
       );
 
       await page.click('button[data-testid="first-button"]');
@@ -112,7 +112,7 @@ describe('tracking script', () => {
       const beaconResponse = await page.waitForResponse(
         (resp: Response) =>
           resp.url() ===
-          `${beaconApiBaseURL}/v1/beacon/beat?OrgID=${I_ORG}&SessionID=${sessionId}&UserID=${uid}&PageID=${pageId}`
+          `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`
       );
 
       const beaconRequest = beaconResponse.request();

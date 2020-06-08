@@ -40,7 +40,7 @@ public class SessionResourceValidationTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"payload\":\"Payload is required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
   }
 
   @Test
@@ -54,7 +54,7 @@ public class SessionResourceValidationTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"doctype\":\"may not be null\",\"orgId\":\"Organization ID is required\",\"url\":\"may not be null\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"doctype\":\"may not be null\",\"organizationId\":\"Required\",\"url\":\"may not be null\"}}}"));
   }
 
   @Test
@@ -101,12 +101,12 @@ public class SessionResourceValidationTest {
         String.format("%s/%s/pages/%s", SessionResource.PATH, UUID.randomUUID(), UUID.randomUUID());
     given()
         .when()
-        .queryParam("orgID", "qeweqewq")
+        .queryParam("organizationId", "qeweqewq")
         .get(path)
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"orgID\":\"Organization ID must be 6 characters long\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Has to be 6 characters long\"}}}"));
   }
 }

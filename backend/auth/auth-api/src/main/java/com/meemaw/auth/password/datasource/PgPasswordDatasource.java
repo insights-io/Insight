@@ -24,7 +24,7 @@ public class PgPasswordDatasource implements PasswordDatasource {
       "INSERT INTO auth.password(user_id, hash) VALUES($1, $2)";
 
   private static final String FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL =
-      "SELECT auth.user.id, auth.user.email, auth.user.full_name, auth.user.org_id, auth.user.role, auth.user.created_at, auth.password.hash"
+      "SELECT auth.user.id, auth.user.email, auth.user.full_name, auth.user.organization_id, auth.user.role, auth.user.created_at, auth.password.hash"
           + " FROM auth.user LEFT JOIN auth.password ON auth.user.id = auth.password.user_id"
           + " WHERE email = $1 ORDER BY auth.password.created_at DESC LIMIT 1";
 
@@ -64,7 +64,7 @@ public class PgPasswordDatasource implements PasswordDatasource {
         row.getString("email"),
         row.getString("full_name"),
         UserRole.valueOf(row.getString("role")),
-        row.getString("org_id"),
+        row.getString("organization_id"),
         row.getOffsetDateTime("created_at"),
         row.getString("hash"));
   }

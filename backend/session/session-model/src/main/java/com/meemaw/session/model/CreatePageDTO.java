@@ -14,9 +14,9 @@ import lombok.Value;
 @AllArgsConstructor
 public class CreatePageDTO {
 
-  @OrganizationId String orgId;
+  @OrganizationId String organizationId;
 
-  UUID uid;
+  UUID deviceId;
 
   @NotNull(message = "may not be null")
   String url;

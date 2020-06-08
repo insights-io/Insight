@@ -5,7 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public interface Organization {
 
-  int ORG_ID_LENGTH = 6;
+  int ID_LENGTH = 6;
 
   String getId();
 
@@ -14,6 +14,6 @@ public interface Organization {
   OffsetDateTime getCreatedAt();
 
   static String identifier() {
-    return RandomStringUtils.randomAlphanumeric(ORG_ID_LENGTH);
+    return RandomStringUtils.randomAlphanumeric(ID_LENGTH);
   }
 }

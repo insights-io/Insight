@@ -1,9 +1,6 @@
 package com.meemaw.events.model.internal;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
-public class BrowserEventTypeConstants {
+public final class BrowserEventTypeConstants {
 
   public static final String NAVIGATE = "0";
   public static final String UNLOAD = "1";
@@ -15,4 +12,5 @@ public class BrowserEventTypeConstants {
   public static final String MOUSEUP = "7";
   public static final String LOAD = "8";
 
+  private BrowserEventTypeConstants() {}
 }

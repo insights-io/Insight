@@ -134,11 +134,11 @@ public class SignUpServiceImpl implements SignUpService {
       throw Boom.badRequest().message("Sign up request has expired").exception();
     }
     String email = signUpRequest.getEmail();
-    String orgId = Organization.identifier();
+    String organizationId = Organization.identifier();
     UserRole userRole = UserRole.ADMIN;
 
     return organizationDatasource
-        .createOrganization(orgId, signUpRequest.getCompany(), transaction)
+        .createOrganization(organizationId, signUpRequest.getCompany(), transaction)
         .thenCompose(
             organization ->
                 userDatasource

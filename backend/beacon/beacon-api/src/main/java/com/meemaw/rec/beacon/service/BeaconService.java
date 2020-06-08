@@ -7,6 +7,7 @@ import com.meemaw.events.stream.EventsStream;
 import com.meemaw.rec.beacon.model.Beacon;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.resource.v1.SessionResource;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.smallrye.mutiny.Uni;
@@ -22,6 +23,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
@@ -47,7 +49,7 @@ public class BeaconService {
 
   private CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
     return sessionResource
-        .get(sessionId, pageId, organizationId)
+        .getPage(sessionId, pageId, organizationId)
         .exceptionally(
             throwable -> {
               if (throwable.getCause() instanceof WebApplicationException) {
@@ -63,9 +65,9 @@ public class BeaconService {
               }
               DataResponse<PageDTO> dataResponse = response.readEntity(new GenericType<>() {});
               PageDTO page = dataResponse.getData();
-              return page.getSessionID().equals(sessionId)
+              return page.getSessionId().equals(sessionId)
                   && page.getId().equals(pageId)
-                  && page.getOrgID().equals(organizationId);
+                  && page.getOrganizationId().equals(organizationId);
             });
   }
 
@@ -77,28 +79,27 @@ public class BeaconService {
    *
    * @param organizationId String organization id
    * @param sessionId String session id
-   * @param uid String user (device) id
+   * @param deviceId String user (device) id
    * @param pageId String page id
    * @param beacon Beacon
    * @return CompletionStage if successful processing
    */
+  @Timed(name = "processBeacon", description = "A measure of how long it takes to process beacon")
   public CompletionStage<?> process(
-      String organizationId, UUID sessionId, UUID uid, UUID pageId, Beacon beacon) {
-    MDC.put("organizationId", organizationId);
-    MDC.put("uid", uid.toString());
-    MDC.put("pageId", pageId.toString());
-    MDC.put("sessionId", sessionId.toString());
-    MDC.put("beacon.sequence", String.valueOf(beacon.getSequence()));
-    MDC.put("beacon.timestamp", String.valueOf(beacon.getTimestamp()));
+      String organizationId, UUID sessionId, UUID deviceId, UUID pageId, Beacon beacon) {
+    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+    MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
+    MDC.put(LoggingConstants.PAGE_ID, pageId.toString());
+    MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
 
     Function<AbstractBrowserEvent, UserEvent<?>> identify =
         (event) ->
             UserEvent.builder()
                 .event(event)
-                .orgID(organizationId)
-                .sessionID(sessionId)
+                .organizationId(organizationId)
+                .sessionId(sessionId)
                 .pageId(pageId)
-                .uid(uid)
+                .deviceId(deviceId)
                 .build();
 
     log.info("Processing beacon");

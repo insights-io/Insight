@@ -28,27 +28,25 @@ public interface SsoResource {
   @Path("login")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   CompletionStage<Response> login(
-      @NotBlank(message = "Email is required") @Email @FormParam("email") String email,
+      @NotBlank(message = "Required") @Email @FormParam("email") String email,
       @Password @FormParam("password") String password);
 
   @POST
   @Path("logout")
   CompletionStage<Response> logout(
-      @NotBlank(message = "SessionId cookie required") @CookieParam(SsoSession.COOKIE_NAME)
-          String sessionId);
+      @NotBlank(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
 
   @GET
   @Path("session")
   @Produces(MediaType.APPLICATION_JSON)
   CompletionStage<Response> session(
-      @NotNull(message = "SessionId may not be blank") @QueryParam("id") String sessionId);
+      @NotNull(message = "Required") @QueryParam("id") String sessionId);
 
   @GET
   @Path("me")
   @Produces(MediaType.APPLICATION_JSON)
   default CompletionStage<Response> me(
-      @NotNull(message = "SessionId may not be blank") @CookieParam(SsoSession.COOKIE_NAME)
-          String sessionId) {
+      @NotNull(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId) {
     return session(sessionId);
   }
 }

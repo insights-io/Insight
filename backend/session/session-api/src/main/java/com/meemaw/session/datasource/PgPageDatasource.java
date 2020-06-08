@@ -15,7 +15,6 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 @Slf4j
@@ -23,26 +22,23 @@ public class PgPageDatasource implements PageDatasource {
 
   @Inject PgPool pgPool;
 
-  @ConfigProperty(name = "quarkus.datasource.url")
-  String datasourceURL;
-
   private static final String SELECT_LINK_DEVICE_SESSION_RAW_SQL =
-      "SELECT session_id FROM session.page WHERE org_id = $1 AND uid = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
+      "SELECT session_id FROM session.page WHERE organization_id = $1 AND device_id = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
 
   private static final String INSERT_PAGE_RAW_SQL =
-      "INSERT INTO session.page (id, uid, session_id, org_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
+      "INSERT INTO session.page (id, device_id, session_id, organization_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
 
   private static final String SELECT_ACTIVE_PAGE_COUNT =
       "SELECT COUNT(*) FROM session.page WHERE page_end IS NULL;";
 
   private static final String SELECT_PAGE_RAW_SQL =
-      "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND org_id=$3;";
+      "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND organization_id=$3;";
 
   @Override
-  public Uni<Optional<UUID>> findUserSessionLink(String organizationId, UUID uid) {
+  public Uni<Optional<UUID>> findUserSessionLink(String organizationId, UUID deviceId) {
     return pgPool
         .preparedQuery(SELECT_LINK_DEVICE_SESSION_RAW_SQL)
-        .execute(Tuple.of(organizationId, uid))
+        .execute(Tuple.of(organizationId, deviceId))
         .map(this::mapSessionId)
         .onFailure()
         .invoke(this::onFindUserSessionLinkException);
@@ -62,14 +58,15 @@ public class PgPageDatasource implements PageDatasource {
   }
 
   @Override
-  public Uni<PageIdentity> insertPage(UUID pageId, UUID uid, UUID sessionId, CreatePageDTO page) {
+  public Uni<PageIdentity> insertPage(
+      UUID pageId, UUID deviceId, UUID sessionId, CreatePageDTO page) {
     Tuple values =
         Tuple.newInstance(
             io.vertx.sqlclient.Tuple.of(
                 pageId,
-                uid,
+                deviceId,
                 sessionId,
-                page.getOrgId(),
+                page.getOrganizationId(),
                 page.getDoctype(),
                 page.getUrl(),
                 page.getReferrer(),
@@ -82,7 +79,13 @@ public class PgPageDatasource implements PageDatasource {
     return pgPool
         .preparedQuery(INSERT_PAGE_RAW_SQL)
         .execute(values)
-        .map(rowSet -> PageIdentity.builder().pageId(pageId).sessionId(sessionId).uid(uid).build())
+        .map(
+            rowSet ->
+                PageIdentity.builder()
+                    .pageId(pageId)
+                    .sessionId(sessionId)
+                    .deviceId(deviceId)
+                    .build())
         .onFailure()
         .invoke(this::onInsertPageException);
   }
@@ -121,8 +124,8 @@ public class PgPageDatasource implements PageDatasource {
               return new PageDTO(
                   row.getUUID("id"),
                   row.getUUID("session_id"),
-                  row.getString("org_id"),
-                  row.getUUID("uid"),
+                  row.getString("organization_id"),
+                  row.getUUID("device_id"),
                   row.getString("url"),
                   row.getString("referrer"),
                   row.getString("doctype"),

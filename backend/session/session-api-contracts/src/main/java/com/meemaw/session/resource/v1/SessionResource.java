@@ -27,8 +27,7 @@ public interface SessionResource {
   String PATH = "/v1/sessions";
 
   @POST
-  CompletionStage<Response> page(
-      @NotNull(message = "Payload is required") @Valid CreatePageDTO payload);
+  CompletionStage<Response> createPage(@NotNull(message = "Required") @Valid CreatePageDTO body);
 
   @GET
   @CookieAuth
@@ -36,11 +35,11 @@ public interface SessionResource {
 
   // TODO: this should be authenticated
   @GET
-  @Path("{SessionID}/pages/{PageID}")
-  CompletionStage<Response> get(
-      @PathParam("SessionID") UUID sessionID,
-      @PathParam("PageID") UUID pageID,
-      @OrganizationId @QueryParam("orgID") String orgID);
+  @Path("{sessionId}/pages/{pageId}")
+  CompletionStage<Response> getPage(
+      @PathParam("sessionId") UUID sessionId,
+      @PathParam("pageId") UUID pageId,
+      @OrganizationId @QueryParam("organizationId") String organizationId);
 
   // TODO: this should be authenticated
   @GET

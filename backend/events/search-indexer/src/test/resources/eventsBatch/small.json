@@ -10,9 +10,9 @@
         8.584999945014715
       ]
     },
-    "orgID": "org123",
+    "organizationId": "org123",
     "pageId": "d274c40c-357b-4357-8359-f33aed7b86df",
-    "sessionID": "02737f08-28ba-47c4-9c13-5a2b6a133a9a",
-    "uid": "14671e07-9081-4009-8752-a4d896c620c8"
+    "sessionId": "02737f08-28ba-47c4-9c13-5a2b6a133a9a",
+    "deviceId": "14671e07-9081-4009-8752-a4d896c620c8"
   }
 ]

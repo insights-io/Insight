@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-hibernate-validator'
     implementation 'io.quarkus:quarkus-rest-client'
     implementation project(":auth:auth-model")
     implementation project(":events:model")
@@ -15,4 +14,5 @@ dependencies {
 
 configurations {
     all*.exclude group: 'io.smallrye.reactive', module: 'smallrye-reactive-streams-operators'
+    all*.exclude group: 'io.quarkus', module: 'quarkus-smallrye-opentracing'
 }

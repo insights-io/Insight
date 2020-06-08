@@ -3,6 +3,7 @@ package com.meemaw.auth.sso.service.google;
 import com.meemaw.auth.sso.model.SsoSocialLogin;
 import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.math.BigInteger;
 import java.net.URI;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
@@ -73,10 +75,16 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
               String location =
                   URLDecoder.decode(sessionState.substring(26), StandardCharsets.UTF_8);
               String cookieDomain = RequestUtils.parseCookieDomain(location);
+              MDC.put(LoggingConstants.USER_EMAIL, email);
 
               return ssoService
                   .socialLogin(email, fullName)
-                  .thenApply(sessionId -> new SsoSocialLogin(sessionId, location, cookieDomain));
+                  .thenApply(
+                      sessionId -> {
+                        MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
+                        log.info("Authenticated with Google OAuth");
+                        return new SsoSocialLogin(sessionId, location, cookieDomain);
+                      });
             });
   }
 }

@@ -22,7 +22,7 @@ public class PgUserDatasource implements UserDatasource {
   @Inject PgPool pgPool;
 
   private static final String CREATE_USER_RAW_SQL =
-      "INSERT INTO auth.user(email, full_name, org_id, role) VALUES($1, $2, $3, $4) RETURNING id, created_at";
+      "INSERT INTO auth.user(email, full_name, organization_id, role) VALUES($1, $2, $3, $4) RETURNING id, created_at";
 
   private static final String FIND_USER_BY_EMAIL_RAW_SQL =
       "SELECT * FROM auth.user WHERE email = $1";
@@ -91,7 +91,7 @@ public class PgUserDatasource implements UserDatasource {
         row.getString("email"),
         row.getString("full_name"),
         UserRole.valueOf(row.getString("role")),
-        row.getString("org_id"),
+        row.getString("organization_id"),
         row.getOffsetDateTime("created_at"));
   }
 }

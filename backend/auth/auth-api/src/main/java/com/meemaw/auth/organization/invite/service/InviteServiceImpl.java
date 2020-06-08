@@ -72,13 +72,13 @@ public class InviteServiceImpl implements InviteService {
   }
 
   private CompletionStage<TeamInvite> createTeamInvite(
-      String orgId,
+      String organizationId,
       UUID creatorId,
       TeamInviteTemplateData teamInviteTemplateData,
       String acceptInviteURL,
       Transaction transaction) {
     return inviteDatasource
-        .createTeamInvite(orgId, creatorId, teamInviteTemplateData, transaction)
+        .createTeamInvite(organizationId, creatorId, teamInviteTemplateData, transaction)
         .thenCompose(
             teamInvite ->
                 sendInviteEmail(teamInvite.getToken(), teamInviteTemplateData, acceptInviteURL)

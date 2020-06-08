@@ -1,7 +1,6 @@
 package com.meemaw.session.resource.v1;
 
 import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.service.PageService;
 import com.meemaw.session.service.SessionSearchService;
 import com.meemaw.session.service.SessionSocketService;
@@ -17,15 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 public class SessionResourceImpl implements SessionResource {
 
   @Inject PageService pageService;
-
   @Inject SessionSocketService sessionSocketService;
-
   @Inject SessionSearchService sessionSearchService;
 
   @Override
-  public CompletionStage<Response> page(CreatePageDTO page) {
+  public CompletionStage<Response> createPage(CreatePageDTO body) {
     return pageService
-        .process(page)
+        .createPage(body)
         .subscribeAsCompletionStage()
         .thenApply(
             pageIdentity -> {
@@ -40,15 +37,12 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> get(UUID sessionID, UUID pageID, String orgID) {
+  public CompletionStage<Response> getPage(UUID sessionId, UUID pageId, String organizationId) {
     return pageService
-        .getPage(pageID, sessionID, orgID)
+        .getPage(pageId, sessionId, organizationId)
         .subscribeAsCompletionStage()
         .thenApply(
-            maybePage -> {
-              PageDTO page = maybePage.orElseThrow(() -> Boom.notFound().exception());
-              return DataResponse.ok(page);
-            });
+            maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }
 
   @Override

@@ -37,19 +37,19 @@ public class PgInviteDatasource implements InviteDatasource {
       "SELECT * FROM auth.team_invite WHERE token = $1";
 
   private static final String FIND_TEAM_INVITE_WITH_ORGANIZATION_RAW_SQL =
-      "SELECT * FROM auth.team_invite LEFT JOIN auth.organization ON auth.team_invite.org_id = auth.organization.id WHERE token = $1";
+      "SELECT * FROM auth.team_invite LEFT JOIN auth.organization ON auth.team_invite.organization_id = auth.organization.id WHERE token = $1";
 
   private static final String FIND_ALL_INVITES_RAW_SQL =
-      "SELECT * FROM auth.team_invite WHERE org_id = $1";
+      "SELECT * FROM auth.team_invite WHERE organization_id = $1";
 
   private static final String DELETE_INVITE_RAW_SQL =
       "DELETE FROM auth.team_invite WHERE token = $1";
 
   private static final String DELETE_ALL_INVITES_RAW_SQL =
-      "DELETE FROM auth.team_invite WHERE email = $1 AND org_id = $2";
+      "DELETE FROM auth.team_invite WHERE email = $1 AND organization_id = $2";
 
   private static final String CREATE_INVITE_RAW_SQL =
-      "INSERT INTO auth.team_invite(creator_id, email, org_id, role) VALUES($1, $2, $3, $4) RETURNING token, created_at";
+      "INSERT INTO auth.team_invite(creator_id, email, organization_id, role) VALUES($1, $2, $3, $4) RETURNING token, created_at";
 
   @Override
   public CompletionStage<Optional<TeamInvite>> findTeamInvite(UUID token, Transaction transaction) {
@@ -165,7 +165,7 @@ public class PgInviteDatasource implements InviteDatasource {
     return new TeamInvite(
         row.getUUID("token"),
         row.getString("email"),
-        row.getString("org_id"),
+        row.getString("organization_id"),
         UserRole.valueOf(row.getString("role")),
         row.getUUID("creator_id"),
         row.getOffsetDateTime("created_at"));
