@@ -19,8 +19,3 @@ module "branch_protection" {
   repository = github_repository.insight.name
   branch     = github_repository.insight.default_branch
 }
-
-resource "github_membership" "meemaw_mermbership" {
-  username = "Meemaw"
-  role     = "admin"
-}
