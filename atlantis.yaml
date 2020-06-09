@@ -12,11 +12,3 @@ projects:
     autoplan:
       when_modified: ['**/*.tf']
       enabled: true
-
-workflows:
-  authenticated:
-    plan:
-      steps:
-        - run: if [ $USERNAME != "Meemaw" ]; then exit 1; fi
-        - init
-        - plan
