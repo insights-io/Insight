@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'infrastructure/terraform/**'
-      - '.github/workflows/terraform.yml'
+      - '.github/workflows/infrastructure:terraform.yml'
 
 jobs:
   terraform:

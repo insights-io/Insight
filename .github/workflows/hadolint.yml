@@ -1,5 +1,5 @@
 ---
-name: reviewdog
+name: hadolint
 on:
   pull_request:
     paths:
