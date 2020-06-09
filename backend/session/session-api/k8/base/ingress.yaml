@@ -1,0 +1,20 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: session-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  tls:
+    - hosts:
+        - session-api.minikube.snuderls.eu
+      secretName: session1-api-tls
+  rules:
+    - host: session-api.minikube.snuderls.eu
+      http:
+        paths:
+          - backend:
+              serviceName: session-api
+              servicePort: 8082

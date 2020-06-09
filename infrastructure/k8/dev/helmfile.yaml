@@ -9,20 +9,147 @@ repositories:
     url: https://jaegertracing.github.io/helm-charts
   - name: elastic
     url: https://helm.elastic.co
+  - name: kubernetes-dashboard
+    url: https://kubernetes.github.io/dashboard/
+
+
+helmfiles:
+ {{ if eq .Environment.Name "production" }}- path: "./releases/cert-manager.yaml"{{ end }}
+
 
 releases:
   - name: postgres
     chart: bitnami/postgresql
-    namespace: recording
+    namespace: {{ .Values.appNamespace }}
     values:
       - postgres.yaml
   - name: kafka
     chart: bitnami/kafka
-    namespace: recording
+    namespace: {{ .Values.appNamespace }}
     values:
       - kafka.yaml
-  - name: es2
+  - name: es3
     chart: elastic/elasticsearch
-    namespace: recording
+    namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
+  - name: fluentbit
+    chart: stable/fluent-bit
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - fluentbit.yaml
+      - backend:
+          es:
+            host: "elasticsearch-master.{{ .Values.appNamespace }}"
+      - input:
+          tail:
+            parser: {{ .Values.fluentbitParser }}
+  - name: kibana
+    chart: elastic/kibana
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - kibana.yaml
+      - elasticsearchHosts: "http://elasticsearch-master.{{ .Values.appNamespace }}:9200"
+      - ingress:
+          tls:
+            - hosts:
+              - "kibana.{{ .Values.infraDomain }}"
+              secretName: kibana-tls
+          hosts:
+            - "kibana.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotations | indent 12 }}
+  - name: dashboard
+    chart: kubernetes-dashboard/kubernetes-dashboard
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - dashboard.yaml
+      - ingress:
+          tls:
+            - hosts:
+              - "dashboard.{{ .Values.infraDomain }}"
+              secretName: dashboard-tls
+          hosts:
+            - "dashboard.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotations | indent 12 }}
+
+  - name: prometheus
+    chart: stable/prometheus-operator
+    namespace: monitoring
+    values:
+      - prometheus.yaml
+      - prometheus:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "prometheus.{{ .Values.infraDomain }}"
+                secretName: prometheus-tls
+            hosts:
+              - "prometheus.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+      - alertmanager:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "alertmanager.{{ .Values.infraDomain }}"
+                secretName: alertmanager-tls
+            hosts:
+              - "alertmanager.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+      - grafana:
+          adminPassword: password
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "grafana.{{ .Values.infraDomain }}"
+                secretName: grafana-tls
+            hosts:
+              - "grafana.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+
+  - name: jaeger
+    chart: jaegertracing/jaeger
+    namespace: monitoring
+    values:
+      - jaeger.yaml
+      - storage:
+          elasticsearch:
+            host: "elasticsearch-master.{{ .Values.appNamespace }}"
+      - query:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "tracing.{{ .Values.infraDomain }}"
+                secretName: tracing-tls
+            hosts:
+              - "tracing.{{ .Values.infraDomain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotations | indent 14 }}
+
+{{ if eq .Environment.Name "production" }}
+  - name: oauth2-proxy
+    chart: stable/oauth2-proxy
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - oauth-proxy.yaml
+      - config:
+          existingSecret: {{ .Values.oauthExistingSecret }}
+{{ end }}
+
+environments:
+  default:
+    values:
+      - ./default.yaml
+    missingFileHandler: Error
+  production:
+    values:
+      - ./production.yaml
+    missingFileHandler: Error

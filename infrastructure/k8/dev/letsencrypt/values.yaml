@@ -1,0 +1,10 @@
+---
+# Default values for letsencrypt.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+apikey: enterme
+email: test@example.com
+
+dnsZones:
+  - dev.snuderls.eu

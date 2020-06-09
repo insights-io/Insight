@@ -1,0 +1,10 @@
+---
+ingress:
+  enabled: true
+  tls:
+    - hosts:
+      - kibana.dev.snuderls.eu
+      secretName: kibana-tls2
+  hosts:
+    - kibana.dev.snuderls.eu
+

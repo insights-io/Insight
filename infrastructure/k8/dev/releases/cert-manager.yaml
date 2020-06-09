@@ -1,0 +1,15 @@
+environments:
+  # This will run only for prod and requires cert-manager to be already installed
+  # TODO: figure out how to install cert-manager as part of this (issue is installing CRDs)
+  production:
+    values:
+      - ./../production.yaml
+    missingFileHandler: Error
+
+releases:
+  - name: letsencrypt
+    chart: ./../letsencrypt
+    namespace: cert-manager
+    values:
+      - apiKey: {{ .Values.cfApiKey }}
+      - email: {{ .Values.cfEmail }}
