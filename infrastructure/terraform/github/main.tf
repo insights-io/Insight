@@ -14,20 +14,10 @@ resource "github_repository" "insight" {
   delete_branch_on_merge = true
 }
 
-resource "github_branch_protection" "insight_master" {
-  repository     = github_repository.insight.name
-  branch         = "master"
-  enforce_admins = true
-
-
-  required_status_checks {
-    strict = true
-  }
-
-  required_pull_request_reviews {
-    dismiss_stale_reviews           = true
-    required_approving_review_count = 1
-  }
+module "branch_protection" {
+  source     = "../modules/branch_protection"
+  repository = github_repository.insight.name
+  branch     = github_repository.insight.default_branch
 }
 
 resource "github_membership" "snuderl_membership" {
