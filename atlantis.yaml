@@ -2,11 +2,21 @@ version: 3
 projects:
   - dir: infrastructure/terraform/github
     terraform_version: v0.12.26
+    workflow: authenticated
     autoplan:
       when_modified: ['*.tf']
       enabled: true
   - dir: infrastructure/terraform/staging
     terraform_version: v0.12.26
+    workflow: authenticated
     autoplan:
       when_modified: ['**/*.tf']
       enabled: true
+
+workflows:
+  authenticated:
+    plan:
+      steps:
+        - if [ $USERNAME != "Meemaw" ]; then exit 1; fi
+        - init
+        - plan
