@@ -20,3 +20,7 @@ module "branch_protection" {
   branch     = github_repository.insight.default_branch
 }
 
+resource "github_membership" "meemaw_mermbership" {
+  username = "Meemaw"
+  role     = "admin"
+}
