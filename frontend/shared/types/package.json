@@ -6,15 +6,15 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "typings": "./dist/index.d.ts",
-  "author": "Meemaw <ematej.snuderl@gmail.com>",
+  "author": "Insight Engineering",
   "license": "MIT",
-  "homepage": "https://github.com/Meemaw/insight#readme",
+  "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Meemaw/insight.git"
+    "url": "git+https://github.com/insights-io/insight.git"
   },
   "bugs": {
-    "url": "https://github.com/Meemaw/insight/issues"
+    "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

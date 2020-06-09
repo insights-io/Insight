@@ -1,7 +1,7 @@
 # Insight
 
-![.github/workflows/core.yml](https://github.com/Meemaw/Insight/workflows/.github/workflows/core.yml/badge.svg)
-[![codecov](https://codecov.io/gh/Meemaw/insight/branch/master/graph/badge.svg)](https://codecov.io/gh/Meemaw/insight)
+![.github/workflows/core.yml](https://github.com/insights-io/Insight/workflows/.github/workflows/core.yml/badge.svg)
+[![codecov](https://codecov.io/gh/insights-io/insight/branch/master/graph/badge.svg)](https://codecov.io/gh/insights-io/insight)
 
 **Monorepo for Insight related services and applications.**
 
@@ -15,7 +15,7 @@
 **Clone the repo**
 
 ```sh
-➜ git clone git@github.com:Meemaw/Insight.git
+➜ git clone git@github.com:insights-io/Insight.git
 ```
 
 ### Frontend
