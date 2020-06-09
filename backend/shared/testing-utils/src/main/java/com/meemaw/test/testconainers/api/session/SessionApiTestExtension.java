@@ -33,7 +33,7 @@ public class SessionApiTestExtension implements BeforeAllCallback {
   }
 
   /**
-   * @param sessionApi
+   * @param sessionApi test container
    * @return map of system properties
    */
   public static Map<String, String> start(SessionApiTestContainer sessionApi) {

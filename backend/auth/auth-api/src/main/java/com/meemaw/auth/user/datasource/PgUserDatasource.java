@@ -31,7 +31,8 @@ public class PgUserDatasource implements UserDatasource {
   public CompletionStage<AuthUser> createUser(
       String email, String fullName, String org, UserRole role, Transaction transaction) {
     return transaction
-        .preparedQuery(CREATE_USER_RAW_SQL, Tuple.of(email, fullName, org, role.toString()))
+        .preparedQuery(CREATE_USER_RAW_SQL)
+        .execute(Tuple.of(email, fullName, org, role.toString()))
         .thenApply(
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();
@@ -56,7 +57,8 @@ public class PgUserDatasource implements UserDatasource {
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
     return pgPool
-        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL, Tuple.of(email))
+        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL)
+        .execute(Tuple.of(email))
         .thenApply(this::onFindUser)
         .exceptionally(this::onFindUserException);
   }
@@ -64,7 +66,8 @@ public class PgUserDatasource implements UserDatasource {
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String email, Transaction transaction) {
     return transaction
-        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL, Tuple.of(email))
+        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL)
+        .execute(Tuple.of(email))
         .thenApply(this::onFindUser)
         .exceptionally(this::onFindUserException);
   }

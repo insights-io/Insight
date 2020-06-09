@@ -23,7 +23,7 @@ public class SsoResourceImpl implements SsoResource {
   @Override
   public CompletionStage<Response> login(String email, String password) {
     MDC.put("email", email);
-    log.debug("Login request");
+    log.info("Login request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .login(email, password)
@@ -53,7 +53,7 @@ public class SsoResourceImpl implements SsoResource {
   @Override
   public CompletionStage<Response> session(String sessionId) {
     MDC.put(SsoSession.COOKIE_NAME, sessionId);
-    log.debug("Session lookup request");
+    log.info("Session request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .findSession(sessionId)

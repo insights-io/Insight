@@ -6,7 +6,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-hibernate-validator'
     implementation 'io.quarkus:quarkus-reactive-pg-client'
     implementation 'io.quarkus:quarkus-mailer'
-    implementation 'io.smallrye.reactive:smallrye-axle-web-client'
+    implementation 'io.smallrye.reactive:smallrye-mutiny-vertx-web-client'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.hazelcast:hazelcast:4.0.1'
     implementation project(":auth:auth-cookie")

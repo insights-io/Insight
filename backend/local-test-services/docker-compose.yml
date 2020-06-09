@@ -33,7 +33,7 @@ services:
   beacon-api:
     build:
       context: ..
-      dockerfile: beacon/api/docker/Dockerfile.jvm
+      dockerfile: beacon/beacon-api/docker/Dockerfile.jvm
     ports:
       - '${BEACON_SERVICE_PORT:-8081}:8080'
     depends_on:

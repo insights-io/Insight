@@ -1,0 +1,18 @@
+plugins {
+    id 'io.quarkus'
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation project(":auth:auth-model")
+    implementation project(":events:model")
+    implementation project(":shared:rest-api")
+    implementation project(":session:session-api-contracts")
+
+    testImplementation project(":shared:testing-utils")
+}
+
+configurations {
+    all*.exclude group: 'io.smallrye.reactive', module: 'smallrye-reactive-streams-operators'
+}

@@ -41,7 +41,8 @@ public class PgPageDatasource implements PageDatasource {
   @Override
   public Uni<Optional<UUID>> findUserSessionLink(String organizationId, UUID uid) {
     return pgPool
-        .preparedQuery(SELECT_LINK_DEVICE_SESSION_RAW_SQL, Tuple.of(organizationId, uid))
+        .preparedQuery(SELECT_LINK_DEVICE_SESSION_RAW_SQL)
+        .execute(Tuple.of(organizationId, uid))
         .map(this::mapSessionId)
         .onFailure()
         .invoke(this::onFindUserSessionLinkException);
@@ -79,7 +80,8 @@ public class PgPageDatasource implements PageDatasource {
                 page.getCompiledTs()));
 
     return pgPool
-        .preparedQuery(INSERT_PAGE_RAW_SQL, values)
+        .preparedQuery(INSERT_PAGE_RAW_SQL)
+        .execute(values)
         .map(rowSet -> PageIdentity.builder().pageId(pageId).sessionId(sessionId).uid(uid).build())
         .onFailure()
         .invoke(this::onInsertPageException);
@@ -94,6 +96,7 @@ public class PgPageDatasource implements PageDatasource {
   public Uni<Integer> activePageCount() {
     return pgPool
         .preparedQuery(SELECT_ACTIVE_PAGE_COUNT)
+        .execute()
         .map(rowSet -> rowSet.iterator().next().getInteger("count"))
         .onFailure()
         .invoke(this::onActivePageCountException);
@@ -107,7 +110,8 @@ public class PgPageDatasource implements PageDatasource {
   @Override
   public Uni<Optional<PageDTO>> getPage(UUID pageID, UUID sessionID, String organizationID) {
     return pgPool
-        .preparedQuery(SELECT_PAGE_RAW_SQL, Tuple.of(pageID, sessionID, organizationID))
+        .preparedQuery(SELECT_PAGE_RAW_SQL)
+        .execute(Tuple.of(pageID, sessionID, organizationID))
         .map(
             rowSet -> {
               if (!rowSet.iterator().hasNext()) {
