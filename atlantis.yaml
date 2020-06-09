@@ -9,10 +9,10 @@ projects:
     workflow: default
 workflows:
   default:
-  plan:
-    steps:
-      - init
-      - plan
-  apply:
-    steps:
-      - apply
+    plan:
+      steps:
+        - init
+        - plan
+    apply:
+      steps:
+        - apply
