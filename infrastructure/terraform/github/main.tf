@@ -25,7 +25,7 @@ module "branch_protection" {
 }
 
 resource "github_membership" "admins" {
-  for_each = local.admins
+  for_each = set(local.admins)
   username = each.value
   role     = "admin"
 }
