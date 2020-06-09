@@ -24,7 +24,7 @@ public class PgPasswordDatasource implements PasswordDatasource {
       "INSERT INTO auth.password(user_id, hash) VALUES($1, $2)";
 
   private static final String FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL =
-      "SELECT auth.user.id, auth.user.email, auth.user.full_name, auth.user.org_id, auth.user.role, auth.user.created_at, auth.password.hash"
+      "SELECT auth.user.id, auth.user.email, auth.user.full_name, auth.user.organization_id, auth.user.role, auth.user.created_at, auth.password.hash"
           + " FROM auth.user LEFT JOIN auth.password ON auth.user.id = auth.password.user_id"
           + " WHERE email = $1 ORDER BY auth.password.created_at DESC LIMIT 1";
 
@@ -32,14 +32,16 @@ public class PgPasswordDatasource implements PasswordDatasource {
   public CompletionStage<Boolean> storePassword(
       UUID userId, String hashedPassword, Transaction transaction) {
     return transaction
-        .preparedQuery(INSERT_PASSWORD_RAW_SQL, Tuple.of(userId, hashedPassword))
+        .preparedQuery(INSERT_PASSWORD_RAW_SQL)
+        .execute(Tuple.of(userId, hashedPassword))
         .thenApply(pgRowSet -> true);
   }
 
   @Override
   public CompletionStage<Optional<UserWithHashedPassword>> findUserWithPassword(String email) {
     return pgPool
-        .preparedQuery(FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL, Tuple.of(email))
+        .preparedQuery(FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL)
+        .execute(Tuple.of(email))
         .thenApply(this::userWithPasswordFromRowSet);
   }
 
@@ -62,7 +64,7 @@ public class PgPasswordDatasource implements PasswordDatasource {
         row.getString("email"),
         row.getString("full_name"),
         UserRole.valueOf(row.getString("role")),
-        row.getString("org_id"),
+        row.getString("organization_id"),
         row.getOffsetDateTime("created_at"),
         row.getString("hash"));
   }

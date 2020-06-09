@@ -22,7 +22,7 @@ public class PgUserDatasource implements UserDatasource {
   @Inject PgPool pgPool;
 
   private static final String CREATE_USER_RAW_SQL =
-      "INSERT INTO auth.user(email, full_name, org_id, role) VALUES($1, $2, $3, $4) RETURNING id, created_at";
+      "INSERT INTO auth.user(email, full_name, organization_id, role) VALUES($1, $2, $3, $4) RETURNING id, created_at";
 
   private static final String FIND_USER_BY_EMAIL_RAW_SQL =
       "SELECT * FROM auth.user WHERE email = $1";
@@ -31,7 +31,8 @@ public class PgUserDatasource implements UserDatasource {
   public CompletionStage<AuthUser> createUser(
       String email, String fullName, String org, UserRole role, Transaction transaction) {
     return transaction
-        .preparedQuery(CREATE_USER_RAW_SQL, Tuple.of(email, fullName, org, role.toString()))
+        .preparedQuery(CREATE_USER_RAW_SQL)
+        .execute(Tuple.of(email, fullName, org, role.toString()))
         .thenApply(
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();
@@ -56,7 +57,8 @@ public class PgUserDatasource implements UserDatasource {
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
     return pgPool
-        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL, Tuple.of(email))
+        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL)
+        .execute(Tuple.of(email))
         .thenApply(this::onFindUser)
         .exceptionally(this::onFindUserException);
   }
@@ -64,7 +66,8 @@ public class PgUserDatasource implements UserDatasource {
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String email, Transaction transaction) {
     return transaction
-        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL, Tuple.of(email))
+        .preparedQuery(FIND_USER_BY_EMAIL_RAW_SQL)
+        .execute(Tuple.of(email))
         .thenApply(this::onFindUser)
         .exceptionally(this::onFindUserException);
   }
@@ -88,7 +91,7 @@ public class PgUserDatasource implements UserDatasource {
         row.getString("email"),
         row.getString("full_name"),
         UserRole.valueOf(row.getString("role")),
-        row.getString("org_id"),
+        row.getString("organization_id"),
         row.getOffsetDateTime("created_at"));
   }
 }

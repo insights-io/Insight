@@ -11,17 +11,17 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class PageIdentity {
 
-  UUID uid;
+  UUID deviceId;
   UUID sessionId;
   UUID pageId;
 
   /**
-   * @param uid user id
-   * @param sessionId session id
-   * @param pageId page id
+   * @param deviceId UUID device id
+   * @param sessionId UUID session id
+   * @param pageId UUID page id
    */
-  public PageIdentity(UUID uid, UUID sessionId, UUID pageId) {
-    this.uid = uid;
+  public PageIdentity(UUID deviceId, UUID sessionId, UUID pageId) {
+    this.deviceId = deviceId;
     this.sessionId = sessionId;
     this.pageId = pageId;
   }

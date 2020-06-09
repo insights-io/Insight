@@ -14,16 +14,16 @@ CREATE TABLE IF NOT EXISTS auth.organization
 
 CREATE TABLE IF NOT EXISTS auth.user
 (
-    id           UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
-    email        TEXT        NOT NULL UNIQUE,
-    org_id       TEXT        NOT NULL,
-    role         TEXT        NOT NULL,
-    full_name    TEXT        NOT NULL,
-    phone_number TEXT,
-    created_at   TIMESTAMPTZ NOT NULL        DEFAULT now(),
+    id              UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+    email           TEXT        NOT NULL UNIQUE,
+    organization_id TEXT        NOT NULL,
+    role            TEXT        NOT NULL,
+    full_name       TEXT        NOT NULL,
+    phone_number    TEXT,
+    created_at      TIMESTAMPTZ NOT NULL        DEFAULT now(),
 
-    PRIMARY KEY (id, email, org_id),
-    FOREIGN KEY (org_id) REFERENCES auth.organization (id),
+    PRIMARY KEY (id, email, organization_id),
+    FOREIGN KEY (organization_id) REFERENCES auth.organization (id),
     CONSTRAINT email_length CHECK (length(auth.user.email) < 255)
 );
 
@@ -67,17 +67,17 @@ CREATE TABLE IF NOT EXISTS auth.sign_up_request
 
 CREATE TABLE IF NOT EXISTS auth.team_invite
 (
-    token      UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
-    email      TEXT        NOT NULL,
-    creator_id UUID        NOT NULL,
-    org_id     TEXT        NOT NULL,
-    role       TEXT        NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL        DEFAULT now(),
+    token           UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+    email           TEXT        NOT NULL,
+    creator_id      UUID        NOT NULL,
+    organization_id TEXT        NOT NULL,
+    role            TEXT        NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL        DEFAULT now(),
 
     PRIMARY KEY (token),
-    FOREIGN KEY (org_id) REFERENCES auth.organization (id),
+    FOREIGN KEY (organization_id) REFERENCES auth.organization (id),
     FOREIGN KEY (creator_id) REFERENCES auth.user (id),
-    CONSTRAINT no_duplicates UNIQUE (org_id, email),
+    CONSTRAINT no_duplicates UNIQUE (organization_id, email),
     CONSTRAINT email_length CHECK (length(auth.team_invite.email) < 255)
 );
 

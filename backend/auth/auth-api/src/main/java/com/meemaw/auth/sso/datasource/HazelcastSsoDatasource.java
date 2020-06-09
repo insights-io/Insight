@@ -4,22 +4,18 @@ import com.hazelcast.map.IMap;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
-import io.quarkus.arc.AlternativePriority;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Priorities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
-@AlternativePriority(Priorities.AUTHENTICATION)
+@Slf4j
 public class HazelcastSsoDatasource implements SsoDatasource {
 
-  private static final Logger log = LoggerFactory.getLogger(HazelcastSsoDatasource.class);
   private static final String SESSION_MAP_NAME = "auth.auth.session";
 
   @Inject HazelcastProvider hazelcastProvider;
@@ -33,8 +29,8 @@ public class HazelcastSsoDatasource implements SsoDatasource {
   }
 
   /**
-   * @param user dto
-   * @return session id
+   * @param user AuthUser user
+   * @return String session id
    */
   @Override
   public CompletionStage<String> createSession(AuthUser user) {

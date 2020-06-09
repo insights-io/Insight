@@ -1,8 +1,8 @@
-import { PageIdentity } from 'backend/types';
+import { PageIdentity } from '@insight/types';
 
 export type InsightIdentity = {
-  orgId: string;
-  uid: string;
+  organizationId: string;
+  deviceId: string;
   sessionId: string;
   host: string;
   expiresSeconds: number;

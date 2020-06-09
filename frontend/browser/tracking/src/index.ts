@@ -11,7 +11,7 @@ import {
   mouseEventWithTargetArgs,
 } from 'event';
 import Backend from 'backend';
-import { PageResponse } from 'backend/types';
+import { CreatePageResponse } from '@insight/types';
 import Identity from 'identity';
 import { MILLIS_IN_SECOND } from 'time';
 import type { InsightWindow } from 'types';
@@ -25,12 +25,12 @@ declare global {
   let { href: lastLocation } = location;
   const context = new Context();
   const eventQueue = new EventQueue(context);
-  const { _i_org: orgId, _i_host: host } = window;
-  const identity = Identity.initFromCookie(host, orgId);
+  const { _i_org: organizationId, _i_host: host } = window;
+  const identity = Identity.initFromCookie(host, organizationId);
   const backend = new Backend(
     `${process.env.RECORDING_API_BASE_URL}`,
     `${process.env.SESSION_API_BASE_URL}`,
-    orgId
+    organizationId
   );
   const UPLOAD_INTERVAL_MILLIS = MILLIS_IN_SECOND * 10;
 
@@ -115,7 +115,7 @@ declare global {
     backend.sendBeacon(eventQueue.events());
   };
 
-  const startBeaconing = (pageResponse: PageResponse) => {
+  const startBeaconing = (pageResponse: CreatePageResponse) => {
     const { data: pageIdentity } = pageResponse;
     backend.connect(pageIdentity);
     identity.connect(pageIdentity);
@@ -134,8 +134,8 @@ declare global {
 
   backend
     .page({
-      orgId,
-      uid: identity.uid(),
+      organizationId,
+      deviceId: identity.deviceId(),
       compiledTs,
       doctype: '<!DOCTYPE html>',
       height: window.innerHeight,

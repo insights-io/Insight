@@ -103,7 +103,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
               path -> {
                 log.info("Applying migration {}", path);
                 try {
-                  client().query(Files.readString(path)).await().indefinitely();
+                  client().query(Files.readString(path)).executeAndAwait();
                 } catch (IOException ex) {
                   log.error("Failed to apply migration {}", migrationsSqlPath, ex);
                   throw new RuntimeException(ex);

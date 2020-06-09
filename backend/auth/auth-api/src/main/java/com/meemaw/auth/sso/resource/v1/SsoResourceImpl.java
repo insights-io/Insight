@@ -3,6 +3,7 @@ package com.meemaw.auth.sso.resource.v1;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
@@ -22,8 +23,8 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> login(String email, String password) {
-    MDC.put("email", email);
-    log.debug("Login request");
+    MDC.put(LoggingConstants.USER_EMAIL, email);
+    log.info("Login request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .login(email, password)
@@ -34,7 +35,7 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> logout(String sessionId) {
-    MDC.put(SsoSession.COOKIE_NAME, sessionId);
+    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
     log.info("Logout request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
@@ -52,8 +53,8 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> session(String sessionId) {
-    MDC.put(SsoSession.COOKIE_NAME, sessionId);
-    log.debug("Session lookup request");
+    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
+    log.info("Session request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .findSession(sessionId)

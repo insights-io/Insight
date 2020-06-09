@@ -1,9 +1,10 @@
 plugins {
     id 'io.quarkus'
+    id 'java-library'
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-hibernate-validator'
+    api 'io.quarkus:quarkus-hibernate-validator'
 
     testImplementation project(":shared:testing-utils")
 }

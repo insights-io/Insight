@@ -6,10 +6,11 @@ import com.meemaw.auth.sso.model.google.GoogleErrorResponse;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
 import com.meemaw.shared.rest.response.Boom;
-import io.vertx.axle.core.Vertx;
-import io.vertx.axle.core.buffer.Buffer;
-import io.vertx.axle.ext.web.client.HttpResponse;
-import io.vertx.axle.ext.web.client.WebClient;
+import io.smallrye.mutiny.Uni;
+import io.vertx.mutiny.core.Vertx;
+import io.vertx.mutiny.core.buffer.Buffer;
+import io.vertx.mutiny.ext.web.client.HttpResponse;
+import io.vertx.mutiny.ext.web.client.WebClient;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -50,11 +51,11 @@ public class SsoGoogleClient {
    */
   public CompletionStage<GoogleTokenResponse> codeExchange(String code, String redirectURI) {
     return requestCodeExchange(code, redirectURI)
-        .thenApply(response -> parseGoogleResponse(response, GoogleTokenResponse.class));
+        .map(response -> parseGoogleResponse(response, GoogleTokenResponse.class))
+        .subscribeAsCompletionStage();
   }
 
-  private CompletionStage<HttpResponse<Buffer>> requestCodeExchange(
-      String code, String redirectURI) {
+  private Uni<HttpResponse<Buffer>> requestCodeExchange(String code, String redirectURI) {
     return webClient
         .postAbs(TOKEN_SERVER_URL)
         .addQueryParam("grant_type", "authorization_code")
@@ -75,10 +76,11 @@ public class SsoGoogleClient {
    */
   public CompletionStage<GoogleUserInfoResponse> userInfo(GoogleTokenResponse token) {
     return requestUserInfo(token)
-        .thenApply(response -> parseGoogleResponse(response, GoogleUserInfoResponse.class));
+        .map(response -> parseGoogleResponse(response, GoogleUserInfoResponse.class))
+        .subscribeAsCompletionStage();
   }
 
-  private CompletionStage<HttpResponse<Buffer>> requestUserInfo(GoogleTokenResponse token) {
+  private Uni<HttpResponse<Buffer>> requestUserInfo(GoogleTokenResponse token) {
     return webClient
         .getAbs(TOKEN_INFO_SERVER_URL)
         .addQueryParam("id_token", token.getIdToken())

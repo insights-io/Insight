@@ -3,9 +3,9 @@ CREATE SCHEMA IF NOT EXISTS session;
 CREATE TABLE IF NOT EXISTS session.page
 (
     id                 UUID        NOT NULL,
-    uid                UUID        NOT NULL,
+    device_id          UUID        NOT NULL,
     session_id         UUID        NOT NULL,
-    org_id             TEXT        NOT NULL,
+    organization_id    TEXT        NOT NULL,
     doctype            TEXT        NOT NULL,
     url                TEXT        NOT NULL,
     referrer           TEXT        NOT NULL,
@@ -17,5 +17,5 @@ CREATE TABLE IF NOT EXISTS session.page
     page_start         TIMESTAMPTZ NOT NULL DEFAULT now(),
     page_end           TIMESTAMPTZ,
 
-    PRIMARY KEY (id, uid, session_id, org_id, page_start)
+    PRIMARY KEY (id, device_id, session_id, organization_id, page_start)
 );

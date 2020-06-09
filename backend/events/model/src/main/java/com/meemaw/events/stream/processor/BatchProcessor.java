@@ -11,5 +11,4 @@ public interface BatchProcessor<V> {
   void close();
 
   void flush();
-
 }

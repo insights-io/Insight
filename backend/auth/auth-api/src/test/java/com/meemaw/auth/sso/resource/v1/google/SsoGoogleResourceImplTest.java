@@ -213,7 +213,7 @@ public class SsoGoogleResourceImplTest {
   @Test
   public void google_oauth2callback_should_succeed_and_login() {
     QuarkusMock.installMockForInstance(new MockedSsoGoogleClient(), ssoGoogleClient);
-    String state = ssoGoogleService.secureState("http://localhost:3000/my_path");
+    String state = ssoGoogleService.secureState("https://www.insight.io/my_path");
 
     given()
         .when()
@@ -224,7 +224,7 @@ public class SsoGoogleResourceImplTest {
         .get(oauth2CallbackURI)
         .then()
         .statusCode(302)
-        .header("Location", "http://localhost:3000/my_path")
+        .header("Location", "https://www.insight.io/my_path")
         .cookie(SsoSession.COOKIE_NAME);
   }
 

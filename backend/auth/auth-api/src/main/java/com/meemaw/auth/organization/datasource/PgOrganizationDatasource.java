@@ -30,7 +30,8 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
   public CompletionStage<Organization> createOrganization(
       String organizationId, String company, Transaction transaction) {
     return transaction
-        .preparedQuery(CREATE_ORGANIZATION_RAW_SQL, Tuple.of(organizationId, company))
+        .preparedQuery(CREATE_ORGANIZATION_RAW_SQL)
+        .execute(Tuple.of(organizationId, company))
         .exceptionally(
             throwable -> {
               log.error("Failed to create organization", throwable);
@@ -47,7 +48,8 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
   @Override
   public CompletionStage<Optional<Organization>> findOrganization(String organizationId) {
     return pgPool
-        .preparedQuery(FIND_ORGANIZATION_RAW_SQL, Tuple.of(organizationId))
+        .preparedQuery(FIND_ORGANIZATION_RAW_SQL)
+        .execute(Tuple.of(organizationId))
         .thenApply(this::onFindOrganization);
   }
 
@@ -55,7 +57,8 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
   public CompletionStage<Optional<Organization>> findOrganization(
       String organizationId, Transaction transaction) {
     return transaction
-        .preparedQuery(FIND_ORGANIZATION_RAW_SQL, Tuple.of(organizationId))
+        .preparedQuery(FIND_ORGANIZATION_RAW_SQL)
+        .execute(Tuple.of(organizationId))
         .thenApply(this::onFindOrganization);
   }
 

@@ -12,9 +12,9 @@ import lombok.Value;
 public class PageDTO {
 
   UUID id;
-  UUID sessionID;
-  String orgID;
-  UUID uid;
+  UUID sessionId;
+  String organizationId;
+  UUID deviceId;
   String doctype;
   String url;
   String referrer;

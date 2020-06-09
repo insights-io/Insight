@@ -5,14 +5,14 @@
   "version": "0.0.0-development",
   "source": "src/index.ts",
   "license": "MIT",
-  "author": "Meemaw <ematej.snuderl@gmail.com>",
-  "homepage": "https://github.com/Meemaw/insight#readme",
+  "author": "Insight Engineering",
+  "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Meemaw/insight.git"
+    "url": "git+https://github.com/insights-io/insight.git"
   },
   "bugs": {
-    "url": "https://github.com/Meemaw/insight/issues"
+    "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
     "build": "rollup -c rollup.config.js",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "playwright": "1.0.2",
-    "rollup": "2.13.1",
+    "rollup": "2.15.0",
     "rollup-plugin-gzip": "2.5.0",
     "rollup-plugin-prettier": "2.1.0",
     "rollup-plugin-terser": "6.1.0"

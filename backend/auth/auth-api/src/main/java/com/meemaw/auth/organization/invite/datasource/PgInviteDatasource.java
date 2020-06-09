@@ -37,24 +37,25 @@ public class PgInviteDatasource implements InviteDatasource {
       "SELECT * FROM auth.team_invite WHERE token = $1";
 
   private static final String FIND_TEAM_INVITE_WITH_ORGANIZATION_RAW_SQL =
-      "SELECT * FROM auth.team_invite LEFT JOIN auth.organization ON auth.team_invite.org_id = auth.organization.id WHERE token = $1";
+      "SELECT * FROM auth.team_invite LEFT JOIN auth.organization ON auth.team_invite.organization_id = auth.organization.id WHERE token = $1";
 
   private static final String FIND_ALL_INVITES_RAW_SQL =
-      "SELECT * FROM auth.team_invite WHERE org_id = $1";
+      "SELECT * FROM auth.team_invite WHERE organization_id = $1";
 
   private static final String DELETE_INVITE_RAW_SQL =
       "DELETE FROM auth.team_invite WHERE token = $1";
 
   private static final String DELETE_ALL_INVITES_RAW_SQL =
-      "DELETE FROM auth.team_invite WHERE email = $1 AND org_id = $2";
+      "DELETE FROM auth.team_invite WHERE email = $1 AND organization_id = $2";
 
   private static final String CREATE_INVITE_RAW_SQL =
-      "INSERT INTO auth.team_invite(creator_id, email, org_id, role) VALUES($1, $2, $3, $4) RETURNING token, created_at";
+      "INSERT INTO auth.team_invite(creator_id, email, organization_id, role) VALUES($1, $2, $3, $4) RETURNING token, created_at";
 
   @Override
   public CompletionStage<Optional<TeamInvite>> findTeamInvite(UUID token, Transaction transaction) {
     return transaction
-        .preparedQuery(FIND_INVITE_RAW_SQL, Tuple.of(token))
+        .preparedQuery(FIND_INVITE_RAW_SQL)
+        .execute(Tuple.of(token))
         .thenApply(this::inviteFromRowSet);
   }
 
@@ -62,7 +63,8 @@ public class PgInviteDatasource implements InviteDatasource {
   public CompletionStage<Optional<Pair<TeamInvite, Organization>>> findTeamInviteWithOrganization(
       UUID token) {
     return pgPool
-        .preparedQuery(FIND_TEAM_INVITE_WITH_ORGANIZATION_RAW_SQL, Tuple.of(token))
+        .preparedQuery(FIND_TEAM_INVITE_WITH_ORGANIZATION_RAW_SQL)
+        .execute(Tuple.of(token))
         .thenApply(
             pgRowSet -> {
               if (!pgRowSet.iterator().hasNext()) {
@@ -78,7 +80,8 @@ public class PgInviteDatasource implements InviteDatasource {
   @Override
   public CompletionStage<List<TeamInvite>> findTeamInvites(String organizationId) {
     return pgPool
-        .preparedQuery(FIND_ALL_INVITES_RAW_SQL, Tuple.of(organizationId))
+        .preparedQuery(FIND_ALL_INVITES_RAW_SQL)
+        .execute(Tuple.of(organizationId))
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
@@ -88,14 +91,18 @@ public class PgInviteDatasource implements InviteDatasource {
 
   @Override
   public CompletionStage<Boolean> deleteTeamInvite(UUID token) {
-    return pgPool.preparedQuery(DELETE_INVITE_RAW_SQL, Tuple.of(token)).thenApply(pgRowSet -> true);
+    return pgPool
+        .preparedQuery(DELETE_INVITE_RAW_SQL)
+        .execute(Tuple.of(token))
+        .thenApply(pgRowSet -> true);
   }
 
   @Override
   public CompletionStage<Boolean> deleteTeamInvites(
       String email, String organizationId, Transaction transaction) {
     return transaction
-        .preparedQuery(DELETE_ALL_INVITES_RAW_SQL, Tuple.of(email, organizationId))
+        .preparedQuery(DELETE_ALL_INVITES_RAW_SQL)
+        .execute(Tuple.of(email, organizationId))
         .thenApply(pgRowSet -> true);
   }
 
@@ -109,8 +116,8 @@ public class PgInviteDatasource implements InviteDatasource {
     UserRole role = teamInvite.getRecipientRole();
 
     return transaction
-        .preparedQuery(
-            CREATE_INVITE_RAW_SQL, Tuple.of(creatorId, email, organizationId, role.toString()))
+        .preparedQuery(CREATE_INVITE_RAW_SQL)
+        .execute(Tuple.of(creatorId, email, organizationId, role.toString()))
         .thenApply(
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();
@@ -158,7 +165,7 @@ public class PgInviteDatasource implements InviteDatasource {
     return new TeamInvite(
         row.getUUID("token"),
         row.getString("email"),
-        row.getString("org_id"),
+        row.getString("organization_id"),
         UserRole.valueOf(row.getString("role")),
         row.getUUID("creator_id"),
         row.getOffsetDateTime("created_at"));

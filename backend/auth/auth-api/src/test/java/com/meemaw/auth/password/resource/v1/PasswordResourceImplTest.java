@@ -176,6 +176,7 @@ public class PasswordResourceImplTest {
 
     Response response =
         given()
+            .header("referer", "https://www.insight.io")
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .body(payload)
@@ -288,7 +289,7 @@ public class PasswordResourceImplTest {
     tokenMatcher.matches();
     String token = tokenMatcher.group(1);
 
-    assertEquals(passwordForgotLink, "http://localhost:8081/password-reset?token=" + token);
+    assertEquals(passwordForgotLink, "https://www.insight.io/password-reset?token=" + token);
 
     // reset request should exist
     given()

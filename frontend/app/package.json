@@ -4,14 +4,14 @@
   "version": "0.0.0-development",
   "description": "Insight app",
   "license": "MIT",
-  "author": "Meemaw <ematej.snuderl@gmail.com>",
-  "homepage": "https://github.com/Meemaw/insight#readme",
+  "author": "Insight Engineering",
+  "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Meemaw/insight.git"
+    "url": "git+https://github.com/insights-io/insight.git"
   },
   "bugs": {
-    "url": "https://github.com/Meemaw/insight/issues"
+    "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
     "dev": "next",

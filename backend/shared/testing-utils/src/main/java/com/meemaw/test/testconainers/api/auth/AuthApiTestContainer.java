@@ -14,6 +14,8 @@ public class AuthApiTestContainer extends AbstractApiTestContainer<AuthApiTestCo
 
   /** @return auth api test container */
   public static AuthApiTestContainer newInstance() {
-    return new AuthApiTestContainer().withLogConsumer(new Slf4jLogConsumer(log));
+    return new AuthApiTestContainer()
+        .withEnv("MAILER_MOCK", "true")
+        .withLogConsumer(new Slf4jLogConsumer(log));
   }
 }
