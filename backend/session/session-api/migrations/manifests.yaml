@@ -10,7 +10,7 @@ spec:
   template:
     spec:
       containers:
-        - image: eu.gcr.io/insight/session-api-migrations
+        - image: docker.pkg.github.com/insights-io/Insight/session-api-migrations
           name: session-api-migrations
           imagePullPolicy: Never # kustomize this
           env:
