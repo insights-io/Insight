@@ -1,7 +1,12 @@
 version: 3
 projects:
-  - dir: infrastructure
+  - dir: infrastructure/github
     terraform_version: v0.12.26
     autoplan:
-      when_modified: ['terraform/**/*.tf']
+      when_modified: ['*.tf']
+      enabled: true
+  - dir: infrastructure/staging
+    terraform_version: v0.12.26
+    autoplan:
+      when_modified: ['*.tf']
       enabled: true
