@@ -1,5 +1,18 @@
 version: 3
 projects:
   - dir: infrastructure
+    terraform_version: v0.12.26
     autoplan:
       when_modified: ['terraform/**/*.tf']
+      enabled: true
+    apply_requirements: [mergeable, approved]
+    workflow: default
+workflows:
+  default:
+  plan:
+    steps:
+      - init
+      - plan
+  apply:
+    steps:
+      - apply
