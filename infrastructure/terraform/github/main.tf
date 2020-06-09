@@ -1,5 +1,5 @@
 locals {
-  admins = ["Meemaw", "snuderl", "botsights"]
+  adminss = ["Meemaw", "snuderl", "botsights"]
 }
 
 resource "github_repository" "insight" {
@@ -25,7 +25,7 @@ module "branch_protection" {
 }
 
 resource "github_membership" "admins" {
-  for_each = local.admins
+  for_each = local.adminss
   username = each.value
   role     = "admin"
 }
