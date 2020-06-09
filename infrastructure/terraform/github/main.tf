@@ -1,3 +1,7 @@
+locals {
+  admins = ["Meemaw", "snuderl", "botsights"]
+}
+
 resource "github_repository" "insight" {
   name           = "Insight"
   description    = "Find insights into your frontend applications."
@@ -20,17 +24,8 @@ module "branch_protection" {
   branch     = github_repository.insight.default_branch
 }
 
-resource "github_membership" "snuderl_membership" {
-  username = "snuderl"
-  role     = "admin"
-}
-
-resource "github_membership" "meemaw_membership" {
-  username = "Meemaw"
-  role     = "admin"
-}
-
-resource "github_membership" "botsights_membership" {
-  username = "botsights"
+resource "github_membership" "admins" {
+  for_each = local.admins
+  username = each.value
   role     = "admin"
 }
