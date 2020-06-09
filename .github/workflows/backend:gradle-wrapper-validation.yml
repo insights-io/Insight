@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'backend/**'
+      - '.github/workflows/backend:gradle-wrapper-validation.yml'
 
 jobs:
   validation:
