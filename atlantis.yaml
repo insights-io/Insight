@@ -17,6 +17,6 @@ workflows:
   authenticated:
     plan:
       steps:
-        - if [ $USERNAME != "Meemaw" ]; then exit 1; fi
+        - run: if [ $USERNAME != "Meemaw" ]; then exit 1; fi
         - init
         - plan
