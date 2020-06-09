@@ -3,9 +3,6 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: auth-api
-  namespace: recording
-  labels:
-    team: auth
 spec:
   maxReplicas: 10
   minReplicas: 2

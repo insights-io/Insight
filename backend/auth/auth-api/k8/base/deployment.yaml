@@ -3,9 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-api
-  namespace: recording
-  labels:
-    team: auth
 spec:
   replicas: 2
   selector:

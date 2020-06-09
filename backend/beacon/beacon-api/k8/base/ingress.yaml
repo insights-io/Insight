@@ -1,0 +1,20 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: beacon-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  tls:
+    - hosts:
+        - beacon-api.minikube.snuderls.eu
+      secretName: beacon1-api-tls
+  rules:
+    - host: beacon-api.minikube.snuderls.eu
+      http:
+        paths:
+          - backend:
+              serviceName: beacon-api
+              servicePort: 8080

@@ -3,9 +3,6 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: session-api
-  namespace: recording
-  labels:
-    team: session
 spec:
   maxReplicas: 10
   minReplicas: 2

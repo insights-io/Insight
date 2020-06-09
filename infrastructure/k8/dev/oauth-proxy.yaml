@@ -1,0 +1,26 @@
+---
+config:
+  cookieSecret: dbgfdgfhdgfdgfdgf
+  clientID: test-client-id
+  clientSecret: test-client-secret
+
+extraArgs:
+  whitelist-domain: .dev.snuderls.eu
+  cookie-domain: .dev.snuderls.eu
+  provider: github
+  github-org: meemaw-corp
+  pass-user-headers: true
+  pass-authorization-header: true
+  set-xauthrequest: true
+
+ingress:
+  enabled: true
+  path: /
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - auth.dev.snuderls.eu
+  tls:
+    - hosts:
+        - auth.dev.snuderls.eu
+      secretName: auth-dev-tls

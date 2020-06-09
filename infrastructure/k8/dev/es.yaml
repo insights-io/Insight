@@ -17,9 +17,12 @@ resources:
 # Request smaller persistent volumes.
 volumeClaimTemplate:
   accessModes: ['ReadWriteOnce']
-  storageClassName: 'standard'
+  storageClassName: 'local-path'
   resources:
     requests:
-      storage: 100M
+      storage: 1000M
 
 replicas: 1
+
+# If running only 1 master node will be in state yellow after restart, since it wont be able to do a clean handoff from prev master
+clusterHealthCheckParams: wait_for_status=yellow&timeout=1s
