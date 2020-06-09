@@ -2,7 +2,10 @@
 
 [![codecov](https://codecov.io/gh/insights-io/insight/branch/master/graph/badge.svg)](https://codecov.io/gh/insights-io/insight)
 ![gitleaks](https://github.com/insights-io/Insight/workflows/gitleaks/badge.svg)
+![hadolint](https://github.com/insights-io/Insight/workflows/hadolint/badge.svg)
 ![misspell](https://github.com/insights-io/Insight/workflows/misspell/badge.svg)
+![misspell](https://github.com/insights-io/Insight/workflows/misspell/badge.svg)
+![shellcheck](https://github.com/insights-io/Insight/workflows/shellcheck/badge.svg)
 
 **Monorepo for Insight related services and applications.**
 
