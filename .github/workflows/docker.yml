@@ -2,82 +2,86 @@
 name: Docker
 on: [push]
 
+env:
+  REGISTRY: docker.pkg.github.com
+  REPOSITORY: insights-io/Insight
+
 jobs:
   build-auth-api:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: insights-io/Insight/auth-api
+          name: ${{ env.REPOSITORY }}/auth-api
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
+          registry: ${{ env.REGISTRY }}
           dockerfile: auth/auth-api/docker/Dockerfile.jvm
           workdir: backend
 
   build-auth-api-migrations:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: insights-io/Insight/auth-api-migrations
+          name: ${{ env.REPOSITORY }}/auth-api-migrations
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
+          registry: ${{ env.REGISTRY }}
           dockerfile: Dockerfile
           workdir: backend/auth/auth-api/migrations/
 
   build-session-api:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: insights-io/Insight/session-api
+          name: ${{ env.REPOSITORY }}/session-api
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
+          registry: ${{ env.REGISTRY }}
           dockerfile: session/session-api/docker/Dockerfile.jvm
           workdir: backend
 
   build-session-api-migrations:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: insights-io/Insight/session-api-migrations
+          name: ${{ env.REPOSITORY }}/session-api-migrations
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
+          registry: ${{ env.REGISTRY }}
           dockerfile: Dockerfile
           workdir: backend/session/session-api/migrations
 
   build-beacon-api:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: insights-io/Insight/beacon-api
+          name: ${{ env.REPOSITORY }}/beacon-api
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
+          registry: ${{ env.REGISTRY }}
           dockerfile: beacon/beacon-api/docker/Dockerfile.jvm
           workdir: backend
 
   build-search-indexer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: insights-io/Insight/search-indexer
+          name: ${{ env.REPOSITORY }}/search-indexer
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
+          registry: ${{ env.REGISTRY }}
           dockerfile: events/search-indexer/docker/Dockerfile.jvm
           workdir: backend
 
@@ -86,8 +90,8 @@ jobs:
     steps:
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: insights-io/Insight/frontend-app
+          name: ${{ env.REPOSITORY }}/frontend-app
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
+          registry: ${{ env.REGISTRY }}
           dockerfile: frontend/app/docker/Dockerfile
