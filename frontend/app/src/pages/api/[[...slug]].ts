@@ -13,8 +13,11 @@ const LOCALHOST_SERVICE_MAPPINGS = {
   auth: 8080,
 } as const;
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  const { slug, ...rest } = req.query;
+export default (
+  originalRequest: NextApiRequest,
+  originalResponse: NextApiResponse
+) => {
+  const { slug, ...rest } = originalRequest.query;
   const [service, ...path] = slug as string[];
   let proxiedPath = `/${path.join('/')}`;
   if (Object.keys(rest).length > 0) {
@@ -33,45 +36,52 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   const options = url.parse(proxiedURL);
   const httpModule = options.protocol === 'https:' ? https : http;
 
+  originalRequest.pause();
   console.log(`<== Proxying /api/${service}${proxiedPath} to ${proxiedURL}`);
-  req.pause();
 
   const protocol = options.protocol as string;
   const headers = {
-    ...req.headers,
+    ...originalRequest.headers,
     'X-Forwarded-Host': options.host as string,
     'X-Forwarded-Proto': protocol.substring(0, protocol.length - 1),
   };
 
-  const connector = httpModule.request(
-    { ...options, headers, method: req.method },
-    (proxiedResponse) => {
-      const statusCode = proxiedResponse.statusCode as number;
+  const proxiedRequest = httpModule.request({
+    ...options,
+    headers,
+    method: originalRequest.method,
+  });
 
-      console.log(
-        '<== Received response for proxied request',
-        statusCode,
-        proxiedURL
-      );
-
-      proxiedResponse.pause();
-      res.writeHead(statusCode, proxiedResponse.headers);
-      proxiedResponse.pipe(res, { end: true });
-      proxiedResponse.resume();
-    }
-  );
-
-  const contentType = headers['content-type'];
+  const contentType = originalRequest.headers['content-type'];
   if (contentType === 'application/x-www-form-urlencoded;charset=UTF-8') {
-    connector.write(querystring.stringify(req.body));
+    const body = querystring.stringify(originalRequest.body);
+    proxiedRequest.setHeader('Content-Length', Buffer.byteLength(body));
+    proxiedRequest.write(body);
   } else if (contentType === 'application/json') {
-    connector.write(JSON.stringify(req.body));
+    const body = JSON.stringify(originalRequest.body);
+    proxiedRequest.setHeader('Content-Length', Buffer.byteLength(body));
+    proxiedRequest.write(body);
   }
 
-  connector.on('error', (error) => {
+  proxiedRequest.on('response', (proxiedResponse) => {
+    const statusCode = proxiedResponse.statusCode as number;
+
+    console.log(
+      '<== Received response for proxied request',
+      statusCode,
+      proxiedURL
+    );
+
+    proxiedResponse.pause();
+    originalResponse.writeHead(statusCode, proxiedResponse.headers);
+    proxiedResponse.pipe(originalResponse, { end: true });
+    proxiedResponse.resume();
+  });
+
+  proxiedRequest.on('error', (error) => {
     console.error('Something went wrong', error);
   });
 
-  req.pipe(connector, { end: true });
-  req.resume();
+  originalRequest.pipe(proxiedRequest, { end: true });
+  originalRequest.resume();
 };
