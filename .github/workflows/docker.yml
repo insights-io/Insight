@@ -88,6 +88,7 @@ jobs:
   build-frontend-app:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: ${{ env.REPOSITORY }}/frontend-app
