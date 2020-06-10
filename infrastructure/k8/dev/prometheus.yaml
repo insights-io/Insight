@@ -1,0 +1,10 @@
+---
+prometheus:
+  prometheusSpec:
+    replicas: 1
+alertmanager:
+  alertmanagerSpec:
+    replicas: 1
+
+grafana:
+  replicas: 1
