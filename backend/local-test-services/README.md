@@ -43,7 +43,7 @@ brew install kustomize
 ### Applying
 
 ```sh
-docker build . -f auth/auth-api/docker/Dockerfile.jvm -t eu.gcr.io/insight/auth-api
+docker build . -f auth/auth-api/docker/Dockerfile.jvm -t docker.pkg.github.com/insights-io/Insight/auth-api
 kustomize build auth/auth-api/k8/overlays/minikube | kubectl apply -f -
 ```
 
