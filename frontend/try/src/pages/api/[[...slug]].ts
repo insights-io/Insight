@@ -9,7 +9,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 const PROXIED_DOMAIN = process.env.PROXIED_DOMAIN || 'localhost';
 const IS_PROXIED_LOCALHOST = PROXIED_DOMAIN === 'localhost';
 
-const LOCALHOST_SERVICE_MAPPINGS = {
+const PORT_MAPPINGS = {
   auth: 8080,
   beacon: 8081,
   session: 8082,
@@ -26,14 +26,10 @@ export default (
     proxiedPath = `${proxiedPath}?${querystring.stringify(rest)}`;
   }
 
-  const proxiedApi = `${service}-api`;
+  const proxiedApiPort = PORT_MAPPINGS[service as keyof typeof PORT_MAPPINGS];
   const proxiedURL = IS_PROXIED_LOCALHOST
-    ? `http://localhost:${
-        LOCALHOST_SERVICE_MAPPINGS[
-          service as keyof typeof LOCALHOST_SERVICE_MAPPINGS
-        ]
-      }${proxiedPath}`
-    : `https://${proxiedApi}.${PROXIED_DOMAIN}${proxiedPath}`;
+    ? `http://localhost:${proxiedApiPort}${proxiedPath}`
+    : `https://${service}-api.${PROXIED_DOMAIN}${proxiedPath}`;
 
   const options = url.parse(proxiedURL);
   const httpModule = options.protocol === 'https:' ? https : http;
