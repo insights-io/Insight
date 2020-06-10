@@ -13,4 +13,7 @@ const {
 module.exports = withBundleAnalyzer({
   env: { APP_BASE_URL, HELP_BASE_URL, AUTH_API_BASE_URL },
   webpack: (config, _config) => config,
+  experimental: {
+    optionalCatchAll: true,
+  },
 });
