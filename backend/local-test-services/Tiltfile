@@ -29,4 +29,4 @@ docker_build('docker.pkg.github.com/insights-io/Insight/search-indexer', '..', {
 
 k8s_yaml(kustomize('../../frontend/app/k8/overlays/development'))
 k8s_resource('app', port_forwards=3000, resource_deps=['auth-api', 'session-api', 'beacon-api'])
-docker_build('docker.pkg.github.com/insights-io/Insight/app', '../..', {'auth_api_server_base_url': 'http://auth-api.recording.svc.cluster.local'}, '../../frontend/app/docker/Dockerfile')
+docker_build('docker.pkg.github.com/insights-io/Insight/frontend-app', '../..', {'auth_api_server_base_url': 'http://auth-api.recording.svc.cluster.local'}, '../../frontend/app/docker/Dockerfile')
