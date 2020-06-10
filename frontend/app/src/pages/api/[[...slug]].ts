@@ -11,6 +11,8 @@ const IS_PROXIED_LOCALHOST = PROXIED_DOMAIN === 'localhost';
 
 const LOCALHOST_SERVICE_MAPPINGS = {
   auth: 8080,
+  beacon: 8081,
+  session: 8082,
 } as const;
 
 export default (
