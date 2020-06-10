@@ -16,5 +16,5 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: session2-api
+              serviceName: session-api
               servicePort: 8082

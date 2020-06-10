@@ -16,5 +16,5 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: beacon-api-2
+              serviceName: beacon-api
               servicePort: 8080
