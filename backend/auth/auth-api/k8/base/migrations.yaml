@@ -2,18 +2,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: session-api-migrations
+  name: auth-api-migrations
   namespace: recording
   labels:
-    team: session
+    team: auth
 spec:
   template:
     spec:
+      imagePullSecrets:
+        - name: regcred2
       containers:
-        - image: docker.pkg.github.com/insights-io/Insight/session-api-migrations
-          name: session-api-migrations
-          imagePullPolicy: Never # kustomize this
+        - image: insightio/auth-api-migrations:docker-build
+          name: auth-api-migrations
           env:
+            - name: LOG_JSON
+              value: "true"
             - name: POSTGRES_HOST
               value: postgres-postgresql
             - name: POSTGRES_USER
@@ -28,7 +31,7 @@ spec:
                   key: password
           resources:
             requests:
-              cpu: 200m
+              cpu: 100m
               memory: 200Mi
             limits:
               cpu: 200m

@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - auth-api.minikube.snuderls.eu
-      secretName: auth1-api-tls
+        - auth-api.dev.snuderls.eu
+      secretName: auth-dev-api-tls
   rules:
-    - host: auth-api.minikube.snuderls.eu
+    - host: auth-api.dev.snuderls.eu
       http:
         paths:
           - backend:

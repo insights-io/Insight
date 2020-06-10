@@ -24,7 +24,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: docker.pkg.github.com/insights-io/Insight/search-indexer
+        - image: insightio/search-indexer
           name: search-indexer
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
@@ -33,7 +33,7 @@ spec:
               value: elasticsearch-master:9200
           resources:
             requests:
-              cpu: 500m
+              cpu: 100m
               memory: 500Mi
             limits:
               cpu: 1000m
