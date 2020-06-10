@@ -19,6 +19,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: auth/auth-api/docker/Dockerfile.jvm
           workdir: backend
+          tag_names: true
 
   build-auth-api-migrations:
     runs-on: ubuntu-latest
@@ -32,6 +33,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: Dockerfile
           workdir: backend/auth/auth-api/migrations/
+          tag_names: true
 
   build-session-api:
     runs-on: ubuntu-latest
@@ -45,6 +47,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: session/session-api/docker/Dockerfile.jvm
           workdir: backend
+          tag_names: true
 
   build-session-api-migrations:
     runs-on: ubuntu-latest
@@ -58,6 +61,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: Dockerfile
           workdir: backend/session/session-api/migrations
+          tag_names: true
 
   build-beacon-api:
     runs-on: ubuntu-latest
@@ -71,6 +75,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: beacon/beacon-api/docker/Dockerfile.jvm
           workdir: backend
+          tag_names: true
 
   build-search-indexer:
     runs-on: ubuntu-latest
@@ -84,6 +89,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: events/search-indexer/docker/Dockerfile.jvm
           workdir: backend
+          tag_names: true
 
   build-frontend-app:
     runs-on: ubuntu-latest
@@ -96,3 +102,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           registry: ${{ env.REGISTRY }}
           dockerfile: frontend/app/docker/Dockerfile
+          tag_names: true
