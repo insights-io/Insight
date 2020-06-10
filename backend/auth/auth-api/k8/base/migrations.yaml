@@ -3,9 +3,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: auth-api-migrations
-  namespace: recording
-  labels:
-    team: auth
 spec:
   template:
     spec:

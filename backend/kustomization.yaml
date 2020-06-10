@@ -14,11 +14,35 @@ patchesJson6902:
       name: auth-api
     path: image-pull-secret.patch
   - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: auth-api-migrations
+    path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: auth-api-migrations
+    path: job-generate-name.patch
+  - target:
       group: apps
       version: v1
       kind: Deployment
       name: session-api
     path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: session-api-migrations
+    path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: session-api-migrations
+    path: job-generate-name.patch
   - target:
       group: apps
       version: v1

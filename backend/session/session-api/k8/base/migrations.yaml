@@ -3,16 +3,12 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: session-api-migrations
-  namespace: recording
-  labels:
-    team: session
 spec:
   template:
     spec:
       containers:
         - image: insightio/session-api-migrations:docker-build
           name: session-api-migrations
-          imagePullPolicy: Never # kustomize this
           env:
             - name: POSTGRES_HOST
               value: postgres-postgresql
