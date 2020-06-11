@@ -1,3 +1,4 @@
+---
 storage:
   type: elasticsearch
   elasticsearch:
