@@ -1,0 +1,59 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - auth/auth-api/k8/base
+  - beacon/beacon-api/k8/base
+  - session/session-api/k8/base
+  - events/search-indexer/k8
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: search-indexer
+    path: image-pull-secret.patch
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: auth-api
+    path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: auth-api-migrations
+    path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: auth-api-migrations
+    path: job-generate-name.patch
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: session-api
+    path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: session-api-migrations
+    path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: session-api-migrations
+    path: job-generate-name.patch
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: beacon-api
+    path: image-pull-secret.patch

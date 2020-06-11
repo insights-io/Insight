@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - beacon-api.minikube.snuderls.eu
+        - beacon-api.dev.snuderls.eu
       secretName: beacon1-api-tls
   rules:
-    - host: beacon-api.minikube.snuderls.eu
+    - host: beacon-api.dev.snuderls.eu
       http:
         paths:
           - backend:

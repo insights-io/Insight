@@ -12,3 +12,4 @@ resources:
   - deployment.yaml
   - hpa.yaml
   - ingress.yaml
+  - migrations.yaml

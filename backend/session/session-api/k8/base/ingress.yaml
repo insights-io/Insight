@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - session-api.minikube.snuderls.eu
+        - session-api.dev.snuderls.eu
       secretName: session1-api-tls
   rules:
-    - host: session-api.minikube.snuderls.eu
+    - host: session-api.dev.snuderls.eu
       http:
         paths:
           - backend:

@@ -23,11 +23,11 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: docker.pkg.github.com/insights-io/Insight/beacon-api
+        - image: insightio/beacon-api
           name: beacon-api
           env:
             - name: LOG_JSON
-              value: true
+              value: "true"
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
             - name: SESSION_SERVICE_BASE_URL
@@ -36,13 +36,6 @@ spec:
             - containerPort: 8080
               name: http
               protocol: TCP
-          resources:
-            requests:
-              cpu: 500m
-              memory: 500Mi
-            limits:
-              cpu: 1000m
-              memory: 1000Mi
           livenessProbe:
             httpGet:
               path: /health/live
