@@ -7,6 +7,21 @@ env:
   REPOSITORY: insightio
 
 jobs:
+  k8-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: checkout
+      - name: 'Kustomize Build'
+        uses: karancode/kustomize-github-action@master
+        with:
+          kustomize_build_dir: 'backend'
+          kustomize_comment: true
+          kustomize_output_file: "gitops/rendered.yaml"
+          enable_alpha_plugins: true
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+
   build-auth-api:
     runs-on: ubuntu-latest
     steps:
