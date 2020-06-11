@@ -14,6 +14,27 @@ type ServerRequest = IncomingMessage & {
 
 export type ProxyConfiguration = Record<string, string | undefined>;
 
+export const proxyCookies = (
+  cookies: string[],
+  originalRequestHost: string | undefined
+) => {
+  return cookies.map((cookie) =>
+    cookie
+      .split(';')
+      .map((part) => {
+        const [key] = part.split('=');
+        if (key === 'Domain') {
+          const originalHost = (originalRequestHost || '').includes('localhost')
+            ? ''
+            : originalRequestHost;
+          return [key, originalHost].join('=');
+        }
+        return part;
+      })
+      .join(';')
+  );
+};
+
 export const proxy = (
   originalRequest: ServerRequest,
   originalResponse: ServerResponse,
@@ -59,24 +80,10 @@ export const proxy = (
 
     const cookies = proxiedResponse.headers['set-cookie'];
     if (cookies) {
-      const proxiedCookies = cookies.map((cookie) =>
-        cookie
-          .split(';')
-          .map((part) => {
-            const [key] = part.split('=');
-            if (key === 'Domain') {
-              const originalHost = (
-                originalRequest.headers.host || ''
-              ).includes('localhost')
-                ? ''
-                : originalRequest.headers.host;
-              return [key, originalHost].join('=');
-            }
-            return part;
-          })
-          .join(';')
+      const proxiedCookies = proxyCookies(
+        cookies,
+        originalRequest.headers.host
       );
-
       proxiedResponse.headers['set-cookie'] = proxiedCookies;
     }
 
