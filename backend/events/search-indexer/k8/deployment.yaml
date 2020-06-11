@@ -3,9 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: search-indexer
-  namespace: recording
-  labels:
-    team: beacon
 spec:
   replicas: 1
   selector:
@@ -24,7 +21,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: insightio/search-indexer
+        - image: insightio/search-indexer:docker-build
           name: search-indexer
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
