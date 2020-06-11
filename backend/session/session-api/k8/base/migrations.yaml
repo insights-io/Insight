@@ -9,7 +9,7 @@ spec:
   template:
     spec:
       containers:
-        - image: insightio/session-api-migrations:docker-build
+        - image: insightio/session-api-migrations
           name: session-api-migrations
           env:
             - name: POSTGRES_HOST

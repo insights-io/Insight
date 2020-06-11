@@ -21,7 +21,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: insightio/search-indexer:docker-build
+        - image: insightio/search-indexer
           name: search-indexer
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS

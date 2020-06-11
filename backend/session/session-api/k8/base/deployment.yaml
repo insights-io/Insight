@@ -23,7 +23,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: insightio/session-api:docker-build
+        - image: insightio/session-api
           name: session-api
           env:
             - name: LOG_JSON

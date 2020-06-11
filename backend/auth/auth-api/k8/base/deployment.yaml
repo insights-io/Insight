@@ -23,7 +23,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: insightio/auth-api:docker-build
+        - image: insightio/auth-api
           name: auth-api
           env:
             - name: GOOGLE_OAUTH_CLIENT_ID

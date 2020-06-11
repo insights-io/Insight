@@ -23,7 +23,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: insightio/beacon-api:docker-build
+        - image: insightio/beacon-api
           name: beacon-api
           env:
             - name: LOG_JSON

@@ -11,7 +11,7 @@ spec:
       imagePullSecrets:
         - name: regcred2
       containers:
-        - image: insightio/auth-api-migrations:docker-build
+        - image: insightio/auth-api-migrations
           name: auth-api-migrations
           env:
             - name: LOG_JSON

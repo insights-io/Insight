@@ -1,0 +1,7 @@
+storage:
+  type: elasticsearch
+  elasticsearch:
+    host: elasticsearch-master
+
+provisionDataStore:
+  cassandra: false
