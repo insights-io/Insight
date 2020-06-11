@@ -5,7 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 const withServiceProxy = require('@insight/service-proxy').default({
   enabled: (process.env.PROXY || 'false').toLowerCase() === 'true',
-  proxies: { NEXT_PUBLIC_AUTH_API_BASE_URL: '/api/auth' },
 });
 
 const {

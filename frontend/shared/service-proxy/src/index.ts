@@ -7,6 +7,12 @@ import querystring from 'querystring';
 
 import { NextApiRequest, NextApiResponse } from 'next';
 
+const NEXT_PUBLIC_SERVICE_PATTERN = /^NEXT_PUBLIC_(.*)_API_BASE_URL$/;
+
+const getServiceKey = (service: string) => {
+  return `NEXT_PUBLIC_${service.toUpperCase()}_API_BASE_URL`;
+};
+
 type ServerRequest = IncomingMessage & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body: any;
@@ -109,15 +115,18 @@ export const proxy = (
 
 export const nextProxy = (
   originalRequest: NextApiRequest,
-  originalResponse: NextApiResponse,
-  configuration: ProxyConfiguration
+  originalResponse: NextApiResponse
 ) => {
   const { slug, ...queryParams } = originalRequest.query;
   const [service, ...path] = slug as string[];
 
-  const serviceBaseURL = configuration[service];
+  const serviceBaseURL = process.env[getServiceKey(service)];
   if (!serviceBaseURL) {
-    throw new Error(`Could not find proxy configuration for ${service}`);
+    throw new Error(
+      `Could not find proxy configuration for ${service} in ${getServiceKey(
+        service
+      )}`
+    );
   }
 
   let proxiedPath = `/${path.join('/')}`;
@@ -131,7 +140,6 @@ export const nextProxy = (
 
 type WithServiceProxyConfiguration = {
   enabled: boolean;
-  proxies: Record<string, string>;
 };
 
 type NextConfig = {
@@ -139,23 +147,25 @@ type NextConfig = {
   experimental: { optionalCatchAll: boolean };
 };
 
-const withServiceProxy = ({
-  enabled,
-  proxies,
-}: WithServiceProxyConfiguration) => {
+const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
   return (config: NextConfig) => {
     if (!enabled) {
       return config;
     }
 
     const env = Object.keys(config.env).reduce((acc, key) => {
-      const proxiedPath = proxies[key];
-      if (proxiedPath) {
+      const match = key.match(NEXT_PUBLIC_SERVICE_PATTERN);
+      if (match) {
+        const [_, serviceMatch] = match;
+        const proxiedPath = `/api/${serviceMatch.toLowerCase()}`;
+        const proxiedServiceBaseURL = config.env[key];
         console.log(
-          `Setting up proxy for ${key} => ${proxiedPath} => ${config.env[key]}`
+          `Setting up proxy for ${key} => ${proxiedPath} => ${proxiedServiceBaseURL}`
         );
+
         return { ...acc, [key]: proxiedPath };
       }
+
       return { ...acc, [key]: config.env[key] };
     }, {});
 
