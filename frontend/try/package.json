@@ -30,7 +30,7 @@
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
     "pretest": "yarn prebuild",
-    "prebuild": "yarn workspace @insight/service-proxy build && yarn workspace @insight/types build && yarn workspace @insight/storybook build && yarn workspace @insight/testing build"
+    "prebuild": "concurrently \"yarn workspace @insight/service-proxy build\" \"yarn workspace @insight/types build\" \"yarn workspace @insight/storybook build\" \"yarn workspace @insight/testing build\""
   },
   "dependencies": {
     "@insight/service-proxy": "0.0.0-development",
