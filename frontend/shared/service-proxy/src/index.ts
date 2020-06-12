@@ -144,7 +144,6 @@ type WithServiceProxyConfiguration = {
 
 type NextConfig = {
   env: Record<string, string>;
-  experimental: { optionalCatchAll: boolean };
 };
 
 const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
@@ -169,11 +168,7 @@ const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
       return { ...acc, [key]: config.env[key] };
     }, {});
 
-    return {
-      ...config,
-      env,
-      experimental: { ...config.experimental, optionalCatchAll: true },
-    };
+    return { ...config, env };
   };
 };
 
