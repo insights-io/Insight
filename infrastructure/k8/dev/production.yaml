@@ -16,3 +16,5 @@ ingressAnnotations:
 
 oauthExistingSecret: oauth2-proxy-creds
 cloudflareApiKeySecretName: cloudflare-apikey-secret
+
+storageClassName: "local-path"

@@ -1,5 +1,4 @@
 ---
-adminPasswod: password
 dashboards:
   default:
     prometheus-stats:

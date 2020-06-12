@@ -35,6 +35,8 @@ releases:
     namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
+      - volumeClaimTemplate:
+          storageClassName: "{{ .Values.storageClassName }}"
   - name: fluentbit
     chart: stable/fluent-bit
     namespace: {{ .Values.infraNamespace }}

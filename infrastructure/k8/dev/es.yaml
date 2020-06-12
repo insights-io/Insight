@@ -17,7 +17,6 @@ resources:
 # Request smaller persistent volumes.
 volumeClaimTemplate:
   accessModes: ['ReadWriteOnce']
-  storageClassName: 'local-path'
   resources:
     requests:
       storage: 1000M
