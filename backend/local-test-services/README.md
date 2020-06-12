@@ -23,7 +23,10 @@ minikube config set memory 8192
 minikube config set cpus 4
 minikube config set disk-size 100GB
 minikube start
-minikube addons enable metrics-server ingress
+minikube addons enable metrics-server
+minikube addons enable ingress
+minikube addons enable default-storageclass
+minikube addons enable storage-provisioner
 ```
 
 ### Point your shell to minikube's docker-deamon
