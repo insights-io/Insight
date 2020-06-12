@@ -18,7 +18,7 @@ spec:
           cloudflare:
             email: {{ .Values.email }}
             apiKeySecretRef:
-              name: cloudflare-apikey-secret
+              name: {{ .Values.apiKeySecretName }}
               key: api-token
         selector:
           dnsZones: {{ .Values.dnsZones }}
