@@ -25,5 +25,6 @@ module.exports = withServiceProxy(
       NEXT_PUBLIC_SESSION_API_BASE_URL,
     },
     webpack: (config, _config) => config,
+    experimental: { optionalCatchAll: true },
   })
 );
