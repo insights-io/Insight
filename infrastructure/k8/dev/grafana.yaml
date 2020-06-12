@@ -1,3 +1,4 @@
+---
 adminPasswod: password
 dashboards:
   default:
@@ -16,11 +17,11 @@ datasources:
   datasources.yaml:
     apiVersion: 1
     datasources:
-    - name: Prometheus
-      type: prometheus
-      url: http://prometheus-server.prometheus
-      access: proxy
-      isDefault: true
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.prometheus
+        access: proxy
+        isDefault: true
 
 grafana.ini:
   auth.anonymous:
@@ -30,4 +31,3 @@ grafana.ini:
     enabled: false
     header_name: X-Auth-Request-User
     auto_sign_up: true
-
