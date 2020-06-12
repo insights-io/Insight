@@ -6,3 +6,5 @@ rules:
   line-length: disable
 ignore: |
   helmfile.yaml
+  infrastructure/k8/dev/releases/*
+  infrastructure/k8/dev/letsencrypt/**
