@@ -68,7 +68,7 @@ export const proxy = (
     agent: false,
   });
 
-  // TODO: do we realy need to manualy write?
+  // TODO: do we really need to manually write?
   const contentType = originalRequest.headers['content-type'];
   if (contentType === 'application/x-www-form-urlencoded;charset=UTF-8') {
     const body = querystring.stringify(originalRequest.body);
