@@ -11,6 +11,7 @@ ENV AUTH_API_BASE_URL=$auth_api_server_base_url
 COPY package.json yarn.lock tsconfig.json /src/
 COPY frontend/app/package.json /src/frontend/app/package.json
 COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json
+COPY frontend/shared/service-proxy/package.json /src/frontend/shared/service-proxy/package.json
 COPY frontend/shared/testing/package.json /src/frontend/shared/testing/package.json
 COPY frontend/shared/storybook/package.json /src/frontend/shared/storybook/package.json
 RUN yarn install --frozen-lockfile

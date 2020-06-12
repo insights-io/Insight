@@ -1,0 +1,27 @@
+{
+  "name": "@insight/service-proxy",
+  "version": "0.0.0-development",
+  "private": true,
+  "source": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
+  "author": "Insight Engineering",
+  "license": "MIT",
+  "homepage": "https://github.com/insights-io/insight#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insights-io/insight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/insights-io/insight/issues"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
