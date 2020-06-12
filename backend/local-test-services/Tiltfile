@@ -2,28 +2,23 @@ print('Hello Tiltfile')
 allow_k8s_contexts('k3s-dev')
 
 k8s_yaml('../../infrastructure/k8/base/namespaces.yml')
+k8s_yaml(kustomize('.'))
 
-k8s_yaml('../auth/auth-api/migrations/manifests.yaml')
 k8s_resource('auth-api-migrations')
 docker_build('insightio/auth-api-migrations', '../auth/auth-api/migrations', {})
 
-k8s_yaml(kustomize('../auth/auth-api/k8/overlays/minikube'))
 k8s_resource('auth-api', port_forwards=8080, resource_deps=['auth-api-migrations'])
 docker_build('insightio/auth-api', '..', {}, '../auth/auth-api/docker/Dockerfile.jvm')
 
-k8s_yaml(kustomize('../session/session-api/k8/overlays/development'))
 k8s_resource('session-api', port_forwards=8082, resource_deps=['session-api-migrations', 'auth-api'])
 docker_build('insightio/session-api', '..', {}, '../session/session-api/docker/Dockerfile.jvm')
 
-k8s_yaml('../session/session-api/migrations/manifests.yaml')
 k8s_resource('session-api-migrations')
 docker_build('insightio/session-api-migrations', '../session/session-api/migrations', {})
 
-k8s_yaml(kustomize('../beacon/beacon-api/k8/overlays/development'))
 k8s_resource('beacon-api', port_forwards=8081, resource_deps=['session-api'])
 docker_build('insightio/beacon-api', '..', {}, '../beacon/beacon-api/docker/Dockerfile.jvm')
 
-k8s_yaml(kustomize('../events/search-indexer/k8'))
 k8s_resource('search-indexer')
 docker_build('insightio/search-indexer', '..', {}, '../events/search-indexer/docker/Dockerfile.jvm')
 

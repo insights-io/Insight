@@ -1,0 +1,32 @@
+---
+dashboards:
+  default:
+    prometheus-stats:
+      # Ref: https://grafana.com/dashboards/2
+      gnetId: 2
+      revision: 2
+      datasource: Prometheus
+    kubernetes:
+      # Ref: https://grafana.com/grafana/dashboards/10000
+      gnetId: 10000
+      revision: 1
+      datasource: Prometheus
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.prometheus
+        access: proxy
+        isDefault: true
+
+grafana.ini:
+  auth.anonymous:
+    enabled: true
+    org_role: Admin
+  auth.proxy:
+    enabled: false
+    header_name: X-Auth-Request-User
+    auto_sign_up: true

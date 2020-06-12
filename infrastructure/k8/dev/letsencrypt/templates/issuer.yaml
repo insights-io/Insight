@@ -1,3 +1,4 @@
+---
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
@@ -18,7 +19,7 @@ spec:
           cloudflare:
             email: {{ .Values.email }}
             apiKeySecretRef:
-              name: cloudflare-apikey-secret
+              name: {{ .Values.apiKeySecretName }}
               key: api-token
         selector:
           dnsZones: {{ .Values.dnsZones }}

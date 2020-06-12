@@ -3,7 +3,7 @@ cfEmail: a@b.c
 cfApiKey: apikey
 
 # Minikube ip
-infraDomain: 192.168.39.112.xip.io
+infraDomain: 192.168.39.67.xip.io
 appNamespace: recording
 infraNamespace: infra
 
@@ -12,3 +12,5 @@ fluentbitParser: docker
 ingressAnnotations:
   cert-manager.io/cluster-issuer: letsencrypt
   kubernetes.io/ingress.class: nginx
+
+storageClassName: "standard"

@@ -18,14 +18,14 @@ spec:
   template:
     metadata:
       annotations:
-        prometheus.io/scrape: 'true'
+        prometheus.io/scrape: "true"
       labels:
         app: app
         team: frontend
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: docker.pkg.github.com/insights-io/Insight/frontend-app
+        - image: insightio/frontend-app
           name: app
           ports:
             - containerPort: 3000
@@ -33,7 +33,7 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 500m
+              cpu: 1m
               memory: 1000Mi
             limits:
               cpu: 500m

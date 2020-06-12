@@ -35,6 +35,8 @@ releases:
     namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
+      - volumeClaimTemplate:
+          storageClassName: "{{ .Values.storageClassName }}"
   - name: fluentbit
     chart: stable/fluent-bit
     namespace: {{ .Values.infraNamespace }}
@@ -77,11 +79,11 @@ releases:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
 
   - name: prometheus
-    chart: stable/prometheus-operator
-    namespace: monitoring
+    chart: stable/prometheus
+    namespace: prometheus
     values:
       - prometheus.yaml
-      - prometheus:
+      - server:
           ingress:
             enabled: true
             tls:
@@ -92,6 +94,7 @@ releases:
               - "prometheus.{{ .Values.infraDomain }}"
             annotations:
 {{ toYaml .Values.ingressAnnotations | indent 14 }}
+
       - alertmanager:
           ingress:
             enabled: true
@@ -103,18 +106,22 @@ releases:
               - "alertmanager.{{ .Values.infraDomain }}"
             annotations:
 {{ toYaml .Values.ingressAnnotations | indent 14 }}
-      - grafana:
-          adminPassword: password
-          ingress:
-            enabled: true
-            tls:
-              - hosts:
-                - "grafana.{{ .Values.infraDomain }}"
-                secretName: grafana-tls
-            hosts:
+
+  - name: grafana
+    chart: stable/grafana
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - grafana.yaml
+      - ingress:
+          enabled: true
+          tls:
+            - hosts:
               - "grafana.{{ .Values.infraDomain }}"
-            annotations:
-{{ toYaml .Values.ingressAnnotations | indent 14 }}
+              secretName: grafana-tls
+          hosts:
+            - "grafana.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotations | indent 12 }}
 
   - name: jaeger
     chart: jaegertracing/jaeger
