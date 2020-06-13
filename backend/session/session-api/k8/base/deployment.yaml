@@ -24,6 +24,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - image: insightio/session-api
+          imagePullPolicy: Always
           name: session-api
           env:
             - name: JAEGER_AGENT_HOST

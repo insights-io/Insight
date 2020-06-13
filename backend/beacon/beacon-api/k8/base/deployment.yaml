@@ -24,6 +24,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - image: insightio/beacon-api
+          imagePullPolicy: Always
           name: beacon-api
           env:
             - name: JAEGER_AGENT_HOST
