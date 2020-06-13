@@ -8450,10 +8450,10 @@ eslint-plugin-testcafe@0.2.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-testcafe/-/eslint-plugin-testcafe-0.2.1.tgz#4089f646dadb69b1376a01d7e608184907e6036b"
   integrity sha1-QIn2RtrbabE3agHX5ggYSQfmA2s=
 
-eslint-plugin-testing-library@3.2.3:
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-testing-library/-/eslint-plugin-testing-library-3.2.3.tgz#5c57d90695e0b4012ffa5c185dba5a7140ceef3d"
-  integrity sha512-7H3QcG3h5/F+0LV70IjF+riIxKrTNLEh6kkUUZKCvAvI+utBHteZQAitP1UeYUeH4sL7VoXrbCLpxzn5WoVgIA==
+eslint-plugin-testing-library@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-testing-library/-/eslint-plugin-testing-library-3.3.0.tgz#485ec166ac96c301bf6f005d5160aeb744d218f2"
+  integrity sha512-G/KqAMFfIGeUAkUEaoYGPVQyrKkYy4uqHGTzq62k8tBDBoOwsv0NwWeE1cM1G2VtHnS+m5dAms26bt9H7QABuw==
   dependencies:
     "@typescript-eslint/experimental-utils" "^2.29.0"
 
