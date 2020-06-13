@@ -24,6 +24,8 @@ spec:
         - image: insightio/search-indexer
           name: search-indexer
           env:
+            - name: JAEGER_AGENT_HOST
+              value: jaeger-agent.monitoring
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
             - name: ELASTICSEARCH_HOSTS
