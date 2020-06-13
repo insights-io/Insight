@@ -16,7 +16,6 @@ jobs:
         uses: karancode/kustomize-github-action@master
         with:
           kustomize_version: "3.2.0"
-          kustomize_build_dir: 'backend'
           kustomize_comment: true
           kustomize_output_file: "gitops/rendered.yaml"
           enable_alpha_plugins: true
@@ -127,3 +126,5 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: frontend/app/docker/Dockerfile
           tag_names: true
+          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api:8080
+

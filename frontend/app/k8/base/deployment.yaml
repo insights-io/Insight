@@ -3,8 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app
-  labels:
-    team: frontend
 spec:
   replicas: 2
   selector:
