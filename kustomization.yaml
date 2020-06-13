@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - backend/dev
   - frontend/app/k8/base
+  - frontend/try/k8/base
 
 patchesJson6902:
   - target:
@@ -60,4 +61,10 @@ patchesJson6902:
       version: v1
       kind: Deployment
       name: app
+    path: image-pull-secret.patch
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: try
     path: image-pull-secret.patch

@@ -1,0 +1,19 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: try
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+    - hosts:
+        - try.dev.snuderls.eu
+      secretName: frontend1-try-api-tls
+  rules:
+    - host: try.dev.snuderls.eu
+      http:
+        paths:
+          - backend:
+              serviceName: try
+              servicePort: 80
