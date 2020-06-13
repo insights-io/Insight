@@ -24,8 +24,11 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - image: insightio/auth-api
+          imagePullPolicy: Always
           name: auth-api
           env:
+            - name: JAEGER_AGENT_HOST
+              value: jaeger-agent.monitoring:6831
             - name: GOOGLE_OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:

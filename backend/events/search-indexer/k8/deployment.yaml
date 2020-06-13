@@ -22,8 +22,11 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - image: insightio/search-indexer
+          imagePullPolicy: Always
           name: search-indexer
           env:
+            - name: JAEGER_AGENT_HOST
+              value: jaeger-agent.monitoring:6831
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
             - name: ELASTICSEARCH_HOSTS
