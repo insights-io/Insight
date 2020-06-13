@@ -141,4 +141,3 @@ jobs:
           dockerfile: frontend/try/k8/Dockerfile
           tag_names: true
           buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api:8080,try_app_base_url=https://try.dev.snuderls.eu
-
