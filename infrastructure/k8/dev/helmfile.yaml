@@ -112,6 +112,8 @@ releases:
     namespace: {{ .Values.infraNamespace }}
     values:
       - grafana.yaml
+      - persistence:
+          storageClassName: {{ .Values.storageClassName }}
       - ingress:
           enabled: true
           tls:

@@ -23,10 +23,14 @@ datasources:
         isDefault: true
 
 grafana.ini:
-  auth.anonymous:
-    enabled: true
-    org_role: Admin
+  users:
+    allow_sign_up: false
+    auto_assign_org: true
+    auto_assign_org_role: Admin
   auth.proxy:
-    enabled: false
+    enabled: true
     header_name: X-Auth-Request-User
     auto_sign_up: true
+
+persistence:
+  enabled: true
