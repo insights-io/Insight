@@ -31,3 +31,6 @@ grafana.ini:
     enabled: true
     header_name: X-Auth-Request-User
     auto_sign_up: true
+
+persistence:
+  enabled: true
