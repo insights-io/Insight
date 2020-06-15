@@ -8,7 +8,7 @@ const withServiceProxy = require('@insight/service-proxy').default({
 });
 
 const {
-  TRY_BASE_URL = 'http://localhost:3002',
+  NEXT_PUBLIC_TRY_BASE_URL = 'http://localhost:3002',
   AUTH_API_BASE_URL = 'http://localhost:8080',
   NEXT_PUBLIC_AUTH_API_BASE_URL = 'http://localhost:8080',
   SESSION_API_BASE_URL = 'http://localhost:8082',
@@ -18,7 +18,7 @@ const {
 module.exports = withServiceProxy(
   withBundleAnalyzer({
     env: {
-      TRY_BASE_URL,
+      NEXT_PUBLIC_TRY_BASE_URL,
       AUTH_API_BASE_URL,
       NEXT_PUBLIC_AUTH_API_BASE_URL,
       SESSION_API_BASE_URL,
