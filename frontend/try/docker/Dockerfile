@@ -5,9 +5,6 @@ WORKDIR /src
 ARG auth_api_client_base_url=http://localhost:8080
 ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_client_base_url
 
-ARG auth_api_server_base_url=http://localhost:8080
-ENV AUTH_API_BASE_URL=$auth_api_server_base_url
-
 ARG app_base_url=http://localhost:3000
 ENV APP_BASE_URL=$app_base_url
 
