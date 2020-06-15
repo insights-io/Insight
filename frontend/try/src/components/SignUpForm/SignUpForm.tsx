@@ -30,7 +30,10 @@ const SignUpForm = ({
   const [css, theme] = useStyletron();
   const { register, handleSubmit, errors, control } = useForm<SignUpFormDTO>();
 
-  const onSubmit = handleSubmit(({ phoneNumber, ...rest }) => {
+  const onSubmit = handleSubmit(({ phoneNumber, ...rest }, event) => {
+    if (event) {
+      event.preventDefault();
+    }
     if (isSubmitting) {
       return;
     }
