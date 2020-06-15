@@ -2,12 +2,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: beacon-api
+  name: try
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: beacon-api
+      app: try
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,44 +18,34 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
       labels:
-        app: beacon-api
-        team: beacon
+        app: try
+        team: frontend
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: insightio/beacon-api
-          imagePullPolicy: Always
-          name: beacon-api
-          env:
-            - name: JAEGER_AGENT_HOST
-              value: jaeger-agent.monitoring:6831
-            - name: LOG_JSON
-              value: 'true'
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: PLAINTEXT://kafka:9092
-            - name: SESSION_SERVICE_BASE_URL
-              value: http://session-api:8082
+        - image: insightio/frontend-try
+          name: try
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
               name: http
               protocol: TCP
           resources:
             requests:
               cpu: 200m
-              memory: 400Mi
+              memory: 200Mi
             limits:
               cpu: 500m
               memory: 500Mi
           livenessProbe:
             httpGet:
-              path: /health/live
-              port: 8080
+              path: /
+              port: 3000
             initialDelaySeconds: 60
             periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /health/ready
-              port: 8080
+              path: /
+              port: 3000
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 1

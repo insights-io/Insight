@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        prometheus.io/scrape: "true"
+        prometheus.io/scrape: 'true'
       labels:
         app: auth-api
         team: auth
@@ -55,6 +55,13 @@ spec:
             - containerPort: 8080
               name: http
               protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 400Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
           livenessProbe:
             httpGet:
               path: /health/live

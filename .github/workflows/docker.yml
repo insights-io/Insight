@@ -15,18 +15,17 @@ jobs:
       - name: 'Kustomize Build'
         uses: karancode/kustomize-github-action@master
         with:
-          kustomize_version: "3.2.0"
-          kustomize_build_dir: 'backend'
+          kustomize_version: '3.2.0'
           kustomize_comment: true
-          kustomize_output_file: "gitops/rendered.yaml"
+          kustomize_output_file: 'gitops/rendered.yaml'
           enable_alpha_plugins: true
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
       - name: Setup helmfile
         uses: mamezou-tech/setup-helmfile@v0.3.0
         with:
-          helmfile-version: "v0.118.7"
-          helm-version: "v3.2.0"
+          helmfile-version: 'v0.118.7'
+          helm-version: 'v3.2.0'
       - name: Build infra
         run: |
           cd infrastructure/k8/dev && helmfile template
@@ -127,3 +126,18 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: frontend/app/docker/Dockerfile
           tag_names: true
+          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api:8080,try_app_base_url=https://try.dev.snuderls.eu
+
+  build-try-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: ${{ env.REPOSITORY }}/frontend-try
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          registry: ${{ env.REGISTRY }}
+          dockerfile: frontend/try/docker/Dockerfile
+          tag_names: true
+          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api:8080,app_base_url=https://app.dev.snuderls.eu
