@@ -14,14 +14,18 @@ const {
   NEXT_PUBLIC_AUTH_API_BASE_URL = 'http://localhost:8080',
 } = process.env;
 
+const env = {
+  APP_BASE_URL,
+  HELP_BASE_URL,
+  AUTH_API_BASE_URL,
+  NEXT_PUBLIC_AUTH_API_BASE_URL,
+};
+
+console.log('Try environment:', env);
+
 module.exports = withServiceProxy(
   withBundleAnalyzer({
-    env: {
-      APP_BASE_URL,
-      HELP_BASE_URL,
-      AUTH_API_BASE_URL,
-      NEXT_PUBLIC_AUTH_API_BASE_URL,
-    },
+    env,
     webpack: (config, _config) => config,
     experimental: { optionalCatchAll: true },
   })
