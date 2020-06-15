@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        prometheus.io/scrape: "true"
+        prometheus.io/scrape: 'true'
       labels:
         app: beacon-api
         team: beacon
@@ -30,7 +30,7 @@ spec:
             - name: JAEGER_AGENT_HOST
               value: jaeger-agent.monitoring:6831
             - name: LOG_JSON
-              value: "true"
+              value: 'true'
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
             - name: SESSION_SERVICE_BASE_URL
@@ -39,6 +39,13 @@ spec:
             - containerPort: 8080
               name: http
               protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 400Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
           livenessProbe:
             httpGet:
               path: /health/live
