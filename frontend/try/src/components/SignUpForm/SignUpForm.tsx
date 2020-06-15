@@ -66,6 +66,7 @@ const SignUpForm = ({
     <form
       onSubmit={(event) => {
         event.preventDefault();
+        event.stopPropagation();
         onSubmit(event);
       }}
       noValidate
