@@ -15,7 +15,7 @@ spec:
           name: auth-api-migrations
           env:
             - name: LOG_JSON
-              value: "true"
+              value: 'true'
             - name: POSTGRES_HOST
               value: postgres-postgresql
             - name: POSTGRES_USER
@@ -31,8 +31,5 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 200Mi
-            limits:
-              cpu: 200m
-              memory: 200Mi
+              memory: 400Mi
       restartPolicy: Never

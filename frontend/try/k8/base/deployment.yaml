@@ -31,11 +31,8 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 200m
+              cpu: 100m
               memory: 200Mi
-            limits:
-              cpu: 500m
-              memory: 500Mi
           livenessProbe:
             httpGet:
               path: /
