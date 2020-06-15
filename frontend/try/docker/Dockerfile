@@ -8,11 +8,11 @@ ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_client_base_url
 ARG auth_api_server_base_url=http://localhost:8080
 ENV AUTH_API_BASE_URL=$auth_api_server_base_url
 
-ARG try_app_base_url=http://localhost:3002
-ENV TRY_BASE_URL=$try_app_base_url
+ARG app_base_url=http://localhost:3000
+ENV APP_BASE_URL=$app_base_url
 
 COPY package.json yarn.lock tsconfig.json /src/
-COPY frontend/app/package.json /src/frontend/app/package.json
+COPY frontend/try/package.json /src/frontend/try/package.json
 COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json
 COPY frontend/shared/service-proxy/package.json /src/frontend/shared/service-proxy/package.json
 COPY frontend/shared/testing/package.json /src/frontend/shared/testing/package.json
