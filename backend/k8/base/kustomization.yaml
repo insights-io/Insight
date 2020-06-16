@@ -6,4 +6,4 @@ bases:
   - ../../auth/auth-api/k8/base
   - ../../beacon/beacon-api/k8/base
   - ../../session/session-api/k8/base
-  - ../../events/search-indexer/k8
+  - ../../events/search-indexer/k8/base

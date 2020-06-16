@@ -47,7 +47,7 @@ brew install kustomize
 
 ```sh
 docker build . -f auth/auth-api/docker/Dockerfile.jvm -t insights-io/insight/auth-api
-kustomize build auth/auth-api/k8/overlays/minikube | kubectl apply -f -
+kustomize build auth/auth-api/k8/overlays/development | kubectl apply -f -
 ```
 
 ## Tilt
