@@ -28,7 +28,7 @@ jobs:
           helm-version: 'v3.2.0'
       - name: Build infra
         run: |
-          cd infrastructure/k8/dev && helmfile template
+          cd infrastructure/k8/development && helmfile template
 
   build-auth-api:
     runs-on: ubuntu-latest

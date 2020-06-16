@@ -14,5 +14,5 @@ helm plugin install https://github.com/databus23/helm-diff
 ### Applying
 
 ```sh
-helmfile --file k8/dev/helmfile.yaml apply
+helmfile --file k8/development/helmfile.yaml apply
 ```

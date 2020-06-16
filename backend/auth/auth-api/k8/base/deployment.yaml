@@ -27,6 +27,21 @@ spec:
           imagePullPolicy: Always
           name: auth-api
           env:
+            - name: MAILER_MOCK
+              valueFrom:
+                secretKeyRef:
+                  name: mailer-configuration
+                  key: mock
+            - name: MAILER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mailer-configuration
+                  key: username
+            - name: MAILER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mailer-configuration
+                  key: password
             - name: JAEGER_AGENT_HOST
               value: jaeger-agent.monitoring:6831
             - name: GOOGLE_OAUTH_CLIENT_ID

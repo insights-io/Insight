@@ -13,4 +13,4 @@ ingressAnnotations:
   cert-manager.io/cluster-issuer: letsencrypt
   kubernetes.io/ingress.class: nginx
 
-storageClassName: "standard"
+storageClassName: 'standard'
