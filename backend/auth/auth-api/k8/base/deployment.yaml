@@ -28,16 +28,19 @@ spec:
           name: auth-api
           env:
             - name: MAILER_MOCK
-              value: false
+              valueFrom:
+                secretKeyRef:
+                  name: mailer-configuration
+                  key: mock
             - name: MAILER_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mailer-credentials
+                  name: mailer-configuration
                   key: username
             - name: MAILER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mailer-credentials
+                  name: mailer-configuration
                   key: password
             - name: JAEGER_AGENT_HOST
               value: jaeger-agent.monitoring:6831
