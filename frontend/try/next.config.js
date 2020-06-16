@@ -11,12 +11,14 @@ const {
   APP_BASE_URL = 'http://localhost:3000',
   HELP_BASE_URL = 'http://localhost:3003',
   NEXT_PUBLIC_AUTH_API_BASE_URL = 'http://localhost:8080',
+  BOOTSTRAP_SCRIPT = 'https://d1l87tz7sw1x04.cloudfront.net/b/local.insight.js',
 } = process.env;
 
 const env = {
   APP_BASE_URL,
   HELP_BASE_URL,
   NEXT_PUBLIC_AUTH_API_BASE_URL,
+  BOOTSTRAP_SCRIPT,
 };
 
 console.log('Try environment:', env);

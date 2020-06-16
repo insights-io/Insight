@@ -34,8 +34,7 @@ class InsightDocument extends Document<Props> {
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
     const bootstrapScript = await ky(
-      process.env.BOOTSTRAP_SCRIPT ||
-        'https://d1l87tz7sw1x04.cloudfront.net/b/development.insight.js'
+      process.env.BOOTSTRAP_SCRIPT as string
     ).text();
 
     return { ...page, stylesheets, bootstrapScript };

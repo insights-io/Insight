@@ -12,6 +12,7 @@ const CDN_BASE_URL = 'https://d1l87tz7sw1x04.cloudfront.net';
 const ENVIRONMENTS = {
   local: `${CDN_BASE_URL}/s/local.${OUTPUT_FILE_NAME}`,
   development: `${CDN_BASE_URL}/s/development.${OUTPUT_FILE_NAME}`,
+  staging: `${CDN_BASE_URL}/s/staging.${OUTPUT_FILE_NAME}`,
   production: `${CDN_BASE_URL}/s/${OUTPUT_FILE_NAME}`,
 };
 

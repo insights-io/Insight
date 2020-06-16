@@ -13,10 +13,12 @@ import {
   styletron,
   STYLETRON_HYDRATE_CLASSNAME,
 } from 'shared/styles/styletron';
+import ky from 'ky-universal';
 import { Server, Sheet } from 'styletron-engine-atomic';
 
 type Props = {
   stylesheets: Sheet[];
+  bootstrapScript: string;
 };
 
 class InsightDocument extends Document<Props> {
@@ -30,26 +32,12 @@ class InsightDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    return { ...page, stylesheets };
-  }
+    const bootstrapScript = await ky(
+      process.env.BOOTSTRAP_SCRIPT as string
+    ).text();
 
-  getInsightScript = () => {
-    return {
-      __html: `((s, t, e) => {
-      s._i_debug = !1;
-      s._i_host = 'insight.com';
-      s._i_org = 'try123';
-      s._i_ns = 'IS';
-      const n = t.createElement(e);
-      n.async = true;
-      n.crossOrigin = 'anonymous';
-      n.src = 'https://d1l87tz7sw1x04.cloudfront.net/s/development.insight.js';
-      const o = t.getElementsByTagName(e)[0];
-      o.parentNode.insertBefore(n, o);
-    })(window, document, 'script');
-    `,
-    };
-  };
+    return { ...page, bootstrapScript, stylesheets };
+  }
 
   render() {
     return (
@@ -76,7 +64,9 @@ class InsightDocument extends Document<Props> {
               }
             `}
           </style>
-          <script dangerouslySetInnerHTML={this.getInsightScript()} />
+          <script
+            dangerouslySetInnerHTML={{ __html: this.props.bootstrapScript }}
+          />
         </Head>
         <body>
           <Main />

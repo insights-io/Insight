@@ -126,7 +126,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: frontend/app/docker/Dockerfile
           tag_names: true
-          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api,try_app_base_url=https://try.dev.snuderls.eu
+          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api,try_app_base_url=https://try.dev.snuderls.eu,bootstrap_script=https://d1l87tz7sw1x04.cloudfront.net/b/development.insight.js
 
   build-try-app:
     runs-on: ubuntu-latest
@@ -140,4 +140,4 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: frontend/try/docker/Dockerfile
           tag_names: true
-          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,app_base_url=https://app.dev.snuderls.eu
+          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,app_base_url=https://app.dev.snuderls.eu,bootstrap_script=https://d1l87tz7sw1x04.cloudfront.net/b/development.insight.js

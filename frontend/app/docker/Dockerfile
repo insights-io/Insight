@@ -11,6 +11,9 @@ ENV AUTH_API_BASE_URL=$auth_api_server_base_url
 ARG try_app_base_url=http://localhost:3002
 ENV NEXT_PUBLIC_TRY_BASE_URL=$try_app_base_url
 
+ARG bootstrap_script=https://d1l87tz7sw1x04.cloudfront.net/b/local.insight.js
+ENV BOOTSTRAP_SCRIPT=$bootstrap_script
+
 COPY package.json yarn.lock tsconfig.json /src/
 COPY frontend/app/package.json /src/frontend/app/package.json
 COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json
