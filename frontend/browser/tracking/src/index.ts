@@ -28,7 +28,7 @@ declare global {
   const { _i_org: organizationId, _i_host: host } = window;
   const identity = Identity.initFromCookie(host, organizationId);
   const backend = new Backend(
-    `${process.env.RECORDING_API_BASE_URL}`,
+    `${process.env.BEACON_API_BASE_URL}`,
     `${process.env.SESSION_API_BASE_URL}`,
     organizationId
   );

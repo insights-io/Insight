@@ -17,28 +17,28 @@ const envConfig = (env) => {
     case 'local': {
       return {
         fileName,
-        recordingApiBaseURL: 'http://localhost:8081',
+        beaconApiBaseURL: 'http://localhost:8081',
         sessionApiBaseURL: 'http://localhost:8082',
       };
     }
     case 'development': {
       return {
         fileName,
-        recordingApiBaseURL: 'http://localhost:8081',
-        sessionApiBaseURL: 'http://localhost:8082',
+        beaconApiBaseURL: 'https://beacon-api.dev.snuderls.eu',
+        sessionApiBaseURL: 'https://session-api.dev.snuderls.eu',
       };
     }
     case 'staging': {
       return {
         fileName,
-        recordingApiBaseURL: 'https://staging.insight.com',
+        beaconApiBaseURL: 'https://staging.insight.com',
         sessionApiBaseURL: 'https://staging.insight.com',
       };
     }
     case 'production': {
       return {
         fileName: baseName,
-        recordingApiBaseURL: 'https://insight.com',
+        beaconApiBaseURL: 'https://insight.com',
         sessionApiBaseURL: 'https://insight.com',
       };
     }
@@ -51,7 +51,7 @@ const envConfig = (env) => {
 const compiledTs = Date.now();
 
 const config = (env) => {
-  const { fileName, recordingApiBaseURL, sessionApiBaseURL } = envConfig(env);
+  const { fileName, beaconApiBaseURL, sessionApiBaseURL } = envConfig(env);
   const output = path.join('dist', fileName);
 
   return {
@@ -60,9 +60,7 @@ const config = (env) => {
       typescript({ tsconfig: 'tsconfig.build.json' }),
       replace({
         'process.env.NODE_ENV': JSON.stringify(env),
-        'process.env.RECORDING_API_BASE_URL': JSON.stringify(
-          recordingApiBaseURL
-        ),
+        'process.env.BEACON_API_BASE_URL': JSON.stringify(beaconApiBaseURL),
         'process.env.SESSION_API_BASE_URL': JSON.stringify(sessionApiBaseURL),
         'process.env.COMPILED_TS': JSON.stringify(compiledTs),
       }),
