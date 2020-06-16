@@ -5,4 +5,3 @@ resources:
 patchesStrategicMerge:
   - never-pull-image-policy.yaml
   - single-replica.yaml
-  - mailer-mock.yaml
