@@ -65,7 +65,7 @@ public class PgPasswordDatasource implements PasswordDatasource {
         row.getString("full_name"),
         UserRole.valueOf(row.getString("role")),
         row.getString("organization_id"),
-        row.getOffsetDateTime("created_at"),
+        row.getOffsetDateTime("created_at").toInstant(),
         row.getString("hash"));
   }
 }

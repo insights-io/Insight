@@ -47,9 +47,9 @@ public class BeaconService {
   @OnOverflow(Strategy.UNBOUNDED_BUFFER)
   Emitter<UserEvent<?>> unloadEventsEmitter;
 
-  private CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
+  private CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId) {
     return sessionResource
-        .getPage(sessionId, pageId, organizationId)
+        .getPage(sessionId, pageId)
         .exceptionally(
             throwable -> {
               if (throwable.getCause() instanceof WebApplicationException) {
@@ -65,9 +65,7 @@ public class BeaconService {
               }
               DataResponse<PageDTO> dataResponse = response.readEntity(new GenericType<>() {});
               PageDTO page = dataResponse.getData();
-              return page.getSessionId().equals(sessionId)
-                  && page.getId().equals(pageId)
-                  && page.getOrganizationId().equals(organizationId);
+              return page.getSessionId().equals(sessionId) && page.getId().equals(pageId);
             });
   }
 
@@ -103,7 +101,7 @@ public class BeaconService {
                 .build();
 
     log.info("Processing beacon");
-    return pageExists(sessionId, pageId, organizationId)
+    return pageExists(sessionId, pageId)
         .thenApply(
             exists -> {
               if (!exists) {

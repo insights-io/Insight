@@ -16,14 +16,14 @@ public class JacksonObjectMapperCustomizer implements ObjectMapperCustomizer {
   }
 
   /**
-   * @param mapper
-   * @return
+   * @param mapper object mapper
+   * @return configures object mapper
    */
   public static ObjectMapper configure(ObjectMapper mapper) {
     mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.registerModule(new JavaTimeModule());
-    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     return mapper;
   }
 }

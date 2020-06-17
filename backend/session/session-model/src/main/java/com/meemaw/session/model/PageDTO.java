@@ -14,7 +14,6 @@ public class PageDTO {
   UUID id;
   UUID sessionId;
   String organizationId;
-  UUID deviceId;
   String doctype;
   String url;
   String referrer;

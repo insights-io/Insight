@@ -1,5 +1,6 @@
 package com.meemaw.test.setup;
 
+import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,10 +9,12 @@ import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
@@ -107,21 +110,35 @@ public final class SsoTestSetupUtils {
   /**
    * Log in with provided credentials.
    *
+   * @param baseURI auth api base uri
    * @param email address
    * @param password from the user
    * @return String SessionID
    */
-  public static String login(String email, String password) {
+  public static String login(String baseURI, String email, String password) {
+    String uri =
+        String.join("/", Optional.ofNullable(baseURI).orElse("") + SsoResource.PATH, "login");
+
     Response response =
         given()
             .when()
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .post(SsoResource.PATH + "/login");
+            .post(uri);
 
     response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
     return extractSessionCookie(response).getValue();
+  }
+
+  /**
+   * Log in with pre-created admin user.
+   *
+   * @return session id
+   */
+  public static String login() {
+    String authApiBaseURI = AuthApiTestExtension.getInstance().getBaseURI();
+    return login(authApiBaseURI, "admin@insight.io", "superDuperPassword123");
   }
 
   /**
@@ -132,5 +149,17 @@ public final class SsoTestSetupUtils {
    */
   public static Cookie extractSessionCookie(Response response) {
     return response.getDetailedCookie(SsoSession.COOKIE_NAME);
+  }
+
+  public static void cookieExpect401(String path, String cookie) {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, cookie)
+        .get(path)
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
   }
 }

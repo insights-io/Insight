@@ -1,6 +1,6 @@
 package com.meemaw.auth.user.model;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.Value;
 
@@ -12,7 +12,7 @@ public class UserWithHashedPassword {
   String fullName;
   UserRole role;
   String org;
-  OffsetDateTime createdAt;
+  Instant createdAt;
   String password;
 
   public AuthUser user() {

@@ -62,14 +62,6 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     return getMappedPort(PORT);
   }
 
-  public String getHost(String host) {
-    return String.format("%s:%d", host, getPort());
-  }
-
-  public String getHost() {
-    return getHost(getContainerIpAddress());
-  }
-
   /** @return */
   public String getDatasourceURL() {
     return getDatasourceURL(getHost());

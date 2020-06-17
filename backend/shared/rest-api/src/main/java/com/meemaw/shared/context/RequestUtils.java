@@ -125,4 +125,9 @@ public final class RequestUtils {
   public static String parseCookieDomain(String url) {
     return parseTLD(url).orElse(null);
   }
+
+  public static String requestIpAddress(HttpServerRequest request) {
+    String forwardedFor = request.getHeader("X-Forwarded-For");
+    return forwardedFor == null ? request.remoteAddress().host() : forwardedFor;
+  }
 }

@@ -81,3 +81,14 @@ CREATE TABLE IF NOT EXISTS auth.team_invite
     CONSTRAINT email_length CHECK (length(auth.team_invite.email) < 255)
 );
 
+INSERT INTO auth.organization(id, name)
+VALUES ('000000', 'Insight');
+
+INSERT INTO auth.user(id, email, organization_id, role, full_name)
+VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', 'admin@insight.io', '000000', 'ADMIN',
+        'Admin Admin');
+
+INSERT INTO auth.password(user_id, hash)
+VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b',
+        '$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS');
+

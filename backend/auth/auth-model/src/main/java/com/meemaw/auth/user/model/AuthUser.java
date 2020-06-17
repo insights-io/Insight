@@ -1,13 +1,13 @@
 package com.meemaw.auth.user.model;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public interface AuthUser {
 
   UUID getId();
 
-  String getOrg();
+  String getOrganizationId();
 
   UserRole getRole();
 
@@ -15,5 +15,5 @@ public interface AuthUser {
 
   String getFullName();
 
-  OffsetDateTime getCreatedAt();
+  Instant getCreatedAt();
 }

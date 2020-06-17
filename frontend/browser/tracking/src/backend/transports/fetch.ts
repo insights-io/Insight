@@ -9,9 +9,11 @@ export class FetchTranport implements RequestResponseTransport {
       body,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-    }).then((response) =>
-      response.json().then((json) => ({ status: response.status, json }))
-    );
+    }).then((response) => {
+      return response
+        .json()
+        .then((json) => ({ status: response.status, json }));
+    });
   };
 
   public send = (url: string, body: string) => {

@@ -43,7 +43,7 @@ public class PgUserDatasource implements UserDatasource {
                       fullName,
                       role,
                       org,
-                      row.getOffsetDateTime("created_at"));
+                      row.getOffsetDateTime("created_at").toInstant());
               return user;
             })
         .exceptionally(this::onCreateUserException);
@@ -92,6 +92,6 @@ public class PgUserDatasource implements UserDatasource {
         row.getString("full_name"),
         UserRole.valueOf(row.getString("role")),
         row.getString("organization_id"),
-        row.getOffsetDateTime("created_at"));
+        row.getOffsetDateTime("created_at").toInstant());
   }
 }

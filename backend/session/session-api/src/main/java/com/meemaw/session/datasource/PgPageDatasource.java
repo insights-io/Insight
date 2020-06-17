@@ -7,8 +7,7 @@ import com.meemaw.shared.rest.exception.DatabaseException;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowIterator;
-import io.vertx.mutiny.sqlclient.RowSet;
+import io.vertx.mutiny.sqlclient.Transaction;
 import io.vertx.mutiny.sqlclient.Tuple;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,12 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 public class PgPageDatasource implements PageDatasource {
 
   @Inject PgPool pgPool;
-
-  private static final String SELECT_LINK_DEVICE_SESSION_RAW_SQL =
-      "SELECT session_id FROM session.page WHERE organization_id = $1 AND device_id = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
+  @Inject SessionDatasource sessionDatasource;
 
   private static final String INSERT_PAGE_RAW_SQL =
-      "INSERT INTO session.page (id, device_id, session_id, organization_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
+      "INSERT INTO session.page (id, session_id, organization_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);";
 
   private static final String SELECT_ACTIVE_PAGE_COUNT =
       "SELECT COUNT(*) FROM session.page WHERE page_end IS NULL;";
@@ -35,59 +32,79 @@ public class PgPageDatasource implements PageDatasource {
       "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND organization_id=$3;";
 
   @Override
-  public Uni<Optional<UUID>> findUserSessionLink(String organizationId, UUID deviceId) {
+  public Uni<PageIdentity> createPageAndNewSession(
+      UUID pageId,
+      UUID sessionId,
+      UUID deviceId,
+      String userAgent,
+      String ipAddress,
+      CreatePageDTO page) {
     return pgPool
-        .preparedQuery(SELECT_LINK_DEVICE_SESSION_RAW_SQL)
-        .execute(Tuple.of(organizationId, deviceId))
-        .map(this::mapSessionId)
+        .begin()
+        .onItem()
+        .produceUni(
+            transaction ->
+                createPageAndNewSession(
+                    transaction, pageId, sessionId, deviceId, userAgent, ipAddress, page));
+  }
+
+  private Uni<PageIdentity> createPageAndNewSession(
+      Transaction transaction,
+      UUID pageId,
+      UUID sessionId,
+      UUID deviceId,
+      String userAgent,
+      String ipAddress,
+      CreatePageDTO page) {
+    return sessionDatasource
+        .createSession(
+            transaction, sessionId, deviceId, page.getOrganizationId(), ipAddress, userAgent)
+        .onItem()
+        .produceUni(
+            session ->
+                insertPage(transaction, pageId, session.getId(), session.getDeviceId(), page)
+                    .onItem()
+                    .produceUni(pageIdentity -> transaction.commit().map(ignored -> pageIdentity)));
+  }
+
+  private Uni<PageIdentity> insertPage(
+      Transaction transaction, UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
+    return transaction
+        .preparedQuery(INSERT_PAGE_RAW_SQL)
+        .execute(insertPageValues(id, sessionId, page))
+        .map(
+            rowSet ->
+                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
         .onFailure()
-        .invoke(this::onFindUserSessionLinkException);
-  }
-
-  private <T> T onFindUserSessionLinkException(Throwable throwable) {
-    log.error("Failed to findUserSessionLinkException", throwable);
-    throw new DatabaseException(throwable);
-  }
-
-  private Optional<UUID> mapSessionId(RowSet<Row> pgRowSet) {
-    RowIterator<Row> iterator = pgRowSet.iterator();
-    if (!iterator.hasNext()) {
-      return Optional.empty();
-    }
-    return Optional.of(iterator.next().getUUID(0));
+        .invoke(this::onInsertPageException);
   }
 
   @Override
-  public Uni<PageIdentity> insertPage(
-      UUID pageId, UUID deviceId, UUID sessionId, CreatePageDTO page) {
-    Tuple values =
-        Tuple.newInstance(
-            io.vertx.sqlclient.Tuple.of(
-                pageId,
-                deviceId,
-                sessionId,
-                page.getOrganizationId(),
-                page.getDoctype(),
-                page.getUrl(),
-                page.getReferrer(),
-                page.getHeight(),
-                page.getWidth(),
-                page.getScreenHeight(),
-                page.getScreenWidth(),
-                page.getCompiledTs()));
-
+  public Uni<PageIdentity> insertPage(UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
     return pgPool
         .preparedQuery(INSERT_PAGE_RAW_SQL)
-        .execute(values)
+        .execute(insertPageValues(id, sessionId, page))
         .map(
             rowSet ->
-                PageIdentity.builder()
-                    .pageId(pageId)
-                    .sessionId(sessionId)
-                    .deviceId(deviceId)
-                    .build())
+                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
         .onFailure()
         .invoke(this::onInsertPageException);
+  }
+
+  private Tuple insertPageValues(UUID id, UUID sessionId, CreatePageDTO page) {
+    return Tuple.newInstance(
+        io.vertx.sqlclient.Tuple.of(
+            id,
+            sessionId,
+            page.getOrganizationId(),
+            page.getDoctype(),
+            page.getUrl(),
+            page.getReferrer(),
+            page.getHeight(),
+            page.getWidth(),
+            page.getScreenHeight(),
+            page.getScreenWidth(),
+            page.getCompiledTs()));
   }
 
   private <T> T onInsertPageException(Throwable throwable) {
@@ -111,10 +128,10 @@ public class PgPageDatasource implements PageDatasource {
   }
 
   @Override
-  public Uni<Optional<PageDTO>> getPage(UUID pageID, UUID sessionID, String organizationID) {
+  public Uni<Optional<PageDTO>> getPage(UUID pageId, UUID sessionId, String organizationId) {
     return pgPool
         .preparedQuery(SELECT_PAGE_RAW_SQL)
-        .execute(Tuple.of(pageID, sessionID, organizationID))
+        .execute(Tuple.of(pageId, sessionId, organizationId))
         .map(
             rowSet -> {
               if (!rowSet.iterator().hasNext()) {
@@ -125,7 +142,6 @@ public class PgPageDatasource implements PageDatasource {
                   row.getUUID("id"),
                   row.getUUID("session_id"),
                   row.getString("organization_id"),
-                  row.getUUID("device_id"),
                   row.getString("url"),
                   row.getString("referrer"),
                   row.getString("doctype"),
