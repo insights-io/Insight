@@ -2,6 +2,7 @@ locals {
   s3_static_origin_id = "${var.bucket_name}-origin"
   s3_allowed_methods =  ["GET", "HEAD"]
   cf_allowed_methods     = ["GET", "HEAD", "OPTIONS"]
+  static_domain = "static.devtest.${var.domain}"
 }
 
 resource "aws_s3_bucket" "static" {
@@ -36,6 +37,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   is_ipv6_enabled     = true
   wait_for_deployment = false
   comment             = "${var.bucket_name} (Managed by Terraform)"
+  aliases             = [local.static_domain]
 
   default_cache_behavior {
     allowed_methods  = local.cf_allowed_methods
@@ -69,7 +71,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    #cloudfront_default_certificate = true
+    iam_certificate_id = "${aws_acm_certificate.static_cert.id}"
   }
 
 
