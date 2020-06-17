@@ -3614,10 +3614,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/react@16.9.36":
-  version "16.9.36"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.36.tgz#ade589ff51e2a903e34ee4669e05dbfa0c1ce849"
-  integrity sha512-mGgUb/Rk/vGx4NCvquRuSH0GHBQKb1OqpGS9cT9lFxlTLHZgkksgI60TuIxubmn7JuCb+sENHhQciqa0npm0AQ==
+"@types/react@16.9.38":
+  version "16.9.38"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.38.tgz#868405dace93a4095d3e054f4c4a1de7a1ac0680"
+  integrity sha512-pHAeZbjjNRa/hxyNuLrvbxhhnKyKNiLC6I5fRF2Zr/t/S6zS41MiyzH4+c+1I9vVfvuRt1VS2Lodjr4ZWnxrdA==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -5782,10 +5782,10 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-baseui@9.84.0:
-  version "9.84.0"
-  resolved "https://registry.yarnpkg.com/baseui/-/baseui-9.84.0.tgz#68de63151074b1bd1955d09170fb0e16058b6bbc"
-  integrity sha512-D5Mn8vlQDRnZYcu+/6P4zyW2+zWQxkhwcruHdXsO5WKXRpz/+hHGqJCx5BagZ1VfjJQ5syjcMtnZ80x9WeGAug==
+baseui@9.84.1:
+  version "9.84.1"
+  resolved "https://registry.yarnpkg.com/baseui/-/baseui-9.84.1.tgz#2c5f06d89c31a4acb727af727943eb8ac88da0bd"
+  integrity sha512-I8F6lTSfQt74/Zi40q/P9U9fG5SbPoCbijP4P6KayqAYySbcfsPaXSxNfW4RGqYXmmW9eUSe681fjr88IGBR1w==
   dependencies:
     "@date-io/date-fns" "^2.4.0"
     card-validator "^6.2.0"
