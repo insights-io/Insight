@@ -23,8 +23,8 @@ resource "tls_private_key" "static_private_key" {
 }
 
 resource "acme_registration" "reg" {
-    account_key_pem = tls_private_key.static_private_key.private_key_pem
-    email_address   = var.acme_email
+  account_key_pem = tls_private_key.static_private_key.private_key_pem
+  email_address   = var.acme_email
 }
 
 resource "acme_certificate" "static_cert" {
@@ -37,6 +37,6 @@ resource "acme_certificate" "static_cert" {
 }
 
 resource "aws_acm_certificate" "static_cert" {
-  private_key      =  acme_certificate.static_cert.private_key_pem
+  private_key      = acme_certificate.static_cert.private_key_pem
   certificate_body = acme_certificate.static_cert.certificate_pem
 }
