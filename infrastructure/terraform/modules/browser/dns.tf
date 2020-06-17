@@ -28,8 +28,8 @@ resource "acme_registration" "reg" {
 }
 
 resource "acme_certificate" "static_cert" {
-  account_key_pem           = acme_registration.reg.account_key_pem
-  common_name               = local.static_domain
+  account_key_pem = acme_registration.reg.account_key_pem
+  common_name     = local.static_domain
 
   dns_challenge {
     provider = "cloudflare"
