@@ -1,10 +1,5 @@
-
-resource "cloudflare_zone" "dns" {
-    zone = var.domain
-}
-
 resource "cloudflare_record" "static" {
-  zone_id = cloudflare_zone.dns.id
+  zone_id = var.zone_id
   name    = local.static_domain
   value   = aws_cloudfront_distribution.s3_distribution.domain_name
   type    = "CNAME"
@@ -12,8 +7,8 @@ resource "cloudflare_record" "static" {
 }
 
 resource "cloudflare_record" "star" {
-  zone_id = cloudflare_zone.dns.id
-  name    = "*.devtest"
+  zone_id = var.zone_id
+  name    = "*${var.domain_suffix}"
   value   = var.public_ip
   type    = "A"
   ttl     = 1
@@ -27,9 +22,9 @@ resource "tls_private_key" "static_private_key" {
   algorithm = "RSA"
 }
 
-resource "acme_registration" "email" {
+resource "acme_registration" "reg" {
     account_key_pem = tls_private_key.static_private_key.private_key_pem
-    email_address   = "blaz.snuderl@gmail.com"
+    email_address   = var.acme_email
 }
 
 resource "acme_certificate" "static_cert" {

@@ -10,7 +10,20 @@ variable "region" {
   type = string
 }
 
+variable "zone_id" {
+  type = string
+  description = "Cloudformation zone_id for which we are setting records"
+}
+
+variable "acme_email" {
+  type = string
+}
+
 variable "domain" {
+  type = string
+}
+
+variable "domain_suffix" {
   type = string
 }
 

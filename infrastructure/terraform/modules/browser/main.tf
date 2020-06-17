@@ -2,7 +2,7 @@ locals {
   s3_static_origin_id = "${var.bucket_name}-origin"
   s3_allowed_methods =  ["GET", "HEAD"]
   cf_allowed_methods     = ["GET", "HEAD", "OPTIONS"]
-  static_domain = "static.devtest.${var.domain}"
+  static_domain = "static${var.domain_suffix}.${var.domain}"
 }
 
 resource "aws_s3_bucket" "static" {
