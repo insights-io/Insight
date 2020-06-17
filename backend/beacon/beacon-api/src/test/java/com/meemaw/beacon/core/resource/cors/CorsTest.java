@@ -17,7 +17,7 @@ public class CorsTest {
   @ValueSource(
       strings = {"https://app.dev.snuderls.eu", "https://www.google.com", "http://localhost:3000"})
   public void cors_on_beacon_should_be_enabled_for_all_origins(String origin) {
-    List.of("OPTIONS", "OPTIONS")
+    List.of("POST", "OPTIONS")
         .forEach(
             method -> {
               given()
