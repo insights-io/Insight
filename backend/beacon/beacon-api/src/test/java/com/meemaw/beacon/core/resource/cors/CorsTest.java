@@ -1,8 +1,8 @@
-package com.meemaw.session.core.resource.cors;
+package com.meemaw.beacon.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.session.resource.v1.SessionResource;
+import com.meemaw.beacon.resource.v1.BeaconResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
@@ -16,7 +16,7 @@ public class CorsTest {
   @ParameterizedTest
   @ValueSource(
       strings = {"https://app.dev.snuderls.eu", "https://www.google.com", "http://localhost:3000"})
-  public void cors_on_create_page_should_be_enabled_for_all_origins(String origin) {
+  public void cors_on_beacon_should_be_enabled_for_all_origins(String origin) {
     List.of("OPTIONS", "OPTIONS")
         .forEach(
             method -> {
@@ -24,7 +24,7 @@ public class CorsTest {
                   .header("Origin", origin)
                   .header("Access-Control-Request-Method", method)
                   .when()
-                  .options(SessionResource.PATH)
+                  .options(BeaconResource.PATH)
                   .then()
                   .statusCode(200)
                   .header("access-control-allow-origin", origin)
