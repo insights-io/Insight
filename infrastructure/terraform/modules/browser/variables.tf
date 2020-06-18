@@ -12,7 +12,7 @@ variable "region" {
 
 variable "zone_id" {
   type        = string
-  description = "Cloudformation zone_id for which we are setting records"
+  description = "Cloudfront zone_id for which we are setting records"
 }
 
 variable "acme_email" {
