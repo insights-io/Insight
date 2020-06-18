@@ -71,7 +71,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   viewer_certificate {
     #cloudfront_default_certificate = true
-    ssl_support_method = "sni-only"
+    ssl_support_method  = "sni-only"
     acm_certificate_arn = aws_acm_certificate.static_cert.id
   }
 
