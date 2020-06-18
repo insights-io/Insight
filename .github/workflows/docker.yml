@@ -7,29 +7,6 @@ env:
   REPOSITORY: insightio
 
 jobs:
-  k8-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        name: checkout
-      - name: 'Kustomize Build'
-        uses: karancode/kustomize-github-action@master
-        with:
-          kustomize_version: '3.2.0'
-          kustomize_comment: true
-          kustomize_output_file: 'gitops/rendered.yaml'
-          enable_alpha_plugins: true
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-      - name: Setup helmfile
-        uses: mamezou-tech/setup-helmfile@v0.3.0
-        with:
-          helmfile-version: 'v0.118.7'
-          helm-version: 'v3.2.0'
-      - name: Build infra
-        run: |
-          cd infrastructure/k8/development && helmfile template
-
   build-auth-api:
     runs-on: ubuntu-latest
     steps:
