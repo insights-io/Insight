@@ -13,7 +13,7 @@ jobs:
       - name: Build infra
         run: cd infrastructure/k8/development && helmfile template
 
-  kubeval:
+  kube-score:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
