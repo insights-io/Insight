@@ -20,7 +20,7 @@ variable "acme_email" {
 }
 
 variable "alias" {
-  type = string
+  type        = string
   description = "Cloudfront alias (domain) name"
 }
 
