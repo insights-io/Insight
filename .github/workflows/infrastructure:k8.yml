@@ -28,6 +28,8 @@ jobs:
       - run: docker run -v $(pwd):/project zegl/kube-score:v1.7.0 score ./project/rendered.yml > kube-score-results.txt
       - run: cat kube-score-results.txt
         if: failure()
+      - run: pwd
+        if: failure()
       - name: Comment PR 💬
         if: failure()
         uses: harupy/comment-on-pr@master
