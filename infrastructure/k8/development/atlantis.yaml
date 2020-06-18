@@ -1,9 +1,16 @@
+---
 atlantisUrl: https://atlantis.dev.snuderls.eu
 
 orgWhitelist: github.com/insights-io/*
 
 vcsSecretName: atlantis-vcs
 awsSecretName: atlantis-aws
+
+environmentSecrets:
+  - name: CLOUDFLARE_API_KEY
+    secretKeyRef:
+      name: cloudflare-apikey-secret
+      key: api-token
 
 github:
   user: botsights
@@ -20,12 +27,12 @@ repoConfig: |
     authenticated:
       plan:
         steps:
-          - run: if [ $USER_NAME != "Meemaw" ]; then echo \"Sorry $USER_NAME, you are not authorized to plan.\" && exit 1; fi
+          - run: if [ $USER_NAME != "Meemaw"  ] && [ $USER_NAME != "snuderl" ] ; then echo \"Sorry $USER_NAME, you are not authorized to plan.\" && exit 1; fi
           - init
           - plan
       apply:
         steps:
-          - run: if [ $USER_NAME != "Meemaw" ]; then echo \"Sorry $USER_NAME, you are not authorized to apply.\" && exit 1; fi
+          - run: if [ $USER_NAME != "Meemaw" ] && [ $USER_NAME != "snuderl" ]; then echo \"Sorry $USER_NAME, you are not authorized to apply.\" && exit 1; fi
           - apply
 
 # disableApplyAll disables running `atlantis apply` without any flags
