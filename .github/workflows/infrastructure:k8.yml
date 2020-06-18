@@ -25,6 +25,4 @@ jobs:
           enable_alpha_plugins: true
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: instrumenta/kubeval-action@master
-        with:
-          files: 'rendered.yml'
+      - run: docker run -v $(pwd):/project zegl/kube-score:v1.7.0 score rendered.yaml
