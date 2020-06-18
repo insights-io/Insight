@@ -40,11 +40,7 @@ public final class RHSColonParser {
       } else {
         List<FilterExpression> termFilterExpressions =
             entry.getValue().stream()
-                .map(
-                    value -> {
-                      Pair<TermOperation, String> pair = extractOperationAndValue(value);
-                      return new TermFilterExpression<>(name, pair.getLeft(), pair.getRight());
-                    })
+                .map(value -> extractTermFilterExpression(name, value))
                 .collect(Collectors.toList());
 
         expressions.add(new BooleanFilterExpression(BooleanOperation.OR, termFilterExpressions));
@@ -68,6 +64,11 @@ public final class RHSColonParser {
       sorts.add(Pair.of(fieldWithDirection.substring(1), sortDirection));
     }
     return sorts;
+  }
+
+  private static TermFilterExpression<?> extractTermFilterExpression(String name, String value) {
+    Pair<TermOperation, String> pair = extractOperationAndValue(value);
+    return new TermFilterExpression<>(name, pair.getLeft(), pair.getRight());
   }
 
   private static Pair<TermOperation, String> extractOperationAndValue(String text) {
