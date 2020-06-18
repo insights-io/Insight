@@ -58,7 +58,7 @@ public final class RHSColonParser {
     List<Pair<String, SortDirection>> sorts = new ArrayList<>(fields.length);
     for (String fieldWithDirection : fields) {
       SortDirection sortDirection = SortDirection.ASC;
-      if (fieldWithDirection.charAt(0) == '-') {
+      if (fieldWithDirection.charAt(0) == SortDirection.DESC.getSymbol()) {
         sortDirection = SortDirection.DESC;
       }
       sorts.add(Pair.of(fieldWithDirection.substring(1), sortDirection));
@@ -72,7 +72,7 @@ public final class RHSColonParser {
   }
 
   private static Pair<TermOperation, String> extractOperationAndValue(String text) {
-    int colon = text.indexOf(":");
+    int colon = text.indexOf(':');
     TermOperation op = TermOperation.valueOf(text.substring(0, colon).toUpperCase());
     return Pair.of(op, text.substring(colon + 1));
   }
@@ -90,7 +90,7 @@ public final class RHSColonParser {
     }
     final String[] pairs = url.getQuery().split("&");
     for (String pair : pairs) {
-      final int idx = pair.indexOf("=");
+      final int idx = pair.indexOf('=');
       final String key = idx > 0 ? pair.substring(0, idx) : pair;
       if (!queryParams.containsKey(key)) {
         queryParams.put(key, new LinkedList<>());
