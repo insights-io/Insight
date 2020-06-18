@@ -27,6 +27,7 @@ jobs:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: docker run -v $(pwd):/project zegl/kube-score:v1.7.0 score ./project/rendered.yml > kube-score-results.txt
       - run: cat kube-score-results.txt
+        if: failure()
       - name: Comment PR 💬
         if: failure()
         uses: harupy/comment-on-pr@master
