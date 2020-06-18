@@ -7,6 +7,10 @@ infraNamespace: infra
 
 fluentbitParser: cri-2
 
+ingressAnnotationsHttps:
+  cert-manager.io/cluster-issuer: letsencrypt
+  kubernetes.io/ingress.class: nginx
+
 ingressAnnotations:
   cert-manager.io/cluster-issuer: letsencrypt
   kubernetes.io/ingress.class: nginx

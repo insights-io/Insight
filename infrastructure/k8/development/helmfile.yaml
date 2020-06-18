@@ -153,6 +153,20 @@ releases:
       - oauth-proxy.yaml
       - config:
           existingSecret: {{ .Values.oauthExistingSecret }}
+  - name: atlantis
+    chart: stable/atlantis
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - atlantis.yaml
+      - ingress:
+          tls:
+            - hosts:
+              - "atlantis.{{ .Values.infraDomain }}"
+              secretName: atlantis-tls
+          host: "atlantis.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotationsHttps | indent 12 }}
+
 {{ end }}
 
 environments:
