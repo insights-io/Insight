@@ -6,5 +6,4 @@ module "browser" {
   zone_id       = "5c1425c7c9c3dac30330217af5b3349c"
   alias         = "static.dev.snuderls.eu"
   acme_email    = "blaz.snuderl@gmail.com"
-  public_ip     = "213.161.29.246"
 }
