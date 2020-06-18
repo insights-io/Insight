@@ -29,6 +29,7 @@ resource "acme_certificate" "static_cert" {
 }
 
 resource "aws_acm_certificate" "static_cert" {
-  private_key      = acme_certificate.static_cert.private_key_pem
-  certificate_chain = acme_certificate.static_cert.issuer_pem
+  private_key       = acme_certificate.static_cert.private_key_pem
+  certificate_body  = acme_certificate.static_cert.certificate_pem
+  certificate_chain = acme_certificate.static_cert.certificate_pem
 }
