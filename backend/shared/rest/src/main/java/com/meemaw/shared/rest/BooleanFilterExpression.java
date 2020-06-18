@@ -13,6 +13,7 @@ public class BooleanFilterExpression extends FilterExpression {
   BooleanOperation operator;
   List<FilterExpression> children;
 
+  @Override
   public SelectConditionStep<?> sql(SelectJoinStep<?> query) {
     if (children.size() == 0) {
       return (SelectConditionStep<?>) query;

@@ -22,6 +22,12 @@ public final class RHSColonParser {
 
   private RHSColonParser() {}
 
+  /**
+   * Build search dto from query params.
+   *
+   * @param params query params
+   * @return search dto
+   */
   public static SearchDTO buildFromParams(Map<String, List<String>> params) {
     List<FilterExpression> filterExpressions = new ArrayList<>();
     List<Pair<String, SortDirection>> sorts = new ArrayList<>();
@@ -71,7 +77,12 @@ public final class RHSColonParser {
     return Pair.of(op, text.substring(colon + 1));
   }
 
-  // TODO: remove -- dont reinvent the wheel
+  /**
+   * Parse query params from url.
+   *
+   * @param url url
+   * @return query params
+   */
   public static Map<String, List<String>> queryParams(URL url) {
     final Map<String, List<String>> queryParams = new LinkedHashMap<>();
     if (url.getQuery() == null) {

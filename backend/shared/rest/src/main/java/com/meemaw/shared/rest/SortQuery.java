@@ -11,6 +11,11 @@ public class SortQuery {
 
   public List<Pair<String, SortDirection>> orders;
 
+  /**
+   * Returns list of sort SQL sort fields.
+   *
+   * @return list of sort fields
+   */
   public List<SortField<?>> sql() {
     return orders.stream()
         .map(order -> order.getRight().sortField(order.getLeft()))

@@ -10,5 +10,11 @@ public abstract class FilterExpression {
 
   List<FilterExpression> children;
 
+  /**
+   * Update query with filter expression.
+   *
+   * @param query existing select query
+   * @return query with applied filter conditions
+   */
   public abstract SelectConditionStep<?> sql(SelectJoinStep<?> query);
 }
