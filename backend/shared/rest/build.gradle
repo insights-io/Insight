@@ -5,6 +5,8 @@ plugins {
 
 dependencies {
     api 'io.quarkus:quarkus-hibernate-validator'
+    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'org.jooq:jooq:3.13.2'
 
     testImplementation project(":shared:testing-utils")
 }
