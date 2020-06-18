@@ -3,6 +3,7 @@ package com.meemaw.session.datasource;
 import com.meemaw.session.model.SessionDTO;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.sqlclient.Transaction;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,4 +40,12 @@ public interface SessionDatasource {
    * @return maybe session
    */
   Uni<Optional<SessionDTO>> getSession(UUID id, String organizationId);
+
+  /**
+   * List sessions.
+   *
+   * @param organizationId organization id
+   * @return collection of sessions
+   */
+  Uni<Collection<SessionDTO>> getSessions(String organizationId);
 }

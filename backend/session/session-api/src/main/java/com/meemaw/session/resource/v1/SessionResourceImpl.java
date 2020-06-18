@@ -21,10 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SessionResourceImpl implements SessionResource {
 
-  @Inject InsightPrincipal principal;
   @Context HttpServletRequest request;
   @Context UriInfo uriInfo;
-
+  @Inject InsightPrincipal principal;
   @Inject SessionDatasource sessionDatasource;
   @Inject PageService pageService;
   @Inject SessionSocketService sessionSocketService;
@@ -32,8 +31,8 @@ public class SessionResourceImpl implements SessionResource {
 
   @Override
   public CompletionStage<Response> createPage(
-      CreatePageDTO body, String userAgent, String xForwarderFor) {
-    String clientIpAddress = Optional.ofNullable(xForwarderFor).orElse(request.getRemoteAddr());
+      CreatePageDTO body, String userAgent, String xForwardedFor) {
+    String clientIpAddress = Optional.ofNullable(xForwardedFor).orElse(request.getRemoteAddr());
 
     return pageService
         .createPage(body, userAgent, clientIpAddress)
@@ -46,14 +45,10 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> count() {
-    return pageService.activePageCount().subscribeAsCompletionStage().thenApply(DataResponse::ok);
-  }
-
-  @Override
   public CompletionStage<Response> getSession(UUID sessionId) {
+    String organizationId = principal.user().getOrganizationId();
     return sessionDatasource
-        .getSession(sessionId, principal.user().getOrganizationId())
+        .getSession(sessionId, organizationId)
         .subscribeAsCompletionStage()
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
@@ -61,15 +56,26 @@ public class SessionResourceImpl implements SessionResource {
 
   @Override
   public CompletionStage<Response> getPage(UUID sessionId, UUID pageId) {
+    String organizationId = principal.user().getOrganizationId();
     return pageService
-        .getPage(pageId, sessionId, principal.user().getOrganizationId())
+        .getPage(pageId, sessionId, organizationId)
         .subscribeAsCompletionStage()
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }
 
   @Override
-  public CompletionStage<Response> search() {
-    return sessionSearchService.search().thenApply(DataResponse::ok);
+  public CompletionStage<Response> getSessions() {
+    String organizationId = principal.user().getOrganizationId();
+    return sessionDatasource
+        .getSessions(organizationId)
+        .subscribeAsCompletionStage()
+        .thenApply(DataResponse::ok);
+  }
+
+  @Override
+  public CompletionStage<Response> searchSessions() {
+    String organizationId = principal.user().getOrganizationId();
+    return sessionSearchService.search(organizationId).thenApply(DataResponse::ok);
   }
 }

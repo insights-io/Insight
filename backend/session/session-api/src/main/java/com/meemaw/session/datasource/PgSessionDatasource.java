@@ -9,6 +9,9 @@ import io.vertx.mutiny.sqlclient.RowIterator;
 import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Transaction;
 import io.vertx.mutiny.sqlclient.Tuple;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
@@ -30,6 +33,9 @@ public class PgSessionDatasource implements SessionDatasource {
   private static final String SELECT_SESSION_RAW_SQL =
       "SELECT * FROM session.session WHERE id=$1 AND organization_id=$2;";
 
+  private static final String SELECT_SESSIONS_RAW_SQL =
+      "SELECT * FROM session.session WHERE organization_id=$1;";
+
   @Override
   public Uni<Optional<UUID>> findSessionDeviceLink(String organizationId, UUID deviceId) {
     return pgPool
@@ -40,17 +46,17 @@ public class PgSessionDatasource implements SessionDatasource {
         .invoke(this::onFindUserSessionLinkException);
   }
 
-  private <T> T onFindUserSessionLinkException(Throwable throwable) {
-    log.error("Failed to findUserSessionLinkException", throwable);
-    throw new DatabaseException(throwable);
-  }
-
   private Optional<UUID> mapSessionId(RowSet<Row> pgRowSet) {
     RowIterator<Row> iterator = pgRowSet.iterator();
     if (!iterator.hasNext()) {
       return Optional.empty();
     }
     return Optional.of(iterator.next().getUUID(0));
+  }
+
+  private <T> T onFindUserSessionLinkException(Throwable throwable) {
+    log.error("Failed to findUserSessionLinkException", throwable);
+    throw new DatabaseException(throwable);
   }
 
   @Override
@@ -64,17 +70,7 @@ public class PgSessionDatasource implements SessionDatasource {
     return transaction
         .preparedQuery(INSERT_SESSION_RAW_SQL)
         .execute(Tuple.of(sessionId, deviceId, organizationId, ipAddress, userAgent))
-        .map(
-            rowSet -> {
-              Row row = rowSet.iterator().next();
-              return new SessionDTO(
-                  row.getUUID("id"),
-                  row.getUUID("device_id"),
-                  row.getString("organization_id"),
-                  row.getString("ip_address"),
-                  row.getString("user_agent"),
-                  row.getOffsetDateTime("created_at"));
-            })
+        .map(rowSet -> mapSession(rowSet.iterator().next()))
         .onFailure()
         .invoke(this::onCreateSessionException);
   }
@@ -84,21 +80,34 @@ public class PgSessionDatasource implements SessionDatasource {
     return pgPool
         .preparedQuery(SELECT_SESSION_RAW_SQL)
         .execute(Tuple.of(id, organizationId))
-        .map(
-            rowSet -> {
-              if (!rowSet.iterator().hasNext()) {
-                return null;
-              }
-              Row row = rowSet.iterator().next();
-              return new SessionDTO(
-                  row.getUUID("id"),
-                  row.getUUID("device_id"),
-                  row.getString("organization_id"),
-                  row.getString("ip_address"),
-                  row.getString("user_agent"),
-                  row.getOffsetDateTime("created_at"));
-            })
+        .map(rowSet -> rowSet.iterator().hasNext() ? mapSession(rowSet.iterator().next()) : null)
         .map(Optional::ofNullable);
+  }
+
+  @Override
+  public Uni<Collection<SessionDTO>> getSessions(String organizationId) {
+    return pgPool
+        .preparedQuery(SELECT_SESSIONS_RAW_SQL)
+        .execute(Tuple.of(organizationId))
+        .map(this::mapSessions);
+  }
+
+  private List<SessionDTO> mapSessions(RowSet<Row> rowSet) {
+    List<SessionDTO> collection = new ArrayList<>(rowSet.size());
+    for (Row row : rowSet) {
+      collection.add(mapSession(row));
+    }
+    return collection;
+  }
+
+  private SessionDTO mapSession(Row row) {
+    return new SessionDTO(
+        row.getUUID("id"),
+        row.getUUID("device_id"),
+        row.getString("organization_id"),
+        row.getString("ip_address"),
+        row.getString("user_agent"),
+        row.getOffsetDateTime("created_at"));
   }
 
   private <T> T onCreateSessionException(Throwable throwable) {

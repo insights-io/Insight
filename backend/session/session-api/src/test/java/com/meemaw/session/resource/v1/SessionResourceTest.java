@@ -83,6 +83,7 @@ public class SessionResourceTest {
     ObjectNode nextPageNode = objectMapper.readValue(payload, ObjectNode.class);
     nextPageNode.put("deviceId", deviceId.toString());
 
+    // page is linked to same session because we pass device id along
     dataResponse =
         given()
             .when()
@@ -105,6 +106,7 @@ public class SessionResourceTest {
       throws IOException, URISyntaxException {
     String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
 
+    // page and session are created
     DataResponse<PageIdentity> dataResponse =
         given()
             .when()
@@ -122,6 +124,7 @@ public class SessionResourceTest {
     UUID sessionId = pageIdentity.getSessionId();
     UUID pageId = pageIdentity.getPageId();
 
+    // new page is created cause device id is not matching
     dataResponse =
         given()
             .when()

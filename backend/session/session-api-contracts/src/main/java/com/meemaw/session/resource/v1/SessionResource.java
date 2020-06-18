@@ -30,11 +30,11 @@ public interface SessionResource {
   CompletionStage<Response> createPage(
       @NotNull(message = "Required") @Valid CreatePageDTO body,
       @HeaderParam(HttpHeaders.USER_AGENT) String userAgent,
-      @HeaderParam("X-Forwarded-For") String xForwarderFor);
+      @HeaderParam("X-Forwarded-For") String xForwardedFor);
 
   @GET
   @CookieAuth
-  CompletionStage<Response> count();
+  CompletionStage<Response> getSessions();
 
   @GET
   @Path("{sessionId}")
@@ -50,5 +50,5 @@ public interface SessionResource {
   @GET
   @Path("search")
   @CookieAuth
-  CompletionStage<Response> search();
+  CompletionStage<Response> searchSessions();
 }
