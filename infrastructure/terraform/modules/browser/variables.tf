@@ -19,12 +19,9 @@ variable "acme_email" {
   type = string
 }
 
-variable "domain" {
+variable "alias" {
   type = string
-}
-
-variable "domain_suffix" {
-  type = string
+  description = "Cloudfront alias (domain) name"
 }
 
 variable "public_ip" {

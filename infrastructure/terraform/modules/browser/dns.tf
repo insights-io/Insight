@@ -1,16 +1,8 @@
 resource "cloudflare_record" "static" {
   zone_id = var.zone_id
-  name    = local.static_domain
+  name    = var.alias
   value   = aws_cloudfront_distribution.s3_distribution.domain_name
   type    = "CNAME"
-  ttl     = 1
-}
-
-resource "cloudflare_record" "star" {
-  zone_id = var.zone_id
-  name    = "*${var.domain_suffix}"
-  value   = var.public_ip
-  type    = "A"
   ttl     = 1
 }
 
@@ -29,7 +21,7 @@ resource "acme_registration" "reg" {
 
 resource "acme_certificate" "static_cert" {
   account_key_pem = acme_registration.reg.account_key_pem
-  common_name     = local.static_domain
+  common_name     = var.alias
 
   dns_challenge {
     provider = "cloudflare"
