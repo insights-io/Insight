@@ -22,10 +22,10 @@ public enum BooleanOperation {
     }
   };
 
-  @Getter private final String text;
+  @Getter private final String condition;
 
-  BooleanOperation(String text) {
-    this.text = text;
+  BooleanOperation(String condition) {
+    this.condition = condition;
   }
 
   public abstract SelectConditionStep<?> applyCondition(
