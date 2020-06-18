@@ -7,7 +7,7 @@ import prettier from 'rollup-plugin-prettier';
 
 const BUILD_FOLDER = 'dist';
 const OUTPUT_FILE_NAME = 'insight.js';
-const CDN_BASE_URL = 'https://d1l87tz7sw1x04.cloudfront.net';
+const CDN_BASE_URL = 'https://static.dev.snuderls.eu';
 
 const ENVIRONMENTS = {
   local: `${CDN_BASE_URL}/s/local.${OUTPUT_FILE_NAME}`,

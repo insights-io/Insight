@@ -13,7 +13,7 @@ const {
   NEXT_PUBLIC_AUTH_API_BASE_URL = 'http://localhost:8080',
   SESSION_API_BASE_URL = 'http://localhost:8082',
   NEXT_PUBLIC_SESSION_API_BASE_URL = 'http://localhost:8082',
-  BOOTSTRAP_SCRIPT = 'https://d1l87tz7sw1x04.cloudfront.net/b/local.insight.js',
+  BOOTSTRAP_SCRIPT = 'https://static.dev.snuderls.eu/b/local.insight.js',
 } = process.env;
 
 const env = {
