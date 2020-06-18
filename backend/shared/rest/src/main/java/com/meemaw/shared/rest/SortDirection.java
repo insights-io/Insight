@@ -7,24 +7,18 @@ import org.jooq.SortField;
 
 @ToString
 public enum SortDirection {
-  ASC("ASC") {
+  ASC {
     @Override
     public SortField<?> sortField(String field) {
       return field(field).asc();
     }
   },
-  DESC("DESC") {
+  DESC {
     @Override
     public SortField<?> sortField(String field) {
       return field(field).desc();
     }
   };
-
-  private final String direction;
-
-  SortDirection(String direction) {
-    this.direction = direction;
-  }
 
   public abstract SortField<?> sortField(String field);
 }

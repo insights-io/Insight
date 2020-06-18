@@ -15,7 +15,7 @@ public class BooleanFilterExpression extends FilterExpression {
 
   @Override
   public SelectConditionStep<?> sql(SelectJoinStep<?> query) {
-    if (children.size() == 0) {
+    if (children.isEmpty()) {
       return (SelectConditionStep<?>) query;
     }
     SelectConditionStep<?> subQuery = children.get(0).sql(query);

@@ -10,6 +10,7 @@ import com.meemaw.shared.rest.TermFilterExpression;
 import com.meemaw.shared.rest.TermOperation;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,44 +30,42 @@ public final class RHSColonParser {
    * @return search dto
    */
   public static SearchDTO buildFromParams(Map<String, List<String>> params) {
-    List<FilterExpression> filterExpressions = new ArrayList<>();
-    List<Pair<String, SortDirection>> sorts = new ArrayList<>();
+    List<FilterExpression> expressions = new ArrayList<>(params.size());
+    List<Pair<String, SortDirection>> sorts = Collections.emptyList();
 
-    for (Entry<String, List<String>> pair : params.entrySet()) {
-      String name = pair.getKey();
-      if (name.equals("sort_by")) {
-        sorts = parseSorts(pair.getValue().get(0));
+    for (Entry<String, List<String>> entry : params.entrySet()) {
+      String name = entry.getKey();
+      if ("sort_by".equals(name)) {
+        sorts = parseSorts(entry.getValue().get(0));
       } else {
         List<FilterExpression> termFilterExpressions =
-            pair.getValue().stream()
+            entry.getValue().stream()
                 .map(
                     value -> {
-                      Pair<TermOperation, String> p = extractOperationAndValue(value);
-                      return new TermFilterExpression<>(name, p.getLeft(), p.getRight());
+                      Pair<TermOperation, String> pair = extractOperationAndValue(value);
+                      return new TermFilterExpression<>(name, pair.getLeft(), pair.getRight());
                     })
                 .collect(Collectors.toList());
 
-        filterExpressions.add(
-            new BooleanFilterExpression(BooleanOperation.OR, termFilterExpressions));
+        expressions.add(new BooleanFilterExpression(BooleanOperation.OR, termFilterExpressions));
       }
     }
-    return new SearchDTO(
-        new BooleanFilterExpression(BooleanOperation.AND, filterExpressions), new SortQuery(sorts));
+
+    FilterExpression rootFilterExpression =
+        new BooleanFilterExpression(BooleanOperation.AND, expressions);
+
+    return new SearchDTO(rootFilterExpression, new SortQuery(sorts));
   }
 
   private static List<Pair<String, SortDirection>> parseSorts(String text) {
-    List<Pair<String, SortDirection>> sorts = new ArrayList<>();
     String[] fields = text.split(",");
-
-    for (String string : fields) {
-      SortDirection direction = SortDirection.ASC;
-      if (string.startsWith("+")) {
-        string = string.substring(1);
-      } else if (string.startsWith("-")) {
-        direction = SortDirection.DESC;
-        string = string.substring(1);
+    List<Pair<String, SortDirection>> sorts = new ArrayList<>(fields.length);
+    for (String fieldWithDirection : fields) {
+      SortDirection sortDirection = SortDirection.ASC;
+      if (fieldWithDirection.charAt(0) == '-') {
+        sortDirection = SortDirection.DESC;
       }
-      sorts.add(Pair.of(string, direction));
+      sorts.add(Pair.of(fieldWithDirection.substring(1), sortDirection));
     }
     return sorts;
   }
