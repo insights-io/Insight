@@ -8,8 +8,10 @@ import com.meemaw.shared.rest.SearchDTO;
 import com.meemaw.shared.rest.rhs.colon.RHSColonParser;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.jooq.Query;
 import org.jooq.SelectJoinStep;
 import org.junit.jupiter.api.Test;
 
@@ -21,9 +23,11 @@ public class RHSColorParserTest {
     Map<String, List<String>> params = RHSColonParser.queryParams(new URL(input));
     SearchDTO<SelectJoinStep<?>> searchDTO = RHSColonParser.buildFromParams(params);
 
+    Query query = searchDTO.sql(select().from(table("session.session")));
     assertEquals(
         "select * from session.session where (field1 <= ? and field2 >= ?) order by field2 asc, age desc",
-        searchDTO.sql(select().from(table("session.session"))).getSQL());
+        query.getSQL());
+    assertEquals(List.of("123", "matej"), query.getBindValues());
   }
 
   @Test
@@ -32,8 +36,8 @@ public class RHSColorParserTest {
     Map<String, List<String>> params = RHSColonParser.queryParams(new URL(input));
     SearchDTO<SelectJoinStep<?>> searchDTO = RHSColonParser.buildFromParams(params);
 
-    assertEquals(
-        "select * from session.session",
-        searchDTO.sql(select().from(table("session.session"))).getSQL());
+    Query query = searchDTO.sql(select().from(table("session.session")));
+    assertEquals("select * from session.session", query.getSQL());
+    assertEquals(Collections.emptyList(), query.getBindValues());
   }
 }
