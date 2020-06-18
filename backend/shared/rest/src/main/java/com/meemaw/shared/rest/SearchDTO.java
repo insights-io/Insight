@@ -1,16 +1,16 @@
 package com.meemaw.shared.rest;
 
 import lombok.Value;
-import org.jooq.Query;
+import org.jooq.SelectJoinStep;
 import org.jooq.SelectSeekStepN;
 
 @Value
-public class SearchDTO<P extends Query> {
+public class SearchDTO {
 
-  FilterExpression<P> filter;
+  FilterExpression filter;
   SortQuery sort;
 
-  public SelectSeekStepN<?> sql(P query) {
+  public SelectSeekStepN<?> sql(SelectJoinStep<?> query) {
     return filter.sql(query).orderBy(sort.sql());
   }
 }

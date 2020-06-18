@@ -12,16 +12,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.jooq.Query;
-import org.jooq.SelectJoinStep;
 import org.junit.jupiter.api.Test;
 
 public class RHSColorParserTest {
 
   @Test
-  public void should_correctly_parse_complex_rhs_colon_query_to_sql() throws MalformedURLException {
+  public void should_correctly_parse_rhs_colon_mixed_query_to_sql() throws MalformedURLException {
+    String input = "http://www.abc.com?field1=lte:123&field1=gte:100&field2=gte:200";
+    Map<String, List<String>> params = RHSColonParser.queryParams(new URL(input));
+    SearchDTO searchDTO = RHSColonParser.buildFromParams(params);
+
+    Query query = searchDTO.sql(select().from(table("session.session")));
+    assertEquals(
+        "select * from session.session where ((field1 <= ? or field1 >= ?) and field2 >= ?)",
+        query.getSQL());
+    assertEquals(List.of("123", "100", "200"), query.getBindValues());
+  }
+
+  @Test
+  public void should_correctly_parse_rhs_colon_and_query_to_sql() throws MalformedURLException {
     String input = "http://www.abc.com?field1=lte:123&sort_by=+field2,-age&field2=gte:matej";
     Map<String, List<String>> params = RHSColonParser.queryParams(new URL(input));
-    SearchDTO<SelectJoinStep<?>> searchDTO = RHSColonParser.buildFromParams(params);
+    SearchDTO searchDTO = RHSColonParser.buildFromParams(params);
 
     Query query = searchDTO.sql(select().from(table("session.session")));
     assertEquals(
@@ -31,10 +43,10 @@ public class RHSColorParserTest {
   }
 
   @Test
-  public void should_correctly_parse_empty_rhs_colon_query_to_sql() throws MalformedURLException {
+  public void should_correctly_parse_rhs_colon_empty_query_to_sql() throws MalformedURLException {
     String input = "http://www.abc.com";
     Map<String, List<String>> params = RHSColonParser.queryParams(new URL(input));
-    SearchDTO<SelectJoinStep<?>> searchDTO = RHSColonParser.buildFromParams(params);
+    SearchDTO searchDTO = RHSColonParser.buildFromParams(params);
 
     Query query = searchDTO.sql(select().from(table("session.session")));
     assertEquals("select * from session.session", query.getSQL());

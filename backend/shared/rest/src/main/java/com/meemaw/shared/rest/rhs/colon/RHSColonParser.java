@@ -15,15 +15,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jooq.SelectJoinStep;
 
 public final class RHSColonParser {
 
   private RHSColonParser() {}
 
-  public static SearchDTO<SelectJoinStep<?>> buildFromParams(Map<String, List<String>> params) {
-    List<FilterExpression<?>> filterExpressions = new ArrayList<>();
+  public static SearchDTO buildFromParams(Map<String, List<String>> params) {
+    List<FilterExpression> filterExpressions = new ArrayList<>();
     List<Pair<String, SortDirection>> sorts = new ArrayList<>();
 
     for (Entry<String, List<String>> pair : params.entrySet()) {
@@ -31,12 +31,20 @@ public final class RHSColonParser {
       if (name.equals("sort_by")) {
         sorts = parseSorts(pair.getValue().get(0));
       } else {
-        String value = pair.getValue().get(0);
-        Pair<TermOperation, String> p = extractOperationAndValue(value);
-        filterExpressions.add(new TermFilterExpression<>(name, p.getLeft(), p.getRight()));
+        List<FilterExpression> termFilterExpressions =
+            pair.getValue().stream()
+                .map(
+                    value -> {
+                      Pair<TermOperation, String> p = extractOperationAndValue(value);
+                      return new TermFilterExpression<>(name, p.getLeft(), p.getRight());
+                    })
+                .collect(Collectors.toList());
+
+        filterExpressions.add(
+            new BooleanFilterExpression(BooleanOperation.OR, termFilterExpressions));
       }
     }
-    return new SearchDTO<>(
+    return new SearchDTO(
         new BooleanFilterExpression(BooleanOperation.AND, filterExpressions), new SortQuery(sorts));
   }
 

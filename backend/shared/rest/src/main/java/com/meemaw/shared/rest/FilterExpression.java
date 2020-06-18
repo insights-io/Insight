@@ -2,12 +2,13 @@ package com.meemaw.shared.rest;
 
 import java.util.List;
 import lombok.Data;
-import org.jooq.Query;
-import org.jooq.SelectConnectByStep;
+import org.jooq.SelectConditionStep;
+import org.jooq.SelectJoinStep;
 
 @Data
-public abstract class FilterExpression<P extends Query> {
-  List<FilterExpression<?>> children;
+public abstract class FilterExpression {
 
-  public abstract SelectConnectByStep<?> sql(P query);
+  List<FilterExpression> children;
+
+  public abstract SelectConditionStep<?> sql(SelectJoinStep<?> query);
 }
