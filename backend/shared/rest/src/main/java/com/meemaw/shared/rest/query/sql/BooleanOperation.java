@@ -1,4 +1,4 @@
-package com.meemaw.shared.rest;
+package com.meemaw.shared.rest.query.sql;
 
 import lombok.ToString;
 import org.jooq.Condition;

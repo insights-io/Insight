@@ -4,7 +4,12 @@ import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 public final class RequestUtils {
@@ -126,8 +131,13 @@ public final class RequestUtils {
     return parseTLD(url).orElse(null);
   }
 
-  public static String requestIpAddress(HttpServerRequest request) {
-    String forwardedFor = request.getHeader("X-Forwarded-For");
-    return forwardedFor == null ? request.remoteAddress().host() : forwardedFor;
+  /**
+   * Converts JAX-RS multivalued map into a native java Map.
+   *
+   * @param map JAX-RS multivalued map
+   * @return java Map
+   */
+  public static Map<String, List<String>> map(MultivaluedMap<String, String> map) {
+    return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Entry::getValue));
   }
 }

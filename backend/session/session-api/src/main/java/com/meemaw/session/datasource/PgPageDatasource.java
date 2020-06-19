@@ -20,13 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 public class PgPageDatasource implements PageDatasource {
 
   @Inject PgPool pgPool;
-  @Inject SessionDatasource sessionDatasource;
+  @Inject PgSessionDatasource sessionDatasource;
 
   private static final String INSERT_PAGE_RAW_SQL =
       "INSERT INTO session.page (id, session_id, organization_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);";
-
-  private static final String SELECT_ACTIVE_PAGE_COUNT =
-      "SELECT COUNT(*) FROM session.page WHERE page_end IS NULL;";
 
   private static final String SELECT_PAGE_RAW_SQL =
       "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND organization_id=$3;";
@@ -109,21 +106,6 @@ public class PgPageDatasource implements PageDatasource {
 
   private <T> T onInsertPageException(Throwable throwable) {
     log.error("Failed to insertPage", throwable);
-    throw new DatabaseException(throwable);
-  }
-
-  @Override
-  public Uni<Integer> activePageCount() {
-    return pgPool
-        .preparedQuery(SELECT_ACTIVE_PAGE_COUNT)
-        .execute()
-        .map(rowSet -> rowSet.iterator().next().getInteger("count"))
-        .onFailure()
-        .invoke(this::onActivePageCountException);
-  }
-
-  private <T> T onActivePageCountException(Throwable throwable) {
-    log.error("Failed to COUNT(*) active pages", throwable);
     throw new DatabaseException(throwable);
   }
 

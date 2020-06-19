@@ -19,7 +19,7 @@ import org.slf4j.MDC;
 @Slf4j
 public class PageService {
 
-  @Inject SessionDatasource sessionDatasource;
+  @Inject SessionDatasource<?> sessionDatasource;
   @Inject PageDatasource pageDatasource;
 
   /**
@@ -43,8 +43,6 @@ public class PageService {
     MDC.put(LoggingConstants.PAGE_ID, pageId.toString());
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, page.getOrganizationId());
-
-    log.info("GENERATED PAGE ID {}", pageId);
 
     // unrecognized device; start a new session
     if (!deviceId.equals(page.getDeviceId())) {
@@ -72,10 +70,6 @@ public class PageService {
     log.info("Creating new session");
     return pageDatasource.createPageAndNewSession(
         pageId, sessionId, deviceId, userAgent, ipAddress, page);
-  }
-
-  public Uni<Integer> activePageCount() {
-    return pageDatasource.activePageCount();
   }
 
   public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {

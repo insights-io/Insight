@@ -1,11 +1,13 @@
 package com.meemaw.session.resource.v1;
 
 import com.meemaw.auth.sso.model.InsightPrincipal;
-import com.meemaw.session.datasource.SessionDatasource;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.service.PageService;
 import com.meemaw.session.service.SessionSearchService;
+import com.meemaw.session.service.SessionService;
 import com.meemaw.session.service.SessionSocketService;
+import com.meemaw.shared.context.RequestUtils;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.Optional;
@@ -24,7 +26,7 @@ public class SessionResourceImpl implements SessionResource {
   @Context HttpServletRequest request;
   @Context UriInfo uriInfo;
   @Inject InsightPrincipal principal;
-  @Inject SessionDatasource sessionDatasource;
+  @Inject SessionService sessionService;
   @Inject PageService pageService;
   @Inject SessionSocketService sessionSocketService;
   @Inject SessionSearchService sessionSearchService;
@@ -47,7 +49,7 @@ public class SessionResourceImpl implements SessionResource {
   @Override
   public CompletionStage<Response> getSession(UUID sessionId) {
     String organizationId = principal.user().getOrganizationId();
-    return sessionDatasource
+    return sessionService
         .getSession(sessionId, organizationId)
         .subscribeAsCompletionStage()
         .thenApply(
@@ -67,8 +69,9 @@ public class SessionResourceImpl implements SessionResource {
   @Override
   public CompletionStage<Response> getSessions() {
     String organizationId = principal.user().getOrganizationId();
-    return sessionDatasource
-        .getSessions(organizationId)
+    return sessionService
+        .getSessions(
+            organizationId, SearchDTO.rhsColon(RequestUtils.map(uriInfo.getQueryParameters())))
         .subscribeAsCompletionStage()
         .thenApply(DataResponse::ok);
   }

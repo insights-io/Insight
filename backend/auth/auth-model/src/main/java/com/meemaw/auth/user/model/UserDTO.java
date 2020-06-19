@@ -1,6 +1,6 @@
 package com.meemaw.auth.user.model;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,5 +17,5 @@ public class UserDTO implements AuthUser {
   String fullName;
   UserRole role;
   String organizationId;
-  Instant createdAt;
+  OffsetDateTime createdAt;
 }

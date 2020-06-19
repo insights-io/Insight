@@ -1,19 +1,23 @@
 package com.meemaw.session.datasource;
 
 import com.meemaw.session.model.SessionDTO;
+import com.meemaw.shared.rest.query.FilterExpression;
+import com.meemaw.shared.rest.query.SearchDTO;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.sqlclient.Transaction;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import org.eclipse.microprofile.opentracing.Traced;
 
-public interface SessionDatasource {
+public interface SessionDatasource<F extends FilterExpression> {
 
   /**
    * @param organizationId String organization id
    * @param deviceId String device id
    * @return optionally linked sessionID that has been active in the last 30 minutes
    */
+  @Traced
   Uni<Optional<UUID>> findSessionDeviceLink(String organizationId, UUID deviceId);
 
   /**
@@ -24,6 +28,7 @@ public interface SessionDatasource {
    * @param userAgent browser's user agent
    * @return newly created session
    */
+  @Traced
   Uni<SessionDTO> createSession(
       Transaction transaction,
       UUID sessionId,
@@ -39,13 +44,16 @@ public interface SessionDatasource {
    * @param organizationId organization id
    * @return maybe session
    */
+  @Traced
   Uni<Optional<SessionDTO>> getSession(UUID id, String organizationId);
 
   /**
    * List sessions.
    *
    * @param organizationId organization id
+   * @param searchDTO search bean
    * @return collection of sessions
    */
-  Uni<Collection<SessionDTO>> getSessions(String organizationId);
+  @Traced
+  Uni<Collection<SessionDTO>> getSessions(String organizationId, SearchDTO searchDTO);
 }

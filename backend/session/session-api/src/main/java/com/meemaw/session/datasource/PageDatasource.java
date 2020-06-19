@@ -35,9 +35,6 @@ public interface PageDatasource {
       String ipAddress,
       CreatePageDTO page);
 
-  /** @return number of currently active pages */
-  Uni<Integer> activePageCount();
-
   /**
    * @param id page id
    * @param sessionId String session id

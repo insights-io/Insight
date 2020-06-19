@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.session.model.PageIdentity;
+import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
@@ -44,6 +45,7 @@ public class SessionResourceTest {
       throws IOException, URISyntaxException {
     String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
 
+    // Create first session
     DataResponse<PageIdentity> dataResponse =
         given()
             .when()
@@ -61,6 +63,7 @@ public class SessionResourceTest {
     UUID sessionId = pageIdentity.getSessionId();
     UUID pageId = pageIdentity.getPageId();
 
+    // GET newly created page
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
@@ -70,15 +73,32 @@ public class SessionResourceTest {
         .body("data.organizationId", is("000000"))
         .body("data.sessionId", is(sessionId.toString()));
 
+    // GET newly created session
+    DataResponse<SessionDTO> sessionDataResponse =
+        given()
+            .when()
+            .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+            .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
+            .then()
+            .statusCode(200)
+            .body("data.organizationId", is("000000"))
+            .body("data.deviceId", is(deviceId.toString()))
+            .body("data.id", is(sessionId.toString()))
+            .extract()
+            .response()
+            .as(new TypeRef<>() {});
+
+    // GET sessions
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
-        .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
+        .get(
+            String.format(
+                "%s?created_at=gte:%s",
+                SessionResource.PATH, sessionDataResponse.getData().getCreatedAt()))
         .then()
         .statusCode(200)
-        .body("data.organizationId", is("000000"))
-        .body("data.deviceId", is(deviceId.toString()))
-        .body("data.id", is(sessionId.toString()));
+        .body("data.size()", is(1));
 
     ObjectNode nextPageNode = objectMapper.readValue(payload, ObjectNode.class);
     nextPageNode.put("deviceId", deviceId.toString());
@@ -99,6 +119,18 @@ public class SessionResourceTest {
     assertEquals(dataResponse.getData().getDeviceId(), deviceId);
     assertEquals(dataResponse.getData().getSessionId(), sessionId);
     assertNotEquals(dataResponse.getData().getPageId(), pageId);
+
+    // GET sessions again to confirm no new sessions has been created
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+        .get(
+            String.format(
+                "%s?created_at=gte:%s",
+                SessionResource.PATH, sessionDataResponse.getData().getCreatedAt()))
+        .then()
+        .statusCode(200)
+        .body("data.size()", is(1));
   }
 
   @Test
@@ -140,5 +172,28 @@ public class SessionResourceTest {
     assertNotEquals(dataResponse.getData().getDeviceId(), deviceId);
     assertNotEquals(dataResponse.getData().getSessionId(), sessionId);
     assertNotEquals(dataResponse.getData().getPageId(), pageId);
+
+    DataResponse<SessionDTO> firstSessionDataResponse =
+        given()
+            .when()
+            .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+            .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
+            .then()
+            .statusCode(200)
+            .extract()
+            .response()
+            .as(new TypeRef<>() {});
+
+    // GET sessions should return 2 newly created sessions
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+        .get(
+            String.format(
+                "%s?created_at=gte:%s",
+                SessionResource.PATH, firstSessionDataResponse.getData().getCreatedAt()))
+        .then()
+        .statusCode(200)
+        .body("data.size()", is(2));
   }
 }

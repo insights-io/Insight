@@ -7,7 +7,7 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import java.io.IOException;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   UserRole role;
   String organizationId;
   String fullName;
-  Instant createdAt;
+  OffsetDateTime createdAt;
 
   /**
    * Create a SsoUser from an existing AuthUser.
@@ -54,7 +54,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     out.writeUTF(this.role.toString());
     out.writeUTF(this.organizationId);
     out.writeUTF(this.fullName);
-    out.writeLong(this.createdAt.toEpochMilli());
+    out.writeObject(this.createdAt);
   }
 
   @Override
@@ -64,7 +64,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.role = UserRole.valueOf(in.readUTF());
     this.organizationId = in.readUTF();
     this.fullName = in.readUTF();
-    this.createdAt = Instant.ofEpochMilli(in.readLong());
+    this.createdAt = in.readObject();
   }
 
   public AuthUser dto() {
