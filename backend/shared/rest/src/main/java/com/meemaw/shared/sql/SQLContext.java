@@ -8,10 +8,10 @@ import org.jooq.impl.DSL;
 
 public final class SQLContext {
 
-  private SQLContext() {}
-
   public static final DSLContext POSTGRES =
       DSL.using(
           SQLDialect.POSTGRES,
           new Settings().withRenderNamedParamPrefix("$").withParamCastMode(ParamCastMode.NEVER));
+
+  private SQLContext() {}
 }

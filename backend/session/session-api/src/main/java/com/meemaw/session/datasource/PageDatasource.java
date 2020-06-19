@@ -19,6 +19,8 @@ public interface PageDatasource {
   Uni<PageIdentity> insertPage(UUID pageId, UUID sessionId, UUID deviceId, CreatePageDTO page);
 
   /**
+   * Create page and new session linked to it.
+   *
    * @param pageId page id
    * @param sessionId session id
    * @param deviceId device id

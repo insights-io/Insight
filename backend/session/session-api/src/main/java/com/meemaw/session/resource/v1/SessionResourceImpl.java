@@ -57,8 +57,8 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> getPage(UUID sessionId, UUID pageId) {
-    String organizationId = principal.user().getOrganizationId();
+  public CompletionStage<Response> getPage(UUID sessionId, UUID pageId, String organizationId) {
+    // String organizationId = principal.user().getOrganizationId();
     return pageService
         .getPage(pageId, sessionId, organizationId)
         .subscribeAsCompletionStage()

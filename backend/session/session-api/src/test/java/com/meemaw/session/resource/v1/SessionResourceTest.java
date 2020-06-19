@@ -67,6 +67,7 @@ public class SessionResourceTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+        .queryParam("organizationId", "000000") // TODO: remove when S2S auth
         .get(String.format(SESSION_PAGE_PATH_TEMPLATE, sessionId, pageId))
         .then()
         .statusCode(200)

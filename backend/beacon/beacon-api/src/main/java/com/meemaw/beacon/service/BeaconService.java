@@ -47,9 +47,9 @@ public class BeaconService {
   @OnOverflow(Strategy.UNBOUNDED_BUFFER)
   Emitter<UserEvent<?>> unloadEventsEmitter;
 
-  private CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId) {
+  private CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
     return sessionResource
-        .getPage(sessionId, pageId)
+        .getPage(sessionId, pageId, organizationId)
         .exceptionally(
             throwable -> {
               if (throwable.getCause() instanceof WebApplicationException) {
@@ -101,7 +101,7 @@ public class BeaconService {
                 .build();
 
     log.info("Processing beacon");
-    return pageExists(sessionId, pageId)
+    return pageExists(sessionId, pageId, organizationId)
         .thenApply(
             exists -> {
               if (!exists) {
