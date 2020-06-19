@@ -153,6 +153,41 @@ releases:
       - oauth-proxy.yaml
       - config:
           existingSecret: {{ .Values.oauthExistingSecret }}
+  - name: atlantis
+    chart: stable/atlantis
+    namespace: {{ .Values.infraNamespace }}
+    values:
+      - atlantis.yaml
+      - ingress:
+          tls:
+            - hosts:
+              - "atlantis.{{ .Values.infraDomain }}"
+              secretName: atlantis-tls
+          host: "atlantis.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotations | indent 12 }}
+
+      - extraManifests:
+          - apiVersion: extensions/v1beta1
+            kind: Ingress
+            spec:
+              rules:
+              - host: atlantis.dev.snuderls.eu
+                http:
+                  paths:
+                  - backend:
+                      serviceName: atlantis
+                      servicePort: 80
+                    path: /events
+              tls:
+              - hosts:
+                - atlantis.dev.snuderls.eu
+                secretName: atlantis-tls
+            metadata:
+              name: atlantis-public
+              annotations:
+{{ toYaml .Values.ingressAnnotationsHttps | indent 16 }}
+
 {{ end }}
 
 environments:
