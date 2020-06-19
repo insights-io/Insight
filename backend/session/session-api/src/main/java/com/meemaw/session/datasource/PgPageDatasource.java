@@ -1,19 +1,29 @@
 package com.meemaw.session.datasource;
 
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
+
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.shared.rest.exception.DatabaseException;
+import com.meemaw.shared.sql.SQLContext;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.Transaction;
 import io.vertx.mutiny.sqlclient.Tuple;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Field;
+import org.jooq.Query;
+import org.jooq.Table;
+import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
@@ -22,11 +32,34 @@ public class PgPageDatasource implements PageDatasource {
   @Inject PgPool pgPool;
   @Inject PgSessionDatasource sessionDatasource;
 
-  private static final String INSERT_PAGE_RAW_SQL =
-      "INSERT INTO session.page (id, session_id, organization_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);";
+  private static final Table<?> TABLE = table("session.page");
 
-  private static final String SELECT_PAGE_RAW_SQL =
-      "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND organization_id=$3;";
+  private static final Field<UUID> ID = field("id", UUID.class);
+  private static final Field<UUID> SESSION_ID = field("session_id", UUID.class);
+  private static final Field<String> ORGANIZATION_ID = field("organization_id", String.class);
+  private static final Field<String> DOCTYPE = field("doctype", String.class);
+  private static final Field<String> URL = field("url", String.class);
+  private static final Field<String> REFERRER = field("referrer", String.class);
+  private static final Field<Integer> HEIGHT = field("height", Integer.class);
+  private static final Field<Integer> WIDTH = field("width", Integer.class);
+  private static final Field<Integer> SCREEN_HEIGHT = field("screen_height", Integer.class);
+  private static final Field<Integer> SCREEN_WIDTH = field("screen_width", Integer.class);
+  private static final Field<Long> COMPILED_TIMESTAMP = field("compiled_timestamp", Long.class);
+  private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
+
+  private static final List<Field<?>> INSERT_FIELDS =
+      List.of(
+          ID,
+          SESSION_ID,
+          ORGANIZATION_ID,
+          DOCTYPE,
+          URL,
+          REFERRER,
+          HEIGHT,
+          WIDTH,
+          SCREEN_HEIGHT,
+          SCREEN_WIDTH,
+          COMPILED_TIMESTAMP);
 
   @Override
   public Uni<PageIdentity> createPageAndNewSession(
@@ -66,9 +99,10 @@ public class PgPageDatasource implements PageDatasource {
 
   private Uni<PageIdentity> insertPage(
       Transaction transaction, UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
+    Query query = insertPageQuery(id, sessionId, page);
     return transaction
-        .preparedQuery(INSERT_PAGE_RAW_SQL)
-        .execute(insertPageValues(id, sessionId, page))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .map(
             rowSet ->
                 PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
@@ -78,9 +112,10 @@ public class PgPageDatasource implements PageDatasource {
 
   @Override
   public Uni<PageIdentity> insertPage(UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
+    Query query = insertPageQuery(id, sessionId, page);
     return pgPool
-        .preparedQuery(INSERT_PAGE_RAW_SQL)
-        .execute(insertPageValues(id, sessionId, page))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .map(
             rowSet ->
                 PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
@@ -88,9 +123,11 @@ public class PgPageDatasource implements PageDatasource {
         .invoke(this::onInsertPageException);
   }
 
-  private Tuple insertPageValues(UUID id, UUID sessionId, CreatePageDTO page) {
-    return Tuple.newInstance(
-        io.vertx.sqlclient.Tuple.of(
+  private Query insertPageQuery(UUID id, UUID sessionId, CreatePageDTO page) {
+    return SQLContext.POSTGRES
+        .insertInto(TABLE)
+        .columns(INSERT_FIELDS)
+        .values(
             id,
             sessionId,
             page.getOrganizationId(),
@@ -101,7 +138,7 @@ public class PgPageDatasource implements PageDatasource {
             page.getWidth(),
             page.getScreenHeight(),
             page.getScreenWidth(),
-            page.getCompiledTs()));
+            page.getCompiledTs());
   }
 
   private <T> T onInsertPageException(Throwable throwable) {
@@ -110,32 +147,38 @@ public class PgPageDatasource implements PageDatasource {
   }
 
   @Override
-  public Uni<Optional<PageDTO>> getPage(UUID pageId, UUID sessionId, String organizationId) {
+  public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {
+    Query query =
+        SQLContext.POSTGRES
+            .select()
+            .from(TABLE)
+            .where(ID.eq(id).and(SESSION_ID.eq(sessionId).and(ORGANIZATION_ID.eq(organizationId))));
+
+    log.info("SQL: {}", query.getSQL(ParamType.NAMED));
+
     return pgPool
-        .preparedQuery(SELECT_PAGE_RAW_SQL)
-        .execute(Tuple.of(pageId, sessionId, organizationId))
-        .map(
-            rowSet -> {
-              if (!rowSet.iterator().hasNext()) {
-                return null;
-              }
-              Row row = rowSet.iterator().next();
-              return new PageDTO(
-                  row.getUUID("id"),
-                  row.getUUID("session_id"),
-                  row.getString("organization_id"),
-                  row.getString("url"),
-                  row.getString("referrer"),
-                  row.getString("doctype"),
-                  row.getInteger("screen_width"),
-                  row.getInteger("screen_height"),
-                  row.getInteger("width"),
-                  row.getInteger("height"),
-                  row.getInteger("compiled_timestamp"));
-            })
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
+        .map(rowSet -> rowSet.iterator().hasNext() ? map(rowSet.iterator().next()) : null)
         .map(Optional::ofNullable)
         .onFailure()
         .invoke(this::onGetPageException);
+  }
+
+  private PageDTO map(Row row) {
+    return new PageDTO(
+        row.getUUID(ID.getName()),
+        row.getUUID(SESSION_ID.getName()),
+        row.getString(ORGANIZATION_ID.getName()),
+        row.getString(URL.getName()),
+        row.getString(REFERRER.getName()),
+        row.getString(DOCTYPE.getName()),
+        row.getInteger(SCREEN_WIDTH.getName()),
+        row.getInteger(SCREEN_HEIGHT.getName()),
+        row.getInteger(WIDTH.getName()),
+        row.getInteger(HEIGHT.getName()),
+        row.getInteger(COMPILED_TIMESTAMP.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
   }
 
   private <T> T onGetPageException(Throwable throwable) {

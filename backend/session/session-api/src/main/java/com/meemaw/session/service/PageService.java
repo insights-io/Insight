@@ -19,7 +19,7 @@ import org.slf4j.MDC;
 @Slf4j
 public class PageService {
 
-  @Inject SessionDatasource<?> sessionDatasource;
+  @Inject SessionDatasource sessionDatasource;
   @Inject PageDatasource pageDatasource;
 
   /**

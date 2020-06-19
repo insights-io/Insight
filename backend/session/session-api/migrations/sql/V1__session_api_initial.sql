@@ -25,9 +25,9 @@ CREATE TABLE IF NOT EXISTS session.page
     screen_height      SMALLINT    NOT NULL,
     screen_width       SMALLINT    NOT NULL,
     compiled_timestamp INTEGER     NOT NULL,
-    page_start         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
     page_end           TIMESTAMPTZ,
 
     FOREIGN KEY (session_id) REFERENCES session.session (id),
-    PRIMARY KEY (id, session_id, organization_id, page_start)
+    PRIMARY KEY (id, session_id, organization_id, created_at)
 );

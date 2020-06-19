@@ -6,7 +6,6 @@ import static org.jooq.impl.DSL.table;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.query.SearchDTO;
-import com.meemaw.shared.rest.query.sql.SQLFilterExpression;
 import com.meemaw.shared.rest.query.sql.SQLSearchDTO;
 import com.meemaw.shared.sql.SQLContext;
 import io.smallrye.mutiny.Uni;
@@ -36,7 +35,7 @@ import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class PgSessionDatasource implements SessionDatasource<SQLFilterExpression> {
+public class PgSessionDatasource implements SessionDatasource {
 
   @Inject PgPool pgPool;
 
@@ -125,7 +124,7 @@ public class PgSessionDatasource implements SessionDatasource<SQLFilterExpressio
   @Override
   public Uni<Collection<SessionDTO>> getSessions(String organizationId, SearchDTO searchDTO) {
     Query query =
-        new SQLSearchDTO(searchDTO)
+        SQLSearchDTO.of(searchDTO)
             .apply(
                 SQLContext.POSTGRES.select().from(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);

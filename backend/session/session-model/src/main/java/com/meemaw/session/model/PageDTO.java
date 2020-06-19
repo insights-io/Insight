@@ -1,5 +1,6 @@
 package com.meemaw.session.model;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,4 +23,5 @@ public class PageDTO {
   int screenHeight;
   int screenWidth;
   long compiledTimestamp;
+  OffsetDateTime pageStart;
 }

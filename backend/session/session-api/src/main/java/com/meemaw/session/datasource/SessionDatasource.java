@@ -1,7 +1,6 @@
 package com.meemaw.session.datasource;
 
 import com.meemaw.session.model.SessionDTO;
-import com.meemaw.shared.rest.query.FilterExpression;
 import com.meemaw.shared.rest.query.SearchDTO;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.sqlclient.Transaction;
@@ -10,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.eclipse.microprofile.opentracing.Traced;
 
-public interface SessionDatasource<F extends FilterExpression> {
+public interface SessionDatasource {
 
   /**
    * @param organizationId String organization id
