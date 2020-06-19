@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "playwright": "1.1.1",
-    "rollup": "2.17.0",
+    "rollup": "2.17.1",
     "rollup-plugin-gzip": "2.5.0",
     "rollup-plugin-prettier": "2.1.0",
     "rollup-plugin-terser": "6.1.0"
