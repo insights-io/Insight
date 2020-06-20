@@ -21,6 +21,14 @@ const mapSession = (sessionDTO: SessionDTO): Session => {
 };
 
 const SessionApi = {
+  getSession: (sessionId: string) => {
+    return ky
+      .get(`${sessionApiBaseURL}/v1/sessions/${sessionId}`, {
+        credentials: 'include',
+      })
+      .json<DataResponse<SessionDTO>>()
+      .then((dataResponse) => mapSession(dataResponse.data));
+  },
   getSessions: () => {
     return ky
       .get(`${sessionApiBaseURL}/v1/sessions`, { credentials: 'include' })
