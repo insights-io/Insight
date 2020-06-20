@@ -7,23 +7,16 @@ import java.util.Map;
 import lombok.Value;
 import org.jooq.Field;
 import org.jooq.SelectConditionStep;
-import org.jooq.SelectJoinStep;
 
 @Value
 public class SQLBooleanFilterExpression implements SQLFilterExpression {
 
-  BooleanFilterExpression<FilterExpression> booleanFilterExpression;
-
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  @Override
-  public SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> fields) {
-    return sql((SelectConditionStep) query, fields);
-  }
+  BooleanFilterExpression<FilterExpression> expression;
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> fields) {
-    List<FilterExpression> children = booleanFilterExpression.getChildren();
+    List<FilterExpression> children = expression.getChildren();
     if (children.isEmpty()) {
       return query;
     }
@@ -35,11 +28,11 @@ public class SQLBooleanFilterExpression implements SQLFilterExpression {
         subQuery = ((SQLBooleanFilterExpression) filterExpression).sql(query, fields);
       } else if (filterExpression instanceof SQLTermFilterExpression) {
         SQLTermFilterExpression termFilterExpression = (SQLTermFilterExpression) filterExpression;
-        String fieldName = termFilterExpression.getTermFilterExpression().getField();
+        String fieldName = termFilterExpression.getExpression().getField();
 
         if (fields.containsKey(fieldName)) {
           subQuery =
-              booleanFilterExpression
+              expression
                   .getOperator()
                   .applyCondition(subQuery, termFilterExpression.condition(fields.get(fieldName)));
         }

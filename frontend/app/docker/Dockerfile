@@ -8,6 +8,9 @@ ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_client_base_url
 ARG auth_api_server_base_url=http://localhost:8080
 ENV AUTH_API_BASE_URL=$auth_api_server_base_url
 
+ARG session_api_client_base_url=http://localhost:8082
+ENV NEXT_PUBLIC_SESSION_API_BASE_URL=$session_api_client_base_url
+
 ARG try_app_base_url=http://localhost:3002
 ENV NEXT_PUBLIC_TRY_BASE_URL=$try_app_base_url
 
