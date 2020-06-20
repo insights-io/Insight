@@ -23,7 +23,7 @@ public class SessionSearchService {
     restClient = ElasticsearchUtils.restClient();
   }
 
-  public CompletionStage<List<UUID>> search() {
+  public CompletionStage<List<UUID>> search(String organizationId) {
     log.info(restClient.getLowLevelClient().toString());
     return CompletableFuture.completedStage(Collections.emptyList());
   }

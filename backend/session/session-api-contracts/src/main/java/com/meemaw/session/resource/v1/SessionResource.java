@@ -1,6 +1,5 @@
 package com.meemaw.session.resource.v1;
 
-import com.meemaw.auth.organization.model.validation.OrganizationId;
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import com.meemaw.session.model.CreatePageDTO;
 import java.util.UUID;
@@ -9,11 +8,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -27,22 +28,30 @@ public interface SessionResource {
   String PATH = "/v1/sessions";
 
   @POST
-  CompletionStage<Response> createPage(@NotNull(message = "Required") @Valid CreatePageDTO body);
+  CompletionStage<Response> createPage(
+      @NotNull(message = "Required") @Valid CreatePageDTO body,
+      @HeaderParam(HttpHeaders.USER_AGENT) String userAgent,
+      @HeaderParam("X-Forwarded-For") String xForwardedFor);
 
   @GET
   @CookieAuth
-  CompletionStage<Response> count();
+  CompletionStage<Response> getSessions();
 
-  // TODO: this should be authenticated
+  @GET
+  @Path("{sessionId}")
+  @CookieAuth
+  CompletionStage<Response> getSession(@PathParam("sessionId") UUID sessionId);
+
   @GET
   @Path("{sessionId}/pages/{pageId}")
+  // TODO: beacon-api needs this endpoint so figure out S2S auth @CookieAuth
   CompletionStage<Response> getPage(
       @PathParam("sessionId") UUID sessionId,
       @PathParam("pageId") UUID pageId,
-      @OrganizationId @QueryParam("organizationId") String organizationId);
+      @QueryParam("organizationId") String organizationId);
 
-  // TODO: this should be authenticated
   @GET
   @Path("search")
-  CompletionStage<Response> search();
+  @CookieAuth
+  CompletionStage<Response> searchSessions();
 }

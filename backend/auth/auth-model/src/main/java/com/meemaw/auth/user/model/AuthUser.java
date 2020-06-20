@@ -7,7 +7,7 @@ public interface AuthUser {
 
   UUID getId();
 
-  String getOrg();
+  String getOrganizationId();
 
   UserRole getRole();
 

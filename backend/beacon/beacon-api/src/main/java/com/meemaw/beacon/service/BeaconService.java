@@ -65,9 +65,7 @@ public class BeaconService {
               }
               DataResponse<PageDTO> dataResponse = response.readEntity(new GenericType<>() {});
               PageDTO page = dataResponse.getData();
-              return page.getSessionId().equals(sessionId)
-                  && page.getId().equals(pageId)
-                  && page.getOrganizationId().equals(organizationId);
+              return page.getSessionId().equals(sessionId) && page.getId().equals(pageId);
             });
   }
 

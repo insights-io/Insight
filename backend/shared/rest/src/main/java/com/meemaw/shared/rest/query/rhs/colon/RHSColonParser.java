@@ -1,13 +1,13 @@
-package com.meemaw.shared.rest.rhs.colon;
+package com.meemaw.shared.rest.query.rhs.colon;
 
-import com.meemaw.shared.rest.BooleanFilterExpression;
-import com.meemaw.shared.rest.BooleanOperation;
-import com.meemaw.shared.rest.FilterExpression;
-import com.meemaw.shared.rest.SearchDTO;
-import com.meemaw.shared.rest.SortDirection;
-import com.meemaw.shared.rest.SortQuery;
-import com.meemaw.shared.rest.TermFilterExpression;
-import com.meemaw.shared.rest.TermOperation;
+import com.meemaw.shared.rest.query.BooleanFilterExpression;
+import com.meemaw.shared.rest.query.FilterExpression;
+import com.meemaw.shared.rest.query.SearchDTO;
+import com.meemaw.shared.rest.query.TermFilterExpression;
+import com.meemaw.shared.rest.query.sql.BooleanOperation;
+import com.meemaw.shared.rest.query.sql.SortDirection;
+import com.meemaw.shared.rest.query.sql.SortQuery;
+import com.meemaw.shared.rest.query.sql.TermOperation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,10 +32,13 @@ public final class RHSColonParser {
   public static SearchDTO buildFromParams(Map<String, List<String>> params) {
     List<FilterExpression> expressions = new ArrayList<>(params.size());
     List<Pair<String, SortDirection>> sorts = Collections.emptyList();
+    int limit = 0;
 
     for (Entry<String, List<String>> entry : params.entrySet()) {
       String name = entry.getKey();
-      if ("sort_by".equals(name)) {
+      if ("limit".equals(name)) {
+        limit = Integer.parseInt(entry.getValue().get(0));
+      } else if ("sort_by".equals(name)) {
         sorts = parseSorts(entry.getValue().get(0));
       } else {
         List<FilterExpression> termFilterExpressions =
@@ -43,14 +46,14 @@ public final class RHSColonParser {
                 .map(value -> extractTermFilterExpression(name, value))
                 .collect(Collectors.toList());
 
-        expressions.add(new BooleanFilterExpression(BooleanOperation.OR, termFilterExpressions));
+        expressions.add(new BooleanFilterExpression<>(BooleanOperation.OR, termFilterExpressions));
       }
     }
 
     FilterExpression rootFilterExpression =
-        new BooleanFilterExpression(BooleanOperation.AND, expressions);
+        new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
 
-    return new SearchDTO(rootFilterExpression, new SortQuery(sorts));
+    return new SearchDTO(rootFilterExpression, new SortQuery(sorts), limit);
   }
 
   private static List<Pair<String, SortDirection>> parseSorts(String text) {
@@ -66,7 +69,7 @@ public final class RHSColonParser {
     return sorts;
   }
 
-  private static TermFilterExpression<?> extractTermFilterExpression(String name, String value) {
+  private static FilterExpression extractTermFilterExpression(String name, String value) {
     Pair<TermOperation, String> pair = extractOperationAndValue(value);
     return new TermFilterExpression<>(name, pair.getLeft(), pair.getRight());
   }

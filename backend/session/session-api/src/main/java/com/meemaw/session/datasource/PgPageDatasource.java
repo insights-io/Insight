@@ -1,93 +1,144 @@
 package com.meemaw.session.datasource;
 
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
+
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.shared.rest.exception.DatabaseException;
+import com.meemaw.shared.sql.SQLContext;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowIterator;
-import io.vertx.mutiny.sqlclient.RowSet;
+import io.vertx.mutiny.sqlclient.Transaction;
 import io.vertx.mutiny.sqlclient.Tuple;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Field;
+import org.jooq.Query;
+import org.jooq.Table;
+import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
 public class PgPageDatasource implements PageDatasource {
 
   @Inject PgPool pgPool;
+  @Inject PgSessionDatasource sessionDatasource;
 
-  private static final String SELECT_LINK_DEVICE_SESSION_RAW_SQL =
-      "SELECT session_id FROM session.page WHERE organization_id = $1 AND device_id = $2 AND page_start > now() - INTERVAL '30 min' ORDER BY page_start DESC LIMIT 1;";
+  private static final Table<?> TABLE = table("session.page");
 
-  private static final String INSERT_PAGE_RAW_SQL =
-      "INSERT INTO session.page (id, device_id, session_id, organization_id, doctype, url, referrer, height, width, screen_height, screen_width, compiled_timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);";
+  private static final Field<UUID> ID = field("id", UUID.class);
+  private static final Field<UUID> SESSION_ID = field("session_id", UUID.class);
+  private static final Field<String> ORGANIZATION_ID = field("organization_id", String.class);
+  private static final Field<String> DOCTYPE = field("doctype", String.class);
+  private static final Field<String> URL = field("url", String.class);
+  private static final Field<String> REFERRER = field("referrer", String.class);
+  private static final Field<Integer> HEIGHT = field("height", Integer.class);
+  private static final Field<Integer> WIDTH = field("width", Integer.class);
+  private static final Field<Integer> SCREEN_HEIGHT = field("screen_height", Integer.class);
+  private static final Field<Integer> SCREEN_WIDTH = field("screen_width", Integer.class);
+  private static final Field<Long> COMPILED_TIMESTAMP = field("compiled_timestamp", Long.class);
+  private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
-  private static final String SELECT_ACTIVE_PAGE_COUNT =
-      "SELECT COUNT(*) FROM session.page WHERE page_end IS NULL;";
-
-  private static final String SELECT_PAGE_RAW_SQL =
-      "SELECT * FROM session.page WHERE id=$1 AND session_id=$2 AND organization_id=$3;";
-
-  @Override
-  public Uni<Optional<UUID>> findUserSessionLink(String organizationId, UUID deviceId) {
-    return pgPool
-        .preparedQuery(SELECT_LINK_DEVICE_SESSION_RAW_SQL)
-        .execute(Tuple.of(organizationId, deviceId))
-        .map(this::mapSessionId)
-        .onFailure()
-        .invoke(this::onFindUserSessionLinkException);
-  }
-
-  private <T> T onFindUserSessionLinkException(Throwable throwable) {
-    log.error("Failed to findUserSessionLinkException", throwable);
-    throw new DatabaseException(throwable);
-  }
-
-  private Optional<UUID> mapSessionId(RowSet<Row> pgRowSet) {
-    RowIterator<Row> iterator = pgRowSet.iterator();
-    if (!iterator.hasNext()) {
-      return Optional.empty();
-    }
-    return Optional.of(iterator.next().getUUID(0));
-  }
+  private static final List<Field<?>> INSERT_FIELDS =
+      List.of(
+          ID,
+          SESSION_ID,
+          ORGANIZATION_ID,
+          DOCTYPE,
+          URL,
+          REFERRER,
+          HEIGHT,
+          WIDTH,
+          SCREEN_HEIGHT,
+          SCREEN_WIDTH,
+          COMPILED_TIMESTAMP);
 
   @Override
-  public Uni<PageIdentity> insertPage(
-      UUID pageId, UUID deviceId, UUID sessionId, CreatePageDTO page) {
-    Tuple values =
-        Tuple.newInstance(
-            io.vertx.sqlclient.Tuple.of(
-                pageId,
-                deviceId,
-                sessionId,
-                page.getOrganizationId(),
-                page.getDoctype(),
-                page.getUrl(),
-                page.getReferrer(),
-                page.getHeight(),
-                page.getWidth(),
-                page.getScreenHeight(),
-                page.getScreenWidth(),
-                page.getCompiledTs()));
-
+  public Uni<PageIdentity> createPageAndNewSession(
+      UUID pageId,
+      UUID sessionId,
+      UUID deviceId,
+      String userAgent,
+      String ipAddress,
+      CreatePageDTO page) {
     return pgPool
-        .preparedQuery(INSERT_PAGE_RAW_SQL)
-        .execute(values)
+        .begin()
+        .onItem()
+        .produceUni(
+            transaction ->
+                createPageAndNewSession(
+                    transaction, pageId, sessionId, deviceId, userAgent, ipAddress, page));
+  }
+
+  private Uni<PageIdentity> createPageAndNewSession(
+      Transaction transaction,
+      UUID pageId,
+      UUID sessionId,
+      UUID deviceId,
+      String userAgent,
+      String ipAddress,
+      CreatePageDTO page) {
+    return sessionDatasource
+        .createSession(
+            transaction, sessionId, deviceId, page.getOrganizationId(), ipAddress, userAgent)
+        .onItem()
+        .produceUni(
+            session ->
+                insertPage(transaction, pageId, session.getId(), session.getDeviceId(), page)
+                    .onItem()
+                    .produceUni(pageIdentity -> transaction.commit().map(ignored -> pageIdentity)));
+  }
+
+  private Uni<PageIdentity> insertPage(
+      Transaction transaction, UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
+    Query query = insertPageQuery(id, sessionId, page);
+    return transaction
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .map(
             rowSet ->
-                PageIdentity.builder()
-                    .pageId(pageId)
-                    .sessionId(sessionId)
-                    .deviceId(deviceId)
-                    .build())
+                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
         .onFailure()
         .invoke(this::onInsertPageException);
+  }
+
+  @Override
+  public Uni<PageIdentity> insertPage(UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
+    Query query = insertPageQuery(id, sessionId, page);
+    return pgPool
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
+        .map(
+            rowSet ->
+                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
+        .onFailure()
+        .invoke(this::onInsertPageException);
+  }
+
+  private Query insertPageQuery(UUID id, UUID sessionId, CreatePageDTO page) {
+    return SQLContext.POSTGRES
+        .insertInto(TABLE)
+        .columns(INSERT_FIELDS)
+        .values(
+            id,
+            sessionId,
+            page.getOrganizationId(),
+            page.getDoctype(),
+            page.getUrl(),
+            page.getReferrer(),
+            page.getHeight(),
+            page.getWidth(),
+            page.getScreenHeight(),
+            page.getScreenWidth(),
+            page.getCompiledTs());
   }
 
   private <T> T onInsertPageException(Throwable throwable) {
@@ -96,48 +147,38 @@ public class PgPageDatasource implements PageDatasource {
   }
 
   @Override
-  public Uni<Integer> activePageCount() {
-    return pgPool
-        .preparedQuery(SELECT_ACTIVE_PAGE_COUNT)
-        .execute()
-        .map(rowSet -> rowSet.iterator().next().getInteger("count"))
-        .onFailure()
-        .invoke(this::onActivePageCountException);
-  }
+  public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {
+    Query query =
+        SQLContext.POSTGRES
+            .select()
+            .from(TABLE)
+            .where(ID.eq(id).and(SESSION_ID.eq(sessionId).and(ORGANIZATION_ID.eq(organizationId))));
 
-  private <T> T onActivePageCountException(Throwable throwable) {
-    log.error("Failed to COUNT(*) active pages", throwable);
-    throw new DatabaseException(throwable);
-  }
+    log.info("SQL: {}", query.getSQL(ParamType.NAMED));
 
-  @Override
-  public Uni<Optional<PageDTO>> getPage(UUID pageID, UUID sessionID, String organizationID) {
     return pgPool
-        .preparedQuery(SELECT_PAGE_RAW_SQL)
-        .execute(Tuple.of(pageID, sessionID, organizationID))
-        .map(
-            rowSet -> {
-              if (!rowSet.iterator().hasNext()) {
-                return null;
-              }
-              Row row = rowSet.iterator().next();
-              return new PageDTO(
-                  row.getUUID("id"),
-                  row.getUUID("session_id"),
-                  row.getString("organization_id"),
-                  row.getUUID("device_id"),
-                  row.getString("url"),
-                  row.getString("referrer"),
-                  row.getString("doctype"),
-                  row.getInteger("screen_width"),
-                  row.getInteger("screen_height"),
-                  row.getInteger("width"),
-                  row.getInteger("height"),
-                  row.getInteger("compiled_timestamp"));
-            })
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
+        .map(rowSet -> rowSet.iterator().hasNext() ? map(rowSet.iterator().next()) : null)
         .map(Optional::ofNullable)
         .onFailure()
         .invoke(this::onGetPageException);
+  }
+
+  private PageDTO map(Row row) {
+    return new PageDTO(
+        row.getUUID(ID.getName()),
+        row.getUUID(SESSION_ID.getName()),
+        row.getString(ORGANIZATION_ID.getName()),
+        row.getString(URL.getName()),
+        row.getString(REFERRER.getName()),
+        row.getString(DOCTYPE.getName()),
+        row.getInteger(SCREEN_WIDTH.getName()),
+        row.getInteger(SCREEN_HEIGHT.getName()),
+        row.getInteger(WIDTH.getName()),
+        row.getInteger(HEIGHT.getName()),
+        row.getInteger(COMPILED_TIMESTAMP.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
   }
 
   private <T> T onGetPageException(Throwable throwable) {

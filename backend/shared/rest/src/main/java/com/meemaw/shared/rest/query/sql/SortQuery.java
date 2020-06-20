@@ -1,4 +1,4 @@
-package com.meemaw.shared.rest;
+package com.meemaw.shared.rest.query.sql;
 
 import java.util.List;
 import java.util.stream.Collectors;

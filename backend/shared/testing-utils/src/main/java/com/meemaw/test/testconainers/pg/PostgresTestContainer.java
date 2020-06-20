@@ -62,17 +62,17 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     return getMappedPort(PORT);
   }
 
-  public String getHost(String host) {
+  public String getMappedHost(String host) {
     return String.format("%s:%d", host, getPort());
   }
 
-  public String getHost() {
-    return getHost(getContainerIpAddress());
+  public String getMappedHost() {
+    return getMappedHost(getContainerIpAddress());
   }
 
   /** @return */
   public String getDatasourceURL() {
-    return getDatasourceURL(getHost());
+    return getDatasourceURL(getMappedHost());
   }
 
   /**
@@ -86,6 +86,23 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   public void applyMigrations() {
     Path moduleMigrationsSqlPath = ProjectUtils.getFromModule("migrations", "sql");
     applyMigrations(moduleMigrationsSqlPath);
+  }
+
+  /**
+   * Create test user password so we can use it in our tests. We can't include this into migrations
+   * as that would create user in production and expose password to everyone. Insert statement can
+   * only be executed after V1__auth_api_initial.sql is applied and auth.user table exists.
+   */
+  private void maybeCreateTestUserPassword(Path migrationSqlPath) {
+    if ("V1__auth_api_initial.sql".equals(migrationSqlPath.getFileName().toString())) {
+      log.info("Creating test password for \"admin@insight.io\"");
+      client()
+          .query(
+              "INSERT INTO auth.password(user_id, hash)\n"
+                  + "VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b',\n"
+                  + "        '$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS');\n")
+          .executeAndAwait();
+    }
   }
 
   /** @param migrationsSqlPath */
@@ -104,6 +121,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
                 log.info("Applying migration {}", path);
                 try {
                   client().query(Files.readString(path)).executeAndAwait();
+                  maybeCreateTestUserPassword(path);
                 } catch (IOException ex) {
                   log.error("Failed to apply migration {}", migrationsSqlPath, ex);
                   throw new RuntimeException(ex);

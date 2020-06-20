@@ -1,4 +1,4 @@
-package com.meemaw.auth.user.model;
+package com.meemaw.session.model;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -10,12 +10,12 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class UserDTO implements AuthUser {
+public class SessionDTO {
 
   UUID id;
-  String email;
-  String fullName;
-  UserRole role;
+  UUID deviceId;
   String organizationId;
+  String ipAddress;
+  String userAgent;
   OffsetDateTime createdAt;
 }

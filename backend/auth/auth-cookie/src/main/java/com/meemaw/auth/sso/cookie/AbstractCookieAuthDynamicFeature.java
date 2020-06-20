@@ -70,7 +70,7 @@ public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature
       principal.user(authUser);
       MDC.put(LoggingConstants.USER_ID, authUser.getId().toString());
       MDC.put(LoggingConstants.USER_ROLE, authUser.getRole().toString());
-      MDC.put(LoggingConstants.ORGANIZATION_ID, authUser.getOrg());
+      MDC.put(LoggingConstants.ORGANIZATION_ID, authUser.getOrganizationId());
       MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
       log.debug("Successfully authenticated");
     }

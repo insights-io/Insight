@@ -106,7 +106,7 @@ public class PasswordServiceImpl implements PasswordService {
   private CompletionStage<AuthUser> forgotPassword(
       AuthUser authUser, String passwordResetURL, Transaction transaction) {
     String email = authUser.getEmail();
-    String org = authUser.getOrg();
+    String org = authUser.getOrganizationId();
     UUID userId = authUser.getId();
 
     return passwordResetDatasource

@@ -22,7 +22,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
 
   /** @param api */
   public AbstractApiTestContainer(Api api) {
-    super(buildDockerImage(Objects.requireNonNull(api)));
+    super(imageFromDockerfile(Objects.requireNonNull(api)));
     withExposedPorts(PORT)
         .waitingFor(Wait.forHttp("/health").forStatusCode(200))
         .withNetwork(Network.SHARED);
@@ -53,7 +53,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   }
 
   // TODO: use testcontainers for this
-  private static String buildDockerImage(Api api) {
+  private static String imageFromDockerfile(Api api) {
     Path dockerfile = api.dockerfile();
     String imageName = api.imageName();
     Path context = ProjectUtils.backendPath();
