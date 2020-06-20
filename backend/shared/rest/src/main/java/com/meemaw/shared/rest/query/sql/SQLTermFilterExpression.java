@@ -11,22 +11,16 @@ import org.jooq.SelectJoinStep;
 @Value
 public class SQLTermFilterExpression<T> implements SQLFilterExpression {
 
-  TermFilterExpression<T> termFilterExpression;
+  TermFilterExpression<T> expression;
 
   public Condition condition(Field<T> field) {
-    return termFilterExpression.getOperation().sql(field, termFilterExpression.getTarget());
+    return expression.getOperation().sql(field, expression.getTarget());
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> fields) {
-    Field<T> sqlField = (Field<T>) fields.get(termFilterExpression.getField());
+    Field<T> sqlField = (Field<T>) fields.get(expression.getField());
     return ((SelectJoinStep<?>) query).where(condition(sqlField));
-  }
-
-  @SuppressWarnings({"rawtypes"})
-  @Override
-  public SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> fields) {
-    return sql((SelectConditionStep) query, fields);
   }
 }

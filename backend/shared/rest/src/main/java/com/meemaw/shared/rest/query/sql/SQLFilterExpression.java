@@ -26,7 +26,10 @@ public interface SQLFilterExpression extends FilterExpression {
    * @param fields map of field mappings
    * @return query with applied filter conditions
    */
-  SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> fields);
+  @SuppressWarnings({"rawtypes"})
+  default SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> fields) {
+    return sql((SelectConditionStep) query, fields);
+  }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   static SQLFilterExpression of(FilterExpression filterExpression) {
