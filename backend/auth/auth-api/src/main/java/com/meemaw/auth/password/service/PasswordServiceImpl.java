@@ -23,6 +23,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.mindrot.jbcrypt.BCrypt;
 
 @ApplicationScoped
@@ -39,6 +40,7 @@ public class PasswordServiceImpl implements PasswordService {
   Template passwordResetTemplate;
 
   @Override
+  @Traced
   public CompletionStage<AuthUser> verifyPassword(String email, String password) {
     log.info("[verifyPassword]: request for email: {}", email);
     return passwordDatasource
@@ -77,6 +79,7 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
+  @Traced
   public CompletionStage<Optional<AuthUser>> forgotPassword(
       String email, String passwordResetBaseURL) {
     log.info("[forgotPassword]: request for email: {}", email);
@@ -150,6 +153,7 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
+  @Traced
   public CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password) {
     log.info("[resetPassword]: request with token: {}", token);
     return passwordResetDatasource
@@ -185,6 +189,7 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
+  @Traced
   public CompletionStage<Boolean> createPassword(
       UUID userId, String email, String password, Transaction transaction) {
     log.info("[createPassword]: request for email: {}", email);
@@ -194,6 +199,7 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
+  @Traced
   public CompletionStage<Boolean> passwordResetRequestExists(UUID token) {
     log.info("[passwordResetRequestExists]: request for token: {}", token);
     return passwordResetDatasource.findPasswordResetRequest(token).thenApply(Optional::isPresent);

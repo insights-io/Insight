@@ -71,6 +71,10 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     return new UserDTO(id, email, fullName, role, organizationId, createdAt);
   }
 
+  public static SsoUser as(AuthUser user) {
+    return new SsoUser(user);
+  }
+
   @Override
   public String getOrganizationId() {
     return organizationId;

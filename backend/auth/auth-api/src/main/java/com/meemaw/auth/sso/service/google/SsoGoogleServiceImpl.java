@@ -1,5 +1,6 @@
 package com.meemaw.auth.sso.service.google;
 
+import com.meemaw.auth.core.config.model.Config;
 import com.meemaw.auth.sso.model.SsoSocialLogin;
 import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
@@ -19,7 +20,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @ApplicationScoped
@@ -31,19 +32,14 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
   private static final String AUTHORIZATION_SERVER_URL =
       "https://accounts.google.com/o/oauth2/auth";
 
-  @ConfigProperty(name = "google.oauth.client.id")
-  String googleOAuthClientId;
-
-  @ConfigProperty(name = "google.oauth.client.secret")
-  String googleOAuthClientSecret;
-
+  @Inject Config config;
   @Inject SsoGoogleClient ssoGoogleClient;
   @Inject SsoService ssoService;
 
   @Override
   public URI buildAuthorizationURI(String state, String redirectURI) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
-        .queryParam("client_id", googleOAuthClientId)
+        .queryParam("client_id", config.getGoogleOAuthClientId())
         .queryParam("redirect_uri", redirectURI)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)
@@ -58,6 +54,7 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
   }
 
   @Override
+  @Traced
   public CompletionStage<SsoSocialLogin> oauth2callback(
       String state, String sessionState, String code, String redirectURI) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {

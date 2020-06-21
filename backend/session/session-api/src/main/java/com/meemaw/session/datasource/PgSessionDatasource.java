@@ -126,7 +126,7 @@ public class PgSessionDatasource implements SessionDatasource {
     Query query =
         SQLSearchDTO.of(searchDTO)
             .apply(
-                SQLContext.POSTGRES.select().from(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
+                SQLContext.POSTGRES.selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
     return pgPool
