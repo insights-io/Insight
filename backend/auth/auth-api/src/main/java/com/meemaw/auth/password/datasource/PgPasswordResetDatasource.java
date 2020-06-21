@@ -11,10 +11,8 @@ import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -39,9 +37,8 @@ public class PgPasswordResetDatasource implements PasswordResetDatasource {
   private static final Field<String> EMAIL = field("email", String.class);
   private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
-  private static final Set<Field<?>> INSERT_FIELDS = new HashSet<>(List.of(EMAIL, USER_ID));
-  private static final Set<Field<?>> AUTO_GENERATED_FIELDS =
-      new HashSet<>(List.of(TOKEN, CREATED_AT));
+  private static final List<Field<?>> INSERT_FIELDS = List.of(EMAIL, USER_ID);
+  private static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(TOKEN, CREATED_AT);
 
   @Override
   @Traced

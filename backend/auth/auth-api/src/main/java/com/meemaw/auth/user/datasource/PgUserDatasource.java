@@ -14,10 +14,8 @@ import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -46,12 +44,12 @@ public class PgUserDatasource implements UserDatasource {
   private static final Field<String> ROLE = field("role", String.class);
   private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
-  private static final Set<Field<?>> AUTO_GENERATED_FIELDS = new HashSet<>(List.of(ID, CREATED_AT));
-  private static final Set<Field<?>> INSERT_FIELDS =
-      new HashSet<>(List.of(EMAIL, FULL_NAME, ORGANIZATION_ID, ROLE));
-  private static final Set<Field<?>> FIELDS =
+  private static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(ID, CREATED_AT);
+  private static final List<Field<?>> INSERT_FIELDS =
+      List.of(EMAIL, FULL_NAME, ORGANIZATION_ID, ROLE);
+  private static final List<Field<?>> FIELDS =
       Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream())
-          .collect(Collectors.toSet());
+          .collect(Collectors.toList());
 
   @Override
   @Traced

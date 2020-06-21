@@ -44,7 +44,8 @@ public class PgPasswordDatasource implements PasswordDatasource {
   @Traced
   public CompletionStage<Boolean> storePassword(
       UUID userId, String hashedPassword, Transaction transaction) {
-    Query query = SQLContext.POSTGRES.insertInto(TABLE).columns(USER_ID, HASH);
+    Query query =
+        SQLContext.POSTGRES.insertInto(TABLE).columns(USER_ID, HASH).values(userId, hashedPassword);
 
     return transaction
         .preparedQuery(query.getSQL(ParamType.NAMED))

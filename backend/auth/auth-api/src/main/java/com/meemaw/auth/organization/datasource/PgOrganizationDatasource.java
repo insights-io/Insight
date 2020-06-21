@@ -13,10 +13,8 @@ import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,11 +39,11 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
   private static final Field<String> NAME = field("name", String.class);
   private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
-  private static final Set<Field<?>> INSERT_FIELDS = new HashSet<>(List.of(ID, NAME));
-  private static final Set<Field<?>> AUTO_GENERATED_FIELDS = new HashSet<>(List.of(CREATED_AT));
-  private static final Set<Field<?>> FIELDS =
+  private static final List<Field<?>> INSERT_FIELDS = List.of(ID, NAME);
+  private static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT);
+  private static final List<Field<?>> FIELDS =
       Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream())
-          .collect(Collectors.toSet());
+          .collect(Collectors.toList());
 
   @Override
   @Traced
@@ -76,7 +74,7 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
     return pgPool
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .execute(Tuple.tuple(query.getBindValues()))
-        .thenApply(this::onFindOrganization);
+        .thenApply(this::mapOrganizationIfPresent);
   }
 
   @Override
@@ -87,10 +85,10 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
     return transaction
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .execute(Tuple.tuple(query.getBindValues()))
-        .thenApply(this::onFindOrganization);
+        .thenApply(this::mapOrganizationIfPresent);
   }
 
-  private Optional<Organization> onFindOrganization(RowSet<Row> pgRowSet) {
+  private Optional<Organization> mapOrganizationIfPresent(RowSet<Row> pgRowSet) {
     if (!pgRowSet.iterator().hasNext()) {
       return Optional.empty();
     }
