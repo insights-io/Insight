@@ -52,7 +52,7 @@ jobs:
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
-          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
+          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
@@ -92,6 +92,7 @@ jobs:
           node_modules/wait-on/bin/wait-on http-get://localhost:3000 --timeout 60000
           node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 60000
           node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 60000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 60000
       - name: frontend/app | test:e2e
         run: |
           mkdir -p $ARTIFACTS_PATH/screenshots
