@@ -27,7 +27,7 @@ public class ConfigResourceTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"datasourceURL\":\"%s\",\"googleOAuthClientId\":\"237859759623-rfpiq8eo37afp0qc294ioqrjtq17q25h.apps.googleusercontent.com\"}",
+                    "{\"gitCommitSha\":\"<GIT_COMMIT_SHA>\",\"datasourceURL\":\"%s\",\"googleOAuthClientId\":\"237859759623-rfpiq8eo37afp0qc294ioqrjtq17q25h.apps.googleusercontent.com\"}",
                     datasourceURL)));
   }
 }
