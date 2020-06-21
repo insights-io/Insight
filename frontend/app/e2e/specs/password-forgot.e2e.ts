@@ -48,7 +48,7 @@ test('User should be able to reset password', async (t) => {
     .ok('Password input is visible')
     .typeText(passwordInput, newPassword)
     .click(finishPasswordResetButton)
-    .expect(getByText('THIS IS WHERE THE MAGIC WILL HAPPEN').visible)
+    .expect(getByText('Sessions').visible)
     .ok('Should be signed in to app');
 });
 
