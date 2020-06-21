@@ -89,10 +89,10 @@ jobs:
         run: |
           yarn workspace @insight/app start 2>&1 | tee $ARTIFACTS_PATH/app-serve.log &
           yarn workspace @insight/try start -p 3002 2>&1 | tee $ARTIFACTS_PATH/try-serve.log &
-          node_modules/wait-on/bin/wait-on http-get://localhost:3000 --timeout 60000
-          node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 60000
-          node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 60000
-          node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 60000
+          node_modules/wait-on/bin/wait-on http-get://localhost:3000 --timeout 180000
+          node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 180000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 180000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 180000
       - name: frontend/app | test:e2e
         run: |
           mkdir -p $ARTIFACTS_PATH/screenshots
