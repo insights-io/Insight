@@ -7,9 +7,27 @@ import java.util.concurrent.CompletionStage;
 
 public interface SsoDatasource {
 
+  /**
+   * Create a new SSO session for user.
+   *
+   * @param user auth user
+   * @return newly created session id
+   */
   CompletionStage<String> createSession(AuthUser user);
 
+  /**
+   * Find an existing SSO session if it exists.
+   *
+   * @param sessionId session id
+   * @return maybe user associated with the session if the session exists
+   */
   CompletionStage<Optional<SsoUser>> findSession(String sessionId);
 
-  CompletionStage<Boolean> deleteSession(String sessionId);
+  /**
+   * Delete an existing SSO session if it exists.
+   *
+   * @param sessionId session id
+   * @return maybe user associated with the session if the session exists
+   */
+  CompletionStage<Optional<SsoUser>> deleteSession(String sessionId);
 }

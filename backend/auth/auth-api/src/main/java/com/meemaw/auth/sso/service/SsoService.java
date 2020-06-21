@@ -1,5 +1,6 @@
 package com.meemaw.auth.sso.service;
 
+import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -26,9 +27,9 @@ public interface SsoService {
    * Logout an existing SSO session.
    *
    * @param sessionId to look for
-   * @return boolean indicating whether logout was successful.
+   * @return maybe user associated with logout if it was successful.
    */
-  CompletionStage<Boolean> logout(String sessionId);
+  CompletionStage<Optional<SsoUser>> logout(String sessionId);
 
   /**
    * Log user associated with the provided credentials in.

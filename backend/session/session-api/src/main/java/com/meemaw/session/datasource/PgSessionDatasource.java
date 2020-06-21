@@ -18,11 +18,9 @@ import io.vertx.mutiny.sqlclient.Tuple;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
@@ -48,8 +46,8 @@ public class PgSessionDatasource implements SessionDatasource {
   private static final Field<UUID> DEVICE_ID = field("device_id", UUID.class);
   private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
-  private static final Set<Field<?>> FIELDS =
-      new HashSet<>(List.of(ID, ORGANIZATION_ID, USER_AGENT, IP_ADDRESS, DEVICE_ID, CREATED_AT));
+  private static final List<Field<?>> FIELDS =
+      List.of(ID, ORGANIZATION_ID, USER_AGENT, IP_ADDRESS, DEVICE_ID, CREATED_AT);
 
   private static final Map<String, Field<?>> FIELD_MAPPINGS =
       FIELDS.stream().collect(Collectors.toMap(Field::getName, field -> field));
@@ -126,7 +124,7 @@ public class PgSessionDatasource implements SessionDatasource {
     Query query =
         SQLSearchDTO.of(searchDTO)
             .apply(
-                SQLContext.POSTGRES.select().from(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
+                SQLContext.POSTGRES.selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
     return pgPool

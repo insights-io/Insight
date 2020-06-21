@@ -51,11 +51,12 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
 
                 // session not found
                 if (statusCode == Status.NO_CONTENT.getStatusCode()) {
+                  log.debug("Session not found");
                   return Optional.empty();
                 }
 
-                log.error("Unexpected response status {}", statusCode);
-                throw Boom.status(statusCode).exception();
+                log.error("Failed to findSession statusCode: {}", statusCode);
+                throw Boom.serverError().exception();
               });
     }
   }

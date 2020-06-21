@@ -24,7 +24,7 @@ public class SsoResourceImpl implements SsoResource {
   @Override
   public CompletionStage<Response> login(String email, String password) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
-    log.info("Login request");
+    log.debug("Login request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .login(email, password)
@@ -36,14 +36,14 @@ public class SsoResourceImpl implements SsoResource {
   @Override
   public CompletionStage<Response> logout(String sessionId) {
     MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
-    log.info("Logout request");
+    log.debug("Logout request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .logout(sessionId)
         .thenApply(
-            deleted -> {
+            maybeUser -> {
               ResponseBuilder builder =
-                  deleted
+                  maybeUser.isPresent()
                       ? Response.noContent()
                       : DataResponse.error(Boom.badRequest().message("Session does not exist"))
                           .builder();
@@ -54,7 +54,7 @@ public class SsoResourceImpl implements SsoResource {
   @Override
   public CompletionStage<Response> session(String sessionId) {
     MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
-    log.info("Session request");
+    log.debug("Session request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .findSession(sessionId)
