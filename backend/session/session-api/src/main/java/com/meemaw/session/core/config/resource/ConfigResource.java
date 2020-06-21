@@ -1,6 +1,6 @@
-package com.meemaw.auth.core.config.resource;
+package com.meemaw.session.core.config.resource;
 
-import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.session.core.config.model.AppConfig;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

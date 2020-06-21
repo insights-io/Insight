@@ -13,10 +13,11 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class ConfigResourceTest {
+public class AppConfigResourceTest {
 
   @Test
   public void config() {
+    String gitCommitSha = "<GIT_COMMIT_SHA>";
     String datasourceURL = PostgresTestExtension.getInstance().getDatasourceURL();
 
     given()
@@ -27,7 +28,7 @@ public class ConfigResourceTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"gitCommitSha\":\"<GIT_COMMIT_SHA>\",\"datasourceURL\":\"%s\",\"googleOAuthClientId\":\"237859759623-rfpiq8eo37afp0qc294ioqrjtq17q25h.apps.googleusercontent.com\"}",
-                    datasourceURL)));
+                    "{\"gitCommitSha\":\"%s\",\"datasourceURL\":\"%s\",\"googleOAuthClientId\":\"237859759623-rfpiq8eo37afp0qc294ioqrjtq17q25h.apps.googleusercontent.com\"}",
+                    gitCommitSha, datasourceURL)));
   }
 }

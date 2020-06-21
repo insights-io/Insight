@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.service.google;
 
-import com.meemaw.auth.core.config.model.Config;
+import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.model.SsoSocialLogin;
 import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
@@ -32,14 +32,14 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
   private static final String AUTHORIZATION_SERVER_URL =
       "https://accounts.google.com/o/oauth2/auth";
 
-  @Inject Config config;
+  @Inject AppConfig appConfig;
   @Inject SsoGoogleClient ssoGoogleClient;
   @Inject SsoService ssoService;
 
   @Override
   public URI buildAuthorizationURI(String state, String redirectURI) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
-        .queryParam("client_id", config.getGoogleOAuthClientId())
+        .queryParam("client_id", appConfig.getGoogleOAuthClientId())
         .queryParam("redirect_uri", redirectURI)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)

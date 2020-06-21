@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.service.google;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.core.config.model.Config;
+import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.model.google.GoogleErrorResponse;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
@@ -29,7 +29,7 @@ public class SsoGoogleClient {
 
   @Inject ObjectMapper objectMapper;
   @Inject Vertx vertx;
-  @Inject Config config;
+  @Inject AppConfig appConfig;
 
   private WebClient webClient;
 
@@ -57,8 +57,8 @@ public class SsoGoogleClient {
         .postAbs(TOKEN_SERVER_URL)
         .addQueryParam("grant_type", "authorization_code")
         .addQueryParam("code", code)
-        .addQueryParam("client_id", config.getGoogleOAuthClientId())
-        .addQueryParam("client_secret", config.getGoogleOAuthClientSecret())
+        .addQueryParam("client_id", appConfig.getGoogleOAuthClientId())
+        .addQueryParam("client_secret", appConfig.getGoogleOAuthClientSecret())
         .addQueryParam("redirect_uri", redirectURI)
         .putHeader("Content-Length", "0")
         .send();
