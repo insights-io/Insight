@@ -113,6 +113,12 @@ public class PgUserDatasource implements UserDatasource {
     return Optional.of(mapUser(row));
   }
 
+  /**
+   * Map SQL row to AuthUser.
+   *
+   * @param row sql row
+   * @return mapped AuthUser
+   */
   public static AuthUser mapUser(Row row) {
     return new UserDTO(
         row.getUUID(ID.getName()),
