@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @ApplicationScoped
@@ -37,6 +38,7 @@ public class PageService {
    * @return PageIdentity
    */
   @Timed(name = "createPage", description = "A measure of how long it takes to create a page")
+  @Traced
   public Uni<PageIdentity> createPage(CreatePageDTO page, String userAgent, String ipAddress) {
     UUID pageId = UUID.randomUUID();
     UUID deviceId = Optional.ofNullable(page.getDeviceId()).orElseGet(UUID::randomUUID);

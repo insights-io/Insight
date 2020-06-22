@@ -50,7 +50,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
    * @param ctx container request context
    */
   @Override
-  @Traced
+  @Traced(operationName = "request-filter")
   public void filter(ContainerRequestContext ctx) {
     ctx.setProperty(LOG_START_TIME_PROPERTY, System.currentTimeMillis());
     String requestId = generateRequestId();
@@ -65,7 +65,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
    * @param response container response context
    */
   @Override
-  @Traced
+  @Traced(operationName = "response-filter")
   public void filter(ContainerRequestContext request, ContainerResponseContext response) {
     int status = response.getStatus();
     Family responseFamily = Family.familyOf(status);
