@@ -86,17 +86,16 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   }
 
   private void logRequestLatency(ContainerRequestContext request, int status) {
-    String path = request.getUriInfo().getPath();
-    String method = request.getMethod();
-
     startTime(request)
         .ifPresent(
             startTime -> {
+              String path = request.getUriInfo().getPath();
+              String method = request.getMethod();
               long timeElapsed = System.currentTimeMillis() - startTime;
+              metricsService.requestDuration(path, method, status).update(timeElapsed);
               if (timeElapsed > REQUEST_LATENCY_LOG_LIMIT_MS) {
                 log.info("Request processing latency: {}ms", timeElapsed);
               }
-              metricsService.requestDuration(path, method, status).update(timeElapsed);
             });
   }
 
