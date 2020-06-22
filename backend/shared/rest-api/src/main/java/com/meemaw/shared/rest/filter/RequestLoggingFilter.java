@@ -4,7 +4,6 @@ import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 
 import com.meemaw.shared.metrics.MetricsService;
-import io.opentracing.Tracer;
 import io.vertx.core.http.HttpServerRequest;
 import java.util.UUID;
 import javax.annotation.Priority;
@@ -30,7 +29,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   private static final String LOG_START_TIME_PROPERTY = "start-time";
   private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 50;
 
-  @Inject Tracer tracer;
+  // @Inject Tracer tracer;
   @Inject MetricsService metricsService;
   @Context UriInfo info;
   @Context HttpServerRequest request;
@@ -93,7 +92,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
       return;
     }
 
-    tracer.activeSpan().setTag(REQUEST_ID_HEADER, requestId);
+    // tracer.activeSpan().setTag(REQUEST_ID_HEADER, requestId);
     long timeElapsed = System.currentTimeMillis() - startTime;
     if (timeElapsed > REQUEST_LATENCY_LOG_LIMIT_MS) {
       log.info("Request processing latency: {}ms", timeElapsed);
