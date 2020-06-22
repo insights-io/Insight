@@ -2,6 +2,10 @@ package com.meemaw.shared.logging;
 
 public final class LoggingConstants {
 
+  /* General */
+  public static final String LOG_LINK = "log.link";
+  public static final String TRACE_LINK = "trace.link";
+
   /* SSO */
   public static final String COOKIE_SESSION_ID = "cookie.session.id";
 

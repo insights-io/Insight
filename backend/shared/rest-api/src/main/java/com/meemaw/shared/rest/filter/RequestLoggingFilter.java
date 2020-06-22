@@ -4,6 +4,7 @@ import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 
 import com.meemaw.shared.metrics.MetricsService;
+import io.opentracing.Tracer;
 import io.vertx.core.http.HttpServerRequest;
 import java.util.UUID;
 import javax.annotation.Priority;
@@ -29,43 +30,45 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   private static final String LOG_START_TIME_PROPERTY = "start-time";
   private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 50;
 
-  @Inject
-  MetricsService metricsService;
-
-  @Context
-  UriInfo info;
-
-  @Context
-  HttpServerRequest request;
+  @Inject Tracer tracer;
+  @Inject MetricsService metricsService;
+  @Context UriInfo info;
+  @Context HttpServerRequest request;
 
   /**
-   * @return Unique requestId
+   * Create a new unique request id.
+   *
+   * @return request id
    */
   private String requestId() {
     return UUID.randomUUID().toString();
   }
 
   /**
-   * Request handler
+   * Request handler.
    *
-   * @param ctx
+   * @param ctx container request context
    */
   @Override
   public void filter(ContainerRequestContext ctx) {
+    String requestId = requestId();
     ctx.setProperty(LOG_START_TIME_PROPERTY, System.currentTimeMillis());
-    MDC.put(REQUEST_ID_HEADER, requestId());
+    ctx.setProperty(REQUEST_ID_HEADER, requestId);
+    MDC.put(REQUEST_ID_HEADER, requestId);
   }
 
   /**
-   * Response handler
+   * Response handler.
    *
-   * @param request
-   * @param response
+   * @param request container request context
+   * @param response container response context
    */
   @Override
   public void filter(ContainerRequestContext request, ContainerResponseContext response) {
+    String requestId = (String) request.getProperty(REQUEST_ID_HEADER);
     int status = response.getStatus();
-    logRequestLatency(request, status);
+    logRequestLatency(request, status, requestId);
+    response.getHeaders().add(REQUEST_ID_HEADER, requestId);
 
     Family responseFamily = Family.familyOf(status);
     if (responseFamily == CLIENT_ERROR) {
@@ -80,7 +83,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     MDC.clear();
   }
 
-  private void logRequestLatency(ContainerRequestContext request, int status) {
+  private void logRequestLatency(ContainerRequestContext request, int status, String requestId) {
     String path = request.getUriInfo().getPath();
     String method = request.getMethod();
     Long startTime = (Long) request.getProperty(LOG_START_TIME_PROPERTY);
@@ -90,11 +93,11 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
       return;
     }
 
+    tracer.activeSpan().setTag(REQUEST_ID_HEADER, requestId);
     long timeElapsed = System.currentTimeMillis() - startTime;
     if (timeElapsed > REQUEST_LATENCY_LOG_LIMIT_MS) {
       log.info("Request processing latency: {}ms", timeElapsed);
     }
     metricsService.requestDuration(path, method, status).update(timeElapsed);
   }
-
 }
