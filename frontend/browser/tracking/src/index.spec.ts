@@ -53,7 +53,7 @@ describe('tracking script', () => {
   let server: Server;
 
   beforeAll(() => {
-    jest.setTimeout(60000);
+    jest.setTimeout(180000);
     const pagePath = path.join(process.cwd(), 'templates', 'index.html');
     const pageContents = String(fs.readFileSync(pagePath));
     server = createServer((_req, res) => {
