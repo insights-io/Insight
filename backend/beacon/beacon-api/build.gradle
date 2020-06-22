@@ -13,6 +13,6 @@ dependencies {
 }
 
 configurations {
-    all*.exclude group: 'io.smallrye.reactive', module: 'smallrye-reactive-streams-operators'
-    all*.exclude group: 'io.quarkus', module: 'quarkus-smallrye-opentracing'
+    testRuntimeClasspath.exclude group: 'io.smallrye.reactive', module: 'smallrye-reactive-streams-operators'
+    testRuntimeClasspath.exclude group: 'io.quarkus', module: 'quarkus-smallrye-opentracing'
 }
