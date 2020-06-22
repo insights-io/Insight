@@ -1,4 +1,4 @@
-package com.meemaw.session.core.config.model;
+package com.meemaw.beacon.core.config.model;
 
 import com.meemaw.shared.config.model.AppConfigBase;
 import javax.enterprise.context.ApplicationScoped;
@@ -11,12 +11,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @EqualsAndHashCode(callSuper = true)
 public class AppConfig extends AppConfigBase {
 
-  @ConfigProperty(name = "quarkus.datasource.url")
-  String datasourceURL;
-
   @ConfigProperty(name = "kafka.bootstrap.servers")
   String kafkaBootstrapServers;
 
-  @ConfigProperty(name = "sso-resource/mp-rest/url")
-  String ssoResourceBaseURL;
+  @ConfigProperty(name = "session-resource/mp-rest/url")
+  String sessionResourceBaseURL;
 }

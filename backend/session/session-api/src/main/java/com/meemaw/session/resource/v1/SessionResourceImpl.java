@@ -10,6 +10,8 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -69,9 +71,9 @@ public class SessionResourceImpl implements SessionResource {
   @Override
   public CompletionStage<Response> getSessions() {
     String organizationId = principal.user().getOrganizationId();
+    Map<String, List<String>> queryParams = RequestUtils.map(uriInfo.getQueryParameters());
     return sessionService
-        .getSessions(
-            organizationId, SearchDTO.rhsColon(RequestUtils.map(uriInfo.getQueryParameters())))
+        .getSessions(organizationId, SearchDTO.rhsColon(queryParams))
         .subscribeAsCompletionStage()
         .thenApply(DataResponse::ok);
   }
