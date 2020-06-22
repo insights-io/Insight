@@ -1,13 +1,18 @@
 package com.meemaw.test.testconainers.pg;
 
+import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.project.ProjectUtils;
 import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.Tuple;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.PoolOptions;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Query;
+import org.jooq.conf.ParamType;
+import org.jooq.impl.DSL;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -76,16 +81,16 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   }
 
   /**
-   * @param host
-   * @return
+   * @param host datasource host
+   * @return datasource URL
    */
   public String getDatasourceURL(String host) {
     return String.format("vertx-reactive:postgresql://%s/%s", host, DATABASE_NAME);
   }
 
   public void applyMigrations() {
-    Path moduleMigrationsSqlPath = ProjectUtils.getFromModule("migrations", "sql");
-    applyMigrations(moduleMigrationsSqlPath);
+    Path moduleSqlMigrationsPath = ProjectUtils.getFromModule("migrations");
+    applyFlywayMigrations(moduleSqlMigrationsPath);
   }
 
   /**
@@ -96,17 +101,42 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   private void maybeCreateTestUserPassword(Path migrationSqlPath) {
     if ("V1__auth_api_initial.sql".equals(migrationSqlPath.getFileName().toString())) {
       log.info("Creating test password for \"admin@insight.io\"");
+
+      Query query =
+          SQLContext.POSTGRES
+              .insertInto(DSL.table("auth.password"))
+              .columns(DSL.field("user_id"), DSL.field("hash"))
+              .values(
+                  "7c071176-d186-40ac-aaf8-ac9779ab047b",
+                  "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
+
       client()
-          .query(
-              "INSERT INTO auth.password(user_id, hash)\n"
-                  + "VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b',\n"
-                  + "        '$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS');\n")
-          .executeAndAwait();
+          .preparedQuery(query.getSQL(ParamType.NAMED))
+          .executeAndAwait(Tuple.tuple(query.getBindValues()));
     }
   }
 
-  /** @param migrationsSqlPath */
-  public void applyMigrations(Path migrationsSqlPath) {
+  /**
+   * Apply module migrations via Flyway using Dockerfile.
+   *
+   * @param migrationsSqlPath path to the folder containing the Dockerfile
+   */
+  public void applyFlywayMigrations(Path migrationsSqlPath) {
+    if (!Files.exists(migrationsSqlPath)) {
+      log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
+      return;
+    }
+
+    log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
+    new PostgresFlywayTestContainer<>(migrationsSqlPath).start();
+  }
+
+  /**
+   * Apply module migrations manually by traversing files in the directory.
+   *
+   * @param migrationsSqlPath path to the folder containing migrations
+   */
+  public void applyMigrationsManually(Path migrationsSqlPath) {
     if (!Files.exists(migrationsSqlPath)) {
       log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
       return;
