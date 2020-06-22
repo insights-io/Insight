@@ -1,7 +1,11 @@
 package com.meemaw.test.testconainers.pg;
 
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
+
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.api.Api;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
 import io.vertx.pgclient.PgConnectOptions;
@@ -9,10 +13,10 @@ import io.vertx.sqlclient.PoolOptions;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
-import org.jooq.impl.DSL;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -31,7 +35,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     super(DOCKER_TAG);
   }
 
-  /** @return */
+  /** @return postgres test container */
   public static PostgresTestContainer newInstance() {
     return new PostgresTestContainer()
         .withNetwork(Network.SHARED)
@@ -42,13 +46,20 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
         .withExposedPorts(PORT);
   }
 
+  /**
+   * Create a new client connected to the test container.
+   *
+   * @return pg pool connected to the test container
+   */
   public PgPool client() {
     return PostgresTestContainer.client(this);
   }
 
   /**
-   * @param container
-   * @return
+   * Create a new client connected to the test container.
+   *
+   * @param container postgres test container
+   * @return pg pool connected to the test container
    */
   public static PgPool client(PostgresTestContainer container) {
     PgConnectOptions connectOptions =
@@ -88,32 +99,10 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     return String.format("vertx-reactive:postgresql://%s/%s", host, DATABASE_NAME);
   }
 
+  /** Apply module migrations using Flyway. */
   public void applyMigrations() {
     Path moduleSqlMigrationsPath = ProjectUtils.getFromModule("migrations");
     applyFlywayMigrations(moduleSqlMigrationsPath);
-  }
-
-  /**
-   * Create test user password so we can use it in our tests. We can't include this into migrations
-   * as that would create user in production and expose password to everyone. Insert statement can
-   * only be executed after V1__auth_api_initial.sql is applied and auth.user table exists.
-   */
-  private void maybeCreateTestUserPassword(Path migrationSqlPath) {
-    if ("V1__auth_api_initial.sql".equals(migrationSqlPath.getFileName().toString())) {
-      log.info("Creating test password for \"admin@insight.io\"");
-
-      Query query =
-          SQLContext.POSTGRES
-              .insertInto(DSL.table("auth.password"))
-              .columns(DSL.field("user_id"), DSL.field("hash"))
-              .values(
-                  "7c071176-d186-40ac-aaf8-ac9779ab047b",
-                  "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
-
-      client()
-          .preparedQuery(query.getSQL(ParamType.NAMED))
-          .executeAndAwait(Tuple.tuple(query.getBindValues()));
-    }
   }
 
   /**
@@ -129,6 +118,9 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
     log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
     new PostgresFlywayTestContainer<>(migrationsSqlPath).start();
+    if (migrationsSqlPath.toAbsolutePath().toString().contains(Api.AUTH.fullName())) {
+      createTestUserPassword();
+    }
   }
 
   /**
@@ -151,7 +143,9 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
                 log.info("Applying migration {}", path);
                 try {
                   client().query(Files.readString(path)).executeAndAwait();
-                  maybeCreateTestUserPassword(path);
+                  if ("V1__auth_api_initial.sql".equals(path.getFileName().toString())) {
+                    createTestUserPassword();
+                  }
                 } catch (IOException ex) {
                   log.error("Failed to apply migration {}", migrationsSqlPath, ex);
                   throw new RuntimeException(ex);
@@ -164,5 +158,26 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
           ex);
       throw new RuntimeException(ex);
     }
+  }
+
+  /**
+   * Create test user password so we can use it in our tests. We can't include this into migrations
+   * as that would create user in production and expose password to everyone. Insert statement can
+   * only be executed after V1__auth_api_initial.sql is applied and auth.user table exists.
+   */
+  private void createTestUserPassword() {
+    log.info("Creating test password for \"admin@insight.io\"");
+
+    Query query =
+        SQLContext.POSTGRES
+            .insertInto(table("auth.password"))
+            .columns(field("user_id", UUID.class), field("hash", String.class))
+            .values(
+                UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b"),
+                "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
+
+    client()
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .executeAndAwait(Tuple.tuple(query.getBindValues()));
   }
 }
