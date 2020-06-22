@@ -1,16 +1,14 @@
 package com.meemaw.shared.pg;
 
-public enum PgError {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
+@AllArgsConstructor
+@Getter
+@ToString
+public enum PgError {
   UNIQUE_VIOLATION("23505");
 
-  private String code;
-
-  PgError(String code) {
-    this.code = code;
-  }
-
-  public String getCode() {
-    return code;
-  }
+  private final String code;
 }

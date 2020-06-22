@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @Provider
@@ -26,8 +27,8 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
 
   public static final String REQUEST_ID_HEADER = "X-Request-Id";
 
-  private static final String LOG_START_TIME_PROPERTY = "start-time";
-  private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 50;
+  private static final String LOG_START_TIME_PROPERTY = "X-Start-Time";
+  private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 200;
 
   @Inject MetricsService metricsService;
   @Context UriInfo info;
@@ -44,10 +45,10 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
    * @param ctx container request context
    */
   @Override
+  @Traced
   public void filter(ContainerRequestContext ctx) {
-    String requestId = requestId();
-
     ctx.setProperty(LOG_START_TIME_PROPERTY, System.currentTimeMillis());
+    String requestId = requestId();
     ctx.setProperty(REQUEST_ID_HEADER, requestId);
     MDC.put(REQUEST_ID_HEADER, requestId);
   }
@@ -59,11 +60,12 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
    * @param response container response context
    */
   @Override
+  @Traced
   public void filter(ContainerRequestContext request, ContainerResponseContext response) {
     String requestId = (String) request.getProperty(REQUEST_ID_HEADER);
     int status = response.getStatus();
     logRequestLatency(request, status);
-    response.getHeaders().add(REQUEST_ID_HEADER, requestId);
+    response.getHeaders().putSingle(REQUEST_ID_HEADER, requestId);
 
     Family responseFamily = Family.familyOf(status);
     if (responseFamily == CLIENT_ERROR) {
@@ -78,6 +80,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     MDC.clear();
   }
 
+  @Traced
   private void logRequestLatency(ContainerRequestContext request, int status) {
     String path = request.getUriInfo().getPath();
     String method = request.getMethod();
