@@ -154,8 +154,6 @@ public class PgPageDatasource implements PageDatasource {
             .from(TABLE)
             .where(ID.eq(id).and(SESSION_ID.eq(sessionId).and(ORGANIZATION_ID.eq(organizationId))));
 
-    log.info("SQL: {}", query.getSQL(ParamType.NAMED));
-
     return pgPool
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .execute(Tuple.tuple(query.getBindValues()))
