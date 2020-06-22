@@ -34,7 +34,11 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
-  /** @return Unique requestId */
+  /**
+   * Generate a unique request id.
+   *
+   * @return unique request id
+   */
   private String requestId() {
     return UUID.randomUUID().toString();
   }
@@ -54,7 +58,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   }
 
   /**
-   * Response handler
+   * Response handler.
    *
    * @param request container request context
    * @param response container response context
@@ -65,7 +69,10 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     String requestId = (String) request.getProperty(REQUEST_ID_HEADER);
     int status = response.getStatus();
     logRequestLatency(request, status);
-    response.getHeaders().putSingle(REQUEST_ID_HEADER, requestId);
+
+    if (requestId != null) {
+      response.getHeaders().putSingle(REQUEST_ID_HEADER, requestId);
+    }
 
     Family responseFamily = Family.familyOf(status);
     if (responseFamily == CLIENT_ERROR) {
@@ -88,7 +95,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
 
     // paths that do not match any JAX-RS endpoint
     if (startTime == null) {
-      log.warn("No start time for request {} {}", method, path);
+      log.trace("No start time for request {} {}", method, path);
       return;
     }
 
