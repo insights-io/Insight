@@ -22,7 +22,7 @@ public class AppConfigResourceTest {
 
     given()
         .when()
-        .get(ConfigResource.PATH)
+        .get(AppConfigResource.PATH)
         .then()
         .statusCode(200)
         .body(
