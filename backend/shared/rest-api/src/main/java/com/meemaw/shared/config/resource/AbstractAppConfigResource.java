@@ -8,5 +8,5 @@ public abstract class AbstractAppConfigResource<T extends AppConfigBase> {
   public static final String PATH = "/v1/config";
 
   @GET
-  public abstract T get();
+  public abstract T getAppConfig();
 }

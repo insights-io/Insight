@@ -69,6 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: sed -i "s/<GIT_COMMIT_SHA>/$(git rev-parse --short "$GITHUB_SHA")/g" backend/beacon/beacon-api/src/main/resources/application.properties
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: ${{ env.REPOSITORY }}/beacon-api
