@@ -37,7 +37,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
               container.start();
               if (container instanceof PostgresTestContainer) {
                 PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
-                postgresTestContainer.applyMigrations(api.migrations());
+                postgresTestContainer.applyFlywayMigrations(api.migrations());
                 withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
               }
             });
