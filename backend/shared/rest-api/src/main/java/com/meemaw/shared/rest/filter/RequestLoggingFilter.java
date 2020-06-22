@@ -29,43 +29,41 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   private static final String LOG_START_TIME_PROPERTY = "start-time";
   private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 50;
 
-  @Inject
-  MetricsService metricsService;
+  @Inject MetricsService metricsService;
+  @Context UriInfo info;
+  @Context HttpServerRequest request;
 
-  @Context
-  UriInfo info;
-
-  @Context
-  HttpServerRequest request;
-
-  /**
-   * @return Unique requestId
-   */
+  /** @return Unique requestId */
   private String requestId() {
     return UUID.randomUUID().toString();
   }
 
   /**
-   * Request handler
+   * Request handler.
    *
-   * @param ctx
+   * @param ctx container request context
    */
   @Override
   public void filter(ContainerRequestContext ctx) {
+    String requestId = requestId();
+
     ctx.setProperty(LOG_START_TIME_PROPERTY, System.currentTimeMillis());
-    MDC.put(REQUEST_ID_HEADER, requestId());
+    ctx.setProperty(REQUEST_ID_HEADER, requestId);
+    MDC.put(REQUEST_ID_HEADER, requestId);
   }
 
   /**
    * Response handler
    *
-   * @param request
-   * @param response
+   * @param request container request context
+   * @param response container response context
    */
   @Override
   public void filter(ContainerRequestContext request, ContainerResponseContext response) {
+    String requestId = (String) request.getProperty(REQUEST_ID_HEADER);
     int status = response.getStatus();
     logRequestLatency(request, status);
+    response.getHeaders().add(REQUEST_ID_HEADER, requestId);
 
     Family responseFamily = Family.familyOf(status);
     if (responseFamily == CLIENT_ERROR) {
@@ -85,6 +83,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     String method = request.getMethod();
     Long startTime = (Long) request.getProperty(LOG_START_TIME_PROPERTY);
 
+    // paths that do not match any JAX-RS endpoint
     if (startTime == null) {
       log.warn("No start time for request {} {}", method, path);
       return;
@@ -96,5 +95,4 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     }
     metricsService.requestDuration(path, method, status).update(timeElapsed);
   }
-
 }
