@@ -21,6 +21,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @Slf4j
@@ -49,6 +50,7 @@ public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature
     protected abstract CompletionStage<Optional<T>> findSession(String sessionId);
 
     @Override
+    @Traced(operationName = "AbstractCookieAuthFilter.filter")
     public void filter(ContainerRequestContext ctx) {
       Map<String, Cookie> cookies = ctx.getCookies();
       Cookie ssoCookie = cookies.get(SsoSession.COOKIE_NAME);

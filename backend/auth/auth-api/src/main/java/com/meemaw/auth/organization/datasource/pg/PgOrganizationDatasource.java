@@ -1,8 +1,13 @@
-package com.meemaw.auth.organization.datasource;
+package com.meemaw.auth.organization.datasource.pg;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.table;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.ID;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.NAME;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.TABLE;
 
+import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.shared.rest.exception.DatabaseException;
@@ -12,19 +17,13 @@ import io.vertx.axle.sqlclient.Row;
 import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
-import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
-import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.Table;
 import org.jooq.conf.ParamType;
 
 @ApplicationScoped
@@ -32,18 +31,6 @@ import org.jooq.conf.ParamType;
 public class PgOrganizationDatasource implements OrganizationDatasource {
 
   @Inject PgPool pgPool;
-
-  private static final Table<?> TABLE = table("auth.organization");
-
-  private static final Field<String> ID = field("id", String.class);
-  private static final Field<String> NAME = field("name", String.class);
-  private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
-
-  private static final List<Field<?>> INSERT_FIELDS = List.of(ID, NAME);
-  private static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT);
-  private static final List<Field<?>> FIELDS =
-      Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream())
-          .collect(Collectors.toList());
 
   @Override
   @Traced
