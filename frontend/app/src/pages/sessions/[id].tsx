@@ -22,10 +22,10 @@ const SessionPage = ({ sessionId }: Props) => {
   return <AppLayout>{session.id}</AppLayout>;
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async (
-  context
-) => {
-  return { props: { sessionId: context.params!.id as string } };
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  params = {},
+}) => {
+  return { props: { sessionId: params.id as string } };
 };
 
 export default SessionPage;
