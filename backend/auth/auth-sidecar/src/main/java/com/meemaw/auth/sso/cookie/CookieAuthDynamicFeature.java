@@ -1,5 +1,8 @@
 package com.meemaw.auth.sso.cookie;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
@@ -9,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
 
   @Inject @RestClient SsoResource ssoResource;
+  @Inject ObjectMapper objectMapper;
 
   @Override
   protected ContainerRequestFilter cookieAuthFilter() {
@@ -36,17 +39,24 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
               response -> {
                 int statusCode = response.getStatus();
                 if (statusCode == Status.OK.getStatusCode()) {
-                  DataResponse<UserDTO> dataResponse = response.readEntity(new GenericType<>() {});
-                  return Optional.of(dataResponse.getData());
+                  try {
+                    DataResponse<UserDTO> dataResponse =
+                        objectMapper.readValue(
+                            response.readEntity(String.class), new TypeReference<>() {});
+                    return Optional.of(dataResponse.getData());
+                  } catch (JsonProcessingException ex) {
+                    throw Boom.serverError().exception(ex);
+                  }
                 }
 
                 // session not found
                 if (statusCode == Status.NO_CONTENT.getStatusCode()) {
+                  log.debug("Session not found");
                   return Optional.empty();
                 }
 
-                log.error("Unexpected response status {}", statusCode);
-                throw Boom.status(statusCode).exception();
+                log.error("Failed to findSession statusCode: {}", statusCode);
+                throw Boom.serverError().exception();
               });
     }
   }

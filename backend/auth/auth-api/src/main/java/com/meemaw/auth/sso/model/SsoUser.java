@@ -19,7 +19,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   UUID id;
   String email;
   UserRole role;
-  String org;
+  String organizationId;
   String fullName;
   OffsetDateTime createdAt;
 
@@ -32,7 +32,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.id = user.getId();
     this.email = user.getEmail();
     this.role = user.getRole();
-    this.org = user.getOrg();
+    this.organizationId = user.getOrganizationId();
     this.fullName = user.getFullName();
     this.createdAt = user.getCreatedAt();
   }
@@ -52,7 +52,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     out.writeUTF(this.id.toString());
     out.writeUTF(this.email);
     out.writeUTF(this.role.toString());
-    out.writeUTF(this.org);
+    out.writeUTF(this.organizationId);
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
   }
@@ -62,17 +62,21 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.id = UUID.fromString(in.readUTF());
     this.email = in.readUTF();
     this.role = UserRole.valueOf(in.readUTF());
-    this.org = in.readUTF();
+    this.organizationId = in.readUTF();
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();
   }
 
   public AuthUser dto() {
-    return new UserDTO(id, email, fullName, role, org, createdAt);
+    return new UserDTO(id, email, fullName, role, organizationId, createdAt);
+  }
+
+  public static SsoUser as(AuthUser user) {
+    return new SsoUser(user);
   }
 
   @Override
-  public String getOrg() {
-    return org;
+  public String getOrganizationId() {
+    return organizationId;
   }
 }

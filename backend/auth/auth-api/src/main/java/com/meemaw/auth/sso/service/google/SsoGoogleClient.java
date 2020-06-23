@@ -2,6 +2,7 @@ package com.meemaw.auth.sso.service.google;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.model.google.GoogleErrorResponse;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
@@ -17,7 +18,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
@@ -26,14 +27,9 @@ public class SsoGoogleClient {
   private static final String TOKEN_SERVER_URL = "https://oauth2.googleapis.com/token";
   private static final String TOKEN_INFO_SERVER_URL = "https://oauth2.googleapis.com/tokeninfo";
 
-  @ConfigProperty(name = "google.oauth.client.id")
-  String googleOAuthClientId;
-
-  @ConfigProperty(name = "google.oauth.client.secret")
-  String googleOAuthClientSecret;
-
   @Inject ObjectMapper objectMapper;
   @Inject Vertx vertx;
+  @Inject AppConfig appConfig;
 
   private WebClient webClient;
 
@@ -49,6 +45,7 @@ public class SsoGoogleClient {
    * @param redirectURI String server oauth2callback redirect URL
    * @return GoogleTokenResponse
    */
+  @Traced
   public CompletionStage<GoogleTokenResponse> codeExchange(String code, String redirectURI) {
     return requestCodeExchange(code, redirectURI)
         .map(response -> parseGoogleResponse(response, GoogleTokenResponse.class))
@@ -60,8 +57,8 @@ public class SsoGoogleClient {
         .postAbs(TOKEN_SERVER_URL)
         .addQueryParam("grant_type", "authorization_code")
         .addQueryParam("code", code)
-        .addQueryParam("client_id", googleOAuthClientId)
-        .addQueryParam("client_secret", googleOAuthClientSecret)
+        .addQueryParam("client_id", appConfig.getGoogleOAuthClientId())
+        .addQueryParam("client_secret", appConfig.getGoogleOAuthClientSecret())
         .addQueryParam("redirect_uri", redirectURI)
         .putHeader("Content-Length", "0")
         .send();
@@ -74,6 +71,7 @@ public class SsoGoogleClient {
    * @param token GoogleTokenResponse
    * @return GoogleUserInfoResponse google user info response
    */
+  @Traced
   public CompletionStage<GoogleUserInfoResponse> userInfo(GoogleTokenResponse token) {
     return requestUserInfo(token)
         .map(response -> parseGoogleResponse(response, GoogleUserInfoResponse.class))

@@ -1,18 +1,28 @@
 package com.meemaw.auth.password.datasource;
 
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
+
 import com.meemaw.auth.password.model.PasswordResetRequest;
+import com.meemaw.shared.sql.SQLContext;
 import io.vertx.axle.pgclient.PgPool;
 import io.vertx.axle.sqlclient.Row;
 import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.jooq.Field;
+import org.jooq.Query;
+import org.jooq.Table;
+import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
@@ -20,42 +30,55 @@ public class PgPasswordResetDatasource implements PasswordResetDatasource {
 
   @Inject PgPool pgPool;
 
-  private static final String DELETE_RAW_SQL =
-      "DELETE FROM auth.password_reset_request WHERE token = $1";
+  private static final Table<?> TABLE = table("auth.password_reset_request");
 
-  private static final String FIND_RAW_SQL =
-      "SELECT * FROM auth.password_reset_request WHERE token = $1";
+  private static final Field<UUID> TOKEN = field("token", UUID.class);
+  private static final Field<UUID> USER_ID = field("user_id", UUID.class);
+  private static final Field<String> EMAIL = field("email", String.class);
+  private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
-  private static final String CREATE_RAW_SQL =
-      "INSERT INTO auth.password_reset_request(email, user_id) VALUES($1, $2) RETURNING token, created_at";
+  private static final List<Field<?>> INSERT_FIELDS = List.of(EMAIL, USER_ID);
+  private static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(TOKEN, CREATED_AT);
 
   @Override
+  @Traced
   public CompletionStage<Boolean> deletePasswordResetRequest(UUID token, Transaction transaction) {
+    Query query = SQLContext.POSTGRES.delete(TABLE).where(TOKEN.eq(token));
     return transaction
-        .preparedQuery(DELETE_RAW_SQL)
-        .execute(Tuple.of(token))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .thenApply(pgRowSet -> true);
   }
 
   @Override
+  @Traced
   public CompletionStage<Optional<PasswordResetRequest>> findPasswordResetRequest(UUID token) {
+    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(TOKEN.eq(token));
     return pgPool
-        .preparedQuery(FIND_RAW_SQL)
-        .execute(Tuple.of(token))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .thenApply(this::mapMaybePasswordResetRequest);
   }
 
   @Override
+  @Traced
   public CompletionStage<PasswordResetRequest> createPasswordResetRequest(
       String email, UUID userId, Transaction transaction) {
+    Query query =
+        SQLContext.POSTGRES
+            .insertInto(TABLE)
+            .columns(INSERT_FIELDS)
+            .values(email, userId)
+            .returning(AUTO_GENERATED_FIELDS);
+
     return transaction
-        .preparedQuery(CREATE_RAW_SQL)
-        .execute(Tuple.of(email, userId))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .thenApply(
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();
-              UUID token = row.getUUID("token");
-              OffsetDateTime createdAt = row.getOffsetDateTime("created_at");
+              UUID token = row.getUUID(TOKEN.getName());
+              OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
               return new PasswordResetRequest(token, userId, email, createdAt);
             });
   }
@@ -75,9 +98,9 @@ public class PgPasswordResetDatasource implements PasswordResetDatasource {
    */
   public static PasswordResetRequest mapPasswordResetRequest(Row row) {
     return new PasswordResetRequest(
-        row.getUUID("token"),
-        row.getUUID("user_id"),
-        row.getString("email"),
-        row.getOffsetDateTime("created_at"));
+        row.getUUID(TOKEN.getName()),
+        row.getUUID(USER_ID.getName()),
+        row.getString(EMAIL.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

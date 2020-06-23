@@ -16,6 +16,6 @@ public class UserDTO implements AuthUser {
   String email;
   String fullName;
   UserRole role;
-  String org;
+  String organizationId;
   OffsetDateTime createdAt;
 }

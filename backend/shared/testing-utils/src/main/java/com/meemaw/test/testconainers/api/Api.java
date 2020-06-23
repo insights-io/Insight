@@ -31,7 +31,7 @@ public enum Api {
   }
 
   public Path migrations() {
-    return ProjectUtils.getFromBackend(name().toLowerCase(), fullName(), "migrations", "sql");
+    return ProjectUtils.getFromBackend(name().toLowerCase(), fullName(), "migrations");
   }
 
   public String fullName() {

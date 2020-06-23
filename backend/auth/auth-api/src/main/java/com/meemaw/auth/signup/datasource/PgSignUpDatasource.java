@@ -12,6 +12,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
@@ -32,6 +33,7 @@ public class PgSignUpDatasource implements SignUpDatasource {
       "SELECT COUNT(*) FROM auth.user FULL OUTER JOIN auth.sign_up_request ON auth.user.email = auth.sign_up_request.email WHERE auth.user.email = $1 OR auth.sign_up_request.email = $1";
 
   @Override
+  @Traced
   public CompletionStage<UUID> createSignUpRequest(
       SignUpRequest signUpRequest, Transaction transaction) {
 
@@ -54,11 +56,13 @@ public class PgSignUpDatasource implements SignUpDatasource {
   }
 
   @Override
+  @Traced
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(UUID token) {
     return pgPool.begin().thenCompose(transaction -> findSignUpRequest(token, transaction));
   }
 
   @Override
+  @Traced
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(
       UUID token, Transaction transaction) {
     return transaction
@@ -81,6 +85,7 @@ public class PgSignUpDatasource implements SignUpDatasource {
   }
 
   @Override
+  @Traced
   public CompletionStage<Boolean> deleteSignUpRequest(UUID token, Transaction transaction) {
     return transaction
         .preparedQuery(DELETE_SIGN_UP_RAW_SQL)
@@ -94,6 +99,7 @@ public class PgSignUpDatasource implements SignUpDatasource {
   }
 
   @Override
+  @Traced
   public CompletionStage<Boolean> selectIsEmailTaken(String email, Transaction transaction) {
     return transaction
         .preparedQuery(SELECT_EMAIL_TAKEN_RAW_SQL)

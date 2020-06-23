@@ -5,6 +5,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
@@ -21,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +31,7 @@ public class SsoGoogleResourceImplTest {
 
   @Inject SsoGoogleClient ssoGoogleClient;
   @Inject SsoGoogleService ssoGoogleService;
-
-  @ConfigProperty(name = "google.oauth.client.id")
-  String googleOauthClientId;
+  @Inject AppConfig appConfig;
 
   @TestHTTPResource(SsoGoogleResource.PATH + "/" + SsoGoogleResource.OAUTH2_CALLBACK_PATH)
   URI oauth2CallbackURI;
@@ -92,7 +90,7 @@ public class SsoGoogleResourceImplTest {
     String encodedOAuth2CallbackURL = URLEncoder.encode(oAuth2CallbackURL, StandardCharsets.UTF_8);
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="
-            + googleOauthClientId
+            + appConfig.getGoogleOAuthClientId()
             + "&redirect_uri="
             + encodedOAuth2CallbackURL
             + "&response_type=code&scope=openid+email+profile&state=";
@@ -123,7 +121,7 @@ public class SsoGoogleResourceImplTest {
 
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="
-            + googleOauthClientId
+            + appConfig.getGoogleOAuthClientId()
             + "&redirect_uri="
             + oauth2CallbackURL
             + "&response_type=code&scope=openid+email+profile&state=";

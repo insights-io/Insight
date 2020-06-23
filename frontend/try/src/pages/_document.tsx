@@ -32,9 +32,9 @@ class InsightDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    const bootstrapScript = await ky(
-      process.env.BOOTSTRAP_SCRIPT as string
-    ).text();
+    const bootstrapScript = await ky(process.env.BOOTSTRAP_SCRIPT as string)
+      .text()
+      .then((snippet) => snippet.replace('<ORG>', '000000'));
 
     return { ...page, bootstrapScript, stylesheets };
   }

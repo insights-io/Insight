@@ -4,23 +4,20 @@ import java.util.Objects;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class DataResponse<T> {
 
   T data;
   Boom<?> error;
 
-  public DataResponse(T data, Boom<?> error) {
-    this.data = data;
-    this.error = error;
-  }
-
   public static <T> DataResponse<T> data(T data) {
-    return new DataResponse<T>(Objects.requireNonNull(data), null);
+    return new DataResponse<>(Objects.requireNonNull(data), null);
   }
 
   public static <T> Response ok(T data) {
@@ -36,7 +33,7 @@ public class DataResponse<T> {
   }
 
   public static <T> DataResponse<T> error(Boom<?> error) {
-    return new DataResponse<T>(null, Objects.requireNonNull(error));
+    return new DataResponse<>(null, Objects.requireNonNull(error));
   }
 
   public Response.ResponseBuilder builder(int statusCode) {

@@ -4,11 +4,13 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +20,7 @@ import org.junit.jupiter.api.Test;
 public class SessionResourceValidationTest {
 
   @Test
-  public void postPage_shouldThrowError_whenUnsupportedMediaType() {
+  public void post_page_should_throw_error_when_unsupported_media_type() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
@@ -31,7 +33,7 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void postPage_shouldThrowError_whenEmptyPayload() {
+  public void post_page_should_throw_error_when_empty_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -44,7 +46,7 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void postPage_shouldThrowError_whenEmptyJson() {
+  public void post_page_should_throw_error_when_empty_json() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -58,55 +60,21 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void countPages_shouldThrowError_whenUnauthenticated() {
-    given()
-        .when()
-        .get(SessionResource.PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void get_sessions_should_be_under_cookie_auth() {
+    SsoTestSetupUtils.cookieExpect401(SessionResource.PATH, null);
+    SsoTestSetupUtils.cookieExpect401(SessionResource.PATH, "random");
+    SsoTestSetupUtils.cookieExpect401(SessionResource.PATH, SsoSession.newIdentifier());
   }
 
   @Test
-  public void countPages_shouldThrowError_whenRandomSessionId() {
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, "random")
-        .get(SessionResource.PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
-  }
-
-  @Test
-  public void countPages_shouldThrowError_whenInvalidSessionId() {
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, SsoSession.newIdentifier())
-        .get(SessionResource.PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
-  }
-
-  @Test
-  public void getPage_shouldThrowError_whenInvalidOrgLength() {
+  @Disabled
+  public void get_page_should_be_under_cookie_auth() {
     String path =
-        String.format("%s/%s/pages/%s", SessionResource.PATH, UUID.randomUUID(), UUID.randomUUID());
-    given()
-        .when()
-        .queryParam("organizationId", "qeweqewq")
-        .get(path)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Has to be 6 characters long\"}}}"));
+        String.format(
+            SessionResourceTest.SESSION_PAGE_PATH_TEMPLATE, UUID.randomUUID(), UUID.randomUUID());
+
+    SsoTestSetupUtils.cookieExpect401(path, null);
+    SsoTestSetupUtils.cookieExpect401(path, "random");
+    SsoTestSetupUtils.cookieExpect401(path, SsoSession.newIdentifier());
   }
 }

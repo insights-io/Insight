@@ -13,11 +13,21 @@ dependencies {
     api 'io.quarkus:quarkus-jackson'
     api 'io.rest-assured:rest-assured'
     api 'org.skyscreamer:jsonassert:1.5.0'
-    api "org.testcontainers:testcontainers:${testconainersVersion}"
-    api "org.testcontainers:junit-jupiter:${testconainersVersion}"
-    api "org.testcontainers:postgresql:${testconainersVersion}"
-    api "org.testcontainers:kafka:${testconainersVersion}"
-    api "org.testcontainers:elasticsearch:${testconainersVersion}"
+    api("org.testcontainers:testcontainers:${testconainersVersion}") {
+        force = true
+    }
+    api("org.testcontainers:junit-jupiter:${testconainersVersion}") {
+        force = true
+    }
+    api("org.testcontainers:postgresql:${testconainersVersion}") {
+        force = true
+    }
+    api("org.testcontainers:kafka:${testconainersVersion}") {
+        force = true
+    }
+    api("org.testcontainers:elasticsearch:${testconainersVersion}") {
+        force = true
+    }
     implementation project(':shared:rest-api')
     implementation project(':auth:auth-api-contracts')
 

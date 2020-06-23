@@ -10,29 +10,38 @@ import java.util.UUID;
 public interface PageDatasource {
 
   /**
-   * @param organizationId String organization id
-   * @param deviceId String device id
-   * @return optionally linked sessionID that has been active in the last 30 minutes
-   */
-  Uni<Optional<UUID>> findUserSessionLink(String organizationId, UUID deviceId);
-
-  /**
    * @param pageId String page id
-   * @param deviceId String device id
    * @param sessionId String session id
+   * @param deviceId device id
    * @param page CreatePageDTO page
-   * @return newly created Page
+   * @return page identity
    */
-  Uni<PageIdentity> insertPage(UUID pageId, UUID deviceId, UUID sessionId, CreatePageDTO page);
-
-  /** @return number of currently active pages */
-  Uni<Integer> activePageCount();
+  Uni<PageIdentity> insertPage(UUID pageId, UUID sessionId, UUID deviceId, CreatePageDTO page);
 
   /**
-   * @param pageId String page id
+   * Create page and new session linked to it.
+   *
+   * @param pageId page id
+   * @param sessionId session id
+   * @param deviceId device id
+   * @param userAgent user agent
+   * @param ipAddress ip address
+   * @param page page create dto
+   * @return page identity
+   */
+  Uni<PageIdentity> createPageAndNewSession(
+      UUID pageId,
+      UUID sessionId,
+      UUID deviceId,
+      String userAgent,
+      String ipAddress,
+      CreatePageDTO page);
+
+  /**
+   * @param id page id
    * @param sessionId String session id
    * @param organizationId String organization id
    * @return maybe page
    */
-  Uni<Optional<PageDTO>> getPage(UUID pageId, UUID sessionId, String organizationId);
+  Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId);
 }

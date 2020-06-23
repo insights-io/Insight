@@ -70,15 +70,29 @@ class Backend implements Connected {
     this.beaconURL = `${this.beaconURL}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`;
   };
 
+  // TODO: better error handling
   private _sendEvents = (transport: BaseTransport, e: BrowserEvent[]) => {
     this.beaconSeq += 1;
-    return transport.sendEvents(this.beaconURL, { e, s: this.beaconSeq });
+    return transport
+      .sendEvents(this.beaconURL, { e, s: this.beaconSeq })
+      .then((response) => {
+        if (response.status > 400 && response.status < 600) {
+          throw new Error(`Failed to create page status: ${response.status}`);
+        }
+        return response;
+      });
   };
 
+  // TODO: better error handling
   public page = (pageDTO: CreatePageDTO) => {
     return this.requestResponseTransport
       .post<CreatePageResponse>(this.pageURL, JSON.stringify(pageDTO))
-      .then((response) => response.json);
+      .then((response) => {
+        if (response.status > 400 && response.status < 600) {
+          throw new Error(`Failed to create page status: ${response.status}`);
+        }
+        return response.json;
+      });
   };
 }
 

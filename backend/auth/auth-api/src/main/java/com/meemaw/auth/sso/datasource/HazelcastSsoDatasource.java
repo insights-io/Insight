@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
@@ -28,17 +29,14 @@ public class HazelcastSsoDatasource implements SsoDatasource {
     sessions = hazelcastProvider.getInstance().getMap(SESSION_MAP_NAME);
   }
 
-  /**
-   * @param user AuthUser user
-   * @return String session id
-   */
   @Override
+  @Traced
   public CompletionStage<String> createSession(AuthUser user) {
     String sessionId = SsoSession.newIdentifier();
     return sessions
         .setAsync(
             sessionId,
-            new SsoUser(user),
+            SsoUser.as(user),
             SsoSession.TTL,
             TimeUnit.SECONDS,
             SsoSession.MAX_IDLE,
@@ -51,21 +49,23 @@ public class HazelcastSsoDatasource implements SsoDatasource {
   }
 
   @Override
+  @Traced
   public CompletionStage<Optional<SsoUser>> findSession(String sessionId) {
     return sessions.getAsync(sessionId).thenApply(Optional::ofNullable);
   }
 
   @Override
-  public CompletionStage<Boolean> deleteSession(String sessionId) {
+  @Traced
+  public CompletionStage<Optional<SsoUser>> deleteSession(String sessionId) {
     return sessions
         .removeAsync(sessionId)
         .thenApply(
             ssoUser -> {
               if (ssoUser == null) {
-                return false;
+                return Optional.empty();
               }
               log.info("Session id={} deleted for userId={}", sessionId, ssoUser.getId());
-              return true;
+              return Optional.of(ssoUser);
             });
   }
 }

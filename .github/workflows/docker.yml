@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: sed -i "s/<GIT_COMMIT_SHA>/$(git rev-parse --short "$GITHUB_SHA")/g" backend/auth/auth-api/src/main/resources/application.properties
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: ${{ env.REPOSITORY }}/auth-api
@@ -39,6 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: sed -i "s/<GIT_COMMIT_SHA>/$(git rev-parse --short "$GITHUB_SHA")/g" backend/session/session-api/src/main/resources/application.properties
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: ${{ env.REPOSITORY }}/session-api
@@ -67,6 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: sed -i "s/<GIT_COMMIT_SHA>/$(git rev-parse --short "$GITHUB_SHA")/g" backend/beacon/beacon-api/src/main/resources/application.properties
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: ${{ env.REPOSITORY }}/beacon-api
@@ -103,7 +106,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           dockerfile: frontend/app/docker/Dockerfile
           tag_names: true
-          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api,try_app_base_url=https://try.dev.snuderls.eu,bootstrap_script=https://static.dev.snuderls.eu/b/development.insight.js
+          buildargs: session_api_client_base_url=https://session-api.dev.snuderls.eu,auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api,try_app_base_url=https://try.dev.snuderls.eu,bootstrap_script=https://static.dev.snuderls.eu/b/development.insight.js
 
   build-try-app:
     runs-on: ubuntu-latest

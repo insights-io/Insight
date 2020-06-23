@@ -27,6 +27,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
@@ -44,6 +45,7 @@ public class SignUpServiceImpl implements SignUpService {
   Template completeSignUpTemplate;
 
   @Override
+  @Traced
   public CompletionStage<Optional<UUID>> signUp(
       String referer, String serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
     log.info("Sign up request");
@@ -113,6 +115,7 @@ public class SignUpServiceImpl implements SignUpService {
   }
 
   @Override
+  @Traced
   public CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUp(UUID token) {
     return pgPool
         .begin()
@@ -169,6 +172,7 @@ public class SignUpServiceImpl implements SignUpService {
   }
 
   @Override
+  @Traced
   public CompletionStage<Boolean> signUpRequestValid(UUID token) {
     return signUpDatasource
         .findSignUpRequest(token)
@@ -178,6 +182,7 @@ public class SignUpServiceImpl implements SignUpService {
   }
 
   @Override
+  @Traced
   public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
     log.info("Social sign up request");
     return pgPool

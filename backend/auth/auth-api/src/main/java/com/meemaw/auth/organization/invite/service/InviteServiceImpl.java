@@ -50,7 +50,7 @@ public class InviteServiceImpl implements InviteService {
         .thenCompose(
             transaction ->
                 organizationDatasource
-                    .findOrganization(authUser.getOrg(), transaction)
+                    .findOrganization(authUser.getOrganizationId(), transaction)
                     .thenCompose(
                         maybeOrganization -> {
                           Organization organization =
@@ -63,7 +63,7 @@ public class InviteServiceImpl implements InviteService {
                                   authUser.getFullName(),
                                   organization.getName());
                           return createTeamInvite(
-                              authUser.getOrg(),
+                              authUser.getOrganizationId(),
                               authUser.getId(),
                               teamInviteTemplateData,
                               acceptInviteURL,
@@ -127,7 +127,9 @@ public class InviteServiceImpl implements InviteService {
                   transaction);
             })
         .thenCompose(
-            user -> inviteDatasource.deleteTeamInvites(user.getEmail(), user.getOrg(), transaction))
+            user ->
+                inviteDatasource.deleteTeamInvites(
+                    user.getEmail(), user.getOrganizationId(), transaction))
         .thenCompose(deleted -> transaction.commit().thenApply(x -> deleted));
   }
 
@@ -171,7 +173,7 @@ public class InviteServiceImpl implements InviteService {
 
   @Override
   public CompletionStage<List<TeamInvite>> listTeamInvites(InsightPrincipal principal) {
-    return inviteDatasource.findTeamInvites(principal.user().getOrg());
+    return inviteDatasource.findTeamInvites(principal.user().getOrganizationId());
   }
 
   private CompletionStage<Void> sendInviteEmail(

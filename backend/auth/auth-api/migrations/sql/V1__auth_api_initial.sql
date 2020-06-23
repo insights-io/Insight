@@ -81,3 +81,11 @@ CREATE TABLE IF NOT EXISTS auth.team_invite
     CONSTRAINT email_length CHECK (length(auth.team_invite.email) < 255)
 );
 
+/* Bootstrap Insight organization */
+INSERT INTO auth.organization(id, name)
+VALUES ('000000', 'Insight');
+
+/* Bootstrap user for Insight organization */
+INSERT INTO auth.user(id, email, organization_id, role, full_name)
+VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', 'admin@insight.io', '000000', 'ADMIN',
+        'Admin Admin');
