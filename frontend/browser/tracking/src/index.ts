@@ -1,5 +1,4 @@
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable no-console */
 import Context from 'context';
 import EventQueue from 'queue';
 import {
@@ -10,6 +9,7 @@ import {
   mouseEventSimpleArgs,
   mouseEventWithTargetArgs,
 } from 'event';
+import { logger } from 'logger';
 import Backend from 'backend';
 import { CreatePageResponse } from '@insight/types';
 import Identity from 'identity';
@@ -55,7 +55,7 @@ declare global {
   ) => {
     eventQueue.enqueue(eventType, args);
     if (process.env.NODE_ENV !== 'production') {
-      console.debug(eventName, args);
+      logger.debug(eventName, args);
     }
   };
 
@@ -113,7 +113,9 @@ declare global {
     const args = [lastLocation];
     eventQueue.enqueue(EventType.UNLOAD, args);
     backend.sendBeacon(eventQueue.events()).catch((error) => {
-      console.error('Something went wrong while sending beacon', error);
+      if (process.env.NODE_ENV !== 'production') {
+        logger.error('Something went wrong while sending beacon', error);
+      }
     });
   };
 
@@ -128,7 +130,7 @@ declare global {
         backend.sendEvents(events);
         onMouseMoveClear();
         if (process.env.NODE_ENV !== 'production') {
-          console.debug('[onUploadInterval]', [events.length]);
+          logger.debug('[onUploadInterval]', [events.length]);
         }
       }
     }, UPLOAD_INTERVAL_MILLIS);
@@ -150,7 +152,9 @@ declare global {
     .then(startBeaconing)
     .catch((error) => {
       // TODO: have some error reporting & retrying
-      console.error('Something went wrong while creating page', error);
+      if (process.env.NODE_ENV !== 'production') {
+        logger.error('Something went wrong while creating page', error);
+      }
     });
 
   // eslint-disable-next-line no-restricted-globals

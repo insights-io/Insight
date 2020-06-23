@@ -54,12 +54,16 @@ const config = (env) => {
   const { fileName, beaconApiBaseURL, sessionApiBaseURL } = envConfig(env);
   const output = path.join('dist', fileName);
 
+  const nodeEnvironment = ['production', 'staging'].includes(env)
+    ? 'production'
+    : 'development';
+
   return {
     input,
     plugins: [
       typescript({ tsconfig: 'tsconfig.build.json' }),
       replace({
-        'process.env.NODE_ENV': JSON.stringify(env),
+        'process.env.NODE_ENV': JSON.stringify(nodeEnvironment),
         'process.env.BEACON_API_BASE_URL': JSON.stringify(beaconApiBaseURL),
         'process.env.SESSION_API_BASE_URL': JSON.stringify(sessionApiBaseURL),
         'process.env.COMPILED_TS': JSON.stringify(compiledTs),

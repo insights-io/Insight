@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
-/* eslint-disable no-console */
 /* eslint-disable lodash/prefer-lodash-typecheck */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-underscore-dangle */
 
+import { logger } from 'logger';
 import { PageIdentity } from '@insight/types';
 import {
   MILLIS_IN_SECOND,
@@ -29,35 +29,35 @@ class Identity implements Connected {
     }, {} as { _is_device_id?: string });
 
     if (process.env.NODE_ENV !== 'production') {
-      console.debug('[initFromCookie]', { cookies, host, organizationId });
+      logger.debug('[initFromCookie]', { cookies, host, organizationId });
     }
     let maybeCookie = cookies[Identity.storageKey];
     if (!maybeCookie) {
       try {
         maybeCookie = localStorage[Identity.storageKey];
         if (process.env.NODE_ENV !== 'production' && maybeCookie) {
-          console.debug('Restored identity from localStorage', maybeCookie);
+          logger.debug('Restored identity from localStorage', maybeCookie);
         }
       } catch (err) {
         // noop
       }
     } else if (process.env.NODE_ENV !== 'production') {
-      console.debug('Restored identity from cookie', maybeCookie);
+      logger.debug('Restored identity from cookie', maybeCookie);
     }
 
     const decoded = Identity.decodeIdentity(maybeCookie);
     if (decoded) {
       if (decoded.organizationId === organizationId) {
         if (process.env.NODE_ENV !== 'production') {
-          console.debug('Matching organizationId, setting identity', decoded);
+          logger.debug('Matching organizationId, setting identity', decoded);
         }
         return new Identity(decoded);
       }
       if (process.env.NODE_ENV !== 'production') {
-        console.debug('Unmatching identity', { decoded, organizationId });
+        logger.debug('Unmatching identity', { decoded, organizationId });
       }
     } else if (process.env.NODE_ENV !== 'production') {
-      console.debug('Could not parse identity');
+      logger.debug('Could not parse identity');
     }
 
     const newIdentity = {
@@ -69,7 +69,7 @@ class Identity implements Connected {
     };
 
     if (process.env.NODE_ENV !== 'production') {
-      console.debug('Created new identity', newIdentity);
+      logger.debug('Created new identity', newIdentity);
     }
     return new Identity(newIdentity);
   };
@@ -84,7 +84,7 @@ class Identity implements Connected {
     const expiresSeconds = parseInt(maybeExpiresSeconds, 10);
     if (isNaN(expiresSeconds) || expiresSeconds < currentTimeSeconds()) {
       if (process.env.NODE_ENV !== 'production') {
-        console.debug('identity expired?', { expiresSeconds });
+        logger.debug('identity expired?', { expiresSeconds });
       }
       return undefined;
     }
@@ -126,7 +126,7 @@ class Identity implements Connected {
       // noop
     }
     if (process.env.NODE_ENV !== 'production') {
-      console.debug('Wrote identity', encoded);
+      logger.debug('Wrote identity', encoded);
     }
   };
 
