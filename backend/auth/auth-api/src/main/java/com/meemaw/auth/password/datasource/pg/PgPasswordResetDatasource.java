@@ -1,8 +1,14 @@
-package com.meemaw.auth.password.datasource;
+package com.meemaw.auth.password.datasource.pg;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.table;
+import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.CREATED_AT;
+import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.EMAIL;
+import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.TABLE;
+import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.TOKEN;
+import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.USER_ID;
 
+import com.meemaw.auth.password.datasource.PasswordResetDatasource;
 import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.shared.sql.SQLContext;
 import io.vertx.axle.pgclient.PgPool;
@@ -11,7 +17,6 @@ import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -19,9 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
-import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.Table;
 import org.jooq.conf.ParamType;
 
 @ApplicationScoped
@@ -29,16 +32,6 @@ import org.jooq.conf.ParamType;
 public class PgPasswordResetDatasource implements PasswordResetDatasource {
 
   @Inject PgPool pgPool;
-
-  private static final Table<?> TABLE = table("auth.password_reset_request");
-
-  private static final Field<UUID> TOKEN = field("token", UUID.class);
-  private static final Field<UUID> USER_ID = field("user_id", UUID.class);
-  private static final Field<String> EMAIL = field("email", String.class);
-  private static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
-
-  private static final List<Field<?>> INSERT_FIELDS = List.of(EMAIL, USER_ID);
-  private static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(TOKEN, CREATED_AT);
 
   @Override
   @Traced

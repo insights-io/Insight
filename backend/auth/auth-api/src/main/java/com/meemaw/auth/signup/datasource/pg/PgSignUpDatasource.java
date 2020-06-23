@@ -1,9 +1,24 @@
-package com.meemaw.auth.signup.datasource;
+package com.meemaw.auth.signup.datasource.pg;
 
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.COMPANY;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.CREATED_AT;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.EMAIL;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.FULL_NAME;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.HASHED_PASSWORD;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.PHONE_NUMBER;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.REFERER;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.TABLE;
+import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.TOKEN;
+
+import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.shared.rest.exception.DatabaseException;
+import com.meemaw.shared.sql.SQLContext;
 import io.vertx.axle.pgclient.PgPool;
 import io.vertx.axle.sqlclient.Row;
+import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
 import java.util.Optional;
@@ -13,21 +28,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
+import org.jooq.Query;
+import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
 public class PgSignUpDatasource implements SignUpDatasource {
 
   @Inject PgPool pgPool;
-
-  private static final String INSERT_SIGN_UP_RAW_SQL =
-      "INSERT INTO auth.sign_up_request(email, hashed_password, full_name, company, phone_number, referer) VALUES($1, $2, $3, $4, $5, $6) RETURNING token";
-
-  private static final String SELECT_SIGN_UP_RAW_SQL =
-      "SELECT * FROM auth.sign_up_request WHERE token = $1";
-
-  private static final String DELETE_SIGN_UP_RAW_SQL =
-      "DELETE FROM auth.sign_up_request WHERE token = $1";
 
   private static final String SELECT_EMAIL_TAKEN_RAW_SQL =
       "SELECT COUNT(*) FROM auth.user FULL OUTER JOIN auth.sign_up_request ON auth.user.email = auth.sign_up_request.email WHERE auth.user.email = $1 OR auth.sign_up_request.email = $1";
@@ -36,18 +44,23 @@ public class PgSignUpDatasource implements SignUpDatasource {
   @Traced
   public CompletionStage<UUID> createSignUpRequest(
       SignUpRequest signUpRequest, Transaction transaction) {
-
-    return transaction
-        .preparedQuery(INSERT_SIGN_UP_RAW_SQL)
-        .execute(
-            Tuple.of(
+    Query query =
+        SQLContext.POSTGRES
+            .insertInto(TABLE)
+            .columns(INSERT_FIELDS)
+            .values(
                 signUpRequest.getEmail(),
                 signUpRequest.getHashedPassword(),
                 signUpRequest.getFullName(),
                 signUpRequest.getCompany(),
                 signUpRequest.getPhoneNumber(),
-                signUpRequest.getReferer()))
-        .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID("token"))
+                signUpRequest.getReferer())
+            .returning(AUTO_GENERATED_FIELDS);
+
+    return transaction
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
+        .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID(TOKEN.getName()))
         .exceptionally(
             throwable -> {
               log.error("Failed to create sign up request", throwable);
@@ -65,31 +78,26 @@ public class PgSignUpDatasource implements SignUpDatasource {
   @Traced
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(
       UUID token, Transaction transaction) {
+    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(TOKEN.eq(token));
+
     return transaction
-        .preparedQuery(SELECT_SIGN_UP_RAW_SQL)
-        .execute(Tuple.of(token))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
+        .thenApply(PgSignUpDatasource::maybeMapSignUpRequest)
         .exceptionally(
             throwable -> {
               log.error("Failed to fetch sign up request", throwable);
               throw new DatabaseException(throwable);
-            })
-        .thenApply(
-            pgRowSet -> {
-              if (!pgRowSet.iterator().hasNext()) {
-                return Optional.empty();
-              }
-
-              Row row = pgRowSet.iterator().next();
-              return Optional.of(mapSignUpRequest(row));
             });
   }
 
   @Override
   @Traced
   public CompletionStage<Boolean> deleteSignUpRequest(UUID token, Transaction transaction) {
+    Query query = SQLContext.POSTGRES.deleteFrom(TABLE).where(TOKEN.eq(token));
     return transaction
-        .preparedQuery(DELETE_SIGN_UP_RAW_SQL)
-        .execute(Tuple.of(token))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .thenApply(pgRowSet -> true)
         .exceptionally(
             throwable -> {
@@ -107,6 +115,13 @@ public class PgSignUpDatasource implements SignUpDatasource {
         .thenApply(pgRowSet -> pgRowSet.iterator().next().getInteger("count") > 0);
   }
 
+  private static Optional<SignUpRequest> maybeMapSignUpRequest(RowSet<Row> rowSet) {
+    if (!rowSet.iterator().hasNext()) {
+      return Optional.empty();
+    }
+    return Optional.of(mapSignUpRequest(rowSet.iterator().next()));
+  }
+
   /**
    * Map SQL row to SignUpRequest.
    *
@@ -115,13 +130,13 @@ public class PgSignUpDatasource implements SignUpDatasource {
    */
   public static SignUpRequest mapSignUpRequest(Row row) {
     return new SignUpRequest(
-        row.getUUID("token"),
-        row.getString("email"),
-        row.getString("hashed_password"),
-        row.getString("full_name"),
-        row.getString("company"),
-        row.getString("phone_number"),
-        row.getString("referer"),
-        row.getOffsetDateTime("created_at"));
+        row.getUUID(TOKEN.getName()),
+        row.getString(EMAIL.getName()),
+        row.getString(HASHED_PASSWORD.getName()),
+        row.getString(FULL_NAME.getName()),
+        row.getString(COMPANY.getName()),
+        row.getString(PHONE_NUMBER.getName()),
+        row.getString(REFERER.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

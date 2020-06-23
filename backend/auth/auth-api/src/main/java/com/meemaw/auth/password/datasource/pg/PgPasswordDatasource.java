@@ -1,9 +1,11 @@
-package com.meemaw.auth.password.datasource;
+package com.meemaw.auth.password.datasource.pg;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.table;
+import static com.meemaw.auth.password.datasource.pg.PasswordTable.HASH;
+import static com.meemaw.auth.password.datasource.pg.PasswordTable.TABLE;
+import static com.meemaw.auth.password.datasource.pg.PasswordTable.USER_ID;
 
-import com.meemaw.auth.user.datasource.PgUserDatasource;
+import com.meemaw.auth.password.datasource.PasswordDatasource;
+import com.meemaw.auth.user.datasource.pg.PgUserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithHashedPassword;
 import com.meemaw.shared.sql.SQLContext;
@@ -19,9 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
-import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.Table;
 import org.jooq.conf.ParamType;
 
 @ApplicationScoped
@@ -29,11 +29,6 @@ import org.jooq.conf.ParamType;
 public class PgPasswordDatasource implements PasswordDatasource {
 
   @Inject PgPool pgPool;
-
-  private static final Table<?> TABLE = table("auth.password");
-
-  private static final Field<UUID> USER_ID = field("user_id", UUID.class);
-  private static final Field<String> HASH = field("hash", String.class);
 
   private static final String FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL =
       "SELECT auth.user.id, auth.user.email, auth.user.full_name, auth.user.organization_id, auth.user.role, auth.user.created_at, auth.password.hash"
