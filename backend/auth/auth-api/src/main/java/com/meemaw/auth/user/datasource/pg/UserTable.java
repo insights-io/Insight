@@ -30,5 +30,10 @@ public final class UserTable {
       Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream())
           .collect(Collectors.toList());
 
+  @SuppressWarnings({"unchecked"})
+  public static <T> Field<T> tableField(Field<T> field) {
+    return (Field<T>) field(String.join(".", TABLE.getName(), field.getName()));
+  }
+
   private UserTable() {}
 }

@@ -16,5 +16,10 @@ public final class PasswordTable {
   public static final Field<String> HASH = field("hash", String.class);
   public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
+  @SuppressWarnings({"unchecked"})
+  public static <T> Field<T> tableField(Field<T> field) {
+    return (Field<T>) field(String.join(".", TABLE.getName(), field.getName()));
+  }
+
   private PasswordTable() {}
 }

@@ -10,7 +10,8 @@ import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.
 import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.TABLE;
 import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.TOKEN;
 
-import com.meemaw.auth.organization.datasource.PgOrganizationDatasource;
+import com.meemaw.auth.organization.datasource.pg.OrganizationTable;
+import com.meemaw.auth.organization.datasource.pg.PgOrganizationDatasource;
 import com.meemaw.auth.organization.invite.datasource.InviteDatasource;
 import com.meemaw.auth.organization.invite.model.TeamInvite;
 import com.meemaw.auth.organization.invite.model.TeamInviteTemplateData;
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.Query;
+import org.jooq.Table;
 import org.jooq.conf.ParamType;
 
 @ApplicationScoped
@@ -47,9 +49,6 @@ public class PgInviteDatasource implements InviteDatasource {
 
   @Inject PgPool pgPool;
 
-  private static final String FIND_TEAM_INVITE_WITH_ORGANIZATION_RAW_SQL =
-      "SELECT * FROM auth.team_invite LEFT JOIN auth.organization ON auth.team_invite.organization_id = auth.organization.id WHERE token = $1";
-
   @Override
   public CompletionStage<Optional<TeamInvite>> findTeamInvite(UUID token, Transaction transaction) {
     Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(TOKEN.eq(token));
@@ -57,22 +56,26 @@ public class PgInviteDatasource implements InviteDatasource {
     return transaction
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .execute(Tuple.tuple(query.getBindValues()))
-        .thenApply(this::inviteFromRowSet);
+        .thenApply(this::mapTeamInviteIfPresent);
   }
 
   @Override
   public CompletionStage<Optional<Pair<TeamInvite, Organization>>> findTeamInviteWithOrganization(
       UUID token) {
+    Table<?> joined =
+        TABLE.leftJoin(OrganizationTable.TABLE).on(OrganizationTable.ID.eq(ORGANIZATION_ID));
+    Query query = SQLContext.POSTGRES.selectFrom(joined).where(TOKEN.eq(token));
+
     return pgPool
-        .preparedQuery(FIND_TEAM_INVITE_WITH_ORGANIZATION_RAW_SQL)
-        .execute(Tuple.of(token))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .thenApply(
             pgRowSet -> {
               if (!pgRowSet.iterator().hasNext()) {
                 return Optional.empty();
               }
               Row row = pgRowSet.iterator().next();
-              TeamInvite teamInvite = mapInviteDTO(row);
+              TeamInvite teamInvite = mapTeamInvite(row);
               Organization organization = PgOrganizationDatasource.mapOrganization(row);
               return Optional.of(Pair.of(teamInvite, organization));
             });
@@ -87,7 +90,7 @@ public class PgInviteDatasource implements InviteDatasource {
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
-                    .map(PgInviteDatasource::mapInviteDTO)
+                    .map(PgInviteDatasource::mapTeamInvite)
                     .collect(Collectors.toList()));
   }
 
@@ -164,11 +167,11 @@ public class PgInviteDatasource implements InviteDatasource {
             });
   }
 
-  private Optional<TeamInvite> inviteFromRowSet(RowSet<Row> rowSet) {
+  private Optional<TeamInvite> mapTeamInviteIfPresent(RowSet<Row> rowSet) {
     if (!rowSet.iterator().hasNext()) {
       return Optional.empty();
     }
-    return Optional.of(mapInviteDTO(rowSet.iterator().next()));
+    return Optional.of(mapTeamInvite(rowSet.iterator().next()));
   }
 
   /**
@@ -177,7 +180,7 @@ public class PgInviteDatasource implements InviteDatasource {
    * @param row sql row
    * @return mapped TeamInvite
    */
-  public static TeamInvite mapInviteDTO(Row row) {
+  public static TeamInvite mapTeamInvite(Row row) {
     return new TeamInvite(
         row.getUUID(TOKEN.getName()),
         row.getString(EMAIL.getName()),

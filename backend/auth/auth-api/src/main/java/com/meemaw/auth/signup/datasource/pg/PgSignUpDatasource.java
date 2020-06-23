@@ -14,6 +14,7 @@ import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.TOKEN;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
+import com.meemaw.auth.user.datasource.pg.UserTable;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.SQLContext;
 import io.vertx.axle.pgclient.PgPool;
@@ -28,6 +29,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
+import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
 
@@ -36,9 +38,6 @@ import org.jooq.conf.ParamType;
 public class PgSignUpDatasource implements SignUpDatasource {
 
   @Inject PgPool pgPool;
-
-  private static final String SELECT_EMAIL_TAKEN_RAW_SQL =
-      "SELECT COUNT(*) FROM auth.user FULL OUTER JOIN auth.sign_up_request ON auth.user.email = auth.sign_up_request.email WHERE auth.user.email = $1 OR auth.sign_up_request.email = $1";
 
   @Override
   @Traced
@@ -109,9 +108,18 @@ public class PgSignUpDatasource implements SignUpDatasource {
   @Override
   @Traced
   public CompletionStage<Boolean> selectIsEmailTaken(String email, Transaction transaction) {
+    Field<String> userEmail = UserTable.tableField(UserTable.EMAIL);
+    Field<String> signUpRequestEmail = SignUpRequestTable.tableField(EMAIL);
+
+    Query query =
+        SQLContext.POSTGRES
+            .selectCount()
+            .from(UserTable.TABLE.fullOuterJoin(TABLE).on(userEmail.eq(signUpRequestEmail)))
+            .where(userEmail.eq(email).or(signUpRequestEmail.eq(email)));
+
     return transaction
-        .preparedQuery(SELECT_EMAIL_TAKEN_RAW_SQL)
-        .execute(Tuple.of(email))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .thenApply(pgRowSet -> pgRowSet.iterator().next().getInteger("count") > 0);
   }
 

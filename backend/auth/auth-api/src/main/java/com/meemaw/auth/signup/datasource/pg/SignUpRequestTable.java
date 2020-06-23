@@ -27,5 +27,10 @@ public final class SignUpRequestTable {
 
   public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(TOKEN, CREATED_AT);
 
+  @SuppressWarnings({"unchecked"})
+  public static <T> Field<T> tableField(Field<T> field) {
+    return (Field<T>) field(String.join(".", TABLE.getName(), field.getName()));
+  }
+
   private SignUpRequestTable() {}
 }

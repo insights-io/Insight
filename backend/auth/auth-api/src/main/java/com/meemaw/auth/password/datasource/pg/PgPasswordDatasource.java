@@ -1,11 +1,13 @@
 package com.meemaw.auth.password.datasource.pg;
 
+import static com.meemaw.auth.password.datasource.pg.PasswordTable.CREATED_AT;
 import static com.meemaw.auth.password.datasource.pg.PasswordTable.HASH;
 import static com.meemaw.auth.password.datasource.pg.PasswordTable.TABLE;
 import static com.meemaw.auth.password.datasource.pg.PasswordTable.USER_ID;
 
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.auth.user.datasource.pg.PgUserDatasource;
+import com.meemaw.auth.user.datasource.pg.UserTable;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithHashedPassword;
 import com.meemaw.shared.sql.SQLContext;
@@ -30,11 +32,6 @@ public class PgPasswordDatasource implements PasswordDatasource {
 
   @Inject PgPool pgPool;
 
-  private static final String FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL =
-      "SELECT auth.user.id, auth.user.email, auth.user.full_name, auth.user.organization_id, auth.user.role, auth.user.created_at, auth.password.hash"
-          + " FROM auth.user LEFT JOIN auth.password ON auth.user.id = auth.password.user_id"
-          + " WHERE email = $1 ORDER BY auth.password.created_at DESC LIMIT 1";
-
   @Override
   @Traced
   public CompletionStage<Boolean> storePassword(
@@ -51,9 +48,16 @@ public class PgPasswordDatasource implements PasswordDatasource {
   @Override
   @Traced
   public CompletionStage<Optional<UserWithHashedPassword>> findUserWithPassword(String email) {
+    Query query =
+        SQLContext.POSTGRES
+            .selectFrom(UserTable.TABLE.leftJoin(TABLE).on(UserTable.ID.eq(USER_ID)))
+            .where(UserTable.EMAIL.eq(email))
+            .orderBy(PasswordTable.tableField(CREATED_AT).desc())
+            .limit(1);
+
     return pgPool
-        .preparedQuery(FIND_USER_WITH_ACTIVE_PASSWORD_RAW_SQL)
-        .execute(Tuple.of(email))
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
         .thenApply(this::userWithPasswordFromRowSet);
   }
 
