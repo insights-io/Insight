@@ -51,8 +51,6 @@ public class PgUserDatasource implements UserDatasource {
             .values(email, fullName, organizationId, role.toString())
             .returning(FIELDS);
 
-    log.info("SQL: {}", query.getSQL(ParamType.NAMED));
-
     return transaction
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .execute(Tuple.tuple(query.getBindValues()))
@@ -69,7 +67,6 @@ public class PgUserDatasource implements UserDatasource {
   @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
     Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(EMAIL.eq(email));
-    log.info("SQL: {}", query.getSQL(ParamType.NAMED));
 
     return pgPool
         .preparedQuery(query.getSQL(ParamType.NAMED))
@@ -82,7 +79,6 @@ public class PgUserDatasource implements UserDatasource {
   @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String email, Transaction transaction) {
     Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(EMAIL.eq(email));
-    log.info("SQL: {}", query.getSQL(ParamType.NAMED));
 
     return transaction
         .preparedQuery(query.getSQL(ParamType.NAMED))
