@@ -24,9 +24,9 @@ type Props = {
 };
 
 const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
-const isFileSourcedBootstrapScriptURI = bootstrapScriptURI.startsWith(
-  'file://'
-);
+const fileSourcedBootstrapScriptURI = bootstrapScriptURI.startsWith('file://')
+  ? bootstrapScriptURI.replace('file://', '')
+  : undefined;
 
 class InsightDocument extends Document<Props> {
   static async getInitialProps(ctx: DocumentContext) {
@@ -40,10 +40,8 @@ class InsightDocument extends Document<Props> {
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
     let bootstrapScript;
-    if (isFileSourcedBootstrapScriptURI) {
-      bootstrapScript = String(
-        fs.readFileSync(bootstrapScriptURI.replace('file://', ''))
-      );
+    if (fileSourcedBootstrapScriptURI) {
+      bootstrapScript = String(fs.readFileSync(fileSourcedBootstrapScriptURI));
     } else {
       bootstrapScript = await ky(bootstrapScriptURI).text();
     }
