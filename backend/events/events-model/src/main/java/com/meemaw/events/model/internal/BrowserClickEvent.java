@@ -2,6 +2,7 @@ package com.meemaw.events.model.internal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,16 +37,35 @@ public class BrowserClickEvent extends AbstractBrowserEvent {
     return Optional.of(node.substring(1));
   }
 
+  protected Map<String, Object> nodeIndex() {
+    List<Object> nodeWithAttributes = getNodeWithAttributes();
+    Map<String, Object> nodeIndex = new HashMap<>();
+
+    for (int i = 0; i < nodeWithAttributes.size(); i++) {
+      Object current = nodeWithAttributes.get(i);
+      if (i == 0) {
+        nodeIndex.put("type", current);
+      } else {
+        nodeIndex.put((String) current, nodeWithAttributes.get(++i));
+      }
+    }
+
+    return nodeIndex;
+  }
+
   @Override
   public Map<String, Object> index() {
-    return Map.of(
-        EVENT_TYPE,
-        BrowserEventTypeConstants.CLICK,
-        TIMESTAMP,
-        timestamp,
-        "clientX",
-        getClientX(),
-        "clientY",
-        getClientY());
+    Map<String, Object> index = new HashMap<>(5);
+    index.put(EVENT_TYPE, getEventType());
+    index.put(TIMESTAMP, timestamp);
+    index.put("clientX", getClientX());
+    index.put("clientY", getClientY());
+    index.put("node", nodeIndex());
+    return index;
+  }
+
+  @Override
+  public String getEventType() {
+    return BrowserEventTypeConstants.CLICK;
   }
 }

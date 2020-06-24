@@ -2,9 +2,9 @@ package com.meemaw.events.search.indexer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.external.serialization.UserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.model.internal.UserEvent;
+import com.meemaw.events.model.internal.serialization.UserEventSerializer;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.KafkaTestExtension;

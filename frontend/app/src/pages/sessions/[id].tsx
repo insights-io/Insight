@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next';
 import useSession from 'modules/sessions/hooks/useSession';
 import AppLayout from 'modules/app/components/AppLayout';
 import Router from 'next/router';
+import SessionDetails from 'modules/sessions/components/SessionDetails.tsx';
 
 type Props = {
   sessionId: string;
@@ -19,7 +20,11 @@ const SessionPage = ({ sessionId }: Props) => {
     return null;
   }
 
-  return <AppLayout>{session.id}</AppLayout>;
+  return (
+    <AppLayout>
+      <SessionDetails sessionId={sessionId} />
+    </AppLayout>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({

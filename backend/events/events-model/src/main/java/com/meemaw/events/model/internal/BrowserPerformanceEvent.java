@@ -34,7 +34,7 @@ public class BrowserPerformanceEvent extends AbstractBrowserEvent {
   public Map<String, Object> index() {
     return Map.of(
         EVENT_TYPE,
-        BrowserEventTypeConstants.PERFORMANCE,
+        getEventType(),
         TIMESTAMP,
         timestamp,
         "name",
@@ -45,5 +45,10 @@ public class BrowserPerformanceEvent extends AbstractBrowserEvent {
         getStartTime(),
         "duration",
         getDuration());
+  }
+
+  @Override
+  public String getEventType() {
+    return BrowserEventTypeConstants.PERFORMANCE;
   }
 }

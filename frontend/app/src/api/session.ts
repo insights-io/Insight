@@ -12,6 +12,16 @@ type SessionDTO = {
   createdAt: string;
 };
 
+type UserEventDTO = {
+  deviceId: string;
+  organizationId: string;
+  pageId: string;
+  sessionId: string;
+  event: {
+    t: number;
+  };
+};
+
 export type Session = Omit<SessionDTO, 'createdAt'> & {
   createdAt: Date;
 };
@@ -36,6 +46,14 @@ const SessionApi = {
       })
       .json<DataResponse<SessionDTO[]>>()
       .then((dataResponse) => dataResponse.data.map(mapSession));
+  },
+  getEvents: (sessionId: string) => {
+    return ky
+      .get(`${sessionApiBaseURL}/v1/sessions/${sessionId}/events/search`, {
+        credentials: 'include',
+      })
+      .json<DataResponse<UserEventDTO[]>>()
+      .then((dataResponse) => dataResponse.data);
   },
 };
 

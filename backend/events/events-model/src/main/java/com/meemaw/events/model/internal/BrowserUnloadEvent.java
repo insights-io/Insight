@@ -10,12 +10,11 @@ public class BrowserUnloadEvent extends AbstractBrowserEvent {
 
   @Override
   public Map<String, Object> index() {
-    return Map.of(
-        EVENT_TYPE,
-        BrowserEventTypeConstants.UNLOAD,
-        TIMESTAMP,
-        timestamp,
-        "location",
-        getLocation());
+    return Map.of(EVENT_TYPE, getEventType(), TIMESTAMP, timestamp, "location", getLocation());
+  }
+
+  @Override
+  public String getEventType() {
+    return BrowserEventTypeConstants.UNLOAD;
   }
 }

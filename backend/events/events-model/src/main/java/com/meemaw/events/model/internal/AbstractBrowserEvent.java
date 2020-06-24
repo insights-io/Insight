@@ -40,4 +40,6 @@ public abstract class AbstractBrowserEvent extends Recorded {
 
   @JsonIgnore
   public abstract Map<String, Object> index();
+
+  public abstract String getEventType();
 }

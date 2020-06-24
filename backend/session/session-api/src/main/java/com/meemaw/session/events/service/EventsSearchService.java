@@ -5,7 +5,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.external.dto.UserEvent;
+import com.meemaw.events.model.external.dto.UserEventDTO;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import io.quarkus.runtime.StartupEvent;
 import java.util.List;
@@ -48,9 +48,9 @@ public class EventsSearchService {
    */
   @Traced
   @Timed(name = "searchEvents", description = "A measure of how long it takes to search fot events")
-  public CompletionStage<List<UserEvent<?>>> search(UUID sessionId, String organizationId) {
+  public CompletionStage<List<UserEventDTO<?>>> search(UUID sessionId, String organizationId) {
     SearchRequest searchRequest = prepareSearchRequest(sessionId, organizationId);
-    CompletableFuture<List<UserEvent<?>>> completableFuture = new CompletableFuture<>();
+    CompletableFuture<List<UserEventDTO<?>>> completableFuture = new CompletableFuture<>();
     restClient.searchAsync(
         searchRequest,
         RequestOptions.DEFAULT,
@@ -61,10 +61,10 @@ public class EventsSearchService {
                 StreamSupport.stream(searchResponse.getHits().spliterator(), false)
                     .map(
                         searchHit -> {
-                          UserEvent<?> userEvent =
+                          UserEventDTO<?> userEventDTO =
                               objectMapper.convertValue(
-                                  searchHit.getSourceAsMap(), UserEvent.class);
-                          return userEvent;
+                                  searchHit.getSourceAsMap(), UserEventDTO.class);
+                          return userEventDTO;
                         })
                     .collect(Collectors.toList()));
           }
