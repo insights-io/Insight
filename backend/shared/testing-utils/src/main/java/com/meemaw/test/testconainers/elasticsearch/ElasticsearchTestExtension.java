@@ -1,6 +1,5 @@
 package com.meemaw.test.testconainers.elasticsearch;
 
-import java.util.Collections;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -26,8 +25,8 @@ public class ElasticsearchTestExtension implements BeforeAllCallback {
   }
 
   /**
-   * @param elasticsearch
-   * @return
+   * @param elasticsearch test container
+   * @return elasticsearch configuration properties
    */
   public static Map<String, String> start(ElasticsearchTestContainer elasticsearch) {
     if (!ELASTICSEARCH.isRunning()) {
@@ -35,7 +34,7 @@ public class ElasticsearchTestExtension implements BeforeAllCallback {
       elasticsearch.start();
     }
     log.info("Connecting to elasticsearch http.host={}", elasticsearch.getHttpHost());
-    return Collections.emptyMap();
+    return Map.of("elasticsearch.http.host", elasticsearch.getHttpHost().toHostString());
   }
 
   public static void stop() {

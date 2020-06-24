@@ -1,3 +1,5 @@
+import { logger } from 'logger';
+
 export const enum NodeType {
   HTML = 1,
   TEXT = 3,
@@ -22,8 +24,9 @@ const extractTextContent = (element: Element): string => {
   if (!textContent) return '';
   const { length } = textContent;
   if (length > 16e6) {
-    // eslint-disable-next-line no-console
-    console.warn('Ignoring huge text node', { length });
+    if (process.env.NODE_ENV !== 'production') {
+      logger.warn('Ignoring huge text node', { length });
+    }
     return '';
   }
   return textContent;
@@ -57,8 +60,7 @@ export const encodeTarget = (target: EventTarget): EncodedTagAndAttributes => {
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line no-console
-    console.debug('Unknown element type', target);
+    logger.debug('Unknown element type', target);
   }
   return [];
 };

@@ -10,7 +10,7 @@ COPY auth/auth-model/ /backend/auth/auth-model/
 COPY auth/auth-cookie/ /backend/auth/auth-cookie/
 COPY auth/auth-sidecar/ /backend/auth/auth-sidecar/
 COPY auth/auth-api-contracts/ /backend/auth/auth-api-contracts/
-COPY events/model/ /backend/events/model/
+COPY events/events-model/ /backend/events/events-model/
 COPY shared/rest/ /backend/shared/rest/
 COPY shared/rest-elasticsearch/ /backend/shared/rest-elasticsearch/
 COPY shared/rest-api/ /backend/shared/rest-api/

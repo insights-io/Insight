@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable no-console */
+import { logger } from 'logger';
 import { BrowserEvent } from 'event';
 import { Connected } from 'identity/types';
 import {
@@ -38,19 +38,19 @@ class Backend implements Connected {
     if (FetchTranport.isSupported(globalObject)) {
       this.requestResponseTransport = new FetchTranport();
       if (process.env.NODE_ENV !== 'production') {
-        console.debug('FetchTransport enabled');
+        logger.debug('FetchTransport enabled');
       }
     } else {
       this.requestResponseTransport = new XHRTransport();
       if (process.env.NODE_ENV !== 'production') {
-        console.debug('XHRTransport enabled');
+        logger.debug('XHRTransport enabled');
       }
     }
 
     if (BeaconTransport.isSupported(globalObject)) {
       this.maybeBeaconTransport = new BeaconTransport();
       if (process.env.NODE_ENV !== 'production') {
-        console.debug('BeaconTransport enabled');
+        logger.debug('BeaconTransport enabled');
       }
     } else {
       this.maybeBeaconTransport = this.requestResponseTransport;

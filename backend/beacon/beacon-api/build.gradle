@@ -5,7 +5,7 @@ plugins {
 dependencies {
     implementation 'io.quarkus:quarkus-rest-client'
     implementation project(":auth:auth-model")
-    implementation project(":events:model")
+    implementation project(":events:events-model")
     implementation project(":shared:rest-api")
     implementation project(":session:session-api-contracts")
 

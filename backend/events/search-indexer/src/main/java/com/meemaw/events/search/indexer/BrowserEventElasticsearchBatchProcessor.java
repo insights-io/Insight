@@ -1,7 +1,8 @@
 package com.meemaw.events.search.indexer;
 
-import com.meemaw.events.model.external.UserEvent;
+import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.model.internal.UserEvent;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,6 @@ public class BrowserEventElasticsearchBatchProcessor
   public DocWriteRequest<?> transform(UserEvent<AbstractBrowserEvent> value) {
     Map<String, Object> index = value.index();
     String id = UUID.randomUUID().toString();
-    return new IndexRequest(EventIndex.NAME).id(id).source(index);
+    return new IndexRequest(UserEventIndex.NAME).id(id).source(index);
   }
 }

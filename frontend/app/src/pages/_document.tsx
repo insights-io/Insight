@@ -1,5 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/no-danger */
+import fs from 'fs';
+
 import React from 'react';
 import Document, {
   Html,
@@ -22,6 +24,11 @@ type Props = RenderPageResult & {
   bootstrapScript: string;
 };
 
+const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
+const fileSourcedBootstrapScriptURI = bootstrapScriptURI.startsWith('file://')
+  ? bootstrapScriptURI.replace('file://', '')
+  : undefined;
+
 class InsightDocument extends Document<Props> {
   static async getInitialProps(ctx: DocumentContext): Promise<Props> {
     const page = await ctx.renderPage({
@@ -33,11 +40,19 @@ class InsightDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    const bootstrapScript = await ky(process.env.BOOTSTRAP_SCRIPT as string)
-      .text()
-      .then((snippet) => snippet.replace('<ORG>', '000000'));
 
-    return { ...page, stylesheets, bootstrapScript };
+    let bootstrapScript;
+    if (fileSourcedBootstrapScriptURI) {
+      bootstrapScript = String(fs.readFileSync(fileSourcedBootstrapScriptURI));
+    } else {
+      bootstrapScript = await ky(bootstrapScriptURI).text();
+    }
+
+    return {
+      ...page,
+      stylesheets,
+      bootstrapScript: bootstrapScript.replace('<ORG>', '000000'),
+    };
   }
 
   render() {

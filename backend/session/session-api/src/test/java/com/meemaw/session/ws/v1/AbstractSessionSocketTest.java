@@ -1,5 +1,6 @@
 package com.meemaw.session.ws.v1;
 
+import com.meemaw.session.sessions.ws.v1.SessionSocketImpl;
 import io.quarkus.test.common.http.TestHTTPResource;
 import java.io.IOException;
 import java.net.URI;
