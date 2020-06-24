@@ -93,7 +93,7 @@ jobs:
           node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 180000
           node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 180000
           node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 180000
-          docker-compose -f backend/local-test-services/docker-compose.yml exec db psql -U postgres -c "INSERT INTO auth.password (user_id, hash) VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', '\$2a\$13\$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS')"
+          docker-compose -f backend/local-test-services/docker-compose.yml exec db psql -U postgres -c "INSERT INTO auth.password (user_id, hash) VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', '\$2a\$13\$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS')" 2>&1 | tee $ARTIFACTS_PATH/user-insert.log
       - name: frontend/app | test:e2e
         run: |
           mkdir -p $ARTIFACTS_PATH/screenshots
