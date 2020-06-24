@@ -35,7 +35,7 @@ const SessionApi = {
         credentials: 'include',
       })
       .json<DataResponse<SessionDTO[]>>()
-      .then((dataResponse) => []);
+      .then((dataResponse) => dataResponse.data.map(mapSession));
   },
 };
 
