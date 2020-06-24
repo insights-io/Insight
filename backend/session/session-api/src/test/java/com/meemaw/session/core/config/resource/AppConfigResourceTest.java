@@ -5,6 +5,8 @@ import static io.restassured.RestAssured.given;
 
 import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
+import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
+import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestResource;
 import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
 import com.meemaw.test.testconainers.kafka.KafkaTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestExtension;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTestResource(KafkaTestResource.class)
 @QuarkusTestResource(AuthApiTestResource.class)
+@QuarkusTestResource(ElasticsearchTestResource.class)
 @QuarkusTest
 @Tag("integration")
 public class AppConfigResourceTest {
@@ -27,6 +30,7 @@ public class AppConfigResourceTest {
     String datasourceURL = PostgresTestExtension.getInstance().getDatasourceURL();
     String kafkaBootstrapServers = KafkaTestExtension.getInstance().getBootstrapServers();
     String ssoResourceBaseURL = AuthApiTestExtension.getInstance().getBaseURI();
+    int elasticsearchPort = ElasticsearchTestExtension.getInstance().getHttpHost().getPort();
 
     given()
         .when()
@@ -36,7 +40,11 @@ public class AppConfigResourceTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"gitCommitSha\":\"%s\",\"datasourceURL\":\"%s\",\"kafkaBootstrapServers\":\"%s\", \"ssoResourceBaseURL\":\"%s\"}",
-                    gitCommitSha, datasourceURL, kafkaBootstrapServers, ssoResourceBaseURL)));
+                    "{\"elasticsearchHttpHost\":[{\"port\":%d,\"schemeName\":\"http\",\"hostName\":\"localhost\"}], \"gitCommitSha\":\"%s\",\"datasourceURL\":\"%s\",\"kafkaBootstrapServers\":\"%s\", \"ssoResourceBaseURL\":\"%s\"}",
+                    elasticsearchPort,
+                    gitCommitSha,
+                    datasourceURL,
+                    kafkaBootstrapServers,
+                    ssoResourceBaseURL)));
   }
 }

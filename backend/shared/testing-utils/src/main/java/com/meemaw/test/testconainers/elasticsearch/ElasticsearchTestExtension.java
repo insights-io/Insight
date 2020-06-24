@@ -26,7 +26,7 @@ public class ElasticsearchTestExtension implements BeforeAllCallback {
 
   /**
    * @param elasticsearch test container
-   * @return properties
+   * @return elasticsearch configuration properties
    */
   public static Map<String, String> start(ElasticsearchTestContainer elasticsearch) {
     if (!ELASTICSEARCH.isRunning()) {
