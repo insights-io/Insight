@@ -83,8 +83,9 @@ jobs:
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
       - name: frontend | build
         run: |
+          yarn concurrently "yarn workspace @insight/browser-bootstrap build" "yarn workspace @insight/browser-tracking build"
           yarn workspace @insight/app build
-          yarn concurrently "yarn workspace @insight/try next build" "yarn workspace @insight/browser-bootstrap build" "yarn workspace @insight/browser-tracking build"
+          yarn workspace @insight/try next build
         env:
           BOOTSTRAP_SCRIPT: file:///home/runner/work/Insight/Insight/frontend/browser/bootstrap/dist/local.insight.js
       - name: frontend/app | start
