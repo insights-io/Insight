@@ -4,7 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.meemaw.auth.organization.model.Organization;
-import com.meemaw.events.model.external.UserEvent;
+import com.meemaw.events.model.internal.UserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageIdentity;

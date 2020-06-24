@@ -1,9 +1,9 @@
 package com.meemaw.beacon.service;
 
 import com.meemaw.beacon.model.Beacon;
-import com.meemaw.events.model.external.UserEvent;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.model.internal.BrowserUnloadEvent;
+import com.meemaw.events.model.internal.UserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.resource.v1.SessionResource;

@@ -1,9 +1,9 @@
 package com.meemaw.events.search.indexer;
 
-import com.meemaw.events.model.external.UserEvent;
 import com.meemaw.events.model.external.serialization.UserEventDeserializer;
 import com.meemaw.events.model.external.serialization.UserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.model.internal.UserEvent;
 import com.meemaw.events.stream.kafka.KafkaSourcedBatchProcessor;
 import com.meemaw.events.stream.kafka.RetryQueueStandaloneKafkaConsumer;
 import java.util.Properties;

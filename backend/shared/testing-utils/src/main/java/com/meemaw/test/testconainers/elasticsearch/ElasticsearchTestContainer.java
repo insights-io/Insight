@@ -27,7 +27,7 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
   }
 
   public static RestHighLevelClient restHighLevelClient(ElasticsearchTestContainer container) {
-    return new RestHighLevelClient(RestClient.builder(container.getHttpHost()));
+    return new RestHighLevelClient(RestClient.builder(container.getHttpHosts()));
   }
 
   public RestHighLevelClient restHighLevelClient() {
@@ -36,6 +36,10 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
   public HttpHost getHttpHost() {
     return HttpHost.create(getHttpHostAddress());
+  }
+
+  public HttpHost[] getHttpHosts() {
+    return new HttpHost[] {getHttpHost()};
   }
 
   public void cleanup() throws IOException {

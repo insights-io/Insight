@@ -6,7 +6,7 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
     implementation "org.apache.kafka:kafka-clients:${kafkaVersion}"
-    implementation project(":events:model")
+    implementation project(":events:events-model")
     implementation project(":shared:rest-elasticsearch")
 
     testImplementation project(':shared:testing-utils')

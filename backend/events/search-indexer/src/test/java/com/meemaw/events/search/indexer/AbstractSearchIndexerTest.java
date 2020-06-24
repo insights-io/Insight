@@ -1,9 +1,10 @@
 package com.meemaw.events.search.indexer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.meemaw.events.model.external.UserEvent;
+import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.external.serialization.UserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.model.internal.UserEvent;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
@@ -45,7 +46,7 @@ public class AbstractSearchIndexerTest {
   protected static final String DEAD_LETTER_TOPIC_NAME = "test-events-dql";
 
   protected static final SearchRequest SEARCH_REQUEST =
-      new SearchRequest().indices(EventIndex.NAME);
+      new SearchRequest().indices(UserEventIndex.NAME);
 
   protected SearchIndexer spawnIndexer(RestHighLevelClient client) {
     SearchIndexer searchIndexer =
@@ -104,7 +105,8 @@ public class AbstractSearchIndexerTest {
   }
 
   protected CreateIndexResponse createIndex(RestHighLevelClient client) throws IOException {
-    CreateIndexRequest createIndexRequest = new CreateIndexRequest(EventIndex.NAME);
+    CreateIndexRequest createIndexRequest =
+        new CreateIndexRequest(UserEventIndex.NAME).mapping(UserEventIndex.MAPPING);
     return client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
   }
 

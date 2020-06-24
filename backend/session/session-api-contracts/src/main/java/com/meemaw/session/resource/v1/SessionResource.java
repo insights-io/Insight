@@ -49,9 +49,4 @@ public interface SessionResource {
       @PathParam("sessionId") UUID sessionId,
       @PathParam("pageId") UUID pageId,
       @QueryParam("organizationId") String organizationId);
-
-  @GET
-  @Path("search")
-  @CookieAuth
-  CompletionStage<Response> searchSessions();
 }

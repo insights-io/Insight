@@ -3,7 +3,6 @@ package com.meemaw.session.resource.v1;
 import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.service.PageService;
-import com.meemaw.session.service.SessionSearchService;
 import com.meemaw.session.service.SessionService;
 import com.meemaw.session.service.SessionSocketService;
 import com.meemaw.shared.context.RequestUtils;
@@ -31,7 +30,6 @@ public class SessionResourceImpl implements SessionResource {
   @Inject SessionService sessionService;
   @Inject PageService pageService;
   @Inject SessionSocketService sessionSocketService;
-  @Inject SessionSearchService sessionSearchService;
 
   @Override
   public CompletionStage<Response> createPage(
@@ -76,11 +74,5 @@ public class SessionResourceImpl implements SessionResource {
         .getSessions(organizationId, SearchDTO.rhsColon(queryParams))
         .subscribeAsCompletionStage()
         .thenApply(DataResponse::ok);
-  }
-
-  @Override
-  public CompletionStage<Response> searchSessions() {
-    String organizationId = principal.user().getOrganizationId();
-    return sessionSearchService.search(organizationId).thenApply(DataResponse::ok);
   }
 }
