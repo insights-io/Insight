@@ -5,10 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public class BrowserClickEvent extends AbstractBrowserEvent {
 
   private static final int NODE_INDEX_START = 2;

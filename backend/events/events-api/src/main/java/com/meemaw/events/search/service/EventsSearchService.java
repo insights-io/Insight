@@ -18,6 +18,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -37,15 +39,17 @@ public class EventsSearchService {
     restClient = ElasticsearchUtils.restClient();
   }
 
+  /**
+   * Search for user events asynchronously.
+   *
+   * @param sessionId session id
+   * @param organizationId organization id
+   * @return list of user events matching the search criteria
+   */
+  @Traced
+  @Timed(name = "searchEvents", description = "A measure of how long it takes to search fot events")
   public CompletionStage<List<UserEvent<?>>> search(UUID sessionId, String organizationId) {
-    SearchRequest searchRequest = new SearchRequest(UserEventIndex.NAME);
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-    searchSourceBuilder.query(
-        boolQuery()
-            .filter(termQuery("organizationId", organizationId))
-            .filter(termQuery("sessionId", sessionId.toString())));
-    searchRequest.source(searchSourceBuilder);
-
+    SearchRequest searchRequest = prepareSearchRequest(sessionId, organizationId);
     CompletableFuture<List<UserEvent<?>>> completableFuture = new CompletableFuture<>();
     restClient.searchAsync(
         searchRequest,
@@ -73,5 +77,17 @@ public class EventsSearchService {
         });
 
     return completableFuture;
+  }
+
+  private SearchRequest prepareSearchRequest(UUID sessionId, String organizationId) {
+    SearchRequest searchRequest = new SearchRequest(UserEventIndex.NAME);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.query(
+        boolQuery()
+            .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
+            .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString())));
+
+    searchRequest.source(searchSourceBuilder);
+    return searchRequest;
   }
 }

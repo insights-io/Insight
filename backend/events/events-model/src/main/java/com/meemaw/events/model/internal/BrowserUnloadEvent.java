@@ -1,10 +1,7 @@
 package com.meemaw.events.model.internal;
 
 import java.util.Map;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public class BrowserUnloadEvent extends AbstractBrowserEvent {
 
   public String getLocation() {

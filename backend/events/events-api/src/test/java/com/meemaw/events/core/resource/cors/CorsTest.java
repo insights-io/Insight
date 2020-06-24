@@ -1,10 +1,11 @@
 package com.meemaw.events.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.core.IsNull.nullValue;
 
 import com.meemaw.events.search.resource.EventsResource;
 import io.quarkus.test.junit.QuarkusTest;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,32 +15,25 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class CorsTest {
 
   @ParameterizedTest
-  @ValueSource(strings = {"POST", "OPTIONS"})
-  public void returnsAppropriateHeaders_when_allowedOrigin(String method) {
-    given()
-        .header("Origin", "http://localhost:3000")
-        .header("Access-Control-Request-Method", method)
-        .when()
-        .options(EventsResource.PATH)
-        .then()
-        .statusCode(200)
-        .header("access-control-allow-origin", "http://localhost:3000")
-        .header("access-control-allow-credentials", "true")
-        .header("access-control-allow-methods", method);
-  }
+  @ValueSource(
+      strings = {"https://app.dev.snuderls.eu", "https://www.google.com", "http://localhost:3000"})
+  public void cors_on_create_page_should_be_enabled_for_all_origins(String origin) {
+    String path =
+        String.join("/", EventsResource.PATH, UUID.randomUUID().toString(), "events", "search");
 
-  @ParameterizedTest
-  @ValueSource(strings = {"POST", "OPTIONS"})
-  public void returnsAppropriateHeaders_when_notAllowedOrigin(String method) {
-    given()
-        .header("Origin", "http://random.com")
-        .header("Access-Control-Request-Method", method)
-        .when()
-        .options(EventsResource.PATH)
-        .then()
-        .statusCode(200)
-        .header("access-control-allow-origin", nullValue())
-        .header("access-control-allow-credentials", "true")
-        .header("access-control-allow-methods", method);
+    List.of("POST", "OPTIONS")
+        .forEach(
+            method -> {
+              given()
+                  .header("Origin", origin)
+                  .header("Access-Control-Request-Method", method)
+                  .when()
+                  .options(path)
+                  .then()
+                  .statusCode(200)
+                  .header("access-control-allow-origin", origin)
+                  .header("access-control-allow-credentials", "true")
+                  .header("access-control-allow-methods", method);
+            });
   }
 }
