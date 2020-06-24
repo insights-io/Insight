@@ -1,7 +1,7 @@
 import React from 'react';
 import useSWR from 'swr';
 import SessionApi from 'api/session';
-import { H5, H3 } from 'baseui/typography';
+import { H3 } from 'baseui/typography';
 
 type Props = {
   sessionId: string;
