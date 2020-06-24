@@ -31,9 +31,11 @@ const SessionApi = {
   },
   getSessions: () => {
     return ky
-      .get(`${sessionApiBaseURL}/v1/sessions`, { credentials: 'include' })
+      .get(`${sessionApiBaseURL}/v1/sessions?sort_by=-created_at`, {
+        credentials: 'include',
+      })
       .json<DataResponse<SessionDTO[]>>()
-      .then((dataResponse) => dataResponse.data.map(mapSession));
+      .then((dataResponse) => []);
   },
 };
 

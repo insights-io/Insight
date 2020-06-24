@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 public class RHSColorParserTest {
 
-  private static List<Field<?>> FIELDS = List.of(field("field1"), field("field2"));
+  private static final List<Field<?>> FIELDS = List.of(field("field1"), field("field2"));
   private static final Map<String, Field<?>> FIELD_MAPPINGS =
       FIELDS.stream().collect(Collectors.toMap(Field::getName, field -> field));
 
