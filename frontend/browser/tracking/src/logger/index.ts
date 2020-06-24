@@ -16,11 +16,13 @@ const getLogLevel = (): number => {
 
 export const logger = Object.keys(LOG_LEVELS).reduce((acc, logLevel) => {
   const typedLogLevel = logLevel as LogLevel;
+  const currentLogLevelValue = LOG_LEVELS[typedLogLevel];
+
   return {
     ...acc,
     [typedLogLevel]: (...data: never[]) => {
-      if (getLogLevel() >= LOG_LEVELS[typedLogLevel]) {
-        console[typedLogLevel](data);
+      if (currentLogLevelValue >= getLogLevel()) {
+        console[typedLogLevel](...data);
       }
     },
   };

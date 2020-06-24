@@ -72,11 +72,15 @@ public final class ElasticsearchUtils {
    * @return rest high level client
    */
   public static RestHighLevelClient restClient() {
+    return restClient(httpHosts());
+  }
+
+  public static RestHighLevelClient restClient(HttpHost[] hosts) {
     IOReactorConfig reactorConfig =
         IOReactorConfig.custom().setIoThreadCount(ElasticsearchUtils.getNumThreads()).build();
 
     RestClientBuilder builder =
-        RestClient.builder(httpHosts())
+        RestClient.builder(hosts)
             .setHttpClientConfigCallback(
                 httpAsyncClientBuilder ->
                     httpAsyncClientBuilder.setDefaultIOReactorConfig(reactorConfig));

@@ -8,9 +8,10 @@ import prettier from 'rollup-plugin-prettier';
 const BUILD_FOLDER = 'dist';
 const OUTPUT_FILE_NAME = 'insight.js';
 const CDN_BASE_URL = 'https://static.dev.snuderls.eu';
+const LOCAL_SERVE_BASE_URL = 'http://localhost:5000';
 
 const ENVIRONMENTS = {
-  local: `${CDN_BASE_URL}/s/local.${OUTPUT_FILE_NAME}`,
+  local: `${LOCAL_SERVE_BASE_URL}/local.${OUTPUT_FILE_NAME}`,
   development: `${CDN_BASE_URL}/s/development.${OUTPUT_FILE_NAME}`,
   staging: `${CDN_BASE_URL}/s/staging.${OUTPUT_FILE_NAME}`,
   production: `${CDN_BASE_URL}/s/${OUTPUT_FILE_NAME}`,
