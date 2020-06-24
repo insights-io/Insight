@@ -23,6 +23,11 @@ type Props = {
   bootstrapScript: string;
 };
 
+const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
+const isFileSourcedBootstrapScriptURI = bootstrapScriptURI.startsWith(
+  'file://'
+);
+
 class InsightDocument extends Document<Props> {
   static async getInitialProps(ctx: DocumentContext) {
     const page = ctx.renderPage({
@@ -34,12 +39,8 @@ class InsightDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
     let bootstrapScript;
-    if (
-      process.env.NODE_ENV !== 'production' &&
-      bootstrapScriptURI.startsWith('file://')
-    ) {
+    if (isFileSourcedBootstrapScriptURI) {
       bootstrapScript = String(
         fs.readFileSync(bootstrapScriptURI.replace('file://', ''))
       );
