@@ -15,6 +15,9 @@ on:
 env:
   CI: true
   ARTIFACTS_PATH: frontend/app/artifacts/
+  BOOTSTRAP_SCRIPT: http://localhost:5001/local.insight.js
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
   unit_tests:
@@ -52,10 +55,7 @@ jobs:
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
-          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
+          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
@@ -81,18 +81,24 @@ jobs:
         with:
           path: ${{ github.workspace }}/frontend/try/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-      - name: frontend/app | build
+      - name: frontend | build
         run: |
+          yarn workspace @insight/types build
+          yarn concurrently "yarn workspace @insight/browser-bootstrap build" "yarn workspace @insight/browser-tracking build"
+          yarn workspace @insight/browser-bootstrap serve 2>&1 | tee $ARTIFACTS_PATH/browser-bootstrap-serve.log &
+          node_modules/wait-on/bin/wait-on http-get://localhost:5001 --timeout 600000
           yarn workspace @insight/app build
           yarn workspace @insight/try next build
       - name: frontend/app | start
         run: |
           yarn workspace @insight/app start 2>&1 | tee $ARTIFACTS_PATH/app-serve.log &
           yarn workspace @insight/try start -p 3002 2>&1 | tee $ARTIFACTS_PATH/try-serve.log &
-          node_modules/wait-on/bin/wait-on http-get://localhost:3000 --timeout 180000
-          node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 180000
-          node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 180000
-          node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 180000
+          yarn workspace @insight/browser-tracking serve 2>&1 | tee $ARTIFACTS_PATH/browser-tracking-serve.log &
+          node_modules/wait-on/bin/wait-on http-get://localhost:3000 --timeout 600000
+          node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 600000
+          node_modules/wait-on/bin/wait-on http-get://localhost:5000 --timeout 600000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 600000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 600000
           docker-compose -f backend/local-test-services/docker-compose.yml exec -T db psql -U postgres -c "INSERT INTO auth.password (user_id, hash) VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', '\$2a\$13\$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS')"
       - name: frontend/app | test:e2e
         run: |

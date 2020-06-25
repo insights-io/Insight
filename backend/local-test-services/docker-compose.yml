@@ -148,3 +148,11 @@ services:
       - '5778:5778'
       - 16686:16686
       - 14268:14268
+
+  # Frontend
+  browser-tracking:
+    build:
+      context: ../../
+      dockerfile: frontend/browser/tracking/docker/Dockerfile
+    ports:
+      - '5000:5000'
