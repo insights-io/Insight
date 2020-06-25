@@ -53,7 +53,8 @@ jobs:
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
-          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
+          docker-compose -f backend/local-test-services/docker-compose.yml --parallel app try auth-api session-api beacon-api
+          docker-compose -f backend/local-test-services/docker-compose.yml up app 2>&1 | tee $ARTIFACTS_PATH/docker.log &
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
@@ -72,27 +73,8 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: frontend/app | install
         run: yarn install --frozen-lockfile
-      - name: Cache .next/cache app
-        uses: actions/cache@v2
-        with:
-          path: ${{ github.workspace }}/frontend/app/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-      - name: Cache .next/cache try
-        uses: actions/cache@v2
-        with:
-          path: ${{ github.workspace }}/frontend/try/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-      - name: frontend | build
-        run: |
-          yarn workspace @insight/types build
-          yarn concurrently "yarn workspace @insight/browser-bootstrap build" "yarn workspace @insight/browser-tracking build"
-          yarn workspace @insight/app build
-          yarn workspace @insight/try next build
       - name: frontend/app | start
         run: |
-          yarn workspace @insight/app start 2>&1 | tee $ARTIFACTS_PATH/app-serve.log &
-          yarn workspace @insight/try start -p 3002 2>&1 | tee $ARTIFACTS_PATH/try-serve.log &
-          yarn workspace @insight/browser-tracking serve 2>&1 | tee $ARTIFACTS_PATH/browser-tracking-serve.log &
           node_modules/wait-on/bin/wait-on http-get://localhost:3000 --timeout 180000
           node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 180000
           node_modules/wait-on/bin/wait-on http-get://localhost:5000 --timeout 180000

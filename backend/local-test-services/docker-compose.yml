@@ -148,3 +148,36 @@ services:
       - '5778:5778'
       - 16686:16686
       - 14268:14268
+
+  # Frontend
+  app:
+    build:
+      context: ../../
+      dockerfile: frontend/app/docker/Dockerfile
+      args:
+        auth_api_server_base_url: http://auth-api:8080
+        bootstrap_script: http://browser-tracking:5000/local.insight.js
+    ports:
+      - '3000:3000'
+    depends_on:
+      - auth-api
+      - session-api
+      - beacon-api
+      - try
+      - browser-tracking
+
+  try:
+    build:
+      context: ../../
+      dockerfile: frontend/try/docker/Dockerfile
+    ports:
+      - '3002:3000'
+    depends_on:
+      - auth-api
+
+  browser-tracking:
+    build:
+      context: ../../
+      dockerfile: frontend/browser/tracking/docker/Dockerfile
+    ports:
+      - '5000:5000'
