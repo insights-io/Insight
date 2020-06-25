@@ -45,7 +45,7 @@
     "lerna": "3.22.1",
     "prettier": "2.0.5",
     "pretty-quick": "2.0.1",
-    "serve": "^11.3.2",
+    "serve": "11.3.2",
     "sinon": "9.0.2",
     "testcafe": "1.8.6",
     "ts-jest": "26.1.1",
