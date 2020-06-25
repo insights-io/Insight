@@ -1,6 +1,7 @@
 package com.meemaw.events.index;
 
 import com.meemaw.events.model.Recorded;
+import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import java.util.Map;
 
 public final class UserEventIndex {
@@ -14,11 +15,24 @@ public final class UserEventIndex {
   public static final IndexField DEVICE_ID = new IndexField("deviceId", Map.of("type", "keyword"));
   public static final IndexField PAGE_ID = new IndexField("pageId", Map.of("type", "keyword"));
 
-  public static final IndexField TIMESTAMP =
-      new IndexField(Recorded.TIMESTAMP, Map.of("type", "date"));
+  public static final IndexField EVENT_TIMESTAMP =
+      new IndexField(Recorded.TIMESTAMP, Map.of("type", "long"));
+
+  public static final IndexField EVENT_TYPE =
+      new IndexField(AbstractBrowserEvent.EVENT_TYPE, Map.of("type", "keyword"));
+
   public static final IndexField EVENT =
       new IndexField(
-          "event", Map.of("properties", Map.of(TIMESTAMP.getName(), TIMESTAMP.getProperties())));
+          "event",
+          Map.of(
+              "type",
+              "nested",
+              "properties",
+              Map.of(
+                  EVENT_TIMESTAMP.getName(),
+                  EVENT_TIMESTAMP.getProperties(),
+                  EVENT_TYPE.getName(),
+                  EVENT_TYPE.getProperties())));
 
   public static final Map<String, ?> MAPPING =
       Map.of(

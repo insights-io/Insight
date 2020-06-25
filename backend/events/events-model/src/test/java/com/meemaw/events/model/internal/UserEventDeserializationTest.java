@@ -1,11 +1,9 @@
-package com.meemaw.shared.model;
+package com.meemaw.events.model.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import java.util.Collection;
 import java.util.UUID;

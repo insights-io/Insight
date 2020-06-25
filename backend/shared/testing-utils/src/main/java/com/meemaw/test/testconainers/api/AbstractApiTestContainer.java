@@ -10,6 +10,7 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 @Slf4j
@@ -25,7 +26,8 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     super(imageFromDockerfile(Objects.requireNonNull(api)));
     withExposedPorts(PORT)
         .waitingFor(Wait.forHttp("/health").forStatusCode(200))
-        .withNetwork(Network.SHARED);
+        .withNetwork(Network.SHARED)
+        .withLogConsumer(new Slf4jLogConsumer(log));
     this.api = api;
   }
 

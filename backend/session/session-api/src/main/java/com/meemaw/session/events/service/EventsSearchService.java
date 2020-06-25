@@ -1,12 +1,16 @@
 package com.meemaw.session.events.service;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.events.index.UserEventIndex;
+import com.meemaw.events.model.external.dto.AbstractBrowserEventDTO;
 import com.meemaw.events.model.external.dto.UserEventDTO;
+import com.meemaw.events.model.internal.BrowserEventTypeConstants;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
+import com.meemaw.shared.rest.query.SearchDTO;
 import io.quarkus.runtime.StartupEvent;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +22,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.search.join.ScoreMode;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.elasticsearch.action.ActionListener;
@@ -25,7 +30,12 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.NestedSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 
 @ApplicationScoped
 @Slf4j
@@ -44,13 +54,16 @@ public class EventsSearchService {
    *
    * @param sessionId session id
    * @param organizationId organization id
+   * @param searchDTO search bean
    * @return list of user events matching the search criteria
    */
   @Traced
   @Timed(name = "searchEvents", description = "A measure of how long it takes to search fot events")
-  public CompletionStage<List<UserEventDTO<?>>> search(UUID sessionId, String organizationId) {
-    SearchRequest searchRequest = prepareSearchRequest(sessionId, organizationId);
-    CompletableFuture<List<UserEventDTO<?>>> completableFuture = new CompletableFuture<>();
+  public CompletionStage<List<AbstractBrowserEventDTO>> search(
+      UUID sessionId, String organizationId, SearchDTO searchDTO) {
+    SearchRequest searchRequest = prepareSearchRequest(sessionId, organizationId, searchDTO);
+
+    CompletableFuture<List<AbstractBrowserEventDTO>> completableFuture = new CompletableFuture<>();
     restClient.searchAsync(
         searchRequest,
         RequestOptions.DEFAULT,
@@ -60,12 +73,10 @@ public class EventsSearchService {
             completableFuture.complete(
                 StreamSupport.stream(searchResponse.getHits().spliterator(), false)
                     .map(
-                        searchHit -> {
-                          UserEventDTO<?> userEventDTO =
-                              objectMapper.convertValue(
-                                  searchHit.getSourceAsMap(), UserEventDTO.class);
-                          return userEventDTO;
-                        })
+                        searchHit ->
+                            objectMapper
+                                .convertValue(searchHit.getSourceAsMap(), UserEventDTO.class)
+                                .getEvent())
                     .collect(Collectors.toList()));
           }
 
@@ -79,14 +90,36 @@ public class EventsSearchService {
     return completableFuture;
   }
 
-  private SearchRequest prepareSearchRequest(UUID sessionId, String organizationId) {
+  private SearchRequest prepareSearchRequest(
+      UUID sessionId, String organizationId, SearchDTO searchDTO) {
+
+    QueryBuilder nestedFilter =
+        nestedQuery(
+            "event",
+            boolQuery().filter(termQuery("event.e", BrowserEventTypeConstants.CLICK)),
+            ScoreMode.Avg);
+
+    QueryBuilder filter =
+        boolQuery()
+            .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
+            .filter(nestedFilter)
+            .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString()));
+
+    FieldSortBuilder sort =
+        SortBuilders.fieldSort(
+                String.join(
+                    ".", UserEventIndex.EVENT.getName(), UserEventIndex.EVENT_TIMESTAMP.getName()))
+            .order(SortOrder.DESC)
+            .setNestedSort(new NestedSortBuilder(UserEventIndex.EVENT.getName()));
+
     SearchSourceBuilder searchSourceBuilder =
         new SearchSourceBuilder()
             .size(100) // TODO: pass this
-            .query(
-                boolQuery()
-                    .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
-                    .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString())));
+            .query(filter)
+            .sort(sort);
+
+    // TODO: sorting doesn't actually work yet (it is always ascending) -- investigate why
+    log.info("SearchSourceBuilder: {}", searchSourceBuilder);
 
     return new SearchRequest(UserEventIndex.NAME).source(searchSourceBuilder);
   }

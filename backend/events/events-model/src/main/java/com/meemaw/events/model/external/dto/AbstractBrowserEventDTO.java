@@ -1,19 +1,24 @@
 package com.meemaw.events.model.external.dto;
 
+import static com.meemaw.events.model.internal.AbstractBrowserEvent.EVENT_TYPE;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meemaw.events.model.Recorded;
+import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.model.internal.BrowserEventTypeConstants;
-import lombok.ToString;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@ToString(callSuper = true)
 @JsonTypeInfo(
     use = Id.NAME,
-    property = com.meemaw.events.model.internal.AbstractBrowserEvent.EVENT_TYPE,
-    defaultImpl = com.meemaw.events.model.internal.AbstractBrowserEvent.class)
+    property = EVENT_TYPE,
+    defaultImpl = AbstractBrowserEvent.class,
+    visible = true)
 @JsonSubTypes({
   @Type(value = BrowserNavigateEventDTO.class, name = BrowserEventTypeConstants.NAVIGATE),
   @Type(value = BrowserUnloadEventDTO.class, name = BrowserEventTypeConstants.UNLOAD),
@@ -27,4 +32,10 @@ import lombok.ToString;
   @Type(value = BrowserLogEventDTO.class, name = BrowserEventTypeConstants.LOG),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class AbstractBrowserEventDTO extends Recorded {}
+@Data
+@EqualsAndHashCode(callSuper = true)
+public abstract class AbstractBrowserEventDTO extends Recorded {
+
+  @JsonProperty(EVENT_TYPE)
+  String eventType;
+}

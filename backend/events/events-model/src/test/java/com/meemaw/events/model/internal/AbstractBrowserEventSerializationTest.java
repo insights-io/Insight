@@ -1,17 +1,8 @@
-package com.meemaw.shared.model;
+package com.meemaw.events.model.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.BrowserClickEvent;
-import com.meemaw.events.model.internal.BrowserLoadEvent;
-import com.meemaw.events.model.internal.BrowserLogEvent;
-import com.meemaw.events.model.internal.BrowserMouseMoveEvent;
-import com.meemaw.events.model.internal.BrowserNavigateEvent;
-import com.meemaw.events.model.internal.BrowserPerformanceEvent;
-import com.meemaw.events.model.internal.BrowserResizeEvent;
-import com.meemaw.events.model.internal.BrowserUnloadEvent;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import java.util.Collections;
 import java.util.List;

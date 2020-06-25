@@ -10,10 +10,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meemaw.events.model.Recorded;
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
-@ToString(callSuper = true)
 @JsonTypeInfo(
     use = Id.NAME,
     property = AbstractBrowserEvent.EVENT_TYPE,
@@ -31,6 +31,8 @@ import lombok.ToString;
   @Type(value = BrowserLogEvent.class, name = BrowserEventTypeConstants.LOG),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@EqualsAndHashCode(callSuper = true)
 public abstract class AbstractBrowserEvent extends Recorded {
 
   public static final String EVENT_TYPE = "e";

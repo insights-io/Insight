@@ -1,10 +1,9 @@
-package com.meemaw.shared.model;
+package com.meemaw.events.model.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import org.junit.jupiter.api.Test;
 
