@@ -2,8 +2,15 @@
 
 ## Testing with locally build tracking script
 
+To test app with locally, locally built tracking script has to be served somewhere. There is a pre-prepared command that can do this for you:
+
 ```sh
-BOOTSTRAP_SCRIPT="file://$(pwd)/../browser/bootstrap/dist/local.insight.js" yarn dev
+yarn workspace @insight/browser-tracking serve
 ```
 
-This will inject the locally built bootstrap script which will then load the locally built tracking script. For this to work, tracking script has to be served on `http://localhost:5000`. You can achieve this by running `yarn serve` in `frontend/browser/tracking` directory.
+If you also want to use the locally build bootstrap script, you can do the following:
+
+```sh
+yarn workspace @insight/browser-bootstrap serve
+BOOTSTRAP_SCRIPT=http://localhost:5001/local.insight.js yarn dev
+```
