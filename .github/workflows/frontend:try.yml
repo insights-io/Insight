@@ -15,6 +15,8 @@ on:
 env:
   CI: true
   ARTIFACTS_PATH: frontend/try/artifacts/
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
   unit_tests:
@@ -53,9 +55,6 @@ jobs:
         run: |
           mkdir -p $ARTIFACTS_PATH
           docker-compose -f backend/local-test-services/docker-compose.yml up auth-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
@@ -83,8 +82,8 @@ jobs:
       - name: frontend/try | start
         run: |
           yarn workspace @insight/try start -p 3002 2>&1 | tee $ARTIFACTS_PATH/serve.log &
-          node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 60000
-          node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 60000
+          node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 600000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 600000
       - name: frontend/try | test:e2e
         run: |
           mkdir -p $ARTIFACTS_PATH/screenshots
