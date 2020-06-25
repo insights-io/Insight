@@ -19,6 +19,7 @@ type UserEventDTO = {
   sessionId: string;
   event: {
     t: number;
+    e: string;
   };
 };
 

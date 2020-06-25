@@ -80,14 +80,14 @@ public class EventsSearchService {
   }
 
   private SearchRequest prepareSearchRequest(UUID sessionId, String organizationId) {
-    SearchRequest searchRequest = new SearchRequest(UserEventIndex.NAME);
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-    searchSourceBuilder.query(
-        boolQuery()
-            .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
-            .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString())));
+    SearchSourceBuilder searchSourceBuilder =
+        new SearchSourceBuilder()
+            .size(100) // TODO: pass this
+            .query(
+                boolQuery()
+                    .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
+                    .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString())));
 
-    searchRequest.source(searchSourceBuilder);
-    return searchRequest;
+    return new SearchRequest(UserEventIndex.NAME).source(searchSourceBuilder);
   }
 }

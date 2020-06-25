@@ -24,6 +24,7 @@ import lombok.ToString;
   @Type(value = BrowserMouseDownEventDTO.class, name = BrowserEventTypeConstants.MOUSEDOWN),
   @Type(value = BrowserMouseUpEventDTO.class, name = BrowserEventTypeConstants.MOUSEUP),
   @Type(value = BrowserLoadEventDTO.class, name = BrowserEventTypeConstants.LOAD),
+  @Type(value = BrowserLogEventDTO.class, name = BrowserEventTypeConstants.LOG),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractBrowserEventDTO extends Recorded {}

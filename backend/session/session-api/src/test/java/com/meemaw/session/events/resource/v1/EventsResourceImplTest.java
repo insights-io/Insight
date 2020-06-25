@@ -52,7 +52,7 @@ public class EventsResourceImplTest {
             new CreateIndexRequest(UserEventIndex.NAME).mapping(UserEventIndex.MAPPING),
             RequestOptions.DEFAULT);
 
-    List.of("unloadEvent.json", "performanceEvent.json", "clickEvent.json")
+    List.of("unloadEvent.json", "performanceEvent.json", "clickEvent.json", "logEvent.json")
         .forEach(
             eventFileName -> {
               String path = String.format("/events/%s", eventFileName);
@@ -114,6 +114,6 @@ public class EventsResourceImplTest {
                     .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
                     .then()
                     .statusCode(200)
-                    .body("data.size()", is(3)));
+                    .body("data.size()", is(4)));
   }
 }

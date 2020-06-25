@@ -1,12 +1,13 @@
 /* eslint-disable no-underscore-dangle */
+
 import Context from 'context';
 import EventQueue from 'queue';
 import {
   EventType,
   encodeEventTarget,
-  BrowserEventArguments,
+  // BrowserEventArguments,
   dedupMouseEventSimple,
-  mouseEventSimpleArgs,
+  //  mouseEventSimpleArgs,
   mouseEventWithTargetArgs,
 } from 'event';
 import { logger } from 'logger';
@@ -14,7 +15,9 @@ import Backend from 'backend';
 import { CreatePageResponse } from '@insight/types';
 import Identity from 'identity';
 import { MILLIS_IN_SECOND } from 'time';
-import type { InsightWindow } from 'types';
+import type { InsightWindow, Enqueue } from 'types';
+
+import { proxyConsoleLog } from './console';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -34,6 +37,7 @@ declare global {
   );
   const UPLOAD_INTERVAL_MILLIS = MILLIS_IN_SECOND * 10;
 
+  /*
   const observer = new PerformanceObserver((performanceEntryList) => {
     performanceEntryList.getEntries().forEach((entry) => {
       eventQueue.enqueue(EventType.PERFORMANCE, [
@@ -47,23 +51,22 @@ declare global {
 
   const entryTypes = ['navigation', 'resource', 'measure', 'mark'];
   observer.observe({ entryTypes });
+  */
 
-  const enqueue = (
-    eventType: EventType,
-    args: BrowserEventArguments,
-    eventName: string
-  ) => {
+  const enqueue: Enqueue = (eventType, args, eventName) => {
     eventQueue.enqueue(eventType, args);
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && eventType !== EventType.LOG) {
       logger.debug(eventName, args);
     }
   };
 
+  /*
   const onResize = () => {
     const { innerWidth, innerHeight } = window;
     const args = [innerWidth, innerHeight];
     enqueue(EventType.RESIZE, args, '[resize]');
   };
+  */
 
   const onNavigationChange = () => {
     const { href: currentLocation } = location;
@@ -74,16 +77,20 @@ declare global {
     }
   };
 
+  /*
   const onMouseDown = (event: MouseEvent) => {
     enqueue(EventType.MOUSEDOWN, mouseEventSimpleArgs(event), '[mousedown]');
   };
+  */
 
+  /*
   const onMouseUp = (event: MouseEvent) => {
     enqueue(EventType.MOUSEUP, mouseEventSimpleArgs(event), '[mouseup]');
   };
+  */
 
   const {
-    onMouseEvent: onMouseMove,
+    //   onMouseEvent: onMouseMove,
     clearMouseEvent: onMouseMoveClear,
   } = dedupMouseEventSimple(
     (event: MouseEvent, clientX: number, clientY: number) => {
@@ -101,13 +108,14 @@ declare global {
     enqueue(EventType.LOAD, [lastLocation], '[resize]');
   };
 
+  proxyConsoleLog(enqueue);
   window.addEventListener('popstate', onNavigationChange);
-  window.addEventListener('resize', onResize);
+  // window.addEventListener('resize', onResize);
   window.addEventListener('load', onLoad);
   window.addEventListener('click', onClick);
-  window.addEventListener('mousemove', onMouseMove);
-  window.addEventListener('mousedown', onMouseDown);
-  window.addEventListener('mouseup', onMouseUp);
+  // window.addEventListener('mousemove', onMouseMove);
+  // window.addEventListener('mousedown', onMouseDown);
+  // window.addEventListener('mouseup', onMouseUp);
 
   const onUnload = () => {
     const args = [lastLocation];

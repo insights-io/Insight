@@ -61,6 +61,7 @@ services:
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
       - AUTH_SERVICE_BASE_URL=http://auth-api:8080
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
 
   session-api-migrations:
     build:

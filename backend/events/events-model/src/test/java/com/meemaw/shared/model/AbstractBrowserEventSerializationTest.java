@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.model.internal.BrowserClickEvent;
 import com.meemaw.events.model.internal.BrowserLoadEvent;
+import com.meemaw.events.model.internal.BrowserLogEvent;
 import com.meemaw.events.model.internal.BrowserMouseMoveEvent;
 import com.meemaw.events.model.internal.BrowserNavigateEvent;
 import com.meemaw.events.model.internal.BrowserPerformanceEvent;
@@ -157,5 +158,25 @@ public class AbstractBrowserEventSerializationTest {
             ":class",
             "__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw"),
         browserMouseMoveEvent.getNodeWithAttributes());
+  }
+
+  @Test
+  public void logEventDeserialization() throws JsonProcessingException {
+    String payload =
+        "{\n"
+            + "  \"t\": 10812,\n"
+            + "  \"e\": 9,\n"
+            + "  \"a\": [\n"
+            + "    \"error\",\n"
+            + "    \"HAHA\"\n"
+            + "  ]\n"
+            + "}\n";
+    AbstractBrowserEvent deserialized =
+        JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
+    assertEquals(BrowserLogEvent.class, deserialized.getClass());
+
+    BrowserLogEvent browserLogEvent = (BrowserLogEvent) deserialized;
+    assertEquals("error", browserLogEvent.getLogLevel());
+    assertEquals(List.of("HAHA"), browserLogEvent.getArguments());
   }
 }

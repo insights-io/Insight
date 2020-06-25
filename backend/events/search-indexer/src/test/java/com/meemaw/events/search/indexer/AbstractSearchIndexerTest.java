@@ -41,6 +41,9 @@ public class AbstractSearchIndexerTest {
 
   protected final List<SearchIndexer> searchIndexers = new LinkedList<>();
 
+  protected static final int LARGE_BATCH_SIZE = 384;
+  protected static final int SMALL_BATCH_SIZE = 1;
+
   protected static final String SOURCE_TOPIC_NAME = "test-events";
   protected static final String RETRY_TOPIC_NAME = "test-events-0";
   protected static final String DEAD_LETTER_TOPIC_NAME = "test-events-dql";

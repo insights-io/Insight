@@ -57,7 +57,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
             () -> {
               SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);
               log.info("Total hits: {}", response.getHits().getTotalHits().value);
-              return response.getHits().getTotalHits().value == 383;
+              return response.getHits().getTotalHits().value == LARGE_BATCH_SIZE;
             });
 
     writeSmallBatch(producer);
@@ -69,7 +69,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
             () -> {
               SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);
               log.info("Total hits: {}", response.getHits().getTotalHits().value);
-              return response.getHits().getTotalHits().value == 384;
+              return response.getHits().getTotalHits().value == LARGE_BATCH_SIZE + SMALL_BATCH_SIZE;
             });
 
     // spawn a few more indexers
@@ -89,7 +89,8 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
         .until(
             () -> {
               SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);
-              return response.getHits().getTotalHits().value == 384 + numExtraBatches;
+              return response.getHits().getTotalHits().value
+                  == LARGE_BATCH_SIZE + SMALL_BATCH_SIZE + (numExtraBatches * SMALL_BATCH_SIZE);
             });
 
     producer.close();
