@@ -55,7 +55,7 @@ jobs:
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
-          docker-compose -f backend/local-test-services/docker-compose.yml --parallel app try auth-api session-api beacon-api
+          docker-compose -f backend/local-test-services/docker-compose.yml build --parallel app try auth-api session-api beacon-api
           docker-compose -f backend/local-test-services/docker-compose.yml up app 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
         with:
