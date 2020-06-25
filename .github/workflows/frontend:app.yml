@@ -16,6 +16,8 @@ env:
   CI: true
   ARTIFACTS_PATH: frontend/app/artifacts/
   BOOTSTRAP_SCRIPT: file:///home/runner/work/Insight/Insight/frontend/browser/bootstrap/dist/local.insight.js
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
   unit_tests:
@@ -55,9 +57,6 @@ jobs:
           mkdir -p $ARTIFACTS_PATH
           docker-compose -f backend/local-test-services/docker-compose.yml --parallel app try auth-api session-api beacon-api
           docker-compose -f backend/local-test-services/docker-compose.yml up app 2>&1 | tee $ARTIFACTS_PATH/docker.log &
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
