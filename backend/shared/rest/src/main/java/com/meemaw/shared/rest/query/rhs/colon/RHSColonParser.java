@@ -50,7 +50,7 @@ public final class RHSColonParser {
       }
     }
 
-    FilterExpression rootFilterExpression =
+    BooleanFilterExpression<?> rootFilterExpression =
         new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
 
     return new SearchDTO(rootFilterExpression, new SortQuery(sorts), limit);

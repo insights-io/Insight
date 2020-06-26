@@ -1,16 +1,15 @@
 package com.meemaw.session.events.service;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.external.dto.AbstractBrowserEventDTO;
 import com.meemaw.events.model.external.dto.UserEventDTO;
-import com.meemaw.events.model.internal.BrowserEventTypeConstants;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
+import com.meemaw.shared.rest.query.elasticsearch.ElasticSearchDTO;
 import io.quarkus.runtime.StartupEvent;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +21,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.search.join.ScoreMode;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.elasticsearch.action.ActionListener;
@@ -30,12 +28,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.NestedSortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 
 @ApplicationScoped
 @Slf4j
@@ -92,31 +85,23 @@ public class EventsSearchService {
 
   private SearchRequest prepareSearchRequest(
       UUID sessionId, String organizationId, SearchDTO searchDTO) {
+    SearchSourceBuilder searchSourceBuilder =
+        new SearchSourceBuilder()
+            .query(
+                boolQuery()
+                    .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
+                    .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString())));
 
-    QueryBuilder nestedFilter =
-        nestedQuery(
-            "event",
-            boolQuery().filter(termQuery("event.e", BrowserEventTypeConstants.CLICK)),
-            ScoreMode.Avg);
+    ElasticSearchDTO.of(searchDTO).apply(searchSourceBuilder);
 
-    QueryBuilder filter =
-        boolQuery()
-            .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
-            .filter(nestedFilter)
-            .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString()));
-
+    /*
     FieldSortBuilder sort =
         SortBuilders.fieldSort(
                 String.join(
                     ".", UserEventIndex.EVENT.getName(), UserEventIndex.EVENT_TIMESTAMP.getName()))
             .order(SortOrder.DESC)
             .setNestedSort(new NestedSortBuilder(UserEventIndex.EVENT.getName()));
-
-    SearchSourceBuilder searchSourceBuilder =
-        new SearchSourceBuilder()
-            .size(100) // TODO: pass this
-            .query(filter)
-            .sort(sort);
+     */
 
     // TODO: sorting doesn't actually work yet (it is always ascending) -- investigate why
     log.info("SearchSourceBuilder: {}", searchSourceBuilder);

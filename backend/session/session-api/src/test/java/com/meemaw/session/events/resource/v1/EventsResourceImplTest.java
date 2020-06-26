@@ -1,5 +1,6 @@
 package com.meemaw.session.events.resource.v1;
 
+import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
 import static com.meemaw.test.setup.SsoTestSetupUtils.login;
 import static io.restassured.RestAssured.given;
@@ -11,7 +12,6 @@ import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.model.internal.UserEvent;
 import com.meemaw.session.resource.v1.SessionResource;
-import com.meemaw.test.matchers.SameJSON;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
@@ -119,7 +119,7 @@ public class EventsResourceImplTest {
   @Test
   public void events_search_should_return_all_events() {
     await()
-        .atMost(10, TimeUnit.SECONDS)
+        .atMost(5, TimeUnit.SECONDS)
         .untilAsserted(
             () ->
                 given()
@@ -129,14 +129,14 @@ public class EventsResourceImplTest {
                     .then()
                     .statusCode(200)
                     .body(
-                        SameJSON.sameJson(
+                        sameJson(
                             "{\"data\":[{\"name\":\"http://localhost:8081/v1/page\",\"entryType\":\"resource\",\"startTime\":3963.6150000151247,\"duration\":29.37000000383705,\"t\":34,\"e\":\"3\"},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":\"1\"},{\"clientX\":1167,\"clientY\":732,\"node\":{\":class\":\"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\",\":type\":\"submit\",\":data-baseweb\":\"button\",\"type\":\"<BUTTON\"},\"t\":1306,\"e\":\"4\"},{\"level\":\"error\",\"arguments\":[\"HAHA\"],\"t\":10812,\"e\":\"9\"}]}")));
   }
 
   @Test
   public void events_search_should_return_matching_events() {
     await()
-        .atMost(10, TimeUnit.SECONDS)
+        .atMost(5, TimeUnit.SECONDS)
         .untilAsserted(
             () ->
                 given()
@@ -146,7 +146,7 @@ public class EventsResourceImplTest {
                     .then()
                     .statusCode(200)
                     .body(
-                        SameJSON.sameJson(
+                        sameJson(
                             "{\"data\":[{\"clientX\":1167,\"clientY\":732,\"node\":{\":class\":\"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\",\":type\":\"submit\",\":data-baseweb\":\"button\",\"type\":\"<BUTTON\"},\"t\":1306,\"e\":\"4\"}]}")));
   }
 }
