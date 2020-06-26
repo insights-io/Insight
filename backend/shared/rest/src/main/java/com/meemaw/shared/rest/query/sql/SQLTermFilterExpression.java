@@ -14,7 +14,7 @@ public class SQLTermFilterExpression<T> implements SQLFilterExpression {
   TermFilterExpression<T> expression;
 
   public Condition condition(Field<T> field) {
-    return expression.getOperation().sql(field, expression.getTarget());
+    return SQLTermOperation.of(expression.getOperation()).apply(field, expression.getTarget());
   }
 
   @SuppressWarnings("unchecked")

@@ -32,9 +32,8 @@ public class SQLBooleanFilterExpression implements SQLFilterExpression {
 
         if (fields.containsKey(fieldName)) {
           subQuery =
-              expression
-                  .getOperator()
-                  .applyCondition(subQuery, termFilterExpression.condition(fields.get(fieldName)));
+              SQLBooleanOperation.of(expression.getOperation())
+                  .apply(subQuery, termFilterExpression.condition(fields.get(fieldName)));
         }
       } else {
         throw new IllegalStateException("Unsupported filter expression");

@@ -142,7 +142,7 @@ public class EventsResourceImplTest {
                 given()
                     .when()
                     .cookie(SsoSession.COOKIE_NAME, login())
-                    .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=4")
+                    .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:4")
                     .then()
                     .statusCode(200)
                     .body(

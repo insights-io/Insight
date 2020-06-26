@@ -23,7 +23,7 @@ public class SQLSearchDTO {
     SelectSeekStepN<?> select =
         SQLFilterExpression.of(searchDTO.getFilter())
             .sql(query, fields)
-            .orderBy(searchDTO.getSort().sql());
+            .orderBy(SQLSortQuery.of(searchDTO.getSort()).apply());
 
     if (searchDTO.getLimit() != 0) {
       return select.limit(searchDTO.getLimit());
