@@ -2,7 +2,7 @@
 backend:
   type: es
   es:
-    time_key: '@time'
+    time_key: '@ts'
 
 image:
   fluent_bit:
