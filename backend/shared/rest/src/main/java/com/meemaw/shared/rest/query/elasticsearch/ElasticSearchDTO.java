@@ -40,6 +40,16 @@ public class ElasticSearchDTO {
   /**
    * Apply search bean to a search source builder.
    *
+   * @param boolQueryBuilder existing bool query builder
+   * @return search source builder with applied filters
+   */
+  public SearchSourceBuilder apply(BoolQueryBuilder boolQueryBuilder) {
+    return apply(new SearchSourceBuilder().query(boolQueryBuilder));
+  }
+
+  /**
+   * Apply search bean to a search source builder.
+   *
    * @return search source builder with applied filters
    */
   public SearchSourceBuilder apply() {

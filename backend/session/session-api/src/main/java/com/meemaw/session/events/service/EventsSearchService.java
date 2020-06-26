@@ -28,6 +28,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 @ApplicationScoped
@@ -85,14 +86,13 @@ public class EventsSearchService {
 
   private SearchRequest prepareSearchRequest(
       UUID sessionId, String organizationId, SearchDTO searchDTO) {
-    SearchSourceBuilder searchSourceBuilder =
-        new SearchSourceBuilder()
-            .query(
-                boolQuery()
-                    .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
-                    .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString())));
+    BoolQueryBuilder boolQueryBuilder =
+        boolQuery()
+            .filter(termQuery(UserEventIndex.ORGANIZATION_ID.getName(), organizationId))
+            .filter(termQuery(UserEventIndex.SESSION_ID.getName(), sessionId.toString()));
 
-    ElasticSearchDTO.of(searchDTO).apply(searchSourceBuilder);
+    SearchSourceBuilder searchSourceBuilder =
+        ElasticSearchDTO.of(searchDTO).apply(boolQueryBuilder);
 
     // TODO: sorting doesn't actually work yet (it is always ascending) -- investigate why
     /*
