@@ -4,6 +4,14 @@ backend:
   es:
     time_key: '@time'
 
+image:
+  fluent_bit:
+    tag: 1.4.6
+
+input:
+  tail:
+    memBufLimit: 200MB
+
 parsers:
   enabled: true
   regex:
