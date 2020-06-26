@@ -94,6 +94,7 @@ public class EventsSearchService {
 
     ElasticSearchDTO.of(searchDTO).apply(searchSourceBuilder);
 
+    // TODO: sorting doesn't actually work yet (it is always ascending) -- investigate why
     /*
     FieldSortBuilder sort =
         SortBuilders.fieldSort(
@@ -102,9 +103,6 @@ public class EventsSearchService {
             .order(SortOrder.DESC)
             .setNestedSort(new NestedSortBuilder(UserEventIndex.EVENT.getName()));
      */
-
-    // TODO: sorting doesn't actually work yet (it is always ascending) -- investigate why
-    log.info("SearchSourceBuilder: {}", searchSourceBuilder);
 
     return new SearchRequest(UserEventIndex.NAME).source(searchSourceBuilder);
   }

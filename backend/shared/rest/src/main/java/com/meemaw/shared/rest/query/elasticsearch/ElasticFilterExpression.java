@@ -14,6 +14,12 @@ public interface ElasticFilterExpression extends FilterExpression {
    */
   QueryBuilder apply();
 
+  /**
+   * Create ElasticFilterExpression instance.
+   *
+   * @param filterExpression AST filter expression
+   * @return elastic filter expression
+   */
   @SuppressWarnings({"unchecked", "rawtypes"})
   static ElasticFilterExpression of(FilterExpression filterExpression) {
     if (filterExpression instanceof BooleanFilterExpression) {

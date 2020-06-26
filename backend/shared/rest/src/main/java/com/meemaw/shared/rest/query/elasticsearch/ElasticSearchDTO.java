@@ -10,6 +10,12 @@ public class ElasticSearchDTO {
 
   SearchDTO searchDTO;
 
+  /**
+   * Apply search bean to a search source builder. Mutates the original searchSourceBuilder.
+   *
+   * @param searchSourceBuilder existing search source builder
+   * @return search source builder with applied filters
+   */
   public SearchSourceBuilder apply(SearchSourceBuilder searchSourceBuilder) {
     ElasticBooleanFilterExpression filterExpression =
         (ElasticBooleanFilterExpression) ElasticFilterExpression.of(searchDTO.getFilter());
@@ -31,10 +37,21 @@ public class ElasticSearchDTO {
     return searchSourceBuilder;
   }
 
+  /**
+   * Apply search bean to a search source builder.
+   *
+   * @return search source builder with applied filters
+   */
   public SearchSourceBuilder apply() {
     return apply(new SearchSourceBuilder());
   }
 
+  /**
+   * Create an instance of ElasticSearchDTO.
+   *
+   * @param searchDTO search bean
+   * @return elastic search bean
+   */
   public static ElasticSearchDTO of(SearchDTO searchDTO) {
     return new ElasticSearchDTO(searchDTO);
   }
