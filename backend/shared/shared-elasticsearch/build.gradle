@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
+    api project(":shared:rest")
+
+    testImplementation project(":shared:testing-utils")
+}
+
+test {
+    useJUnitPlatform()
+}

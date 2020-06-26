@@ -5,9 +5,7 @@ plugins {
 
 dependencies {
     api 'io.quarkus:quarkus-hibernate-validator'
-    api 'org.jooq:jooq:3.13.2'
-    implementation 'org.apache.commons:commons-lang3:3.10'
-    implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
+    api 'org.apache.commons:commons-lang3:3.10'
 
     testImplementation project(":shared:testing-utils")
 }

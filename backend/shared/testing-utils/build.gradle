@@ -30,5 +30,5 @@ dependencies {
     }
     implementation project(':shared:rest-api')
     implementation project(':auth:auth-api-contracts')
-
+    implementation project(':shared:shared-sql')
 }

@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    testImplementation 'io.quarkus:quarkus-junit5'
+
+    api "org.jooq:jooq:${jooqVersion}"
+    api project(":shared:rest")
+}
+
+test {
+    useJUnitPlatform()
+}
