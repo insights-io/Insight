@@ -9,6 +9,8 @@ COPY auth/auth-model/ /backend/auth/auth-model/
 COPY auth/auth-cookie/ /backend/auth/auth-cookie/
 COPY shared/rest-api/ /backend/shared/rest-api/
 COPY shared/rest/ /backend/shared/rest/
+COPY shared/shared-sql/ /backend/shared/shared-sql/
+
 
 RUN gradle auth:auth-api:quarkusBuild --uber-jar
 
