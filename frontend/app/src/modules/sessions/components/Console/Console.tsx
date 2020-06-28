@@ -5,21 +5,15 @@ import Flex from 'shared/components/Flex';
 import { Block } from 'baseui/block';
 import { Input } from 'baseui/input';
 import { StyleObject } from 'styletron-react';
-
-export type LogEvent = {
-  t: number;
-  e: '9';
-  level: 'log' | 'info' | 'debug' | 'error' | 'warn';
-  arguments: string[];
-};
+import { BrowserLogEventDTO, LogLevel } from '@insight/types';
 
 type Props = {
-  events: LogEvent[];
+  events: BrowserLogEventDTO[];
   style?: StyleObject;
 };
 
 const LEVEL_COLOR_MAPPINGS: Record<
-  LogEvent['level'],
+  LogLevel,
   { backgroundColor: string; color: string }
 > = {
   warn: { backgroundColor: '#e65100', color: '#ffc107' },
@@ -29,10 +23,7 @@ const LEVEL_COLOR_MAPPINGS: Record<
   info: { backgroundColor: 'transparent', color: '#000' },
 };
 
-const LEVEL_ICON_MAPPINGS: Record<
-  LogEvent['level'],
-  React.FC<IconProps> | null
-> = {
+const LEVEL_ICON_MAPPINGS: Record<LogLevel, React.FC<IconProps> | null> = {
   error: DeleteAlt,
   warn: Alert,
   debug: null,

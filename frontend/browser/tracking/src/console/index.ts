@@ -1,16 +1,15 @@
+/* eslint-disable no-console */
 import { Enqueue } from 'types';
 import { EventType } from 'event';
+import { LogLevel } from '@insight/types';
 
-/* eslint-disable no-console */
-export const LOG_LEVELS = {
+export const LOG_LEVELS: Record<LogLevel, number> = {
   debug: 10,
   log: 20,
   info: 20,
   warn: 30,
   error: 40,
-} as const;
-
-export type LogLevel = keyof typeof LOG_LEVELS;
+};
 
 export const proxyConsoleLog = (enqueue: Enqueue) => {
   Object.keys(LOG_LEVELS).forEach((logLevel) => {

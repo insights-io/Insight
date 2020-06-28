@@ -1,4 +1,6 @@
-import { LOG_LEVELS, LogLevel } from '../console';
+import { LogLevel } from '@insight/types';
+
+import { LOG_LEVELS } from '../console';
 
 const getLogLevel = (): number => {
   // eslint-disable-next-line no-underscore-dangle

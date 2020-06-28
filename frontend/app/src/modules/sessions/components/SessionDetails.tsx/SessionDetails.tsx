@@ -3,8 +3,9 @@ import useSWR from 'swr';
 import SessionApi from 'api/session';
 import { H3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
+import { BrowserLogEventDTO } from '@insight/types';
 
-import Console, { LogEvent } from '../Console';
+import Console from '../Console';
 
 type Props = {
   sessionId: string;
@@ -17,8 +18,8 @@ const SessionDetails = ({ sessionId }: Props) => {
 
   const logEvents = useMemo(() => {
     return data
-      .filter((event) => event.event.e === '9')
-      .map((event) => event.event) as LogEvent[];
+      .filter((event) => event.e === '9')
+      .map((event) => event) as BrowserLogEventDTO[];
   }, [data]);
 
   return (
