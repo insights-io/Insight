@@ -10,7 +10,8 @@ dependencies {
     implementation project(':auth:auth-sidecar')
     implementation project(':session:session-model')
     implementation project(':session:session-api-contracts')
-    implementation project(':shared:rest-elasticsearch')
+    implementation project(':shared:shared-elasticsearch')
+    implementation project(":shared:shared-sql")
 
     testImplementation project(':shared:testing-utils')
 }

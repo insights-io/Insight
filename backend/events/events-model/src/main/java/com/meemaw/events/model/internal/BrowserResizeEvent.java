@@ -16,12 +16,17 @@ public class BrowserResizeEvent extends AbstractBrowserEvent {
   public Map<String, Object> index() {
     return Map.of(
         EVENT_TYPE,
-        BrowserEventTypeConstants.RESIZE,
+        getEventType(),
         TIMESTAMP,
         timestamp,
         "innerWidth",
         getInnerWidth(),
         "innerHeight",
         getInnerHeight());
+  }
+
+  @Override
+  public String getEventType() {
+    return BrowserEventTypeConstants.RESIZE;
   }
 }

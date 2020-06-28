@@ -1,13 +1,13 @@
 package com.meemaw.shared.rest.query.rhs.colon;
 
 import com.meemaw.shared.rest.query.BooleanFilterExpression;
+import com.meemaw.shared.rest.query.BooleanOperation;
 import com.meemaw.shared.rest.query.FilterExpression;
 import com.meemaw.shared.rest.query.SearchDTO;
+import com.meemaw.shared.rest.query.SortDirection;
+import com.meemaw.shared.rest.query.SortQuery;
 import com.meemaw.shared.rest.query.TermFilterExpression;
-import com.meemaw.shared.rest.query.sql.BooleanOperation;
-import com.meemaw.shared.rest.query.sql.SortDirection;
-import com.meemaw.shared.rest.query.sql.SortQuery;
-import com.meemaw.shared.rest.query.sql.TermOperation;
+import com.meemaw.shared.rest.query.TermOperation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public final class RHSColonParser {
       }
     }
 
-    FilterExpression rootFilterExpression =
+    BooleanFilterExpression<?> rootFilterExpression =
         new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
 
     return new SearchDTO(rootFilterExpression, new SortQuery(sorts), limit);

@@ -1,5 +1,5 @@
 import ky from 'ky-universal';
-import { DataResponse } from '@insight/types';
+import { DataResponse, BrowserEventDTO } from '@insight/types';
 
 import { sessionApiBaseURL } from './base';
 
@@ -36,6 +36,14 @@ const SessionApi = {
       })
       .json<DataResponse<SessionDTO[]>>()
       .then((dataResponse) => dataResponse.data.map(mapSession));
+  },
+  getEvents: (sessionId: string) => {
+    return ky
+      .get(`${sessionApiBaseURL}/v1/sessions/${sessionId}/events/search`, {
+        credentials: 'include',
+      })
+      .json<DataResponse<BrowserEventDTO[]>>()
+      .then((dataResponse) => dataResponse.data);
   },
 };
 

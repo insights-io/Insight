@@ -10,9 +10,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meemaw.events.model.Recorded;
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @JsonTypeInfo(
     use = Id.NAME,
@@ -28,6 +32,7 @@ import lombok.ToString;
   @Type(value = BrowserMouseDownEvent.class, name = BrowserEventTypeConstants.MOUSEDOWN),
   @Type(value = BrowserMouseUpEvent.class, name = BrowserEventTypeConstants.MOUSEUP),
   @Type(value = BrowserLoadEvent.class, name = BrowserEventTypeConstants.LOAD),
+  @Type(value = BrowserLogEvent.class, name = BrowserEventTypeConstants.LOG),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractBrowserEvent extends Recorded {
@@ -40,4 +45,6 @@ public abstract class AbstractBrowserEvent extends Recorded {
 
   @JsonIgnore
   public abstract Map<String, Object> index();
+
+  public abstract String getEventType();
 }

@@ -1,13 +1,16 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
+
+apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
     implementation "org.apache.kafka:kafka-clients:${kafkaVersion}"
     implementation project(":events:events-model")
-    implementation project(":shared:rest-elasticsearch")
+    implementation project(":shared:shared-elasticsearch")
 
     testImplementation project(':shared:testing-utils')
 }
@@ -15,10 +18,6 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty "java.util.logging.manager", "org.apache.logging.log4j.LogManager"
-}
-
-configurations.runtimeClasspath.getAllDependencies().withType(ProjectDependency).each {
-    jar.dependsOn(it.getDependencyProject().getTasksByName("jar", true))
 }
 
 jar {

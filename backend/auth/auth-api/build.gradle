@@ -11,6 +11,7 @@ dependencies {
     implementation project(":auth:auth-cookie")
     implementation project(":auth:auth-api-contracts")
     implementation project(":shared:rest-api")
+    implementation project(":shared:shared-sql")
 
     testImplementation project(":shared:testing-utils")
 }

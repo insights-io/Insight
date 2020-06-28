@@ -3,7 +3,12 @@
     "event": {
       "t": 6,
       "e": 3,
-      "a": ["http://localhost:3002/", "navigation", 0, 3965.885000070557]
+      "a": [
+        "http://localhost:3002/",
+        "navigation",
+        0,
+        3965.885000070557
+      ]
     },
     "pageId": "3bfdd301-463b-4e14-9d2d-5a58893fb185",
     "organizationId": "org123",
@@ -30,7 +35,13 @@
     "event": {
       "t": 1279,
       "e": 5,
-      "a": [1173, 654, "<FORM", ":novalidate", ""]
+      "a": [
+        1173,
+        654,
+        "<FORM",
+        ":novalidate",
+        ""
+      ]
     },
     "pageId": "72281b5e-f8be-4bef-b2b5-843869bcc1c1",
     "organizationId": "org123",
@@ -41,7 +52,13 @@
     "event": {
       "t": 1513,
       "e": 5,
-      "a": [1173, 650, "<FORM", ":novalidate", ""]
+      "a": [
+        1173,
+        650,
+        "<FORM",
+        ":novalidate",
+        ""
+      ]
     },
     "pageId": "422c7d4a-dc70-40e0-a2a8-9d22253a76b4",
     "organizationId": "org123",
@@ -155,7 +172,10 @@
     "event": {
       "t": 1611,
       "e": 2,
-      "a": [644, 916]
+      "a": [
+        644,
+        916
+      ]
     },
     "pageId": "b1721d34-8648-4a8e-a33c-ff1566637fd6",
     "organizationId": "org123",
@@ -1203,7 +1223,10 @@
     "event": {
       "t": 5386,
       "e": 6,
-      "a": [529, 261]
+      "a": [
+        529,
+        261
+      ]
     },
     "pageId": "29b0b12c-c89d-471b-a0c8-555f20c829c3",
     "organizationId": "org123",
@@ -1230,7 +1253,12 @@
     "event": {
       "t": 5422,
       "e": 3,
-      "a": ["⚛ Input [update]", "measure", 9364.479999989271, 4.36500005889684]
+      "a": [
+        "⚛ Input [update]",
+        "measure",
+        9364.479999989271,
+        4.36500005889684
+      ]
     },
     "pageId": "43649d3f-37bf-4c90-880e-e57ff6ce904b",
     "organizationId": "org123",
@@ -1241,7 +1269,12 @@
     "event": {
       "t": 5422,
       "e": 3,
-      "a": ["⚛ Root [update]", "measure", 9364.59500005003, 4.244999960064888]
+      "a": [
+        "⚛ Root [update]",
+        "measure",
+        9364.59500005003,
+        4.244999960064888
+      ]
     },
     "pageId": "83f51cc5-5fa3-4caa-8783-08f6b989bfe3",
     "organizationId": "org123",
@@ -1492,7 +1525,10 @@
     "event": {
       "t": 5460,
       "e": 7,
-      "a": [529, 261]
+      "a": [
+        529,
+        261
+      ]
     },
     "pageId": "e65aaab1-9e10-471d-9d1a-b7a5b5160743",
     "organizationId": "org123",
@@ -2267,7 +2303,10 @@
     "event": {
       "t": 6087,
       "e": 6,
-      "a": [240, 375]
+      "a": [
+        240,
+        375
+      ]
     },
     "pageId": "9a37fb46-8217-4b99-b30e-2697cc0adbb1",
     "organizationId": "org123",
@@ -2934,7 +2973,10 @@
     "event": {
       "t": 6188,
       "e": 7,
-      "a": [240, 375]
+      "a": [
+        240,
+        375
+      ]
     },
     "pageId": "ff11fa5c-7e02-4773-bf0d-1b518462fb3b",
     "organizationId": "org123",
@@ -3273,7 +3315,15 @@
     "event": {
       "t": 6281,
       "e": 5,
-      "a": [240, 306, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        240,
+        306,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "a703c74d-3ffa-4cc9-9745-858db76738f0",
     "organizationId": "org123",
@@ -3637,7 +3687,10 @@
     "event": {
       "t": 6531,
       "e": 6,
-      "a": [241, 273]
+      "a": [
+        241,
+        273
+      ]
     },
     "pageId": "f1ea9d5b-d34e-46ae-af3e-a98a891ff36d",
     "organizationId": "org123",
@@ -3680,7 +3733,12 @@
     "event": {
       "t": 6544,
       "e": 3,
-      "a": ["⚛ Root [update]", "measure", 10494.485000032, 1.459999941289425]
+      "a": [
+        "⚛ Root [update]",
+        "measure",
+        10494.485000032,
+        1.459999941289425
+      ]
     },
     "pageId": "39e23744-8c25-4620-a30a-49bfbf1c8216",
     "organizationId": "org123",
@@ -4299,7 +4357,10 @@
     "event": {
       "t": 6637,
       "e": 7,
-      "a": [241, 273]
+      "a": [
+        241,
+        273
+      ]
     },
     "pageId": "72cb2430-a4fe-4fcb-9b97-59ff2565c652",
     "organizationId": "org123",
@@ -4546,7 +4607,15 @@
     "event": {
       "t": 6844,
       "e": 5,
-      "a": [307, 384, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        307,
+        384,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "8ab50f9c-4dbc-4784-b0c6-db18d1704d2e",
     "organizationId": "org123",
@@ -4557,7 +4626,11 @@
     "event": {
       "t": 6849,
       "e": 5,
-      "a": [318, 402, "<DIV"]
+      "a": [
+        318,
+        402,
+        "<DIV"
+      ]
     },
     "pageId": "e4d09252-6d0d-418d-b032-9b170b9fd744",
     "organizationId": "org123",
@@ -4568,7 +4641,15 @@
     "event": {
       "t": 6857,
       "e": 5,
-      "a": [328, 418, "<DIV", ":data-baseweb", "block", ":class", "__debug-2 "]
+      "a": [
+        328,
+        418,
+        "<DIV",
+        ":data-baseweb",
+        "block",
+        ":class",
+        "__debug-2 "
+      ]
     },
     "pageId": "d5bd6d4f-b793-4117-835a-009eaccb04c8",
     "organizationId": "org123",
@@ -4808,7 +4889,15 @@
     "event": {
       "t": 6921,
       "e": 5,
-      "a": [357, 471, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        357,
+        471,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "6c5bfb61-7ab0-4c3f-8094-d844c5720fd1",
     "organizationId": "org123",
@@ -4819,7 +4908,15 @@
     "event": {
       "t": 6931,
       "e": 5,
-      "a": [358, 472, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        358,
+        472,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "b8704ef5-b96b-4da0-a4db-c683b775d9c7",
     "organizationId": "org123",
@@ -4830,7 +4927,15 @@
     "event": {
       "t": 6937,
       "e": 5,
-      "a": [358, 473, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        358,
+        473,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "d0abfaa9-d834-4c0d-a845-5fa307c7181c",
     "organizationId": "org123",
@@ -4841,7 +4946,15 @@
     "event": {
       "t": 6947,
       "e": 5,
-      "a": [359, 474, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        359,
+        474,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "83482c00-6e3f-48ee-bb64-a9da37af412c",
     "organizationId": "org123",
@@ -4852,7 +4965,10 @@
     "event": {
       "t": 7042,
       "e": 6,
-      "a": [359, 474]
+      "a": [
+        359,
+        474
+      ]
     },
     "pageId": "a712fcb5-66c2-4407-ab81-57425c6fcc0e",
     "organizationId": "org123",
@@ -4895,7 +5011,12 @@
     "event": {
       "t": 7051,
       "e": 3,
-      "a": ["⚛ Root [update]", "measure", 11006.80500001181, 1.2150000547990203]
+      "a": [
+        "⚛ Root [update]",
+        "measure",
+        11006.80500001181,
+        1.2150000547990203
+      ]
     },
     "pageId": "1f3d0ac5-3642-45b4-b0ef-c226a5c73d35",
     "organizationId": "org123",
@@ -5146,7 +5267,10 @@
     "event": {
       "t": 7154,
       "e": 7,
-      "a": [359, 474]
+      "a": [
+        359,
+        474
+      ]
     },
     "pageId": "6adbd764-2f85-4d22-a059-58029e41e37a",
     "organizationId": "org123",
@@ -5157,7 +5281,15 @@
     "event": {
       "t": 7155,
       "e": 5,
-      "a": [359, 474, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        359,
+        474,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "e17fc28a-bf00-45a3-9b55-8d87f0a39c26",
     "organizationId": "org123",
@@ -5248,7 +5380,15 @@
     "event": {
       "t": 7235,
       "e": 5,
-      "a": [359, 472, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        359,
+        472,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "bf16154f-c78e-4bab-b131-252751c5719d",
     "organizationId": "org123",
@@ -5558,7 +5698,10 @@
     "event": {
       "t": 7335,
       "e": 6,
-      "a": [362, 454]
+      "a": [
+        362,
+        454
+      ]
     },
     "pageId": "ca80a46d-41e4-48ba-90ab-4783bc5ca2fb",
     "organizationId": "org123",
@@ -5889,7 +6032,10 @@
     "event": {
       "t": 7426,
       "e": 7,
-      "a": [362, 454]
+      "a": [
+        362,
+        454
+      ]
     },
     "pageId": "186fc79a-e19c-480d-bfb4-46b181f93bb5",
     "organizationId": "org123",
@@ -6128,7 +6274,15 @@
     "event": {
       "t": 7509,
       "e": 5,
-      "a": [365, 475, "<FORM", ":novalidate", "", ":_lpchecked", "1"]
+      "a": [
+        365,
+        475,
+        "<FORM",
+        ":novalidate",
+        "",
+        ":_lpchecked",
+        "1"
+      ]
     },
     "pageId": "4580dcd9-8006-464e-9e76-2d854223e0b4",
     "organizationId": "org123",
@@ -6632,7 +6786,10 @@
     "event": {
       "t": 7728,
       "e": 6,
-      "a": [388, 546]
+      "a": [
+        388,
+        546
+      ]
     },
     "pageId": "3b0dcdbd-5a60-4dcb-8ee8-fc3e2eb72527",
     "organizationId": "org123",
@@ -7331,7 +7488,10 @@
     "event": {
       "t": 7831,
       "e": 7,
-      "a": [388, 546]
+      "a": [
+        388,
+        546
+      ]
     },
     "pageId": "bdc3847c-4d77-4320-abc1-4f52aab8e6a4",
     "organizationId": "org123",
@@ -7570,7 +7730,15 @@
     "event": {
       "t": 8007,
       "e": 5,
-      "a": [410, 509, "<DIV", ":data-baseweb", "block", ":class", "__debug-2 "]
+      "a": [
+        410,
+        509,
+        "<DIV",
+        ":data-baseweb",
+        "block",
+        ":class",
+        "__debug-2 "
+      ]
     },
     "pageId": "ad3e2729-006c-49f6-b3f4-72773a5214ab",
     "organizationId": "org123",
@@ -7635,7 +7803,15 @@
     "event": {
       "t": 8032,
       "e": 5,
-      "a": [481, 420, "<DIV", ":data-baseweb", "block", ":class", "__debug-2 "]
+      "a": [
+        481,
+        420,
+        "<DIV",
+        ":data-baseweb",
+        "block",
+        ":class",
+        "__debug-2 "
+      ]
     },
     "pageId": "9eb790b4-ef8b-4eeb-a5a8-a790b9381137",
     "organizationId": "org123",
@@ -8010,6 +8186,20 @@
         "measure",
         12596.955000073649,
         0.059999991208314896
+      ]
+    },
+    "pageId": "80184f80-7123-4638-b7d4-0989c1c2b3cf",
+    "organizationId": "org123",
+    "deviceId": "19b6991a-f620-40be-a03d-fd7c76085166",
+    "sessionId": "d6d446ba-7530-45bb-93c0-f99cdeb36e30"
+  },
+  {
+    "event": {
+      "t": 10812,
+      "e": 9,
+      "a": [
+        "error",
+        "HAHA"
       ]
     },
     "pageId": "80184f80-7123-4638-b7d4-0989c1c2b3cf",

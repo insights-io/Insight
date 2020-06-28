@@ -3,10 +3,10 @@ package com.meemaw.events.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.Getter;
-import lombok.ToString;
 
-@ToString
+@Data
 public class Recorded {
 
   public static final String TIMESTAMP = "t";

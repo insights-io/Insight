@@ -1,16 +1,17 @@
 FROM gradle:6.5.0-jdk14 as build
 
 COPY build.gradle lombok.config gradle.properties settings.gradle /backend/
-COPY shared/rest-elasticsearch /backend/shared/rest-elasticsearch
+COPY shared/rest/ /backend/shared/rest/
+COPY shared/shared-elasticsearch/ /backend/shared/shared-elasticsearch/
 COPY events/events-model/ /backend/events/events-model/
 COPY events/search-indexer/ /backend/events/search-indexer/
 WORKDIR /backend
 
-RUN gradle --no-daemon events:search-indexer:jar
+RUN gradle --no-daemon events:search-indexer:shadowJar
 
 FROM adoptopenjdk:14-jre-hotspot
 
-COPY --from=build /backend/events/search-indexer/build/libs/search-indexer-1.0.jar /usr/app/search-indexer.jar
+COPY --from=build /backend/events/search-indexer/build/libs/search-indexer-1.0-all.jar /usr/app/search-indexer.jar
 
 WORKDIR /usr/app/
 

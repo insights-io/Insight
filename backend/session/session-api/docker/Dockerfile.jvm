@@ -12,7 +12,8 @@ COPY auth/auth-sidecar/ /backend/auth/auth-sidecar/
 COPY auth/auth-api-contracts/ /backend/auth/auth-api-contracts/
 COPY events/events-model/ /backend/events/events-model/
 COPY shared/rest/ /backend/shared/rest/
-COPY shared/rest-elasticsearch/ /backend/shared/rest-elasticsearch/
+COPY shared/shared-elasticsearch/ /backend/shared/shared-elasticsearch/
+COPY shared/shared-sql/ /backend/shared/shared-sql/
 COPY shared/rest-api/ /backend/shared/rest-api/
 
 RUN gradle session:session-api:quarkusBuild --uber-jar

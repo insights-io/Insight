@@ -11,6 +11,7 @@ public final class BrowserEventTypeConstants {
   public static final String MOUSEDOWN = "6";
   public static final String MOUSEUP = "7";
   public static final String LOAD = "8";
+  public static final String LOG = "9";
 
   private BrowserEventTypeConstants() {}
 }

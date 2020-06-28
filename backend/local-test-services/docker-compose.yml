@@ -61,6 +61,7 @@ services:
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
       - AUTH_SERVICE_BASE_URL=http://auth-api:8080
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
 
   session-api-migrations:
     build:
@@ -110,7 +111,7 @@ services:
       - '9092:9092'
     environment:
       LOG_DIR: '/tmp/logs'
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
   zookeeper:

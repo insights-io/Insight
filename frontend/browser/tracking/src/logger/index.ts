@@ -1,16 +1,10 @@
-/* eslint-disable no-console */
-const LOG_LEVELS = {
-  debug: 10,
-  info: 20,
-  warn: 30,
-  error: 40,
-} as const;
+import { LogLevel } from '@insight/types';
 
-type LogLevel = keyof typeof LOG_LEVELS;
+import { LOG_LEVELS } from '../console';
 
 const getLogLevel = (): number => {
   // eslint-disable-next-line no-underscore-dangle
-  const logLevel = (window._i_log_level || 'info').toLowerCase() as LogLevel;
+  const logLevel = (window._i_log_level || 'log').toLowerCase() as LogLevel;
   return LOG_LEVELS[logLevel] || 0;
 };
 
@@ -22,6 +16,7 @@ export const logger = Object.keys(LOG_LEVELS).reduce((acc, logLevel) => {
     ...acc,
     [typedLogLevel]: (...data: never[]) => {
       if (currentLogLevelValue >= getLogLevel()) {
+        // eslint-disable-next-line no-console
         console[typedLogLevel](...data);
       }
     },

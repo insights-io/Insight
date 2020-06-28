@@ -9,7 +9,12 @@ type Props = {
 
 const AppLayout = ({ children }: Props) => {
   return (
-    <Block height="100%" display="flex" flexDirection="column">
+    <Block
+      height="100%"
+      display="flex"
+      flexDirection="column"
+      overflow="hidden"
+    >
       <Navbar />
       <Block height="100%">{children}</Block>
     </Block>

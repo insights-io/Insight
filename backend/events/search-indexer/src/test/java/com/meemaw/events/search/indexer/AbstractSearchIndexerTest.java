@@ -2,9 +2,9 @@ package com.meemaw.events.search.indexer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.external.serialization.UserEventSerializer;
 import com.meemaw.events.model.internal.AbstractBrowserEvent;
 import com.meemaw.events.model.internal.UserEvent;
+import com.meemaw.events.model.internal.serialization.UserEventSerializer;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
@@ -40,6 +40,9 @@ import org.elasticsearch.client.indices.CreateIndexResponse;
 public class AbstractSearchIndexerTest {
 
   protected final List<SearchIndexer> searchIndexers = new LinkedList<>();
+
+  protected static final int LARGE_BATCH_SIZE = 384;
+  protected static final int SMALL_BATCH_SIZE = 1;
 
   protected static final String SOURCE_TOPIC_NAME = "test-events";
   protected static final String RETRY_TOPIC_NAME = "test-events-0";

@@ -16,12 +16,17 @@ public class BrowserNavigateEvent extends AbstractBrowserEvent {
   public Map<String, Object> index() {
     return Map.of(
         EVENT_TYPE,
-        BrowserEventTypeConstants.NAVIGATE,
+        getEventType(),
         TIMESTAMP,
         timestamp,
         "location",
         getLocation(),
         "title",
         getTitle());
+  }
+
+  @Override
+  public String getEventType() {
+    return BrowserEventTypeConstants.NAVIGATE;
   }
 }
