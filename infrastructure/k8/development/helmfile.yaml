@@ -30,8 +30,9 @@ releases:
     namespace: {{ .Values.appNamespace }}
     values:
       - kafka.yaml
-  - name: es3
+  - name: es5
     chart: elastic/elasticsearch
+    version: 7.7.1
     namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
@@ -53,6 +54,7 @@ releases:
             parser: {{ .Values.fluentbitParser }}
   - name: kibana
     chart: elastic/kibana
+    version: 7.7.1
     namespace: {{ .Values.infraNamespace }}
     values:
       - kibana.yaml
@@ -131,6 +133,7 @@ releases:
   - name: jaeger
     chart: jaegertracing/jaeger
     namespace: monitoring
+    version: 0.29.0
     values:
       - jaeger.yaml
       - storage:
