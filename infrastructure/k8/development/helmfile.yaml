@@ -35,6 +35,9 @@ releases:
     namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
+      - esJavaOpts: "{{ .Values.esJavaOpts }}"
+      - resources:
+{{ toYaml .Values.esResources | indent 10 }}
       - volumeClaimTemplate:
           storageClassName: "{{ .Values.storageClassName }}"
   - name: fluentbit
