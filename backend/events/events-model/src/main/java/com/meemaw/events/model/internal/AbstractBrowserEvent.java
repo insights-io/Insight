@@ -13,7 +13,11 @@ import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @JsonTypeInfo(
     use = Id.NAME,
     property = AbstractBrowserEvent.EVENT_TYPE,
@@ -31,8 +35,6 @@ import lombok.Getter;
   @Type(value = BrowserLogEvent.class, name = BrowserEventTypeConstants.LOG),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Data
-@EqualsAndHashCode(callSuper = true)
 public abstract class AbstractBrowserEvent extends Recorded {
 
   public static final String EVENT_TYPE = "e";
