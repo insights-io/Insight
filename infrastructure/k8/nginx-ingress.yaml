@@ -1,0 +1,5 @@
+---
+controller:
+  config:
+    enable-opentracing: "true"
+    jaeger-collector-host: jaeger-agent.monitoring.svc.cluster.local
