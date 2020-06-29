@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"github.com/elastic/go-elasticsearch"
-	"github.com/elastic/go-elasticsearch/esapi"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/elastic/go-elasticsearch"
+	"github.com/elastic/go-elasticsearch/esapi"
 )
 
 var migrationPattern = `^V([0-9]+)__.*$`
@@ -92,8 +93,7 @@ func main() {
 			}
 			defer res.Body.Close()
 			if res.IsError() {
-				log.Printf("[%s] Error creating index=%s path=%s", res.Status(), index, filePath)
-				continue
+				log.Fatalf("[%s] Error creating index=%s path=%s", res.Status(), index, filePath)
 			}
 		}
 
@@ -107,7 +107,7 @@ func main() {
 			}
 			defer res.Body.Close()
 			if res.IsError() {
-				log.Printf("[%d] Error creating mapping for index=%s", res.StatusCode, index)
+				log.Fatalf("[%d] Error creating mapping for index=%s", res.StatusCode, index)
 			}
 
 		}
