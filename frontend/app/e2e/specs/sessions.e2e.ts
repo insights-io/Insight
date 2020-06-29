@@ -18,13 +18,12 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
 
   const lastSession = getByText('less than 5 seconds ago');
   const lastSessionListItem = lastSession.parent().parent().parent().parent();
-  const consoleInput = getByPlaceholderText('Filter');
 
   await t
     .expect(lastSession.visible)
     .ok('Newly created session is dispalyed')
     .click(lastSessionListItem)
-    .expect(consoleInput.visible)
+    .expect(queryByText('Filter').visible)
     .ok('Navigates to session details page');
 
   await t.eval(() => {
@@ -39,7 +38,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   await t
-    .typeText(consoleInput, 'console')
+    .typeText(getByPlaceholderText('Filter'), 'console')
     .expect(queryByText('console.log').visible)
     .ok('console.log should be visible in the console', { timeout: 60000 })
     .expect(queryByText('console.info').visible)

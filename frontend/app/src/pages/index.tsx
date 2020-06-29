@@ -19,6 +19,11 @@ const Home = () => {
       <H5 margin={['24px', '48px']}>Sessions</H5>
       <ul className="sessions">
         {data.map((session) => {
+          const createdAtText = formatDistanceToNow(session.createdAt, {
+            includeSeconds: true,
+            addSuffix: true,
+          });
+
           return (
             <Link href={`/sessions/${session.id}`} key={session.id}>
               <a className={css({ color: 'inherit' })}>
@@ -32,12 +37,7 @@ const Home = () => {
                   }}
                   endEnhancer={() => (
                     <>
-                      <Tag closeable={false}>
-                        {formatDistanceToNow(session.createdAt, {
-                          includeSeconds: true,
-                          addSuffix: true,
-                        })}
-                      </Tag>
+                      <Tag closeable={false}>{createdAtText}</Tag>
                       <ChevronRight />
                     </>
                   )}
