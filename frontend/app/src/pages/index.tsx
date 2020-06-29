@@ -7,12 +7,16 @@ import { H5 } from 'baseui/typography';
 import { formatDistanceToNow } from 'date-fns';
 import { Tag } from 'baseui/tag';
 import { ChevronRight } from 'baseui/icon';
-import Link from 'next/link';
 import { useStyletron } from 'baseui';
+import Link from 'next/link';
 
 const Home = () => {
   const { data } = useSessions();
   const [css, theme] = useStyletron();
+
+  const listItemStyle = {
+    ':hover': { background: theme.colors.primary200 },
+  };
 
   return (
     <AppLayout>
@@ -25,16 +29,14 @@ const Home = () => {
           });
 
           return (
-            <Link href={`/sessions/${session.id}`} key={session.id}>
+            <Link
+              href="/sessions/[id]"
+              as={`sessions/${session.id}`}
+              key={session.id}
+            >
               <a className={css({ color: 'inherit' })}>
                 <ListItem
-                  overrides={{
-                    Root: {
-                      style: {
-                        ':hover': { background: theme.colors.primary200 },
-                      },
-                    },
-                  }}
+                  overrides={{ Root: { style: listItemStyle } }}
                   endEnhancer={() => (
                     <>
                       <Tag closeable={false}>{createdAtText}</Tag>
