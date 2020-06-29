@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           registry: ${{ env.REGISTRY }}
           dockerfile: Dockerfile
-          workdir: backend/auth/auth-api/migrations/
+          workdir: backend/auth/auth-api/migrations/postgres/
           tag_names: true
 
   build-session-api:
@@ -62,7 +62,21 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           registry: ${{ env.REGISTRY }}
           dockerfile: Dockerfile
-          workdir: backend/session/session-api/migrations
+          workdir: backend/session/session-api/migrations/postgres/
+          tag_names: true
+
+  build-session-api-elasticsearch-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: ${{ env.REPOSITORY }}/session-api-elasticsearch-migrations
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          registry: ${{ env.REGISTRY }}
+          dockerfile: Dockerfile
+          workdir: backend/session/session-api/migrations/elasticsearch/
           tag_names: true
 
   build-beacon-api:
