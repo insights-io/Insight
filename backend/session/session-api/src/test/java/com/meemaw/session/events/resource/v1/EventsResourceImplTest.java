@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -68,14 +67,7 @@ public class EventsResourceImplTest {
   }
 
   @BeforeAll
-  public static void init() throws IOException {
-    ElasticsearchTestExtension.getInstance()
-        .restHighLevelClient()
-        .indices()
-        .create(
-            new CreateIndexRequest(UserEventIndex.NAME).mapping(UserEventIndex.MAPPING),
-            RequestOptions.DEFAULT);
-
+  public static void init() {
     loadEvents()
         .forEach(
             browserEvent -> {

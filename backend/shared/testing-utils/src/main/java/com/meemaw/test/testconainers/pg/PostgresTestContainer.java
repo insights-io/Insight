@@ -101,7 +101,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   /** Apply module migrations using Flyway. */
   public void applyMigrations() {
-    Path moduleSqlMigrationsPath = ProjectUtils.getFromModule("migrations");
+    Path moduleSqlMigrationsPath = ProjectUtils.getFromModule("migrations", "postgres");
     applyFlywayMigrations(moduleSqlMigrationsPath);
   }
 

@@ -1,0 +1,30 @@
+PUT /events
+{
+  "mappings": {
+    "properties": {
+      "deviceId": {
+        "type": "keyword"
+      },
+      "event": {
+        "type": "nested",
+        "properties": {
+          "e": {
+            "type": "keyword"
+          },
+          "t": {
+            "type": "long"
+          }
+        }
+      },
+      "organizationId": {
+        "type": "keyword"
+      },
+      "pageId": {
+        "type": "keyword"
+      },
+      "sessionId": {
+        "type": "keyword"
+      }
+    }
+  }
+}
