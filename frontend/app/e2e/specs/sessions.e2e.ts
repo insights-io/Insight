@@ -17,11 +17,12 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   const lastSession = getByText('less than 5 seconds ago');
+  const lastSessionListItem = lastSession.parent().parent().parent().parent();
 
   await t
     .expect(lastSession.visible)
     .ok('Newly created session is dispalyed')
-    .click(lastSession);
+    .click(lastSessionListItem);
 
   await t.eval(() => {
     console.log('console.log');
