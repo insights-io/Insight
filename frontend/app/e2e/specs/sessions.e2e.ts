@@ -2,7 +2,7 @@
 import {
   getByText,
   queryByText,
-  getByPlaceholderText,
+  queryByPlaceholderText,
 } from '@testing-library/testcafe';
 
 import { login } from '../utils';
@@ -23,7 +23,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
     .expect(lastSession.visible)
     .ok('Newly created session is dispalyed')
     .click(lastSessionListItem)
-    .expect(queryByText('Filter').visible)
+    .expect(queryByPlaceholderText('Filter').visible)
     .ok('Navigates to session details page');
 
   await t.eval(() => {
@@ -38,15 +38,14 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   await t
-    .typeText(getByPlaceholderText('Filter'), 'console')
     .expect(queryByText('console.log').visible)
-    .ok('console.log should be visible in the console', { timeout: 60000 })
+    .ok('console.log should be visible in the console')
     .expect(queryByText('console.info').visible)
-    .ok('console.info should be visible in the console', { timeout: 60000 })
+    .ok('console.info should be visible in the console')
     .expect(queryByText('console.debug').visible)
-    .ok('console.debug should be visible in the console', { timeout: 60000 })
+    .ok('console.debug should be visible in the console')
     .expect(queryByText('console.warn').visible)
-    .ok('console.warn should be visible in the console', { timeout: 60000 })
+    .ok('console.warn should be visible in the console')
     .expect(queryByText('console.error').visible)
-    .ok('console.error should be visible in the console', { timeout: 60000 });
+    .ok('console.error should be visible in the console');
 });
