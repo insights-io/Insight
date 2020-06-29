@@ -16,11 +16,11 @@ services:
       - MAILER_MOCK=${MAILER_MOCK}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
     depends_on:
-      - auth-api-migrations
+      - auth-api-postgres-migrations
 
-  auth-api-migrations:
+  auth-api-postgres-migrations:
     build:
-      context: ../auth/auth-api/migrations
+      context: ../auth/auth-api/migrations/postgres
       dockerfile: Dockerfile
     depends_on:
       - db
@@ -54,7 +54,8 @@ services:
       - '${SESSION_SERVICE_PORT:-8082}:8080'
     depends_on:
       - kafka
-      - session-api-migrations
+      - session-api-postgres-migrations
+      - session-api-elasticsearch-migrations
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
@@ -63,9 +64,19 @@ services:
       - AUTH_SERVICE_BASE_URL=http://auth-api:8080
       - ELASTICSEARCH_HOSTS=elasticsearch:9200
 
-  session-api-migrations:
+  session-api-elasticsearch-migrations:
     build:
-      context: ../session/session-api/migrations
+      context: ../session/session-api/migrations/elasticsearch
+      dockerfile: Dockerfile
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    restart: on-failure
+
+  session-api-postgres-migrations:
+    build:
+      context: ../session/session-api/migrations/postgres
       dockerfile: Dockerfile
     depends_on:
       - db

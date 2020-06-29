@@ -32,6 +32,7 @@ public class ElasticsearchTestExtension implements BeforeAllCallback {
     if (!ELASTICSEARCH.isRunning()) {
       log.info("Starting elasticsearch container ...");
       elasticsearch.start();
+      elasticsearch.applyMigrations();
     }
     log.info("Connecting to elasticsearch http.host={}", elasticsearch.getHttpHost());
     return Map.of("elasticsearch.http.host", elasticsearch.getHttpHost().toHostString());

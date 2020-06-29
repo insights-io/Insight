@@ -12,8 +12,10 @@ type Props = {
 };
 
 const SessionDetails = ({ sessionId }: Props) => {
-  const { data = [] } = useSWR(`sessions/${sessionId}/events/search`, () =>
-    SessionApi.getEvents(sessionId)
+  const { data = [] } = useSWR(
+    `sessions/${sessionId}/events/search`,
+    () => SessionApi.getEvents(sessionId),
+    { refreshWhenHidden: true, refreshInterval: 5000 }
   );
 
   const logEvents = useMemo(() => {

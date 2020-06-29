@@ -23,13 +23,13 @@ patchesJson6902:
       group: batch
       version: v1
       kind: Job
-      name: auth-api-migrations
+      name: auth-api-postgres-migrations
     path: image-pull-secret.patch
   - target:
       group: batch
       version: v1
       kind: Job
-      name: auth-api-migrations
+      name: auth-api-postgres-migrations
     path: job-generate-name.patch
   - target:
       group: apps
@@ -41,13 +41,13 @@ patchesJson6902:
       group: batch
       version: v1
       kind: Job
-      name: session-api-migrations
+      name: session-api-postgres-migrations
     path: image-pull-secret.patch
   - target:
       group: batch
       version: v1
       kind: Job
-      name: session-api-migrations
+      name: session-api-postgres-migrations
     path: job-generate-name.patch
   - target:
       group: apps

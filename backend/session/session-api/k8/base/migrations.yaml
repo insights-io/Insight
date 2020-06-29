@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: session-api-migrations
+  name: session-api-postgres-migrations
   annotations:
     argocd.argoproj.io/hook: PreSync
 spec:
@@ -10,8 +10,8 @@ spec:
   template:
     spec:
       containers:
-        - image: insightio/session-api-migrations
-          name: session-api-migrations
+        - image: insightio/session-api-postgres-migrations
+          name: session-api-postgres-migrations
           env:
             - name: POSTGRES_HOST
               value: postgres-postgresql

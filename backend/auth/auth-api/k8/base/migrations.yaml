@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: auth-api-migrations
+  name: auth-api-postgres-migrations
   annotations:
     argocd.argoproj.io/hook: PreSync
 spec:
@@ -12,8 +12,8 @@ spec:
       imagePullSecrets:
         - name: regcred2
       containers:
-        - image: insightio/auth-api-migrations
-          name: auth-api-migrations
+        - image: insightio/auth-api-postgres-migrations
+          name: auth-api-postgres-migrations
           env:
             - name: LOG_JSON
               value: 'true'
