@@ -22,13 +22,13 @@ jobs:
           workdir: backend
           tag_names: true
 
-  build-auth-api-migrations:
+  build-auth-api-postgres-migrations:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: ${{ env.REPOSITORY }}/auth-api-migrations
+          name: ${{ env.REPOSITORY }}/auth-api-postgres-migrations
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           registry: ${{ env.REGISTRY }}
@@ -51,13 +51,13 @@ jobs:
           workdir: backend
           tag_names: true
 
-  build-session-api-migrations:
+  build-session-api-postgres-migrations:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: ${{ env.REPOSITORY }}/session-api-migrations
+          name: ${{ env.REPOSITORY }}/session-api-postgres-migrations
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           registry: ${{ env.REGISTRY }}
