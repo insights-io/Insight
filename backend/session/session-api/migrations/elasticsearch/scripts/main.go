@@ -72,6 +72,11 @@ func main() {
 	migrationFiles := readMigrationFiles(mappingsPath)
 	log.Printf("Searching for migrations in: %s", mappingsPath)
 
+	_, err := es.Info()
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+
 	for _, file := range migrationFiles {
 		filePath := strings.Join([]string{mappingsPath, file.Name()}, "/")
 		log.Printf("Applying migration from: %s", filePath)

@@ -17,7 +17,7 @@ const Home = () => {
   return (
     <AppLayout>
       <H5 margin={['24px', '48px']}>Sessions</H5>
-      <ul>
+      <ul className="sessions">
         {data.map((session) => {
           return (
             <Link href={`/sessions/${session.id}`} key={session.id}>

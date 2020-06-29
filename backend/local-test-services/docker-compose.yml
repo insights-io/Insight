@@ -72,6 +72,7 @@ services:
       - elasticsearch
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    restart: on-failure
 
   session-api-postgres-migrations:
     build:

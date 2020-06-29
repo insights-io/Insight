@@ -39,9 +39,12 @@ const SessionApi = {
   },
   getEvents: (sessionId: string) => {
     return ky
-      .get(`${sessionApiBaseURL}/v1/sessions/${sessionId}/events/search`, {
-        credentials: 'include',
-      })
+      .get(
+        `${sessionApiBaseURL}/v1/sessions/${sessionId}/events/search?limit=1000&event.e=eq:9`,
+        {
+          credentials: 'include',
+        }
+      )
       .json<DataResponse<BrowserEventDTO[]>>()
       .then((dataResponse) => dataResponse.data);
   },
