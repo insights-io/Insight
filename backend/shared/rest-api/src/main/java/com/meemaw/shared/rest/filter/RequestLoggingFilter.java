@@ -4,6 +4,7 @@ import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 
 import com.meemaw.shared.metrics.MetricsService;
+import io.opentracing.Tracer;
 import io.vertx.core.http.HttpServerRequest;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,12 +27,13 @@ import org.slf4j.MDC;
 @Slf4j
 public class RequestLoggingFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
-  public static final String REQUEST_ID_HEADER = "X-Request-Id";
+  public static final String REQUEST_ID_HEADER = "X-Request-ID";
 
   private static final String LOG_START_TIME_PROPERTY = "X-Start-Time";
   private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 200;
 
   @Inject MetricsService metricsService;
+  @Inject Tracer tracer;
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
@@ -53,9 +55,13 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   @Traced(operationName = "RequestLoggingFilter.request-filter")
   public void filter(ContainerRequestContext ctx) {
     ctx.setProperty(LOG_START_TIME_PROPERTY, System.currentTimeMillis());
-    String requestId = generateRequestId();
+    String requestId =
+        Optional.ofNullable(ctx.getHeaderString(REQUEST_ID_HEADER))
+            .orElseGet(this::generateRequestId);
+
     ctx.setProperty(REQUEST_ID_HEADER, requestId);
     MDC.put(REQUEST_ID_HEADER, requestId);
+    tracer.activeSpan().setTag(REQUEST_ID_HEADER, requestId);
   }
 
   /**

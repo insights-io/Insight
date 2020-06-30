@@ -14,5 +14,4 @@ dependencies {
 
 configurations {
     testRuntimeClasspath.exclude group: 'io.smallrye.reactive', module: 'smallrye-reactive-streams-operators'
-    testRuntimeClasspath.exclude group: 'io.quarkus', module: 'quarkus-smallrye-opentracing'
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,7 @@ public class BeaconBeatResourceProcessingTest {
     unloadEvents = new ArrayList<>();
   }
 
+  @Traced
   protected Uni<PageIdentity> insertPage(UUID deviceId) {
     CreatePageDTO payload =
         new CreatePageDTO(
