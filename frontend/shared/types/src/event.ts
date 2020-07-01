@@ -2,16 +2,16 @@ type SequenceID = number;
 type Timestamp = number;
 
 export const enum EventType {
-  NAVIGATE = '0',
-  UNLOAD = '1',
-  RESIZE = '2',
-  PERFORMANCE = '3',
-  CLICK = '4',
-  MOUSEMOVE = '5',
-  MOUSEDOWN = '6',
-  MOUSEUP = '7',
-  LOAD = '8',
-  LOG = '9',
+  NAVIGATE = 0,
+  UNLOAD = 1,
+  RESIZE = 2,
+  PERFORMANCE = 3,
+  CLICK = 4,
+  MOUSEMOVE = 5,
+  MOUSEDOWN = 6,
+  MOUSEUP = 7,
+  LOAD = 8,
+  LOG = 9,
 }
 
 export type AbstractBeaconEvent = {
