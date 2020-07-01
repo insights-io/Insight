@@ -40,7 +40,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
     createIndex(client);
 
     // setup Kafka
-    KafkaProducer<String, UserEvent<AbstractBrowserEvent>> producer = configureProducer();
+    KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer = configureProducer();
     writeSmallBatch(producer);
     writeLargeBatch(producer);
 

@@ -45,8 +45,8 @@ public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTes
   @Test
   public void canRecoverAfterConnectionRefused() throws IOException, URISyntaxException {
     // setup Kafka
-    KafkaProducer<String, UserEvent<AbstractBrowserEvent>> producer = configureProducer();
-    KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> retryQueueConsumer =
+    KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer = configureProducer();
+    KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> retryQueueConsumer =
         retryQueueConsumer();
 
     writeSmallBatch(producer);
@@ -57,7 +57,7 @@ public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTes
         .atMost(30, TimeUnit.SECONDS)
         .until(
             () -> {
-              ConsumerRecords<String, UserEvent<AbstractBrowserEvent>> records =
+              ConsumerRecords<String, UserEvent<AbstractBrowserEvent<?>>> records =
                   retryQueueConsumer.poll(Duration.ofMillis(1000));
               log.info("retry queue record count: {}", records.count());
               return records.count() == 1;

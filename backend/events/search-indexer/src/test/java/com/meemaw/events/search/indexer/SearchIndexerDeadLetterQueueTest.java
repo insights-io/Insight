@@ -31,7 +31,7 @@ public class SearchIndexerDeadLetterQueueTest extends AbstractSearchIndexerTest 
   @Test
   public void shouldWriteToDlqAfterRetryQuotaExceeded() {
     // Configure Kafka
-    KafkaProducer<String, UserEvent<AbstractBrowserEvent>> producer = configureProducer();
+    KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer = configureProducer();
 
     int numRecords = 5;
     for (int i = 0; i < numRecords; i++) {
@@ -45,7 +45,7 @@ public class SearchIndexerDeadLetterQueueTest extends AbstractSearchIndexerTest 
     spawnIndexer(client);
 
     // Configure DQL consumer
-    KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> deadLetterQueueConsumer =
+    KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> deadLetterQueueConsumer =
         deadLetterQueueConsumer();
 
     AtomicInteger numConsumedDeadLetterQueueEvents = new AtomicInteger(0);
@@ -54,7 +54,7 @@ public class SearchIndexerDeadLetterQueueTest extends AbstractSearchIndexerTest 
         .atMost(30, TimeUnit.SECONDS)
         .until(
             () -> {
-              ConsumerRecords<String, UserEvent<AbstractBrowserEvent>> records =
+              ConsumerRecords<String, UserEvent<AbstractBrowserEvent<?>>> records =
                   deadLetterQueueConsumer.poll(Duration.ofMillis(1000));
               int count = numConsumedDeadLetterQueueEvents.addAndGet(records.count());
               log.info("Num events in dead letter queue: {}", count);
