@@ -7,6 +7,8 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestContextUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -28,6 +30,7 @@ import org.slf4j.MDC;
 public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature {
 
   @Inject InsightPrincipal principal;
+  @Inject Tracer tracer;
 
   protected abstract ContainerRequestFilter cookieAuthFilter();
 
@@ -67,15 +70,28 @@ public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature
 
       MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
       Optional<T> maybeUser = findSession(sessionId).toCompletableFuture().join();
-      T authUser = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
-      MDC.put(LoggingConstants.USER_ID, authUser.getId().toString());
-      MDC.put(LoggingConstants.USER_ROLE, authUser.getRole().toString());
-      MDC.put(LoggingConstants.ORGANIZATION_ID, authUser.getOrganizationId());
+      T user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
+      setUserContext(user);
 
       boolean isSecure = RequestContextUtils.getServerBaseURL(ctx).startsWith("https");
-      ctx.setSecurityContext(new InsightSecurityContext(authUser, isSecure));
-      principal.user(authUser);
+      ctx.setSecurityContext(new InsightSecurityContext(user, isSecure));
+      principal.user(user);
       log.debug("Successfully authenticated");
+    }
+
+    private void setUserContext(AuthUser user) {
+      Span span = tracer.activeSpan();
+      String userId = user.getId().toString();
+      String role = user.getRole().toString();
+      String organizationId = user.getOrganizationId();
+
+      MDC.put(LoggingConstants.USER_ID, userId);
+      MDC.put(LoggingConstants.USER_ROLE, role);
+      MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+
+      span.setTag(LoggingConstants.USER_ID, userId);
+      span.setTag(LoggingConstants.USER_ROLE, role);
+      span.setTag(LoggingConstants.ORGANIZATION_ID, organizationId);
     }
   }
 }
