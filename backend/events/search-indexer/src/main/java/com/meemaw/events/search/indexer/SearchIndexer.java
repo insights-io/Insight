@@ -19,14 +19,14 @@ public class SearchIndexer {
 
   private static final String CONSUMER_GROUP_ID = "search-indexer";
 
-  private final KafkaSourcedBatchProcessor<String, UserEvent<AbstractBrowserEvent>> processor;
+  private final KafkaSourcedBatchProcessor<String, UserEvent<AbstractBrowserEvent<?>>> processor;
 
   /**
-   * @param sourceTopicName
-   * @param retryTopicName
-   * @param deadLetterTopicName
-   * @param bootstrapServers
-   * @param client
+   * @param sourceTopicName source topic name
+   * @param retryTopicName retry topic name
+   * @param deadLetterTopicName dead letter topic name
+   * @param bootstrapServers bootstrap servers
+   * @param client rest high level client
    */
   public SearchIndexer(
       String sourceTopicName,

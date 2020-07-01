@@ -12,14 +12,14 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 @Slf4j
 public class BrowserEventElasticsearchBatchProcessor
-    extends ElasticsearchBatchProcessor<UserEvent<AbstractBrowserEvent>> {
+    extends ElasticsearchBatchProcessor<UserEvent<AbstractBrowserEvent<?>>> {
 
   public BrowserEventElasticsearchBatchProcessor(RestHighLevelClient client) {
     super(client);
   }
 
   @Override
-  public DocWriteRequest<?> transform(UserEvent<AbstractBrowserEvent> value) {
+  public DocWriteRequest<?> transform(UserEvent<AbstractBrowserEvent<?>> value) {
     Map<String, Object> index = value.index();
     String id = UUID.randomUUID().toString();
     return new IndexRequest(UserEventIndex.NAME).id(id).source(index);
