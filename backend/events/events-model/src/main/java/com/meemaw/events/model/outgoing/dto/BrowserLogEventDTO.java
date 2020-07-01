@@ -1,5 +1,6 @@
 package com.meemaw.events.model.outgoing.dto;
 
+import com.meemaw.events.model.shared.LogLevel;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -11,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public class BrowserLogEventDTO extends AbstractBrowserEventDTO {
 
-  String level;
+  LogLevel level;
   List<String> arguments;
 }

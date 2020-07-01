@@ -1,54 +1,36 @@
 package com.meemaw.events.model.incoming;
 
+import com.meemaw.events.model.incoming.BrowserPerformanceEvent.Arguments;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-public class BrowserPerformanceEvent extends AbstractBrowserEvent {
-
-  public String getName() {
-    return (String) args.get(0);
-  }
-
-  public String getEntryType() {
-    return (String) args.get(1);
-  }
-
-  public double getStartTime() {
-    Object startTime = args.get(2);
-    if (startTime instanceof Integer) {
-      return (int) startTime;
-    } else {
-      return (Double) startTime;
-    }
-  }
-
-  public double getDuration() {
-    Object duration = args.get(3);
-    if (duration instanceof Integer) {
-      return (int) duration;
-    } else {
-      return (Double) duration;
-    }
-  }
+public class BrowserPerformanceEvent extends AbstractBrowserEvent<Arguments> {
 
   @Override
   public Map<String, Object> index() {
     return Map.of(
         EVENT_TYPE,
-        getEventType(),
+        getEventTypeKey(),
         TIMESTAMP,
         timestamp,
         "name",
-        getName(),
+        arguments.getName(),
         "entryType",
-        getEntryType(),
+        arguments.getEntryType(),
         "startTime",
-        getStartTime(),
+        arguments.getStartTime(),
         "duration",
-        getDuration());
+        arguments.getDuration());
   }
 
-  @Override
-  public String getEventType() {
-    return BrowserEventTypeConstants.PERFORMANCE;
+  @Value
+  @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+  static class Arguments {
+    String name;
+    String entryType;
+    double startTime;
+    double duration;
   }
 }

@@ -1,32 +1,30 @@
 package com.meemaw.events.model.incoming;
 
+import com.meemaw.events.model.incoming.BrowserNavigateEvent.Arguments;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-public class BrowserNavigateEvent extends AbstractBrowserEvent {
-
-  public String getLocation() {
-    return (String) args.get(0);
-  }
-
-  public String getTitle() {
-    return (String) args.get(1);
-  }
+public class BrowserNavigateEvent extends AbstractBrowserEvent<Arguments> {
 
   @Override
   public Map<String, Object> index() {
     return Map.of(
         EVENT_TYPE,
-        getEventType(),
+        getEventTypeKey(),
         TIMESTAMP,
         timestamp,
         "location",
-        getLocation(),
+        arguments.getLocation(),
         "title",
-        getTitle());
+        arguments.getTitle());
   }
 
-  @Override
-  public String getEventType() {
-    return BrowserEventTypeConstants.NAVIGATE;
+  @Value
+  @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+  static class Arguments {
+    String location;
+    String title;
   }
 }

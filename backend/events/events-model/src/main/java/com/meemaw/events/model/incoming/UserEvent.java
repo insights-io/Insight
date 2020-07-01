@@ -14,7 +14,7 @@ import lombok.Value;
 @Builder
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class UserEvent<T extends AbstractBrowserEvent> {
+public class UserEvent<T extends AbstractBrowserEvent<?>> {
 
   T event;
   UUID pageId;

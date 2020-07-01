@@ -1,32 +1,30 @@
 package com.meemaw.events.model.incoming;
 
+import com.meemaw.events.model.incoming.BrowserResizeEvent.Arguments;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-public class BrowserResizeEvent extends AbstractBrowserEvent {
-
-  public int getInnerWidth() {
-    return (int) args.get(0);
-  }
-
-  public int getInnerHeight() {
-    return (int) args.get(1);
-  }
+public class BrowserResizeEvent extends AbstractBrowserEvent<Arguments> {
 
   @Override
   public Map<String, Object> index() {
     return Map.of(
         EVENT_TYPE,
-        getEventType(),
+        getEventTypeKey(),
         TIMESTAMP,
         timestamp,
         "innerWidth",
-        getInnerWidth(),
+        arguments.getInnerWidth(),
         "innerHeight",
-        getInnerHeight());
+        arguments.getInnerHeight());
   }
 
-  @Override
-  public String getEventType() {
-    return BrowserEventTypeConstants.RESIZE;
+  @Value
+  @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+  static class Arguments {
+    int innerWidth;
+    int innerHeight;
   }
 }

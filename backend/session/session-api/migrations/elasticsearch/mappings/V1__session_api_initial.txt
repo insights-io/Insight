@@ -9,7 +9,7 @@ PUT /events
         "type": "nested",
         "properties": {
           "e": {
-            "type": "keyword"
+            "type": "byte"
           },
           "t": {
             "type": "long"

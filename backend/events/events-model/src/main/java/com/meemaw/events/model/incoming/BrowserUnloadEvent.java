@@ -1,20 +1,22 @@
 package com.meemaw.events.model.incoming;
 
+import com.meemaw.events.model.incoming.BrowserUnloadEvent.Arguments;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-public class BrowserUnloadEvent extends AbstractBrowserEvent {
-
-  public String getLocation() {
-    return (String) args.get(0);
-  }
+public class BrowserUnloadEvent extends AbstractBrowserEvent<Arguments> {
 
   @Override
   public Map<String, Object> index() {
-    return Map.of(EVENT_TYPE, getEventType(), TIMESTAMP, timestamp, "location", getLocation());
+    return Map.of(
+        EVENT_TYPE, getEventTypeKey(), TIMESTAMP, timestamp, "location", arguments.getLocation());
   }
 
-  @Override
-  public String getEventType() {
-    return BrowserEventTypeConstants.UNLOAD;
+  @Value
+  @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+  public static class Arguments {
+    String location;
   }
 }

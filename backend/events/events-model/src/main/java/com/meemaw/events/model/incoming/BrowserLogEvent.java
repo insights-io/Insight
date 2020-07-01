@@ -1,36 +1,32 @@
 package com.meemaw.events.model.incoming;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meemaw.events.model.shared.LogLevel;
 import java.util.List;
 import java.util.Map;
 
-public class BrowserLogEvent extends AbstractBrowserEvent {
+public class BrowserLogEvent extends AbstractBrowserEvent<List<String>> {
 
   @JsonIgnore
-  public String getLogLevel() {
-    return (String) args.get(0);
+  public LogLevel getLevel() {
+    return LogLevel.fromString(arguments.get(0));
   }
 
   @JsonIgnore
-  public List<Object> getArguments() {
-    return args.subList(1, args.size());
+  public List<String> getArguments() {
+    return arguments.subList(1, arguments.size());
   }
 
   @Override
   public Map<String, Object> index() {
     return Map.of(
         EVENT_TYPE,
-        getEventType(),
+        getEventTypeKey(),
         TIMESTAMP,
         timestamp,
         "level",
-        getLogLevel(),
+        getLevel(),
         "arguments",
         getArguments());
-  }
-
-  @Override
-  public String getEventType() {
-    return BrowserEventTypeConstants.LOG;
   }
 }

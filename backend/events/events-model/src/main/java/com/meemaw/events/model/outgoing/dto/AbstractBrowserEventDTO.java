@@ -4,38 +4,43 @@ import static com.meemaw.events.model.incoming.AbstractBrowserEvent.EVENT_TYPE;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meemaw.events.model.Recorded;
-import com.meemaw.events.model.incoming.AbstractBrowserEvent;
-import com.meemaw.events.model.incoming.BrowserEventTypeConstants;
+import com.meemaw.events.model.shared.BrowserEventType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @JsonTypeInfo(
     use = Id.NAME,
     property = EVENT_TYPE,
-    defaultImpl = AbstractBrowserEvent.class,
+    defaultImpl = AbstractBrowserEventDTO.class,
     visible = true)
 @JsonSubTypes({
-  @Type(value = BrowserNavigateEventDTO.class, name = BrowserEventTypeConstants.NAVIGATE),
-  @Type(value = BrowserUnloadEventDTO.class, name = BrowserEventTypeConstants.UNLOAD),
-  @Type(value = BrowserResizeEventDTO.class, name = BrowserEventTypeConstants.RESIZE),
-  @Type(value = BrowserPerformanceEventDTO.class, name = BrowserEventTypeConstants.PERFORMANCE),
-  @Type(value = BrowserClickEventDTO.class, name = BrowserEventTypeConstants.CLICK),
-  @Type(value = BrowserMouseMoveEventDTO.class, name = BrowserEventTypeConstants.MOUSEMOVE),
-  @Type(value = BrowserMouseDownEventDTO.class, name = BrowserEventTypeConstants.MOUSEDOWN),
-  @Type(value = BrowserMouseUpEventDTO.class, name = BrowserEventTypeConstants.MOUSEUP),
-  @Type(value = BrowserLoadEventDTO.class, name = BrowserEventTypeConstants.LOAD),
-  @Type(value = BrowserLogEventDTO.class, name = BrowserEventTypeConstants.LOG),
+  @Type(value = BrowserNavigateEventDTO.class, name = BrowserEventType.NAVIGATE_KEY),
+  @Type(value = BrowserUnloadEventDTO.class, name = BrowserEventType.UNLOAD_KEY),
+  @Type(value = BrowserResizeEventDTO.class, name = BrowserEventType.RESIZE_KEY),
+  @Type(value = BrowserPerformanceEventDTO.class, name = BrowserEventType.PERFORMANCE_KEY),
+  @Type(value = BrowserClickEventDTO.class, name = BrowserEventType.CLICK_KEY),
+  @Type(value = BrowserMouseMoveEventDTO.class, name = BrowserEventType.MOUSEMOVE_KEY),
+  @Type(value = BrowserMouseDownEventDTO.class, name = BrowserEventType.MOUSEDOWN_KEY),
+  @Type(value = BrowserMouseUpEventDTO.class, name = BrowserEventType.MOUSEUP_KEY),
+  @Type(value = BrowserLoadEventDTO.class, name = BrowserEventType.LOAD_KEY),
+  @Type(value = BrowserLogEventDTO.class, name = BrowserEventType.LOG_KEY),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 public abstract class AbstractBrowserEventDTO extends Recorded {
 
-  @JsonProperty(EVENT_TYPE)
-  String eventType;
+  @JsonProperty(access = Access.WRITE_ONLY, value = EVENT_TYPE)
+  BrowserEventType eventType;
+
+  @JsonProperty(access = Access.READ_ONLY, value = EVENT_TYPE)
+  public byte getEventTypeKey() {
+    return eventType.getKey();
+  }
 }
