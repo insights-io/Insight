@@ -41,7 +41,7 @@
     "next-cookies": "2.0.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-hook-form": "5.7.2",
+    "react-hook-form": "6.0.0",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7",
     "swr": "0.2.3"
