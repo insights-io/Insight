@@ -2,7 +2,7 @@ package com.meemaw.beacon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meemaw.events.model.Recorded;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;

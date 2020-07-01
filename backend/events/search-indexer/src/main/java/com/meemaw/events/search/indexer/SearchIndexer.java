@@ -1,9 +1,9 @@
 package com.meemaw.events.search.indexer;
 
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
-import com.meemaw.events.model.internal.serialization.UserEventDeserializer;
-import com.meemaw.events.model.internal.serialization.UserEventSerializer;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.events.model.incoming.serialization.UserEventDeserializer;
+import com.meemaw.events.model.incoming.serialization.UserEventSerializer;
 import com.meemaw.events.stream.kafka.KafkaSourcedBatchProcessor;
 import com.meemaw.events.stream.kafka.RetryQueueStandaloneKafkaConsumer;
 import java.util.Properties;
@@ -19,14 +19,14 @@ public class SearchIndexer {
 
   private static final String CONSUMER_GROUP_ID = "search-indexer";
 
-  private final KafkaSourcedBatchProcessor<String, UserEvent<AbstractBrowserEvent>> processor;
+  private final KafkaSourcedBatchProcessor<String, UserEvent<AbstractBrowserEvent<?>>> processor;
 
   /**
-   * @param sourceTopicName
-   * @param retryTopicName
-   * @param deadLetterTopicName
-   * @param bootstrapServers
-   * @param client
+   * @param sourceTopicName source topic name
+   * @param retryTopicName retry topic name
+   * @param deadLetterTopicName dead letter topic name
+   * @param bootstrapServers bootstrap servers
+   * @param client rest high level client
    */
   public SearchIndexer(
       String sourceTopicName,

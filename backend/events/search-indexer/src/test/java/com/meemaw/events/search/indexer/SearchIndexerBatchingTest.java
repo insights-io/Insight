@@ -4,8 +4,8 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.test.testconainers.elasticsearch.Elasticsearch;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.Kafka;
@@ -40,7 +40,7 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
     createIndex(client);
 
     // setup Kafka
-    KafkaProducer<String, UserEvent<AbstractBrowserEvent>> producer = configureProducer();
+    KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer = configureProducer();
     writeSmallBatch(producer);
     writeLargeBatch(producer);
 

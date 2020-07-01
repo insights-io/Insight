@@ -4,8 +4,8 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.test.testconainers.elasticsearch.Elasticsearch;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.Kafka;
@@ -45,8 +45,8 @@ public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTes
   @Test
   public void canRecoverAfterConnectionRefused() throws IOException, URISyntaxException {
     // setup Kafka
-    KafkaProducer<String, UserEvent<AbstractBrowserEvent>> producer = configureProducer();
-    KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> retryQueueConsumer =
+    KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer = configureProducer();
+    KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> retryQueueConsumer =
         retryQueueConsumer();
 
     writeSmallBatch(producer);
@@ -57,7 +57,7 @@ public class SearchIndexerConnectionRecoverTest extends AbstractSearchIndexerTes
         .atMost(30, TimeUnit.SECONDS)
         .until(
             () -> {
-              ConsumerRecords<String, UserEvent<AbstractBrowserEvent>> records =
+              ConsumerRecords<String, UserEvent<AbstractBrowserEvent<?>>> records =
                   retryQueueConsumer.poll(Duration.ofMillis(1000));
               log.info("retry queue record count: {}", records.count());
               return records.count() == 1;

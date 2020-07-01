@@ -2,9 +2,9 @@ package com.meemaw.events.search.indexer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
-import com.meemaw.events.model.internal.serialization.UserEventSerializer;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.events.model.incoming.serialization.UserEventSerializer;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
@@ -72,7 +72,7 @@ public class AbstractSearchIndexerTest {
     return spawnIndexer(ElasticsearchTestExtension.getInstance().getHttpHost());
   }
 
-  protected KafkaProducer<String, UserEvent<AbstractBrowserEvent>> configureProducer() {
+  protected KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> configureProducer() {
     Properties props = new Properties();
     props.put(
         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -82,17 +82,17 @@ public class AbstractSearchIndexerTest {
     return new KafkaProducer<>(props);
   }
 
-  protected Collection<ProducerRecord<String, UserEvent<AbstractBrowserEvent>>> kafkaRecords(
-      Collection<UserEvent<AbstractBrowserEvent>> batch) {
+  protected Collection<ProducerRecord<String, UserEvent<AbstractBrowserEvent<?>>>> kafkaRecords(
+      Collection<UserEvent<AbstractBrowserEvent<?>>> batch) {
     return batch.stream()
         .map(
             event ->
-                new ProducerRecord<String, UserEvent<AbstractBrowserEvent>>(
+                new ProducerRecord<String, UserEvent<AbstractBrowserEvent<?>>>(
                     SOURCE_TOPIC_NAME, event))
         .collect(Collectors.toList());
   }
 
-  protected Collection<ProducerRecord<String, UserEvent<AbstractBrowserEvent>>> readKafkaRecords(
+  protected Collection<ProducerRecord<String, UserEvent<AbstractBrowserEvent<?>>>> readKafkaRecords(
       String path) throws IOException, URISyntaxException {
     String payload =
         Files.readString(
@@ -101,7 +101,7 @@ public class AbstractSearchIndexerTest {
                         Thread.currentThread().getContextClassLoader().getResource(path))
                     .toURI()));
 
-    Collection<UserEvent<AbstractBrowserEvent>> batch =
+    Collection<UserEvent<AbstractBrowserEvent<?>>> batch =
         JacksonMapper.get().readValue(payload, new TypeReference<>() {});
 
     return kafkaRecords(batch);
@@ -114,7 +114,7 @@ public class AbstractSearchIndexerTest {
   }
 
   protected Collection<Future<RecordMetadata>> writeSmallBatch(
-      KafkaProducer<String, UserEvent<AbstractBrowserEvent>> producer)
+      KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer)
       throws IOException, URISyntaxException {
     return readKafkaRecords("eventsBatch/small.json").stream()
         .map(
@@ -135,7 +135,7 @@ public class AbstractSearchIndexerTest {
   }
 
   protected Collection<Future<RecordMetadata>> writeLargeBatch(
-      KafkaProducer<String, UserEvent<AbstractBrowserEvent>> producer)
+      KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer)
       throws IOException, URISyntaxException {
     return readKafkaRecords("eventsBatch/large.json").stream()
         .map(
@@ -155,20 +155,21 @@ public class AbstractSearchIndexerTest {
         .collect(Collectors.toList());
   }
 
-  private KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> eventsConsumer(String topicName) {
+  private KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> eventsConsumer(
+      String topicName) {
     Properties properties =
         SearchIndexer.consumerProperties(KafkaTestExtension.getInstance().getBootstrapServers());
-    KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> consumer =
+    KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> consumer =
         new KafkaConsumer<>(properties);
     consumer.subscribe(Collections.singletonList(topicName));
     return consumer;
   }
 
-  protected KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> retryQueueConsumer() {
+  protected KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> retryQueueConsumer() {
     return eventsConsumer(RETRY_TOPIC_NAME);
   }
 
-  protected KafkaConsumer<String, UserEvent<AbstractBrowserEvent>> deadLetterQueueConsumer() {
+  protected KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> deadLetterQueueConsumer() {
     return eventsConsumer(DEAD_LETTER_TOPIC_NAME);
   }
 }

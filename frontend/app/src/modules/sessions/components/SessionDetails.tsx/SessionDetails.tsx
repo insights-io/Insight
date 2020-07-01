@@ -20,7 +20,7 @@ const SessionDetails = ({ sessionId }: Props) => {
 
   const logEvents = useMemo(() => {
     return data
-      .filter((event) => event.e === '9')
+      .filter((event) => event.e === 9)
       .map((event) => event) as BrowserLogEventDTO[];
   }, [data]);
 

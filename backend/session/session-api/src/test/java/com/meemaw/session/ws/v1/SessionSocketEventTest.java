@@ -3,7 +3,7 @@ package com.meemaw.session.ws.v1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.test.testconainers.kafka.KafkaTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
