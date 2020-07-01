@@ -1,8 +1,8 @@
 package com.meemaw.events.search.indexer;
 
 import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;

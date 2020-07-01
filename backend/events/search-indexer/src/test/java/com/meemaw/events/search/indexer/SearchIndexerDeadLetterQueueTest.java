@@ -2,8 +2,8 @@ package com.meemaw.events.search.indexer;
 
 import static org.awaitility.Awaitility.with;
 
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.test.testconainers.kafka.Kafka;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;

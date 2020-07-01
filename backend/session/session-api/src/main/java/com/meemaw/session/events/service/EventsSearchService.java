@@ -5,8 +5,8 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.external.dto.AbstractBrowserEventDTO;
-import com.meemaw.events.model.external.dto.UserEventDTO;
+import com.meemaw.events.model.outgoing.dto.AbstractBrowserEventDTO;
+import com.meemaw.events.model.outgoing.dto.UserEventDTO;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import com.meemaw.shared.elasticsearch.rest.query.ElasticSearchDTO;
 import com.meemaw.shared.rest.query.SearchDTO;

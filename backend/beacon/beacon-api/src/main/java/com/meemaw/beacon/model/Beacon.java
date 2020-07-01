@@ -1,7 +1,7 @@
 package com.meemaw.beacon.model;
 
 import com.meemaw.beacon.model.dto.BeaconDTO;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;

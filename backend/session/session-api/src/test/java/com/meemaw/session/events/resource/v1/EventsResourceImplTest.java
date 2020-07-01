@@ -9,8 +9,8 @@ import static org.hamcrest.Matchers.is;
 
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.internal.AbstractBrowserEvent;
-import com.meemaw.events.model.internal.UserEvent;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
