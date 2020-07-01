@@ -50,7 +50,7 @@
     "testcafe": "1.8.6",
     "ts-jest": "26.1.1",
     "tsdx": "0.13.2",
-    "typescript": "3.9.5",
+    "typescript": "3.9.6",
     "wait-on": "5.0.1"
   },
   "husky": {
