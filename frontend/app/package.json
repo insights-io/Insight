@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@insight/service-proxy": "0.0.0-development",
-    "baseui": "9.84.2",
+    "baseui": "9.85.0",
     "date-fns": "2.14.0",
     "ky": "0.20.0",
     "ky-universal": "0.8.1",
