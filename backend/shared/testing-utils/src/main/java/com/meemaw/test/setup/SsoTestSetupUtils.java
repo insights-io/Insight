@@ -108,12 +108,25 @@ public final class SsoTestSetupUtils {
   }
 
   /**
-   * Log in with provided credentials.
+   * Log in with provided credentials. This method can only be used from auth-api as it uses an URL
+   * relative to the current environment for login endpoint. If you want to login from other module,
+   * use {@link #login(String email, String password, String baseURI)}.
    *
-   * @param baseURI auth api base uri
    * @param email address
    * @param password from the user
-   * @return String SessionID
+   * @return session id
+   */
+  public static String login(String email, String password) {
+    return login(email, password, null);
+  }
+
+  /**
+   * Log in with provided credentials.
+   *
+   * @param email address
+   * @param password from the user
+   * @param baseURI auth api base uri
+   * @return session id
    */
   public static String login(String email, String password, String baseURI) {
     String uri =
@@ -132,7 +145,7 @@ public final class SsoTestSetupUtils {
   }
 
   /**
-   * Log in with pre-created admin user.
+   * Log in with pre-created Insight admin user.
    *
    * @return session id
    */

@@ -1,7 +1,9 @@
 package com.meemaw.auth.sso.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.SsoTestSetupUtils.login;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
+import static com.meemaw.test.setup.SsoTestSetupUtils.signUpRequestMock;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -16,7 +18,6 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -101,7 +102,7 @@ public class SsoResourceImplTest {
   @Test
   public void login_should_fail_when_user_with_unfinished_signUp() throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
-        SsoTestSetupUtils.signUpRequestMock("login-no-complete@gmail.com", "password123");
+        signUpRequestMock("login-no-complete@gmail.com", "password123");
 
     given()
         .when()
@@ -194,7 +195,7 @@ public class SsoResourceImplTest {
     String password = "test-logout-password";
 
     String firstSessionId = signUpAndLogin(mailbox, objectMapper, email, password);
-    String secondSessionId = SsoTestSetupUtils.login(email, password, null);
+    String secondSessionId = login(email, password);
 
     // Make sure sessions are not the same
     assertNotEquals(firstSessionId, secondSessionId);
