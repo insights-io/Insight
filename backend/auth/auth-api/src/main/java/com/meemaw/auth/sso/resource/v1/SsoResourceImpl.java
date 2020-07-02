@@ -45,10 +45,20 @@ public class SsoResourceImpl implements SsoResource {
               ResponseBuilder builder =
                   maybeUser.isPresent()
                       ? Response.noContent()
-                      : DataResponse.error(Boom.badRequest().message("Session does not exist"))
-                          .builder();
+                      : DataResponse.error(Boom.notFound()).builder();
               return builder.cookie(SsoSession.clearCookie(cookieDomain)).build();
             });
+  }
+
+  @Override
+  public CompletionStage<Response> logoutFromAllDevices(String sessionId) {
+    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
+    log.debug("Logout from all devices request");
+    String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
+    return ssoService
+        .logoutFromAllDevices(sessionId)
+        .thenApply(
+            sessions -> Response.noContent().cookie(SsoSession.clearCookie(cookieDomain)).build());
   }
 
   @Override

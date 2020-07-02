@@ -36,6 +36,11 @@ public interface SsoResource {
   CompletionStage<Response> logout(
       @NotBlank(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
 
+  @POST
+  @Path("logout-from-all-devices")
+  CompletionStage<Response> logoutFromAllDevices(
+      @NotBlank(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
+
   @GET
   @Path("session")
   @Produces(MediaType.APPLICATION_JSON)

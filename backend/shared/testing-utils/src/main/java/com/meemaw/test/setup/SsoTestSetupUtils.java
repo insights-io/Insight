@@ -115,7 +115,7 @@ public final class SsoTestSetupUtils {
    * @param password from the user
    * @return String SessionID
    */
-  public static String login(String baseURI, String email, String password) {
+  public static String login(String email, String password, String baseURI) {
     String uri =
         String.join("/", Optional.ofNullable(baseURI).orElse("") + SsoResource.PATH, "login");
 
@@ -136,9 +136,9 @@ public final class SsoTestSetupUtils {
    *
    * @return session id
    */
-  public static String login() {
+  public static String loginWithInsightAdmin() {
     String authApiBaseURI = AuthApiTestExtension.getInstance().getBaseURI();
-    return login(authApiBaseURI, "admin@insight.io", "superDuperPassword123");
+    return login("admin@insight.io", "superDuperPassword123", authApiBaseURI);
   }
 
   /**

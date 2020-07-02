@@ -90,7 +90,7 @@ public class BeaconService {
     MDC.put(LoggingConstants.PAGE_ID, pageId.toString());
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
 
-    Function<AbstractBrowserEvent, UserEvent<?>> identify =
+    Function<AbstractBrowserEvent<?>, UserEvent<?>> identify =
         (event) ->
             UserEvent.builder()
                 .event(event)
@@ -110,12 +110,12 @@ public class BeaconService {
               }
               log.info("Sending {} beacon events to Kafka", beacon.getEvents().size());
 
-              List<AbstractBrowserEvent> events = beacon.getEvents();
+              List<AbstractBrowserEvent<?>> events = beacon.getEvents();
               Stream<Uni<Void>> operations =
                   events.stream().map(event -> sendEvent(eventsEmitter, identify, event));
 
               // BrowserUnloadEvent always comes last!
-              AbstractBrowserEvent maybeUnloadEvent = events.get(events.size() - 1);
+              AbstractBrowserEvent<?> maybeUnloadEvent = events.get(events.size() - 1);
               if (maybeUnloadEvent instanceof BrowserUnloadEvent) {
                 log.info("Sending BrowserUnloadEvent to Kafka");
                 operations =
@@ -133,8 +133,8 @@ public class BeaconService {
 
   private Uni<Void> sendEvent(
       Emitter<UserEvent<?>> channel,
-      Function<AbstractBrowserEvent, UserEvent<?>> identify,
-      AbstractBrowserEvent event) {
+      Function<AbstractBrowserEvent<?>, UserEvent<?>> identify,
+      AbstractBrowserEvent<?> event) {
     return Uni.createFrom().completionStage(channel.send(identify.apply(event)));
   }
 }

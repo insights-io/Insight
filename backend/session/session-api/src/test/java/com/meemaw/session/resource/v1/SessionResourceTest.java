@@ -66,7 +66,7 @@ public class SessionResourceTest {
     // GET newly created page
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.loginWithInsightAdmin())
         .queryParam("organizationId", "000000") // TODO: remove when S2S auth
         .get(String.format(SESSION_PAGE_PATH_TEMPLATE, sessionId, pageId))
         .then()
@@ -78,7 +78,7 @@ public class SessionResourceTest {
     DataResponse<SessionDTO> sessionDataResponse =
         given()
             .when()
-            .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+            .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.loginWithInsightAdmin())
             .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
             .then()
             .statusCode(200)
@@ -92,7 +92,7 @@ public class SessionResourceTest {
     // GET sessions
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.loginWithInsightAdmin())
         .get(
             String.format(
                 "%s?created_at=gte:%s",
@@ -124,7 +124,7 @@ public class SessionResourceTest {
     // GET sessions again to confirm no new sessions has been created
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.loginWithInsightAdmin())
         .get(
             String.format(
                 "%s?created_at=gte:%s",
@@ -177,7 +177,7 @@ public class SessionResourceTest {
     DataResponse<SessionDTO> firstSessionDataResponse =
         given()
             .when()
-            .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+            .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.loginWithInsightAdmin())
             .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
             .then()
             .statusCode(200)
@@ -188,7 +188,7 @@ public class SessionResourceTest {
     // GET sessions should return 2 newly created sessions
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.login())
+        .cookie(SsoSession.COOKIE_NAME, SsoTestSetupUtils.loginWithInsightAdmin())
         .get(
             String.format(
                 "%s?created_at=gte:%s",

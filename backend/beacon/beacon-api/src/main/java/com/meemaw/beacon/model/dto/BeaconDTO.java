@@ -24,5 +24,5 @@ public class BeaconDTO extends Recorded {
 
   @JsonProperty("e")
   @NotEmpty(message = "e may not be empty")
-  List<AbstractBrowserEvent> events;
+  List<AbstractBrowserEvent<?>> events;
 }

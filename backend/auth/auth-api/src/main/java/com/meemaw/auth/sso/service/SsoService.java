@@ -2,7 +2,11 @@ package com.meemaw.auth.sso.service;
 
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public interface SsoService {
@@ -30,6 +34,29 @@ public interface SsoService {
    * @return maybe user associated with logout if it was successful.
    */
   CompletionStage<Optional<SsoUser>> logout(String sessionId);
+
+  /**
+   * Logout user from all devices.
+   *
+   * @param userId user id
+   * @return list of sessions that has been revoked
+   */
+  CompletionStage<List<String>> logoutUserFromAllDevices(UUID userId);
+
+  /**
+   * Logout user associated with a session id from all devices.
+   *
+   * @param sessionId session id
+   * @return list of sessions that has been revoked
+   */
+  default CompletionStage<List<String>> logoutFromAllDevices(String sessionId) {
+    return findSession(sessionId)
+        .thenCompose(
+            maybeUser ->
+                maybeUser.isEmpty()
+                    ? CompletableFuture.completedStage(Collections.emptyList())
+                    : logoutUserFromAllDevices(maybeUser.get().getId()));
+  }
 
   /**
    * Log user associated with the provided credentials in.

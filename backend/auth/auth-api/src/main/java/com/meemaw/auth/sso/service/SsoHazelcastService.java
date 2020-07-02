@@ -6,7 +6,9 @@ import com.meemaw.auth.sso.datasource.SsoDatasource;
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -45,6 +47,15 @@ public class SsoHazelcastService implements SsoService {
   @Timed(name = "logout", description = "A measure of how long it takes to do logout")
   public CompletionStage<Optional<SsoUser>> logout(String sessionId) {
     return ssoDatasource.deleteSession(sessionId);
+  }
+
+  @Override
+  @Traced
+  @Timed(
+      name = "logoutFromAllDevices",
+      description = "A measure of how long it takes to do a logout from all devices")
+  public CompletionStage<List<String>> logoutUserFromAllDevices(UUID userId) {
+    return ssoDatasource.deleteAllSessionsForUser(userId);
   }
 
   @Override
