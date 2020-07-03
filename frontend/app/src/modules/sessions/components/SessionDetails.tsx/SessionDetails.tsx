@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import useSWR from 'swr';
 import SessionApi from 'api/session';
 import { H3 } from 'baseui/typography';
@@ -17,6 +17,14 @@ const SessionDetails = ({ sessionId }: Props) => {
     () => SessionApi.getEvents(sessionId),
     { refreshWhenHidden: true, refreshInterval: 5000 }
   );
+
+  useEffect(() => {
+    window.addEventListener('error', (event) => {
+      console.log(event);
+    });
+
+    throw new Error('HA!');
+  }, []);
 
   const logEvents = useMemo(() => {
     return data

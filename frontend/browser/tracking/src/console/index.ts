@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { Enqueue } from 'types';
-import { EventType } from 'event';
-import { LogLevel } from '@insight/types';
+import { LogLevel, EventType } from '@insight/types';
 
 export const LOG_LEVELS: Record<LogLevel, number> = {
   debug: 10,

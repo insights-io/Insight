@@ -1,4 +1,4 @@
-import { EventData } from 'backend/types';
+import { EventData } from 'event';
 
 import { BaseTransport, Status, GlobalObject } from './base';
 

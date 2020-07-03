@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-nested-ternary */
-import { EventData } from 'backend/types';
+import { EventData } from 'event';
 
 export class Status {
   public static Unknown = 'unknown';
