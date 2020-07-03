@@ -1,13 +1,14 @@
 package com.meemaw.auth.sso.service;
 
 import com.meemaw.auth.password.service.PasswordService;
-import com.meemaw.auth.signup.service.SignUpServiceImpl;
+import com.meemaw.auth.signup.service.SignUpService;
 import com.meemaw.auth.sso.datasource.SsoDatasource;
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
-import java.util.Collection;
+import com.meemaw.shared.rest.response.Boom;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -19,12 +20,12 @@ import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
-public class SsoHazelcastService implements SsoService {
+public class SsoServiceImpl implements SsoService {
 
   @Inject SsoDatasource ssoDatasource;
   @Inject PasswordService passwordService;
   @Inject UserDatasource userDatasource;
-  @Inject SignUpServiceImpl signUpService;
+  @Inject SignUpService signUpService;
 
   @Override
   @Traced
@@ -44,6 +45,18 @@ public class SsoHazelcastService implements SsoService {
 
   @Override
   @Traced
+  @Timed(name = "findSessions", description = "A measure of how long it takes to find SSO sessions")
+  public CompletionStage<Set<String>> findSessions(String sessionId) {
+    return ssoDatasource
+        .findSession(sessionId)
+        .thenCompose(
+            ssoUser ->
+                ssoDatasource.getAllSessionsForUser(
+                    ssoUser.orElseThrow(() -> Boom.notFound().exception()).getId()));
+  }
+
+  @Override
+  @Traced
   @Timed(name = "logout", description = "A measure of how long it takes to do logout")
   public CompletionStage<Optional<SsoUser>> logout(String sessionId) {
     return ssoDatasource.deleteSession(sessionId);
@@ -54,7 +67,7 @@ public class SsoHazelcastService implements SsoService {
   @Timed(
       name = "logoutFromAllDevices",
       description = "A measure of how long it takes to do a logout from all devices")
-  public CompletionStage<Collection<String>> logoutUserFromAllDevices(UUID userId) {
+  public CompletionStage<Set<String>> logoutUserFromAllDevices(UUID userId) {
     return ssoDatasource.deleteAllSessionsForUser(userId);
   }
 

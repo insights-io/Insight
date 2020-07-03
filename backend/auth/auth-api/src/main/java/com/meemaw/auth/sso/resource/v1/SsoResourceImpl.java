@@ -77,4 +77,11 @@ public class SsoResourceImpl implements SsoResource {
               return DataResponse.ok(maybeUser.get());
             });
   }
+
+  @Override
+  public CompletionStage<Response> mySessions(String sessionId) {
+    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
+    log.debug("Sessions request");
+    return ssoService.findSessions(sessionId).thenApply(DataResponse::ok);
+  }
 }
