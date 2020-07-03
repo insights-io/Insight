@@ -15,7 +15,7 @@ on:
 env:
   CI: true
   ARTIFACTS_PATH: frontend/app/artifacts/
-  BOOTSTRAP_SCRIPT: http://localhost:5001/local.insight.js
+  BOOTSTRAP_SCRIPT: http://localhost:5001/localhost.insight.js
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
 
