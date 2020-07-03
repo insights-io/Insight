@@ -1,6 +1,7 @@
 package com.meemaw.auth.organization.invite.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,7 +13,6 @@ import com.meemaw.auth.organization.invite.model.dto.InviteAcceptDTO;
 import com.meemaw.auth.organization.invite.model.dto.InviteCreateDTO;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
-import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
@@ -61,7 +61,7 @@ public class TeamInviteResourceImplTest {
     if (sessionId == null) {
       String email = "org_invite_test@gmail.com";
       String password = "org_invite_test_password";
-      sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+      sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
     }
 
     return sessionId;
@@ -229,7 +229,7 @@ public class TeamInviteResourceImplTest {
   @Test
   public void list_invites_should_return_collection() throws IOException {
     String sessionId =
-        SsoTestSetupUtils.signUpAndLogin(
+        signUpAndLogin(
             mailbox, objectMapper, "list-invites-fetcher@gmail.com", "list-invites-fetcher");
 
     given()

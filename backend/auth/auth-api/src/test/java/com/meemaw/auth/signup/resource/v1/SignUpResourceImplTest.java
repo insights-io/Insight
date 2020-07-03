@@ -1,6 +1,8 @@
 package com.meemaw.auth.signup.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.RestAssuredUtils.dontFollowRedirects;
+import static com.meemaw.test.setup.SsoTestSetupUtils.parseLink;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -10,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
@@ -142,8 +143,8 @@ public class SignUpResourceImplTest {
     // completing sign up with with referer should redirect back to it
     given()
         .when()
-        .config(RestAssuredUtils.dontFollowRedirects())
-        .get(SsoTestSetupUtils.parseLink(mailbox.getMessagesSentTo(signUpEmail).get(0)))
+        .config(dontFollowRedirects())
+        .get(parseLink(mailbox.getMessagesSentTo(signUpEmail).get(0)))
         .then()
         .statusCode(Status.FOUND.getStatusCode())
         .cookie(SsoSession.COOKIE_NAME)

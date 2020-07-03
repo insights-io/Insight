@@ -1,4 +1,4 @@
-package com.meemaw.auth.shared;
+package com.meemaw.shared.model;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;

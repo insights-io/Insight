@@ -1,6 +1,6 @@
 package com.meemaw.auth.signup.model;
 
-import com.meemaw.auth.shared.CanExpire;
+import com.meemaw.shared.model.CanExpire;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;

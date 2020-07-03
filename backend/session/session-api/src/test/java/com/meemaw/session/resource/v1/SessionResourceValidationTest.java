@@ -1,10 +1,10 @@
 package com.meemaw.session.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
 import static io.restassured.RestAssured.given;
 
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -61,9 +61,9 @@ public class SessionResourceValidationTest {
 
   @Test
   public void get_sessions_should_be_under_cookie_auth() {
-    SsoTestSetupUtils.cookieExpect401(SessionResource.PATH, null);
-    SsoTestSetupUtils.cookieExpect401(SessionResource.PATH, "random");
-    SsoTestSetupUtils.cookieExpect401(SessionResource.PATH, SsoSession.newIdentifier());
+    cookieExpect401(SessionResource.PATH, null);
+    cookieExpect401(SessionResource.PATH, "random");
+    cookieExpect401(SessionResource.PATH, SsoSession.newIdentifier());
   }
 
   @Test
@@ -73,8 +73,8 @@ public class SessionResourceValidationTest {
         String.format(
             SessionResourceTest.SESSION_PAGE_PATH_TEMPLATE, UUID.randomUUID(), UUID.randomUUID());
 
-    SsoTestSetupUtils.cookieExpect401(path, null);
-    SsoTestSetupUtils.cookieExpect401(path, "random");
-    SsoTestSetupUtils.cookieExpect401(path, SsoSession.newIdentifier());
+    cookieExpect401(path, null);
+    cookieExpect401(path, "random");
+    cookieExpect401(path, SsoSession.newIdentifier());
   }
 }

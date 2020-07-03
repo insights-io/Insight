@@ -2,7 +2,7 @@ package com.meemaw.session.events.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
-import static com.meemaw.test.setup.SsoTestSetupUtils.login;
+import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
@@ -96,7 +96,7 @@ public class EventsResourceImplTest {
   public void events_search_should_return_empty_list_on_random_session() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, login())
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, UUID.randomUUID()))
         .then()
         .statusCode(200)
@@ -112,7 +112,7 @@ public class EventsResourceImplTest {
             () ->
                 given()
                     .when()
-                    .cookie(SsoSession.COOKIE_NAME, login())
+                    .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
                     .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
                     .then()
                     .statusCode(200)
@@ -129,7 +129,7 @@ public class EventsResourceImplTest {
             () ->
                 given()
                     .when()
-                    .cookie(SsoSession.COOKIE_NAME, login())
+                    .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
                     .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:4")
                     .then()
                     .statusCode(200)

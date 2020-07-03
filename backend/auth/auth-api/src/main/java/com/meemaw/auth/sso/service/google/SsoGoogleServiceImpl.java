@@ -6,7 +6,6 @@ import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +19,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
@@ -27,10 +27,13 @@ import org.slf4j.MDC;
 @Slf4j
 public class SsoGoogleServiceImpl implements SsoGoogleService {
 
+  public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final Collection<String> SCOPE_LIST = List.of("openid", "email", "profile");
   private static final String SCOPES = String.join(" ", SCOPE_LIST);
   private static final String AUTHORIZATION_SERVER_URL =
       "https://accounts.google.com/o/oauth2/auth";
+
+  private static final SecureRandom random = new SecureRandom();
 
   @Inject AppConfig appConfig;
   @Inject SsoGoogleClient ssoGoogleClient;
@@ -49,7 +52,8 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
 
   @Override
   public String secureState(String data) {
-    String secureString = new BigInteger(130, new SecureRandom()).toString(32);
+    String secureString =
+        RandomStringUtils.random(SECURE_STATE_PREFIX_LENGTH, 0, 0, true, true, null, random);
     return secureString + data;
   }
 
@@ -70,7 +74,8 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
               String fullName = String.join(" ", userInfo.getGivenName(), userInfo.getFamilyName());
               String email = userInfo.getEmail();
               String location =
-                  URLDecoder.decode(sessionState.substring(26), StandardCharsets.UTF_8);
+                  URLDecoder.decode(
+                      sessionState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
               String cookieDomain = RequestUtils.parseCookieDomain(location);
               MDC.put(LoggingConstants.USER_EMAIL, email);
 

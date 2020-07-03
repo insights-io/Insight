@@ -1,6 +1,7 @@
 package com.meemaw.auth.password.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,7 +11,6 @@ import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
-import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
@@ -156,7 +156,7 @@ public class PasswordResourceImplTest {
   public void password_forgot_should_send_email_on_existing_user() throws JsonProcessingException {
     String email = "test-forgot-password-flow@gmail.com";
     String password = "superHardPassword";
-    SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    signUpAndLogin(mailbox, objectMapper, email, password);
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
     // can trigger the forgot flow multiple times!!
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
@@ -263,7 +263,7 @@ public class PasswordResourceImplTest {
   public void password_reset_flow_should_succeed_after_sign_up() throws JsonProcessingException {
     String signUpEmail = "reset-password-flow@gmail.com";
     String oldPassword = "superHardPassword";
-    SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, signUpEmail, oldPassword);
+    signUpAndLogin(mailbox, objectMapper, signUpEmail, oldPassword);
     PasswordResourceImplTest.passwordForgot(signUpEmail, objectMapper);
 
     // login with "oldPassword" should succeed

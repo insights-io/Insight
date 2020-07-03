@@ -14,7 +14,7 @@ public class Beacon {
 
   int timestamp;
   int sequence;
-  List<AbstractBrowserEvent> events;
+  List<AbstractBrowserEvent<?>> events;
 
   Beacon(BeaconDTO dto) {
     this(dto.getTimestamp(), dto.getSequence(), dto.getEvents());
