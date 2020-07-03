@@ -153,10 +153,10 @@ describe('tracking script', () => {
       expect(postData.s).toEqual(2);
       expect(beaconResponse.status()).toEqual(204);
 
-      const [consoleInfoEvent, consoleLogEvent, errorEvent] = postData.e;
+      const [consoleInfoEvent, consoleErrorEvent, errorEvent] = postData.e;
 
       expect(consoleInfoEvent.a).toEqual(['info', 'Do some console.info!']);
-      expect(consoleLogEvent.a).toEqual(['error', 'Do some console.error!']);
+      expect(consoleErrorEvent.a).toEqual(['error', 'Do some console.error!']);
       expect(errorEvent.a[0]).toEqual('simulated error');
       expect(
         (errorEvent.a[1] as string).includes('Error: simulated error\n    at')
