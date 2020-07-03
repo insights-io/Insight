@@ -22,6 +22,11 @@ const SsoApi = {
   logout: (baseURL = authApiBaseURL) => {
     return ky.post(`${baseURL}/v1/sso/logout`, { credentials: 'include' });
   },
+  logoutFromAllDevices: (baseURL = authApiBaseURL) => {
+    return ky.post(`${baseURL}/v1/sso/logout-from-all-devices`, {
+      credentials: 'include',
+    });
+  },
 };
 
 export default SsoApi;
