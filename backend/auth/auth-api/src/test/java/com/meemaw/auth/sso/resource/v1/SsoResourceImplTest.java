@@ -23,6 +23,7 @@ import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
@@ -166,6 +167,65 @@ public class SsoResourceImplTest {
   }
 
   @Test
+  public void logout_should_clear_session_from_future_sessions_lookups()
+      throws JsonProcessingException {
+    String email = "test-logoug-sso-sessions@gmail.com";
+    String password = "password123";
+
+    String firstSessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    String secondSessionId = login(email, password);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, secondSessionId)
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                JacksonMapper.get()
+                    .writeValueAsString(
+                        DataResponse.data(List.of(firstSessionId, secondSessionId)))));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, secondSessionId)
+        .post(SsoResource.PATH + "/logout")
+        .then()
+        .statusCode(204)
+        .cookie(SsoSession.COOKIE_NAME, "");
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, firstSessionId)
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                JacksonMapper.get()
+                    .writeValueAsString(DataResponse.data(List.of(firstSessionId)))));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, firstSessionId)
+        .post(SsoResource.PATH + "/logout")
+        .then()
+        .statusCode(204)
+        .cookie(SsoSession.COOKIE_NAME, "");
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, firstSessionId)
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
+
+  @Test
   public void logout_from_all_devices_should_fail_when_no_cookie() {
     given()
         .when()
@@ -226,6 +286,18 @@ public class SsoResourceImplTest {
     assertEquals(firstSessionIdUser, secondSessionIdUser);
     assertEquals(email, firstSessionIdUser.getData().getEmail());
 
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, secondSessionId)
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                JacksonMapper.get()
+                    .writeValueAsString(
+                        DataResponse.data(List.of(firstSessionId, secondSessionId)))));
+
     // Logout from all sessions
     given()
         .when()
@@ -239,12 +311,32 @@ public class SsoResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, firstSessionId)
         .get(SsoResource.PATH + "/me")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
 
     // second session id is deleted
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, secondSessionId)
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
@@ -335,5 +427,47 @@ public class SsoResourceImplTest {
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
+  }
+
+  @Test
+  public void sessions_should_fail_when_missing_sessionId_cookie() {
+    given()
+        .when()
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"sessionId\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void sessions_should_fail_when_random_sessionId_cookie() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, "random")
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
+
+  @Test
+  public void sessions_should_return_collection_on_existing_sessionId_cookie()
+      throws JsonProcessingException {
+    String sessionId =
+        signUpAndLogin(mailbox, objectMapper, "test-sso-sessions@gmail.com", "password123");
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .get(SsoResource.PATH + "/sessions")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                JacksonMapper.get().writeValueAsString(DataResponse.data(List.of(sessionId)))));
   }
 }

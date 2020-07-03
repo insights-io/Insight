@@ -2,8 +2,8 @@ package com.meemaw.auth.sso.datasource;
 
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
-import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
@@ -39,5 +39,13 @@ public interface SsoDatasource {
    * @param userId user id
    * @return collection of deleted sessions
    */
-  CompletionStage<Collection<String>> deleteAllSessionsForUser(UUID userId);
+  CompletionStage<Set<String>> deleteAllSessionsForUser(UUID userId);
+
+  /**
+   * Get all SSO sessions for a given user id.
+   *
+   * @param userId user id
+   * @return set of sessions
+   */
+  CompletionStage<Set<String>> getAllSessionsForUser(UUID userId);
 }

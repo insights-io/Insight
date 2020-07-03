@@ -6,7 +6,6 @@ import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import io.smallrye.mutiny.Uni;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -92,44 +91,50 @@ public class HazelcastSsoDatasource implements SsoDatasource {
   @Override
   @Traced
   public CompletionStage<Optional<SsoUser>> deleteSession(String sessionId) {
-    return sessionToUserMap
-        .removeAsync(sessionId)
-        .thenCompose(
-            ssoUser -> {
-              if (ssoUser == null) {
-                return CompletableFuture.completedStage(Optional.empty());
+    SsoUser maybeSsoUser = sessionToUserMap.remove(sessionId);
+    if (maybeSsoUser == null) {
+      return CompletableFuture.completedStage(Optional.empty());
+    }
+
+    return userToSessionsMap
+        .submitToKey(
+            maybeSsoUser.getId(),
+            entry -> {
+              Set<String> sessions = entry.getValue();
+              sessions.remove(sessionId);
+              if (sessions.isEmpty()) {
+                entry.setValue(null);
+              } else {
+                entry.setValue(sessions);
               }
-              return userToSessionsMap
-                  .submitToKey(
-                      ssoUser.getId(),
-                      entry -> {
-                        Set<String> sessions = entry.getValue();
-                        sessions.remove(sessionId);
-                        if (sessions.isEmpty()) {
-                          entry.setValue(null);
-                        } else {
-                          entry.setValue(sessions);
-                        }
-                        return null;
-                      })
-                  .thenApply(ignored -> Optional.of(ssoUser));
-            });
+              return null;
+            })
+        .thenApply(ignored -> Optional.of(maybeSsoUser));
   }
 
   @Override
   @Traced
-  public CompletionStage<Collection<String>> deleteAllSessionsForUser(UUID userId) {
-    Set<String> sessions =
-        Optional.ofNullable(userToSessionsMap.get(userId)).orElseGet(Collections::emptySet);
+  public CompletionStage<Set<String>> deleteAllSessionsForUser(UUID userId) {
+    return getAllSessionsForUser(userId)
+        .thenCompose(
+            sessions ->
+                sessionToUserMap
+                    .submitToKeys(
+                        sessions,
+                        (EntryProcessor<String, SsoUser, SsoUser>)
+                            entry -> {
+                              entry.setValue(null);
+                              return null;
+                            })
+                    .thenApply(ignored -> sessions));
+  }
 
-    return sessionToUserMap
-        .submitToKeys(
-            new HashSet<>(sessions),
-            (EntryProcessor<String, SsoUser, SsoUser>)
-                entry -> {
-                  entry.setValue(null);
-                  return null;
-                })
-        .thenApply(ignored -> sessions);
+  @Override
+  @Traced
+  public CompletionStage<Set<String>> getAllSessionsForUser(UUID userId) {
+    return userToSessionsMap
+        .getAsync(userId)
+        .thenApply(
+            maybeSessions -> Optional.ofNullable(maybeSessions).orElseGet(Collections::emptySet));
   }
 }

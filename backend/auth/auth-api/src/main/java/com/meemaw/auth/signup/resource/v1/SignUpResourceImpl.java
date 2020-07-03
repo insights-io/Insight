@@ -31,8 +31,6 @@ public class SignUpResourceImpl implements SignUpResource {
     String referer = RequestUtils.parseRefererBaseURL(request).orElse(null);
     String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
 
-    log.info("REFERER: {}", referer);
-
     return signUpService
         .signUp(referer, serverBaseURL, payload)
         .thenApply(ignored -> Response.noContent().build());

@@ -48,6 +48,12 @@ public interface SsoResource {
       @NotNull(message = "Required") @QueryParam("id") String sessionId);
 
   @GET
+  @Path("sessions")
+  @Produces(MediaType.APPLICATION_JSON)
+  CompletionStage<Response> mySessions(
+      @NotNull(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
+
+  @GET
   @Path("me")
   @Produces(MediaType.APPLICATION_JSON)
   default CompletionStage<Response> me(

@@ -2,9 +2,9 @@ package com.meemaw.auth.sso.service;
 
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -28,6 +28,14 @@ public interface SsoService {
   CompletionStage<Optional<AuthUser>> findSession(String sessionId);
 
   /**
+   * Find all SSO sessions associated with the same user as sessionId.
+   *
+   * @param sessionId to look for
+   * @return set of sessions
+   */
+  CompletionStage<Set<String>> findSessions(String sessionId);
+
+  /**
    * Logout an existing SSO session.
    *
    * @param sessionId to look for
@@ -39,17 +47,17 @@ public interface SsoService {
    * Logout user from all devices.
    *
    * @param userId user id
-   * @return list of sessions that has been revoked
+   * @return set of sessions that has been revoked
    */
-  CompletionStage<Collection<String>> logoutUserFromAllDevices(UUID userId);
+  CompletionStage<Set<String>> logoutUserFromAllDevices(UUID userId);
 
   /**
    * Logout user associated with a session id from all devices.
    *
    * @param sessionId session id
-   * @return list of sessions that has been revoked
+   * @return set of sessions that has been revoked
    */
-  default CompletionStage<Collection<String>> logoutFromAllDevices(String sessionId) {
+  default CompletionStage<Set<String>> logoutFromAllDevices(String sessionId) {
     return findSession(sessionId)
         .thenCompose(
             maybeUser ->
