@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -93,13 +94,25 @@ public class HazelcastSsoDatasource implements SsoDatasource {
   public CompletionStage<Optional<SsoUser>> deleteSession(String sessionId) {
     return sessionToUserMap
         .removeAsync(sessionId)
-        .thenApply(
+        .thenCompose(
             ssoUser -> {
               if (ssoUser == null) {
-                return Optional.empty();
+                return CompletableFuture.completedStage(Optional.empty());
               }
-              log.info("Session id={} deleted for userId={}", sessionId, ssoUser.getId());
-              return Optional.of(ssoUser);
+              return userToSessionsMap
+                  .submitToKey(
+                      ssoUser.getId(),
+                      entry -> {
+                        Set<String> sessions = entry.getValue();
+                        sessions.remove(sessionId);
+                        if (sessions.isEmpty()) {
+                          entry.setValue(null);
+                        } else {
+                          entry.setValue(sessions);
+                        }
+                        return null;
+                      })
+                  .thenApply(ignored -> Optional.of(ssoUser));
             });
   }
 
