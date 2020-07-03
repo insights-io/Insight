@@ -30,6 +30,7 @@ import lombok.EqualsAndHashCode;
   @Type(value = BrowserMouseUpEventDTO.class, name = BrowserEventType.MOUSEUP_KEY),
   @Type(value = BrowserLoadEventDTO.class, name = BrowserEventType.LOAD_KEY),
   @Type(value = BrowserLogEventDTO.class, name = BrowserEventType.LOG_KEY),
+  @Type(value = BrowserErrorEventDTO.class, name = BrowserEventType.ERROR_KEY),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data

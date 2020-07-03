@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
 import path from 'path';
 import { createServer, Server } from 'http';
@@ -7,6 +8,7 @@ import { CreatePageResponse } from '@insight/types';
 import { chromium, Response, Page } from 'playwright';
 import type { InsightWindow } from 'types';
 import Identity from 'identity';
+import { EventData } from 'event';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -91,6 +93,7 @@ describe('tracking script', () => {
       const {
         data: { sessionId, deviceId, pageId },
       } = await parsePageResponse(pageResponse);
+      const beaconBeatURI = `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`;
 
       const { cookie, localStorage } = await page.evaluate(() => {
         return {
@@ -109,22 +112,16 @@ describe('tracking script', () => {
 
       await page.click('button[data-testid="first-button"]');
 
-      const beaconResponse = await page.waitForResponse(
-        (resp: Response) =>
-          resp.url() ===
-          `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`
+      let beaconResponse = await page.waitForResponse(
+        (resp: Response) => resp.url() === beaconBeatURI
       );
 
-      const beaconRequest = beaconResponse.request();
       const beaconRequestHeaders = responseRequestHeaders(beaconResponse);
 
-      const postData = JSON.parse(beaconRequest.postData() || '') as {
-        e: { t: number; e: number; a: (string | number)[] }[];
-        s: number;
-      };
-
-      // MOUSEMOVE event
-      expect(postData.e.find((e) => e.e === 5)?.a).toEqual([
+      let beaconRequest = beaconResponse.request();
+      let postData = JSON.parse(beaconRequest.postData() || '') as EventData;
+      const [mouseMoveEvent] = postData.e;
+      expect(mouseMoveEvent.a).toEqual([
         61,
         60,
         '<BUTTON',
@@ -136,6 +133,34 @@ describe('tracking script', () => {
       expect(beaconRequest.method()).toEqual('POST');
       expect(beaconRequestHeaders['content-type']).toEqual('application/json');
       expect(beaconRequest.resourceType()).toEqual('fetch');
+
+      await page.evaluate(() => {
+        console.info('Do some console.info!');
+        console.error('Do some console.error!');
+
+        // simulate error thrown in browser (we cant just throw here as this will kill Playwright process)
+        const errorElem = document.createElement('script');
+        errorElem.textContent = 'throw new Error("simulated error");';
+        document.body.append(errorElem);
+      });
+
+      beaconResponse = await page.waitForResponse(
+        (resp: Response) => resp.url() === beaconBeatURI
+      );
+      beaconRequest = beaconResponse.request();
+      postData = JSON.parse(beaconRequest.postData() || '') as EventData;
+
+      expect(postData.s).toEqual(2);
+      expect(beaconResponse.status()).toEqual(204);
+
+      const [consoleInfoEvent, consoleErrorEvent, errorEvent] = postData.e;
+
+      expect(consoleInfoEvent.a).toEqual(['info', 'Do some console.info!']);
+      expect(consoleErrorEvent.a).toEqual(['error', 'Do some console.error!']);
+      expect(errorEvent.a[0]).toEqual('simulated error');
+      expect(
+        (errorEvent.a[1] as string).includes('Error: simulated error\n    at')
+      ).toBeTruthy();
 
       await browser.close();
     });

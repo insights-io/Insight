@@ -35,6 +35,7 @@ import lombok.ToString;
   @Type(value = BrowserMouseUpEvent.class, name = BrowserEventType.MOUSEUP_KEY),
   @Type(value = BrowserLoadEvent.class, name = BrowserEventType.LOAD_KEY),
   @Type(value = BrowserLogEvent.class, name = BrowserEventType.LOG_KEY),
+  @Type(value = BrowserErrorEvent.class, name = BrowserEventType.ERROR_KEY),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractBrowserEvent<T> extends Recorded {

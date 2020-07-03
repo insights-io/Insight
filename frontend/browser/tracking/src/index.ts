@@ -3,7 +3,6 @@
 import Context from 'context';
 import EventQueue from 'queue';
 import {
-  EventType,
   encodeEventTarget,
   // BrowserEventArguments,
   dedupMouseEventSimple,
@@ -12,7 +11,7 @@ import {
 } from 'event';
 import { logger } from 'logger';
 import Backend from 'backend';
-import { CreatePageResponse } from '@insight/types';
+import { CreatePageResponse, EventType } from '@insight/types';
 import Identity from 'identity';
 import { MILLIS_IN_SECOND } from 'time';
 import type { InsightWindow, Enqueue } from 'types';
@@ -53,8 +52,8 @@ declare global {
   observer.observe({ entryTypes });
   */
 
-  const enqueue: Enqueue = (eventType, args, eventName) => {
-    eventQueue.enqueue(eventType, args);
+  const enqueue: Enqueue = (eventType, args, eventName, event) => {
+    eventQueue.enqueue(eventType, args, event);
     if (process.env.NODE_ENV !== 'production' && eventType !== EventType.LOG) {
       logger.debug(eventName, args);
     }
@@ -68,12 +67,12 @@ declare global {
   };
   */
 
-  const onNavigationChange = () => {
+  const onNavigationChange = (event: PopStateEvent) => {
     const { href: currentLocation } = location;
     if (lastLocation !== currentLocation) {
       lastLocation = currentLocation;
       const args = [currentLocation, document.title];
-      enqueue(EventType.NAVIGATE, args, '[navigate]');
+      enqueue(EventType.NAVIGATE, args, '[navigate]', event);
     }
   };
 
@@ -95,17 +94,26 @@ declare global {
   } = dedupMouseEventSimple(
     (event: MouseEvent, clientX: number, clientY: number) => {
       const args = [clientX, clientY, ...encodeEventTarget(event)];
-      enqueue(EventType.MOUSEMOVE, args, '[mousemove]');
+      enqueue(EventType.MOUSEMOVE, args, '[mousemove]', event);
     }
   );
 
   const onClick = (event: MouseEvent) => {
     const args = mouseEventWithTargetArgs(event);
-    enqueue(EventType.MOUSEMOVE, args, '[mousemove]');
+    enqueue(EventType.MOUSEMOVE, args, '[mousemove]', event);
   };
 
-  const onLoad = () => {
-    enqueue(EventType.LOAD, [lastLocation], '[resize]');
+  const onLoad = (event: Event) => {
+    enqueue(EventType.LOAD, [lastLocation], '[resize]', event);
+  };
+
+  const onError = (event: ErrorEvent) => {
+    enqueue(
+      EventType.ERROR,
+      [event.error.message, event.error.stack],
+      '[error]',
+      event
+    );
   };
 
   proxyConsoleLog(enqueue);
@@ -113,13 +121,14 @@ declare global {
   // window.addEventListener('resize', onResize);
   window.addEventListener('load', onLoad);
   window.addEventListener('click', onClick);
+  window.addEventListener('error', onError);
   // window.addEventListener('mousemove', onMouseMove);
   // window.addEventListener('mousedown', onMouseDown);
   // window.addEventListener('mouseup', onMouseUp);
 
-  const onUnload = () => {
+  const onUnload = (event: Event) => {
     const args = [lastLocation];
-    eventQueue.enqueue(EventType.UNLOAD, args);
+    eventQueue.enqueue(EventType.UNLOAD, args, event);
     backend.sendBeacon(eventQueue.events()).catch((error) => {
       if (process.env.NODE_ENV !== 'production') {
         logger.error('Something went wrong while sending beacon', error);

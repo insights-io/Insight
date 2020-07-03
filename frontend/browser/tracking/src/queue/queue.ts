@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import Context from 'context/Context';
-import { EventType, BrowserEvent, BrowserEventArgument } from 'event';
+import { BrowserEvent, BrowserEventArgument } from 'event';
+import { EventType } from '@insight/types';
 
 class EventQueue {
   private readonly _context: Context;
@@ -12,8 +13,12 @@ class EventQueue {
     this._rawQueue = [];
   }
 
-  public enqueue = (kind: EventType, args: BrowserEventArgument[]) => {
-    this.enqueueAt(this._context.now(), kind, args);
+  public enqueue = (
+    kind: EventType,
+    args: BrowserEventArgument[],
+    event?: Event
+  ) => {
+    this.enqueueAt(event?.timeStamp || this._context.now(), kind, args);
   };
 
   public drainEvents = (): BrowserEvent[] => {

@@ -1,17 +1,5 @@
 import { isHtmlElement, encodeTarget } from 'dom';
-
-export const enum EventType {
-  NAVIGATE = 0,
-  UNLOAD = 1,
-  RESIZE = 2,
-  PERFORMANCE = 3,
-  CLICK = 4,
-  MOUSEMOVE = 5,
-  MOUSEDOWN = 6,
-  MOUSEUP = 7,
-  LOAD = 8,
-  LOG = 9,
-}
+import { EventType } from '@insight/types';
 
 export type BrowserEventArgument = string | number | null;
 export type BrowserEventArguments = BrowserEventArgument[];
@@ -20,6 +8,11 @@ export type BrowserEvent = {
   t: number;
   e: EventType;
   a: BrowserEventArguments;
+};
+
+export type EventData = {
+  e: BrowserEvent[];
+  s: number;
 };
 
 export const getEventTarget = (event: MouseEvent): EventTarget | null => {

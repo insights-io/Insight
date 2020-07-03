@@ -1,4 +1,5 @@
-import { EventType, BrowserEventArguments } from 'event';
+import { BrowserEventArguments } from 'event';
+import { EventType } from '@insight/types';
 
 /* eslint-disable camelcase */
 export interface InsightWindow {
@@ -10,5 +11,6 @@ export interface InsightWindow {
 export type Enqueue = (
   eventType: EventType,
   args: BrowserEventArguments,
-  eventName: string
+  eventName: string,
+  event?: Event
 ) => void;

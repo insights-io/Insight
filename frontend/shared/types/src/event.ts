@@ -12,6 +12,7 @@ export const enum EventType {
   MOUSEUP = 7,
   LOAD = 8,
   LOG = 9,
+  ERROR = 10,
 }
 
 export type AbstractBeaconEvent = {
