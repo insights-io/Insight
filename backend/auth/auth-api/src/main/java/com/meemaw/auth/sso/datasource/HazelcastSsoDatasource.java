@@ -1,6 +1,5 @@
 package com.meemaw.auth.sso.datasource;
 
-import com.hazelcast.map.EntryProcessor;
 import com.hazelcast.map.IMap;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.SsoUser;
@@ -64,14 +63,13 @@ public class HazelcastSsoDatasource implements SsoDatasource {
     CompletionStage<Void> userToSessionsLookup =
         userToSessionsMap.submitToKey(
             user.getId(),
-            (EntryProcessor<UUID, Set<String>, Void>)
-                entry -> {
-                  Set<String> sessionIds =
-                      Optional.ofNullable(entry.getValue()).orElseGet(HashSet::new);
-                  sessionIds.add(sessionId);
-                  entry.setValue(sessionIds);
-                  return null;
-                });
+            entry -> {
+              Set<String> sessionIds =
+                  Optional.ofNullable(entry.getValue()).orElseGet(HashSet::new);
+              sessionIds.add(sessionId);
+              entry.setValue(sessionIds);
+              return null;
+            });
 
     return Uni.combine()
         .all()
@@ -121,11 +119,10 @@ public class HazelcastSsoDatasource implements SsoDatasource {
                 sessionToUserMap
                     .submitToKeys(
                         sessions,
-                        (EntryProcessor<String, SsoUser, SsoUser>)
-                            entry -> {
-                              entry.setValue(null);
-                              return null;
-                            })
+                        entry -> {
+                          entry.setValue(null);
+                          return null;
+                        })
                     .thenApply(ignored -> sessions));
   }
 
