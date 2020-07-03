@@ -120,8 +120,8 @@ describe('tracking script', () => {
 
       let beaconRequest = beaconResponse.request();
       let postData = JSON.parse(beaconRequest.postData() || '') as EventData;
-
-      expect(postData.e.find((e) => e.e === EventType.MOUSEMOVE)?.a).toEqual([
+      const [mouseMoveEvent] = postData.e;
+      expect(mouseMoveEvent.a).toEqual([
         61,
         60,
         '<BUTTON',
