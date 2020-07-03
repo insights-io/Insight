@@ -2,8 +2,8 @@ package com.meemaw.auth.sso.service;
 
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -41,7 +41,7 @@ public interface SsoService {
    * @param userId user id
    * @return list of sessions that has been revoked
    */
-  CompletionStage<List<String>> logoutUserFromAllDevices(UUID userId);
+  CompletionStage<Collection<String>> logoutUserFromAllDevices(UUID userId);
 
   /**
    * Logout user associated with a session id from all devices.
@@ -49,12 +49,12 @@ public interface SsoService {
    * @param sessionId session id
    * @return list of sessions that has been revoked
    */
-  default CompletionStage<List<String>> logoutFromAllDevices(String sessionId) {
+  default CompletionStage<Collection<String>> logoutFromAllDevices(String sessionId) {
     return findSession(sessionId)
         .thenCompose(
             maybeUser ->
                 maybeUser.isEmpty()
-                    ? CompletableFuture.completedStage(Collections.emptyList())
+                    ? CompletableFuture.completedStage(Collections.emptySet())
                     : logoutUserFromAllDevices(maybeUser.get().getId()));
   }
 

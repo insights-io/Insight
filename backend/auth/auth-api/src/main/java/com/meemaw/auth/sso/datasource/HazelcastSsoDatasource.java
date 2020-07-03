@@ -6,11 +6,11 @@ import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import io.smallrye.mutiny.Uni;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +26,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 public class HazelcastSsoDatasource implements SsoDatasource {
 
   private IMap<String, SsoUser> sessionToUserMap;
-  private IMap<UUID, List<String>> userToSessionsMap;
+  private IMap<UUID, Set<String>> userToSessionsMap;
 
   @Inject HazelcastProvider hazelcastProvider;
 
@@ -64,10 +64,10 @@ public class HazelcastSsoDatasource implements SsoDatasource {
     CompletionStage<Void> userToSessionsLookup =
         userToSessionsMap.submitToKey(
             user.getId(),
-            (EntryProcessor<UUID, List<String>, Void>)
+            (EntryProcessor<UUID, Set<String>, Void>)
                 entry -> {
-                  List<String> sessionIds =
-                      Optional.ofNullable(entry.getValue()).orElseGet(ArrayList::new);
+                  Set<String> sessionIds =
+                      Optional.ofNullable(entry.getValue()).orElseGet(HashSet::new);
                   sessionIds.add(sessionId);
                   entry.setValue(sessionIds);
                   return null;
@@ -105,9 +105,9 @@ public class HazelcastSsoDatasource implements SsoDatasource {
 
   @Override
   @Traced
-  public CompletionStage<List<String>> deleteAllSessionsForUser(UUID userId) {
-    List<String> sessions =
-        Optional.ofNullable(userToSessionsMap.get(userId)).orElseGet(Collections::emptyList);
+  public CompletionStage<Collection<String>> deleteAllSessionsForUser(UUID userId) {
+    Set<String> sessions =
+        Optional.ofNullable(userToSessionsMap.get(userId)).orElseGet(Collections::emptySet);
 
     return sessionToUserMap
         .submitToKeys(

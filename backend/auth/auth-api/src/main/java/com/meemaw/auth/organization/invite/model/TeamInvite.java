@@ -1,6 +1,6 @@
 package com.meemaw.auth.organization.invite.model;
 
-import com.meemaw.auth.shared.CanExpire;
+import com.meemaw.shared.model.CanExpire;
 import com.meemaw.auth.user.model.UserRole;
 import java.time.OffsetDateTime;
 import java.util.UUID;
