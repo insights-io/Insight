@@ -64,4 +64,13 @@ test('Should be able to change password', async (t) => {
     .typeText(newPasswordInput, config.insightUserPassword)
     .typeText(confirmNewPasswordInput, config.insightUserPassword)
     .click(saveNewPasswordButton);
+
+  await t
+    .click(getByText('Organization settings'))
+    .expect(queryByText('000000').visible)
+    .ok('Should display Insight organization id')
+    .expect(queryByText('Insight').visible)
+    .ok('Should display Insight organization name')
+    .expect(queryByText(config.insightUserEmail).visible)
+    .ok('Should display user email in the members table');
 });

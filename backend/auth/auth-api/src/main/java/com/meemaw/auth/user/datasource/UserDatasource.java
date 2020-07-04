@@ -3,6 +3,7 @@ package com.meemaw.auth.user.datasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
 import io.vertx.axle.sqlclient.Transaction;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
@@ -30,11 +31,10 @@ public interface UserDatasource {
   CompletionStage<Optional<AuthUser>> findUser(String email);
 
   /**
-   * Find user by email address.
+   * Find organization users.
    *
-   * @param email String email address
-   * @param transaction Transaction context
-   * @return maybe AuthUser
+   * @param organizationId organization id
+   * @return collection of users
    */
-  CompletionStage<Optional<AuthUser>> findUser(String email, Transaction transaction);
+  CompletionStage<Collection<AuthUser>> findOrganizationMembers(String organizationId);
 }
