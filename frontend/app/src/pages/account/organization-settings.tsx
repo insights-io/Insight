@@ -6,7 +6,6 @@ import Router from 'next/router';
 type Props = WithAuthProps;
 
 const OrganizationSettings = ({ user }: Props) => {
-  console.log(user);
   return (
     <AccountSettings
       activeKey="/account/organization-settings"

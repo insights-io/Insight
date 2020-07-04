@@ -1,16 +1,22 @@
 package com.meemaw.auth.password.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.SsoTestSetupUtils.login;
+import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
@@ -38,6 +44,9 @@ public class PasswordResourceImplTest {
   public static final String PASSWORD_FORGOT_PATH =
       String.join("/", PasswordResource.PATH, "password_forgot");
 
+  public static final String PASSWORD_CHANGE_PATH =
+      String.join("/", PasswordResource.PATH, "password_change");
+
   public static final String PASSWORD_RESET_PATH_TEMPLATE =
       String.join("/", PasswordResource.PATH, "password_reset", "%s");
 
@@ -55,7 +64,6 @@ public class PasswordResourceImplTest {
 
   @Test
   public void password_reset_exists_should_fail_when_random_token() {
-
     given()
         .when()
         .get(String.format(PASSWORD_RESET_EXISTS_PATH_TEMPLATE, UUID.randomUUID()))
@@ -91,7 +99,7 @@ public class PasswordResourceImplTest {
   }
 
   @Test
-  public void passsword_forgot_should_fail_when_empty_payload() {
+  public void password_forgot_should_fail_when_empty_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -348,5 +356,163 @@ public class PasswordResourceImplTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Password reset request not found\"}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_invalid_content_type() {
+    given()
+        .when()
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(415)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":415,\"reason\":\"Unsupported Media Type\",\"message\":\"Media type not supported.\"}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_no_auth() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_random_session_id() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, "random")
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_missing_body() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin(null))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_empty_body() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin(null))
+        .body("{}")
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"confirmNewPassword\":\"Required\",\"newPassword\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_invalid_body() throws JsonProcessingException {
+    PasswordChangeRequestDTO passwordChangeRequestDTO = new PasswordChangeRequestDTO("aba", "caba");
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin(null))
+        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"confirmNewPassword\":\"Password must be at least 8 characters long\",\"newPassword\":\"Password must be at least 8 characters long\"}}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_password_miss_match()
+      throws JsonProcessingException {
+    PasswordChangeRequestDTO passwordChangeRequestDTO =
+        new PasswordChangeRequestDTO("password123", "password1234");
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin(null))
+        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Passwords must match!\"}}"));
+  }
+
+  @Test
+  public void password_change_should_fail_when_password_duplicate() throws JsonProcessingException {
+    PasswordChangeRequestDTO passwordChangeRequestDTO =
+        new PasswordChangeRequestDTO("superDuperPassword123", "superDuperPassword123");
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin(null))
+        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"New password cannot be the same as the previous one!\"}}"));
+  }
+
+  @Test
+  public void password_change_should_work_when_different_password() throws JsonProcessingException {
+    String email = "password-change-test@gmail.com";
+    String oldPassword = "password123";
+    String newPassword = "superDuperPassword123";
+
+    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, oldPassword);
+    PasswordChangeRequestDTO passwordChangeRequestDTO =
+        new PasswordChangeRequestDTO(newPassword, newPassword);
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":true}"));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("email", email)
+        .param("password", oldPassword)
+        .post(SsoResource.PATH + "/login")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Invalid email or password\"}}"));
+
+    String newSessionId = login(email, newPassword);
+    assertNotEquals(newSessionId, sessionId);
   }
 }

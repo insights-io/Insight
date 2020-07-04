@@ -151,7 +151,17 @@ public final class SsoTestSetupUtils {
    */
   public static String loginWithInsightAdmin() {
     String authApiBaseURI = AuthApiTestExtension.getInstance().getBaseURI();
-    return login("admin@insight.io", "superDuperPassword123", authApiBaseURI);
+    return loginWithInsightAdmin(authApiBaseURI);
+  }
+
+  /**
+   * Log in with pre-created Insight admin user.
+   *
+   * @param baseURI auth-api base URI
+   * @return session id
+   */
+  public static String loginWithInsightAdmin(String baseURI) {
+    return login("admin@insight.io", "superDuperPassword123", baseURI);
   }
 
   /**
