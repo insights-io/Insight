@@ -8,7 +8,9 @@ import { UserDTO, DataResponse } from '@insight/types';
 import { isServer } from 'shared/utils/next';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const authMiddleware = async (ctx: NextPageContext) => {
+const authMiddleware = async (
+  ctx: NextPageContext
+): Promise<UserDTO | void> => {
   const { pathname } = ctx;
   const { SessionId } = nextCookie(ctx);
 

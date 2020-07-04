@@ -1,8 +1,10 @@
 package com.meemaw.auth.password.resource.v1;
 
+import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.password.service.PasswordService;
+import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
@@ -14,11 +16,14 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class PasswordResourceImpl implements PasswordResource {
 
   @Inject PasswordService passwordService;
   @Inject SsoService ssoService;
+  @Inject InsightPrincipal insightPrincipal;
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
@@ -50,5 +55,17 @@ public class PasswordResourceImpl implements PasswordResource {
   @Override
   public CompletionStage<Response> passwordResetRequestExists(UUID token) {
     return passwordService.passwordResetRequestExists(token).thenApply(DataResponse::ok);
+  }
+
+  @Override
+  public CompletionStage<Response> passwordChange(PasswordChangeRequestDTO body) {
+    log.info("Password change request");
+    return passwordService
+        .changePassword(
+            insightPrincipal.user().getId(),
+            insightPrincipal.user().getEmail(),
+            body.getNewPassword(),
+            body.getConfirmNewPassword())
+        .thenApply(DataResponse::ok);
   }
 }

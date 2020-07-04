@@ -46,6 +46,17 @@ public class PgPasswordDatasource implements PasswordDatasource {
   }
 
   @Override
+  public CompletionStage<Boolean> storePassword(UUID userId, String hashedPassword) {
+    Query query =
+        SQLContext.POSTGRES.insertInto(TABLE).columns(USER_ID, HASH).values(userId, hashedPassword);
+
+    return pgPool
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
+        .thenApply(pgRowSet -> true);
+  }
+
+  @Override
   @Traced
   public CompletionStage<Optional<UserWithHashedPassword>> findUserWithPassword(String email) {
     Query query =

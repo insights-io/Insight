@@ -1,5 +1,5 @@
 import ky from 'ky-universal';
-import { DataResponse } from '@insight/types';
+import { DataResponse, ChangePasswordDTO } from '@insight/types';
 
 import { authApiBaseURL } from './base';
 
@@ -13,6 +13,14 @@ const PasswordApi = {
     return ky
       .post(`${baseURL}/v1/password_reset/${token}`, {
         json: { password },
+        credentials: 'include',
+      })
+      .json<DataResponse<boolean>>();
+  },
+  change: (data: ChangePasswordDTO, baseURL = authApiBaseURL) => {
+    return ky
+      .post(`${baseURL}/v1/password_change`, {
+        json: data,
         credentials: 'include',
       })
       .json<DataResponse<boolean>>();

@@ -5,7 +5,7 @@ import { UserDTO } from '@insight/types';
 import authMiddleware from 'modules/auth/middleware/authMiddleware';
 import { NextPageContext, NextComponentType } from 'next';
 
-type WithAuthProps = {
+export type WithAuthProps = {
   user?: UserDTO;
 };
 

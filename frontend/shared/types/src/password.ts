@@ -7,3 +7,8 @@ export type PasswordResetRequest = {
 export type PasswordReset = PasswordResetRequest & {
   password: string;
 };
+
+export type ChangePasswordDTO = {
+  newPassword: string;
+  confirmNewPassword: string;
+};

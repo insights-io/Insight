@@ -9,7 +9,7 @@ import java.util.concurrent.CompletionStage;
 public interface PasswordDatasource {
 
   /**
-   * Store user password.
+   * Store user password within a given transaction.
    *
    * @param userId UUID user id
    * @param hashedPassword String hashed password
@@ -18,6 +18,15 @@ public interface PasswordDatasource {
    */
   CompletionStage<Boolean> storePassword(
       UUID userId, String hashedPassword, Transaction transaction);
+
+  /**
+   * Store user password.
+   *
+   * @param userId UUID user id
+   * @param hashedPassword String hashed password
+   * @return Boolean indicating successful insert
+   */
+  CompletionStage<Boolean> storePassword(UUID userId, String hashedPassword);
 
   /**
    * Find user with its password.

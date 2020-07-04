@@ -1,7 +1,9 @@
 package com.meemaw.auth.password.resource.v1;
 
+import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
+import com.meemaw.auth.sso.cookie.CookieAuth;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
@@ -36,4 +38,10 @@ public interface PasswordResource {
   @GET
   @Path("password_reset/{token}/exists")
   CompletionStage<Response> passwordResetRequestExists(@PathParam("token") UUID token);
+
+  @CookieAuth
+  @POST
+  @Path("password_change")
+  CompletionStage<Response> passwordChange(
+      @NotNull(message = "Required") @Valid PasswordChangeRequestDTO body);
 }

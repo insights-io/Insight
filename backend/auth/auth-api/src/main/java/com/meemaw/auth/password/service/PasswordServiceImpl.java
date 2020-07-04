@@ -50,9 +50,7 @@ public class PasswordServiceImpl implements PasswordService {
               UserWithHashedPassword withPassword =
                   maybeUserWithPasswordHash.orElseThrow(
                       () -> {
-                        log.info("User {} not found", email);
-                        throw new BoomException(
-                            Boom.badRequest().message("Invalid email or password"));
+                        throw Boom.badRequest().message("Invalid email or password").exception();
                       });
 
               String hashedPassword = withPassword.getPassword();
@@ -166,6 +164,39 @@ public class PasswordServiceImpl implements PasswordService {
                           Boom.notFound().message("Password reset request not found"));
                     }))
         .thenCompose(passwordResetRequest -> reset(passwordResetRequest, password));
+  }
+
+  @Override
+  @Traced
+  public CompletionStage<Boolean> changePassword(
+      UUID userId, String email, String newPassword, String confirmNewPassword) {
+    if (!confirmNewPassword.equals(newPassword)) {
+      throw Boom.badRequest().message("Passwords must match!").exception();
+    }
+
+    return passwordDatasource
+        .findUserWithPassword(email)
+        .thenCompose(
+            maybeUserWithPasswordHash -> {
+              UserWithHashedPassword userWithHashedPassword =
+                  maybeUserWithPasswordHash.orElseThrow(
+                      () -> {
+                        throw Boom.notFound().exception();
+                      });
+
+              // User does not have a password yet (signed up with social login)
+              if (userWithHashedPassword.getPassword() == null) {
+                return passwordDatasource.storePassword(userId, hashPassword(newPassword));
+              }
+
+              if (BCrypt.checkpw(newPassword, userWithHashedPassword.getPassword())) {
+                throw Boom.badRequest()
+                    .message("New password cannot be the same as the previous one!")
+                    .exception();
+              }
+
+              return passwordDatasource.storePassword(userId, hashPassword(newPassword));
+            });
   }
 
   private CompletionStage<PasswordResetRequest> reset(

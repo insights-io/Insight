@@ -1,4 +1,5 @@
 import ky from 'ky-universal';
+import { DataResponse, UserDTO } from '@insight/types';
 
 import { authApiBaseURL } from './base';
 
@@ -17,7 +18,10 @@ const SsoApi = {
     });
   },
   me: (baseURL = authApiBaseURL) => {
-    return ky.get(`${baseURL}/v1/sso/me`, { credentials: 'include' });
+    return ky
+      .get(`${baseURL}/v1/sso/me`, { credentials: 'include' })
+      .json<DataResponse<UserDTO>>()
+      .then((response) => response.data);
   },
   logout: (baseURL = authApiBaseURL) => {
     return ky.post(`${baseURL}/v1/sso/logout`, { credentials: 'include' });
