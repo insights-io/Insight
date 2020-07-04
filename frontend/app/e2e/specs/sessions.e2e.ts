@@ -8,7 +8,7 @@ import {
 import { login } from '../utils';
 import config from '../config';
 
-fixture('/sessions').page(`${config.appBaseURL}/login `);
+fixture('/sessions').page(`${config.appBaseURL}/login`);
 
 test('Should be able to see sessions for Insight logged in user', async (t) => {
   await login(t, {

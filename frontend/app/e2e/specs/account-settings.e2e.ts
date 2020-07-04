@@ -36,10 +36,11 @@ test('Should be able to change password', async (t) => {
     .typeText(confirmNewPasswordInput, config.insightUserPassword)
     .click(saveNewPasswordButton)
     .expect(
-      queryByText('New password cannot be the same as the previous one').visible
+      queryByText('New password cannot be the same as the previous one!')
+        .visible
     )
     .ok(
-      'Should not allow to change password to the same value as previous one!'
+      'Should not allow to change password to the same value as previous one'
     );
 
   // Change password to a new one
