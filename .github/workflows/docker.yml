@@ -11,127 +11,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: sed -i "s/<GIT_COMMIT_SHA>/$(git rev-parse --short "$GITHUB_SHA")/g" backend/auth/auth-api/src/main/resources/application.properties
-      - uses: elgohr/Publish-Docker-Github-Action@master
+      - uses: azure/docker-login@v1
         with:
-          name: ${{ env.REPOSITORY }}/auth-api
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: auth/auth-api/docker/Dockerfile.jvm
-          workdir: backend
-          tag_names: true
 
-  build-auth-api-postgres-migrations:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: elgohr/Publish-Docker-Github-Action@master
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
         with:
-          name: ${{ env.REPOSITORY }}/auth-api-postgres-migrations
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: Dockerfile
-          workdir: backend/auth/auth-api/migrations/postgres/
-          tag_names: true
+          buildx-version: latest
+          qemu-version: latest
 
-  build-session-api:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: sed -i "s/<GIT_COMMIT_SHA>/$(git rev-parse --short "$GITHUB_SHA")/g" backend/session/session-api/src/main/resources/application.properties
-      - uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: ${{ env.REPOSITORY }}/session-api
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: session/session-api/docker/Dockerfile.jvm
-          workdir: backend
-          tag_names: true
+      - name: setup builder
+        run: |
+          docker buildx create --use --name=qemu --buildkitd-flags '--allow-insecure-entitlement network.host'
+          docker buildx inspect --bootstrap
 
-  build-session-api-postgres-migrations:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: ${{ env.REPOSITORY }}/session-api-postgres-migrations
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: Dockerfile
-          workdir: backend/session/session-api/migrations/postgres/
-          tag_names: true
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
 
-  build-session-api-elasticsearch-migrations:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: ${{ env.REPOSITORY }}/session-api-elasticsearch-migrations
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: Dockerfile
-          workdir: backend/session/session-api/migrations/elasticsearch/
-          tag_names: true
+      - name: Install skaffold
+        run: curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/
 
-  build-beacon-api:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: sed -i "s/<GIT_COMMIT_SHA>/$(git rev-parse --short "$GITHUB_SHA")/g" backend/beacon/beacon-api/src/main/resources/application.properties
-      - uses: elgohr/Publish-Docker-Github-Action@master
+      - name: Build
+        run: |
+          mkdir out
+          skaffold build | sed 's/\(image:.*\)@.*$/\1/g' > out/manifest.yml
+      - name: Archive manifest
+        uses: actions/upload-artifact@v1
         with:
-          name: ${{ env.REPOSITORY }}/beacon-api
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: beacon/beacon-api/docker/Dockerfile.jvm
-          workdir: backend
-          tag_names: true
+          name: manifest
+          path: out/manifest.yml
 
-  build-search-indexer:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: ${{ env.REPOSITORY }}/search-indexer
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: events/search-indexer/docker/Dockerfile.jvm
-          workdir: backend
-          tag_names: true
-
-  build-frontend-app:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: ${{ env.REPOSITORY }}/frontend-app
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: frontend/app/docker/Dockerfile
-          tag_names: true
-          buildargs: session_api_client_base_url=https://session-api.dev.snuderls.eu,auth_api_client_base_url=https://auth-api.dev.snuderls.eu,auth_api_server_base_url=http://auth-api,try_app_base_url=https://try.dev.snuderls.eu,bootstrap_script=https://static.dev.snuderls.eu/b/development.insight.js
-
-  build-try-app:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: ${{ env.REPOSITORY }}/frontend-try
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-          dockerfile: frontend/try/docker/Dockerfile
-          tag_names: true
-          buildargs: auth_api_client_base_url=https://auth-api.dev.snuderls.eu,app_base_url=https://app.dev.snuderls.eu,bootstrap_script=https://static.dev.snuderls.eu/b/development.insight.js
+      # - name: Commit manifest
+      #   uses: cpina/github-action-push-to-another-repository@master
+      # - name: publish:starters
+      #   uses: johno/actions-push-subdirectories@master
+      #   env:
+      #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     args: out

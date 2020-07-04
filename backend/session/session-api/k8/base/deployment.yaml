@@ -70,3 +70,8 @@ spec:
             timeoutSeconds: 1
             successThreshold: 1
             failureThreshold: 10
+      tolerations:
+        - key: "arm"
+          operator: "Equal"
+          value: "true"
+          effect: "NoExecute"

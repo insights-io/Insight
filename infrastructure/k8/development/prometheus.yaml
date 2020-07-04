@@ -5,6 +5,12 @@ prometheus:
 alertmanager:
   alertmanagerSpec:
     replicas: 1
+nodeExporter:
+  tolerations:
+    - key: "arm"
+      operator: "Equal"
+      value: "true"
+      effect: "NoExecute"
 
 grafana:
   replicas: 1

@@ -20,3 +20,10 @@ parsers:
       regex: '^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$'
       timeKey: time
       timeFormat: '%Y-%m-%dT%H:%M:%S.%L%z'
+
+tolerations:
+  - key: "arm"
+    operator: "Equal"
+    value: "true"
+    effect: "NoExecute"
+
