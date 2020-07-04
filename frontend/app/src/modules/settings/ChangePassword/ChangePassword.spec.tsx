@@ -6,7 +6,7 @@ import { sandbox } from '@insight/testing';
 import { Base, WithError } from './ChangePassword.stories';
 
 describe('ChangePassword', () => {
-  it('Should sucesfully change password', async () => {
+  it('Should successfully change password', async () => {
     Base.story.setupMocks(sandbox);
     const { getByPlaceholderText, getByText, findByText } = render(<Base />);
     await userEvent.type(getByPlaceholderText('New password'), 'password 123');
