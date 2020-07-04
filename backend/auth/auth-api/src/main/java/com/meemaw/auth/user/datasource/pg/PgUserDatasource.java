@@ -21,6 +21,8 @@ import io.vertx.axle.sqlclient.Row;
 import io.vertx.axle.sqlclient.RowSet;
 import io.vertx.axle.sqlclient.Transaction;
 import io.vertx.axle.sqlclient.Tuple;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -77,14 +79,17 @@ public class PgUserDatasource implements UserDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Optional<AuthUser>> findUser(String email, Transaction transaction) {
-    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(EMAIL.eq(email));
-
-    return transaction
+  public CompletionStage<Collection<AuthUser>> findOrganizationMembers(String organizationId) {
+    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
+    return pgPool
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .execute(Tuple.tuple(query.getBindValues()))
-        .thenApply(this::onFindUser)
-        .exceptionally(this::onFindUserException);
+        .thenApply(this::onUsersFound)
+        .exceptionally(
+            throwable -> {
+              log.error("Failed to find organization users");
+              throw new DatabaseException(throwable);
+            });
   }
 
   private Optional<AuthUser> onFindUserException(Throwable throwable) {
@@ -98,6 +103,12 @@ public class PgUserDatasource implements UserDatasource {
     }
     Row row = pgRowSet.iterator().next();
     return Optional.of(mapUser(row));
+  }
+
+  private Collection<AuthUser> onUsersFound(RowSet<Row> pgRowSet) {
+    Collection<AuthUser> users = new ArrayList<>();
+    pgRowSet.forEach(row -> users.add(mapUser(row)));
+    return users;
   }
 
   /**

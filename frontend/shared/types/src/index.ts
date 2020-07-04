@@ -5,3 +5,4 @@ export * from './user';
 export * from './team';
 export * from './password';
 export * from './signup';
+export * from './organization';

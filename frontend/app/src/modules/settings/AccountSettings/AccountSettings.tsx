@@ -4,11 +4,10 @@ import { H1 } from 'baseui/typography';
 import { useStyletron } from 'baseui';
 import { Tabs, Tab } from 'baseui/tabs';
 import { UserDTO } from '@insight/types';
-import { Table } from 'baseui/table';
-import { Block } from 'baseui/block';
 import useAuth from 'modules/auth/hooks/useAuth';
 
-import ChangePassword from '../ChangePassword';
+import UserSettings from '../UserSettings';
+import OrganizationSettings from '../OrganizationSettings';
 
 type Props = {
   activeKey: string;
@@ -54,36 +53,10 @@ const AccountSettings = ({ activeKey, onTabChange, initialUser }: Props) => {
         }}
       >
         <Tab key="/account/settings" title="User settings">
-          <Block display="flex">
-            <Block display="flex" flex="1">
-              <Block width="100%" height="fit-content">
-                <Table
-                  isLoading={loadingUser}
-                  columns={['User Information']}
-                  data={[
-                    ['Full name', user?.fullName],
-                    ['Email', user?.email],
-                    ['Organization', user?.organizationId],
-                    ['Member since', user?.createdAt.toLocaleDateString()],
-                  ]}
-                />
-              </Block>
-            </Block>
-            <ChangePassword
-              overrides={{
-                Root: {
-                  style: {
-                    maxWidth: '400px',
-                    width: '100%',
-                    marginLeft: theme.sizing.scale600,
-                  },
-                },
-              }}
-            />
-          </Block>
+          <UserSettings user={user} loading={loadingUser} />
         </Tab>
         <Tab key="/account/organization-settings" title="Organization settings">
-          <div>TODO</div>
+          <OrganizationSettings />
         </Tab>
         <Tab key="/account/api-keys" title="API Keys">
           <div>TODO</div>
