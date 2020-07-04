@@ -165,6 +165,15 @@ public final class SsoTestSetupUtils {
   }
 
   /**
+   * Log in with pre-created Insight admin user from auth-api module.
+   *
+   * @return session id
+   */
+  public static String loginWithInsightAdminFromAuthApi() {
+    return loginWithInsightAdmin(null);
+  }
+
+  /**
    * Extract session cookie from rest assured response.
    *
    * @param response rest assured response
