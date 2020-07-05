@@ -9,6 +9,10 @@ describe('ChangePassword', () => {
   it('Should successfully change password', async () => {
     Base.story.setupMocks(sandbox);
     const { getByPlaceholderText, getByText, findByText } = render(<Base />);
+    await userEvent.type(
+      getByPlaceholderText('Current password'),
+      'currentPassword123'
+    );
     await userEvent.type(getByPlaceholderText('New password'), 'password 123');
     await userEvent.type(
       getByPlaceholderText('Confirm new password'),
@@ -23,6 +27,10 @@ describe('ChangePassword', () => {
     WithError.story.setupMocks(sandbox);
     const { getByPlaceholderText, getByText, findByText } = render(
       <WithError />
+    );
+    await userEvent.type(
+      getByPlaceholderText('Current password'),
+      'currentPassword123'
     );
     await userEvent.type(getByPlaceholderText('New password'), 'password 123');
     await userEvent.type(

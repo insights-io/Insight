@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS auth.sign_up_request
     CONSTRAINT email_length CHECK (length(auth.sign_up_request.email) < 255)
 );
 
-CREATE TABLE IF NOT EXISTS auth.team_invite
+CREATE TABLE IF NOT EXISTS auth.organization_invite
 (
     token           UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
     email           TEXT        NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS auth.team_invite
     FOREIGN KEY (organization_id) REFERENCES auth.organization (id),
     FOREIGN KEY (creator_id) REFERENCES auth.user (id),
     CONSTRAINT no_duplicates UNIQUE (organization_id, email),
-    CONSTRAINT email_length CHECK (length(auth.team_invite.email) < 255)
+    CONSTRAINT email_length CHECK (length(auth.organization_invite.email) < 255)
 );
 
 /* Bootstrap Insight organization */

@@ -6,7 +6,7 @@ import { Block } from 'baseui/block';
 import SignUpForm from 'components/SignUpForm';
 import config from 'shared/config';
 import Topbar from 'components/Topbar';
-import { SignupApi } from 'api/signup';
+import AuthApi from 'api/auth';
 
 const GetStarted = () => {
   const [_css, theme] = useStyletron();
@@ -43,7 +43,7 @@ const GetStarted = () => {
             </Paragraph3>
           </Block>
 
-          <SignUpForm onSubmit={SignupApi.signup} />
+          <SignUpForm onSubmit={AuthApi.signup.create} />
         </Block>
       </Block>
     </Block>

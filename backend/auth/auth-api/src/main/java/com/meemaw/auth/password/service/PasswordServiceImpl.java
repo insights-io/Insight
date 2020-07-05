@@ -169,7 +169,17 @@ public class PasswordServiceImpl implements PasswordService {
   @Override
   @Traced
   public CompletionStage<Boolean> changePassword(
-      UUID userId, String email, String newPassword, String confirmNewPassword) {
+      UUID userId,
+      String email,
+      String currentPassword,
+      String newPassword,
+      String confirmNewPassword) {
+    if (currentPassword.equals(newPassword)) {
+      throw Boom.badRequest()
+          .message("New password cannot be the same as the previous one!")
+          .exception();
+    }
+
     if (!confirmNewPassword.equals(newPassword)) {
       throw Boom.badRequest().message("Passwords must match!").exception();
     }
@@ -184,15 +194,15 @@ public class PasswordServiceImpl implements PasswordService {
                         throw Boom.notFound().exception();
                       });
 
-              // User does not have a password yet (signed up with social login)
-              if (userWithHashedPassword.getPassword() == null) {
-                return passwordDatasource.storePassword(userId, hashPassword(newPassword));
-              }
-
-              if (BCrypt.checkpw(newPassword, userWithHashedPassword.getPassword())) {
-                throw Boom.badRequest()
-                    .message("New password cannot be the same as the previous one!")
-                    .exception();
+              /*
+               * If user signed up with social login he does not have a password yet.
+               * we could just omit the check and store the new password here, but for semantics we
+               * have it. User without a password should go through a password reset flow to get
+               * one.
+               */
+              String hashedPassword = userWithHashedPassword.getPassword();
+              if (hashedPassword == null || !BCrypt.checkpw(currentPassword, hashedPassword)) {
+                throw Boom.badRequest().message("Current password miss match").exception();
               }
 
               return passwordDatasource.storePassword(userId, hashPassword(newPassword));

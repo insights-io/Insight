@@ -7,7 +7,7 @@ import { Block } from 'baseui/block';
 import { useForm } from 'react-hook-form';
 import { Button } from 'baseui/button';
 import { createInputOverrides } from 'shared/styles/input';
-import SsoApi from 'api/sso';
+import AuthApi from 'api/auth';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import Divider from 'shared/components/Divider';
@@ -41,7 +41,8 @@ const Login = () => {
     }
     setIsSubmitting(true);
 
-    SsoApi.login(formData.email, formData.password)
+    AuthApi.sso
+      .login(formData.email, formData.password)
       .then((_) => router.replace(decodeURIComponent(dest as string)))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();

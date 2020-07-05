@@ -1,6 +1,7 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
-import SsoApi from 'api/sso';
+import AuthApi from 'api/auth';
+import { ResponsePromise } from 'ky';
 
 import Login from './Login';
 
@@ -13,8 +14,10 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(SsoApi, 'login').callsFake(() => {
-      return new Promise((resolve) => setTimeout(resolve, 10));
+    return sandbox.stub(AuthApi.sso, 'login').callsFake(() => {
+      return new Promise((resolve) =>
+        setTimeout(resolve, 10)
+      ) as ResponsePromise;
     });
   },
 });
@@ -24,7 +27,7 @@ export const InvalidPassword = () => {
 };
 InvalidPassword.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(SsoApi, 'login').callsFake(() => {
+    return sandbox.stub(AuthApi.sso, 'login').callsFake(() => {
       const error = mockApiError({
         statusCode: 400,
         reason: 'Bad Request',
@@ -33,7 +36,7 @@ InvalidPassword.story = configureStory({
 
       return new Promise((_resolve, reject) =>
         setTimeout(() => reject(error), 10)
-      );
+      ) as ResponsePromise;
     });
   },
 });

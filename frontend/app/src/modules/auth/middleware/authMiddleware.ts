@@ -3,7 +3,7 @@ import { OutgoingHttpHeaders } from 'http';
 import { NextPageContext } from 'next';
 import nextCookie from 'next-cookies';
 import Router from 'next/router';
-import SsoApi from 'api/sso';
+import AuthApi from 'api/auth';
 import { UserDTO, DataResponse } from '@insight/types';
 import { isServer } from 'shared/utils/next';
 
@@ -32,7 +32,7 @@ const authMiddleware = async (
     return undefined;
   }
 
-  const response = await SsoApi.session(
+  const response = await AuthApi.sso.session(
     SessionId,
     process.env.AUTH_API_BASE_URL
   );
