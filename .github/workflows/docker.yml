@@ -44,12 +44,12 @@ jobs:
           name: manifest
           path: out/manifest.yml
 
-      # - name: Commit manifest
-      #   uses: cpina/github-action-push-to-another-repository@master
-      # - name: publish:starters
-      #   uses: johno/actions-push-subdirectories@master
-      #   env:
-      #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     args: out
+# - name: Commit manifest
+#   uses: cpina/github-action-push-to-another-repository@master
+# - name: publish:starters
+#   uses: johno/actions-push-subdirectories@master
+#   env:
+#     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+#     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#   with:
+#     args: out
