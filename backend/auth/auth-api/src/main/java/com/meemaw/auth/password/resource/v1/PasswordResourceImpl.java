@@ -64,6 +64,7 @@ public class PasswordResourceImpl implements PasswordResource {
         .changePassword(
             insightPrincipal.user().getId(),
             insightPrincipal.user().getEmail(),
+            body.getCurrentPassword(),
             body.getNewPassword(),
             body.getConfirmNewPassword())
         .thenApply(DataResponse::ok);

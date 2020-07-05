@@ -42,13 +42,18 @@ public interface PasswordService {
    *
    * @param userId user id
    * @param email email address
+   * @param currentPassword current password (validated)
    * @param newPassword new password (validated, should be different than the current password if
    *     current password exists)
    * @param confirmNewPassword confirm new password (validated, should be the same as newPassword)
    * @return boolean indicating if password was successfully changed
    */
   CompletionStage<Boolean> changePassword(
-      UUID userId, String email, String newPassword, String confirmNewPassword);
+      UUID userId,
+      String email,
+      String currentPassword,
+      String newPassword,
+      String confirmNewPassword);
 
   /**
    * Create password associated with user.

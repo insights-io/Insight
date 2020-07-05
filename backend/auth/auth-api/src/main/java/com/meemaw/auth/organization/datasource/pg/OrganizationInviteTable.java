@@ -1,4 +1,4 @@
-package com.meemaw.auth.organization.invite.datasource.pg;
+package com.meemaw.auth.organization.datasource.pg;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -9,9 +9,9 @@ import java.util.UUID;
 import org.jooq.Field;
 import org.jooq.Table;
 
-public final class TeamInviteTable {
+public final class OrganizationInviteTable {
 
-  public static final Table<?> TABLE = table("auth.team_invite");
+  public static final Table<?> TABLE = table("auth.organization_invite");
 
   public static final Field<UUID> TOKEN = field("token", UUID.class);
   public static final Field<String> EMAIL = field("email", String.class);
@@ -25,5 +25,5 @@ public final class TeamInviteTable {
 
   public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(TOKEN, CREATED_AT);
 
-  private TeamInviteTable() {}
+  private OrganizationInviteTable() {}
 }

@@ -1,14 +1,15 @@
 import { useMemo, useCallback } from 'react';
 import useSWR, { mutate } from 'swr';
-import { TeamInvite, UserRole } from '@insight/types';
+import { TeamInvite, TeamInviteCreateDTO } from '@insight/types';
 import InviteApi from 'api/invite';
 
-const cacheKey = '/v1/org/invites';
+const cacheKey = '/v1/organizations/invites';
 const EMPTY_LIST: TeamInvite[] = [];
 
-const useInvites = () => {
-  const { data } = useSWR(cacheKey, InviteApi.list);
-  const invites = useMemo(() => data?.data ?? EMPTY_LIST, [data?.data]);
+const useTeamInvites = () => {
+  const { data } = useSWR(cacheKey, () => InviteApi.list());
+  const invites = useMemo(() => data ?? EMPTY_LIST, [data]);
+  const loading = useMemo(() => data === undefined, [data]);
 
   const deleteInvite = useCallback(
     async (token: string, email: string) => {
@@ -22,16 +23,16 @@ const useInvites = () => {
   );
 
   const createInvite = useCallback(
-    async (role: UserRole, email: string) => {
-      return InviteApi.create(role, email).then((resp) => {
-        mutate(cacheKey, { data: [...invites, resp.data] });
+    async (formData: TeamInviteCreateDTO) => {
+      return InviteApi.create(formData).then((resp) => {
+        mutate(cacheKey, [...invites, resp]);
         return resp;
       });
     },
     [invites]
   );
 
-  return { invites, deleteInvite, createInvite };
+  return { invites, deleteInvite, createInvite, loading };
 };
 
-export default useInvites;
+export default useTeamInvites;

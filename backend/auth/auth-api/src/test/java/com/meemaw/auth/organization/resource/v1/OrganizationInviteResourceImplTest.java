@@ -1,4 +1,4 @@
-package com.meemaw.auth.organization.invite.resource.v1;
+package com.meemaw.auth.organization.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.MailingConstants;
-import com.meemaw.auth.organization.invite.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.invite.model.dto.InviteCreateDTO;
+import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class TeamInviteResourceImplTest {
+public class OrganizationInviteResourceImplTest {
 
   @Inject MockMailbox mailbox;
 
@@ -72,7 +72,7 @@ public class TeamInviteResourceImplTest {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(415)
         .body(
@@ -85,7 +85,7 @@ public class TeamInviteResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(401)
         .body(
@@ -99,7 +99,7 @@ public class TeamInviteResourceImplTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(400)
         .body(
@@ -114,7 +114,7 @@ public class TeamInviteResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
         .body("{}")
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(400)
         .body(
@@ -132,7 +132,7 @@ public class TeamInviteResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
         .body(payload)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(422)
         .body(
@@ -150,7 +150,7 @@ public class TeamInviteResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
         .body(payload)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(400)
         .body(
@@ -169,7 +169,7 @@ public class TeamInviteResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
         .body(payload)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(201);
 
@@ -179,7 +179,7 @@ public class TeamInviteResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
         .body(payload)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(409)
         .body(
@@ -208,7 +208,7 @@ public class TeamInviteResourceImplTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(inviteAcceptPayload)
-        .post(String.join("/", TeamInviteResource.PATH, token, "accept"))
+        .post(String.join("/", OrganizationInviteResource.PATH, token, "accept"))
         .then()
         .statusCode(201)
         .body(sameJson("{\"data\":true}"));
@@ -218,7 +218,7 @@ public class TeamInviteResourceImplTest {
   public void list_invites_should_fail_when_not_authenticated() {
     given()
         .when()
-        .get(TeamInviteResource.PATH)
+        .get(OrganizationInviteResource.PATH)
         .then()
         .statusCode(401)
         .body(
@@ -235,7 +235,7 @@ public class TeamInviteResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TeamInviteResource.PATH)
+        .get(OrganizationInviteResource.PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":[]}"))
@@ -250,12 +250,15 @@ public class TeamInviteResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(payload)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(201);
 
     Response response =
-        given().when().cookie(SsoSession.COOKIE_NAME, sessionId).get(TeamInviteResource.PATH);
+        given()
+            .when()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .get(OrganizationInviteResource.PATH);
     response.then().statusCode(200).body("data.size()", is(1));
 
     UUID token = UUID.fromString(response.body().path("data[0].token"));
@@ -265,7 +268,7 @@ public class TeamInviteResourceImplTest {
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .pathParam("token", token)
-        .delete(TeamInviteResource.PATH + "/{token}")
+        .delete(OrganizationInviteResource.PATH + "/{token}")
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":true}"));
@@ -274,7 +277,7 @@ public class TeamInviteResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TeamInviteResource.PATH)
+        .get(OrganizationInviteResource.PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":[]}"))
@@ -285,7 +288,7 @@ public class TeamInviteResourceImplTest {
   public void delete_invite_should_fail_when_no_token_param() {
     given()
         .when()
-        .delete(TeamInviteResource.PATH)
+        .delete(OrganizationInviteResource.PATH)
         .then()
         .statusCode(405)
         .body(
@@ -298,7 +301,7 @@ public class TeamInviteResourceImplTest {
     given()
         .when()
         .pathParam("token", UUID.randomUUID())
-        .delete(TeamInviteResource.PATH + "/{token}")
+        .delete(OrganizationInviteResource.PATH + "/{token}")
         .then()
         .statusCode(401)
         .body(
@@ -312,7 +315,7 @@ public class TeamInviteResourceImplTest {
         .when()
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
         .pathParam("token", "randomToken")
-        .delete(TeamInviteResource.PATH + "/{token}")
+        .delete(OrganizationInviteResource.PATH + "/{token}")
         .then()
         .statusCode(404)
         .body(
@@ -325,7 +328,8 @@ public class TeamInviteResourceImplTest {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
-        .post(String.join("/", TeamInviteResource.PATH, UUID.randomUUID().toString(), "send"))
+        .post(
+            String.join("/", OrganizationInviteResource.PATH, UUID.randomUUID().toString(), "send"))
         .then()
         .statusCode(415)
         .body(
@@ -338,7 +342,8 @@ public class TeamInviteResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .post(String.join("/", TeamInviteResource.PATH, UUID.randomUUID().toString(), "send"))
+        .post(
+            String.join("/", OrganizationInviteResource.PATH, UUID.randomUUID().toString(), "send"))
         .then()
         .statusCode(401)
         .body(
@@ -359,7 +364,7 @@ public class TeamInviteResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
         .body(invitePayload)
-        .post(TeamInviteResource.PATH)
+        .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(201);
 
@@ -385,7 +390,7 @@ public class TeamInviteResourceImplTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
-        .post(String.join("/", TeamInviteResource.PATH, token, "send"))
+        .post(String.join("/", OrganizationInviteResource.PATH, token, "send"))
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":true}"));

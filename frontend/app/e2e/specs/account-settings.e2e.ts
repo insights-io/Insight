@@ -3,6 +3,7 @@ import {
   getByPlaceholderText,
   getByText,
 } from '@testing-library/testcafe';
+import { v4 as uuid } from 'uuid';
 import { Selector } from 'testcafe';
 
 import { login } from '../utils';
@@ -11,8 +12,6 @@ import config from '../config';
 fixture('/account-settings').page(`${config.appBaseURL}/login`);
 
 test('Should be able to change password', async (t) => {
-  const newPassword = 'testPassword123456';
-
   await login(t, {
     email: config.insightUserEmail,
     password: config.insightUserPassword,
@@ -26,12 +25,15 @@ test('Should be able to change password', async (t) => {
     .expect(queryByText('000000').visible)
     .ok('Should display Insight organization id');
 
+  const newPassword = 'testPassword123456';
+  const currentPasswordInput = getByPlaceholderText('Current password');
   const newPasswordInput = getByPlaceholderText('New password');
   const confirmNewPasswordInput = getByPlaceholderText('Confirm new password');
   const saveNewPasswordButton = getByText('Save new password');
 
-  // Try changing password to an existing one
+  // Try changing password to the same as current one
   await t
+    .typeText(currentPasswordInput, config.insightUserPassword)
     .typeText(newPasswordInput, config.insightUserPassword)
     .typeText(confirmNewPasswordInput, config.insightUserPassword)
     .click(saveNewPasswordButton)
@@ -39,16 +41,32 @@ test('Should be able to change password', async (t) => {
       queryByText('New password cannot be the same as the previous one!')
         .visible
     )
-    .ok(
-      'Should not allow to change password to the same value as previous one'
-    );
+    .ok('Should not allow to change password to the same as previous one');
 
-  // Change password to a new one
+  // Try changing password with a wrong current one
   await t
+    .selectText(currentPasswordInput)
+    .pressKey('delete')
     .selectText(newPasswordInput)
     .pressKey('delete')
     .selectText(confirmNewPasswordInput)
     .pressKey('delete')
+    .typeText(currentPasswordInput, 'password 12345')
+    .typeText(newPasswordInput, config.insightUserPassword)
+    .typeText(confirmNewPasswordInput, config.insightUserPassword)
+    .click(saveNewPasswordButton)
+    .expect(queryByText('Current password miss match').visible)
+    .ok('Should not allow to change password if current one is wrong');
+
+  // Change password to a new one
+  await t
+    .selectText(currentPasswordInput)
+    .pressKey('delete')
+    .selectText(newPasswordInput)
+    .pressKey('delete')
+    .selectText(confirmNewPasswordInput)
+    .pressKey('delete')
+    .typeText(currentPasswordInput, config.insightUserEmail)
     .typeText(newPasswordInput, newPassword)
     .typeText(confirmNewPasswordInput, newPassword)
     .click(saveNewPasswordButton)
@@ -57,10 +75,13 @@ test('Should be able to change password', async (t) => {
 
   // Change password back to initial one
   await t
+    .selectText(currentPasswordInput)
+    .pressKey('delete')
     .selectText(newPasswordInput)
     .pressKey('delete')
     .selectText(confirmNewPasswordInput)
     .pressKey('delete')
+    .typeText(currentPasswordInput, newPassword)
     .typeText(newPasswordInput, config.insightUserPassword)
     .typeText(confirmNewPasswordInput, config.insightUserPassword)
     .click(saveNewPasswordButton);
@@ -73,4 +94,16 @@ test('Should be able to change password', async (t) => {
     .ok('Should display Insight organization name')
     .expect(queryByText(config.insightUserEmail).visible)
     .ok('Should display user email in the members table');
+
+  const insightUserEmailSplit = config.insightUserEmail.split('@');
+  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid}@${insightUserEmailSplit[1]}`;
+  await t
+    .click(getByText('Invite new member'))
+    .typeText(getByPlaceholderText('Email'), newMemberEmail)
+    .click(getByText('ADMIN'))
+    .click('Invite')
+    .expect(queryByText('Member invited').visible)
+    .ok('Should display notification')
+    .expect(queryByText(newMemberEmail).visible)
+    .ok('Should display new member email in the team invites list');
 });

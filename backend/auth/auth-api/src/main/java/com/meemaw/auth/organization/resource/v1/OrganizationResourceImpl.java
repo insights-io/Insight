@@ -1,6 +1,6 @@
 package com.meemaw.auth.organization.resource.v1;
 
-import com.meemaw.auth.organization.service.OrganizationService;
+import com.meemaw.auth.organization.service.impl.OrganizationServiceImpl;
 import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 public class OrganizationResourceImpl implements OrganizationResource {
 
   @Inject InsightPrincipal insightPrincipal;
-  @Inject OrganizationService organizationService;
+  @Inject OrganizationServiceImpl organizationService;
 
   @Override
   public CompletionStage<Response> members() {

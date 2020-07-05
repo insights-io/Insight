@@ -1,21 +1,19 @@
-package com.meemaw.auth.organization.invite.datasource.pg;
+package com.meemaw.auth.organization.datasource.pg;
 
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.CREATED_AT;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.CREATOR_ID;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.EMAIL;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.INSERT_FIELDS;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.ORGANIZATION_ID;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.ROLE;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.TABLE;
-import static com.meemaw.auth.organization.invite.datasource.pg.TeamInviteTable.TOKEN;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.CREATOR_ID;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.EMAIL;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.ORGANIZATION_ID;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.ROLE;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.TABLE;
+import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.TOKEN;
 
-import com.meemaw.auth.organization.datasource.pg.OrganizationTable;
-import com.meemaw.auth.organization.datasource.pg.PgOrganizationDatasource;
-import com.meemaw.auth.organization.invite.datasource.InviteDatasource;
-import com.meemaw.auth.organization.invite.model.TeamInvite;
-import com.meemaw.auth.organization.invite.model.TeamInviteTemplateData;
+import com.meemaw.auth.organization.datasource.OrganizationInviteDatasource;
 import com.meemaw.auth.organization.model.Organization;
+import com.meemaw.auth.organization.model.TeamInviteTemplateData;
+import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.pg.PgError;
 import com.meemaw.shared.rest.exception.DatabaseException;
@@ -39,20 +37,21 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Query;
 import org.jooq.Table;
 import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class PgInviteDatasource implements InviteDatasource {
+public class PgOrganizationInviteDatasource implements OrganizationInviteDatasource {
 
   @Inject PgPool pgPool;
 
   @Override
-  public CompletionStage<Optional<TeamInvite>> findTeamInvite(UUID token, Transaction transaction) {
+  @Traced
+  public CompletionStage<Optional<TeamInviteDTO>> get(UUID token, Transaction transaction) {
     Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(TOKEN.eq(token));
-
     return transaction
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .execute(Tuple.tuple(query.getBindValues()))
@@ -60,7 +59,8 @@ public class PgInviteDatasource implements InviteDatasource {
   }
 
   @Override
-  public CompletionStage<Optional<Pair<TeamInvite, Organization>>> findTeamInviteWithOrganization(
+  @Traced
+  public CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> getWithOrganization(
       UUID token) {
     Table<?> joined =
         TABLE.leftJoin(OrganizationTable.TABLE).on(OrganizationTable.ID.eq(ORGANIZATION_ID));
@@ -75,14 +75,15 @@ public class PgInviteDatasource implements InviteDatasource {
                 return Optional.empty();
               }
               Row row = pgRowSet.iterator().next();
-              TeamInvite teamInvite = mapTeamInvite(row);
+              TeamInviteDTO teamInvite = mapTeamInvite(row);
               Organization organization = PgOrganizationDatasource.mapOrganization(row);
               return Optional.of(Pair.of(teamInvite, organization));
             });
   }
 
   @Override
-  public CompletionStage<List<TeamInvite>> findTeamInvites(String organizationId) {
+  @Traced
+  public CompletionStage<List<TeamInviteDTO>> find(String organizationId) {
     Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
     return pgPool
         .preparedQuery(query.getSQL(ParamType.NAMED))
@@ -90,12 +91,13 @@ public class PgInviteDatasource implements InviteDatasource {
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
-                    .map(PgInviteDatasource::mapTeamInvite)
+                    .map(PgOrganizationInviteDatasource::mapTeamInvite)
                     .collect(Collectors.toList()));
   }
 
   @Override
-  public CompletionStage<Boolean> deleteTeamInvite(UUID token) {
+  @Traced
+  public CompletionStage<Boolean> delete(UUID token) {
     Query query = SQLContext.POSTGRES.deleteFrom(TABLE).where(TOKEN.eq(token));
     return pgPool
         .preparedQuery(query.getSQL(ParamType.NAMED))
@@ -104,7 +106,8 @@ public class PgInviteDatasource implements InviteDatasource {
   }
 
   @Override
-  public CompletionStage<Boolean> deleteTeamInvites(
+  @Traced
+  public CompletionStage<Boolean> deleteAll(
       String email, String organizationId, Transaction transaction) {
     Query query =
         SQLContext.POSTGRES
@@ -119,7 +122,8 @@ public class PgInviteDatasource implements InviteDatasource {
   }
 
   @Override
-  public CompletionStage<TeamInvite> createTeamInvite(
+  @Traced
+  public CompletionStage<TeamInviteDTO> create(
       String organizationId,
       UUID creatorId,
       TeamInviteTemplateData teamInvite,
@@ -142,7 +146,7 @@ public class PgInviteDatasource implements InviteDatasource {
               Row row = pgRowSet.iterator().next();
               UUID token = row.getUUID(TOKEN.getName());
               OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
-              return new TeamInvite(token, email, organizationId, role, creatorId, createdAt);
+              return new TeamInviteDTO(token, email, organizationId, role, creatorId, createdAt);
             })
         .exceptionally(
             throwable -> {
@@ -167,7 +171,7 @@ public class PgInviteDatasource implements InviteDatasource {
             });
   }
 
-  private Optional<TeamInvite> mapTeamInviteIfPresent(RowSet<Row> rowSet) {
+  private Optional<TeamInviteDTO> mapTeamInviteIfPresent(RowSet<Row> rowSet) {
     if (!rowSet.iterator().hasNext()) {
       return Optional.empty();
     }
@@ -180,8 +184,8 @@ public class PgInviteDatasource implements InviteDatasource {
    * @param row sql row
    * @return mapped TeamInvite
    */
-  public static TeamInvite mapTeamInvite(Row row) {
-    return new TeamInvite(
+  public static TeamInviteDTO mapTeamInvite(Row row) {
+    return new TeamInviteDTO(
         row.getUUID(TOKEN.getName()),
         row.getString(EMAIL.getName()),
         row.getString(ORGANIZATION_ID.getName()),

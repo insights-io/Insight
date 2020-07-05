@@ -1,8 +1,8 @@
-package com.meemaw.auth.organization.invite.datasource;
+package com.meemaw.auth.organization.datasource;
 
-import com.meemaw.auth.organization.invite.model.TeamInvite;
-import com.meemaw.auth.organization.invite.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.Organization;
+import com.meemaw.auth.organization.model.TeamInviteTemplateData;
+import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import io.vertx.axle.sqlclient.Transaction;
 import java.util.List;
 import java.util.Optional;
@@ -10,16 +10,16 @@ import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import org.apache.commons.lang3.tuple.Pair;
 
-public interface InviteDatasource {
+public interface OrganizationInviteDatasource {
 
   /**
-   * Find an existing team invite by confirmation token.
+   * Get an existing team invite by confirmation token.
    *
    * @param token UUID team invite confirmation token
    * @param transaction Transaction context
-   * @return maybe InviteDTO
+   * @return maybe team invite
    */
-  CompletionStage<Optional<TeamInvite>> findTeamInvite(UUID token, Transaction transaction);
+  CompletionStage<Optional<TeamInviteDTO>> get(UUID token, Transaction transaction);
 
   /**
    * Find team invite with associated organization by confirmation token.
@@ -27,8 +27,7 @@ public interface InviteDatasource {
    * @param token UUID confirmation token
    * @return maybe pair of TeamInvite and Organization
    */
-  CompletionStage<Optional<Pair<TeamInvite, Organization>>> findTeamInviteWithOrganization(
-      UUID token);
+  CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> getWithOrganization(UUID token);
 
   /**
    * Find all team invites associated with an organization.
@@ -36,7 +35,7 @@ public interface InviteDatasource {
    * @param organizationId String organization id
    * @return List of team invites
    */
-  CompletionStage<List<TeamInvite>> findTeamInvites(String organizationId);
+  CompletionStage<List<TeamInviteDTO>> find(String organizationId);
 
   /**
    * Delete team invite by confirmation token.
@@ -44,7 +43,7 @@ public interface InviteDatasource {
    * @param token UUID team invite confirmation token
    * @return Boolean indicating successful deletion
    */
-  CompletionStage<Boolean> deleteTeamInvite(UUID token);
+  CompletionStage<Boolean> delete(UUID token);
 
   /**
    * Delete all team invites associated with an email address in organization. One would call this
@@ -55,8 +54,7 @@ public interface InviteDatasource {
    * @param transaction Transaction context
    * @return Boolean indicating successful deletion
    */
-  CompletionStage<Boolean> deleteTeamInvites(
-      String email, String organizationId, Transaction transaction);
+  CompletionStage<Boolean> deleteAll(String email, String organizationId, Transaction transaction);
 
   /**
    * Create a new team invite.
@@ -67,7 +65,7 @@ public interface InviteDatasource {
    * @param transaction Transaction context
    * @return newly created InviteDTO
    */
-  CompletionStage<TeamInvite> createTeamInvite(
+  CompletionStage<TeamInviteDTO> create(
       String organizationId,
       UUID creatorId,
       TeamInviteTemplateData teamInvite,

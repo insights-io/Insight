@@ -1,13 +1,13 @@
-package com.meemaw.auth.organization.invite.model;
+package com.meemaw.auth.organization.model.dto;
 
-import com.meemaw.shared.model.CanExpire;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.model.CanExpire;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Value;
 
 @Value
-public class TeamInvite implements CanExpire {
+public class TeamInviteDTO implements CanExpire {
 
   UUID token;
   String email;

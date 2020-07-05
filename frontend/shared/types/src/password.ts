@@ -9,6 +9,7 @@ export type PasswordReset = PasswordResetRequest & {
 };
 
 export type ChangePasswordDTO = {
+  currentPassword: string;
   newPassword: string;
   confirmNewPassword: string;
 };

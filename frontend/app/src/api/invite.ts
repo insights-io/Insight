@@ -1,33 +1,44 @@
 import ky from 'ky-universal';
-import { DataResponse, TeamInvite, UserRole } from '@insight/types';
+import {
+  DataResponse,
+  TeamInviteCreateDTO,
+  TeamInviteDTO,
+  TeamInvite,
+} from '@insight/types';
 
 import { authApiBaseURL } from './base';
 
-const InviteApi = {
+export const mapTeamInvite = (teamInvite: TeamInviteDTO): TeamInvite => {
+  return { ...teamInvite, createdAt: new Date(teamInvite.createdAt) };
+};
+
+const TeamInviteApi = {
   list: (baseURL = authApiBaseURL) => {
     return ky
-      .get(`${baseURL}/v1/org/invites`, { credentials: 'include' })
-      .json<DataResponse<TeamInvite[]>>();
+      .get(`${baseURL}/v1/organizations/invites`, { credentials: 'include' })
+      .json<DataResponse<TeamInviteDTO[]>>()
+      .then((response) => response.data.map(mapTeamInvite));
   },
   delete: (token: string, email: string, baseURL = authApiBaseURL) => {
     return ky
-      .delete(`${baseURL}/v1/org/invites/${token}`, {
+      .delete(`${baseURL}/v1/organizations/invites/${token}`, {
         json: { email },
         credentials: 'include',
       })
       .json<DataResponse<boolean>>();
   },
-  create: (role: UserRole, email: string, baseURL = authApiBaseURL) => {
+  create: (json: TeamInviteCreateDTO, baseURL = authApiBaseURL) => {
     return ky
-      .post(`${baseURL}/v1/org/invites`, {
-        json: { email, role },
+      .post(`${baseURL}/v1/organizations/invites`, {
+        json,
         credentials: 'include',
       })
-      .json<DataResponse<TeamInvite>>();
+      .json<DataResponse<TeamInviteDTO>>()
+      .then((response) => mapTeamInvite(response.data));
   },
   resend: (email: string, baseURL = authApiBaseURL) => {
     return ky
-      .post(`${baseURL}/v1/org/invites/send`, {
+      .post(`${baseURL}/v1/organizations/invites/send`, {
         json: { email },
         credentials: 'include',
       })
@@ -35,4 +46,4 @@ const InviteApi = {
   },
 };
 
-export default InviteApi;
+export default TeamInviteApi;

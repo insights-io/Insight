@@ -1,8 +1,8 @@
-package com.meemaw.auth.organization.invite.resource.v1;
+package com.meemaw.auth.organization.resource.v1;
 
-import com.meemaw.auth.organization.invite.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.invite.model.dto.InviteCreateDTO;
-import com.meemaw.auth.organization.invite.service.InviteService;
+import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
+import com.meemaw.auth.organization.service.OrganizationInviteService;
 import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -16,10 +16,10 @@ import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class TeamInviteResourceImpl implements TeamInviteResource {
+public class OrganizationInviteResourceImpl implements OrganizationInviteResource {
 
   @Inject InsightPrincipal principal;
-  @Inject InviteService inviteService;
+  @Inject OrganizationInviteService inviteService;
   @Context UriInfo info;
   @Context HttpServerRequest request;
 

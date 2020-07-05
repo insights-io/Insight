@@ -1,4 +1,4 @@
-package com.meemaw.auth.organization.invite.model;
+package com.meemaw.auth.organization.model;
 
 import com.meemaw.auth.user.model.UserRole;
 import lombok.Value;

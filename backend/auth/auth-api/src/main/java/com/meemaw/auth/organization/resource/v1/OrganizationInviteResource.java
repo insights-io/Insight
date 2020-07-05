@@ -1,7 +1,7 @@
-package com.meemaw.auth.organization.invite.resource.v1;
+package com.meemaw.auth.organization.resource.v1;
 
-import com.meemaw.auth.organization.invite.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.invite.model.dto.InviteCreateDTO;
+import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -17,12 +17,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path(TeamInviteResource.PATH)
+@Path(OrganizationInviteResource.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface TeamInviteResource {
+public interface OrganizationInviteResource {
 
-  String PATH = "/v1/organization/invites";
+  String PATH = OrganizationResource.PATH + "/invites";
 
   @POST
   @CookieAuth
