@@ -1,5 +1,5 @@
 import React from 'react';
-import PasswordApi from 'api/password';
+import AuthApi from 'api/auth';
 import { GetServerSideProps } from 'next';
 import InvalidPasswordResetRequest from 'modules/auth/components/InvalidPasswordResetRequest';
 import PasswordReset from 'modules/auth/components/PasswordReset';
@@ -37,10 +37,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     return { props: { exists: false } };
   }
 
-  const response = await PasswordApi.resetExists(
-    token,
-    process.env.AUTH_API_BASE_URL
-  );
+  const response = await AuthApi.password.resetExists(token, {
+    baseURL: process.env.AUTH_API_BASE_URL,
+  });
   if (response.data === false) {
     return { props: { exists: false } };
   }

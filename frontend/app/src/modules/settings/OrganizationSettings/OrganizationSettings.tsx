@@ -2,7 +2,7 @@ import React from 'react';
 import { Table } from 'baseui/table';
 import { Block } from 'baseui/block';
 import useSWR from 'swr';
-import OrganizationsApi from 'api/organizations';
+import AuthApi from 'api/auth';
 import { H3 } from 'baseui/typography';
 import { useStyletron } from 'baseui';
 import { differenceInSeconds } from 'date-fns';
@@ -16,12 +16,13 @@ import TeamInviteModal from '../TeamInviteModal';
 
 const OrganizationSettings = () => {
   const [_css, theme] = useStyletron();
-  const { data: organizationMembers } = useSWR('OrganizationsApi.members', () =>
-    OrganizationsApi.members()
+  const { data: organizationMembers } = useSWR(
+    'AuthApi.organizations.members',
+    () => AuthApi.organizations.members()
   );
 
-  const { data: organization } = useSWR('OrganizationsApi.get', () =>
-    OrganizationsApi.get()
+  const { data: organization } = useSWR('AuthApi.organizations.get', () =>
+    AuthApi.organizations.get()
   );
 
   const { invites, loading: loadingInvites, createInvite } = useTeamInvites();

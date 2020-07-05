@@ -7,7 +7,7 @@ import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import { useForm } from 'react-hook-form';
-import PasswordApi from 'api/password';
+import AuthApi from 'api/auth';
 import { createInputOverrides } from 'shared/styles/input';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -34,7 +34,8 @@ const PasswordForgot = () => {
     }
     setIsSubmitting(true);
 
-    PasswordApi.forgot(formData.email)
+    AuthApi.password
+      .forgot(formData.email)
       .then((response) => setCheckYourInbox(response.data))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();

@@ -1,4 +1,5 @@
 /* eslint-disable lodash/prefer-lodash-typecheck */
+import { createSessionsClient } from './sessions';
 import { createAuthClient } from './auth';
 import { RequestOptions } from './types';
 
@@ -8,15 +9,19 @@ type ClientConfig =
 
 const createClient = (clientConfig: ClientConfig) => {
   let authApiBaseURL: string;
+  let sessionApiBaseURL: string;
   if (typeof clientConfig === 'string') {
     authApiBaseURL = clientConfig;
+    sessionApiBaseURL = clientConfig;
   } else {
     authApiBaseURL = clientConfig.authApiBaseURL;
+    sessionApiBaseURL = clientConfig.sessionApiBaseURL;
   }
 
   const auth = createAuthClient(authApiBaseURL);
+  const sessions = createSessionsClient(sessionApiBaseURL);
 
-  return { auth };
+  return { auth, sessions };
 };
 
-export { createClient, createAuthClient, RequestOptions };
+export { createClient, createAuthClient, createSessionsClient, RequestOptions };

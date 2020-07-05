@@ -14,7 +14,7 @@ type Props = {
 const SessionDetails = ({ sessionId }: Props) => {
   const { data = [] } = useSWR(
     `sessions/${sessionId}/events/search`,
-    () => SessionApi.getEvents(sessionId),
+    () => SessionApi.events.get(sessionId),
     { refreshWhenHidden: true, refreshInterval: 5000 }
   );
 
