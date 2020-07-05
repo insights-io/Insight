@@ -1,5 +1,5 @@
 import type { Options } from 'ky';
 
-export type InsightRequestOptions = Options & {
+export type RequestOptions = Options & {
   baseURL?: string;
 };

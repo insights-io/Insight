@@ -1,12 +1,12 @@
 /* eslint-disable lodash/prefer-lodash-typecheck */
-import { createInsightAuthClient } from './auth';
-import { InsightRequestOptions } from './types';
+import { createAuthClient } from './auth';
+import { RequestOptions } from './types';
 
-type CreateClientConfig =
+type ClientConfig =
   | string
   | { authApiBaseURL: string; sessionApiBaseURL: string };
 
-const createInsightClient = (clientConfig: CreateClientConfig) => {
+const createClient = (clientConfig: ClientConfig) => {
   let authApiBaseURL: string;
   if (typeof clientConfig === 'string') {
     authApiBaseURL = clientConfig;
@@ -14,9 +14,9 @@ const createInsightClient = (clientConfig: CreateClientConfig) => {
     authApiBaseURL = clientConfig.authApiBaseURL;
   }
 
-  const auth = createInsightAuthClient(authApiBaseURL);
+  const auth = createAuthClient(authApiBaseURL);
 
   return { auth };
 };
 
-export { createInsightClient, createInsightAuthClient, InsightRequestOptions };
+export { createClient, createAuthClient, RequestOptions };

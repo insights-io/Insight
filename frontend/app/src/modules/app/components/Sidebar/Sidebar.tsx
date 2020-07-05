@@ -5,7 +5,7 @@ import { StatefulPopover, PLACEMENT, TRIGGER_TYPE } from 'baseui/popover';
 import { StatefulMenu, OnItemSelect } from 'baseui/menu';
 import { Button, SHAPE } from 'baseui/button';
 import { Menu } from 'baseui/icon';
-import SsoApi from 'api/sso';
+import AuthApi from 'api/auth';
 import Router from 'next/router';
 
 import Logo from '../Logo';
@@ -23,7 +23,8 @@ const Sidebar = () => {
         },
         {
           label: 'Sign out',
-          handler: () => SsoApi.logout().then((_) => Router.push('/login')),
+          handler: () =>
+            AuthApi.sso.logout().then((_) => Router.push('/login')),
         },
       ],
     };

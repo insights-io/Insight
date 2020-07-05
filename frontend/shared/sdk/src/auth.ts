@@ -1,12 +1,12 @@
 import ky from 'ky-universal';
 import { DataResponse, UserDTO } from '@insight/types';
-import { InsightRequestOptions } from 'types';
+import { RequestOptions } from 'types';
 
-export const createInsightAuthClient = (authApiBaseURL: string) => {
+export const createAuthClient = (authApiBaseURL: string) => {
   const login = (
     email: string,
     password: string,
-    { baseURL = authApiBaseURL, ...rest }: InsightRequestOptions = {}
+    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
   ) => {
     const body = new URLSearchParams();
     body.set('email', email);
@@ -20,7 +20,7 @@ export const createInsightAuthClient = (authApiBaseURL: string) => {
 
   const session = (
     sessionId: string,
-    { baseURL = authApiBaseURL, ...rest }: InsightRequestOptions = {}
+    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
   ) => {
     return ky.get(`${baseURL}/v1/sso/session`, {
       searchParams: { id: sessionId },
@@ -28,10 +28,7 @@ export const createInsightAuthClient = (authApiBaseURL: string) => {
     });
   };
 
-  const me = ({
-    baseURL = authApiBaseURL,
-    ...rest
-  }: InsightRequestOptions = {}) => {
+  const me = ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
     return ky
       .get(`${baseURL}/v1/sso/me`, { credentials: 'include', ...rest })
       .json<DataResponse<UserDTO>>()
@@ -41,7 +38,7 @@ export const createInsightAuthClient = (authApiBaseURL: string) => {
   const logout = ({
     baseURL = authApiBaseURL,
     ...rest
-  }: InsightRequestOptions = {}) => {
+  }: RequestOptions = {}) => {
     return ky.post(`${baseURL}/v1/sso/logout`, {
       credentials: 'include',
       ...rest,
@@ -51,12 +48,12 @@ export const createInsightAuthClient = (authApiBaseURL: string) => {
   const logoutFromAllDevices = ({
     baseURL = authApiBaseURL,
     ...rest
-  }: InsightRequestOptions = {}) => {
+  }: RequestOptions = {}) => {
     return ky.post(`${baseURL}/v1/sso/logout-from-all-devices`, {
       credentials: 'include',
       ...rest,
     });
   };
 
-  return { login, session, me, logout, logoutFromAllDevices };
+  return { sso: { login, session, me, logout, logoutFromAllDevices } };
 };
