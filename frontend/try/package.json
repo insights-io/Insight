@@ -36,8 +36,6 @@
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
     "baseui": "9.85.0",
-    "ky": "0.20.0",
-    "ky-universal": "0.8.1",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",

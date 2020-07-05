@@ -47,12 +47,12 @@ test('Should be able to change password', async (t) => {
   await t
     .selectText(currentPasswordInput)
     .pressKey('delete')
+    .typeText(currentPasswordInput, 'password 12345')
     .selectText(newPasswordInput)
     .pressKey('delete')
+    .typeText(newPasswordInput, config.insightUserPassword)
     .selectText(confirmNewPasswordInput)
     .pressKey('delete')
-    .typeText(currentPasswordInput, 'password 12345')
-    .typeText(newPasswordInput, config.insightUserPassword)
     .typeText(confirmNewPasswordInput, config.insightUserPassword)
     .click(saveNewPasswordButton)
     .expect(queryByText('Current password miss match').visible)
@@ -62,12 +62,12 @@ test('Should be able to change password', async (t) => {
   await t
     .selectText(currentPasswordInput)
     .pressKey('delete')
+    .typeText(currentPasswordInput, config.insightUserPassword)
     .selectText(newPasswordInput)
     .pressKey('delete')
+    .typeText(newPasswordInput, newPassword)
     .selectText(confirmNewPasswordInput)
     .pressKey('delete')
-    .typeText(currentPasswordInput, config.insightUserEmail)
-    .typeText(newPasswordInput, newPassword)
     .typeText(confirmNewPasswordInput, newPassword)
     .click(saveNewPasswordButton)
     .expect(queryByText('Password changed').visible)
@@ -77,14 +77,16 @@ test('Should be able to change password', async (t) => {
   await t
     .selectText(currentPasswordInput)
     .pressKey('delete')
+    .typeText(currentPasswordInput, newPassword)
     .selectText(newPasswordInput)
     .pressKey('delete')
+    .typeText(newPasswordInput, config.insightUserPassword)
     .selectText(confirmNewPasswordInput)
     .pressKey('delete')
-    .typeText(currentPasswordInput, newPassword)
-    .typeText(newPasswordInput, config.insightUserPassword)
     .typeText(confirmNewPasswordInput, config.insightUserPassword)
-    .click(saveNewPasswordButton);
+    .click(saveNewPasswordButton)
+    .expect(queryByText('Password changed').visible)
+    .ok('Should display notification that password was changed');
 
   await t
     .click(getByText('Organization settings'))
@@ -96,12 +98,15 @@ test('Should be able to change password', async (t) => {
     .ok('Should display user email in the members table');
 
   const insightUserEmailSplit = config.insightUserEmail.split('@');
-  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid}@${insightUserEmailSplit[1]}`;
+  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid()}@${
+    insightUserEmailSplit[1]
+  }`;
+
   await t
     .click(getByText('Invite new member'))
     .typeText(getByPlaceholderText('Email'), newMemberEmail)
-    .click(getByText('ADMIN'))
-    .click('Invite')
+    .click(getByText('Admin'))
+    .click(getByText('Invite'))
     .expect(queryByText('Member invited').visible)
     .ok('Should display notification')
     .expect(queryByText(newMemberEmail).visible)
