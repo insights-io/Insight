@@ -12,7 +12,7 @@ import {
   APIError,
   APIErrorDataResponse,
 } from '@insight/types';
-import PasswordApi from 'api/password';
+import AuthApi from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { toaster } from 'baseui/toast';
 
@@ -35,7 +35,8 @@ const ChangePassword = ({ overrides }: Props) => {
     }
     setIsSubmitting(true);
 
-    PasswordApi.change(formData)
+    AuthApi.password
+      .change(formData)
       .then((_resp) => {
         toaster.positive('Password changed', {});
         setFormError(undefined);

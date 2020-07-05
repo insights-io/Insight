@@ -13,6 +13,6 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(SessionApi, 'getEvents').resolves([]);
+    return sandbox.stub(SessionApi.events, 'get').resolves([]);
   },
 });

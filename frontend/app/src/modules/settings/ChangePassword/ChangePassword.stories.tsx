@@ -1,6 +1,6 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
-import PasswordApi from 'api/password';
+import AuthApi from 'api/auth';
 
 import ChangePassword from './ChangePassword';
 
@@ -13,7 +13,7 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(PasswordApi, 'change').resolves({ data: true });
+    return sandbox.stub(AuthApi.password, 'change').resolves({ data: true });
   },
 });
 
@@ -22,7 +22,7 @@ export const WithError = () => {
 };
 WithError.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(PasswordApi, 'change').rejects(
+    return sandbox.stub(AuthApi.password, 'change').rejects(
       mockApiError({
         statusCode: 400,
         reason: 'Bad Request',

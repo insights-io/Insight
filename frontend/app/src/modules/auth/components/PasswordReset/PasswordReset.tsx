@@ -9,7 +9,7 @@ import { Button } from 'baseui/button';
 import { createInputOverrides } from 'shared/styles/input';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@insight/types';
-import PasswordApi from 'api/password';
+import AuthApi from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 
@@ -37,7 +37,8 @@ const PasswordReset = ({ token }: Props) => {
     }
     setIsSubmitting(true);
 
-    PasswordApi.reset(token, formData.password)
+    AuthApi.password
+      .reset(token, formData.password)
       .then((_) => router.replace('/'))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
