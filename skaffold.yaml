@@ -1,0 +1,50 @@
+---
+apiVersion: skaffold/v2beta5
+kind: Config
+metadata:
+  name: insight
+build:
+  local:
+    useBuildkit: true
+    concurrency: 3
+  tagPolicy:
+    gitCommit:
+      variant: CommitSha
+  artifacts:
+    - image: insightio/session-api
+      context: backend
+      custom:
+        buildCommand: ./custom_build.sh session/session-api/docker/Dockerfile.jvm
+    - image: insightio/auth-api
+      context: backend
+      custom:
+        buildCommand: ./custom_build.sh auth/auth-api/docker/Dockerfile.jvm
+    - image: insightio/auth-api-migrations
+      context: backend/auth/auth-api/migrations/postgres
+    - image: insightio/beacon-api
+      context: backend
+      custom:
+        buildCommand: ./custom_build.sh beacon/beacon-api/docker/Dockerfile.jvm
+    - image: insightio/frontend-app
+      context: .
+      docker:
+        dockerfile: frontend/app/docker/Dockerfile
+    - image: insightio/frontend-try
+      context: .
+      docker:
+        dockerfile: frontend/try/docker/Dockerfile
+    - image: insightio/search-indexer
+      context: backend
+      custom:
+        buildCommand: ./custom_build.sh events/search-indexer/docker/Dockerfile.jvm
+    - image: insightio/session-api-migrations
+      context: backend/session/session-api/migrations/postgres
+deploy:
+  kustomize:
+    paths:
+      - .
+profiles:
+  - name: push
+    build:
+      local:
+        push: true

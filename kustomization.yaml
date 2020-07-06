@@ -25,12 +25,12 @@ patchesJson6902:
       kind: Job
       name: auth-api-postgres-migrations
     path: image-pull-secret.patch
-  - target:
-      group: batch
-      version: v1
-      kind: Job
-      name: auth-api-postgres-migrations
-    path: job-generate-name.patch
+  # - target:
+  #     group: batch
+  #     version: v1
+  #     kind: Job
+  #     name: auth-api-postgres-migrations
+  #   path: job-generate-name.patch
   - target:
       group: apps
       version: v1
@@ -43,12 +43,12 @@ patchesJson6902:
       kind: Job
       name: session-api-postgres-migrations
     path: image-pull-secret.patch
-  - target:
-      group: batch
-      version: v1
-      kind: Job
-      name: session-api-postgres-migrations
-    path: job-generate-name.patch
+  # - target:
+  #     group: batch
+  #     version: v1
+  #     kind: Job
+  #     name: session-api-postgres-migrations
+  #   path: job-generate-name.patch
   - target:
       group: apps
       version: v1

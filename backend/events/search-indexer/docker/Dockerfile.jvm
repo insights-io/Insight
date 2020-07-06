@@ -1,4 +1,4 @@
-FROM gradle:6.5.1-jdk14 as build
+FROM --platform=$BUILDPLATFORM gradle:6.5.1-jdk14 as build
 
 COPY build.gradle lombok.config gradle.properties settings.gradle /backend/
 COPY shared/rest/ /backend/shared/rest/
@@ -7,9 +7,9 @@ COPY events/events-model/ /backend/events/events-model/
 COPY events/search-indexer/ /backend/events/search-indexer/
 WORKDIR /backend
 
-RUN gradle --no-daemon events:search-indexer:shadowJar
+RUN gradle --no-daemon events:search-indexer:shadowJar --stacktrace
 
-FROM adoptopenjdk:14-jre-hotspot
+FROM --platform=$TARGETPLATFORM adoptopenjdk:14-jre-hotspot
 
 COPY --from=build /backend/events/search-indexer/build/libs/search-indexer-1.0-all.jar /usr/app/search-indexer.jar
 

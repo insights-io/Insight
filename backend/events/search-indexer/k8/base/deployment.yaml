@@ -35,3 +35,8 @@ spec:
             requests:
               cpu: 100m
               memory: 400Mi
+      tolerations:
+        - key: "arm"
+          operator: "Equal"
+          value: "true"
+          effect: "NoExecute"
