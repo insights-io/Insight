@@ -4,7 +4,7 @@ import { queryByText } from '@testing-library/testcafe';
 import config from '../config';
 import { login } from '../utils';
 
-fixture('/').page(config.appBaseURL);
+fixture('_app').page(config.appBaseURL);
 
 test('Should be able to logout', async (t) => {
   await login(t, {

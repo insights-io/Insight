@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  AuthMiddlewareProps,
-  getServerSideAuthProps,
+  AuthenticatedServerSideProps,
+  getAuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 import AppLayout from 'modules/app/components/AppLayout';
 import useSessions from 'modules/sessions/hooks/useSessions';
@@ -17,7 +17,7 @@ import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
 import { GetServerSideProps } from 'next';
 
-type Props = AuthMiddlewareProps;
+type Props = AuthenticatedServerSideProps;
 
 const Home = ({ user: initialUser }: Props) => {
   const { user } = useAuth(initialUser);
@@ -81,6 +81,6 @@ const Home = ({ user: initialUser }: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = getServerSideAuthProps;
+export const getServerSideProps: GetServerSideProps<Props> = getAuthenticatedServerSideProps;
 
 export default Home;

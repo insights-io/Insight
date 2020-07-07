@@ -5,7 +5,7 @@ import nextCookie from 'next-cookies';
 import { AuthApi } from 'api';
 import { DataResponse, UserDTO } from '@insight/types';
 
-const authMiddleware = async (
+export const authenticated = async (
   context: GetServerSidePropsContext
 ): Promise<UserDTO | unknown> => {
   const { SessionId } = nextCookie(context);
@@ -39,15 +39,13 @@ const authMiddleware = async (
   return dataResponse.data;
 };
 
-export type AuthMiddlewareProps = {
+export type AuthenticatedServerSideProps = {
   user: UserDTO;
 };
 
-export const getServerSideAuthProps: GetServerSideProps<AuthMiddlewareProps> = async (
+export const getAuthenticatedServerSideProps: GetServerSideProps<AuthenticatedServerSideProps> = async (
   context
 ) => {
-  const user = (await authMiddleware(context)) as UserDTO;
+  const user = (await authenticated(context)) as UserDTO;
   return { props: { user } };
 };
-
-export default authMiddleware;

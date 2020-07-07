@@ -2,22 +2,17 @@ import React from 'react';
 import { NextPageContext } from 'next';
 import { isServer } from 'shared/utils/next';
 import Router from 'next/router';
+import ErrorPage from 'modules/app/components/ErrorPage';
 
 type Props = {
   statusCode: number;
 };
 
-const ErrorPage = ({ statusCode }: Props) => {
-  return (
-    <p>
-      {statusCode
-        ? `An error ${statusCode} occurred on server`
-        : 'An error occurred on client'}
-    </p>
-  );
+const Error = ({ statusCode }: Props) => {
+  return <ErrorPage statusCode={statusCode} />;
 };
 
-ErrorPage.getInitialProps = (context: NextPageContext) => {
+Error.getInitialProps = (context: NextPageContext) => {
   let statusCode: number | undefined;
 
   if (isServer(context) && context.res.writeHead) {
@@ -25,17 +20,17 @@ ErrorPage.getInitialProps = (context: NextPageContext) => {
     if (statusCode === 404) {
       context.res.writeHead(302, { Location: '/' });
       context.res.end();
-      return {};
+      return { statusCode };
     }
   } else {
     statusCode = context.err?.statusCode;
     if (statusCode === 404) {
       Router.push('/');
-      return {};
+      return { statusCode };
     }
   }
 
   return { statusCode };
 };
 
-export default ErrorPage;
+export default Error;

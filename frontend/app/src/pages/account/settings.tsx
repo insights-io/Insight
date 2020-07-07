@@ -3,11 +3,11 @@ import AccountSettings from 'modules/settings/AccountSettings';
 import Router from 'next/router';
 import { GetServerSideProps } from 'next';
 import {
-  getServerSideAuthProps,
-  AuthMiddlewareProps,
+  AuthenticatedServerSideProps,
+  getAuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 
-type Props = AuthMiddlewareProps;
+type Props = AuthenticatedServerSideProps;
 
 const Settings = ({ user }: Props) => {
   return (
@@ -19,6 +19,6 @@ const Settings = ({ user }: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = getServerSideAuthProps;
+export const getServerSideProps: GetServerSideProps<Props> = getAuthenticatedServerSideProps;
 
 export default Settings;
