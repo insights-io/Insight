@@ -24,7 +24,7 @@
     "serve": "serve -l 5001 dist --cors"
   },
   "devDependencies": {
-    "playwright": "1.1.1",
+    "playwright": "1.2.0",
     "rollup": "2.19.0",
     "rollup-plugin-gzip": "2.5.0",
     "rollup-plugin-prettier": "2.1.0",
