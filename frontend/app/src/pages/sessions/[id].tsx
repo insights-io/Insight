@@ -4,8 +4,12 @@ import useSession from 'modules/sessions/hooks/useSession';
 import AppLayout from 'modules/app/components/AppLayout';
 import Router from 'next/router';
 import SessionDetails from 'modules/sessions/components/SessionDetails.tsx';
+import authMiddleware, {
+  AuthMiddlewareProps,
+} from 'modules/auth/middleware/authMiddleware';
+import { UserDTO } from '@insight/types';
 
-type Props = {
+type Props = AuthMiddlewareProps & {
   sessionId: string;
 };
 
@@ -27,10 +31,12 @@ const SessionPage = ({ sessionId }: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-  params = {},
-}) => {
-  return { props: { sessionId: params.id as string } };
+export const getServerSideProps: GetServerSideProps<Props> = async (
+  context
+) => {
+  const { params } = context;
+  const user = (await authMiddleware(context)) as UserDTO;
+  return { props: { sessionId: params?.id as string, user } };
 };
 
 export default SessionPage;

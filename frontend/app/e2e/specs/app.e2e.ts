@@ -1,20 +1,20 @@
-import { v4 as uuid } from 'uuid';
-import { getByText } from '@testing-library/testcafe';
+import { Selector } from 'testcafe';
+import { queryByText } from '@testing-library/testcafe';
 
 import config from '../config';
-import { signUpAndLogin } from '../utils';
+import { login } from '../utils';
 
 fixture('/').page(config.appBaseURL);
 
-test('Should be able to log in to app', async (t) => {
-  await signUpAndLogin(t, {
-    fullName: 'Matej Snuderl',
-    company: 'Insight',
-    email: `ematej.snuderl+${uuid()}@gmail.com`,
-    password: uuid(),
+test('Should be able to logout', async (t) => {
+  await login(t, {
+    email: config.insightUserEmail,
+    password: config.insightUserPassword,
   });
 
   await t
-    .expect(getByText('Sessions').visible)
-    .ok('Should be signed in to app');
+    .click(Selector('svg[title="Menu"]'))
+    .click(queryByText('Sign out'))
+    .expect(queryByText('Create a free account').visible)
+    .ok('Should be on the login page');
 });

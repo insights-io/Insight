@@ -1,5 +1,8 @@
 import React from 'react';
-import authenticated, { WithAuthProps } from 'modules/auth/hoc/authenticated';
+import {
+  AuthMiddlewareProps,
+  getServerSideAuthProps,
+} from 'modules/auth/middleware/authMiddleware';
 import AppLayout from 'modules/app/components/AppLayout';
 import useSessions from 'modules/sessions/hooks/useSessions';
 import { ListItem, ListItemLabel } from 'baseui/list';
@@ -12,8 +15,9 @@ import Link from 'next/link';
 import useAuth from 'modules/auth/hooks/useAuth';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
+import { GetServerSideProps } from 'next';
 
-type Props = WithAuthProps;
+type Props = AuthMiddlewareProps;
 
 const Home = ({ user: initialUser }: Props) => {
   const { user } = useAuth(initialUser);
@@ -77,4 +81,6 @@ const Home = ({ user: initialUser }: Props) => {
   );
 };
 
-export default authenticated(Home);
+export const getServerSideProps: GetServerSideProps<Props> = getServerSideAuthProps;
+
+export default Home;
