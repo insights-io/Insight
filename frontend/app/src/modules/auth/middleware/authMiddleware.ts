@@ -1,15 +1,21 @@
 import { OutgoingHttpHeaders } from 'http';
 
+import { Span, FORMAT_HTTP_HEADERS } from 'opentracing';
 import { GetServerSidePropsContext, GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
 import { AuthApi } from 'api';
 import { DataResponse, UserDTO } from '@insight/types';
+import { getTracer, startRequestSpan } from 'modules/tracing';
 
 export const authenticated = async (
-  context: GetServerSidePropsContext
+  context: GetServerSidePropsContext,
+  requestSpan: Span
 ): Promise<UserDTO | unknown> => {
   const { SessionId } = nextCookie(context);
   const pathname = context.req.url;
+  const span = getTracer().startSpan('authMiddleware.authenticated', {
+    childOf: requestSpan,
+  });
 
   const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
     let Location = '/login';
@@ -22,21 +28,32 @@ export const authenticated = async (
   };
 
   if (!SessionId) {
+    span.log({ message: 'Missing session id' });
+    span.finish();
     return redirectToLogin();
   }
+  span.setTag('SessionId', SessionId);
 
-  const response = await AuthApi.sso.session(
-    SessionId,
-    process.env.AUTH_API_BASE_URL
-  );
+  const headers = {};
+  getTracer().inject(span, FORMAT_HTTP_HEADERS, headers);
 
-  if (response.status === 204) {
-    const setCookie = response.headers.get('set-cookie');
-    return redirectToLogin({ 'set-cookie': setCookie || undefined });
+  try {
+    const response = await AuthApi.sso.session(SessionId, {
+      baseURL: process.env.AUTH_API_BASE_URL,
+      headers,
+    });
+
+    if (response.status === 204) {
+      span.log({ message: 'Session expired' });
+      const setCookie = response.headers.get('set-cookie');
+      return redirectToLogin({ 'set-cookie': setCookie || undefined });
+    }
+    const dataResponse = (await response.json()) as DataResponse<UserDTO>;
+    span.setTag('user.id', dataResponse.data.id);
+    return dataResponse.data;
+  } finally {
+    span.finish();
   }
-
-  const dataResponse = (await response.json()) as DataResponse<UserDTO>;
-  return dataResponse.data;
 };
 
 export type AuthenticatedServerSideProps = {
@@ -46,6 +63,11 @@ export type AuthenticatedServerSideProps = {
 export const getAuthenticatedServerSideProps: GetServerSideProps<AuthenticatedServerSideProps> = async (
   context
 ) => {
-  const user = (await authenticated(context)) as UserDTO;
-  return { props: { user } };
+  const requestSpan = startRequestSpan(context.req);
+  try {
+    const user = (await authenticated(context, requestSpan)) as UserDTO;
+    return { props: { user } };
+  } finally {
+    requestSpan.finish();
+  }
 };

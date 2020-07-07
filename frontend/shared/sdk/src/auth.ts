@@ -1,5 +1,4 @@
 import ky from 'ky-universal';
-import { RequestOptions } from 'types';
 import {
   DataResponse,
   UserDTO,
@@ -11,6 +10,8 @@ import {
   TeamInviteCreateDTO,
   TeamInvite,
 } from '@insight/types';
+
+import { RequestOptions } from './types';
 
 export const mapOrganization = (
   organization: OrganizationDTO

@@ -1,11 +1,12 @@
 import ky from 'ky-universal';
-import { RequestOptions } from 'types';
 import {
   DataResponse,
   SessionDTO,
   Session,
   BrowserEventDTO,
 } from '@insight/types';
+
+import { RequestOptions } from './types';
 
 export const mapSession = (sessionDTO: SessionDTO): Session => {
   return { ...sessionDTO, createdAt: new Date(sessionDTO.createdAt) };

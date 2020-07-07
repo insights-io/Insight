@@ -14,6 +14,8 @@ const {
   SESSION_API_BASE_URL = 'http://localhost:8082',
   NEXT_PUBLIC_SESSION_API_BASE_URL = 'http://localhost:8082',
   BOOTSTRAP_SCRIPT = 'https://static.dev.snuderls.eu/b/local.insight.js',
+  JAEGER_AGENT_HOST = 'localhost',
+  JAEGER_AGENT_PORT = '6832',
 } = process.env;
 
 const env = {
@@ -23,6 +25,8 @@ const env = {
   SESSION_API_BASE_URL,
   NEXT_PUBLIC_SESSION_API_BASE_URL,
   BOOTSTRAP_SCRIPT,
+  JAEGER_AGENT_HOST,
+  JAEGER_AGENT_PORT,
 };
 
 console.log('App environment:', env);
