@@ -18,6 +18,7 @@ env:
   BOOTSTRAP_SCRIPT: http://localhost:5001/localhost.insight.js
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
+  MAILER_MOCK: true
 
 jobs:
   unit_tests:
