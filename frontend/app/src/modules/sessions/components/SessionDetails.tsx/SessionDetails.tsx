@@ -33,7 +33,7 @@ const SessionDetails = ({ sessionId }: Props) => {
         width="100%"
       >
         <H3>Session {sessionId}</H3>
-        <div>TODO some contennt</div>
+        <div>TODO some content</div>
       </Block>
       <Console style={{ width: '600px' }} events={logEvents} />
     </Block>
