@@ -1,5 +1,4 @@
 import ky from 'ky-universal';
-import { RequestOptions } from 'types';
 import {
   DataResponse,
   UserDTO,
@@ -12,13 +11,17 @@ import {
   TeamInvite,
 } from '@insight/types';
 
+import { RequestOptions } from './types';
+
 export const mapOrganization = (
-  organization: OrganizationDTO
+  organization: Organization | OrganizationDTO
 ): Organization => {
   return { ...organization, createdAt: new Date(organization.createdAt) };
 };
 
-export const mapTeamInvite = (teamInvite: TeamInviteDTO): TeamInvite => {
+export const mapTeamInvite = (
+  teamInvite: TeamInvite | TeamInviteDTO
+): TeamInvite => {
   return { ...teamInvite, createdAt: new Date(teamInvite.createdAt) };
 };
 

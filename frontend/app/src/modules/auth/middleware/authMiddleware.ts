@@ -1,48 +1,73 @@
 import { OutgoingHttpHeaders } from 'http';
 
-import { NextPageContext } from 'next';
+import { Span, FORMAT_HTTP_HEADERS } from 'opentracing';
+import { GetServerSidePropsContext, GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
-import Router from 'next/router';
-import AuthApi from 'api/auth';
-import { UserDTO, DataResponse } from '@insight/types';
-import { isServer } from 'shared/utils/next';
+import { AuthApi } from 'api';
+import { DataResponse, UserDTO } from '@insight/types';
+import { getTracer, startRequestSpan } from 'modules/tracing';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const authMiddleware = async (
-  ctx: NextPageContext
-): Promise<UserDTO | void> => {
-  const { pathname } = ctx;
-  const { SessionId } = nextCookie(ctx);
+export const authenticated = async (
+  context: GetServerSidePropsContext,
+  requestSpan: Span
+): Promise<UserDTO | unknown> => {
+  const { SessionId } = nextCookie(context);
+  const pathname = context.req.url;
+  const span = getTracer().startSpan('authMiddleware.authenticated', {
+    childOf: requestSpan,
+  });
 
   const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
-    const Location = `/login?dest=${encodeURIComponent(pathname)}`;
-    if (isServer(ctx)) {
-      ctx.res.writeHead(302, { Location, ...headers });
-      ctx.res.end();
-    } else {
-      Router.push(Location);
+    let Location = '/login';
+    if (pathname) {
+      Location += `?dest=${encodeURIComponent(pathname)}`;
     }
+    context.res.writeHead(302, { Location, ...headers });
+    context.res.end();
+    return {};
   };
 
   if (!SessionId) {
+    span.log({ message: 'Missing session id' });
+    span.finish();
     return redirectToLogin();
   }
+  span.setTag('SessionId', SessionId);
 
-  if (!isServer(ctx)) {
-    return undefined;
+  const headers = {};
+  getTracer().inject(span, FORMAT_HTTP_HEADERS, headers);
+
+  try {
+    const response = await AuthApi.sso.session(SessionId, {
+      baseURL: process.env.AUTH_API_BASE_URL,
+      headers,
+    });
+
+    if (response.status === 204) {
+      span.log({ message: 'Session expired' });
+      const setCookie = response.headers.get('set-cookie');
+      return redirectToLogin({ 'set-cookie': setCookie || undefined });
+    }
+    const dataResponse = (await response.json()) as DataResponse<UserDTO>;
+    span.setTag('user.id', dataResponse.data.id);
+    return dataResponse.data;
+  } finally {
+    span.finish();
   }
-
-  const response = await AuthApi.sso.session(
-    SessionId,
-    process.env.AUTH_API_BASE_URL
-  );
-  if (response.status === 204) {
-    const setCookie = response.headers.get('set-cookie');
-    return redirectToLogin({ 'set-cookie': setCookie || undefined });
-  }
-
-  const dataResponse = (await response.json()) as DataResponse<UserDTO>;
-  return dataResponse.data;
 };
 
-export default authMiddleware;
+export type AuthenticatedServerSideProps = {
+  user: UserDTO;
+};
+
+export const getAuthenticatedServerSideProps: GetServerSideProps<AuthenticatedServerSideProps> = async (
+  context
+) => {
+  const requestSpan = startRequestSpan(context.req);
+  try {
+    const user = (await authenticated(context, requestSpan)) as UserDTO;
+    return { props: { user } };
+  } finally {
+    requestSpan.finish();
+  }
+};

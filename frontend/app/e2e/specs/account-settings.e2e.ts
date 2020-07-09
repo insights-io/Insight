@@ -4,12 +4,11 @@ import {
   getByText,
 } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
-import { Selector } from 'testcafe';
 
 import { login } from '../utils';
 import config from '../config';
 
-fixture('/account-settings').page(`${config.appBaseURL}/login`);
+fixture('/account-settings').page(`${config.appBaseURL}/account/settings`);
 
 test('Should be able to change password', async (t) => {
   await login(t, {
@@ -18,8 +17,6 @@ test('Should be able to change password', async (t) => {
   });
 
   await t
-    .click(Selector('svg[title="Menu"]'))
-    .click(queryByText('Account settings'))
     .expect(queryByText(config.insightUserEmail).visible)
     .ok('Should display email address')
     .expect(queryByText('000000').visible)

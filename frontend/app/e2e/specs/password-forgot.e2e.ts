@@ -21,6 +21,7 @@ const emailSentMessage = getByText(
 fixture(page).page(`${config.appBaseURL}`);
 
 test('User should be able to reset password', async (t) => {
+  const settingsMenu = Selector('svg[title="Menu"]');
   const password = uuid();
   const email = `miha.novak+${uuid()}@gmail.com`;
 
@@ -32,7 +33,7 @@ test('User should be able to reset password', async (t) => {
   });
 
   await t
-    .click(Selector('svg[title="Menu"]'))
+    .click(settingsMenu)
     .click(getByText('Sign out'))
     .click(forgotPasswordButton)
     .typeText(emailInput, email)
@@ -48,7 +49,7 @@ test('User should be able to reset password', async (t) => {
     .ok('Password input is visible')
     .typeText(passwordInput, newPassword)
     .click(finishPasswordResetButton)
-    .expect(getByText('Sessions').visible)
+    .expect(settingsMenu.visible)
     .ok('Should be signed in to app');
 });
 

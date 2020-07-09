@@ -1,9 +1,13 @@
 import React from 'react';
-import authenticated, { WithAuthProps } from 'modules/auth/hoc/authenticated';
 import AccountSettings from 'modules/settings/AccountSettings';
 import Router from 'next/router';
+import { GetServerSideProps } from 'next';
+import {
+  AuthenticatedServerSideProps,
+  getAuthenticatedServerSideProps,
+} from 'modules/auth/middleware/authMiddleware';
 
-type Props = WithAuthProps;
+type Props = AuthenticatedServerSideProps;
 
 const APIKeysSettings = ({ user }: Props) => {
   return (
@@ -15,4 +19,6 @@ const APIKeysSettings = ({ user }: Props) => {
   );
 };
 
-export default authenticated(APIKeysSettings);
+export const getServerSideProps: GetServerSideProps<Props> = getAuthenticatedServerSideProps;
+
+export default APIKeysSettings;

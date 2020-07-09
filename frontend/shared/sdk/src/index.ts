@@ -1,6 +1,6 @@
 /* eslint-disable lodash/prefer-lodash-typecheck */
-import { createSessionsClient } from './sessions';
-import { createAuthClient } from './auth';
+import { createSessionsClient, mapSession } from './sessions';
+import { createAuthClient, mapOrganization, mapTeamInvite } from './auth';
 import { RequestOptions } from './types';
 
 type ClientConfig =
@@ -24,4 +24,12 @@ const createClient = (clientConfig: ClientConfig) => {
   return { auth, sessions };
 };
 
-export { createClient, createAuthClient, createSessionsClient, RequestOptions };
+export {
+  createClient,
+  createAuthClient,
+  createSessionsClient,
+  RequestOptions,
+  mapSession,
+  mapOrganization,
+  mapTeamInvite,
+};
