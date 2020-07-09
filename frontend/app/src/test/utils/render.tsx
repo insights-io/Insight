@@ -1,4 +1,4 @@
-import React, { JSXElementConstructor } from 'react';
+import React, { JSXElementConstructor, ComponentType } from 'react';
 import { render as renderImpl } from '@testing-library/react';
 import { StoryConfiguration } from '@insight/storybook';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
@@ -47,9 +47,11 @@ const render = <Props, T, S extends StoryConfiguration<T>>(
     pageLoader: null,
     subscription: sandbox.stub(),
     initialProps: {},
-    App: null as any,
-    Component: null as any,
-    wrapApp: null as any,
+    App: (null as unknown) as ComponentType,
+    Component: (null as unknown) as ComponentType,
+    wrapApp: (null as unknown) as (
+      App: ComponentType<Record<string, unknown>>
+    ) => unknown,
   });
 
   clientRouter.push = push;
