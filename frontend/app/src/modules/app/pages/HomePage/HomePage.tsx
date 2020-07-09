@@ -11,10 +11,10 @@ import Link from 'next/link';
 import useAuth from 'modules/auth/hooks/useAuth';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
-import { UserDTO, Session } from '@insight/types';
+import { Session, User } from '@insight/types';
 
 type Props = {
-  user: UserDTO;
+  user: User;
   sessions: Session[];
 };
 

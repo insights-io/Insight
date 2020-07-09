@@ -3,7 +3,7 @@ import AppLayout from 'modules/app/components/AppLayout';
 import { H1 } from 'baseui/typography';
 import { useStyletron } from 'baseui';
 import { Tabs, Tab } from 'baseui/tabs';
-import { UserDTO } from '@insight/types';
+import { User } from '@insight/types';
 import useAuth from 'modules/auth/hooks/useAuth';
 
 import UserSettings from '../UserSettings';
@@ -12,10 +12,14 @@ import OrganizationSettings from '../OrganizationSettings';
 type Props = {
   activeKey: string;
   onTabChange: (key: string) => void;
-  initialUser?: UserDTO;
+  user: User;
 };
 
-const AccountSettings = ({ activeKey, onTabChange, initialUser }: Props) => {
+const AccountSettings = ({
+  activeKey,
+  onTabChange,
+  user: initialUser,
+}: Props) => {
   const { user, loading: loadingUser } = useAuth(initialUser);
   const [_css, theme] = useStyletron();
 

@@ -4,10 +4,10 @@ import {
   authenticated,
 } from 'modules/auth/middleware/authMiddleware';
 import { GetServerSideProps } from 'next';
-import { startRequestSpan } from 'modules/tracing';
+import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { SessionApi } from 'api';
 import { SessionDTO, UserDTO } from '@insight/types';
-import { mapSession } from '@insight/sdk';
+import { mapSession, mapUser } from '@insight/sdk';
 import HomePage from 'modules/app/pages/HomePage';
 
 type Props = AuthenticatedServerSideProps & {
@@ -16,7 +16,10 @@ type Props = AuthenticatedServerSideProps & {
 
 const Home = ({ user: initialUser, sessions: initialSessions }: Props) => {
   return (
-    <HomePage user={initialUser} sessions={initialSessions.map(mapSession)} />
+    <HomePage
+      user={mapUser(initialUser)}
+      sessions={initialSessions.map(mapSession)}
+    />
   );
 };
 
@@ -27,8 +30,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const user = (await authenticated(context, requestSpan)) as UserDTO;
   const sessions = await SessionApi.getSessions({
     baseURL: process.env.SESSION_API_BASE_URL,
-    headers: { cookie: context.req.headers.cookie as string },
-  }).then((response) => response.data);
+    headers: {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: context.req.headers.cookie as string,
+    },
+  });
 
   return { props: { user, sessions } };
 };

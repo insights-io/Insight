@@ -1,23 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import useSWR from 'swr';
 import AuthApi from 'api/auth';
-import { UserDTO } from '@insight/types';
-import { useMemo } from 'react';
+import { User } from '@insight/types';
+import { mapUser } from '@insight/sdk';
 
-const CACHE_KEY = 'AuthApi.sso.me';
-
-const useAuth = (initialData?: UserDTO) => {
-  const { data: userDTO } = useSWR(CACHE_KEY, () => AuthApi.sso.me(), {
-    initialData,
-    refreshInterval: 30000,
-  });
-
-  const user = useMemo(
-    () =>
-      userDTO
-        ? { ...userDTO, createdAt: new Date(userDTO.createdAt) }
-        : undefined,
-    [userDTO]
+const useAuth = (initialData?: User) => {
+  const { data: user } = useSWR(
+    'AuthApi.sso.me',
+    () => AuthApi.sso.me().then(mapUser),
+    {
+      initialData,
+      refreshInterval: 30000,
+    }
   );
 
   return { user, loading: user === undefined };

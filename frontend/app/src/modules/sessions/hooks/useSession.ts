@@ -1,10 +1,17 @@
-import useSessions from './useSessions';
+import { Session } from '@insight/types';
+import useSWR from 'swr';
+import { SessionApi } from 'api';
+import { mapSession } from '@insight/sdk';
 
-const useSession = (sessionId: string) => {
-  const { data, loading } = useSessions();
-  const maybeSession = data.find((session) => session.id === sessionId);
+const useSession = (sessionId: string, initialData: Session) => {
+  const { data } = useSWR(
+    'SessionApi.getSession',
+    () =>
+      SessionApi.getSession(sessionId).then((session) => mapSession(session)),
+    { initialData }
+  );
 
-  return { session: maybeSession, loading };
+  return { session: data || initialData };
 };
 
 export default useSession;
