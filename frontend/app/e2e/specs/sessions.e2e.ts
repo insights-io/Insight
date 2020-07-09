@@ -1,9 +1,5 @@
 /* eslint-disable no-console */
-import {
-  getByText,
-  queryByText,
-  queryByPlaceholderText,
-} from '@testing-library/testcafe';
+import { queryByText, queryByPlaceholderText } from '@testing-library/testcafe';
 
 import { login } from '../utils';
 import config from '../config';
@@ -16,7 +12,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
     password: config.insightUserPassword,
   });
 
-  const lastSession = getByText('less than 5 seconds ago');
+  const lastSession = queryByText('less than 5 seconds ago');
   const lastSessionListItem = lastSession.parent().parent().parent().parent();
 
   await t

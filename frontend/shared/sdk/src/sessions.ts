@@ -8,7 +8,7 @@ import {
 
 import { RequestOptions } from './types';
 
-export const mapSession = (sessionDTO: SessionDTO): Session => {
+export const mapSession = (sessionDTO: SessionDTO | Session): Session => {
   return { ...sessionDTO, createdAt: new Date(sessionDTO.createdAt) };
 };
 
@@ -23,8 +23,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
           credentials: 'include',
           ...rest,
         })
-        .json<DataResponse<SessionDTO>>()
-        .then((dataResponse) => mapSession(dataResponse.data));
+        .json<DataResponse<SessionDTO>>();
     },
     getSessions: ({
       baseURL = sessionApiBaseURL,
@@ -35,8 +34,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
           credentials: 'include',
           ...rest,
         })
-        .json<DataResponse<SessionDTO[]>>()
-        .then((dataResponse) => dataResponse.data.map(mapSession));
+        .json<DataResponse<SessionDTO[]>>();
     },
   };
 
