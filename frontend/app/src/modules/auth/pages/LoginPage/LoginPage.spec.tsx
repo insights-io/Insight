@@ -4,9 +4,9 @@ import { waitFor } from '@testing-library/react';
 import { sandbox } from '@insight/testing';
 import userEvent from '@testing-library/user-event';
 
-import { Base, InvalidPassword } from './Login.stories';
+import { Base, InvalidPassword } from './LoginPage.stories';
 
-describe('<Login />', () => {
+describe('<LoginPage />', () => {
   it('Should validate input fields client side', async () => {
     const loginStub = Base.story.setupMocks(sandbox);
     const {

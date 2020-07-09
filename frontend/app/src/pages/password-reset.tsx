@@ -1,8 +1,9 @@
 import React from 'react';
 import AuthApi from 'api/auth';
 import { GetServerSideProps } from 'next';
-import InvalidPasswordResetRequest from 'modules/auth/components/InvalidPasswordResetRequest';
-import PasswordReset from 'modules/auth/components/PasswordReset';
+import PasswordResetInvalidPage from 'modules/auth/pages/PasswordResetInvalidPage';
+import PasswordResetPage from 'modules/auth/pages/PasswordResetPage';
+import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 
 type NonExistingPasswordResetRequest = {
   exists: false;
@@ -21,17 +22,20 @@ const passwordResetRequest = (
   return props.exists === true;
 };
 
-const PasswordResetPage = (props: Props) => {
+const PasswordReset = (props: Props) => {
   if (!passwordResetRequest(props)) {
-    return <InvalidPasswordResetRequest />;
+    return <PasswordResetInvalidPage />;
   }
 
   const { token } = props;
-  return <PasswordReset token={token} />;
+  return <PasswordResetPage token={token} />;
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const token = ctx.query.token as string | undefined;
+export const getServerSideProps: GetServerSideProps<Props> = async (
+  context
+) => {
+  const requestSpan = startRequestSpan(context.req);
+  const token = context.query.token as string | undefined;
 
   if (!token) {
     return { props: { exists: false } };
@@ -39,6 +43,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   const response = await AuthApi.password.resetExists(token, {
     baseURL: process.env.AUTH_API_BASE_URL,
+    headers: prepareCrossServiceHeaders(requestSpan),
   });
   if (response.data === false) {
     return { props: { exists: false } };
@@ -46,4 +51,4 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   return { props: { exists: true, token } };
 };
 
-export default PasswordResetPage;
+export default PasswordReset;

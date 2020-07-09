@@ -17,8 +17,7 @@ import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { TRY_BASE_URL } from 'shared/config';
-
-import AuthPageLayout from '../PageLayout';
+import AuthPageLayout from 'modules/auth/components/PageLayout';
 
 type FormData = {
   email: string;
@@ -26,7 +25,7 @@ type FormData = {
   rememberMe: boolean;
 };
 
-const Login = () => {
+const LoginPage = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
@@ -148,4 +147,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

@@ -13,14 +13,13 @@ import Link from 'next/link';
 import Head from 'next/head';
 import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
-
-import AuthPageLayout from '../PageLayout';
+import AuthPageLayout from 'modules/auth/components/PageLayout';
 
 type FormData = {
   email: string;
 };
 
-const PasswordForgot = () => {
+const PasswordForgotPage = () => {
   const [checkYourInbox, setCheckYourInbox] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
   const { register, handleSubmit, errors } = useForm<FormData>();
@@ -113,4 +112,4 @@ const PasswordForgot = () => {
   );
 };
 
-export default PasswordForgot;
+export default PasswordForgotPage;
