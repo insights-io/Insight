@@ -1,6 +1,11 @@
 /* eslint-disable lodash/prefer-lodash-typecheck */
 import { createSessionsClient, mapSession } from './sessions';
-import { createAuthClient, mapOrganization, mapTeamInvite } from './auth';
+import {
+  createAuthClient,
+  mapOrganization,
+  mapTeamInvite,
+  mapUser,
+} from './auth';
 import { RequestOptions } from './types';
 
 type ClientConfig =
@@ -32,4 +37,5 @@ export {
   mapSession,
   mapOrganization,
   mapTeamInvite,
+  mapUser,
 };

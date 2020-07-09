@@ -1,6 +1,11 @@
 import React from 'react';
 import { configureStory } from '@insight/storybook';
 import SessionApi from 'api/session';
+import {
+  INSIGHT_SESSION,
+  FAST_REFRESH_CONSOLE_LOG_EVENT,
+  STORYBOK_CONSOLE_WARN_EVENT,
+} from 'test/data';
 
 import SessionDetails from './SessionDetails';
 
@@ -9,10 +14,12 @@ export default {
 };
 
 export const Base = () => {
-  return <SessionDetails sessionId="95e77906-21fd-4edf-b91e-ca3c3dc3eb89" />;
+  return <SessionDetails session={INSIGHT_SESSION} />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(SessionApi.events, 'get').resolves([]);
+    return sandbox
+      .stub(SessionApi.events, 'get')
+      .resolves([FAST_REFRESH_CONSOLE_LOG_EVENT, STORYBOK_CONSOLE_WARN_EVENT]);
   },
 });

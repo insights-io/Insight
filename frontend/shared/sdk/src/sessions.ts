@@ -23,7 +23,8 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
           credentials: 'include',
           ...rest,
         })
-        .json<DataResponse<SessionDTO>>();
+        .json<DataResponse<SessionDTO>>()
+        .then((dataResponse) => dataResponse.data);
     },
     getSessions: ({
       baseURL = sessionApiBaseURL,
@@ -34,7 +35,8 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
           credentials: 'include',
           ...rest,
         })
-        .json<DataResponse<SessionDTO[]>>();
+        .json<DataResponse<SessionDTO[]>>()
+        .then((dataResponse) => dataResponse.data);
     },
   };
 

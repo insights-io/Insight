@@ -3,18 +3,18 @@ import useSWR from 'swr';
 import SessionApi from 'api/session';
 import { H3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
-import { BrowserLogEventDTO } from '@insight/types';
+import { BrowserLogEventDTO, Session } from '@insight/types';
 
 import Console from '../Console';
 
 type Props = {
-  sessionId: string;
+  session: Session;
 };
 
-const SessionDetails = ({ sessionId }: Props) => {
+const SessionDetails = ({ session }: Props) => {
   const { data = [] } = useSWR(
-    `sessions/${sessionId}/events/search`,
-    () => SessionApi.events.get(sessionId),
+    `sessions/${session.id}/events/search`,
+    () => SessionApi.events.get(session.id),
     { refreshWhenHidden: true, refreshInterval: 5000 }
   );
 
@@ -32,8 +32,9 @@ const SessionDetails = ({ sessionId }: Props) => {
         overflow="hidden"
         width="100%"
       >
-        <H3>Session {sessionId}</H3>
-        <div>TODO some content</div>
+        <H3>Session {session.id}</H3>
+        <div>Device ID: {session.deviceId}</div>
+        <div>IP Address: {session.ipAddress}</div>
       </Block>
       <Console style={{ width: '600px' }} events={logEvents} />
     </Block>

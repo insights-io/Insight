@@ -9,9 +9,14 @@ import {
   TeamInviteDTO,
   TeamInviteCreateDTO,
   TeamInvite,
+  User,
 } from '@insight/types';
 
 import { RequestOptions } from './types';
+
+export const mapUser = (user: User | UserDTO): User => {
+  return { ...user, createdAt: new Date(user.createdAt) };
+};
 
 export const mapOrganization = (
   organization: Organization | OrganizationDTO
