@@ -35,7 +35,7 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
       {hasSessions ? (
         <>
           <H5 margin={0}>Sessions</H5>
-          <ul className="sessions">
+          <ul className={css({ paddingLeft: 0 })}>
             {sessions.map((session) => {
               const createdAtText = formatDistanceToNow(session.createdAt, {
                 includeSeconds: true,
@@ -53,7 +53,16 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
                       overrides={{ Root: { style: listItemStyle } }}
                       endEnhancer={() => (
                         <>
-                          <Tag closeable={false}>{createdAtText}</Tag>
+                          <Tag
+                            closeable={false}
+                            overrides={{
+                              Root: {
+                                style: { ':hover': { cursor: 'pointer' } },
+                              },
+                            }}
+                          >
+                            {createdAtText}
+                          </Tag>
                           <ChevronRight />
                         </>
                       )}

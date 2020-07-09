@@ -3,10 +3,10 @@ import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
 import { ResponsePromise } from 'ky';
 
-import Login from './Login';
+import Login from './LoginPage';
 
 export default {
-  title: 'Auth|Login',
+  title: 'Auth|pages/LoginPage',
 };
 
 export const Base = () => {

@@ -1,11 +1,15 @@
 import { OutgoingHttpHeaders } from 'http';
 
-import { Span, FORMAT_HTTP_HEADERS } from 'opentracing';
+import { Span } from 'opentracing';
 import { GetServerSidePropsContext, GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
 import { AuthApi } from 'api';
 import { DataResponse, UserDTO } from '@insight/types';
-import { getTracer, startRequestSpan } from 'modules/tracing';
+import {
+  getTracer,
+  startRequestSpan,
+  prepareCrossServiceHeaders,
+} from 'modules/tracing';
 
 export const authenticated = async (
   context: GetServerSidePropsContext,
@@ -34,13 +38,10 @@ export const authenticated = async (
   }
   span.setTag('SessionId', SessionId);
 
-  const headers = {};
-  getTracer().inject(span, FORMAT_HTTP_HEADERS, headers);
-
   try {
     const response = await AuthApi.sso.session(SessionId, {
       baseURL: process.env.AUTH_API_BASE_URL,
-      headers,
+      headers: prepareCrossServiceHeaders(span),
     });
 
     if (response.status === 204) {

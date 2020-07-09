@@ -5,7 +5,7 @@ import { useStyletron } from 'baseui';
 import { Button } from 'baseui/button';
 import { Paragraph3 } from 'baseui/typography';
 
-const InvalidPasswordResetRequest = () => {
+const PasswordResetInvalidPage = () => {
   const [css, theme] = useStyletron();
   return (
     <AuthPageLayout subtitle="Oooops.">
@@ -16,7 +16,7 @@ const InvalidPasswordResetRequest = () => {
       <Link href="/login">
         <a className={css({ textDecoration: 'none' })}>
           <Button $style={{ width: '100%', marginTop: theme.sizing.scale700 }}>
-            Log in or reset your password.
+            Log in or reset your password
           </Button>
         </a>
       </Link>
@@ -24,4 +24,4 @@ const InvalidPasswordResetRequest = () => {
   );
 };
 
-export default InvalidPasswordResetRequest;
+export default PasswordResetInvalidPage;

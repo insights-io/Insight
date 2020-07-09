@@ -2,7 +2,13 @@
 import { IncomingMessage } from 'http';
 
 import { initTracer } from 'jaeger-client';
-import { Tracer, Span, Tags, FORMAT_HTTP_HEADERS } from 'opentracing';
+import {
+  Tracer,
+  Span,
+  Tags,
+  FORMAT_HTTP_HEADERS,
+  SpanContext,
+} from 'opentracing';
 
 let _tracer: Tracer | undefined;
 
@@ -37,4 +43,10 @@ export const startRequestSpan = (req: IncomingMessage): Span => {
       [Tags.HTTP_METHOD]: method,
     },
   });
+};
+
+export const prepareCrossServiceHeaders = (spanContext: SpanContext | Span) => {
+  const headers = {};
+  getTracer().inject(spanContext, FORMAT_HTTP_HEADERS, headers);
+  return headers;
 };

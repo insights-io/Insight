@@ -1,15 +1,25 @@
 import React from 'react';
+import { INSIGHT_SESSION, INSIGHT_SESSION_DTO } from 'test/data';
+import { configureStory, fullHeightDecorator } from '@insight/storybook';
+import { SessionApi } from 'api';
 
-import Console from './Console';
+import SessionPage from './SessionPage';
 
 export default {
-  title: 'sessions|components/Console',
+  title: 'sessions|pages/SessionPage',
+  decorators: [fullHeightDecorator],
 };
 
 export const Base = () => {
-  return (
-    <Console
-      events={[
+  return <SessionPage sessionId={INSIGHT_SESSION.id} />;
+};
+Base.story = configureStory({
+  setupMocks: (sandbox) => {
+    return {
+      getSessions: sandbox.stub(SessionApi, 'getSessions').resolves({
+        data: [INSIGHT_SESSION_DTO],
+      }),
+      getEvents: sandbox.stub(SessionApi.events, 'get').resolves([
         {
           e: 9,
           level: 'log',
@@ -26,19 +36,7 @@ export const Base = () => {
           ],
           t: 1001,
         },
-        {
-          e: 9,
-          level: 'error',
-          arguments: ['HAHA'],
-          t: 1001,
-        },
-        {
-          e: 9,
-          level: 'debug',
-          arguments: ['HAHA'],
-          t: 1001,
-        },
-      ]}
-    />
-  );
-};
+      ]),
+    };
+  },
+});

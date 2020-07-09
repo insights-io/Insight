@@ -12,8 +12,7 @@ import { APIError, APIErrorDataResponse } from '@insight/types';
 import AuthApi from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
-
-import AuthPageLayout from '../PageLayout';
+import AuthPageLayout from 'modules/auth/components/PageLayout';
 
 type Props = {
   token: string;
@@ -23,7 +22,7 @@ type PasswordResetFormData = {
   password: string;
 };
 
-const PasswordReset = ({ token }: Props) => {
+const PasswordResetPage = ({ token }: Props) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
@@ -82,4 +81,4 @@ const PasswordReset = ({ token }: Props) => {
   );
 };
 
-export default PasswordReset;
+export default PasswordResetPage;
