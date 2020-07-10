@@ -46,10 +46,10 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
       { baseURL = sessionApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(
-          `${baseURL}/v1/sessions/${sessionId}/events/search?limit=10000&event.e=eq:9`,
-          { credentials: 'include', ...rest }
-        )
+        .get(`${baseURL}/v1/sessions/${sessionId}/events/search?limit=10000`, {
+          credentials: 'include',
+          ...rest,
+        })
         .json<DataResponse<BrowserEventDTO[]>>()
         .then((dataResponse) => dataResponse.data);
     },

@@ -17,6 +17,8 @@ public class BrowserErrorEvent extends AbstractBrowserEvent<Arguments> {
         timestamp,
         "message",
         arguments.getMessage(),
+        "name",
+        arguments.getName(),
         "stack",
         arguments.getStack());
   }
@@ -25,6 +27,7 @@ public class BrowserErrorEvent extends AbstractBrowserEvent<Arguments> {
   @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
   static class Arguments {
     String message;
+    String name;
     String stack;
   }
 }

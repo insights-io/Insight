@@ -39,4 +39,11 @@ export interface BrowserLogEventDTO extends AbstractBrowserEventDTO {
   arguments: string[];
 }
 
-export type BrowserEventDTO = BrowserLogEventDTO;
+export interface BrowserErrorEventDTO extends AbstractBrowserEventDTO {
+  e: EventType.ERROR;
+  message: string;
+  name: string;
+  stack: string;
+}
+
+export type BrowserEventDTO = BrowserLogEventDTO | BrowserErrorEventDTO;

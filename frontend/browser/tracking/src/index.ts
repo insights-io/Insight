@@ -110,7 +110,7 @@ declare global {
   const onError = (event: ErrorEvent) => {
     enqueue(
       EventType.ERROR,
-      [event.error.message, event.error.stack],
+      [event.error.message, event.error.name, event.error.stack],
       '[error]',
       event
     );

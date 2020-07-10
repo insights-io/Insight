@@ -1,34 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import { useStyletron } from 'baseui';
-import { DeleteAlt, Alert, IconProps } from 'baseui/icon';
 import Flex from 'shared/components/Flex';
 import { Block } from 'baseui/block';
 import { Input } from 'baseui/input';
 import { StyleObject } from 'styletron-react';
-import { BrowserLogEventDTO, LogLevel } from '@insight/types';
+import VerticalAligned from 'shared/components/VerticalAligned';
+
+import {
+  ConsoleEventDTO,
+  isErrorEvent,
+  getEventStyling,
+  getEventIcon,
+  eventMatchesText,
+} from './utils';
+import ConsoleErrorEvent from './ConsoleErrorEvent';
 
 type Props = {
-  events: BrowserLogEventDTO[];
+  events: ConsoleEventDTO[];
   style?: StyleObject;
-};
-
-const LEVEL_COLOR_MAPPINGS: Record<
-  LogLevel,
-  { backgroundColor: string; color: string }
-> = {
-  warn: { backgroundColor: '#e65100', color: '#ffc107' },
-  error: { backgroundColor: '#7f0000', color: '#DB4437' },
-  debug: { backgroundColor: 'transparent', color: '#1e88e5' },
-  log: { backgroundColor: 'transparent', color: '#000' },
-  info: { backgroundColor: 'transparent', color: '#000' },
-};
-
-const LEVEL_ICON_MAPPINGS: Record<LogLevel, React.FC<IconProps> | null> = {
-  error: DeleteAlt,
-  warn: Alert,
-  debug: null,
-  log: null,
-  info: null,
 };
 
 const Console = ({ events, style }: Props) => {
@@ -36,8 +25,15 @@ const Console = ({ events, style }: Props) => {
   const [filterText, setFilterText] = useState('');
 
   const filteredEvents = useMemo(() => {
-    return events.filter((e) => e.arguments.join(' ').includes(filterText));
+    return events.filter((e) => eventMatchesText(e, filterText));
   }, [events, filterText]);
+
+  const renderEvent = (event: ConsoleEventDTO): React.ReactNode => {
+    if (isErrorEvent(event)) {
+      return <ConsoleErrorEvent event={event} />;
+    }
+    return <span>{event.arguments.join(' ')}</span>;
+  };
 
   return (
     <section
@@ -63,8 +59,8 @@ const Console = ({ events, style }: Props) => {
       </Block>
       <Block height="100%" overflow="scroll">
         {filteredEvents.map((event) => {
-          const { backgroundColor, color } = LEVEL_COLOR_MAPPINGS[event.level];
-          const IconComponent = LEVEL_ICON_MAPPINGS[event.level];
+          const { backgroundColor, color } = getEventStyling(event);
+          const IconComponent = getEventIcon(event);
 
           return (
             <Flex
@@ -75,19 +71,18 @@ const Console = ({ events, style }: Props) => {
               }}
             >
               {IconComponent && (
-                <Block>
+                <VerticalAligned>
                   <IconComponent color={color} />
-                </Block>
+                </VerticalAligned>
               )}
               <Block
-                $style={{
-                  color,
-                  wordBreak: 'break-word',
-                  marginLeft: theme.sizing.scale300,
-                  marginRight: theme.sizing.scale300,
-                }}
+                width="100%"
+                marginLeft={theme.sizing.scale300}
+                marginRight={theme.sizing.scale300}
+                color={color}
+                $style={{ wordBreak: 'break-word' }}
               >
-                {event.arguments.join(' ')}
+                {renderEvent(event)}
               </Block>
             </Flex>
           );

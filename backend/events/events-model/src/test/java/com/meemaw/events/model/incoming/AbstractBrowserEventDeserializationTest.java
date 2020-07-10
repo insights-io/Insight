@@ -1,6 +1,7 @@
 package com.meemaw.events.model.incoming;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.events.model.shared.BrowserEventType;
@@ -172,5 +173,21 @@ public class AbstractBrowserEventDeserializationTest {
     assertEquals(LogLevel.ERROR, event.getLevel());
     assertEquals(List.of("HAHA"), event.getArguments());
     assertEquals(BrowserEventType.LOG, event.getEventType());
+  }
+
+  @Test
+  public void errorEventBeaconDeserializationTest() throws JsonProcessingException {
+    String payload =
+        "{\"t\":10158.850000007078,\"e\":10,\"a\":[\"Unexpected identifier\",\"SyntaxError\",\"SyntaxError: Unexpected identifier\"]}";
+
+    AbstractBrowserEvent<?> deserialized =
+        JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
+    assertEquals(BrowserErrorEvent.class, deserialized.getClass());
+
+    BrowserErrorEvent event = (BrowserErrorEvent) deserialized;
+    assertEquals("SyntaxError", event.getArguments().getName());
+    assertEquals("Unexpected identifier", event.getArguments().getMessage());
+    assertEquals(10158.0, event.getTimestamp());
+    assertTrue(event.getArguments().getStack().contains("SyntaxError: Unexpected identifier"));
   }
 }

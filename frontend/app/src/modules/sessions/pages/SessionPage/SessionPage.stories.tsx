@@ -2,8 +2,8 @@ import React from 'react';
 import {
   INSIGHT_SESSION,
   INSIGHT_SESSION_DTO,
-  STORYBOK_CONSOLE_WARN_EVENT,
-  FAST_REFRESH_CONSOLE_LOG_EVENT,
+  CONSOLE_EVENTS,
+  ERROR_EVENTS,
 } from 'test/data';
 import { configureStory, fullHeightDecorator } from '@insight/storybook';
 import { SessionApi } from 'api';
@@ -29,8 +29,12 @@ Base.story = configureStory({
       getEvents: sandbox
         .stub(SessionApi.events, 'get')
         .resolves([
-          FAST_REFRESH_CONSOLE_LOG_EVENT,
-          STORYBOK_CONSOLE_WARN_EVENT,
+          CONSOLE_EVENTS.FAST_REFRESH_LOG,
+          CONSOLE_EVENTS.STORYBOOK_WARN,
+          CONSOLE_EVENTS.ERROR_LOG,
+          CONSOLE_EVENTS.DEBUG_LOG,
+          ERROR_EVENTS.ERROR,
+          ERROR_EVENTS.SYNTAX_ERROR,
         ]),
     };
   },
