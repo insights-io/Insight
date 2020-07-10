@@ -38,23 +38,4 @@ public class AbstractBrowserEventDtoSerializationTest {
     assertEquals(BrowserEventType.LOG, event.getEventType());
     SameJSON.assertEquals(payload, JacksonMapper.get().writeValueAsString(event));
   }
-
-  @Test
-  public void errorEventDtoSerializationTest() throws JsonProcessingException, JSONException {
-    String payload =
-        "{\"t\":10158.850000007078,\"e\":10,\"a\":[\"Unexpected identifier\",\"SyntaxError\",\"SyntaxError: Unexpected identifier\n"
-            + "    at <anonymous>:1:1\n"
-            + "    at eval (__playwright_evaluation_script__45:11:47)\n"
-            + "    at UtilityScript.callFunction (__playwright_evaluation_script__1:299:24)\n"
-            + "    at UtilityScript.<anonymous> (__playwright_evaluation_script__46:1:44)\"]}";
-
-    AbstractBrowserEventDTO deserialized =
-        JacksonMapper.get().readValue(payload, AbstractBrowserEventDTO.class);
-    assertEquals(BrowserErrorEventDTO.class, deserialized.getClass());
-
-    BrowserLogEventDTO event = (BrowserLogEventDTO) deserialized;
-    assertEquals(LogLevel.ERROR, event.getLevel());
-    assertEquals(BrowserEventType.LOG, event.getEventType());
-    SameJSON.assertEquals(payload, JacksonMapper.get().writeValueAsString(event));
-  }
 }
