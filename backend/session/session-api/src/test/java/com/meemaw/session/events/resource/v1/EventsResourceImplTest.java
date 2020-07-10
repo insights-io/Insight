@@ -12,9 +12,9 @@ import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.session.resource.v1.SessionResource;
+import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
-import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -68,8 +68,7 @@ public class EventsResourceImplTest {
         .forEach(
             browserEvent -> {
               try {
-                ElasticsearchTestExtension.getInstance()
-                    .restHighLevelClient()
+                ElasticsearchUtils.restClient()
                     .index(
                         new IndexRequest(UserEventIndex.NAME)
                             .id(UUID.randomUUID().toString())
@@ -103,7 +102,6 @@ public class EventsResourceImplTest {
         .body("data.size()", is(0));
   }
 
-  // TODO: smarter comparison than raw string
   @Test
   public void events_search_should_return_all_events() {
     await()
@@ -122,19 +120,44 @@ public class EventsResourceImplTest {
   }
 
   @Test
-  public void events_search_should_return_matching_events() {
-    await()
-        .atMost(5, TimeUnit.SECONDS)
-        .untilAsserted(
-            () ->
-                given()
-                    .when()
-                    .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-                    .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:4")
-                    .then()
-                    .statusCode(200)
-                    .body(
-                        sameJson(
-                            "{\"data\":[{\"clientX\":1167,\"clientY\":732,\"node\":{\":class\":\"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\",\":type\":\"submit\",\":data-baseweb\":\"button\",\"type\":\"<BUTTON\"},\"t\":1306,\"e\":4}]}")));
+  public void events_search_should_return_even_type_matching_events() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:4")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":[{\"clientX\":1167,\"clientY\":732,\"node\":{\":class\":\"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\",\":type\":\"submit\",\":data-baseweb\":\"button\",\"type\":\"<BUTTON\"},\"t\":1306,\"e\":4}]}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:100")
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[]}"));
+  }
+
+  @Test
+  public void events_search_should_return_event_timestamp_matching_events() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.t=lt:1250")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":[{\"name\":\"http://localhost:8081/v1/page\",\"entryType\":\"resource\",\"startTime\":3963.6150000151247,\"duration\":29.37000000383705,\"t\":34,\"e\":3},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":1}]}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.t=lt:5")
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[]}"));
   }
 }

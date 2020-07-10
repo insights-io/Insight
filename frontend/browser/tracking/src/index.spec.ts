@@ -112,6 +112,7 @@ describe('tracking script', () => {
 
       await page.click('button[data-testid="first-button"]');
 
+      console.log('Waiting for beacon api response...');
       let beaconResponse = await page.waitForResponse(
         (resp: Response) => resp.url() === beaconBeatURI
       );
@@ -138,12 +139,18 @@ describe('tracking script', () => {
         console.info('Do some console.info!');
         console.error('Do some console.error!');
 
-        // simulate error thrown in browser (we cant just throw here as this will kill Playwright process)
+        // simulate Error thrown in browser (we cant just throw here as this will kill Playwright process)
         const errorElem = document.createElement('script');
         errorElem.textContent = 'throw new Error("simulated error");';
         document.body.append(errorElem);
+
+        // simulate SyntaxError thrown in browser (we cant just throw here as this will kill Playwright process)
+        const syntaxErrorElem = document.createElement('script');
+        syntaxErrorElem.textContent = 'eval("va x = 5;");';
+        document.body.append(syntaxErrorElem);
       });
 
+      console.log('Waiting for beacon api response...');
       beaconResponse = await page.waitForResponse(
         (resp: Response) => resp.url() === beaconBeatURI
       );
@@ -153,13 +160,27 @@ describe('tracking script', () => {
       expect(postData.s).toEqual(2);
       expect(beaconResponse.status()).toEqual(204);
 
-      const [consoleInfoEvent, consoleErrorEvent, errorEvent] = postData.e;
+      const [
+        consoleInfoEvent,
+        consoleErrorEvent,
+        errorEvent,
+        syntaxErrorEvent,
+      ] = postData.e;
 
       expect(consoleInfoEvent.a).toEqual(['info', 'Do some console.info!']);
       expect(consoleErrorEvent.a).toEqual(['error', 'Do some console.error!']);
       expect(errorEvent.a[0]).toEqual('simulated error');
+      expect(errorEvent.a[1]).toEqual('Error');
       expect(
-        (errorEvent.a[1] as string).includes('Error: simulated error\n    at')
+        (errorEvent.a[2] as string).includes('Error: simulated error\n    at')
+      ).toBeTruthy();
+
+      expect(syntaxErrorEvent.a[0]).toEqual('Unexpected identifier');
+      expect(syntaxErrorEvent.a[1]).toEqual('SyntaxError');
+      expect(
+        (syntaxErrorEvent.a[2] as string).includes(
+          'SyntaxError: Unexpected identifier\n    at'
+        )
       ).toBeTruthy();
 
       await browser.close();

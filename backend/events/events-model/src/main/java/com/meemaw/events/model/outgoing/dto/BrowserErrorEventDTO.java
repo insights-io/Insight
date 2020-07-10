@@ -10,5 +10,6 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public class BrowserErrorEventDTO extends AbstractBrowserEventDTO {
   String message;
+  String name;
   String stack;
 }
