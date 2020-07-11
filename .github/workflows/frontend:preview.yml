@@ -32,4 +32,4 @@ jobs:
         uses: foo-software/lighthouse-check-action@master
         with:
           accessToken: ${{ secrets.GITHUB_TOKEN }}
-          urls: ${{ secrets.LIGHTHOUSE_CHECK_URL_TOKEN }}::${{ steps.now.outputs.preview-url }}
+          urls: ${{ steps.now.outputs.preview-url }}
