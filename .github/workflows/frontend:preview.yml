@@ -31,10 +31,11 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
           vercel-args: '-m ref_slug=${{ env.GITHUB_HEAD_REF_SLUG }}'
       - uses: foo-software/lighthouse-check-action@master
+        id: lighthouseCheck
         with:
           accessToken: ${{ secrets.GITHUB_TOKEN }}
           author: ${{ github.actor }}
-          urls: ${{ steps.vercel.outputs.preview-url }},${{ steps.vercel.outputs.preview-url }}/try/
+          urls: ${{ steps.vercel.outputs.preview-url }}/login/,${{ steps.vercel.outputs.preview-url }}/try/,${{ steps.vercel.outputs.preview-url }}/password-forgot/
           branch: ${{ github.ref }}
           sha: ${{ github.sha }}
           outputDirectory: /tmp/artifacts
@@ -42,3 +43,11 @@ jobs:
         with:
           name: Lighthouse reports
           path: /tmp/artifacts
+      - uses: foo-software/lighthouse-check-status-action@master
+        with:
+          lighthouseCheckResults: ${{ steps.lighthouseCheck.outputs.lighthouseCheckResults }}
+          minAccessibilityScore: '100'
+          minBestPracticesScore: '100'
+          minPerformanceScore: '100'
+          minProgressiveWebAppScore: '100'
+          minSeoScore: '100'
