@@ -46,7 +46,7 @@ class InsightDocument extends Document<Props> {
 
   render() {
     return (
-      <Html>
+      <Html lang="en">
         <Head>
           <style>
             {`

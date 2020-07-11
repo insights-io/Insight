@@ -34,7 +34,7 @@ jobs:
         with:
           accessToken: ${{ secrets.GITHUB_TOKEN }}
           author: ${{ github.actor }}
-          urls: ${{ steps.vercel.outputs.preview-url }}
+          urls: ${{ steps.vercel.outputs.preview-url }},${{ steps.vercel.outputs.preview-url }}/try/
           branch: ${{ github.ref }}
           sha: ${{ github.sha }}
           outputDirectory: /tmp/artifacts
