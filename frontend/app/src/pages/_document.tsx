@@ -48,6 +48,11 @@ class InsightDocument extends Document<Props> {
     return (
       <Html lang="en">
         <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta
+            name="Description"
+            content="Find insights into your frontend applications."
+          />
           <style>
             {`
               html, body, #__next {

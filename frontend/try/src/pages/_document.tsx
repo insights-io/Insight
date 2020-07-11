@@ -47,6 +47,10 @@ class InsightDocument extends Document<Props> {
       <Html lang="en">
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta
+            name="Description"
+            content="Find insights into your frontend applications."
+          />
           {this.props.stylesheets.map((sheet, i) => (
             <style
               className={STYLETRON_HYDRATE_CLASSNAME}

@@ -78,9 +78,14 @@ const LoginPage = () => {
 
       <form onSubmit={onSubmit} noValidate>
         <Block>
-          <FormControl label="Email" error={errors.email?.message}>
+          <FormControl
+            label="Email"
+            error={errors.email?.message}
+            overrides={{ Label: { props: { for: 'email' } } }}
+          >
             <Input
               overrides={inputOverrides}
+              id="email"
               name="email"
               type="email"
               placeholder="Email"
@@ -102,12 +107,14 @@ const LoginPage = () => {
               </Block>
             }
             error={errors.password?.message}
+            overrides={{ Label: { props: { for: 'password' } } }}
           >
             <Input
               overrides={inputOverrides}
-              placeholder="Password"
+              id="password"
               name="password"
               type="password"
+              placeholder="Password"
               ref={register}
               inputRef={register(PASSWORD_VALIDATION)}
               error={Boolean(errors.password)}
