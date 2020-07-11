@@ -30,12 +30,15 @@ const env = {
   JAEGER_AGENT_PORT,
 };
 
-console.log('App environment:', env);
-
 const nextConfig = {
   env,
   webpack: (config, _config) => config,
   experimental: { optionalCatchAll: true },
+  pwa: {
+    dest: 'public',
+  },
 };
+
+console.log('Next config', nextConfig);
 
 module.exports = withServiceProxy(withBundleAnalyzer(withPWA(nextConfig)));
