@@ -64,6 +64,8 @@ class InsightDocument extends Document<Props> {
             content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
           />
 
+          <link rel="shortcut icon" href="/static/favicon.ico" />
+
           <style>
             {`
               html, body, #__next {
