@@ -1,0 +1,11 @@
+{
+  "name": "Insight",
+  "short_name": "Insight",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "standalone",
+  "Scope": "/",
+  "start_url": "/",
+  "icons": null,
+  "splash_pages": null
+}
