@@ -65,6 +65,7 @@ class InsightDocument extends Document<Props> {
           />
 
           <link rel="shortcut icon" href="/static/favicon.ico" />
+          <link rel="manifest" href="/static/manifest.json" />
 
           <style>
             {`
