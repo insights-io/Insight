@@ -55,9 +55,9 @@ yarn-error.log
 .next
 out
 
-**/public/precache.*.js
-**/public/sw.js
-**/public/workbox*.js
+**/public/precache.*.js*
+**/public/sw.js*
+**/public/workbox*.js*
 
 # Environment files
 .env

@@ -21,12 +21,12 @@ const env = {
   BOOTSTRAP_SCRIPT,
 };
 
-console.log('Try environment:', env);
+const nextConfig = {
+  env,
+  webpack: (config, _config) => config,
+  experimental: { optionalCatchAll: true },
+};
 
-module.exports = withServiceProxy(
-  withBundleAnalyzer({
-    env,
-    webpack: (config, _config) => config,
-    experimental: { optionalCatchAll: true },
-  })
-);
+console.log('Next config', nextConfig);
+
+module.exports = withServiceProxy(withBundleAnalyzer(nextConfig));
