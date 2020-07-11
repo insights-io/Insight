@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-var-requires */
+const withPWA = require('next-pwa');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -31,10 +32,10 @@ const env = {
 
 console.log('App environment:', env);
 
-module.exports = withServiceProxy(
-  withBundleAnalyzer({
-    env,
-    webpack: (config, _config) => config,
-    experimental: { optionalCatchAll: true },
-  })
-);
+const nextConfig = {
+  env,
+  webpack: (config, _config) => config,
+  experimental: { optionalCatchAll: true },
+};
+
+module.exports = withServiceProxy(withBundleAnalyzer(withPWA(nextConfig)));

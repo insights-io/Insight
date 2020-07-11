@@ -30,6 +30,15 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
           vercel-args: '-m ref_slug=${{ env.GITHUB_HEAD_REF_SLUG }}'
+      - uses: wei/curl@master
+        with:
+          args: ${{ steps.vercel.outputs.preview-url }}/login/
+      - uses: wei/curl@master
+        with:
+          args: ${{ steps.vercel.outputs.preview-url }}/try/
+      - uses: wei/curl@master
+        with:
+          args: ${{ steps.vercel.outputs.preview-url }}/password-forgot/
       - uses: foo-software/lighthouse-check-action@master
         id: lighthouseCheck
         with:
@@ -46,8 +55,8 @@ jobs:
       - uses: foo-software/lighthouse-check-status-action@master
         with:
           lighthouseCheckResults: ${{ steps.lighthouseCheck.outputs.lighthouseCheckResults }}
-          minAccessibilityScore: '100'
-          minBestPracticesScore: '100'
-          minPerformanceScore: '100'
-          minProgressiveWebAppScore: '100'
-          minSeoScore: '100'
+          minAccessibilityScore: '85'
+          minBestPracticesScore: '85'
+          minPerformanceScore: '85'
+          minProgressiveWebAppScore: '85'
+          minSeoScore: '85'
