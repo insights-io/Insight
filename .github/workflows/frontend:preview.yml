@@ -20,8 +20,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: mkdir -p /tmp/artifacts
       - uses: rlespinasse/github-slug-action@v2.x
-      - run: mkdir /tmp/artifacts
       - uses: amondnet/vercel-action@v19
         id: vercel
         with:
