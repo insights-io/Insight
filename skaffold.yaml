@@ -11,20 +11,6 @@ build:
     gitCommit:
       variant: CommitSha
   artifacts:
-    - image: insightio/session-api
-      context: backend
-      custom:
-        buildCommand: ./custom_build.sh session/session-api/docker/Dockerfile.jvm
-    - image: insightio/auth-api
-      context: backend
-      custom:
-        buildCommand: ./custom_build.sh auth/auth-api/docker/Dockerfile.jvm
-    - image: insightio/auth-api-migrations
-      context: backend/auth/auth-api/migrations/postgres
-    - image: insightio/beacon-api
-      context: backend
-      custom:
-        buildCommand: ./custom_build.sh beacon/beacon-api/docker/Dockerfile.jvm
     - image: insightio/frontend-app
       context: .
       docker:
@@ -33,9 +19,35 @@ build:
       context: .
       docker:
         dockerfile: frontend/try/docker/Dockerfile
+    - image: insightio/session-api
+      context: backend
+      custom:
+        dependencies:
+          dockerfile:
+            path: session/session-api/docker/Dockerfile.jvm
+        buildCommand: ./custom_build.sh session/session-api/docker/Dockerfile.jvm
+    - image: insightio/auth-api
+      context: backend
+      custom:
+        dependencies:
+          dockerfile:
+            path: auth/auth-api/docker/Dockerfile.jvm
+        buildCommand: ./custom_build.sh auth/auth-api/docker/Dockerfile.jvm
+    - image: insightio/auth-api-migrations
+      context: backend/auth/auth-api/migrations/postgres
+    - image: insightio/beacon-api
+      context: backend
+      custom:
+        dependencies:
+          dockerfile:
+            path: beacon/beacon-api/docker/Dockerfile.jvm
+        buildCommand: ./custom_build.sh beacon/beacon-api/docker/Dockerfile.jvm
     - image: insightio/search-indexer
       context: backend
       custom:
+        dependencies:
+          dockerfile:
+            path: events/search-indexer/docker/Dockerfile.jvm
         buildCommand: ./custom_build.sh events/search-indexer/docker/Dockerfile.jvm
     - image: insightio/session-api-migrations
       context: backend/session/session-api/migrations/postgres
@@ -48,3 +60,22 @@ profiles:
     build:
       local:
         push: true
+    patches:
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          session_api_client_base_url: https://session-api.dev.snuderls.eu
+          auth_api_client_base_url: https://auth-api.dev.snuderls.eu
+          auth_api_server_base_url: http://auth-api
+          try_app_base_url: https://try.dev.snuderls.eu
+          bootstrap_script: https://static.dev.snuderls.eu/b/development.insight.js
+          app_base_url: https://app.dev.snuderls.eu
+      - op: add
+        path: /build/artifacts/1/docker/buildArgs
+        value:
+          session_api_client_base_url: https://session-api.dev.snuderls.eu
+          auth_api_client_base_url: https://auth-api.dev.snuderls.eu
+          auth_api_server_base_url: http://auth-api
+          try_app_base_url: https://try.dev.snuderls.eu
+          bootstrap_script: https://static.dev.snuderls.eu/b/development.insight.js
+          app_base_url: https://app.dev.snuderls.eu
