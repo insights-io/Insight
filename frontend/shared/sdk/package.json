@@ -28,7 +28,7 @@
     "@insight/types": "0.0.0-development"
   },
   "dependencies": {
-    "ky": "0.20.0",
+    "ky": "0.21.0",
     "ky-universal": "0.8.1"
   }
 }
