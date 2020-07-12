@@ -7,7 +7,7 @@ args+=('--builder' 'qemu')
 args+=('--network' 'host')
 if [ "$PUSH_IMAGE" = "true" ];
 then
-  args+=('--platform' 'linux/arm/v7,linux/amd64,linux/arm64')
+  args+=('--platform' 'linux/arm/v7,linux/amd64')
   args+=('-o' 'type=registry')
 else
   args+=('--platform' 'linux/amd64')
