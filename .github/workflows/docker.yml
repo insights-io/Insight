@@ -36,8 +36,7 @@ jobs:
 
       - name: Build
         run: |
-          mkdir out
-          skaffold build -p push | sed 's/\(image:.*\)@.*$/\1/g' > out/manifest.yml
+          skaffold render -p push | sed 's/\(image:.*\)@.*$/\1/g' > manifest.yml
       - name: Archive manifest
         uses: actions/upload-artifact@v1
         with:
