@@ -24,7 +24,7 @@ resource "github_repository" "ops" {
   name           = "ops"
   description    = "Insight operations"
   default_branch = "master"
-  private        = false
+  private        = true
   has_issues     = false
   has_wiki       = false
   has_projects   = false
