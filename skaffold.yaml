@@ -65,17 +65,14 @@ profiles:
         path: /build/artifacts/0/docker/buildArgs
         value:
           session_api_client_base_url: https://session-api.dev.snuderls.eu
+          session_api_server_base_url: http://session-api
           auth_api_client_base_url: https://auth-api.dev.snuderls.eu
           auth_api_server_base_url: http://auth-api
           try_app_base_url: https://try.dev.snuderls.eu
           bootstrap_script: https://static.dev.snuderls.eu/b/development.insight.js
-          app_base_url: https://app.dev.snuderls.eu
       - op: add
         path: /build/artifacts/1/docker/buildArgs
         value:
-          session_api_client_base_url: https://session-api.dev.snuderls.eu
           auth_api_client_base_url: https://auth-api.dev.snuderls.eu
-          auth_api_server_base_url: http://auth-api
-          try_app_base_url: https://try.dev.snuderls.eu
           bootstrap_script: https://static.dev.snuderls.eu/b/development.insight.js
           app_base_url: https://app.dev.snuderls.eu
