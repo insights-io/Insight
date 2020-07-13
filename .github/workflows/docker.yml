@@ -5,38 +5,17 @@ on: [push]
 env:
   REGISTRY: registry.hub.docker.com
   REPOSITORY: insightio
+  GITOPS_REPOSITORY: insights-io/ops
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: imranismail/setup-kustomize@v1
-        with:
-          kustomize-version: '3.2.0'
-      - uses: azure/docker-login@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v3
-        with:
-          buildx-version: latest
-          qemu-version: latest
-      - name: setup builder
-        run: |
-          docker buildx create --use --name=qemu --buildkitd-flags '--allow-insecure-entitlement network.host'
-          docker buildx inspect --bootstrap
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
-      - name: Install skaffold
-        run: curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/
       - name: Build
         run: |
           mkdir -p out
-          skaffold render --loud -p push --output out/manifest.yaml
-          sed 's/\(image:.*\)@.*$/\1/g' -i out/manifest.yaml
+          echo "Hello world" > out/manifest.yaml
       - uses: actions/upload-artifact@v2
         with:
           name: manifests
@@ -49,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          repository: insights-io/ops
+          repository: ${{ env.GITOPS_REPOSITORY }}
           token: ${{ secrets.OPS_SYNC_TOKEN }}
       - uses: rlespinasse/github-slug-action@v2.x
       - uses: actions/download-artifact@v2
@@ -61,6 +40,6 @@ jobs:
           git commit -am 'Release ${{ env.GITHUB_SHA_SHORT }}' || echo "Everything is up to date"
       - uses: ad-m/github-push-action@master
         with:
-          repository: insights-io/ops
           branch: master
+          repository: ${{ env.GITOPS_REPOSITORY }}
           github_token: ${{ secrets.OPS_SYNC_TOKEN }}
