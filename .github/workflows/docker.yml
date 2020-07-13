@@ -31,6 +31,8 @@ jobs:
         with:
           name: manifests
       - run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add manifest.yml
           git commit -m 'Commit 1'
       - uses: ad-m/github-push-action@master
