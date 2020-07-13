@@ -27,15 +27,16 @@ jobs:
           fetch-depth: 0
           repository: insights-io/ops
           token: ${{ secrets.OPS_SYNC_TOKEN }}
+      - uses: rlespinasse/github-slug-action@v2.x
       - uses: actions/download-artifact@v2
         with:
           name: manifests
       - run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add manifest.yml
-          git commit -m 'Commit 1'
+          git commit -am 'Release ${{ env.GITHUB_SHA_SHORT }}'
       - uses: ad-m/github-push-action@master
         with:
           repository: insights-io/ops
+          branch: master
           github_token: ${{ secrets.OPS_SYNC_TOKEN }}

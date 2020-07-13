@@ -19,3 +19,20 @@ module "branch_protection" {
   repository = github_repository.insight.name
   branch     = github_repository.insight.default_branch
 }
+
+
+resource "github_repository" "ops" {
+  name           = "ops"
+  description    = "Insight operations"
+  default_branch = "master"
+  private        = false
+  has_issues     = false
+  has_wiki       = false
+  has_projects   = false
+
+  allow_merge_commit = false
+  allow_rebase_merge = false
+  allow_squash_merge = false
+
+  delete_branch_on_merge = false
+}
