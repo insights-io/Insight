@@ -32,6 +32,7 @@ jobs:
           name: manifests
       - run: |
           git add manifest.yml
+          git commit -m 'Commit 1'
       - uses: ad-m/github-push-action@master
         with:
           repository: insights-io/ops
