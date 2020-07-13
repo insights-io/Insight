@@ -18,7 +18,7 @@ const ConsoleErrorEvent = ({ event }: Props) => {
   const ToggleComponent = expanded ? ArrowUp : ArrowDown;
 
   const baseStyling = {
-    borderBottom: 'none',
+    borderBottomWidth: 0,
     backgroundColor: 'inherit',
     fontSize: 'inherit',
   } as const;
@@ -27,7 +27,15 @@ const ConsoleErrorEvent = ({ event }: Props) => {
     <Accordion onChange={(data) => setExpanded(data.expanded.length === 1)}>
       <Panel
         overrides={{
-          Header: { style: { padding: 0, ...baseStyling } },
+          Header: {
+            style: {
+              paddingTop: 0,
+              paddingLeft: 0,
+              paddingBottom: 0,
+              paddingRight: 0,
+              ...baseStyling,
+            },
+          },
           ToggleIcon: { style: { display: 'none' } },
           Content: {
             style: {

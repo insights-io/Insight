@@ -81,7 +81,7 @@ const LoginPage = () => {
           <FormControl
             label="Email"
             error={errors.email?.message}
-            overrides={{ Label: { props: { for: 'email' } } }}
+            overrides={{ Label: { props: { htmlFor: 'email' } } }}
           >
             <Input
               overrides={inputOverrides}
@@ -107,7 +107,7 @@ const LoginPage = () => {
               </Block>
             }
             error={errors.password?.message}
-            overrides={{ Label: { props: { for: 'password' } } }}
+            overrides={{ Label: { props: { htmlFor: 'password' } } }}
           >
             <Input
               overrides={inputOverrides}
