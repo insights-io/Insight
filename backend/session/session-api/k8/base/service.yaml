@@ -9,6 +9,6 @@ spec:
     app: session-api
   ports:
     - name: http
-      port: 8082
+      port: 8080
       protocol: TCP
       targetPort: 8080

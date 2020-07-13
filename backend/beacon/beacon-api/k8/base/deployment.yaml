@@ -34,7 +34,7 @@ spec:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
             - name: SESSION_SERVICE_BASE_URL
-              value: http://session-api:8082
+              value: http://session-api:8080
           ports:
             - containerPort: 8080
               name: http
@@ -59,7 +59,7 @@ spec:
             successThreshold: 1
             failureThreshold: 10
       tolerations:
-        - key: "arm"
-          operator: "Equal"
-          value: "true"
-          effect: "NoExecute"
+        - key: 'arm'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoExecute'
