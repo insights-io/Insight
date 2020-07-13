@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           repository: insights-io/ops
           token: ${{ secrets.OPS_SYNC_TOKEN }}
       - uses: actions/download-artifact@v2
