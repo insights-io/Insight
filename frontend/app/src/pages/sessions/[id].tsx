@@ -5,7 +5,7 @@ import {
   AuthenticatedServerSideProps,
   Authenticated,
 } from 'modules/auth/middleware/authMiddleware';
-import { UserDTO, SessionDTO, APIErrorDataResponse } from '@insight/types';
+import { SessionDTO, APIErrorDataResponse } from '@insight/types';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import SessionPage from 'modules/sessions/pages/SessionPage';
 import { SessionApi } from 'api';

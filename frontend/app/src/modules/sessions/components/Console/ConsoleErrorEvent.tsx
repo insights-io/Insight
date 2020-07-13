@@ -15,26 +15,23 @@ const ConsoleErrorEvent = ({ event }: Props) => {
   const loc = event.stack.split('\n')[1].trim();
   const [expanded, setExpanded] = useState(false);
 
+  const ToggleComponent = expanded ? ArrowUp : ArrowDown;
+
+  const baseStyling = {
+    borderBottom: 'none',
+    backgroundColor: 'inherit',
+    fontSize: 'inherit',
+  } as const;
+
   return (
     <Accordion onChange={(data) => setExpanded(data.expanded.length === 1)}>
       <Panel
         overrides={{
-          Header: {
-            style: {
-              padding: 0,
-              borderBottom: 'none',
-              backgroundColor: 'inherit',
-              fontSize: 'imherit',
-            },
-          },
-          ToggleIcon: {
-            style: { display: 'none' },
-          },
+          Header: { style: { padding: 0, ...baseStyling } },
+          ToggleIcon: { style: { display: 'none' } },
           Content: {
             style: {
-              backgroundColor: 'inherit',
-              borderBottom: 'none',
-              fontSize: 'inherit',
+              ...baseStyling,
               paddingLeft: theme.sizing.scale300,
               ...(expanded
                 ? {
@@ -49,11 +46,7 @@ const ConsoleErrorEvent = ({ event }: Props) => {
           <Block display="flex" justifyContent="space-between" width="100%">
             <Block display="flex">
               <VerticalAligned>
-                {expanded ? (
-                  <ArrowUp size={16} color={theme.colors.mono500} />
-                ) : (
-                  <ArrowDown size={16} color={theme.colors.mono500} />
-                )}
+                <ToggleComponent size={16} color={theme.colors.mono500} />
               </VerticalAligned>
               <span className={css({ color: theme.colors.negative400 })}>
                 Uncaught {event.name}: {event.message}

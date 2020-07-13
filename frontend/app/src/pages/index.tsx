@@ -7,7 +7,7 @@ import {
 import { GetServerSideProps } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { SessionApi } from 'api';
-import { SessionDTO, UserDTO } from '@insight/types';
+import { SessionDTO } from '@insight/types';
 import { mapSession, mapUser } from '@insight/sdk';
 import HomePage from 'modules/app/pages/HomePage';
 
