@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AuthenticatedServerSideProps,
   authenticated,
+  Authenticated,
 } from 'modules/auth/middleware/authMiddleware';
 import { GetServerSideProps } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
@@ -27,12 +28,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   const requestSpan = startRequestSpan(context.req);
-  const user = (await authenticated(context, requestSpan)) as UserDTO;
+  const { user, SessionId } = (await authenticated(
+    context,
+    requestSpan
+  )) as Authenticated;
   const sessions = await SessionApi.getSessions({
     baseURL: process.env.SESSION_API_BASE_URL,
     headers: {
       ...prepareCrossServiceHeaders(requestSpan),
-      cookie: context.req.headers.cookie as string,
+      cookie: `SessionId=${SessionId}`,
     },
   });
 

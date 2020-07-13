@@ -11,10 +11,15 @@ import {
   prepareCrossServiceHeaders,
 } from 'modules/tracing';
 
+export type Authenticated = {
+  user: UserDTO;
+  SessionId: string;
+};
+
 export const authenticated = async (
   context: GetServerSidePropsContext,
   requestSpan: Span
-): Promise<UserDTO | unknown> => {
+): Promise<Authenticated | unknown> => {
   const { SessionId } = nextCookie(context);
   const pathname = context.req.url;
   const span = getTracer().startSpan('authMiddleware.authenticated', {
@@ -51,22 +56,23 @@ export const authenticated = async (
     }
     const dataResponse = (await response.json()) as DataResponse<UserDTO>;
     span.setTag('user.id', dataResponse.data.id);
-    return dataResponse.data;
+    return { user: dataResponse.data, SessionId };
   } finally {
     span.finish();
   }
 };
 
-export type AuthenticatedServerSideProps = {
-  user: UserDTO;
-};
+export type AuthenticatedServerSideProps = Pick<Authenticated, 'user'>;
 
 export const getAuthenticatedServerSideProps: GetServerSideProps<AuthenticatedServerSideProps> = async (
   context
 ) => {
   const requestSpan = startRequestSpan(context.req);
   try {
-    const user = (await authenticated(context, requestSpan)) as UserDTO;
+    const { user } = (await authenticated(
+      context,
+      requestSpan
+    )) as Authenticated;
     return { props: { user } };
   } finally {
     requestSpan.finish();
