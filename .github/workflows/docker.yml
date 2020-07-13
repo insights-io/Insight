@@ -31,7 +31,9 @@ jobs:
         with:
           name: manifest.yml
           path: manifest.yml
-      - run: git diff
+      - run: |
+          ls
+          cat manifest.yml
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
