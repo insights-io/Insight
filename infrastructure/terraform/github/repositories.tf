@@ -20,7 +20,6 @@ module "branch_protection" {
   branch     = github_repository.insight.default_branch
 }
 
-
 resource "github_repository" "ops" {
   name           = "ops"
   description    = "Insight operations"

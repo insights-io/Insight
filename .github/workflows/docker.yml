@@ -34,7 +34,7 @@ jobs:
       - run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -am 'Release ${{ env.GITHUB_SHA_SHORT }}'
+          git commit -am 'Release ${{ env.GITHUB_SHA_SHORT }}' || echo "Everything is up to date"
       - uses: ad-m/github-push-action@master
         with:
           repository: insights-io/ops
