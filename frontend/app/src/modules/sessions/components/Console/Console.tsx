@@ -41,6 +41,7 @@ const Console = ({ events, style }: Props) => {
         ...style,
         backgroundColor: '#d3d3d3',
         height: '100%',
+        fontSize: '0.8rem',
       })}
     >
       <Block
@@ -71,7 +72,7 @@ const Console = ({ events, style }: Props) => {
               }}
             >
               {IconComponent && (
-                <VerticalAligned>
+                <VerticalAligned $style={{ maxHeight: '20px' }}>
                   <IconComponent color={color} />
                 </VerticalAligned>
               )}

@@ -3,8 +3,9 @@ import { GetServerSideProps } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
+  Authenticated,
 } from 'modules/auth/middleware/authMiddleware';
-import { UserDTO, SessionDTO, APIErrorDataResponse } from '@insight/types';
+import { SessionDTO, APIErrorDataResponse } from '@insight/types';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import SessionPage from 'modules/sessions/pages/SessionPage';
 import { SessionApi } from 'api';
@@ -26,12 +27,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const requestSpan = startRequestSpan(context.req);
   const sessionId = params?.id as string;
   try {
-    const user = (await authenticated(context, requestSpan)) as UserDTO;
+    const { user, SessionId } = (await authenticated(
+      context,
+      requestSpan
+    )) as Authenticated;
     const session = await SessionApi.getSession(sessionId, {
       baseURL: process.env.SESSION_API_BASE_URL,
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
-        cookie: context.req.headers.cookie as string,
+        cookie: `SessionId=${SessionId}`,
       },
     }).catch(async (error) => {
       const errorDTO: APIErrorDataResponse = await error.response.json();

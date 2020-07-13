@@ -46,11 +46,25 @@ class InsightDocument extends Document<Props> {
     return (
       <Html lang="en">
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="application-name" content="Insight" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="default"
+          />
           <meta
             name="Description"
             content="Find insights into your frontend applications."
           />
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover"
+          />
+          <meta name="theme-color" content="#000000" />
+
+          <link rel="shortcut icon" href="/static/favicon.ico" />
+
           {this.props.stylesheets.map((sheet, i) => (
             <style
               className={STYLETRON_HYDRATE_CLASSNAME}
