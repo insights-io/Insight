@@ -35,7 +35,7 @@ jobs:
       - name: Build
         run: |
           mkdir -p out
-          skaffold render --loud -p push --output out/manifest.yaml
+          skaffold render --add-skaffold-labels=false --loud -p push --output out/manifest.yaml
           sed 's/\(image:.*\)@.*$/\1/g' -i out/manifest.yaml
       - uses: actions/upload-artifact@v2
         with:
