@@ -16,8 +16,8 @@ jobs:
       - name: Archive manifest
         uses: actions/upload-artifact@v2
         with:
-          name: manifest.yml
-          path: out/manifest.yml
+          name: manifests
+          path: out
 
   sync:
     runs-on: ubuntu-latest
@@ -29,8 +29,7 @@ jobs:
           token: ${{ secrets.OPS_SYNC_TOKEN }}
       - uses: actions/download-artifact@v2
         with:
-          name: manifest.yml
-          path: manifest.yml
+          name: manifests
       - run: |
           ls
           cat manifest.yml
