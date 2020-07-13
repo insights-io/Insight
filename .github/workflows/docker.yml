@@ -16,7 +16,7 @@ jobs:
       - name: Archive manifest
         uses: actions/upload-artifact@v2
         with:
-          name: manifest
+          name: manifest.yml
           path: out/manifest.yml
 
   sync:
