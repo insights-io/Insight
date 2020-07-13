@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-var-requires */
+const withPWA = require('next-pwa');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -29,12 +30,15 @@ const env = {
   JAEGER_AGENT_PORT,
 };
 
-console.log('App environment:', env);
+const nextConfig = {
+  env,
+  webpack: (config, _config) => config,
+  experimental: { optionalCatchAll: true },
+  pwa: {
+    dest: 'public',
+  },
+};
 
-module.exports = withServiceProxy(
-  withBundleAnalyzer({
-    env,
-    webpack: (config, _config) => config,
-    experimental: { optionalCatchAll: true },
-  })
-);
+console.log('Next config', nextConfig);
+
+module.exports = withServiceProxy(withBundleAnalyzer(withPWA(nextConfig)));

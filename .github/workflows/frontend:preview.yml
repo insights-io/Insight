@@ -20,11 +20,43 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: mkdir -p /tmp/artifacts
       - uses: rlespinasse/github-slug-action@v2.x
       - uses: amondnet/vercel-action@v19
+        id: vercel
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
           vercel-args: '-m ref_slug=${{ env.GITHUB_HEAD_REF_SLUG }}'
+      - uses: wei/curl@master
+        with:
+          args: ${{ steps.vercel.outputs.preview-url }}/login/
+      - uses: wei/curl@master
+        with:
+          args: ${{ steps.vercel.outputs.preview-url }}/try/
+      - uses: wei/curl@master
+        with:
+          args: ${{ steps.vercel.outputs.preview-url }}/password-forgot/
+      - uses: foo-software/lighthouse-check-action@master
+        id: lighthouseCheck
+        with:
+          accessToken: ${{ secrets.GITHUB_TOKEN }}
+          author: ${{ github.actor }}
+          urls: ${{ steps.vercel.outputs.preview-url }}/login/,${{ steps.vercel.outputs.preview-url }}/try/,${{ steps.vercel.outputs.preview-url }}/password-forgot/
+          branch: ${{ github.ref }}
+          sha: ${{ github.sha }}
+          outputDirectory: /tmp/artifacts
+      - uses: actions/upload-artifact@master
+        with:
+          name: Lighthouse reports
+          path: /tmp/artifacts
+      - uses: foo-software/lighthouse-check-status-action@master
+        with:
+          lighthouseCheckResults: ${{ steps.lighthouseCheck.outputs.lighthouseCheckResults }}
+          minAccessibilityScore: '80'
+          minBestPracticesScore: '80'
+          minPerformanceScore: '80'
+          minSeoScore: '80'
+          minProgressiveWebAppScore: '50'

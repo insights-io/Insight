@@ -74,6 +74,7 @@ const PasswordForgotPage = () => {
           <form onSubmit={onSubmit} noValidate>
             <Block>
               <FormControl
+                overrides={{ Label: { props: { for: 'email' } } }}
                 label={
                   <Block display="flex" justifyContent="space-between">
                     <span>Email</span>
@@ -86,6 +87,7 @@ const PasswordForgotPage = () => {
               >
                 <Input
                   overrides={inputOverrides}
+                  id="email"
                   name="email"
                   type="email"
                   placeholder="Email"

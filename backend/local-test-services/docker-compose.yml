@@ -1,6 +1,19 @@
 version: '3.7'
 
 services:
+  app:
+    build:
+      context: ../..
+      dockerfile: frontend/app/docker/Dockerfile
+      args:
+        auth_api_server_base_url: http://auth-api:8080
+        session_api_server_base_url: http://session-api:8080
+    ports:
+      - '${APP_PORT:-3000}:3000'
+    depends_on:
+      - auth-api
+      - session-api
+
   auth-api:
     build:
       context: ..

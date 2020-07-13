@@ -8,6 +8,9 @@ ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_client_base_url
 ARG auth_api_server_base_url=http://localhost:8080
 ENV AUTH_API_BASE_URL=$auth_api_server_base_url
 
+ARG session_api_server_base_url=http://localhost:8082
+ENV SESSION_API_BASE_URL=$session_api_server_base_url
+
 ARG session_api_client_base_url=http://localhost:8082
 ENV NEXT_PUBLIC_SESSION_API_BASE_URL=$session_api_client_base_url
 
@@ -39,7 +42,12 @@ WORKDIR /usr/app
 ENV NODE_ENV production
 
 COPY --from=build /src/node_modules /usr/app/node_modules
+
 COPY --from=build /src/frontend/app/package.json /usr/app/package.json
 COPY --from=build /src/frontend/app/.next /usr/app/.next
+COPY --from=build /src/frontend/app/public /usr/app/public
+
+COPY --from=build /src/frontend/shared/sdk/package.json /usr/app/node_modules/@insight/sdk/package.json
+COPY --from=build /src/frontend/shared/sdk/dist /usr/app/node_modules/@insight/sdk/dist
 
 CMD ["npm", "start"]
