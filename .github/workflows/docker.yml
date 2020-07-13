@@ -13,8 +13,7 @@ jobs:
       - run: |
           mkdir -p out
           echo "Hell world" > out/manifest.yml
-      - name: Archive manifest
-        uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v2
         with:
           name: manifests
           path: out
@@ -31,10 +30,8 @@ jobs:
         with:
           name: manifests
       - run: |
-          ls
-          cat manifest.yml
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+          git add manifest.yml
+      - uses: ad-m/github-push-action@master
         with:
           repository: insights-io/ops
           github_token: ${{ secrets.OPS_SYNC_TOKEN }}
