@@ -5,6 +5,7 @@ metadata:
   name: session-api-postgres-migrations
   annotations:
     argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   ttlSecondsAfterFinished: 3600
   template:

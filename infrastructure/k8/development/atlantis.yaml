@@ -11,6 +11,10 @@ environmentSecrets:
     secretKeyRef:
       name: cloudflare-apikey-secret
       key: api-token
+  - name: GITHUB_TOKEN
+    secretKeyRef:
+      name: github-secrets
+      key: personal-access-token
 
 github:
   user: botsights
