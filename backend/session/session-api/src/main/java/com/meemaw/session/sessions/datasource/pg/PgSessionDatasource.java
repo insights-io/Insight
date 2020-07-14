@@ -10,6 +10,7 @@ import static com.meemaw.session.sessions.datasource.pg.SessionTable.IP_ADDRESS;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.ORGANIZATION_ID;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.USER_AGENT;
+import static org.jooq.impl.DSL.condition;
 
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
@@ -47,7 +48,13 @@ public class PgSessionDatasource implements SessionDatasource {
         SQLContext.POSTGRES
             .select(ID)
             .from(TABLE)
-            .where(ORGANIZATION_ID.eq(organizationId).and(DEVICE_ID.eq(deviceId)));
+            .where(
+                ORGANIZATION_ID
+                    .eq(organizationId)
+                    .and(DEVICE_ID.eq(deviceId))
+                    .and(condition("created_at > now() - INTERVAL '30 min'")))
+            .orderBy(CREATED_AT.desc())
+            .limit(1);
 
     return pgPool
         .preparedQuery(query.getSQL(ParamType.NAMED))

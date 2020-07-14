@@ -48,6 +48,7 @@ public class PageService {
 
     // unrecognized device; start a new session
     if (!deviceId.equals(page.getDeviceId())) {
+      log.debug("Unrecognized device -- starting a new session");
       return createPageAndNewSession(pageId, deviceId, userAgent, ipAddress, page);
     }
 
@@ -58,13 +59,14 @@ public class PageService {
         .produceUni(
             maybeSessionId -> {
               if (maybeSessionId.isEmpty()) {
-                log.warn("Failed to link to an existing session");
+                log.debug("Failed to link to an existing session -- starting new session");
                 return createPageAndNewSession(pageId, deviceId, userAgent, ipAddress, page);
               }
               return pageDatasource.insertPage(pageId, maybeSessionId.get(), deviceId, page);
             });
   }
 
+  @Traced
   private Uni<PageIdentity> createPageAndNewSession(
       UUID pageId, UUID deviceId, String userAgent, String ipAddress, CreatePageDTO page) {
     UUID sessionId = UUID.randomUUID();
