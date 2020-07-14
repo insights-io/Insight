@@ -4,11 +4,11 @@ kind: Service
 metadata:
   name: beacon-api
 spec:
+  type: ClusterIP
   selector:
     app: beacon-api
   ports:
     - name: http
-      port: 8080
+      port: 80
       protocol: TCP
       targetPort: 8080
-  type: ClusterIP
