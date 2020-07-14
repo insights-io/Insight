@@ -15446,10 +15446,10 @@ platform@1.3.3:
   resolved "https://registry.yarnpkg.com/platform/-/platform-1.3.3.tgz#646c77011899870b6a0903e75e997e8e51da7461"
   integrity sha1-ZGx3ARiZhwtqCQPnXpl+jlHadGE=
 
-playwright@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.2.0.tgz#9a25c050183a8f83994d4bbd0b7555c799d5866b"
-  integrity sha512-r8780weMaCxa7yG5pMudf3T+s8NWa+2aG+vo7DGjDkO013WxUNpmRMe6L6LYOU9YpAUUTDHsRDur1HLKQBov3A==
+playwright@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.2.1.tgz#9c6758668ff9776b162f8174a2d972265540cd5b"
+  integrity sha512-wD5WZ3rNvmXq+W4qhwykrm8J7VGYsjMjdC2WjZb4B4r7j/IFzq6EhliD+ZBIl+HOymFNsTwPZYhXy7IqeC2+YQ==
   dependencies:
     commander "^5.1.0"
     debug "^4.1.1"
