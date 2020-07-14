@@ -36,6 +36,7 @@ const nextConfig = {
   experimental: { optionalCatchAll: true },
   pwa: {
     dest: 'public',
+    disable: true,
   },
 };
 

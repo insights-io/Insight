@@ -47,6 +47,8 @@ spec:
                   key: password
             - name: POSTGRES_HOST
               value: postgres-postgresql
+            - name: ELASTICSEARCH_HOSTS
+              value: elasticsearch-master:9200
           ports:
             - containerPort: 8080
               name: http
@@ -71,7 +73,7 @@ spec:
             successThreshold: 1
             failureThreshold: 10
       tolerations:
-        - key: "arm"
-          operator: "Equal"
-          value: "true"
-          effect: "NoExecute"
+        - key: 'arm'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoExecute'
