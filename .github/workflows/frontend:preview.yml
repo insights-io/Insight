@@ -59,4 +59,4 @@ jobs:
           minBestPracticesScore: '80'
           minPerformanceScore: '80'
           minSeoScore: '80'
-          minProgressiveWebAppScore: '50'
+          minProgressiveWebAppScore: '0'
