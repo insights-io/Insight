@@ -34,7 +34,7 @@ spec:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
             - name: SESSION_SERVICE_BASE_URL
-              value: http://session-api:8080
+              value: http://session-api
           ports:
             - containerPort: 8080
               name: http
