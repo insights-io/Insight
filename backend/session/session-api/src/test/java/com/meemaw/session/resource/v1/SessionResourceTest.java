@@ -1,5 +1,7 @@
 package com.meemaw.session.resource.v1;
 
+import static com.meemaw.session.sessions.datasource.pg.SessionTable.FIELDS;
+import static com.meemaw.session.sessions.datasource.pg.SessionTable.TABLE;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -12,18 +14,27 @@ import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.response.DataResponse;
+import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.Tuple;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import javax.inject.Inject;
+import org.jooq.Query;
+import org.jooq.conf.ParamType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +50,7 @@ public class SessionResourceTest {
       String.join("/", SESSION_PATH_TEMPLATE, "pages", "%s");
 
   @Inject ObjectMapper objectMapper;
+  @Inject PgPool pgPool;
 
   @Test
   public void post_page_should_link_sessions_when_matching_device_id()
@@ -117,9 +129,9 @@ public class SessionResourceTest {
             .response()
             .as(new TypeRef<>() {});
 
+    assertNotEquals(dataResponse.getData().getPageId(), pageId);
     assertEquals(dataResponse.getData().getDeviceId(), deviceId);
     assertEquals(dataResponse.getData().getSessionId(), sessionId);
-    assertNotEquals(dataResponse.getData().getPageId(), pageId);
 
     // GET sessions again to confirm no new sessions has been created
     given()
@@ -196,5 +208,56 @@ public class SessionResourceTest {
         .then()
         .statusCode(200)
         .body("data.size()", is(2));
+  }
+
+  @Test
+  public void post_page_should_create_new_session_when_no_session_timeout()
+      throws IOException, URISyntaxException {
+    ObjectNode payload =
+        objectMapper.readValue(
+            Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI())),
+            ObjectNode.class);
+
+    UUID deviceId = UUID.randomUUID();
+    UUID sessionId = UUID.randomUUID();
+    String organizationId = payload.get("organizationId").textValue();
+
+    payload.put("deviceId", deviceId.toString());
+
+    Query query =
+        SQLContext.POSTGRES
+            .insertInto(TABLE)
+            .columns(FIELDS)
+            .values(
+                sessionId,
+                deviceId,
+                organizationId,
+                "127.0.0.1",
+                "userAgent",
+                OffsetDateTime.ofInstant(
+                    Instant.now().minus(31, ChronoUnit.MINUTES), ZoneOffset.UTC))
+            .returning(FIELDS);
+
+    pgPool
+        .preparedQuery(query.getSQL(ParamType.NAMED))
+        .execute(Tuple.tuple(query.getBindValues()))
+        .await()
+        .indefinitely();
+
+    // page and session are created
+    DataResponse<PageIdentity> dataResponse =
+        given()
+            .when()
+            .contentType(ContentType.JSON)
+            .body(payload)
+            .post(SessionResource.PATH)
+            .then()
+            .statusCode(200)
+            .extract()
+            .response()
+            .as(new TypeRef<>() {});
+
+    assertNotEquals(dataResponse.getData().getSessionId(), sessionId);
+    assertEquals(dataResponse.getData().getDeviceId(), deviceId);
   }
 }
