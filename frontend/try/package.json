@@ -35,7 +35,7 @@
   "dependencies": {
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
-    "baseui": "9.85.2",
+    "baseui": "9.85.3",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
