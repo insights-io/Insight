@@ -5,6 +5,8 @@ import { Block } from 'baseui/block';
 import { Input } from 'baseui/input';
 import { StyleObject } from 'styletron-react';
 import VerticalAligned from 'shared/components/VerticalAligned';
+import Divider from 'shared/components/Divider';
+import { StyledSpinnerNext } from 'baseui/spinner';
 
 import {
   ConsoleEventDTO,
@@ -17,10 +19,11 @@ import ConsoleErrorEvent from './ConsoleErrorEvent';
 
 type Props = {
   events: ConsoleEventDTO[];
+  loading: boolean;
   style?: StyleObject;
 };
 
-const Console = ({ events, style }: Props) => {
+const Console = ({ events, loading, style }: Props) => {
   const [css, theme] = useStyletron();
   const [filterText, setFilterText] = useState('');
 
@@ -42,6 +45,9 @@ const Console = ({ events, style }: Props) => {
         backgroundColor: '#d3d3d3',
         height: '100%',
         fontSize: '0.8rem',
+        overflow: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
       })}
     >
       <Block
@@ -58,36 +64,45 @@ const Console = ({ events, style }: Props) => {
           onChange={(event) => setFilterText(event.currentTarget.value)}
         />
       </Block>
-      <Block height="100%" overflow="scroll">
-        {filteredEvents.map((event) => {
-          const { backgroundColor, color } = getEventStyling(event);
-          const IconComponent = getEventIcon(event);
 
-          return (
-            <Flex
-              key={JSON.stringify(event)}
-              $style={{
-                backgroundColor,
-                padding: theme.sizing.scale100,
-              }}
-            >
-              {IconComponent && (
-                <VerticalAligned $style={{ maxHeight: '20px' }}>
-                  <IconComponent color={color} />
-                </VerticalAligned>
-              )}
-              <Block
-                width="100%"
-                marginLeft={theme.sizing.scale300}
-                marginRight={theme.sizing.scale300}
-                color={color}
-                $style={{ wordBreak: 'break-word' }}
+      <Divider marginTop={0} marginBottom={0} />
+
+      <Block height="100%" overflow="auto">
+        {loading ? (
+          <Block display="flex" justifyContent="center">
+            <StyledSpinnerNext />
+          </Block>
+        ) : (
+          filteredEvents.map((event) => {
+            const { backgroundColor, color } = getEventStyling(event);
+            const IconComponent = getEventIcon(event);
+
+            return (
+              <Flex
+                key={JSON.stringify(event)}
+                $style={{
+                  backgroundColor,
+                  padding: theme.sizing.scale100,
+                }}
               >
-                {renderEvent(event)}
-              </Block>
-            </Flex>
-          );
-        })}
+                {IconComponent && (
+                  <VerticalAligned $style={{ maxHeight: '20px' }}>
+                    <IconComponent color={color} />
+                  </VerticalAligned>
+                )}
+                <Block
+                  width="100%"
+                  marginLeft={theme.sizing.scale300}
+                  marginRight={theme.sizing.scale300}
+                  color={color}
+                  $style={{ wordBreak: 'break-word' }}
+                >
+                  {renderEvent(event)}
+                </Block>
+              </Flex>
+            );
+          })
+        )}
       </Block>
     </section>
   );

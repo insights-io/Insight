@@ -8,7 +8,15 @@ import { Base } from './SessionPage.stories';
 describe('<SessionPage />', () => {
   it('Should render log events in the console', async () => {
     Base.story.setupMocks(sandbox);
-    const { findByText, queryByText, getByPlaceholderText } = render(<Base />);
+    const { findByText, queryByText, getByPlaceholderText, container } = render(
+      <Base />
+    );
+
+    const toggleDevToolsIcon = container.querySelector(
+      'svg[title="Arrow Left"]'
+    ) as SVGElement;
+
+    userEvent.click(toggleDevToolsIcon);
 
     await findByText('[Fast Refresh] done');
 

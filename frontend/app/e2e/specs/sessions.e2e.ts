@@ -3,6 +3,7 @@ import { queryByText, queryByPlaceholderText } from '@testing-library/testcafe';
 
 import { login } from '../utils';
 import config from '../config';
+import { Selector } from 'testcafe';
 
 fixture('/sessions').page(`${config.appBaseURL}/login`);
 
@@ -34,6 +35,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   await t
+    .click(Selector('svg[title="Arrow Left"]'))
     .expect(queryByText('console.log').visible)
     .ok('console.log should be visible in the console')
     .expect(queryByText('console.info').visible)

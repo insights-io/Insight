@@ -18,6 +18,11 @@ export const Base = () => {
         ERROR_EVENTS.ERROR,
         ERROR_EVENTS.SYNTAX_ERROR,
       ]}
+      loading={false}
     />
   );
+};
+
+export const Loading = () => {
+  return <Console events={[]} loading={true} />;
 };
