@@ -10,19 +10,21 @@ type Props = {
 
 const SessionDetails = ({ session }: Props) => {
   return (
-    <Block display="flex" height="100%">
-      <Block
-        display="flex"
-        flexDirection="column"
-        overflow="hidden"
-        width="100%"
-      >
-        <H3>Session {session.id}</H3>
-        <div>Device ID: {session.deviceId}</div>
-        <div>IP Address: {session.ipAddress}</div>
+    <>
+      <Block display="flex" height="100%">
+        <Block
+          display="flex"
+          flexDirection="column"
+          overflow="hidden"
+          width="100%"
+        >
+          <H3>Session {session.id}</H3>
+          <div>Device ID: {session.deviceId}</div>
+          <div>IP Address: {session.ipAddress}</div>
+        </Block>
       </Block>
       <DevTools sessionId={session.id} />
-    </Block>
+    </>
   );
 };
 

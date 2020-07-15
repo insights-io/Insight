@@ -4,4 +4,4 @@ const NetworkTab = () => {
   return <div>TODO</div>;
 };
 
-export default NetworkTab;
+export default React.memo(NetworkTab);

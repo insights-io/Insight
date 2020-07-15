@@ -67,12 +67,8 @@ const DevTools = ({ sessionId }: Props) => {
             setActiveKey(activeKey);
           }}
           overrides={{
-            TabBar: {
-              style: {
-                paddingLeft: 0,
-                paddingRight: 0,
-              },
-            },
+            Root: { style: { width: '100%', background: '#d3d3d3' } },
+            TabBar: { style: { paddingLeft: 0, paddingRight: 0 } },
             TabContent: {
               style: {
                 width: '100%',
@@ -84,7 +80,6 @@ const DevTools = ({ sessionId }: Props) => {
                 paddingBottom: 0,
               },
             },
-            Root: { style: { width: '100%', background: '#d3d3d3' } },
           }}
         >
           <Tab

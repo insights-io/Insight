@@ -6,10 +6,9 @@ import { StyleObject } from 'styletron-react';
 
 type Props = {
   sessionId: string;
-  style?: StyleObject;
 };
 
-const ConsoleContainer = ({ sessionId, style }: Props) => {
+const ConsoleContainer = ({ sessionId }: Props) => {
   const { data } = useSWR(
     `sessions/${sessionId}/events/search`,
     () => SessionApi.events.get(sessionId),
@@ -19,9 +18,7 @@ const ConsoleContainer = ({ sessionId, style }: Props) => {
   const loading = data === undefined;
   const events = (data || []) as ConsoleEventDTO[];
 
-  return (
-    <Console events={events.slice(0, 10)} style={style} loading={loading} />
-  );
+  return <Console events={events.slice(0, 50)} loading={loading} />;
 };
 
-export default ConsoleContainer;
+export default React.memo(ConsoleContainer);
