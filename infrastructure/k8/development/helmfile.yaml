@@ -25,6 +25,22 @@ releases:
     namespace: {{ .Values.appNamespace }}
     values:
       - postgres.yaml
+  - name: metabase
+    chart: stable/metabase
+    namespace: {{ .Values.appNamespace }}
+    values:
+      - metabase.yaml
+      - ingress:
+          enabled: true
+          tls:
+            - hosts:
+              - "metabase.{{ .Values.infraDomain }}"
+              secretName: metabase-tls
+          hosts:
+            - "metabase.{{ .Values.infraDomain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotations | indent 12 }}
+
   - name: kafka
     chart: bitnami/kafka
     namespace: {{ .Values.appNamespace }}
