@@ -42,7 +42,7 @@ jobs:
       - name: install and unit test
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/app test --coverage
+          yarn workspace @insight/app test --coverage --testTimeout=15000
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

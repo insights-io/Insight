@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { queryByText, queryByPlaceholderText } from '@testing-library/testcafe';
+import { Selector } from 'testcafe';
 
 import { login } from '../utils';
 import config from '../config';
@@ -14,11 +15,13 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
 
   const lastSession = queryByText('less than 5 seconds ago');
   const lastSessionListItem = lastSession.parent().parent().parent().parent();
+  const showDevToolsIcon = Selector('svg[title="Arrow Left"]');
 
   await t
     .expect(lastSession.visible)
     .ok('Newly created session is dispalyed')
     .click(lastSessionListItem)
+    .click(showDevToolsIcon)
     .expect(queryByPlaceholderText('Filter').visible)
     .ok('Navigates to session details page');
 
@@ -34,6 +37,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   await t
+    .click(showDevToolsIcon)
     .expect(queryByText('console.log').visible)
     .ok('console.log should be visible in the console')
     .expect(queryByText('console.info').visible)
