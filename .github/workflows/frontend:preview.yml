@@ -57,6 +57,6 @@ jobs:
           lighthouseCheckResults: ${{ steps.lighthouseCheck.outputs.lighthouseCheckResults }}
           minAccessibilityScore: '80'
           minBestPracticesScore: '80'
-          minPerformanceScore: '80'
           minSeoScore: '80'
-          minProgressiveWebAppScore: '0'
+          minPerformanceScore: '50' # Performance might be flaky on lambdas
+          minProgressiveWebAppScore: '0' # PWA disabled for now
