@@ -1,8 +1,9 @@
 import React from 'react';
-import DevTools from './DevTools';
 import { configureStory } from '@insight/storybook';
 import { SessionApi } from 'api';
 import { CONSOLE_EVENTS, ERROR_EVENTS } from 'test/data';
+
+import DevTools from './DevTools';
 
 export default {
   title: 'sessions|containers/DevTools',

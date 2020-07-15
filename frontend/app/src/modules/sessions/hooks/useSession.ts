@@ -14,7 +14,7 @@ const useSession = (sessionId: string, initialData: Session) => {
 
   useEffect(() => {
     mutate(initialData);
-  }, [initialData]);
+  }, [initialData, mutate]);
 
   return { session: data || initialData };
 };
