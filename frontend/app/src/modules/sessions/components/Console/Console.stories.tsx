@@ -24,5 +24,5 @@ export const Base = () => {
 };
 
 export const Loading = () => {
-  return <Console events={[]} loading={true} />;
+  return <Console events={[]} loading />;
 };

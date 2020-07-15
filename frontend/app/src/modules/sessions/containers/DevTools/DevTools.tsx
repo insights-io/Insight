@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Tabs, Tab } from 'baseui/tabs';
 import { Drawer } from 'baseui/drawer';
 import { ArrowLeft } from 'baseui/icon';
-
 import dynamic from 'next/dynamic';
 import { Button, SIZE, SHAPE } from 'baseui/button';
 import { useStyletron } from 'baseui';
@@ -63,9 +62,7 @@ const DevTools = ({ sessionId }: Props) => {
         <Tabs
           renderAll={false}
           activeKey={activeKey}
-          onChange={({ activeKey }) => {
-            setActiveKey(activeKey);
-          }}
+          onChange={(args) => setActiveKey(args.activeKey)}
           overrides={{
             Root: { style: { width: '100%', background: '#d3d3d3' } },
             TabBar: { style: { paddingLeft: 0, paddingRight: 0 } },

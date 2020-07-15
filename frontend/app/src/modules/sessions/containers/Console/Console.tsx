@@ -2,7 +2,6 @@ import React from 'react';
 import Console, { ConsoleEventDTO } from 'modules/sessions/components/Console';
 import useSWR from 'swr';
 import { SessionApi } from 'api';
-import { StyleObject } from 'styletron-react';
 
 type Props = {
   sessionId: string;
