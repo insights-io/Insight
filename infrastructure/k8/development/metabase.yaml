@@ -1,0 +1,6 @@
+database:
+  type: postgres
+  host: postgres-postgresql
+  dbname: metabase
+  username: postgres
+  password: postgres
