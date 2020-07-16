@@ -4,7 +4,6 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 
 import com.meemaw.auth.sso.model.SsoSession;
@@ -24,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -104,19 +102,15 @@ public class EventsResourceImplTest {
 
   @Test
   public void events_search_should_return_all_events() {
-    await()
-        .atMost(5, TimeUnit.SECONDS)
-        .untilAsserted(
-            () ->
-                given()
-                    .when()
-                    .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-                    .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
-                    .then()
-                    .statusCode(200)
-                    .body(
-                        sameJson(
-                            "{\"data\":[{\"name\":\"http://localhost:8081/v1/page\",\"entryType\":\"resource\",\"startTime\":3963.6150000151247,\"duration\":29.37000000383705,\"t\":34,\"e\":3},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":1},{\"clientX\":1167,\"clientY\":732,\"node\":{\":class\":\"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\",\":type\":\"submit\",\":data-baseweb\":\"button\",\"type\":\"<BUTTON\"},\"t\":1306,\"e\":4},{\"level\":\"error\",\"arguments\":[\"HAHA\"],\"t\":10812,\"e\":9}]}")));
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":[{\"clientX\":1167,\"clientY\":732,\"node\":{\":class\":\"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\",\":type\":\"submit\",\":data-baseweb\":\"button\",\"type\":\"<BUTTON\"},\"t\":1306,\"e\":4},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":1},{\"method\":\"POST\",\"url\":\"http://localhost:8080\",\"status\":200,\"type\":\"cors\",\"t\":22000,\"e\":11},{\"name\":\"http://localhost:8081/v1/page\",\"entryType\":\"resource\",\"startTime\":3963.6150000151247,\"duration\":29.37000000383705,\"t\":34,\"e\":3},{\"level\":\"error\",\"arguments\":[\"HAHA\"],\"t\":10812,\"e\":9}]}"));
   }
 
   @Test
