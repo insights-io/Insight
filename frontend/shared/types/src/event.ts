@@ -13,6 +13,7 @@ export const enum EventType {
   LOAD = 8,
   LOG = 9,
   ERROR = 10,
+  FETCH = 11,
 }
 
 export type AbstractBeaconEvent = {

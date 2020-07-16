@@ -15,8 +15,7 @@ import { CreatePageResponse, EventType } from '@insight/types';
 import Identity from 'identity';
 import { MILLIS_IN_SECOND } from 'time';
 import type { InsightWindow, Enqueue } from 'types';
-
-import { proxyConsoleLog } from './console';
+import { instrumentGlobals } from 'instrument';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -36,21 +35,21 @@ declare global {
   );
   const UPLOAD_INTERVAL_MILLIS = MILLIS_IN_SECOND * 10;
 
-  /*
   const observer = new PerformanceObserver((performanceEntryList) => {
     performanceEntryList.getEntries().forEach((entry) => {
-      eventQueue.enqueue(EventType.PERFORMANCE, [
+      const performanceArgs = [
         entry.name,
         entry.entryType,
         entry.startTime,
         entry.duration,
-      ]);
+      ];
+
+      eventQueue.enqueue(EventType.PERFORMANCE, performanceArgs);
     });
   });
 
-  const entryTypes = ['navigation', 'resource', 'measure', 'mark'];
+  const entryTypes = ['resource'];
   observer.observe({ entryTypes });
-  */
 
   const enqueue: Enqueue = (eventType, args, eventName, event) => {
     eventQueue.enqueue(eventType, args, event);
@@ -116,12 +115,12 @@ declare global {
     );
   };
 
-  proxyConsoleLog(enqueue);
   window.addEventListener('popstate', onNavigationChange);
   // window.addEventListener('resize', onResize);
   window.addEventListener('load', onLoad);
   window.addEventListener('click', onClick);
   window.addEventListener('error', onError);
+  instrumentGlobals(enqueue);
   // window.addEventListener('mousemove', onMouseMove);
   // window.addEventListener('mousedown', onMouseDown);
   // window.addEventListener('mouseup', onMouseUp);

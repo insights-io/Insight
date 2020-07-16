@@ -50,7 +50,7 @@ export interface RequestResponseTransport extends BaseTransport {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type GlobalObject = Window | NodeJS.Global | {};
+export type GlobalObject = Window | (NodeJS.Global & typeof globalThis) | {};
 
 export function getGlobalObject(): GlobalObject {
   return typeof window !== 'undefined'

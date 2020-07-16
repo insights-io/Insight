@@ -79,9 +79,11 @@ describe('tracking script', () => {
 
       await setupPage(page);
 
-      const pageResponse = await page.waitForResponse(
-        (resp: Response) => resp.url() === `${sessionApiBaseURL}/v1/sessions`
-      );
+      console.log('Waiting for session api response...');
+      const createSessionURI = `${sessionApiBaseURL}/v1/sessions`;
+      const pageResponse = await page.waitForResponse((resp: Response) => {
+        return resp.url() === createSessionURI;
+      });
 
       const pageRequest = pageResponse.request();
       const pageRequestHeaders = responseRequestHeaders(pageResponse);
@@ -113,15 +115,30 @@ describe('tracking script', () => {
       await page.click('button[data-testid="first-button"]');
 
       console.log('Waiting for beacon api response...');
-      let beaconResponse = await page.waitForResponse(
-        (resp: Response) => resp.url() === beaconBeatURI
-      );
+      let beaconResponse = await page.waitForResponse((resp: Response) => {
+        return resp.url() === beaconBeatURI;
+      });
 
       const beaconRequestHeaders = responseRequestHeaders(beaconResponse);
 
       let beaconRequest = beaconResponse.request();
       let postData = JSON.parse(beaconRequest.postData() || '') as EventData;
-      const [mouseMoveEvent] = postData.e;
+      const [
+        sessionCreateFetchEvent,
+        sessionCreatePerformanceResourceEvent,
+        mouseMoveEvent,
+      ] = postData.e;
+
+      expect(sessionCreateFetchEvent.a).toEqual([
+        'POST',
+        createSessionURI,
+        200,
+        'cors',
+      ]);
+      expect(sessionCreatePerformanceResourceEvent.a.slice(0, 2)).toEqual([
+        createSessionURI,
+        'resource',
+      ]);
       expect(mouseMoveEvent.a).toEqual([
         61,
         60,
@@ -161,12 +178,24 @@ describe('tracking script', () => {
       expect(beaconResponse.status()).toEqual(204);
 
       const [
+        beaconBeatFetchEvent,
+        beaconBeatPerformanceResourceEvent,
         consoleInfoEvent,
         consoleErrorEvent,
         errorEvent,
         syntaxErrorEvent,
       ] = postData.e;
 
+      expect(beaconBeatFetchEvent.a).toEqual([
+        'POST',
+        beaconBeatURI,
+        204,
+        'cors',
+      ]);
+      expect(beaconBeatPerformanceResourceEvent.a.slice(0, 2)).toEqual([
+        beaconBeatURI,
+        'resource',
+      ]);
       expect(consoleInfoEvent.a).toEqual(['info', 'Do some console.info!']);
       expect(consoleErrorEvent.a).toEqual(['error', 'Do some console.error!']);
       expect(errorEvent.a[0]).toEqual('simulated error');
