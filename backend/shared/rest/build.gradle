@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api 'io.quarkus:quarkus-hibernate-validator'
-    api 'org.apache.commons:commons-lang3:3.10'
+    api 'org.apache.commons:commons-lang3:3.11'
 
     testImplementation project(":shared:testing-utils")
 }
