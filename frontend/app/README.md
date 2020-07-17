@@ -12,5 +12,6 @@ If you also want to use the locally build bootstrap script, you can do the follo
 
 ```sh
 yarn workspace @insight/browser-bootstrap serve
+yarn workspace @insight/browser-tracking serve
 BOOTSTRAP_SCRIPT=http://localhost:5001/localhost.insight.js yarn dev
 ```

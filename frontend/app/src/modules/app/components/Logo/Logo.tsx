@@ -12,8 +12,8 @@ const Logo = () => {
           shape={SHAPE.round}
           size="mini"
           $style={{
-            ':hover': { background: theme.colors.black },
-            ':focus': { background: theme.colors.black },
+            ':hover': { backgroundColor: theme.colors.black },
+            ':focus': { backgroundColor: theme.colors.black },
           }}
         >
           <img

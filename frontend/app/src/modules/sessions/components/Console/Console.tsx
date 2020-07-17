@@ -42,12 +42,13 @@ const Console = ({ events, loading, style }: Props) => {
     <section
       className={css({
         ...style,
-        backgroundColor: '#d3d3d3',
+        background: '#d3d3d3',
         height: '100%',
         fontSize: '0.8rem',
         overflow: 'auto',
         display: 'flex',
         flexDirection: 'column',
+        width: '100%',
       })}
     >
       <Block
@@ -70,7 +71,7 @@ const Console = ({ events, loading, style }: Props) => {
       <Block height="100%" overflow="auto">
         {loading ? (
           <Block display="flex" justifyContent="center">
-            <StyledSpinnerNext />
+            <StyledSpinnerNext $style={{ marginTop: theme.sizing.scale500 }} />
           </Block>
         ) : (
           filteredEvents.map((event) => {
