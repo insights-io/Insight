@@ -91,7 +91,11 @@ export const instrumentConsole = (enqueue: Enqueue): Console => {
 
     console[typedLogLevel] = (...args: never[]) => {
       originalConsoleLog(...args);
-      enqueue(EventType.LOG, [typedLogLevel, ...args], `[console.${logLevel}]`);
+      enqueue(
+        EventType.LOG,
+        [typedLogLevel, JSON.stringify(args)],
+        `[console.${logLevel}]`
+      );
     };
   });
 

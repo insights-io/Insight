@@ -40,6 +40,7 @@ const nextConfig = {
   },
 };
 
+// eslint-disable-next-line no-console
 console.log('Next config', nextConfig);
 
 module.exports = withServiceProxy(withBundleAnalyzer(withPWA(nextConfig)));

@@ -155,6 +155,8 @@ describe('tracking script', () => {
       await page.evaluate(() => {
         console.info('Do some console.info!');
         console.error('Do some console.error!');
+        console.debug({ message: 'Nested' });
+        console.warn([{ message: 'Nested' }], 'random');
 
         // simulate Error thrown in browser (we cant just throw here as this will kill Playwright process)
         const errorElem = document.createElement('script');
@@ -182,6 +184,8 @@ describe('tracking script', () => {
         beaconBeatPerformanceResourceEvent,
         consoleInfoEvent,
         consoleErrorEvent,
+        consoleDebugNestedEvent,
+        consoleWarnNestedEvent,
         errorEvent,
         syntaxErrorEvent,
       ] = postData.e;
@@ -196,8 +200,20 @@ describe('tracking script', () => {
         beaconBeatURI,
         'resource',
       ]);
-      expect(consoleInfoEvent.a).toEqual(['info', 'Do some console.info!']);
-      expect(consoleErrorEvent.a).toEqual(['error', 'Do some console.error!']);
+      expect(consoleInfoEvent.a).toEqual(['info', '["Do some console.info!"]']);
+      expect(consoleErrorEvent.a).toEqual([
+        'error',
+        '["Do some console.error!"]',
+      ]);
+      expect(consoleDebugNestedEvent.a).toEqual([
+        'debug',
+        '[{"message":"Nested"}]',
+      ]);
+      expect(consoleWarnNestedEvent.a).toEqual([
+        'warn',
+        '[[{"message":"Nested"}],"random"]',
+      ]);
+
       expect(errorEvent.a[0]).toEqual('simulated error');
       expect(errorEvent.a[1]).toEqual('Error');
       expect(

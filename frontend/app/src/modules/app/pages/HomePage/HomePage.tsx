@@ -35,7 +35,7 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
       {hasSessions ? (
         <>
           <H5 margin={0}>Sessions</H5>
-          <ul className={css({ paddingLeft: 0 })}>
+          <ul className={css({ paddingLeft: 0, overflow: 'auto' })}>
             {sessions.map((session) => {
               const createdAtText = formatDistanceToNow(session.createdAt, {
                 includeSeconds: true,

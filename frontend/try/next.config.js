@@ -27,6 +27,7 @@ const nextConfig = {
   experimental: { optionalCatchAll: true },
 };
 
+// eslint-disable-next-line no-console
 console.log('Next config', nextConfig);
 
 module.exports = withServiceProxy(withBundleAnalyzer(nextConfig));

@@ -22,6 +22,17 @@ const DevTools = ({ sessionId }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [_css, theme] = useStyletron();
 
+  const tabOverrides = {
+    Tab: {
+      style: {
+        marginLeft: 0,
+        marginRight: 0,
+        paddingLeft: theme.sizing.scale600,
+        paddingRight: theme.sizing.scale600,
+      },
+    },
+  };
+
   return (
     <>
       {!isOpen && (
@@ -79,35 +90,11 @@ const DevTools = ({ sessionId }: Props) => {
             },
           }}
         >
-          <Tab
-            title="Console"
-            overrides={{
-              Tab: {
-                style: {
-                  marginLeft: 0,
-                  marginRight: 0,
-                  paddingLeft: theme.sizing.scale600,
-                  paddingRight: theme.sizing.scale600,
-                },
-              },
-            }}
-          >
+          <Tab title="Console" overrides={tabOverrides}>
             <ConsoleTab sessionId={sessionId} />
           </Tab>
-          <Tab
-            title="Network"
-            overrides={{
-              Tab: {
-                style: {
-                  marginLeft: 0,
-                  marginRight: 0,
-                  paddingLeft: theme.sizing.scale600,
-                  paddingRight: theme.sizing.scale600,
-                },
-              },
-            }}
-          >
-            <NetworkTab />
+          <Tab title="Network" overrides={tabOverrides}>
+            <NetworkTab sessionId={sessionId} />
           </Tab>
         </Tabs>
       </Drawer>
@@ -115,4 +102,4 @@ const DevTools = ({ sessionId }: Props) => {
   );
 };
 
-export default DevTools;
+export default React.memo(DevTools);

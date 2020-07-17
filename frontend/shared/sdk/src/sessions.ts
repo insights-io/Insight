@@ -6,6 +6,7 @@ import {
   BrowserEventDTO,
 } from '@insight/types';
 
+import { querystring, QueryParam } from './util';
 import { RequestOptions } from './types';
 
 export const mapSession = (sessionDTO: SessionDTO | Session): Session => {
@@ -40,19 +41,28 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
     },
   };
 
+  type SearchEventsRequestOptions = Omit<RequestOptions, 'searchParams'> & {
+    searchParams?: {
+      'event.e'?: QueryParam;
+      limit?: number;
+    };
+  };
+
   const events = {
-    get: (
+    search: (
       sessionId: string,
-      { baseURL = sessionApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseURL = sessionApiBaseURL,
+        searchParams,
+        ...rest
+      }: SearchEventsRequestOptions = {}
     ) => {
+      const query = decodeURIComponent(querystring(searchParams));
       return ky
-        .get(
-          `${baseURL}/v1/sessions/${sessionId}/events/search?limit=10000&event.e=gte:9&event.e=lte:10`,
-          {
-            credentials: 'include',
-            ...rest,
-          }
-        )
+        .get(`${baseURL}/v1/sessions/${sessionId}/events/search${query}`, {
+          credentials: 'include',
+          ...rest,
+        })
         .json<DataResponse<BrowserEventDTO[]>>()
         .then((dataResponse) => dataResponse.data);
     },
