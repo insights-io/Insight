@@ -36,11 +36,19 @@ const DEBUG_LOG: BrowserLogEventDTO = {
   t: 1001,
 };
 
+const INFO_NESTED_LOG: BrowserLogEventDTO = {
+  e: 9,
+  level: 'info',
+  arguments: ['Debug message', [{ message: 'Nested' }]],
+  t: 1001,
+};
+
 export const CONSOLE_EVENTS = {
   STORYBOOK_WARN,
   FAST_REFRESH_LOG,
   ERROR_LOG,
   DEBUG_LOG,
+  INFO_NESTED_LOG,
 } as const;
 
 const ERROR: BrowserErrorEventDTO = {

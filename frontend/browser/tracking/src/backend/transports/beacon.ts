@@ -1,6 +1,7 @@
 import { EventData } from 'event';
+import { GlobalObject } from 'context/Context';
 
-import { BaseTransport, Status, GlobalObject } from './base';
+import { BaseTransport, Status } from './base';
 
 /** `sendBeacon` based transport */
 export class BeaconTransport implements BaseTransport {

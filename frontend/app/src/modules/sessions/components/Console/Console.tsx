@@ -1,3 +1,4 @@
+/* eslint-disable lodash/prefer-lodash-typecheck */
 import React, { useState, useMemo } from 'react';
 import { useStyletron } from 'baseui';
 import Flex from 'shared/components/Flex';
@@ -35,7 +36,14 @@ const Console = ({ events, loading, style }: Props) => {
     if (isErrorEvent(event)) {
       return <ConsoleErrorEvent event={event} />;
     }
-    return <span>{event.arguments.join(' ')}</span>;
+    return (
+      <span>
+        {event.arguments
+          // TODO: smarter rendering of objects
+          .map((v) => (typeof v === 'object' ? JSON.stringify(v) : v))
+          .join(' ')}
+      </span>
+    );
   };
 
   return (

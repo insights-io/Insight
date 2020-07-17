@@ -200,18 +200,16 @@ describe('tracking script', () => {
         beaconBeatURI,
         'resource',
       ]);
-      expect(consoleInfoEvent.a).toEqual(['info', '["Do some console.info!"]']);
-      expect(consoleErrorEvent.a).toEqual([
-        'error',
-        '["Do some console.error!"]',
-      ]);
+      expect(consoleInfoEvent.a).toEqual(['info', 'Do some console.info!']);
+      expect(consoleErrorEvent.a).toEqual(['error', 'Do some console.error!']);
       expect(consoleDebugNestedEvent.a).toEqual([
         'debug',
-        '[{"message":"Nested"}]',
+        { message: 'Nested' },
       ]);
       expect(consoleWarnNestedEvent.a).toEqual([
         'warn',
-        '[[{"message":"Nested"}],"random"]',
+        [{ message: 'Nested' }],
+        'random',
       ]);
 
       expect(errorEvent.a[0]).toEqual('simulated error');

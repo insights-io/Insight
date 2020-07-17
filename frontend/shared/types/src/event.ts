@@ -37,7 +37,7 @@ export type LogLevel = 'info' | 'debug' | 'log' | 'error' | 'warn';
 export interface BrowserLogEventDTO extends AbstractBrowserEventDTO {
   e: EventType.LOG;
   level: LogLevel;
-  arguments: string[];
+  arguments: unknown[];
 }
 
 export interface BrowserErrorEventDTO extends AbstractBrowserEventDTO {
