@@ -31,7 +31,8 @@ declare global {
   const backend = new Backend(
     `${process.env.BEACON_API_BASE_URL}`,
     `${process.env.SESSION_API_BASE_URL}`,
-    organizationId
+    organizationId,
+    context
   );
   const UPLOAD_INTERVAL_MILLIS = MILLIS_IN_SECOND * 10;
 

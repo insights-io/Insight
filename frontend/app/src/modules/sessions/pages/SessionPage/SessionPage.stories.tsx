@@ -27,7 +27,7 @@ Base.story = configureStory({
         .stub(SessionApi, 'getSessions')
         .resolves([INSIGHT_SESSION_DTO]),
       getEvents: sandbox
-        .stub(SessionApi.events, 'get')
+        .stub(SessionApi.events, 'search')
         .resolves([
           CONSOLE_EVENTS.FAST_REFRESH_LOG,
           CONSOLE_EVENTS.STORYBOOK_WARN,

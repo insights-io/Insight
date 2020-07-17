@@ -15,7 +15,7 @@ export const Base = () => {
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox
-      .stub(SessionApi.events, 'get')
+      .stub(SessionApi.events, 'search')
       .resolves([
         CONSOLE_EVENTS.FAST_REFRESH_LOG,
         CONSOLE_EVENTS.STORYBOOK_WARN,

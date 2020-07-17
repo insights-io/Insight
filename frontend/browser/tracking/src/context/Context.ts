@@ -3,10 +3,17 @@ export type GlobalObject = Window | (NodeJS.Global & typeof globalThis) | {};
 
 class Context {
   private readonly startTime: number;
+  private seq: number;
 
   constructor() {
     this.startTime = this.getTime();
+    this.seq = 0;
   }
+
+  public incrementAndGetSeq = (): number => {
+    this.seq += 1;
+    return this.seq;
+  };
 
   private getTime = (): number => {
     return new Date().getTime();
