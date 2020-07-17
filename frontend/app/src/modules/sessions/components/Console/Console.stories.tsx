@@ -11,12 +11,8 @@ export const Base = () => {
   return (
     <Console
       events={[
-        CONSOLE_EVENTS.FAST_REFRESH_LOG,
-        CONSOLE_EVENTS.STORYBOOK_WARN,
-        CONSOLE_EVENTS.ERROR_LOG,
-        CONSOLE_EVENTS.DEBUG_LOG,
-        ERROR_EVENTS.ERROR,
-        ERROR_EVENTS.SYNTAX_ERROR,
+        ...Object.values(CONSOLE_EVENTS),
+        ...Object.values(ERROR_EVENTS),
       ]}
       loading={false}
     />

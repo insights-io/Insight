@@ -1,5 +1,10 @@
 /* eslint-disable no-console */
-import { queryByText, queryByPlaceholderText } from '@testing-library/testcafe';
+import {
+  queryByText,
+  queryByPlaceholderText,
+  getByText,
+  queryAllByText,
+} from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
 import { login } from '../utils';
@@ -48,4 +53,20 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
     .ok('console.warn should be visible in the console')
     .expect(queryByText('console.error').visible)
     .ok('console.error should be visible in the console');
+
+  await t
+
+    .click(getByText('Network'))
+    .expect(queryAllByText('POST').visible)
+    .ok('Multiple POST requests')
+    .expect(queryAllByText('GET').visible)
+    .ok('Multiple GET requests')
+    .expect(queryAllByText('sessions').visible)
+    .ok('Should display GET /sessions request')
+    .expect(queryAllByText('login').visible)
+    .ok('Should display /login request')
+    .expect(
+      queryAllByText('search?event.e=gte:9&event.e=lte:10&limit=1000').visible
+    )
+    .ok('Should display console events search request');
 });

@@ -98,6 +98,24 @@ public class AbstractBrowserEventDeserializationTest {
   }
 
   @Test
+  public void fetchBeaconEventDeserializationTest() throws JsonProcessingException {
+    String payload =
+        "{\"t\":520066,\"e\":11,\"a\":[\"POST\",\"http://localhost:8081/v1/beacon/beat?organizationId=test-1&sessionId=912969ea-0f2e-473d-b1b6-473b9787c3e0&deviceId=51c383f8-8654-4f66-a0d6-a6cd73893ec4&pageId=7c6aaeed-b23b-484b-9d5d-4c680b4e2b93\",422,\"cors\"]}";
+    AbstractBrowserEvent<?> deserialized =
+        JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
+    assertEquals(BrowserFetchEvent.class, deserialized.getClass());
+
+    BrowserFetchEvent event = (BrowserFetchEvent) deserialized;
+    assertEquals("POST", event.arguments.getMethod());
+    assertEquals(
+        "http://localhost:8081/v1/beacon/beat?organizationId=test-1&sessionId=912969ea-0f2e-473d-b1b6-473b9787c3e0&deviceId=51c383f8-8654-4f66-a0d6-a6cd73893ec4&pageId=7c6aaeed-b23b-484b-9d5d-4c680b4e2b93",
+        event.arguments.getUrl());
+    assertEquals(422, event.arguments.getStatus());
+    assertEquals("cors", event.arguments.getType());
+    assertEquals(BrowserEventType.FETCH, event.getEventType());
+  }
+
+  @Test
   public void clickNodeBeaconEventDeserializationTest() throws JsonProcessingException {
     String payload =
         "{\"t\": 1306,\"e\": 4,\"a\": [1167, 732, \"<BUTTON\", \":data-baseweb\", \"button\", \":type\", \"submit\", \":class\", \"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\"]}";

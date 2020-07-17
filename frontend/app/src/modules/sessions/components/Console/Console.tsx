@@ -1,3 +1,4 @@
+/* eslint-disable lodash/prefer-lodash-typecheck */
 import React, { useState, useMemo } from 'react';
 import { useStyletron } from 'baseui';
 import Flex from 'shared/components/Flex';
@@ -35,19 +36,27 @@ const Console = ({ events, loading, style }: Props) => {
     if (isErrorEvent(event)) {
       return <ConsoleErrorEvent event={event} />;
     }
-    return <span>{event.arguments.join(' ')}</span>;
+    return (
+      <span>
+        {event.arguments
+          // TODO: smarter rendering of objects
+          .map((v) => (typeof v === 'object' ? JSON.stringify(v) : v))
+          .join(' ')}
+      </span>
+    );
   };
 
   return (
     <section
       className={css({
         ...style,
-        backgroundColor: '#d3d3d3',
+        background: '#d3d3d3',
         height: '100%',
         fontSize: '0.8rem',
         overflow: 'auto',
         display: 'flex',
         flexDirection: 'column',
+        width: '100%',
       })}
     >
       <Block
@@ -70,7 +79,7 @@ const Console = ({ events, loading, style }: Props) => {
       <Block height="100%" overflow="auto">
         {loading ? (
           <Block display="flex" justifyContent="center">
-            <StyledSpinnerNext />
+            <StyledSpinnerNext $style={{ marginTop: theme.sizing.scale500 }} />
           </Block>
         ) : (
           filteredEvents.map((event) => {

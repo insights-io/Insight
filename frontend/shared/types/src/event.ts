@@ -13,6 +13,7 @@ export const enum EventType {
   LOAD = 8,
   LOG = 9,
   ERROR = 10,
+  FETCH = 11,
 }
 
 export type AbstractBeaconEvent = {
@@ -36,7 +37,7 @@ export type LogLevel = 'info' | 'debug' | 'log' | 'error' | 'warn';
 export interface BrowserLogEventDTO extends AbstractBrowserEventDTO {
   e: EventType.LOG;
   level: LogLevel;
-  arguments: string[];
+  arguments: unknown[];
 }
 
 export interface BrowserErrorEventDTO extends AbstractBrowserEventDTO {
@@ -46,4 +47,15 @@ export interface BrowserErrorEventDTO extends AbstractBrowserEventDTO {
   stack: string;
 }
 
-export type BrowserEventDTO = BrowserLogEventDTO | BrowserErrorEventDTO;
+export interface BrowserFetchEventDTO extends AbstractBrowserEventDTO {
+  e: EventType.FETCH;
+  method: string;
+  url: string;
+  status: number;
+  type: string;
+}
+
+export type BrowserEventDTO =
+  | BrowserLogEventDTO
+  | BrowserErrorEventDTO
+  | BrowserFetchEventDTO;

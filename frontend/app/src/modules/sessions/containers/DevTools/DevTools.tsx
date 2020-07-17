@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tabs, Tab } from 'baseui/tabs';
+import { Tabs, Tab, TabOverrides, SharedProps } from 'baseui/tabs';
 import { Drawer } from 'baseui/drawer';
 import { ArrowLeft } from 'baseui/icon';
 import dynamic from 'next/dynamic';
@@ -11,16 +11,26 @@ type Props = {
   sessionId: string;
 };
 
-const NetworkTab = dynamic(() =>
-  import('modules/sessions/components/NetworkTab')
-);
-
 const ConsoleTab = dynamic(() => import('modules/sessions/containers/Console'));
+const NetworkTab = dynamic(() =>
+  import('modules/sessions/containers/NetworkTab')
+);
 
 const DevTools = ({ sessionId }: Props) => {
   const [activeKey, setActiveKey] = useState<string | number>('0');
   const [isOpen, setIsOpen] = useState(false);
   const [_css, theme] = useStyletron();
+
+  const tabOverrides: TabOverrides<SharedProps> = {
+    Tab: {
+      style: {
+        marginLeft: 0,
+        marginRight: 0,
+        paddingLeft: theme.sizing.scale600,
+        paddingRight: theme.sizing.scale600,
+      },
+    },
+  };
 
   return (
     <>
@@ -70,7 +80,7 @@ const DevTools = ({ sessionId }: Props) => {
               style: {
                 width: '100%',
                 display: 'flex',
-                overflow: 'scroll',
+                overflow: 'auto',
                 paddingLeft: 0,
                 paddingTop: 0,
                 paddingRight: 0,
@@ -79,35 +89,11 @@ const DevTools = ({ sessionId }: Props) => {
             },
           }}
         >
-          <Tab
-            title="Console"
-            overrides={{
-              Tab: {
-                style: {
-                  marginLeft: 0,
-                  marginRight: 0,
-                  paddingLeft: theme.sizing.scale600,
-                  paddingRight: theme.sizing.scale600,
-                },
-              },
-            }}
-          >
+          <Tab title="Console" overrides={tabOverrides}>
             <ConsoleTab sessionId={sessionId} />
           </Tab>
-          <Tab
-            title="Network"
-            overrides={{
-              Tab: {
-                style: {
-                  marginLeft: 0,
-                  marginRight: 0,
-                  paddingLeft: theme.sizing.scale600,
-                  paddingRight: theme.sizing.scale600,
-                },
-              },
-            }}
-          >
-            <NetworkTab />
+          <Tab title="Network" overrides={tabOverrides}>
+            <NetworkTab sessionId={sessionId} />
           </Tab>
         </Tabs>
       </Drawer>
@@ -115,4 +101,4 @@ const DevTools = ({ sessionId }: Props) => {
   );
 };
 
-export default DevTools;
+export default React.memo(DevTools);

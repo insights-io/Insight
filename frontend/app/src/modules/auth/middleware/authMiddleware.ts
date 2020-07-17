@@ -33,7 +33,7 @@ export const authenticated = async (
     }
     context.res.writeHead(302, { Location, ...headers });
     context.res.end();
-    return {};
+    throw new Error('Unauthorized');
   };
 
   if (!SessionId) {

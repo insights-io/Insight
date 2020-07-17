@@ -15,7 +15,8 @@ public enum BrowserEventType {
   MOUSEUP(BrowserEventType.MOUSEUP_KEY),
   LOAD(BrowserEventType.LOAD_KEY),
   LOG(BrowserEventType.LOG_KEY),
-  ERROR(BrowserEventType.ERROR_KEY);
+  ERROR(BrowserEventType.ERROR_KEY),
+  FETCH(BrowserEventType.FETCH_KEY);
 
   @Getter private final byte key;
 
@@ -34,4 +35,5 @@ public enum BrowserEventType {
   public static final String LOAD_KEY = "8";
   public static final String LOG_KEY = "9";
   public static final String ERROR_KEY = "10";
+  public static final String FETCH_KEY = "11";
 }

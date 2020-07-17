@@ -1,6 +1,7 @@
 import { EventData } from 'event';
+import { GlobalObject } from 'context/Context';
 
-import { Status, GlobalObject, RequestResponseTransport } from './base';
+import { Status, RequestResponseTransport } from './base';
 
 /** `fetch` based transport */
 export class FetchTranport implements RequestResponseTransport {
@@ -26,7 +27,9 @@ export class FetchTranport implements RequestResponseTransport {
     return this.send(url, JSON.stringify(data));
   };
 
-  public static isSupported = (global: GlobalObject) => {
+  public static isSupported = (
+    global: GlobalObject
+  ): global is Window | NodeJS.Global => {
     if (!('fetch' in global)) {
       return false;
     }

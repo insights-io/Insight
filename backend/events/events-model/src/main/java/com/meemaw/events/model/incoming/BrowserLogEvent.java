@@ -5,15 +5,15 @@ import com.meemaw.events.model.shared.LogLevel;
 import java.util.List;
 import java.util.Map;
 
-public class BrowserLogEvent extends AbstractBrowserEvent<List<String>> {
+public class BrowserLogEvent extends AbstractBrowserEvent<List<?>> {
 
   @JsonIgnore
   public LogLevel getLevel() {
-    return LogLevel.fromString(arguments.get(0));
+    return LogLevel.fromString((String) arguments.get(0));
   }
 
   @JsonIgnore
-  public List<String> getArguments() {
+  public List<?> getArguments() {
     return arguments.subList(1, arguments.size());
   }
 

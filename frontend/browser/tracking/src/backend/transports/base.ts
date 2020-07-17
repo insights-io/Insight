@@ -48,16 +48,3 @@ export type PostResponse<T> = {
 export interface RequestResponseTransport extends BaseTransport {
   post: <T>(url: string, data: string) => Promise<PostResponse<T>>;
 }
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type GlobalObject = Window | NodeJS.Global | {};
-
-export function getGlobalObject(): GlobalObject {
-  return typeof window !== 'undefined'
-    ? window
-    : typeof global !== 'undefined'
-    ? global
-    : typeof self !== 'undefined'
-    ? self
-    : {};
-}
