@@ -8,12 +8,10 @@ import {
   CreatePageDTO,
 } from '@insight/types';
 
+import Context from '../context';
+
 import { BeaconTransport } from './transports/beacon';
-import {
-  BaseTransport,
-  getGlobalObject,
-  RequestResponseTransport,
-} from './transports/base';
+import { BaseTransport, RequestResponseTransport } from './transports/base';
 import { FetchTranport } from './transports/fetch';
 import { XHRTransport } from './transports/xhr';
 
@@ -34,7 +32,7 @@ class Backend implements Connected {
     this.pageURL = `${sessionApiBaseURL}/v1/sessions`;
     this.beaconSeq = 0;
 
-    const globalObject = getGlobalObject();
+    const globalObject = Context.getGlobalObject();
     if (FetchTranport.isSupported(globalObject)) {
       this.requestResponseTransport = new FetchTranport();
       if (process.env.NODE_ENV !== 'production') {

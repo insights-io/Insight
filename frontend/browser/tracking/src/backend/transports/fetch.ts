@@ -1,11 +1,7 @@
 import { EventData } from 'event';
+import { GlobalObject } from 'context/Context';
 
-import {
-  Status,
-  GlobalObject,
-  RequestResponseTransport,
-  getGlobalObject,
-} from './base';
+import { Status, RequestResponseTransport } from './base';
 
 /** `fetch` based transport */
 export class FetchTranport implements RequestResponseTransport {

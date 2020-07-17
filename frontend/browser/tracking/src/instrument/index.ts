@@ -2,9 +2,10 @@
 /* eslint-disable no-console */
 import { Enqueue } from 'types';
 import { EventType, LogLevel } from '@insight/types';
+import Context from 'context';
 
-import { getGlobalObject, GlobalObject } from '../backend/transports/base';
 import { FetchTranport } from '../backend/transports/fetch';
+import { GlobalObject } from '../context/Context';
 
 import { monkeyPatch } from './patch';
 
@@ -103,7 +104,7 @@ export const instrumentConsole = (enqueue: Enqueue): Console => {
 };
 
 export function instrumentGlobals(enqueue: Enqueue) {
-  const globalObject = getGlobalObject();
+  const globalObject = Context.getGlobalObject();
   instrumentFetch(globalObject, enqueue);
   instrumentConsole(enqueue);
   insrumentXMLHttpRequest(enqueue);
