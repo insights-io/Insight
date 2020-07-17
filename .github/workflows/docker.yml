@@ -74,3 +74,4 @@ jobs:
           SLACK_CHANNEL: general
           SLACK_TITLE: New release
           SLACK_MESSAGE: 'Released git commit ${{ env.GITHUB_SHA_SHORT }} :rocket:'
+          SLACK_ICON: https://avatars0.githubusercontent.com/u/66676697?s=96&v=4
