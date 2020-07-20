@@ -52,38 +52,6 @@ public class AbstractBrowserEventDeserializationTest {
   }
 
   @Test
-  public void performanceMeasureBeaconEventDeserializationTest() throws JsonProcessingException {
-    String payload =
-        "{\"t\": 13097,\"e\": 3,\"a\": [\"⚛ FormControl [update]\", \"measure\", 18549.754999927245, 1.9050000701099634]}";
-    AbstractBrowserEvent<?> deserialized =
-        JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
-    assertEquals(BrowserPerformanceEvent.class, deserialized.getClass());
-
-    BrowserPerformanceEvent event = (BrowserPerformanceEvent) deserialized;
-    assertEquals("⚛ FormControl [update]", event.arguments.getName());
-    assertEquals("measure", event.arguments.getEntryType());
-    assertEquals(18549.754999927245, event.arguments.getStartTime());
-    assertEquals(1.9050000701099634, event.arguments.getDuration());
-    assertEquals(BrowserEventType.PERFORMANCE, event.getEventType());
-  }
-
-  @Test
-  public void performanceNavigationBeaconEventDeserializationTest() throws JsonProcessingException {
-    String payload =
-        "{\"t\": 17,\"e\": 3,\"a\": [\"http://localhost:3002/\", \"navigation\", 0, 5478.304999996908]}";
-    AbstractBrowserEvent<?> deserialized =
-        JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
-    assertEquals(BrowserPerformanceEvent.class, deserialized.getClass());
-
-    BrowserPerformanceEvent event = (BrowserPerformanceEvent) deserialized;
-    assertEquals("http://localhost:3002/", event.arguments.getName());
-    assertEquals("navigation", event.arguments.getEntryType());
-    assertEquals(0, event.arguments.getStartTime());
-    assertEquals(5478.304999996908, event.arguments.getDuration());
-    assertEquals(BrowserEventType.PERFORMANCE, event.getEventType());
-  }
-
-  @Test
   public void navigateBeaconEventDeserializationTest() throws JsonProcessingException {
     String payload =
         "{\"t\": 1234, \"e\": 0, \"a\": [\"http://localhost:8080/test\", \"Test title\"]}";
@@ -98,21 +66,37 @@ public class AbstractBrowserEventDeserializationTest {
   }
 
   @Test
-  public void fetchBeaconEventDeserializationTest() throws JsonProcessingException {
+  public void xhrBeaconEventDeserializationTest() throws JsonProcessingException {
     String payload =
         "{\"t\":520066,\"e\":11,\"a\":[\"POST\",\"http://localhost:8081/v1/beacon/beat?organizationId=test-1&sessionId=912969ea-0f2e-473d-b1b6-473b9787c3e0&deviceId=51c383f8-8654-4f66-a0d6-a6cd73893ec4&pageId=7c6aaeed-b23b-484b-9d5d-4c680b4e2b93\",422,\"cors\"]}";
     AbstractBrowserEvent<?> deserialized =
         JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
-    assertEquals(BrowserFetchEvent.class, deserialized.getClass());
+    assertEquals(BrowserXhrEvent.class, deserialized.getClass());
 
-    BrowserFetchEvent event = (BrowserFetchEvent) deserialized;
+    BrowserXhrEvent event = (BrowserXhrEvent) deserialized;
     assertEquals("POST", event.arguments.getMethod());
     assertEquals(
         "http://localhost:8081/v1/beacon/beat?organizationId=test-1&sessionId=912969ea-0f2e-473d-b1b6-473b9787c3e0&deviceId=51c383f8-8654-4f66-a0d6-a6cd73893ec4&pageId=7c6aaeed-b23b-484b-9d5d-4c680b4e2b93",
         event.arguments.getUrl());
     assertEquals(422, event.arguments.getStatus());
     assertEquals("cors", event.arguments.getType());
-    assertEquals(BrowserEventType.FETCH, event.getEventType());
+    assertEquals(BrowserEventType.XHR, event.getEventType());
+  }
+
+  @Test
+  public void resourcePerformanceBeaconEventDeserializationTest() throws JsonProcessingException {
+    String payload = "{\"t\":520066,\"e\":12,\"a\":[\"test\", 10, 10, \"fetch\", \"h2\"]}";
+    AbstractBrowserEvent<?> deserialized =
+        JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
+    assertEquals(BrowserResourcePerformanceEvent.class, deserialized.getClass());
+
+    BrowserResourcePerformanceEvent event = (BrowserResourcePerformanceEvent) deserialized;
+    assertEquals("test", event.arguments.getName());
+    assertEquals(10, event.arguments.getDuration());
+    assertEquals(10, event.arguments.getStartTime());
+    assertEquals("fetch", event.arguments.getInitiatorType());
+    assertEquals("h2", event.arguments.getNextHopProtocol());
+    assertEquals(BrowserEventType.RESOURCE_PERFORMANCE, event.getEventType());
   }
 
   @Test

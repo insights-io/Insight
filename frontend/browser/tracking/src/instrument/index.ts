@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
+/* eslint-disable camelcase */
+/* eslint-disable func-names */
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable lodash/prefer-lodash-typecheck */
 /* eslint-disable no-console */
 import { Enqueue } from 'types';
@@ -9,14 +13,52 @@ import { GlobalObject } from '../context/Context';
 
 import { monkeyPatch } from './patch';
 
+interface WrappedXMLHttpRequest extends XMLHttpRequest {
+  __insight_xhr__?: {
+    url?: string;
+    method?: string;
+  };
+}
+
 export function insrumentXMLHttpRequest(
-  _enqueue: Enqueue
+  enqueue: Enqueue
 ): XMLHttpRequest['send'] | undefined {
   const xhrproto = XMLHttpRequest.prototype;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  monkeyPatch(xhrproto, 'open', (original) => {
+    return function (
+      this: WrappedXMLHttpRequest,
+      ...args: Parameters<XMLHttpRequest['open']>
+    ) {
+      const method = args[0].toUpperCase();
+      const url = args[1];
+      this.__insight_xhr__ = { method, url };
+      return original.apply(this, args);
+    };
+  });
+
   return monkeyPatch(xhrproto, 'send', (original) => {
-    return (...args) => {
-      return original.apply(xhrproto, args);
+    return function (this: WrappedXMLHttpRequest, ...args) {
+      const xhr = this;
+
+      xhr.addEventListener('readystatechange', function () {
+        if (xhr.readyState === 4) {
+          enqueue(
+            EventType.FETCH,
+            [
+              xhr.__insight_xhr__?.method as string,
+              xhr.__insight_xhr__?.url as string,
+              xhr.status,
+              null,
+            ],
+            '[xhr]'
+          );
+        }
+      });
+
+      return original.apply(this, args);
     };
   });
 }

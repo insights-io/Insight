@@ -113,6 +113,7 @@ describe('tracking script', () => {
       );
 
       await page.click('button[data-testid="first-button"]');
+      await page.click('button[data-testid="xhr-button"]');
 
       console.log('Waiting for beacon api response...');
       let beaconResponse = await page.waitForResponse((resp: Response) => {
@@ -123,10 +124,21 @@ describe('tracking script', () => {
 
       let beaconRequest = beaconResponse.request();
       let postData = JSON.parse(beaconRequest.postData() || '') as EventData;
+
+      expect(postData.s).toEqual(1);
+      expect(beaconResponse.status()).toEqual(204);
+      expect(beaconRequest.method()).toEqual('POST');
+      expect(beaconRequestHeaders['content-type']).toEqual('application/json');
+      expect(beaconRequest.resourceType()).toEqual('fetch');
+
       const [
         sessionCreateFetchEvent,
         sessionCreatePerformanceResourceEvent,
         mouseMoveEvent,
+        xhrButtonClickEvent,
+        xhrResponseLogEvent,
+        xhrRequestEvent,
+        performanceResourceEvent,
       ] = postData.e;
 
       expect(sessionCreateFetchEvent.a).toEqual([
@@ -135,9 +147,12 @@ describe('tracking script', () => {
         200,
         'cors',
       ]);
-      expect(sessionCreatePerformanceResourceEvent.a.slice(0, 2)).toEqual([
+      expect(sessionCreatePerformanceResourceEvent.a.slice(0, 1)).toEqual([
         createSessionURI,
-        'resource',
+      ]);
+      expect(sessionCreatePerformanceResourceEvent.a.slice(3)).toEqual([
+        'fetch',
+        'http/1.1',
       ]);
       expect(mouseMoveEvent.a).toEqual([
         61,
@@ -146,11 +161,34 @@ describe('tracking script', () => {
         ':data-testid',
         'first-button',
       ]);
-      expect(postData.s).toEqual(1);
-      expect(beaconResponse.status()).toEqual(204);
-      expect(beaconRequest.method()).toEqual('POST');
-      expect(beaconRequestHeaders['content-type']).toEqual('application/json');
-      expect(beaconRequest.resourceType()).toEqual('fetch');
+      expect(xhrButtonClickEvent.a).toEqual([
+        379,
+        60,
+        '<BUTTON',
+        ':data-testid',
+        'xhr-button',
+        ':onclick',
+        'handleXhrClick()',
+      ]);
+      expect(xhrResponseLogEvent.a).toEqual([
+        'log',
+        { completed: false, id: 1, title: 'delectus aut autem', userId: 1 },
+      ]);
+
+      expect(xhrRequestEvent.a).toEqual([
+        'GET',
+        'https://jsonplaceholder.typicode.com/todos/1',
+        200,
+        null,
+      ]);
+      expect(performanceResourceEvent.a.slice(0, 1)).toEqual([
+        'https://jsonplaceholder.typicode.com/todos/1',
+      ]);
+
+      expect(performanceResourceEvent.a.slice(3)).toEqual([
+        'xmlhttprequest',
+        'h2',
+      ]);
 
       await page.evaluate(() => {
         console.info('Do some console.info!');
@@ -196,9 +234,12 @@ describe('tracking script', () => {
         204,
         'cors',
       ]);
-      expect(beaconBeatPerformanceResourceEvent.a.slice(0, 2)).toEqual([
+      expect(beaconBeatPerformanceResourceEvent.a.slice(0, 1)).toEqual([
         beaconBeatURI,
-        'resource',
+      ]);
+      expect(beaconBeatPerformanceResourceEvent.a.slice(3)).toEqual([
+        'fetch',
+        'http/1.1',
       ]);
       expect(consoleInfoEvent.a).toEqual(['info', 'Do some console.info!']);
       expect(consoleErrorEvent.a).toEqual(['error', 'Do some console.error!']);

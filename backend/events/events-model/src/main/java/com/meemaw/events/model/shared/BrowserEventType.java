@@ -8,7 +8,7 @@ public enum BrowserEventType {
   NAVIGATE(BrowserEventType.NAVIGATE_KEY),
   UNLOAD(BrowserEventType.UNLOAD_KEY),
   RESIZE(BrowserEventType.RESIZE_KEY),
-  PERFORMANCE(BrowserEventType.PERFORMANCE_KEY),
+  PERFORMANCE(BrowserEventType.PERFORMANCE_KEY), /* Deprecated */
   CLICK(BrowserEventType.CLICK_KEY),
   MOUSEMOVE(BrowserEventType.MOUSEMOVE_KEY),
   MOUSEDOWN(BrowserEventType.MOUSEDOWN_KEY),
@@ -16,7 +16,8 @@ public enum BrowserEventType {
   LOAD(BrowserEventType.LOAD_KEY),
   LOG(BrowserEventType.LOG_KEY),
   ERROR(BrowserEventType.ERROR_KEY),
-  FETCH(BrowserEventType.FETCH_KEY);
+  XHR(BrowserEventType.XHR_KEY),
+  RESOURCE_PERFORMANCE(BrowserEventType.RESOURCE_PERFORMANCE_KEY);
 
   @Getter private final byte key;
 
@@ -35,5 +36,6 @@ public enum BrowserEventType {
   public static final String LOAD_KEY = "8";
   public static final String LOG_KEY = "9";
   public static final String ERROR_KEY = "10";
-  public static final String FETCH_KEY = "11";
+  public static final String XHR_KEY = "11";
+  public static final String RESOURCE_PERFORMANCE_KEY = "12";
 }
