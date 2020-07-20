@@ -1961,17 +1961,17 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@date-io/core@^2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@date-io/core/-/core-2.6.0.tgz#01efa47b225d1a94d3138583588b919442149ee8"
-  integrity sha512-GkM3jTlh9r3MfZEuFKV4g1JSbxz1G0Or1CBKkhPcw7UCJRjjsk5mLVYZYtUQEsOY8rCSFUTdCOm63ulWzAC/pw==
+"@date-io/core@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@date-io/core/-/core-2.8.0.tgz#bbfdd5d09c6757e456478e0bcc0764ecc85b5d40"
+  integrity sha512-MIL74B3O08gjjm5fcDSWME5MfdsvyQBX58zlWHIzM+m2h3+M5rP6P+T3qym3FWnpc8EKK5E8kF97nLqNiOwgkQ==
 
-"@date-io/date-fns@^2.4.0":
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/@date-io/date-fns/-/date-fns-2.6.2.tgz#231e075b0ac18beb3654cbd3d4ae09e91846fafa"
-  integrity sha512-LJnNxYhGihB1h503yRLj9s36a9bSF/NOyIbHDp7Bev2lmKn8c2zjoX9u0p5i3WV7z2nujBW1oDR/h+VfzjFkvg==
+"@date-io/date-fns@^2.6.2":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@date-io/date-fns/-/date-fns-2.8.0.tgz#33cadd0aeeea23afa95c246d35672f4783744129"
+  integrity sha512-7j2RtmXWbDDBROJNL/WMrC7dK9RgV8BBW1aQtO3JB3NU52ZP5DBgJ+M5xEoEWJ+50vaKxLPYq2QYkrWsqlbzxg==
   dependencies:
-    "@date-io/core" "^2.6.0"
+    "@date-io/core" "^2.8.0"
 
 "@emotion/cache@^10.0.27", "@emotion/cache@^10.0.9":
   version "10.0.29"
@@ -6685,12 +6685,12 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-baseui@9.86.0:
-  version "9.86.0"
-  resolved "https://registry.yarnpkg.com/baseui/-/baseui-9.86.0.tgz#31b887e6abd32f59e57aba4b1ad19b5f3b147d12"
-  integrity sha512-ew8M5+2mGLtx/e9peQgXGwCYHbcBtZCbX6bn785Eq79anroL8FN6MSdGi1siXK9NnxS/SDt0I2okWWHHeO8Tig==
+baseui@9.87.0:
+  version "9.87.0"
+  resolved "https://registry.yarnpkg.com/baseui/-/baseui-9.87.0.tgz#3c67f21ec1a2a4e007259193866bbe82d0ea7983"
+  integrity sha512-pwFg+4c6+z7H/GpEmuHp9dlVXTh92j4sPlzHaMsNtKT7gs7sOj1qGeHwdpcnZU//ipAfyzPeQQSv1xFPrpoZbg==
   dependencies:
-    "@date-io/date-fns" "^2.4.0"
+    "@date-io/date-fns" "^2.6.2"
     card-validator "^6.2.0"
     date-fns "^2.6.0"
     glob "^7.1.6"
@@ -6706,6 +6706,7 @@ baseui@9.86.0:
     react-movable "^2.4.0"
     react-multi-ref "^1.0.0"
     react-range "^1.6.3"
+    react-uid "^2.3.0"
     react-virtualized "^9.21.1"
     react-virtualized-auto-sizer "^1.0.2"
     react-window "^1.8.5"
@@ -16624,6 +16625,13 @@ react-transition-group@^4.3.0:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
+
+react-uid@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-uid/-/react-uid-2.3.0.tgz#bfd47cfd5ad3e37956ed1a8520964842d7bdcc6b"
+  integrity sha512-tsPZ77GR0pISGYmpCLHAbZTabKXZ7zBniKPVqVMMfnXFyo39zq5g/psIlD5vLTKkjQEhWOO8JhqcHnxkwNu6eA==
+  dependencies:
+    tslib "^1.10.0"
 
 react-virtualized-auto-sizer@^1.0.2:
   version "1.0.2"
