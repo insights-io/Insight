@@ -1,0 +1,9 @@
+{
+  "t": 10812,
+  "e": 12,
+  "name": "http://localhost:8082/v1/sessions",
+  "startTime": 20,
+  "duration": 40,
+  "initiatorType": "fetch",
+  "nextHopProtocol": "http/1.1"
+}

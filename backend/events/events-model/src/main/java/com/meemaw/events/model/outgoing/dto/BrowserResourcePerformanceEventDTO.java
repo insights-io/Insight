@@ -8,10 +8,11 @@ import lombok.Value;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
-public class BrowserFetchEventDTO extends AbstractBrowserEventDTO {
+public class BrowserResourcePerformanceEventDTO extends AbstractBrowserEventDTO {
 
-  String method;
-  String url;
-  int status;
-  String type;
+  String name;
+  double startTime;
+  double duration;
+  String initiatorType;
+  String nextHopProtocol;
 }

@@ -29,7 +29,7 @@ public final class RHSColonParser {
    * @param params query params
    * @return search dto
    */
-  public static SearchDTO buildFromParams(Map<String, List<String>> params) {
+  public static SearchDTO parse(Map<String, List<String>> params) {
     List<FilterExpression> expressions = new ArrayList<>(params.size());
     List<Pair<String, SortDirection>> sorts = Collections.emptyList();
     int limit = 0;

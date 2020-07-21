@@ -1,0 +1,7 @@
+{
+  "t": 10812,
+  "e": 10,
+  "message": "simulated error",
+  "name": "Error",
+  "stack": "Error: simulated error\n    at <anonymous>:1:7\n    at eval (__playwright_evaluation_script__45:7:47)\n    at UtilityScript.callFunction (__playwright_evaluation_script__1:299:24)\n    at UtilityScript.<anonymous> (__playwright_evaluation_script__46:1:44)"
+}

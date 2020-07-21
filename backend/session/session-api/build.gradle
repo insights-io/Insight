@@ -14,6 +14,7 @@ dependencies {
     implementation project(":shared:shared-sql")
 
     testImplementation project(':shared:testing-utils')
+    testImplementation project(':shared:testing-data')
 }
 
 configurations {

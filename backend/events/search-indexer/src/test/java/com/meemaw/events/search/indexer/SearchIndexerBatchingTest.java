@@ -11,9 +11,12 @@ import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.Kafka;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -91,6 +94,21 @@ public class SearchIndexerBatchingTest extends AbstractSearchIndexerTest {
               SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);
               return response.getHits().getTotalHits().value
                   == LARGE_BATCH_SIZE + SMALL_BATCH_SIZE + (numExtraBatches * SMALL_BATCH_SIZE);
+            });
+
+    Collection<Future<RecordMetadata>> writes = indexIncomingEvents(producer);
+
+    // should index all incoming event types
+    with()
+        .atMost(30, TimeUnit.SECONDS)
+        .until(
+            () -> {
+              SearchResponse response = client.search(SEARCH_REQUEST, RequestOptions.DEFAULT);
+              return response.getHits().getTotalHits().value
+                  == LARGE_BATCH_SIZE
+                      + SMALL_BATCH_SIZE
+                      + (numExtraBatches * SMALL_BATCH_SIZE)
+                      + writes.size();
             });
 
     producer.close();

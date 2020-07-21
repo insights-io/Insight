@@ -21,7 +21,8 @@
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
-    "serve": "serve dist --cors"
+    "serve": "serve dist --cors",
+    "serve:templates": "serve templates --cors"
   },
   "devDependencies": {
     "@insight/types": "0.0.0-development",

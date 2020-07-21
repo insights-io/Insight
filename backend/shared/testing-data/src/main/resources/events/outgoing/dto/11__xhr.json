@@ -1,0 +1,8 @@
+{
+  "t": 10812,
+  "e": 11,
+  "method": "GET",
+  "url": "http://localhost:8082/v1/sessions",
+  "status": 200,
+  "type": "cors"
+}

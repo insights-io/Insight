@@ -15,8 +15,7 @@ public class RHSColonParserElasticTest {
   @Test
   public void should_correctly_parse_rhs_colon_query_to_elastic() throws MalformedURLException {
     String input = "http://www.abc.com?field1=lte:123&limit=200&field2.t=eq:aba";
-    SearchDTO searchDTO =
-        RHSColonParser.buildFromParams(RHSColonParser.queryParams(new URL(input)));
+    SearchDTO searchDTO = RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)));
 
     SearchSourceBuilder query = ElasticSearchDTO.of(searchDTO).apply();
     assertEquals(
@@ -28,8 +27,7 @@ public class RHSColonParserElasticTest {
   public void should_correctly_parse_rhs_colon_empty_query_to_elastic()
       throws MalformedURLException {
     String input = "http://www.abc.com";
-    SearchDTO searchDTO =
-        RHSColonParser.buildFromParams(RHSColonParser.queryParams(new URL(input)));
+    SearchDTO searchDTO = RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)));
 
     SearchSourceBuilder query = ElasticSearchDTO.of(searchDTO).apply();
     assertEquals(

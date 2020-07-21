@@ -34,18 +34,18 @@ declare global {
     organizationId,
     context
   );
-  const UPLOAD_INTERVAL_MILLIS = MILLIS_IN_SECOND * 10;
 
   const observer = new PerformanceObserver((performanceEntryList) => {
     performanceEntryList.getEntries().forEach((entry) => {
-      const performanceArgs = [
-        entry.name,
-        entry.entryType,
-        entry.startTime,
-        entry.duration,
-      ];
-
-      eventQueue.enqueue(EventType.PERFORMANCE, performanceArgs);
+      if (entry instanceof PerformanceResourceTiming) {
+        eventQueue.enqueue(EventType.RESOURCE_PERFORMANCE, [
+          entry.name,
+          entry.startTime,
+          entry.duration,
+          entry.initiatorType,
+          entry.nextHopProtocol,
+        ]);
+      }
     });
   });
 
@@ -141,6 +141,7 @@ declare global {
     backend.connect(pageIdentity);
     identity.connect(pageIdentity);
     window.addEventListener('unload', onUnload);
+    const UPLOAD_INTERVAL_MILLIS = MILLIS_IN_SECOND * 10; // every 10 seconds
     setInterval(() => {
       const events = eventQueue.drainEvents();
       if (events.length > 0) {

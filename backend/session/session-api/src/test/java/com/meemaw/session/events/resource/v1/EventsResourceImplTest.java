@@ -1,17 +1,20 @@
 package com.meemaw.session.events.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
+import com.meemaw.test.rest.data.EventTestData;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestResource;
@@ -19,8 +22,6 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -44,16 +45,14 @@ public class EventsResourceImplTest {
   private static final UUID DEVICE_ID = UUID.randomUUID();
 
   @SuppressWarnings("rawtypes")
-  private static Collection<AbstractBrowserEvent> loadEvents()
+  private static Collection<AbstractBrowserEvent> loadIncomingEvents()
       throws URISyntaxException, IOException {
-    return Files.walk(Path.of(EventsResourceImplTest.class.getResource("/events").toURI()))
-        .filter(path -> !Files.isDirectory(path))
+    return EventTestData.readIncomingEvents().stream()
         .map(
-            path -> {
+            eventPayload -> {
               try {
-                return JacksonMapper.get()
-                    .readValue(Files.readString(path), AbstractBrowserEvent.class);
-              } catch (IOException ex) {
+                return JacksonMapper.get().readValue(eventPayload, AbstractBrowserEvent.class);
+              } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
               }
             })
@@ -62,7 +61,7 @@ public class EventsResourceImplTest {
 
   @BeforeAll
   public static void init() throws IOException, URISyntaxException {
-    loadEvents()
+    loadIncomingEvents()
         .forEach(
             browserEvent -> {
               try {
@@ -72,7 +71,11 @@ public class EventsResourceImplTest {
                             .id(UUID.randomUUID().toString())
                             .source(
                                 new UserEvent<>(
-                                        browserEvent, PAGE_ID, SESSION_ID, DEVICE_ID, "000000")
+                                        browserEvent,
+                                        PAGE_ID,
+                                        SESSION_ID,
+                                        DEVICE_ID,
+                                        INSIGHT_ORGANIZATION_ID)
                                     .index()),
                         RequestOptions.DEFAULT);
               } catch (IOException ex) {
@@ -101,20 +104,18 @@ public class EventsResourceImplTest {
   }
 
   @Test
-  public void events_search_should_return_all_events() {
+  public void events_search_should_return_all_events() throws IOException, URISyntaxException {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?limit=100")
         .then()
         .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":[{\"clientX\":1167,\"clientY\":732,\"node\":{\":class\":\"__debug-3 as at au av aw ax ay az b0 b1 b2 b3 b4 b5 b6 ak b7 b8 b9 ba bb bc bd be bf bg bh bi an ci ao c8 d8 d9 d7 da ek el em df en eo ep eq bw\",\":type\":\"submit\",\":data-baseweb\":\"button\",\"type\":\"<BUTTON\"},\"t\":1306,\"e\":4},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":1},{\"method\":\"POST\",\"url\":\"http://localhost:8080\",\"status\":200,\"type\":\"cors\",\"t\":22000,\"e\":11},{\"name\":\"http://localhost:8081/v1/page\",\"entryType\":\"resource\",\"startTime\":3963.6150000151247,\"duration\":29.37000000383705,\"t\":34,\"e\":3},{\"level\":\"error\",\"arguments\":[\"HAHA\"],\"t\":10812,\"e\":9}]}"));
+        .body("data.size()", is(loadIncomingEvents().size()));
   }
 
   @Test
-  public void events_search_should_return_even_type_matching_events() {
+  public void events_search_should_return_event_type_matching_events() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
@@ -144,7 +145,7 @@ public class EventsResourceImplTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"data\":[{\"name\":\"http://localhost:8081/v1/page\",\"entryType\":\"resource\",\"startTime\":3963.6150000151247,\"duration\":29.37000000383705,\"t\":34,\"e\":3},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":1}]}"));
+                "{\"data\":[{\"location\":\"http://localhost:8080\",\"title\":\"Test title\",\"t\":1234,\"e\":0},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":1},{\"innerWidth\":551,\"innerHeight\":232,\"t\":1234,\"e\":2},{\"location\":\"http://localhost:8080\",\"t\":1234,\"e\":8},{\"name\":\"http://localhost:3002/\",\"entryType\":\"navigation\",\"startTime\":0.0,\"duration\":5478.304999996908,\"t\":17,\"e\":3}]}"));
 
     given()
         .when()
@@ -152,6 +153,20 @@ public class EventsResourceImplTest {
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.t=lt:5")
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":[]}"));
+        .body("data.size()", is(0));
+  }
+
+  @Test
+  public void events_search_should_search_by_type_and_clause_query() {
+    String searchQuery = "?event.e=gte:11&event.e=lte:12";
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + searchQuery)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":[{\"method\":\"GET\",\"url\":\"http://localhost:8082/v1/sessions\",\"status\":200,\"type\":\"cors\",\"t\":10812,\"e\":11},{\"name\":\"http://localhost:8082/v1/sessions\",\"startTime\":20.0,\"duration\":40.0,\"initiatorType\":\"fetch\",\"nextHopProtocol\":\"http/1.1\",\"t\":10812,\"e\":12}]}"));
   }
 }

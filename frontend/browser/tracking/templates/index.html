@@ -3,11 +3,27 @@
   <head>
     <title>This is the title of the webpage!</title>
   </head>
+  <script>
+    const handleXhrClick = () => {
+      const xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          console.log(JSON.parse(xhttp.responseText));
+        }
+      };
+
+      xhttp.open('GET', 'https://jsonplaceholder.typicode.com/todos/1', true);
+      xhttp.send();
+    };
+  </script>
   <body>
     <p>
       This is a paragraph
     </p>
     <button data-testid="first-button">This is a button</button>
     <button data-testid="second-button">This is another button</button>
+    <button data-testid="xhr-button" onclick="handleXhrClick()">
+      This button will trigger XHR request
+    </button>
   </body>
 </html>

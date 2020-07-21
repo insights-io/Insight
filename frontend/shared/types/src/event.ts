@@ -14,6 +14,7 @@ export const enum EventType {
   LOG = 9,
   ERROR = 10,
   FETCH = 11,
+  RESOURCE_PERFORMANCE = 12,
 }
 
 export type AbstractBeaconEvent = {
@@ -47,7 +48,7 @@ export interface BrowserErrorEventDTO extends AbstractBrowserEventDTO {
   stack: string;
 }
 
-export interface BrowserFetchEventDTO extends AbstractBrowserEventDTO {
+export interface BrowserXhrEventDTO extends AbstractBrowserEventDTO {
   e: EventType.FETCH;
   method: string;
   url: string;
@@ -55,7 +56,18 @@ export interface BrowserFetchEventDTO extends AbstractBrowserEventDTO {
   type: string;
 }
 
+export interface BrowserResourcePerformanceEventDTO
+  extends AbstractBrowserEventDTO {
+  e: EventType.RESOURCE_PERFORMANCE;
+  name: string;
+  startTime: number;
+  duration: number;
+  initiatorType: string;
+  nextHopProtocol: string;
+}
+
 export type BrowserEventDTO =
   | BrowserLogEventDTO
   | BrowserErrorEventDTO
-  | BrowserFetchEventDTO;
+  | BrowserXhrEventDTO
+  | BrowserResourcePerformanceEventDTO;
