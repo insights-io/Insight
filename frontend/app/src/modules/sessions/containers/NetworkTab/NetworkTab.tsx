@@ -1,8 +1,8 @@
 import React from 'react';
 import useSWR from 'swr';
 import { SessionApi } from 'api';
-import { BrowserFetchEventDTO } from '@insight/types';
 import NetworkTab from 'modules/sessions/components/NetworkTab';
+import { BrowserXhrEventDTO } from '@insight/types';
 
 type Props = {
   sessionId: string;
@@ -19,7 +19,7 @@ const NetworkTabContainer = ({ sessionId }: Props) => {
   );
 
   const loading = data === undefined;
-  const events = (data || []) as BrowserFetchEventDTO[];
+  const events = (data || []) as BrowserXhrEventDTO[];
 
   return <NetworkTab events={events} loading={loading} />;
 };

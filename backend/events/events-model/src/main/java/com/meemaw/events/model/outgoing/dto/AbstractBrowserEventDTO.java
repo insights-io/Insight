@@ -9,6 +9,7 @@ import static com.meemaw.events.model.shared.BrowserEventType.MOUSEDOWN_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.MOUSEMOVE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.MOUSEUP_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.NAVIGATE_KEY;
+import static com.meemaw.events.model.shared.BrowserEventType.PERFORMANCE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.RESIZE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.RESOURCE_PERFORMANCE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.UNLOAD_KEY;
@@ -35,6 +36,7 @@ import lombok.EqualsAndHashCode;
   @Type(value = BrowserNavigateEventDTO.class, name = NAVIGATE_KEY),
   @Type(value = BrowserUnloadEventDTO.class, name = UNLOAD_KEY),
   @Type(value = BrowserResizeEventDTO.class, name = RESIZE_KEY),
+  @Type(value = BrowserPerformanceEventDTO.class, name = PERFORMANCE_KEY),
   @Type(value = BrowserClickEventDTO.class, name = CLICK_KEY),
   @Type(value = BrowserMouseMoveEventDTO.class, name = MOUSEMOVE_KEY),
   @Type(value = BrowserMouseDownEventDTO.class, name = MOUSEDOWN_KEY),
@@ -42,7 +44,7 @@ import lombok.EqualsAndHashCode;
   @Type(value = BrowserLoadEventDTO.class, name = LOAD_KEY),
   @Type(value = BrowserLogEventDTO.class, name = LOG_KEY),
   @Type(value = BrowserErrorEventDTO.class, name = ERROR_KEY),
-  @Type(value = BrowserFetchEventDTO.class, name = XHR_KEY),
+  @Type(value = BrowserXhrEventDTO.class, name = XHR_KEY),
   @Type(value = BrowserResourcePerformanceEventDTO.class, name = RESOURCE_PERFORMANCE_KEY),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)

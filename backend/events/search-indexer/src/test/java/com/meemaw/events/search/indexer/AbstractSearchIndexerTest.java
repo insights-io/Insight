@@ -1,10 +1,14 @@
 package com.meemaw.events.search.indexer;
 
+import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.model.incoming.serialization.UserEventSerializer;
+import com.meemaw.test.rest.data.EventTestData;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
 import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
@@ -18,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -117,41 +122,39 @@ public class AbstractSearchIndexerTest {
       KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer)
       throws IOException, URISyntaxException {
     return readKafkaRecords("eventsBatch/small.json").stream()
-        .map(
-            record ->
-                producer.send(
-                    record,
-                    ((metadata, exception) -> {
-                      if (exception != null) {
-                        throw new RuntimeException(exception);
-                      }
-                      log.info(
-                          "Wrote small batch to topic={}, partition={}, offset={}",
-                          metadata.topic(),
-                          metadata.partition(),
-                          metadata.offset());
-                    })))
+        .map(record -> writeEvent(producer, record))
         .collect(Collectors.toList());
+  }
+
+  private Future<RecordMetadata> writeEvent(
+      KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer,
+      UserEvent<AbstractBrowserEvent<?>> event) {
+    return writeEvent(producer, new ProducerRecord<>(SOURCE_TOPIC_NAME, event));
+  }
+
+  private Future<RecordMetadata> writeEvent(
+      KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer,
+      ProducerRecord<String, UserEvent<AbstractBrowserEvent<?>>> record) {
+
+    return producer.send(
+        record,
+        ((metadata, exception) -> {
+          if (exception != null) {
+            throw new RuntimeException(exception);
+          }
+          log.info(
+              "Wrote record to topic={}, partition={}, offset={}",
+              metadata.topic(),
+              metadata.partition(),
+              metadata.offset());
+        }));
   }
 
   protected Collection<Future<RecordMetadata>> writeLargeBatch(
       KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer)
       throws IOException, URISyntaxException {
     return readKafkaRecords("eventsBatch/large.json").stream()
-        .map(
-            record ->
-                producer.send(
-                    record,
-                    (meta, exception) -> {
-                      if (exception != null) {
-                        throw new RuntimeException(exception);
-                      }
-                      log.info(
-                          "Wrote large batch to topic={}, partition={}, offset={}",
-                          meta.topic(),
-                          meta.partition(),
-                          meta.offset());
-                    }))
+        .map(record -> writeEvent(producer, record))
         .collect(Collectors.toList());
   }
 
@@ -171,5 +174,38 @@ public class AbstractSearchIndexerTest {
 
   protected KafkaConsumer<String, UserEvent<AbstractBrowserEvent<?>>> deadLetterQueueConsumer() {
     return eventsConsumer(DEAD_LETTER_TOPIC_NAME);
+  }
+
+  @SuppressWarnings("rawtypes")
+  private Collection<AbstractBrowserEvent> loadIncomingEvents()
+      throws URISyntaxException, IOException {
+    return EventTestData.readIncomingEvents().stream()
+        .map(
+            eventPayload -> {
+              try {
+                return JacksonMapper.get().readValue(eventPayload, AbstractBrowserEvent.class);
+              } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+              }
+            })
+        .collect(Collectors.toList());
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  protected Collection<Future<RecordMetadata>> indexIncomingEvents(
+      KafkaProducer<String, UserEvent<AbstractBrowserEvent<?>>> producer)
+      throws IOException, URISyntaxException {
+    return loadIncomingEvents().stream()
+        .map(
+            browserEvent ->
+                writeEvent(
+                    producer,
+                    new UserEvent<>(
+                        browserEvent,
+                        UUID.randomUUID(),
+                        UUID.randomUUID(),
+                        UUID.randomUUID(),
+                        INSIGHT_ORGANIZATION_ID)))
+        .collect(Collectors.toList());
   }
 }

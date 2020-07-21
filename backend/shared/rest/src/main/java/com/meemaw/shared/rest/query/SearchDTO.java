@@ -13,6 +13,6 @@ public class SearchDTO {
   int limit;
 
   public static SearchDTO rhsColon(Map<String, List<String>> params) {
-    return RHSColonParser.buildFromParams(params);
+    return RHSColonParser.parse(params);
   }
 }

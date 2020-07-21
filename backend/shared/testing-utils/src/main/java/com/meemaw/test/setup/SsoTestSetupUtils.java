@@ -24,6 +24,10 @@ import org.jsoup.select.Elements;
 
 public final class SsoTestSetupUtils {
 
+  public static final String INSIGHT_ORGANIZATION_ID = "000000";
+  public static final String INSIGHT_ADMIN_EMAIL = "admin@insight.io";
+  public static final String INSIGHT_ADMIN_PASSWORD = "superDuperPassword123";
+
   private SsoTestSetupUtils() {}
 
   /**
@@ -161,7 +165,7 @@ public final class SsoTestSetupUtils {
    * @return session id
    */
   public static String loginWithInsightAdmin(String baseURI) {
-    return login("admin@insight.io", "superDuperPassword123", baseURI);
+    return login(INSIGHT_ADMIN_EMAIL, INSIGHT_ADMIN_PASSWORD, baseURI);
   }
 
   /**

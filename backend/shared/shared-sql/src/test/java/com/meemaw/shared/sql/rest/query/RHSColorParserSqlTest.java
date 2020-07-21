@@ -27,8 +27,7 @@ public class RHSColorParserSqlTest {
   @Test
   public void should_correctly_parse_rhs_colon_mixed_query_to_sql() throws MalformedURLException {
     String input = "http://www.abc.com?field1=lte:123&field1=gte:100&field2=gte:200&limit=25";
-    SearchDTO searchDTO =
-        RHSColonParser.buildFromParams(RHSColonParser.queryParams(new URL(input)));
+    SearchDTO searchDTO = RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)));
 
     Query query =
         SQLSearchDTO.of(searchDTO).apply(select().from(table("session.session")), FIELD_MAPPINGS);
@@ -44,8 +43,7 @@ public class RHSColorParserSqlTest {
   @Test
   public void should_correctly_parse_rhs_colon_and_query_to_sql() throws MalformedURLException {
     String input = "http://www.abc.com?field1=lte:123&sort_by=+field2,-age&field2=gte:matej";
-    SearchDTO searchDTO =
-        RHSColonParser.buildFromParams(RHSColonParser.queryParams(new URL(input)));
+    SearchDTO searchDTO = RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)));
 
     Query query =
         SQLSearchDTO.of(searchDTO).apply(select().from(table("session.session")), FIELD_MAPPINGS);
@@ -58,8 +56,7 @@ public class RHSColorParserSqlTest {
   @Test
   public void should_correctly_parse_rhs_colon_empty_query_to_sql() throws MalformedURLException {
     String input = "http://www.abc.com";
-    SearchDTO searchDTO =
-        RHSColonParser.buildFromParams(RHSColonParser.queryParams(new URL(input)));
+    SearchDTO searchDTO = RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)));
 
     Query query =
         SQLSearchDTO.of(searchDTO).apply(select().from(table("session.session")), FIELD_MAPPINGS);

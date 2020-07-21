@@ -13,6 +13,7 @@ dependencies {
     implementation project(":shared:shared-elasticsearch")
 
     testImplementation project(':shared:testing-utils')
+    testImplementation project(':shared:testing-data')
 }
 
 test {

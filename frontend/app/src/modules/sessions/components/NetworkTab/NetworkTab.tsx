@@ -1,5 +1,4 @@
 import React from 'react';
-import { BrowserFetchEventDTO } from '@insight/types';
 import { Block } from 'baseui/block';
 import { StyledSpinnerNext } from 'baseui/spinner';
 import { useStyletron } from 'baseui';
@@ -9,10 +8,11 @@ import {
   NumericalColumn,
   CategoricalColumn,
 } from 'baseui/data-table';
+import { BrowserXhrEventDTO } from '@insight/types';
 
 type Props = {
   loading: boolean;
-  events: BrowserFetchEventDTO[];
+  events: BrowserXhrEventDTO[];
 };
 
 const NetworkTab = ({ events, loading }: Props) => {
@@ -21,19 +21,19 @@ const NetworkTab = ({ events, loading }: Props) => {
   const columns = [
     CategoricalColumn({
       title: 'Method',
-      mapDataToValue: (data: BrowserFetchEventDTO) => data.method,
+      mapDataToValue: (data: BrowserXhrEventDTO) => data.method,
     }),
     NumericalColumn({
       title: 'Status',
-      mapDataToValue: (data: BrowserFetchEventDTO) => data.status,
+      mapDataToValue: (data: BrowserXhrEventDTO) => data.status,
     }),
     CategoricalColumn({
       title: 'Type',
-      mapDataToValue: (data: BrowserFetchEventDTO) => data.type,
+      mapDataToValue: (data: BrowserXhrEventDTO) => data.type,
     }),
     StringColumn({
       title: 'Name',
-      mapDataToValue: (data: BrowserFetchEventDTO) => {
+      mapDataToValue: (data: BrowserXhrEventDTO) => {
         let pathname;
         let search;
         if (data.url[0] === '/') {

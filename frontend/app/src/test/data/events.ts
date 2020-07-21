@@ -1,7 +1,7 @@
 import {
   BrowserLogEventDTO,
   BrowserErrorEventDTO,
-  BrowserFetchEventDTO,
+  BrowserXhrEventDTO,
 } from '@insight/types';
 
 const STORYBOOK_WARN: BrowserLogEventDTO = {
@@ -74,7 +74,7 @@ export const ERROR_EVENTS = {
   SYNTAX_ERROR,
 } as const;
 
-const CREATE_PAGE_EVENT: BrowserFetchEventDTO = {
+const CREATE_PAGE_EVENT: BrowserXhrEventDTO = {
   method: 'POST',
   url: 'http://localhost:8082/v1/sessions',
   status: 200,
@@ -83,7 +83,7 @@ const CREATE_PAGE_EVENT: BrowserFetchEventDTO = {
   e: 11,
 };
 
-const GET_SESSION_EVENT: BrowserFetchEventDTO = {
+const GET_SESSION_EVENT: BrowserXhrEventDTO = {
   method: 'GET',
   url: 'http://localhost:8082/v1/sessions/d1ae54f7-e285-4bbf-bbeb-3bdc0bc7b0ba',
   status: 200,
@@ -92,7 +92,7 @@ const GET_SESSION_EVENT: BrowserFetchEventDTO = {
   e: 11,
 };
 
-const BEACON_BEAT_EVENT: BrowserFetchEventDTO = {
+const BEACON_BEAT_EVENT: BrowserXhrEventDTO = {
   method: 'POST',
   url:
     'http://localhost:8081/v1/beacon/beat?organizationId=000000&sessionId=d1ae54f7-e285-4bbf-bbeb-3bdc0bc7b0ba&deviceId=1978361a-dfae-4801-8d84-89dd6af21740&pageId=032ba89d-0d8b-4f4e-b60f-516f8291e739',
@@ -102,7 +102,7 @@ const BEACON_BEAT_EVENT: BrowserFetchEventDTO = {
   e: 11,
 };
 
-const NEXT_STACK_FRAME_EVENT: BrowserFetchEventDTO = {
+const NEXT_STACK_FRAME_EVENT: BrowserXhrEventDTO = {
   method: 'GET',
   url:
     '/__nextjs_original-stack-frame?isServerSide=false&file=file%3A%2F%2F%2FUsers%2Fmatejsnuderl%2FWorkspace%2Fpersonal%2Finsight%2Ffrontend%2Fapp%2F.next%2Fstatic%2Fdevelopment%2Fdll%2Fdll_bf9f5a6409814f8e5869.js&methodName=reconcileChildren&arguments=&lineNumber=17021&column=28',

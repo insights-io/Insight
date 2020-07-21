@@ -9,6 +9,7 @@ import static com.meemaw.events.model.shared.BrowserEventType.MOUSEDOWN_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.MOUSEMOVE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.MOUSEUP_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.NAVIGATE_KEY;
+import static com.meemaw.events.model.shared.BrowserEventType.PERFORMANCE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.RESIZE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.RESOURCE_PERFORMANCE_KEY;
 import static com.meemaw.events.model.shared.BrowserEventType.UNLOAD_KEY;
@@ -42,6 +43,7 @@ import lombok.ToString;
   @Type(value = BrowserNavigateEvent.class, name = NAVIGATE_KEY),
   @Type(value = BrowserUnloadEvent.class, name = UNLOAD_KEY),
   @Type(value = BrowserResizeEvent.class, name = RESIZE_KEY),
+  @Type(value = BrowserPerformanceEvent.class, name = PERFORMANCE_KEY),
   @Type(value = BrowserClickEvent.class, name = CLICK_KEY),
   @Type(value = BrowserMouseMoveEvent.class, name = MOUSEMOVE_KEY),
   @Type(value = BrowserMouseDownEvent.class, name = MOUSEDOWN_KEY),
