@@ -69,7 +69,7 @@ jobs:
           github_token: ${{ secrets.OPS_SYNC_TOKEN }}
       - uses: rtCamp/action-slack-notify@master
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_GENERAL_WEBHOOK }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_FIREHOSE_WEBHOOK }}
           SLACK_USERNAME: botsights
           SLACK_CHANNEL: github-firehose
           SLACK_TITLE: Syncing

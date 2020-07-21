@@ -78,3 +78,11 @@ jobs:
         env:
           PATHS: '/b/*'
           DISTRIBUTION: ${{ secrets.AWS_CF_DISTRIBUTION_ID }}
+      - uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_WEBHOOK }}
+          SLACK_USERNAME: botsights
+          SLACK_CHANNEL: release
+          SLACK_TITLE: Tracking script release
+          SLACK_MESSAGE: 'New version ${{ env.GITHUB_SHA_SHORT }} of bootstrap script released! :rocket:'
+          SLACK_ICON: https://avatars0.githubusercontent.com/u/66676697?s=96&v=4
