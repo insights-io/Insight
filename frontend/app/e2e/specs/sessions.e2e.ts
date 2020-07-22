@@ -19,13 +19,12 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   const lastSession = queryAllByText(/^.*less than 5 seconds ago$/);
-  const lastSessionListItem = lastSession.parent().parent().parent().parent();
   const showDevToolsIcon = Selector('svg[title="Arrow Left"]');
 
   await t
     .expect(lastSession.visible)
     .ok('Newly created session is dispalyed')
-    .click(lastSessionListItem)
+    .click(lastSession)
     .click(showDevToolsIcon)
     .expect(queryByPlaceholderText('Filter').visible)
     .ok('Navigates to session details page');

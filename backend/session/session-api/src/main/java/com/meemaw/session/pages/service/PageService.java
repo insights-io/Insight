@@ -54,7 +54,7 @@ public class PageService {
 
     // unrecognized device; start a new session
     if (!deviceId.equals(page.getDeviceId())) {
-      log.debug("Unrecognized device -- starting a new session");
+      log.debug("[PAGE]: Unrecognized device -- starting a new session");
       return createPageAndNewSession(pageId, deviceId, userAgent, ipAddress, page);
     }
 
@@ -65,9 +65,11 @@ public class PageService {
         .produceUni(
             maybeSessionId -> {
               if (maybeSessionId.isEmpty()) {
-                log.debug("Failed to link to an existing session -- starting new session");
+                log.debug("[PAGE]: Failed to link to an existing session -- starting new session");
                 return createPageAndNewSession(pageId, deviceId, userAgent, ipAddress, page);
               }
+              MDC.put(LoggingConstants.SESSION_ID, maybeSessionId.get().toString());
+              log.info("[PAGE]: Linking page to an existing session");
               return pageDatasource.insertPage(pageId, maybeSessionId.get(), deviceId, page);
             });
   }
@@ -77,7 +79,7 @@ public class PageService {
       UUID pageId, UUID deviceId, String userAgentString, String ipAddress, CreatePageDTO page) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
-    log.info("Creating new session");
+    log.info("[PAGE]: Creating new session");
 
     UserAgentDTO userAgent = userAgentService.parse(userAgentString);
     LocationDTO location = locationService.lookupByIp(ipAddress);
@@ -87,6 +89,10 @@ public class PageService {
   }
 
   public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {
+    MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
+    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+    MDC.put(LoggingConstants.PAGE_ID, id.toString());
+    log.debug("[PAGE]: get page");
     return pageDatasource.getPage(id, sessionId, organizationId);
   }
 }
