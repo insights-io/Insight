@@ -87,7 +87,7 @@ public class PasswordServiceImpl implements PasswordService {
   @Override
   @Traced
   @Timed(
-      name = "verifyPassword",
+      name = "forgotPassword",
       description = "A measure of how long it takes to forgot a password")
   public CompletionStage<Optional<AuthUser>> forgotPassword(
       String email, String passwordResetBaseURL) {
