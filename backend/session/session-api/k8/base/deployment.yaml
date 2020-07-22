@@ -49,6 +49,11 @@ spec:
               value: postgres-postgresql
             - name: ELASTICSEARCH_HOSTS
               value: elasticsearch-master:9200
+            - name: LOCATION_LOOKUP_SERVICE_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ipstack-credentials
+                  key: access-key
           ports:
             - containerPort: 8080
               name: http

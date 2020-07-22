@@ -16,7 +16,12 @@
   <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables"/>
   <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters"/>
   <rule ref="category/java/bestpractices.xml/AvoidStringBufferField"/>
-  <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
+  <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP">
+    <properties>
+      <property name="pattern"
+        value='^"(?!127\.0\.0\.1)[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"$'/>
+    </properties>
+  </rule>
   <rule ref="category/java/bestpractices.xml/CheckResultSet"/>
   <rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
   <rule ref="category/java/bestpractices.xml/DefaultLabelNotLastInSwitchStmt"/>
