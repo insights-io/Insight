@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.location.model.LocationDTO;
+import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -18,6 +20,7 @@ import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
+import io.quarkus.test.Mock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -34,6 +37,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
@@ -50,6 +54,16 @@ public class SessionResourceImplTest {
 
   public static final String SESSION_PAGE_PATH_TEMPLATE =
       String.join("/", SESSION_PATH_TEMPLATE, "pages", "%s");
+
+  private static final LocationDTO MOCKED_LOCATION =
+      LocationDTO.builder()
+          .ip("127.0.0.1")
+          .city("Boydton")
+          .countryName("United States")
+          .regionName("Virginia")
+          .latitude(36.667999267578125)
+          .longitude(-78.38899993896484)
+          .build();
 
   @Inject ObjectMapper objectMapper;
   @Inject PgPool pgPool;
@@ -218,6 +232,8 @@ public class SessionResourceImplTest {
     assertEquals(
         new UserAgentDTO("Desktop", "Mac OS X", "Chrome"),
         sessions.getData().get(0).getUserAgent());
+
+    assertEquals(MOCKED_LOCATION, sessions.getData().get(0).getLocation());
   }
 
   @Test
@@ -269,5 +285,15 @@ public class SessionResourceImplTest {
 
     assertNotEquals(dataResponse.getData().getSessionId(), sessionId);
     assertEquals(dataResponse.getData().getDeviceId(), deviceId);
+  }
+
+  @Mock
+  @ApplicationScoped
+  public static class MockedLocationService extends LocationService {
+
+    @Override
+    public LocationDTO lookupByIp(String ip) {
+      return MOCKED_LOCATION;
+    }
   }
 }

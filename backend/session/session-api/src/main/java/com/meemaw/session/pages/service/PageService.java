@@ -1,5 +1,7 @@
 package com.meemaw.session.pages.service;
 
+import com.meemaw.location.model.LocationDTO;
+import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
@@ -23,6 +25,7 @@ import org.slf4j.MDC;
 public class PageService {
 
   @Inject UserAgentService userAgentService;
+  @Inject LocationService locationService;
   @Inject SessionDatasource sessionDatasource;
   @Inject PageDatasource pageDatasource;
 
@@ -77,8 +80,10 @@ public class PageService {
     log.info("Creating new session");
 
     UserAgentDTO userAgent = userAgentService.parse(userAgentString);
+    LocationDTO location = locationService.lookupByIp(ipAddress);
+
     return pageDatasource.createPageAndNewSession(
-        pageId, sessionId, deviceId, userAgent, ipAddress, page);
+        pageId, sessionId, deviceId, userAgent, location, page);
   }
 
   public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {

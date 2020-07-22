@@ -15,6 +15,7 @@ import static com.meemaw.session.pages.datasource.pg.PageTable.TABLE;
 import static com.meemaw.session.pages.datasource.pg.PageTable.URL;
 import static com.meemaw.session.pages.datasource.pg.PageTable.WIDTH;
 
+import com.meemaw.location.model.LocationDTO;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
@@ -49,7 +50,7 @@ public class PgPageDatasource implements PageDatasource {
       UUID sessionId,
       UUID deviceId,
       UserAgentDTO userAgent,
-      String ipAddress,
+      LocationDTO location,
       CreatePageDTO page) {
     return pgPool
         .begin()
@@ -57,7 +58,7 @@ public class PgPageDatasource implements PageDatasource {
         .produceUni(
             transaction ->
                 createPageAndNewSession(
-                    transaction, pageId, sessionId, deviceId, userAgent, ipAddress, page));
+                    transaction, pageId, sessionId, deviceId, userAgent, location, page));
   }
 
   private Uni<PageIdentity> createPageAndNewSession(
@@ -66,12 +67,12 @@ public class PgPageDatasource implements PageDatasource {
       UUID sessionId,
       UUID deviceId,
       UserAgentDTO userAgent,
-      String ipAddress,
+      LocationDTO location,
       CreatePageDTO page) {
 
     return sessionDatasource
         .createSession(
-            transaction, sessionId, deviceId, page.getOrganizationId(), ipAddress, userAgent)
+            transaction, sessionId, deviceId, page.getOrganizationId(), location, userAgent)
         .onItem()
         .produceUni(
             session ->

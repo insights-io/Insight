@@ -2,6 +2,7 @@ package com.meemaw.session.useragent.service;
 
 import com.meemaw.useragent.model.UserAgentDTO;
 import javax.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 public class UserAgentService {
@@ -21,6 +22,7 @@ public class UserAgentService {
   }
    */
 
+  @Traced
   public UserAgentDTO parse(String userAgentString) {
     return new UserAgentDTO("Desktop", "Mac OS X", "Chrome");
   }

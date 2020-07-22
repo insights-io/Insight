@@ -1,5 +1,6 @@
 package com.meemaw.session.model;
 
+import com.meemaw.location.model.LocationDTO;
 import com.meemaw.useragent.model.UserAgentDTO;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class SessionDTO {
   UUID id;
   UUID deviceId;
   String organizationId;
-  String ipAddress;
+  LocationDTO location;
   UserAgentDTO userAgent;
   OffsetDateTime createdAt;
 }
