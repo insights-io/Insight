@@ -18,7 +18,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
     password: config.insightUserPassword,
   });
 
-  const lastSession = queryAllByText('less than 5 seconds ago');
+  const lastSession = queryAllByText(/^.*less than 5 seconds ago$/);
   const lastSessionListItem = lastSession.parent().parent().parent().parent();
   const showDevToolsIcon = Selector('svg[title="Arrow Left"]');
 

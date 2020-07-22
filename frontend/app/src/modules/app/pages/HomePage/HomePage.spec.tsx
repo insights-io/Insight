@@ -17,13 +17,21 @@ describe('<HomePage />', () => {
   });
 
   it('Should render session list when sessions', () => {
-    const { getByText, getAllByText, push } = render(<WithSessions />);
+    const { getByText, queryByText, getAllByText, push } = render(
+      <WithSessions />
+    );
 
-    expect(getAllByText('127.0.0.1').length).toEqual(2);
-    getByText('less than 5 seconds ago');
-    getByText('about 1 hour ago');
+    expect(getAllByText('Mac OS X • Chrome').length).toEqual(2);
+    expect(
+      queryByText('Unknown location - 127.0.0.1 - less than 5 seconds ago')
+    ).toBeInTheDocument();
+    expect(
+      queryByText('Unknown location - 127.0.0.1 - about 1 hour ago')
+    ).toBeInTheDocument();
 
-    userEvent.click(getByText('less than 5 seconds ago'));
+    userEvent.click(
+      getByText('Unknown location - 127.0.0.1 - less than 5 seconds ago')
+    );
 
     sandbox.assert.calledWithExactly(
       push,
