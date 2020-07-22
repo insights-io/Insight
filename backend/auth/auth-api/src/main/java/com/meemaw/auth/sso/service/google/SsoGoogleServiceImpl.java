@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
@@ -59,10 +60,13 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
 
   @Override
   @Traced
+  @Timed(
+      name = "oauth2callback",
+      description = "A measure of how long it takes to do execute Google oauth2callback")
   public CompletionStage<SsoSocialLogin> oauth2callback(
       String state, String sessionState, String code, String redirectURI) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {
-      log.debug("State miss-match, session: {}, query: {}", sessionState, state);
+      log.warn("[AUTH]: State miss-match, session: {}, query: {}", sessionState, state);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 
@@ -83,8 +87,7 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
                   .socialLogin(email, fullName)
                   .thenApply(
                       sessionId -> {
-                        MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
-                        log.info("Authenticated with Google OAuth");
+                        log.info("[AUTH]: User authenticated via Google OAuth email: {}", email);
                         return new SsoSocialLogin(sessionId, location, cookieDomain);
                       });
             });

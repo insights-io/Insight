@@ -71,9 +71,10 @@ public interface SsoService {
    *
    * @param email of the user
    * @param password of the user
+   * @param ipAddress of the user
    * @return String session ID
    */
-  CompletionStage<String> login(String email, String password);
+  CompletionStage<String> login(String email, String password, String ipAddress);
 
   /**
    * Log user in using social login.

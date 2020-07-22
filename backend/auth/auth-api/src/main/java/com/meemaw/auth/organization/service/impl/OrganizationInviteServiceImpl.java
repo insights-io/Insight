@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
@@ -43,15 +44,22 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   Template teamInviteTemplate;
 
   @Override
+  @Traced
   public CompletionStage<TeamInviteDTO> createTeamInvite(
       InviteCreateDTO invite, InsightPrincipal principal, String acceptInviteURL) {
     AuthUser authUser = principal.user();
+    String organizationId = principal.user().getOrganizationId();
+    log.info(
+        "[AUTH]: Creating team invite for user: {} organizationId: {}",
+        invite.getEmail(),
+        organizationId);
+
     return pgPool
         .begin()
         .thenCompose(
             transaction ->
                 datasource
-                    .findOrganization(authUser.getOrganizationId(), transaction)
+                    .findOrganization(organizationId, transaction)
                     .thenCompose(
                         maybeOrganization -> {
                           Organization organization =
@@ -65,7 +73,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                                   organization.getName());
 
                           return createTeamInvite(
-                              authUser.getOrganizationId(),
+                              organizationId,
                               authUser.getId(),
                               teamInviteTemplateData,
                               acceptInviteURL,
@@ -87,6 +95,10 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                     .exceptionally(
                         throwable -> {
                           transaction.rollback();
+                          log.error(
+                              "[AUTH]: Failed to send team invite email to user: {} token: {}",
+                              teamInvite.getEmail(),
+                              teamInvite.getToken());
                           throw Boom.serverError()
                               .message("Failed to send invite email")
                               .exception();
@@ -96,7 +108,9 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   }
 
   @Override
+  @Traced
   public CompletionStage<Boolean> acceptTeamInvite(UUID token, InviteAcceptDTO inviteAccept) {
+    log.info("[AUTH]: Accepting team invite attempt for token: {}", token);
     return pgPool
         .begin()
         .thenCompose(transaction -> acceptTeamInvite(token, inviteAccept, transaction));
@@ -113,7 +127,16 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                   maybeTeamInvite.orElseThrow(
                       () -> Boom.badRequest().message("Team invite does not exist.").exception());
 
+              log.info(
+                  "[AUTH]: Accepting team invite attempt for user: {} organizationId: {}",
+                  teamInvite.getEmail(),
+                  teamInvite.getOrganizationId());
+
               if (teamInvite.hasExpired()) {
+                log.info(
+                    "[AUTH]: Team invite has expired for user: {} organizationId: {}",
+                    teamInvite.getEmail(),
+                    teamInvite.getOrganizationId());
                 throw Boom.badRequest().message("Team invite expired").exception();
               }
               return teamInvite;
@@ -135,6 +158,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   }
 
   @Override
+  @Traced
   public CompletionStage<Void> sendTeamInvite(
       UUID token, InsightPrincipal principal, String acceptInviteURL) {
     String creatorFullName = principal.user().getFullName();
@@ -160,7 +184,9 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   }
 
   @Override
+  @Traced
   public CompletionStage<Boolean> deleteTeamInvite(UUID token, InsightPrincipal principal) {
+    log.info("[AUTH]: Delete team invite attempt for token: {}", token);
     return inviteDatasource
         .delete(token)
         .thenApply(
@@ -168,31 +194,39 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
               if (!deleted) {
                 throw Boom.status(Status.NOT_FOUND).exception();
               }
+              log.info("[AUTH]: Team invite deleted for token: {}", token);
               return true;
             });
   }
 
   @Override
+  @Traced
   public CompletionStage<List<TeamInviteDTO>> listTeamInvites(InsightPrincipal principal) {
-    return inviteDatasource.find(principal.user().getOrganizationId());
+    String organizationId = principal.user().getOrganizationId();
+    log.debug("[AUTH]: List team invites for organizationId: {}", organizationId);
+    return inviteDatasource.find(organizationId);
   }
 
   private CompletionStage<Void> sendInviteEmail(
-      UUID token, TeamInviteTemplateData teamInviteTemplateData, String acceptInviteURL) {
+      UUID token, TeamInviteTemplateData templateData, String acceptInviteURL) {
     String subject = "You've been invited to Insight";
+    log.info(
+        "[AUTH]: Sending team invite email to user: {} token: {}",
+        templateData.getRecipientEmail(),
+        token);
 
     return teamInviteTemplate
-        .data("creator_full_name", teamInviteTemplateData.getCreatorFullName())
+        .data("creator_full_name", templateData.getCreatorFullName())
         .data("token", token)
-        .data("role", teamInviteTemplateData.getRecipientRole())
-        .data("company", teamInviteTemplateData.getOrganizationName())
+        .data("role", templateData.getRecipientRole())
+        .data("company", templateData.getOrganizationName())
         .data("acceptInviteURL", acceptInviteURL)
         .renderAsync()
         .thenCompose(
             html ->
                 mailer
                     .send(
-                        Mail.withHtml(teamInviteTemplateData.getRecipientEmail(), subject, html)
+                        Mail.withHtml(templateData.getRecipientEmail(), subject, html)
                             .setFrom(MailingConstants.FROM_SUPPORT))
                     .subscribeAsCompletionStage());
   }

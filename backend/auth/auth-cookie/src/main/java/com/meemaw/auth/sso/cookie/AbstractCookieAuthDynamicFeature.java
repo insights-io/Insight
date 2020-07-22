@@ -68,7 +68,7 @@ public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature
         throw Boom.status(Status.UNAUTHORIZED).exception();
       }
 
-      MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
+      MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
       Optional<T> maybeUser = findSession(sessionId).toCompletableFuture().join();
       T user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
       setUserContext(user);

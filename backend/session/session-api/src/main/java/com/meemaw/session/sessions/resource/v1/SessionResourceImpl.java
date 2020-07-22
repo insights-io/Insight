@@ -35,10 +35,10 @@ public class SessionResourceImpl implements SessionResource {
   @Override
   public CompletionStage<Response> createPage(
       CreatePageDTO body, String userAgent, String xForwardedFor) {
-    String clientIpAddress = Optional.ofNullable(xForwardedFor).orElse(request.getRemoteAddr());
+    String ipAddress = Optional.ofNullable(xForwardedFor).orElse(request.getRemoteAddr());
 
     return pageService
-        .createPage(body, userAgent, clientIpAddress)
+        .createPage(body, userAgent, ipAddress)
         .subscribeAsCompletionStage()
         .thenApply(
             pageIdentity -> {

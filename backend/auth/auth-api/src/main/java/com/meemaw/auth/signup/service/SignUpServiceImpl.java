@@ -12,6 +12,7 @@ import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
@@ -27,7 +28,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
@@ -46,9 +49,12 @@ public class SignUpServiceImpl implements SignUpService {
 
   @Override
   @Traced
+  @Timed(name = "signUp", description = "A measure of how long it takes to do a sign up")
   public CompletionStage<Optional<UUID>> signUp(
       String referer, String serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
-    log.info("Sign up request");
+    MDC.put(LoggingConstants.USER_EMAIL, signUpRequestDTO.getEmail());
+    log.info("[AUTH]: Sign up request for user: {}", signUpRequestDTO.getEmail());
+
     String hashedPassword = passwordService.hashPassword(signUpRequestDTO.getPassword());
     SignUpRequest signUpRequest =
         SignUpRequest.builder()
@@ -67,13 +73,13 @@ public class SignUpServiceImpl implements SignUpService {
 
   private CompletionStage<Optional<UUID>> signUp(
       String serverBaseURL, SignUpRequest signUpRequest, Transaction transaction) {
-
+    String email = signUpRequest.getEmail();
     return signUpDatasource
-        .selectIsEmailTaken(signUpRequest.getEmail(), transaction)
+        .selectIsEmailTaken(email, transaction)
         .thenCompose(
             emailTaken -> {
               if (emailTaken) {
-                log.info("Sign up request email taken");
+                log.info("[AUTH]: Sign up request email taken");
                 return CompletableFuture.completedStage(Optional.empty());
               }
 
@@ -81,11 +87,15 @@ public class SignUpServiceImpl implements SignUpService {
                   .createSignUpRequest(signUpRequest, transaction)
                   .thenCompose(
                       token ->
-                          sendSignUpCompleteEmail(signUpRequest.getEmail(), serverBaseURL, token)
+                          sendSignUpCompleteEmail(email, serverBaseURL, token)
                               .exceptionally(
                                   throwable -> {
                                     transaction.rollback();
-                                    log.error("Failed to send sign up completion email", throwable);
+                                    log.error(
+                                        "[AUTH]: Failed to send sign up completion email to user: {} token: {}",
+                                        email,
+                                        token,
+                                        throwable);
                                     throw Boom.serverError()
                                         .message("Failed to send sign up completion email")
                                         .exception(throwable);
@@ -95,8 +105,10 @@ public class SignUpServiceImpl implements SignUpService {
             });
   }
 
+  @Traced
   private CompletionStage<Void> sendSignUpCompleteEmail(
       String email, String serverBaseURL, UUID token) {
+    log.info("[AUTH]: Sending sign up complete email to user: {} token: {}", email, token);
     String subject = "Finish your registration";
     String completeSignUpURL =
         String.join("/", serverBaseURL + SignUpResource.PATH, token.toString(), "complete");
@@ -116,7 +128,11 @@ public class SignUpServiceImpl implements SignUpService {
 
   @Override
   @Traced
+  @Timed(
+      name = "completeSignUp",
+      description = "A measure of how long it takes to do complete a sign up")
   public CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUp(UUID token) {
+    log.info("[AUTH]: Complete sign up attempt token: {}", token);
     return pgPool
         .begin()
         .thenCompose(
@@ -132,13 +148,16 @@ public class SignUpServiceImpl implements SignUpService {
 
   private CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUpRequest(
       SignUpRequest signUpRequest, Transaction transaction) {
+    String email = signUpRequest.getEmail();
+    UUID token = signUpRequest.getToken();
+    MDC.put(LoggingConstants.USER_EMAIL, email);
     if (signUpRequest.hasExpired()) {
-      log.info("Sign up request has expired");
+      log.info("[AUTH]: Sign up request expired for user: {} token: {}", email, token);
       throw Boom.badRequest().message("Sign up request has expired").exception();
     }
-    String email = signUpRequest.getEmail();
+
     String organizationId = Organization.identifier();
-    UserRole userRole = UserRole.ADMIN;
+    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
     return organizationDatasource
         .createOrganization(organizationId, signUpRequest.getCompany(), transaction)
@@ -149,13 +168,13 @@ public class SignUpServiceImpl implements SignUpService {
                         email,
                         signUpRequest.getFullName(),
                         organization.getId(),
-                        userRole,
+                        UserRole.ADMIN,
                         transaction)
                     .thenCompose(
                         createdUser ->
                             CompletableFuture.allOf(
                                     signUpDatasource
-                                        .deleteSignUpRequest(signUpRequest.getToken(), transaction)
+                                        .deleteSignUpRequest(token, transaction)
                                         .toCompletableFuture(),
                                     passwordDatasource
                                         .storePassword(
@@ -166,7 +185,10 @@ public class SignUpServiceImpl implements SignUpService {
                                 .thenCompose(x -> transaction.commit())
                                 .thenApply(
                                     x -> {
-                                      log.info("Sign up completed");
+                                      log.info(
+                                          "[AUTH]: Sign up successful for user: {} token: {}",
+                                          email,
+                                          token);
                                       return Pair.of(createdUser, signUpRequest);
                                     })));
   }
@@ -183,8 +205,9 @@ public class SignUpServiceImpl implements SignUpService {
 
   @Override
   @Traced
+  @Timed(name = "socialSignUp", description = "A measure of how long it takes to do social sign up")
   public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
-    log.info("Social sign up request");
+    log.info("[AUTH]: Social sign up attempt");
     return pgPool
         .begin()
         .thenCompose(

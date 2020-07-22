@@ -23,6 +23,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -41,8 +42,11 @@ public class PasswordServiceImpl implements PasswordService {
 
   @Override
   @Traced
+  @Timed(
+      name = "verifyPassword",
+      description = "A measure of how long it takes to verify a password")
   public CompletionStage<AuthUser> verifyPassword(String email, String password) {
-    log.info("[verifyPassword]: request for email: {}", email);
+    log.info("[AUTH]: verify password request for user: {}", email);
     return passwordDatasource
         .findUserWithPassword(email)
         .thenApply(
@@ -55,11 +59,12 @@ public class PasswordServiceImpl implements PasswordService {
 
               String hashedPassword = withPassword.getPassword();
               if (hashedPassword == null) {
-                log.info("Could not associate password with user={}", email);
+                log.info("[AUTH]: Could not associate password with user={}", email);
                 throw Boom.badRequest().message("Invalid email or password").exception();
               }
 
               if (!BCrypt.checkpw(password, hashedPassword)) {
+                log.info("[AUTH]: Failed to verify password for user user: {}", email);
                 throw Boom.badRequest().message("Invalid email or password").exception();
               }
 
@@ -71,16 +76,22 @@ public class PasswordServiceImpl implements PasswordService {
               if (cause instanceof BoomException) {
                 throw (BoomException) cause;
               }
-              log.error("Failed to retrieve user with password hash", throwable);
+              log.error(
+                  "[AUTH]: Failed to retrieve user with password hash for user: {}",
+                  email,
+                  throwable);
               throw new DatabaseException(throwable);
             });
   }
 
   @Override
   @Traced
+  @Timed(
+      name = "verifyPassword",
+      description = "A measure of how long it takes to forgot a password")
   public CompletionStage<Optional<AuthUser>> forgotPassword(
       String email, String passwordResetBaseURL) {
-    log.info("[forgotPassword]: request for email: {}", email);
+    log.info("[AUTH]: Forgot password request for user: {}", email);
     String passwordResetURL = String.join("/", passwordResetBaseURL, "password-reset");
 
     return userDatasource
@@ -89,7 +100,7 @@ public class PasswordServiceImpl implements PasswordService {
             maybeUser -> {
               // Don't leak that email is in use
               if (maybeUser.isEmpty()) {
-                log.info("[forgotPassword]: no user associated with email: {}", email);
+                log.info("[AUTH]: No user associated with email: {}", email);
                 return CompletableFuture.completedStage(maybeUser);
               }
 
@@ -107,7 +118,6 @@ public class PasswordServiceImpl implements PasswordService {
   private CompletionStage<AuthUser> forgotPassword(
       AuthUser authUser, String passwordResetURL, Transaction transaction) {
     String email = authUser.getEmail();
-    String org = authUser.getOrganizationId();
     UUID userId = authUser.getId();
 
     return passwordResetDatasource
@@ -119,9 +129,9 @@ public class PasswordServiceImpl implements PasswordService {
                         throwable -> {
                           transaction.rollback();
                           log.error(
-                              "Failed to send password reset email={} org={}",
+                              "[AUTH] Failed to send password reset email: {} token: {}",
                               email,
-                              org,
+                              passwordResetRequest.getToken(),
                               throwable);
                           throw Boom.serverError()
                               .message("Failed to send password reset email")
@@ -135,6 +145,7 @@ public class PasswordServiceImpl implements PasswordService {
       PasswordResetRequest passwordResetRequest, String passwordResetURL) {
     String email = passwordResetRequest.getEmail();
     UUID token = passwordResetRequest.getToken();
+    log.info("[AUTH]: Sending password reset email to user: {} token: {}", email, token);
     String subject = "Reset your Insight password";
 
     return passwordResetTemplate
@@ -152,8 +163,9 @@ public class PasswordServiceImpl implements PasswordService {
 
   @Override
   @Traced
+  @Timed(name = "resetPassword", description = "A measure of how long it takes to reset a password")
   public CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password) {
-    log.info("[resetPassword]: request with token: {}", token);
+    log.info("[AUTH]: Reset password attempt token: {}", token);
     return passwordResetDatasource
         .findPasswordResetRequest(token)
         .thenApply(
@@ -168,6 +180,9 @@ public class PasswordServiceImpl implements PasswordService {
 
   @Override
   @Traced
+  @Timed(
+      name = "changePassword",
+      description = "A measure of how long it takes to change a password")
   public CompletionStage<Boolean> changePassword(
       UUID userId,
       String email,
@@ -212,6 +227,10 @@ public class PasswordServiceImpl implements PasswordService {
   private CompletionStage<PasswordResetRequest> reset(
       PasswordResetRequest request, String password) {
     if (request.hasExpired()) {
+      log.info(
+          "[AUTH]: Password reset request expired for user: {} token: {}",
+          request.getEmail(),
+          request.getToken());
       throw Boom.badRequest().message("Password reset request expired").exception();
     }
 
@@ -231,9 +250,12 @@ public class PasswordServiceImpl implements PasswordService {
 
   @Override
   @Traced
+  @Timed(
+      name = "createPassword",
+      description = "A measure of how long it takes to create a password")
   public CompletionStage<Boolean> createPassword(
       UUID userId, String email, String password, Transaction transaction) {
-    log.info("[createPassword]: request for email: {}", email);
+    log.info("[AUTH]: Create password request for user {}", email);
     return passwordDatasource
         .storePassword(userId, hashPassword(password), transaction)
         .thenApply(x -> true);
@@ -241,8 +263,11 @@ public class PasswordServiceImpl implements PasswordService {
 
   @Override
   @Traced
+  @Timed(
+      name = "passwordResetRequestExists",
+      description = "A measure of how long it takes to check if password reset request exists")
   public CompletionStage<Boolean> passwordResetRequestExists(UUID token) {
-    log.info("[passwordResetRequestExists]: request for token: {}", token);
+    log.info("[AUTH]: Password reset request exists for token: {}", token);
     return passwordResetDatasource.findPasswordResetRequest(token).thenApply(Optional::isPresent);
   }
 }
