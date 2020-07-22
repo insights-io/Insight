@@ -28,6 +28,14 @@ const NetworkTab = ({ events, loading }: Props) => {
       mapDataToValue: (data: BrowserXhrEventDTO) => data.status,
     }),
     CategoricalColumn({
+      title: 'Protocol',
+      mapDataToValue: (data: BrowserXhrEventDTO) => data.nextHopProtocol,
+    }),
+    CategoricalColumn({
+      title: 'Initiator',
+      mapDataToValue: (data: BrowserXhrEventDTO) => data.initiatorType,
+    }),
+    CategoricalColumn({
       title: 'Type',
       mapDataToValue: (data: BrowserXhrEventDTO) => data.type,
     }),

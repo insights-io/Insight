@@ -81,6 +81,8 @@ const CREATE_PAGE_EVENT: BrowserXhrEventDTO = {
   type: 'cors',
   t: 287,
   e: 11,
+  initiatorType: 'xmlhttprequest',
+  nextHopProtocol: 'h2',
 };
 
 const GET_SESSION_EVENT: BrowserXhrEventDTO = {
@@ -90,6 +92,8 @@ const GET_SESSION_EVENT: BrowserXhrEventDTO = {
   type: 'cors',
   t: 338,
   e: 11,
+  initiatorType: 'fetch',
+  nextHopProtocol: 'http/1.1',
 };
 
 const BEACON_BEAT_EVENT: BrowserXhrEventDTO = {
@@ -100,6 +104,8 @@ const BEACON_BEAT_EVENT: BrowserXhrEventDTO = {
   type: 'cors',
   t: 20739,
   e: 11,
+  initiatorType: 'fetch',
+  nextHopProtocol: 'http/1.1',
 };
 
 const NEXT_STACK_FRAME_EVENT: BrowserXhrEventDTO = {
@@ -107,9 +113,10 @@ const NEXT_STACK_FRAME_EVENT: BrowserXhrEventDTO = {
   url:
     '/__nextjs_original-stack-frame?isServerSide=false&file=file%3A%2F%2F%2FUsers%2Fmatejsnuderl%2FWorkspace%2Fpersonal%2Finsight%2Ffrontend%2Fapp%2F.next%2Fstatic%2Fdevelopment%2Fdll%2Fdll_bf9f5a6409814f8e5869.js&methodName=reconcileChildren&arguments=&lineNumber=17021&column=28',
   status: 204,
-  type: 'basic',
+  type: null,
   t: 2924,
   e: 11,
+  initiatorType: 'xmlhttprequest',
 };
 
 export const FETCH_EVENTS = {

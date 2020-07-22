@@ -1,6 +1,6 @@
 type SequenceID = number;
 type Timestamp = number;
-type XhrInitiatorType = 'fetch' | 'xmlhttprequest';
+export type XhrInitiatorType = 'fetch' | 'xmlhttprequest';
 
 export const enum EventType {
   NAVIGATE = 0,
@@ -54,7 +54,7 @@ export interface BrowserXhrEventDTO extends AbstractBrowserEventDTO {
   method: string;
   url: string;
   status: number;
-  type: string;
+  type: string | null;
   initiatorType: XhrInitiatorType;
   nextHopProtocol?: string;
 }
