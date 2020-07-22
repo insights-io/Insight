@@ -10,9 +10,11 @@ import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -26,6 +28,7 @@ public class PasswordResourceImpl implements PasswordResource {
   @Inject InsightPrincipal insightPrincipal;
   @Context UriInfo info;
   @Context HttpServerRequest request;
+  @Context HttpServletRequest servletRequest;
 
   @Override
   public CompletionStage<Response> forgotPassword(
@@ -40,15 +43,18 @@ public class PasswordResourceImpl implements PasswordResource {
   }
 
   @Override
-  public CompletionStage<Response> resetPassword(UUID token, PasswordResetRequestDTO payload) {
+  public CompletionStage<Response> resetPassword(
+      UUID token, PasswordResetRequestDTO payload, String xForwardedFor) {
     String password = payload.getPassword();
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
+    String ipAddress = Optional.ofNullable(xForwardedFor).orElse(servletRequest.getRemoteAddr());
+
     return passwordService
         .resetPassword(token, password)
         .thenCompose(
             passwordResetRequest ->
                 ssoService
-                    .login(passwordResetRequest.getEmail(), password)
+                    .login(passwordResetRequest.getEmail(), password, ipAddress)
                     .thenApply(sessionId -> SsoSession.cookieResponse(sessionId, cookieDomain)));
   }
 

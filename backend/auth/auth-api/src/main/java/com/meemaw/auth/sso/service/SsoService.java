@@ -71,7 +71,7 @@ public interface SsoService {
    *
    * @param email of the user
    * @param password of the user
-   * @param ipAddress of the user
+   * @param ipAddress of the request associated with login attempt
    * @return String session ID
    */
   CompletionStage<String> login(String email, String password, String ipAddress);
