@@ -1,5 +1,6 @@
 package com.meemaw.session.model;
 
+import com.meemaw.useragent.model.UserAgentDTO;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -16,6 +17,6 @@ public class SessionDTO {
   UUID deviceId;
   String organizationId;
   String ipAddress;
-  String userAgent;
+  UserAgentDTO userAgent;
   OffsetDateTime createdAt;
 }

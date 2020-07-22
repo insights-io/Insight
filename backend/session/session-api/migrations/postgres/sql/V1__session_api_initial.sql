@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS session.session
     device_id       UUID        NOT NULL,
     organization_id TEXT        NOT NULL,
     ip_address      TEXT        NOT NULL,
-    user_agent      TEXT        NOT NULL,
+    user_agent      JSON        NOT NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     PRIMARY KEY (id, device_id, organization_id, created_at)

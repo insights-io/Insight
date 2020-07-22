@@ -67,11 +67,13 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  @Disabled
+  @Disabled // TODO: enable once S2S auth
   public void get_page_should_be_under_cookie_auth() {
     String path =
         String.format(
-            SessionResourceTest.SESSION_PAGE_PATH_TEMPLATE, UUID.randomUUID(), UUID.randomUUID());
+            SessionResourceImplTest.SESSION_PAGE_PATH_TEMPLATE,
+            UUID.randomUUID(),
+            UUID.randomUUID());
 
     cookieExpect401(path, null);
     cookieExpect401(path, "random");

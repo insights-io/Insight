@@ -5,7 +5,9 @@ import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.pages.datasource.PageDatasource;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
+import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.shared.logging.LoggingConstants;
+import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +22,7 @@ import org.slf4j.MDC;
 @Slf4j
 public class PageService {
 
+  @Inject UserAgentService userAgentService;
   @Inject SessionDatasource sessionDatasource;
   @Inject PageDatasource pageDatasource;
 
@@ -68,10 +71,12 @@ public class PageService {
 
   @Traced
   private Uni<PageIdentity> createPageAndNewSession(
-      UUID pageId, UUID deviceId, String userAgent, String ipAddress, CreatePageDTO page) {
+      UUID pageId, UUID deviceId, String userAgentString, String ipAddress, CreatePageDTO page) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
     log.info("Creating new session");
+
+    UserAgentDTO userAgent = userAgentService.parse(userAgentString);
     return pageDatasource.createPageAndNewSession(
         pageId, sessionId, deviceId, userAgent, ipAddress, page);
   }

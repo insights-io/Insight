@@ -17,6 +17,7 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.meemaw.useragent.model.UserAgentDTO;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -31,6 +32,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import org.jooq.Query;
@@ -42,7 +44,7 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTestResource(AuthApiTestResource.class)
-public class SessionResourceTest {
+public class SessionResourceImplTest {
 
   public static final String SESSION_PATH_TEMPLATE = String.join("/", SessionResource.PATH, "%s");
 
@@ -198,16 +200,24 @@ public class SessionResourceTest {
             .as(new TypeRef<>() {});
 
     // GET sessions should return 2 newly created sessions
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(
-            String.format(
-                "%s?created_at=gte:%s",
-                SessionResource.PATH, firstSessionDataResponse.getData().getCreatedAt()))
-        .then()
-        .statusCode(200)
-        .body("data.size()", is(2));
+    DataResponse<List<SessionDTO>> sessions =
+        given()
+            .when()
+            .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+            .get(
+                String.format(
+                    "%s?created_at=gte:%s",
+                    SessionResource.PATH, firstSessionDataResponse.getData().getCreatedAt()))
+            .then()
+            .statusCode(200)
+            .body("data.size()", is(2))
+            .extract()
+            .response()
+            .as(new TypeRef<>() {});
+
+    assertEquals(
+        new UserAgentDTO("Desktop", "Mac OS X", "Chrome"),
+        sessions.getData().get(0).getUserAgent());
   }
 
   @Test

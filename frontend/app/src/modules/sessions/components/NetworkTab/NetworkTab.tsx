@@ -46,13 +46,19 @@ const NetworkTab = ({ events, loading }: Props) => {
         let search;
         if (data.url[0] === '/') {
           pathname = data.url;
-          search = `?${pathname.split('?')[1]}`;
+          const [_, searchQuery] = pathname.split('?');
+          if (searchQuery) {
+            search = `?${searchQuery}`;
+          } else {
+            search = '';
+          }
         } else {
           const url = new URL(data.url);
           pathname = url.pathname;
           search = url.search;
         }
         const split = pathname.split('/');
+
         return `${split[split.length - 1]}${search}`;
       },
     }),

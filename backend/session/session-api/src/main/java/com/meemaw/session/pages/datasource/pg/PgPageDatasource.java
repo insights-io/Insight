@@ -22,6 +22,7 @@ import com.meemaw.session.pages.datasource.PageDatasource;
 import com.meemaw.session.sessions.datasource.pg.PgSessionDatasource;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
@@ -47,7 +48,7 @@ public class PgPageDatasource implements PageDatasource {
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
-      String userAgent,
+      UserAgentDTO userAgent,
       String ipAddress,
       CreatePageDTO page) {
     return pgPool
@@ -64,9 +65,10 @@ public class PgPageDatasource implements PageDatasource {
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
-      String userAgent,
+      UserAgentDTO userAgent,
       String ipAddress,
       CreatePageDTO page) {
+
     return sessionDatasource
         .createSession(
             transaction, sessionId, deviceId, page.getOrganizationId(), ipAddress, userAgent)
