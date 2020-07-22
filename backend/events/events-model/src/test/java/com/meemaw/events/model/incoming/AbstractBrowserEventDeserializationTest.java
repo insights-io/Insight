@@ -1,6 +1,7 @@
 package com.meemaw.events.model.incoming;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.meemaw.events.model.shared.BrowserEventType;
@@ -209,8 +210,27 @@ public class AbstractBrowserEventDeserializationTest {
   }
 
   @Test
-  public void __11__xhrBeaconEventDeserializationTest() throws IOException, URISyntaxException {
-    String payload = EventTestData.readIncomingEvent("11__xhr.json");
+  public void __11__xhr_xmlhttprequestBeaconEventDeserializationTest()
+      throws IOException, URISyntaxException {
+    String payload = EventTestData.readIncomingEvent("11__xhr__xmlhttprequest.json");
+    AbstractBrowserEvent<?> deserialized =
+        JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
+    assertEquals(BrowserXhrEvent.class, deserialized.getClass());
+
+    BrowserXhrEvent event = (BrowserXhrEvent) deserialized;
+    assertEquals("GET", event.arguments.getMethod());
+    assertEquals("http://localhost:8082/v1/sessions", event.arguments.getUrl());
+    assertEquals(200, event.arguments.getStatus());
+    assertNull(event.arguments.getType());
+    assertEquals("xmlhttprequest", event.arguments.getInitiatorType());
+    assertEquals("h2", event.arguments.getNextHopProtocol());
+    assertEquals(BrowserEventType.XHR, event.getEventType());
+  }
+
+  @Test
+  public void __11__xhr_fetchBeaconEventDeserializationTest()
+      throws IOException, URISyntaxException {
+    String payload = EventTestData.readIncomingEvent("11__xhr__fetch.json");
     AbstractBrowserEvent<?> deserialized =
         JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
     assertEquals(BrowserXhrEvent.class, deserialized.getClass());
@@ -220,6 +240,8 @@ public class AbstractBrowserEventDeserializationTest {
     assertEquals("http://localhost:8082/v1/sessions", event.arguments.getUrl());
     assertEquals(200, event.arguments.getStatus());
     assertEquals("cors", event.arguments.getType());
+    assertEquals("fetch", event.arguments.getInitiatorType());
+    assertEquals("http/1.1", event.arguments.getNextHopProtocol());
     assertEquals(BrowserEventType.XHR, event.getEventType());
   }
 

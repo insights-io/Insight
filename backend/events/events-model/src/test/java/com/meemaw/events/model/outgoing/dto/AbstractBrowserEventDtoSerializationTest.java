@@ -1,6 +1,7 @@
 package com.meemaw.events.model.outgoing.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.meemaw.events.model.shared.BrowserEventType;
 import com.meemaw.events.model.shared.LogLevel;
@@ -252,6 +253,28 @@ public class AbstractBrowserEventDtoSerializationTest {
     assertEquals("http://localhost:8082/v1/sessions", event.getUrl());
     assertEquals(200, event.getStatus());
     assertEquals("cors", event.getType());
+    assertNull(event.getInitiatorType());
+    assertNull(event.getNextHopProtocol());
+    assertEquals(BrowserEventType.XHR, event.getEventType());
+    SameJSON.assertEquals(payload, JacksonMapper.get().writeValueAsString(event));
+  }
+
+  @Test
+  public void __11__xhrResourcePerformanceEnrichedEventDtoSerializationTest()
+      throws IOException, JSONException, URISyntaxException {
+    String payload = EventTestData.readOutgoingEvent("11__xhr__resourceperformance_enriched.json");
+    AbstractBrowserEventDTO deserialized =
+        JacksonMapper.get().readValue(payload, AbstractBrowserEventDTO.class);
+    assertEquals(BrowserXhrEventDTO.class, deserialized.getClass());
+
+    BrowserXhrEventDTO event = (BrowserXhrEventDTO) deserialized;
+    assertEquals(10812, event.getTimestamp());
+    assertEquals("GET", event.getMethod());
+    assertEquals("http://localhost:8082/v1/sessions", event.getUrl());
+    assertEquals(200, event.getStatus());
+    assertEquals("cors", event.getType());
+    assertEquals("fetch", event.getInitiatorType());
+    assertEquals("http/1.1", event.getNextHopProtocol());
     assertEquals(BrowserEventType.XHR, event.getEventType());
     SameJSON.assertEquals(payload, JacksonMapper.get().writeValueAsString(event));
   }

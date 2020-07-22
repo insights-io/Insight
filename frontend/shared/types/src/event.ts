@@ -1,5 +1,6 @@
 type SequenceID = number;
 type Timestamp = number;
+type XhrInitiatorType = 'fetch' | 'xmlhttprequest';
 
 export const enum EventType {
   NAVIGATE = 0,
@@ -13,7 +14,7 @@ export const enum EventType {
   LOAD = 8,
   LOG = 9,
   ERROR = 10,
-  FETCH = 11,
+  XHR = 11,
   RESOURCE_PERFORMANCE = 12,
 }
 
@@ -49,11 +50,13 @@ export interface BrowserErrorEventDTO extends AbstractBrowserEventDTO {
 }
 
 export interface BrowserXhrEventDTO extends AbstractBrowserEventDTO {
-  e: EventType.FETCH;
+  e: EventType.XHR;
   method: string;
   url: string;
   status: number;
   type: string;
+  initiatorType: XhrInitiatorType;
+  nextHopProtocol?: string;
 }
 
 export interface BrowserResourcePerformanceEventDTO

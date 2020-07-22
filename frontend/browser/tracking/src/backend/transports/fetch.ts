@@ -1,7 +1,7 @@
 import { EventData } from 'event';
 import { GlobalObject } from 'context/Context';
 
-import { Status, RequestResponseTransport } from './base';
+import { Status, RequestResponseTransport, ContentType } from './base';
 
 /** `fetch` based transport */
 export class FetchTranport implements RequestResponseTransport {
@@ -9,11 +9,14 @@ export class FetchTranport implements RequestResponseTransport {
     return fetch(url, {
       body,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': ContentType.JSON },
     }).then((response) => {
-      return response
-        .json()
-        .then((json) => ({ status: response.status, json }));
+      if (response.headers.get('Content-type') === ContentType.JSON) {
+        return response
+          .json()
+          .then((json) => ({ status: response.status, json }));
+      }
+      return { status: response.status, json: undefined };
     });
   };
 

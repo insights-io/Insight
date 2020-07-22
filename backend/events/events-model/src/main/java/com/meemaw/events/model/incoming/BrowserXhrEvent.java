@@ -11,13 +11,15 @@ public class BrowserXhrEvent extends AbstractBrowserEvent<Arguments> {
 
   @Override
   public Map<String, Object> index() {
-    Map<String, Object> index = new HashMap<>(6);
+    Map<String, Object> index = new HashMap<>(8);
     index.put(EVENT_TYPE, getEventTypeKey());
     index.put(TIMESTAMP, timestamp);
     index.put("method", arguments.getMethod());
     index.put("url", arguments.getUrl());
     index.put("status", arguments.getStatus());
     index.put("type", arguments.getType());
+    index.put("initiatorType", arguments.getInitiatorType());
+    index.put("nextHopProtocol", arguments.getNextHopProtocol());
     return index;
   }
 
@@ -28,5 +30,7 @@ public class BrowserXhrEvent extends AbstractBrowserEvent<Arguments> {
     String url;
     int status;
     String type;
+    String initiatorType;
+    String nextHopProtocol; // extracted from PerformanceResourceTiming
   }
 }

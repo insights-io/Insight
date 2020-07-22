@@ -2,6 +2,10 @@
 /* eslint-disable no-nested-ternary */
 import { EventData } from 'event';
 
+export const enum ContentType {
+  JSON = 'application/json',
+}
+
 export class Status {
   public static Unknown = 'unknown';
   public static Success = 'success';
@@ -42,7 +46,7 @@ export interface BaseTransport {
 
 export type PostResponse<T> = {
   status: number;
-  json: Promise<T>;
+  json: T;
 };
 
 export interface RequestResponseTransport extends BaseTransport {
