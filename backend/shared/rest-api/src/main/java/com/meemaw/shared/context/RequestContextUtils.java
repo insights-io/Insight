@@ -1,5 +1,6 @@
 package com.meemaw.shared.context;
 
+import com.meemaw.shared.rest.headers.MissingHttpHeaders;
 import java.util.Optional;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -42,8 +43,8 @@ public final class RequestContextUtils {
    * @return server base URL
    */
   public static String getServerBaseURL(ContainerRequestContext context) {
-    String proto = context.getHeaderString("X-Forwarded-Proto");
-    String host = context.getHeaderString("X-Forwarded-Host");
+    String proto = context.getHeaderString(MissingHttpHeaders.X_FORWARDED_PROTO);
+    String host = context.getHeaderString(MissingHttpHeaders.X_FORWARDED_HOST);
     return RequestUtils.getServerBaseURL(context.getUriInfo(), proto, host);
   }
 }

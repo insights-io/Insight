@@ -10,7 +10,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -34,8 +33,7 @@ public interface PasswordResource {
   @Path("password_reset/{token}")
   CompletionStage<Response> resetPassword(
       @PathParam("token") UUID token,
-      @NotNull(message = "Required") @Valid PasswordResetRequestDTO body,
-      @HeaderParam("X-Forwarded-For") String xForwardedFor);
+      @NotNull(message = "Required") @Valid PasswordResetRequestDTO body);
 
   @GET
   @Path("password_reset/{token}/exists")

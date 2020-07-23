@@ -6,10 +6,8 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -20,12 +18,11 @@ public class SsoResourceImpl implements SsoResource {
 
   @Inject SsoService ssoService;
   @Context HttpServerRequest request;
-  @Context HttpServletRequest servletRequest;
 
   @Override
-  public CompletionStage<Response> login(String email, String password, String xForwardedFor) {
+  public CompletionStage<Response> login(String email, String password) {
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
-    String ipAddress = Optional.ofNullable(xForwardedFor).orElse(servletRequest.getRemoteAddr());
+    String ipAddress = RequestUtils.getRemoteAddress(request);
 
     return ssoService
         .login(email, password, ipAddress)

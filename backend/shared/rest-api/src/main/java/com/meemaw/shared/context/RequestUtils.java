@@ -1,5 +1,6 @@
 package com.meemaw.shared.context;
 
+import com.meemaw.shared.rest.headers.MissingHttpHeaders;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.MalformedURLException;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
@@ -38,10 +40,6 @@ public final class RequestUtils {
    */
   public static Optional<String> parseRefererBaseURL(HttpServerRequest request) {
     return sneakyParseRefererURL(request).map(RequestUtils::parseBaseURL);
-  }
-
-  public static String sneakyParseBaseURL(String url) {
-    return parseBaseURL(sneakyURL(url));
   }
 
   /**
@@ -82,8 +80,8 @@ public final class RequestUtils {
    * @return server base URL
    */
   public static String getServerBaseURL(UriInfo info, HttpServerRequest request) {
-    String proto = request.getHeader("X-Forwarded-Proto");
-    String host = request.getHeader("X-Forwarded-Host");
+    String proto = request.getHeader(MissingHttpHeaders.X_FORWARDED_PROTO);
+    String host = request.getHeader(MissingHttpHeaders.X_FORWARDED_HOST);
     return getServerBaseURL(info, proto, host);
   }
 
@@ -91,9 +89,9 @@ public final class RequestUtils {
    * Returns server base URL as seen from outer World. In cases when service is behind an Ingress, *
    * X-Forwarded-* headers are used.
    *
-   * @param info uri info
-   * @param forwardedProto String X-Forwarded-Proto header
-   * @param forwardedHost String X-Forwarded-Host header
+   * @param info request uri info
+   * @param forwardedProto X-Forwarded-Proto header value (can be null)
+   * @param forwardedHost X-Forwarded-Host header value (can be null)
    * @return server base URL
    */
   public static String getServerBaseURL(UriInfo info, String forwardedProto, String forwardedHost) {
@@ -132,12 +130,36 @@ public final class RequestUtils {
   }
 
   /**
-   * Converts JAX-RS multivalued map into a native java Map.
+   * Converts JAX-RS {@link MultivaluedMap} into a native java {@link Map}.
    *
    * @param map JAX-RS multivalued map
    * @return java Map
    */
   public static Map<String, List<String>> map(MultivaluedMap<String, String> map) {
     return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Entry::getValue));
+  }
+
+  /**
+   * Get remote IP address. In case application is behind a reverse proxy, X-Forwarded-For header is
+   * checked first. Use in Vertx context via {@link HttpServerRequest}.
+   *
+   * @param request http server request
+   * @return remote address
+   */
+  public static String getRemoteAddress(HttpServerRequest request) {
+    return Optional.ofNullable(request.getHeader(MissingHttpHeaders.X_FORWARDED_FOR))
+        .orElseGet(() -> request.remoteAddress().host());
+  }
+
+  /**
+   * Get remote IP address. In case application is behind a reverse proxy, X-Forwarded-For header is
+   * checked first. Use in Servlet context via {@link HttpServletRequest}.
+   *
+   * @param request http servlet request
+   * @return remote address
+   */
+  public static String getRemoteAddress(HttpServletRequest request) {
+    return Optional.ofNullable(request.getHeader(MissingHttpHeaders.X_FORWARDED_FOR))
+        .orElseGet(request::getRemoteAddr);
   }
 }

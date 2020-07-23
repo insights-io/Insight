@@ -10,7 +10,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -30,8 +29,7 @@ public interface SsoResource {
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   CompletionStage<Response> login(
       @NotBlank(message = "Required") @Email @FormParam("email") String email,
-      @Password @FormParam("password") String password,
-      @HeaderParam("X-Forwarded-For") String xForwardedFor);
+      @Password @FormParam("password") String password);
 
   @POST
   @Path("logout")
