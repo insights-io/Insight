@@ -14,4 +14,6 @@ public class BrowserXhrEventDTO extends AbstractBrowserEventDTO {
   String url;
   int status;
   String type;
+  String initiatorType;
+  String nextHopProtocol; // extracted from PerformanceResourceTiming
 }

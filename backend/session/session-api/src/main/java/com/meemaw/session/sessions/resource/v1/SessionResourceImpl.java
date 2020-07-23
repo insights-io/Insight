@@ -12,7 +12,6 @@ import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -33,12 +32,11 @@ public class SessionResourceImpl implements SessionResource {
   @Inject SessionSocketService sessionSocketService;
 
   @Override
-  public CompletionStage<Response> createPage(
-      CreatePageDTO body, String userAgent, String xForwardedFor) {
-    String clientIpAddress = Optional.ofNullable(xForwardedFor).orElse(request.getRemoteAddr());
+  public CompletionStage<Response> createPage(CreatePageDTO body, String userAgent) {
+    String ipAddress = RequestUtils.getRemoteAddress(request);
 
     return pageService
-        .createPage(body, userAgent, clientIpAddress)
+        .createPage(body, userAgent, ipAddress)
         .subscribeAsCompletionStage()
         .thenApply(
             pageIdentity -> {

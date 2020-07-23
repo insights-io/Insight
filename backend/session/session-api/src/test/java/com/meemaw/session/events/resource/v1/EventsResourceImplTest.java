@@ -167,6 +167,6 @@ public class EventsResourceImplTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"data\":[{\"method\":\"GET\",\"url\":\"http://localhost:8082/v1/sessions\",\"status\":200,\"type\":\"cors\",\"t\":10812,\"e\":11},{\"name\":\"http://localhost:8082/v1/sessions\",\"startTime\":20.0,\"duration\":40.0,\"initiatorType\":\"fetch\",\"nextHopProtocol\":\"http/1.1\",\"t\":10812,\"e\":12}]}"));
+                "{\"data\":[{\"method\":\"GET\",\"url\":\"http://localhost:8082/v1/sessions\",\"status\":200,\"initiatorType\":\"xmlhttprequest\",\"nextHopProtocol\":\"h2\",\"t\":10812,\"e\":11},{\"method\":\"GET\",\"url\":\"http://localhost:8082/v1/sessions\",\"status\":200,\"type\":\"cors\",\"initiatorType\":\"fetch\",\"nextHopProtocol\":\"http/1.1\",\"t\":10812,\"e\":11},{\"name\":\"http://localhost:8082/v1/sessions\",\"startTime\":20.0,\"duration\":40.0,\"initiatorType\":\"fetch\",\"nextHopProtocol\":\"http/1.1\",\"t\":10812,\"e\":12}]}"));
   }
 }

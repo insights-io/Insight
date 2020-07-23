@@ -1,7 +1,7 @@
 import React from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import useSessions from 'modules/sessions/hooks/useSessions';
-import { ListItem, ListItemLabel } from 'baseui/list';
+import { ListItem, ListItemLabel, ARTWORK_SIZES } from 'baseui/list';
 import { H5 } from 'baseui/typography';
 import { formatDistanceToNow } from 'date-fns';
 import { Tag } from 'baseui/tag';
@@ -12,6 +12,7 @@ import useAuth from 'modules/auth/hooks/useAuth';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
 import { Session, User } from '@insight/types';
+import { FaDesktop } from 'react-icons/fa';
 
 type Props = {
   user: User;
@@ -25,12 +26,22 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
     initialSessions
   );
 
-  const listItemStyle = { ':hover': { background: theme.colors.primary200 } };
+  const listItemStyle = {
+    ':hover': { background: theme.colors.primary200 },
+    borderRadius: theme.sizing.scale100,
+  };
   const hasSessions = loadingSessions || sessions.length > 0;
 
   return (
     <AppLayout
-      overrides={{ MainContent: { style: { padding: theme.sizing.scale600 } } }}
+      overrides={{
+        MainContent: {
+          style: {
+            padding: theme.sizing.scale600,
+            background: theme.colors.mono300,
+          },
+        },
+      }}
     >
       {hasSessions ? (
         <>
@@ -51,6 +62,8 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
                   <a className={css({ color: 'inherit' })}>
                     <ListItem
                       overrides={{ Root: { style: listItemStyle } }}
+                      artwork={FaDesktop}
+                      artworkSize={ARTWORK_SIZES.SMALL}
                       endEnhancer={() => (
                         <>
                           <Tag
@@ -61,14 +74,17 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
                               },
                             }}
                           >
-                            {createdAtText}
+                            Details
                           </Tag>
                           <ChevronRight />
                         </>
                       )}
                     >
-                      <ListItemLabel description={session.userAgent}>
-                        {session.ipAddress}
+                      <ListItemLabel
+                        description={`Unknown location - ${session.ipAddress} - ${createdAtText}`}
+                      >
+                        {session.userAgent.operatingSystemName} &bull;{' '}
+                        {session.userAgent.browserName}
                       </ListItemLabel>
                     </ListItem>
                   </a>

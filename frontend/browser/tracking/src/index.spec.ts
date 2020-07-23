@@ -136,9 +136,13 @@ describe('tracking script', () => {
         sessionCreatePerformanceResourceEvent,
         mouseMoveEvent,
         xhrButtonClickEvent,
-        xhrResponseLogEvent,
-        xhrRequestEvent,
-        performanceResourceEvent,
+        firstXhrResponseLogEvent,
+        firstXhrRequestEvent,
+        firstPerformanceResourceEvent,
+
+        secondXhrResponseLogEvent,
+        secondXhrRequestEvent,
+        secondPerformanceResourceEvent,
       ] = postData.e;
 
       expect(sessionCreateFetchEvent.a).toEqual([
@@ -146,6 +150,8 @@ describe('tracking script', () => {
         createSessionURI,
         200,
         'cors',
+        'fetch',
+        'http/1.1',
       ]);
       expect(sessionCreatePerformanceResourceEvent.a.slice(0, 1)).toEqual([
         createSessionURI,
@@ -170,25 +176,42 @@ describe('tracking script', () => {
         ':onclick',
         'handleXhrClick()',
       ]);
-      expect(xhrResponseLogEvent.a).toEqual([
+      expect(firstXhrResponseLogEvent.a).toEqual([
         'log',
         { completed: false, id: 1, title: 'delectus aut autem', userId: 1 },
       ]);
 
-      expect(xhrRequestEvent.a).toEqual([
+      expect(firstXhrRequestEvent.a).toEqual([
         'GET',
         'https://jsonplaceholder.typicode.com/todos/1',
         200,
         null,
-      ]);
-      expect(performanceResourceEvent.a.slice(0, 1)).toEqual([
-        'https://jsonplaceholder.typicode.com/todos/1',
-      ]);
-
-      expect(performanceResourceEvent.a.slice(3)).toEqual([
         'xmlhttprequest',
         'h2',
       ]);
+      expect(firstPerformanceResourceEvent.a.slice(0, 1)).toEqual([
+        'https://jsonplaceholder.typicode.com/todos/1',
+      ]);
+
+      expect(firstPerformanceResourceEvent.a.slice(3)).toEqual([
+        'xmlhttprequest',
+        'h2',
+      ]);
+
+      expect({
+        ...firstXhrRequestEvent,
+        t: secondXhrRequestEvent.t,
+      }).toEqual(secondXhrRequestEvent);
+      expect({
+        ...firstXhrResponseLogEvent,
+        t: secondXhrResponseLogEvent.t,
+      }).toEqual(secondXhrResponseLogEvent);
+      expect(firstPerformanceResourceEvent.a.slice(0, 1)).toEqual(
+        secondPerformanceResourceEvent.a.slice(0, 1)
+      );
+      expect(firstPerformanceResourceEvent.a.slice(3)).toEqual(
+        secondPerformanceResourceEvent.a.slice(3)
+      );
 
       await page.evaluate(() => {
         console.info('Do some console.info!');
@@ -233,6 +256,8 @@ describe('tracking script', () => {
         beaconBeatURI,
         204,
         'cors',
+        'fetch',
+        'http/1.1',
       ]);
       expect(beaconBeatPerformanceResourceEvent.a.slice(0, 1)).toEqual([
         beaconBeatURI,

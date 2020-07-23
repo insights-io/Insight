@@ -6,18 +6,21 @@ import static com.meemaw.session.sessions.datasource.pg.SessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.FIELD_MAPPINGS;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.ID;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.INSERT_FIELDS;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.IP_ADDRESS;
+import static com.meemaw.session.sessions.datasource.pg.SessionTable.LOCATION;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.ORGANIZATION_ID;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.USER_AGENT;
 import static org.jooq.impl.DSL.condition;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.location.model.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
+import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
@@ -32,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
@@ -41,6 +45,7 @@ import org.jooq.conf.ParamType;
 public class PgSessionDatasource implements SessionDatasource {
 
   @Inject PgPool pgPool;
+  @Inject ObjectMapper objectMapper;
 
   @Override
   public Uni<Optional<UUID>> findSessionDeviceLink(String organizationId, UUID deviceId) {
@@ -77,19 +82,25 @@ public class PgSessionDatasource implements SessionDatasource {
     throw new DatabaseException(throwable);
   }
 
+  @SneakyThrows
   @Override
   public Uni<SessionDTO> createSession(
       Transaction transaction,
       UUID id,
       UUID deviceId,
       String organizationId,
-      String ipAddress,
-      String userAgent) {
+      LocationDTO location,
+      UserAgentDTO userAgent) {
     Query query =
         SQLContext.POSTGRES
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(id, deviceId, organizationId, ipAddress, userAgent)
+            .values(
+                id,
+                deviceId,
+                organizationId,
+                objectMapper.writeValueAsString(location),
+                objectMapper.writeValueAsString(userAgent))
             .returning(FIELDS);
 
     return transaction
@@ -137,13 +148,14 @@ public class PgSessionDatasource implements SessionDatasource {
     return collection;
   }
 
+  @SneakyThrows
   private SessionDTO mapSession(Row row) {
     return new SessionDTO(
         row.getUUID(ID.getName()),
         row.getUUID(DEVICE_ID.getName()),
         row.getString(ORGANIZATION_ID.getName()),
-        row.getString(IP_ADDRESS.getName()),
-        row.getString(USER_AGENT.getName()),
+        objectMapper.readValue(row.getString(LOCATION.getName()), LocationDTO.class),
+        objectMapper.readValue(row.getString(USER_AGENT.getName()), UserAgentDTO.class),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 

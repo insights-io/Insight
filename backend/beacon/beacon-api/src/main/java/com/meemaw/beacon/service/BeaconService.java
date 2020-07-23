@@ -24,6 +24,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
@@ -47,6 +48,10 @@ public class BeaconService {
   @OnOverflow(Strategy.UNBOUNDED_BUFFER)
   Emitter<UserEvent<?>> unloadEventsEmitter;
 
+  @Traced
+  @Timed(
+      name = "pageExists",
+      description = "A measure of how long it takes to check if page exists")
   private CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
     return sessionResource
         .getPage(sessionId, pageId, organizationId)
@@ -55,7 +60,7 @@ public class BeaconService {
               if (throwable.getCause() instanceof WebApplicationException) {
                 return ((WebApplicationException) (throwable.getCause())).getResponse();
               }
-              log.error("Unexpected exception", throwable);
+              log.error("[BEACON]: Unexpected exception", throwable);
               throw Boom.serverError().message(throwable.getMessage()).exception();
             })
         .thenApply(
@@ -82,6 +87,7 @@ public class BeaconService {
    * @param beacon Beacon
    * @return CompletionStage if successful processing
    */
+  @Traced
   @Timed(name = "processBeacon", description = "A measure of how long it takes to process beacon")
   public CompletionStage<?> process(
       String organizationId, UUID sessionId, UUID deviceId, UUID pageId, Beacon beacon) {
@@ -100,24 +106,26 @@ public class BeaconService {
                 .deviceId(deviceId)
                 .build();
 
-    log.info("Processing beacon");
+    List<AbstractBrowserEvent<?>> events = beacon.getEvents();
+    log.info(
+        "[BEACON]: Processing beacon sequence: {} size: {}", beacon.getSequence(), events.size());
+
     return pageExists(sessionId, pageId, organizationId)
         .thenApply(
             exists -> {
               if (!exists) {
-                log.warn("Unlinked beacon, ignoring ...");
+                log.warn("[BEACON]: Unlinked beacon, ignoring ...");
                 throw Boom.badRequest().message("Unlinked beacon").exception();
               }
-              log.info("Sending {} beacon events to Kafka", beacon.getEvents().size());
+              log.info("[BEACON]: Sending beacon events to Kafka");
 
-              List<AbstractBrowserEvent<?>> events = beacon.getEvents();
               Stream<Uni<Void>> operations =
                   events.stream().map(event -> sendEvent(eventsEmitter, identify, event));
 
               // BrowserUnloadEvent always comes last!
               AbstractBrowserEvent<?> maybeUnloadEvent = events.get(events.size() - 1);
               if (maybeUnloadEvent instanceof BrowserUnloadEvent) {
-                log.info("Sending BrowserUnloadEvent to Kafka");
+                log.info("[BEACON]: Sending BrowserUnloadEvent to Kafka");
                 operations =
                     Stream.concat(
                         operations,

@@ -38,12 +38,27 @@ declare global {
   const observer = new PerformanceObserver((performanceEntryList) => {
     performanceEntryList.getEntries().forEach((entry) => {
       if (entry instanceof PerformanceResourceTiming) {
+        const { name: url, initiatorType, nextHopProtocol } = entry;
+        if (initiatorType === 'fetch' || initiatorType === 'xmlhttprequest') {
+          const events = eventQueue.events();
+          for (let i = events.length - 1; i >= 0; i--) {
+            const event = events[i];
+            if (
+              event.e === EventType.XHR &&
+              event.a[1] === url &&
+              event.a[4] === initiatorType
+            ) {
+              event.a.push(nextHopProtocol);
+              break;
+            }
+          }
+        }
         eventQueue.enqueue(EventType.RESOURCE_PERFORMANCE, [
-          entry.name,
+          url,
           entry.startTime,
           entry.duration,
-          entry.initiatorType,
-          entry.nextHopProtocol,
+          initiatorType,
+          nextHopProtocol,
         ]);
       }
     });

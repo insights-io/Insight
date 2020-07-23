@@ -1,8 +1,10 @@
 package com.meemaw.session.pages.datasource;
 
+import com.meemaw.location.model.LocationDTO;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
+import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,8 +26,8 @@ public interface PageDatasource {
    * @param pageId page id
    * @param sessionId session id
    * @param deviceId device id
-   * @param userAgent user agent
-   * @param ipAddress ip address
+   * @param userAgent parsed user agent
+   * @param location parsed location
    * @param page page create dto
    * @return page identity
    */
@@ -33,8 +35,8 @@ public interface PageDatasource {
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
-      String userAgent,
-      String ipAddress,
+      UserAgentDTO userAgent,
+      LocationDTO location,
       CreatePageDTO page);
 
   /**

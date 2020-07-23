@@ -46,12 +46,13 @@ export function insrumentXMLHttpRequest(
       xhr.addEventListener('readystatechange', function () {
         if (xhr.readyState === 4) {
           enqueue(
-            EventType.FETCH,
+            EventType.XHR,
             [
               xhr.__insight_xhr__?.method as string,
               xhr.__insight_xhr__?.url as string,
               xhr.status,
               null,
+              'xmlhttprequest',
             ],
             '[xhr]'
           );
@@ -106,8 +107,8 @@ export function instrumentFetch(
         .apply(globalObject, args)
         .then((response) => {
           enqueue(
-            EventType.FETCH,
-            [method, url, response.status, response.type],
+            EventType.XHR,
+            [method, url, response.status, response.type, 'fetch'],
             '[fetch]'
           );
           return response;

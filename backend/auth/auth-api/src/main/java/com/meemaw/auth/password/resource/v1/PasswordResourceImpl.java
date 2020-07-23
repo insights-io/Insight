@@ -43,12 +43,14 @@ public class PasswordResourceImpl implements PasswordResource {
   public CompletionStage<Response> resetPassword(UUID token, PasswordResetRequestDTO payload) {
     String password = payload.getPassword();
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
+    String ipAddress = RequestUtils.getRemoteAddress(request);
+
     return passwordService
         .resetPassword(token, password)
         .thenCompose(
             passwordResetRequest ->
                 ssoService
-                    .login(passwordResetRequest.getEmail(), password)
+                    .login(passwordResetRequest.getEmail(), password, ipAddress)
                     .thenApply(sessionId -> SsoSession.cookieResponse(sessionId, cookieDomain)));
   }
 
@@ -59,7 +61,6 @@ public class PasswordResourceImpl implements PasswordResource {
 
   @Override
   public CompletionStage<Response> passwordChange(PasswordChangeRequestDTO body) {
-    log.info("Password change request");
     return passwordService
         .changePassword(
             insightPrincipal.user().getId(),

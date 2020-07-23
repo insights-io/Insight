@@ -1,5 +1,0 @@
-{
-  "t": 10812,
-  "e": 11,
-  "a": ["GET", "http://localhost:8082/v1/sessions", 200, "cors"]
-}

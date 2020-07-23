@@ -15,6 +15,7 @@ import static com.meemaw.session.pages.datasource.pg.PageTable.TABLE;
 import static com.meemaw.session.pages.datasource.pg.PageTable.URL;
 import static com.meemaw.session.pages.datasource.pg.PageTable.WIDTH;
 
+import com.meemaw.location.model.LocationDTO;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
@@ -22,6 +23,7 @@ import com.meemaw.session.pages.datasource.PageDatasource;
 import com.meemaw.session.sessions.datasource.pg.PgSessionDatasource;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
@@ -47,8 +49,8 @@ public class PgPageDatasource implements PageDatasource {
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
-      String userAgent,
-      String ipAddress,
+      UserAgentDTO userAgent,
+      LocationDTO location,
       CreatePageDTO page) {
     return pgPool
         .begin()
@@ -56,7 +58,7 @@ public class PgPageDatasource implements PageDatasource {
         .produceUni(
             transaction ->
                 createPageAndNewSession(
-                    transaction, pageId, sessionId, deviceId, userAgent, ipAddress, page));
+                    transaction, pageId, sessionId, deviceId, userAgent, location, page));
   }
 
   private Uni<PageIdentity> createPageAndNewSession(
@@ -64,12 +66,13 @@ public class PgPageDatasource implements PageDatasource {
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
-      String userAgent,
-      String ipAddress,
+      UserAgentDTO userAgent,
+      LocationDTO location,
       CreatePageDTO page) {
+
     return sessionDatasource
         .createSession(
-            transaction, sessionId, deviceId, page.getOrganizationId(), ipAddress, userAgent)
+            transaction, sessionId, deviceId, page.getOrganizationId(), location, userAgent)
         .onItem()
         .produceUni(
             session ->

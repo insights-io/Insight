@@ -1,7 +1,9 @@
 package com.meemaw.session.sessions.datasource;
 
+import com.meemaw.location.model.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.query.SearchDTO;
+import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.sqlclient.Transaction;
 import java.util.Collection;
@@ -23,8 +25,8 @@ public interface SessionDatasource {
    * @param transaction current transaction
    * @param deviceId id of the device
    * @param organizationId id of the organization
-   * @param ipAddress ip address of the incoming session request
-   * @param userAgent browser's user agent
+   * @param location parsed location of the incoming request
+   * @param userAgent parsed user agent
    * @return newly created session
    */
   @Traced
@@ -33,8 +35,8 @@ public interface SessionDatasource {
       UUID sessionId,
       UUID deviceId,
       String organizationId,
-      String ipAddress,
-      String userAgent);
+      LocationDTO location,
+      UserAgentDTO userAgent);
 
   /**
    * Get session if it exists.

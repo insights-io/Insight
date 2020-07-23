@@ -58,7 +58,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '8.32'
+        toolVersion = '8.34'
         configFile = rootProject.file('config/checkstyle/.checkstyle.xml')
         configProperties = [
                 'checkstyle.cache.file': "${buildDir}/checkstyle.cache",
@@ -68,7 +68,7 @@ subprojects {
     pmd {
         consoleOutput = true
         ignoreFailures = true
-        toolVersion = "6.23.0"
+        toolVersion = "6.25.0"
         ruleSets = []
         ruleSetFiles = rootProject.files("config/pmd/ruleset.xml")
     }

@@ -19,12 +19,12 @@ public final class SessionTable {
   public static final Field<UUID> ID = field("id", UUID.class);
   public static final Field<String> ORGANIZATION_ID = field("organization_id", String.class);
   public static final Field<String> USER_AGENT = field("user_agent", String.class);
-  public static final Field<String> IP_ADDRESS = field("ip_address", String.class);
+  public static final Field<String> LOCATION = field("location", String.class);
   public static final Field<UUID> DEVICE_ID = field("device_id", UUID.class);
   public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
   public static final List<Field<?>> INSERT_FIELDS =
-      List.of(ID, DEVICE_ID, ORGANIZATION_ID, IP_ADDRESS, USER_AGENT);
+      List.of(ID, DEVICE_ID, ORGANIZATION_ID, LOCATION, USER_AGENT);
 
   public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT);
 

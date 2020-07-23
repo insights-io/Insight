@@ -3,7 +3,6 @@ package com.meemaw.auth.sso.resource.v1;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
-import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
@@ -13,7 +12,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 @Slf4j
 public class SsoResourceImpl implements SsoResource {
@@ -23,11 +21,11 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> login(String email, String password) {
-    MDC.put(LoggingConstants.USER_EMAIL, email);
-    log.debug("Login request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
+    String ipAddress = RequestUtils.getRemoteAddress(request);
+
     return ssoService
-        .login(email, password)
+        .login(email, password, ipAddress)
         .thenApply(
             sessionId ->
                 Response.noContent().cookie(SsoSession.cookie(sessionId, cookieDomain)).build());
@@ -35,8 +33,6 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> logout(String sessionId) {
-    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
-    log.debug("Logout request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .logout(sessionId)
@@ -52,8 +48,6 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> logoutFromAllDevices(String sessionId) {
-    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
-    log.debug("Logout from all devices request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .logoutFromAllDevices(sessionId)
@@ -63,8 +57,6 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> session(String sessionId) {
-    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
-    log.debug("Session request");
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .findSession(sessionId)
@@ -80,8 +72,6 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> mySessions(String sessionId) {
-    MDC.put(LoggingConstants.COOKIE_SESSION_ID, sessionId);
-    log.debug("Sessions request");
     return ssoService.findSessions(sessionId).thenApply(DataResponse::ok);
   }
 }

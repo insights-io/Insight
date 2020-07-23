@@ -63,14 +63,14 @@ public abstract class AbstractBrowserEvent<T> extends Recorded {
   @JsonProperty(access = Access.WRITE_ONLY, value = EVENT_TYPE)
   BrowserEventType eventType;
 
+  @JsonProperty(ARGS)
+  @JsonFormat(shape = JsonFormat.Shape.ARRAY)
+  T arguments;
+
   @JsonProperty(access = Access.READ_ONLY, value = EVENT_TYPE)
   public byte getEventTypeKey() {
     return eventType.getKey();
   }
-
-  @JsonProperty(ARGS)
-  @JsonFormat(shape = JsonFormat.Shape.ARRAY)
-  T arguments;
 
   @JsonIgnore
   public abstract Map<String, Object> index();

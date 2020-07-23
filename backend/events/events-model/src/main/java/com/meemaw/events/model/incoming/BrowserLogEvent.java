@@ -13,6 +13,7 @@ public class BrowserLogEvent extends AbstractBrowserEvent<List<?>> {
   }
 
   @JsonIgnore
+  @Override
   public List<?> getArguments() {
     return arguments.subList(1, arguments.size());
   }
