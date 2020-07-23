@@ -6,7 +6,7 @@ backend:
 
 image:
   fluent_bit:
-    tag: 1.4.6
+    tag: 1.5.1
 
 input:
   tail:
@@ -22,7 +22,7 @@ parsers:
       timeFormat: '%Y-%m-%dT%H:%M:%S.%L%z'
 
 tolerations:
-  - key: "arm"
-    operator: "Equal"
-    value: "true"
-    effect: "NoExecute"
+  - key: 'arm'
+    operator: 'Equal'
+    value: 'true'
+    effect: 'NoExecute'

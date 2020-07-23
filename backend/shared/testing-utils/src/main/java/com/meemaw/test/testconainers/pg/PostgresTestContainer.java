@@ -25,7 +25,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   public static final String NETWORK_ALIAS = "db";
 
-  private static final String DOCKER_TAG = "postgres:12.3";
+  private static final String DOCKER_TAG = "bitnami/postgresql:12.3.0";
   private static final String DATABASE_NAME = "postgres";
   private static final String USERNAME = "postgres";
   private static final String PASSWORD = "postgres";
