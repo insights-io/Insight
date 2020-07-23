@@ -14,6 +14,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 @Slf4j
+@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class LocationService {
 
   private static final String LOCALHOST = "127.0.0.1";

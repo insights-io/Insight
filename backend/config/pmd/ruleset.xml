@@ -16,12 +16,7 @@
   <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables"/>
   <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters"/>
   <rule ref="category/java/bestpractices.xml/AvoidStringBufferField"/>
-  <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP">
-    <properties>
-      <property name="pattern"
-        value='^"(?!127\.0\.0\.1)[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"$'/>
-    </properties>
-  </rule>
+  <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
   <rule ref="category/java/bestpractices.xml/CheckResultSet"/>
   <rule ref="category/java/bestpractices.xml/ConstantsInInterface"/>
   <rule ref="category/java/bestpractices.xml/DefaultLabelNotLastInSwitchStmt"/>
@@ -38,8 +33,7 @@
   <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray"/>
   <rule ref="category/java/bestpractices.xml/MissingOverride"/>
   <rule ref="category/java/bestpractices.xml/OneDeclarationPerLine"/>
-  <rule ref="category/java/bestpractices.xml/PositionLiteralsFirstInCaseInsensitiveComparisons"/>
-  <rule ref="category/java/bestpractices.xml/PositionLiteralsFirstInComparisons"/>
+  <rule ref="category/java/bestpractices.xml/LiteralsFirstInComparisons"/>
   <rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
   <rule ref="category/java/bestpractices.xml/ReplaceEnumerationWithIterator"/>
   <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap"/>
@@ -70,6 +64,7 @@
   <rule ref="category/java/codestyle.xml/ControlStatementBraces"/>
   <rule ref="category/java/codestyle.xml/DontImportJavaLang"/>
   <rule ref="category/java/codestyle.xml/DuplicateImports"/>
+  <rule ref="category/java/codestyle.xml/UnnecessaryCast"/>
   <rule ref="category/java/codestyle.xml/EmptyMethodInAbstractClassShouldBeAbstract"/>
   <rule ref="category/java/codestyle.xml/ExtendsObject"/>
   <rule ref="category/java/codestyle.xml/FieldDeclarationsShouldBeAtStartOfClass"/>
@@ -123,6 +118,7 @@
   <rule ref="category/java/performance.xml/AddEmptyString"/>
   <rule ref="category/java/performance.xml/AppendCharacterWithChar"/>
   <rule ref="category/java/performance.xml/AvoidArrayLoops"/>
+  <rule ref="category/java/performance.xml/AvoidCalendarDateCreation"/>
   <rule ref="category/java/performance.xml/AvoidFileStream"/>
   <rule ref="category/java/performance.xml/AvoidUsingShortType"/>
   <rule ref="category/java/performance.xml/BigIntegerInstantiation"/>
@@ -146,6 +142,7 @@
   <rule ref="category/java/performance.xml/UseArrayListInsteadOfVector"/>
   <rule ref="category/java/performance.xml/UseArraysAsList"/>
   <rule ref="category/java/performance.xml/UseIndexOfChar"/>
+  <rule ref="category/java/performance.xml/UseIOStreamsWithApacheCommonsFileItem"/>
   <rule ref="category/java/performance.xml/UselessStringValueOf"/>
   <rule ref="category/java/performance.xml/UseStringBufferForStringAppends"/>
   <rule ref="category/java/performance.xml/UseStringBufferLength"/>

@@ -310,4 +310,5 @@
       <property name="optional" value="true"/>
     </module>
   </module>
+  <module name="NoCodeInFile"/>
 </module>
