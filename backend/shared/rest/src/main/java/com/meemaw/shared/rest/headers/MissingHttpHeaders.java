@@ -1,8 +1,10 @@
 package com.meemaw.shared.rest.headers;
 
-public interface MissingHttpHeaders {
+public final class MissingHttpHeaders {
 
-  String X_FORWARDED_FOR = "X-Forwarded-For";
-  String X_FORWARDED_PROTO = "X-Forwarded-Proto";
-  String X_FORWARDED_HOST = "X-Forwarded-Host";
+  private MissingHttpHeaders() {}
+
+  public static String X_FORWARDED_FOR = "X-Forwarded-For";
+  public static String X_FORWARDED_PROTO = "X-Forwarded-Proto";
+  public static String X_FORWARDED_HOST = "X-Forwarded-Host";
 }
