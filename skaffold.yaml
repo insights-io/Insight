@@ -33,7 +33,7 @@ build:
           dockerfile:
             path: auth/auth-api/docker/Dockerfile.jvm
         buildCommand: ./custom_build.sh auth/auth-api/docker/Dockerfile.jvm
-    - image: insightio/auth-api-migrations
+    - image: insightio/auth-api-postgres-migrations
       context: backend/auth/auth-api/migrations/postgres
     - image: insightio/beacon-api
       context: backend
@@ -49,7 +49,7 @@ build:
           dockerfile:
             path: events/search-indexer/docker/Dockerfile.jvm
         buildCommand: ./custom_build.sh events/search-indexer/docker/Dockerfile.jvm
-    - image: insightio/session-api-migrations
+    - image: insightio/session-api-postgres-migrations
       context: backend/session/session-api/migrations/postgres
 deploy:
   kustomize:
