@@ -80,7 +80,7 @@ public class BeaconBeatResourceProcessingTest {
     return Uni.createFrom()
         .completionStage(
             sessionResource
-                .createPage(payload, "Apache-HttpClient/4.5.12 (Java/14)", null)
+                .createPage(payload, "Apache-HttpClient/4.5.12 (Java/14)")
                 .thenApply(
                     response -> {
                       DataResponse<PageIdentity> dataResponse =
