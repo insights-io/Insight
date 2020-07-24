@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  INSIGHT_ADMIN,
-  INSIGHT_SESSION,
-  INSIGHT_SESSION_HOUR_AGO,
-} from 'test/data';
+import { INSIGHT_ADMIN, INSIGHT_SESSIONS } from 'test/data';
 import { fullHeightDecorator } from '@insight/storybook';
 
 import HomePage from './HomePage';
@@ -18,10 +14,5 @@ export const NoSessions = () => {
 };
 
 export const WithSessions = () => {
-  return (
-    <HomePage
-      user={INSIGHT_ADMIN}
-      sessions={[INSIGHT_SESSION, INSIGHT_SESSION_HOUR_AGO]}
-    />
-  );
+  return <HomePage user={INSIGHT_ADMIN} sessions={INSIGHT_SESSIONS} />;
 };

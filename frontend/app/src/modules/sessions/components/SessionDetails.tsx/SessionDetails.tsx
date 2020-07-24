@@ -20,7 +20,6 @@ const SessionDetails = ({ session }: Props) => {
         >
           <H3>Session {session.id}</H3>
           <div>Device ID: {session.deviceId}</div>
-          <div>IP Address: {session.ipAddress}</div>
         </Block>
       </Block>
       <DevTools sessionId={session.id} />
