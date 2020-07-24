@@ -21,16 +21,24 @@ describe('<HomePage />', () => {
       <WithSessions />
     );
 
-    expect(getAllByText('Mac OS X • Chrome').length).toEqual(2);
+    expect(getAllByText('Mac OS X • Chrome').length).toEqual(3);
+
     expect(
-      queryByText('Unknown location - 127.0.0.1 - less than 5 seconds ago')
+      queryByText(
+        'Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago'
+      )
     ).toBeInTheDocument();
     expect(
-      queryByText('Unknown location - 127.0.0.1 - about 1 hour ago')
+      queryByText(
+        'Boydton, Virginia, United States - 13.77.88.76 - about 1 hour ago'
+      )
+    ).toBeInTheDocument();
+    expect(
+      queryByText('Unknown location - 13.77.88.76 - 1 day ago')
     ).toBeInTheDocument();
 
     userEvent.click(
-      getByText('Unknown location - 127.0.0.1 - less than 5 seconds ago')
+      getByText('Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago')
     );
 
     sandbox.assert.calledWithExactly(

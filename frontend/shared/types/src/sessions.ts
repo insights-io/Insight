@@ -4,11 +4,21 @@ export type UserAgentDTO = {
   browserName: string;
 };
 
+export type LocationDTO = {
+  ip: string;
+  countryName?: string;
+  regionName?: string;
+  city?: string;
+  zip?: string;
+  latitude?: number;
+  longitude?: number;
+};
+
 export type SessionDTO = {
   id: string;
   deviceId: string;
   organizationId: string;
-  ipAddress: string;
+  location: LocationDTO;
   userAgent: UserAgentDTO;
   createdAt: string;
 };
