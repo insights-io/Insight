@@ -12,7 +12,9 @@ type Props = {
 
 const ConsoleErrorEvent = ({ event }: Props) => {
   const [css, theme] = useStyletron();
-  const loc = event.stack.split('\n')[1].trim();
+  const stackLines = event.stack.split('\n');
+
+  const loc = stackLines.length > 1 ? stackLines[1].trim() : undefined;
   const [expanded, setExpanded] = useState(false);
 
   const ToggleComponent = expanded ? ArrowUp : ArrowDown;
@@ -60,9 +62,11 @@ const ConsoleErrorEvent = ({ event }: Props) => {
                 Uncaught {event.name}: {event.message}
               </span>
             </Block>
-            <span className={css({ color: theme.colors.negative400 })}>
-              {loc}
-            </span>
+            {loc && (
+              <span className={css({ color: theme.colors.negative400 })}>
+                {loc}
+              </span>
+            )}
           </Block>
         }
       >
