@@ -42,6 +42,7 @@ public class LocationServiceImpl implements LocationService {
     return locationLookupResource.lookupByIp(ip, ACCESS_KEY.get());
   }
 
+  @Override
   public LocationDTO lookupByIp(String ip) {
     return CACHE.computeIfAbsent(ip, this::lookupByIpRemotely);
   }
