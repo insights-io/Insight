@@ -2,6 +2,7 @@ package com.meemaw.session.resource.v1;
 
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.TABLE;
+import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -17,6 +18,7 @@ import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.test.rest.data.UserAgentData;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
 import org.junit.jupiter.api.Tag;
@@ -78,6 +81,7 @@ public class SessionResourceImplTest {
         given()
             .when()
             .contentType(ContentType.JSON)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
             .body(payload)
             .post(SessionResource.PATH)
             .then()
@@ -95,11 +99,11 @@ public class SessionResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .queryParam("organizationId", "000000") // TODO: remove when S2S auth
+        .queryParam("organizationId", INSIGHT_ORGANIZATION_ID) // TODO: remove when S2S auth
         .get(String.format(SESSION_PAGE_PATH_TEMPLATE, sessionId, pageId))
         .then()
         .statusCode(200)
-        .body("data.organizationId", is("000000"))
+        .body("data.organizationId", is(INSIGHT_ORGANIZATION_ID))
         .body("data.sessionId", is(sessionId.toString()));
 
     // GET newly created session
@@ -110,7 +114,7 @@ public class SessionResourceImplTest {
             .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
             .then()
             .statusCode(200)
-            .body("data.organizationId", is("000000"))
+            .body("data.organizationId", is(INSIGHT_ORGANIZATION_ID))
             .body("data.deviceId", is(deviceId.toString()))
             .body("data.id", is(sessionId.toString()))
             .extract()
@@ -137,6 +141,7 @@ public class SessionResourceImplTest {
         given()
             .when()
             .contentType(ContentType.JSON)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
             .body(nextPageNode)
             .post(SessionResource.PATH)
             .then()
@@ -171,6 +176,7 @@ public class SessionResourceImplTest {
     DataResponse<PageIdentity> dataResponse =
         given()
             .when()
+            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
             .contentType(ContentType.JSON)
             .body(payload)
             .post(SessionResource.PATH)
@@ -190,6 +196,7 @@ public class SessionResourceImplTest {
         given()
             .when()
             .contentType(ContentType.JSON)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
             .body(payload)
             .post(SessionResource.PATH)
             .then()
@@ -229,9 +236,8 @@ public class SessionResourceImplTest {
             .response()
             .as(new TypeRef<>() {});
 
-    // TODO: robots should not be able to create pages
     assertEquals(
-        new UserAgentDTO("Robot", "Unknown", "Apache-HttpClient"),
+        new UserAgentDTO("Desktop", "Mac OS X", "Chrome"),
         sessions.getData().get(0).getUserAgent());
 
     assertEquals(MOCKED_LOCATION, sessions.getData().get(0).getLocation());
@@ -276,6 +282,7 @@ public class SessionResourceImplTest {
         given()
             .when()
             .contentType(ContentType.JSON)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
             .body(payload)
             .post(SessionResource.PATH)
             .then()

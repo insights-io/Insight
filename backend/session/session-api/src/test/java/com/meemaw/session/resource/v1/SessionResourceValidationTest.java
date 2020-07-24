@@ -3,13 +3,19 @@ package com.meemaw.session.resource.v1;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
 import static io.restassured.RestAssured.given;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.HttpHeaders;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -23,7 +29,7 @@ public class SessionResourceValidationTest {
   public void post_page_should_throw_error_when_unsupported_media_type() {
     given()
         .when()
-        .contentType(MediaType.TEXT_PLAIN)
+        .contentType(TEXT_PLAIN)
         .post(SessionResource.PATH)
         .then()
         .statusCode(415)
@@ -36,7 +42,7 @@ public class SessionResourceValidationTest {
   public void post_page_should_throw_error_when_empty_payload() {
     given()
         .when()
-        .contentType(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
         .post(SessionResource.PATH)
         .then()
         .statusCode(400)
@@ -49,7 +55,7 @@ public class SessionResourceValidationTest {
   public void post_page_should_throw_error_when_empty_json() {
     given()
         .when()
-        .contentType(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
         .body("{}")
         .post(SessionResource.PATH)
         .then()
@@ -57,6 +63,59 @@ public class SessionResourceValidationTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"doctype\":\"may not be null\",\"organizationId\":\"Required\",\"url\":\"may not be null\"}}}"));
+  }
+
+  @Test
+  public void post_page_should_throw_error_when_robot_user_agent()
+      throws URISyntaxException, IOException {
+    String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
+
+    given()
+        .when()
+        .contentType(APPLICATION_JSON)
+        .body(payload)
+        .post(SessionResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"You're a robot\"}}"));
+  }
+
+  @Test
+  public void post_page_should_throw_error_when_hacker_user_agent()
+      throws URISyntaxException, IOException {
+    String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
+
+    given()
+        .when()
+        .contentType(APPLICATION_JSON)
+        .header(HttpHeaders.USER_AGENT, "*".repeat(200))
+        .body(payload)
+        .post(SessionResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"You're a robot\"}}"));
+  }
+
+  @Test
+  public void post_page_should_throw_error_when_missing_user_agent()
+      throws URISyntaxException, IOException {
+    String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
+
+    given()
+        .when()
+        .contentType(APPLICATION_JSON)
+        .header(HttpHeaders.USER_AGENT, "")
+        .body(payload)
+        .post(SessionResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"You're a robot\"}}"));
   }
 
   @Test

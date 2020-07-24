@@ -6,6 +6,7 @@ import com.meemaw.session.pages.service.PageService;
 import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.session.sessions.service.SessionService;
 import com.meemaw.session.sessions.service.SessionSocketService;
+import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
@@ -30,13 +31,14 @@ public class SessionResourceImpl implements SessionResource {
   @Inject SessionService sessionService;
   @Inject PageService pageService;
   @Inject SessionSocketService sessionSocketService;
+  @Inject UserAgentService userAgentService;
 
   @Override
-  public CompletionStage<Response> createPage(CreatePageDTO body, String userAgent) {
+  public CompletionStage<Response> createPage(CreatePageDTO body, String userAgentString) {
     String ipAddress = RequestUtils.getRemoteAddress(request);
 
     return pageService
-        .createPage(body, userAgent, ipAddress)
+        .createPage(body, userAgentString, ipAddress)
         .subscribeAsCompletionStage()
         .thenApply(
             pageIdentity -> {

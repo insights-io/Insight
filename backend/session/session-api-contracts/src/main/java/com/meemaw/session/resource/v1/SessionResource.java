@@ -30,7 +30,7 @@ public interface SessionResource {
   @POST
   CompletionStage<Response> createPage(
       @NotNull(message = "Required") @Valid CreatePageDTO body,
-      @HeaderParam(HttpHeaders.USER_AGENT) String userAgent);
+      @HeaderParam(HttpHeaders.USER_AGENT) String userAgentString);
 
   @GET
   @CookieAuth
