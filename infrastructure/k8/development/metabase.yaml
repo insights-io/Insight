@@ -1,7 +1,4 @@
 ---
-image:
-  tag: v0.35.3
-
 database:
   type: postgres
   host: postgres-postgresql

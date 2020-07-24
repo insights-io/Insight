@@ -1,7 +1,4 @@
 ---
-image:
-  tag: v5.1.0
-
 config:
   cookieSecret: dbgfdgfhdgfdgfdgf
   clientID: test-client-id

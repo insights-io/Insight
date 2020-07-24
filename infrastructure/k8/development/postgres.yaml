@@ -1,6 +1,3 @@
 ---
-image:
-  tag: 12.3.0
-
 postgresqlUsername: postgres
 postgresqlPassword: postgres

@@ -19,9 +19,6 @@ environmentSecrets:
 github:
   user: botsights
 
-image:
-  tag: v0.14.0
-
 repoConfig: |
   repos:
     - id: /.*/
