@@ -22,11 +22,13 @@ helmfiles:
 releases:
   - name: postgres
     chart: bitnami/postgresql
+    version: 9.1.1
     namespace: {{ .Values.appNamespace }}
     values:
       - postgres.yaml
   - name: metabase
     chart: stable/metabase
+    version: 0.12.0
     namespace: {{ .Values.appNamespace }}
     values:
       - metabase.yaml
@@ -43,6 +45,7 @@ releases:
 
   - name: kafka
     chart: bitnami/kafka
+    version: 11.5.1
     namespace: {{ .Values.appNamespace }}
     values:
       - kafka.yaml
@@ -59,6 +62,7 @@ releases:
           storageClassName: "{{ .Values.storageClassName }}"
   - name: fluentbit
     chart: stable/fluent-bit
+    version: 0.6.0
     namespace: {{ .Values.infraNamespace }}
     values:
       - fluentbit.yaml
@@ -86,6 +90,7 @@ releases:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
   - name: dashboard
     chart: kubernetes-dashboard/kubernetes-dashboard
+    version: 2.0.3
     namespace: {{ .Values.infraNamespace }}
     values:
       - dashboard.yaml
@@ -101,6 +106,7 @@ releases:
 
   - name: prometheus
     chart: stable/prometheus
+    version: 11.10.0
     namespace: prometheus
     values:
       - prometheus.yaml
@@ -130,6 +136,7 @@ releases:
 
   - name: grafana
     chart: stable/grafana
+    version: 5.5.0
     namespace: {{ .Values.infraNamespace }}
     values:
       - grafana.yaml
@@ -149,7 +156,7 @@ releases:
   - name: jaeger
     chart: jaegertracing/jaeger
     namespace: monitoring
-    version: 0.29.0
+    version: 0.33.0
     values:
       - jaeger.yaml
       - storage:
@@ -170,6 +177,7 @@ releases:
 {{ if eq .Environment.Name "production" }}
   - name: oauth2-proxy
     chart: stable/oauth2-proxy
+    version: 3.2.1
     namespace: {{ .Values.infraNamespace }}
     values:
       - oauth-proxy.yaml
@@ -177,6 +185,7 @@ releases:
           existingSecret: {{ .Values.oauthExistingSecret }}
   - name: atlantis
     chart: stable/atlantis
+    version: 3.12.2
     namespace: {{ .Values.infraNamespace }}
     values:
       - atlantis.yaml

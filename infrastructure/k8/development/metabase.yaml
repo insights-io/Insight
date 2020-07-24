@@ -1,3 +1,4 @@
+---
 database:
   type: postgres
   host: postgres-postgresql
