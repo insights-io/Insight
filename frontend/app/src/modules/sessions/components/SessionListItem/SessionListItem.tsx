@@ -1,16 +1,25 @@
 import React from 'react';
-import { Session } from '@insight/types';
+import { Session, UserAgentDTO } from '@insight/types';
 import { ListItem, ARTWORK_SIZES, ListItemLabel } from 'baseui/list';
 import { Tag } from 'baseui/tag';
 import UserAgent from 'shared/components/UserAgent';
-import { FaDesktop } from 'react-icons/fa';
+import { FaDesktop, FaMobileAlt } from 'react-icons/fa';
 import { useStyletron } from 'baseui';
 import { formatDistanceToNow } from 'date-fns';
 import { readableLocation } from 'shared/utils/location';
 import { ChevronRight } from 'baseui/icon';
+import { IconType } from 'react-icons/lib';
 
 type Props = {
   session: Session;
+};
+
+const USER_AGENT_DEVICE_ICON_LOOKUP: Record<
+  UserAgentDTO['browserName'],
+  IconType
+> = {
+  Desktop: FaDesktop,
+  Phone: FaMobileAlt,
 };
 
 const SessionListItem = ({
@@ -29,6 +38,9 @@ const SessionListItem = ({
     createdAtText,
   ].join(' - ');
 
+  const artwork =
+    USER_AGENT_DEVICE_ICON_LOOKUP[userAgent.deviceClass] || FaDesktop;
+
   return (
     <ListItem
       overrides={{
@@ -39,7 +51,7 @@ const SessionListItem = ({
           },
         },
       }}
-      artwork={FaDesktop}
+      artwork={artwork}
       artworkSize={ARTWORK_SIZES.SMALL}
       endEnhancer={() => (
         <>

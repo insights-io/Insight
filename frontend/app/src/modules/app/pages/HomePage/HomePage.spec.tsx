@@ -21,7 +21,8 @@ describe('<HomePage />', () => {
       <WithSessions />
     );
 
-    expect(getAllByText('Mac OS X • Chrome').length).toEqual(3);
+    expect(getAllByText('Mac OS X • Chrome').length).toEqual(2);
+    expect(getAllByText('Android • Chrome').length).toEqual(1);
 
     expect(
       queryByText(

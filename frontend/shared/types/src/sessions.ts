@@ -1,5 +1,5 @@
 export type UserAgentDTO = {
-  deviceClass: 'Desktop' | string;
+  deviceClass: 'Desktop' | 'Phone' | string;
   operatingSystemName: string;
   browserName: string;
 };

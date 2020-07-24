@@ -69,9 +69,18 @@ const SYNTAX_ERROR: BrowserErrorEventDTO = {
     'SyntaxError: Unexpected identifier\n    at <anonymous>:1:1\n    at eval (__playwright_evaluation_script__45:11:47)\n    at UtilityScript.callFunction (__playwright_evaluation_script__1:299:24)\n    at UtilityScript.<anonymous> (__playwright_evaluation_script__46:1:44)',
 };
 
+const TYPE_ERROR: BrowserErrorEventDTO = {
+  t: 1000.180000007618,
+  e: 10,
+  message: 'x is not a function',
+  name: 'TypeError',
+  stack: 'TypeError: x is not a function',
+};
+
 export const ERROR_EVENTS = {
   ERROR,
   SYNTAX_ERROR,
+  TYPE_ERROR,
 } as const;
 
 const CREATE_PAGE_EVENT: BrowserXhrEventDTO = {
