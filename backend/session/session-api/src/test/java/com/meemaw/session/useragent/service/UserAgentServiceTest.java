@@ -23,7 +23,7 @@ public class UserAgentServiceTest {
   @Test
   public void test_user_agent_service__mobile() {
     assertEquals(
-        new UserAgentDTO("Mobile", "Android", "Chrome"),
+        new UserAgentDTO("Phone", "Android", "Chrome"),
         userAgentService.parse(
             "Mozilla/5.0 (Linux; Android 10; VOG-L29) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36"));
   }
