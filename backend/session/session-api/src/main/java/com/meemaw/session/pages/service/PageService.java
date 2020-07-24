@@ -82,6 +82,7 @@ public class PageService {
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
     log.info("[SESSION]: Creating new session");
 
+    // TODO: move this to a async queue processing
     UserAgentDTO userAgent = userAgentService.parse(userAgentString);
     LocationDTO location = locationService.lookupByIp(ipAddress);
 

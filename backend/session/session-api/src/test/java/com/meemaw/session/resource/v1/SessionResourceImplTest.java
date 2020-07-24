@@ -229,8 +229,9 @@ public class SessionResourceImplTest {
             .response()
             .as(new TypeRef<>() {});
 
+    // TODO: robots should not be able to create pages
     assertEquals(
-        new UserAgentDTO("Desktop", "Mac OS X", "Chrome"),
+        new UserAgentDTO("Robot", "Unknown", "Apache-HttpClient"),
         sessions.getData().get(0).getUserAgent());
 
     assertEquals(MOCKED_LOCATION, sessions.getData().get(0).getLocation());
@@ -289,7 +290,7 @@ public class SessionResourceImplTest {
 
   @Mock
   @ApplicationScoped
-  public static class MockedLocationService extends LocationService {
+  public static class MockedLocationService implements LocationService {
 
     @Override
     public LocationDTO lookupByIp(String ip) {
