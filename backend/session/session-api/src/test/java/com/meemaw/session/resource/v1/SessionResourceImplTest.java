@@ -289,7 +289,7 @@ public class SessionResourceImplTest {
 
   @Mock
   @ApplicationScoped
-  public static class MockedLocationService extends LocationService {
+  public static class MockedLocationService implements LocationService {
 
     @Override
     public LocationDTO lookupByIp(String ip) {
