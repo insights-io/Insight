@@ -1,6 +1,6 @@
 package com.meemaw.session.location.service;
 
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
 
 public interface LocationService {
 
@@ -10,5 +10,5 @@ public interface LocationService {
    * @param ip address associated with the request
    * @return detailed location
    */
-  LocationDTO lookupByIp(String ip);
+  Location lookupByIp(String ip);
 }

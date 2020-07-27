@@ -1,6 +1,6 @@
 package com.meemaw.session.pages.datasource;
 
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
@@ -36,7 +36,7 @@ public interface PageDatasource {
       UUID sessionId,
       UUID deviceId,
       UserAgentDTO userAgent,
-      LocationDTO location,
+      Location location,
       CreatePageDTO page);
 
   /**

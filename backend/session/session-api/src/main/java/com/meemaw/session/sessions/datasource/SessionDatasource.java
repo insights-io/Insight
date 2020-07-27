@@ -1,6 +1,6 @@
 package com.meemaw.session.sessions.datasource;
 
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.useragent.model.UserAgentDTO;
@@ -35,7 +35,7 @@ public interface SessionDatasource {
       UUID sessionId,
       UUID deviceId,
       String organizationId,
-      LocationDTO location,
+      Location location,
       UserAgentDTO userAgent);
 
   /**

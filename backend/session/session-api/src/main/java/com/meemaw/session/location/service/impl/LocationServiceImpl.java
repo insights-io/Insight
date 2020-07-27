@@ -1,8 +1,10 @@
-package com.meemaw.session.location.service;
+package com.meemaw.session.location.service.impl;
 
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
+import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.location.resource.LocationLookupResource;
 import com.meemaw.session.location.resource.WhatIsMyIpResource;
+import com.meemaw.session.location.service.LocationService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +20,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class LocationServiceImpl implements LocationService {
 
   private static final String LOCALHOST = "127.0.0.1";
-  private static final Map<String, LocationDTO> CACHE = new HashMap<>();
+  private static final Map<String, Location> CACHE = new HashMap<>();
   private static final Optional<String> ACCESS_KEY =
       Optional.ofNullable(System.getenv("LOCATION_LOOKUP_SERVICE_ACCESS_KEY"));
 
@@ -26,24 +28,23 @@ public class LocationServiceImpl implements LocationService {
   @Inject @RestClient WhatIsMyIpResource whatIsMyIpResource;
 
   @Traced
-  private LocationDTO lookupByIpRemotely(String ip) {
+  private Location lookupByIpRemotely(String ip) {
     if (ACCESS_KEY.isEmpty()) {
       log.warn("[LOCATION]: Access key not configured ... skipping lookup for IP: {}", ip);
       return LocationDTO.builder().ip(ip).build();
     }
 
     if (ip.equals(LOCALHOST)) {
-      String publicIp = whatIsMyIpResource.get();
-      log.info("[LOCATION]: Resolved localhost to public IP: {}", publicIp);
-      return locationLookupResource.lookupByIp(publicIp, ACCESS_KEY.get());
+      ip = whatIsMyIpResource.get();
+      log.info("[LOCATION]: Resolved localhost to public IP: {}", ip);
     }
 
     log.info("[LOCATION]: Looking up location for IP: {}", ip);
-    return locationLookupResource.lookupByIp(ip, ACCESS_KEY.get());
+    return locationLookupResource.lookupByIp(ip, ACCESS_KEY.get()).toInternalRepresentation();
   }
 
   @Override
-  public LocationDTO lookupByIp(String ip) {
+  public Location lookupByIp(String ip) {
     return CACHE.computeIfAbsent(ip, this::lookupByIpRemotely);
   }
 }

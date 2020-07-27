@@ -2,7 +2,7 @@ package com.meemaw.session.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.session.resource.v1.SessionResource;
+import com.meemaw.session.sessions.v1.SessionResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
 import org.junit.jupiter.api.Tag;

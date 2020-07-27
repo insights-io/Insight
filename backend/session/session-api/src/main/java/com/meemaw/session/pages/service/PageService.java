@@ -1,6 +1,6 @@
 package com.meemaw.session.pages.service;
 
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
@@ -95,7 +95,7 @@ public class PageService {
     log.info("[SESSION]: Creating new session");
 
     // TODO: move this to a async queue processing
-    LocationDTO location = locationService.lookupByIp(ipAddress);
+    Location location = locationService.lookupByIp(ipAddress);
 
     return pageDatasource.createPageAndNewSession(
         pageId, sessionId, deviceId, userAgent, location, page);

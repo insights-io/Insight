@@ -13,7 +13,8 @@ import static com.meemaw.session.sessions.datasource.pg.SessionTable.USER_AGENT;
 import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
+import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.exception.DatabaseException;
@@ -89,7 +90,7 @@ public class PgSessionDatasource implements SessionDatasource {
       UUID id,
       UUID deviceId,
       String organizationId,
-      LocationDTO location,
+      Location location,
       UserAgentDTO userAgent) {
     Query query =
         SQLContext.POSTGRES

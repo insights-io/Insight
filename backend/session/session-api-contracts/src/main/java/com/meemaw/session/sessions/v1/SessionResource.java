@@ -1,4 +1,4 @@
-package com.meemaw.session.resource.v1;
+package com.meemaw.session.sessions.v1;
 
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import com.meemaw.session.model.CreatePageDTO;

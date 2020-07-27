@@ -1,4 +1,4 @@
-package com.meemaw.session.resource.v1;
+package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.pg.SessionTable.TABLE;
@@ -12,10 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
+import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
+import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.rest.data.UserAgentData;
@@ -58,7 +60,7 @@ public class SessionResourceImplTest {
   public static final String SESSION_PAGE_PATH_TEMPLATE =
       String.join("/", SESSION_PATH_TEMPLATE, "pages", "%s");
 
-  private static final LocationDTO MOCKED_LOCATION =
+  private static final Location MOCKED_LOCATION =
       LocationDTO.builder()
           .ip("127.0.0.1")
           .city("Boydton")
@@ -300,7 +302,7 @@ public class SessionResourceImplTest {
   public static class MockedLocationService implements LocationService {
 
     @Override
-    public LocationDTO lookupByIp(String ip) {
+    public Location lookupByIp(String ip) {
       return MOCKED_LOCATION;
     }
   }

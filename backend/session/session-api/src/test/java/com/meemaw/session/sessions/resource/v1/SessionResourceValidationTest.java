@@ -1,4 +1,4 @@
-package com.meemaw.session.resource.v1;
+package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
@@ -7,6 +7,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
