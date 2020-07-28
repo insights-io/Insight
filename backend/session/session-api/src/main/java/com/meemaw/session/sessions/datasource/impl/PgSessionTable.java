@@ -1,4 +1,4 @@
-package com.meemaw.session.sessions.datasource.pg;
+package com.meemaw.session.sessions.datasource.impl;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import org.jooq.Field;
 import org.jooq.Table;
 
-public final class SessionTable {
+public final class PgSessionTable {
 
   public static final Table<?> TABLE = table("session.session");
 
@@ -35,5 +35,5 @@ public final class SessionTable {
   public static final Map<String, Field<?>> FIELD_MAPPINGS =
       FIELDS.stream().collect(Collectors.toMap(Field::getName, field -> field));
 
-  private SessionTable() {}
+  private PgSessionTable() {}
 }

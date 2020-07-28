@@ -1,6 +1,6 @@
 package com.meemaw.session.pages.service;
 
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.location.model.Location;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
@@ -9,6 +9,7 @@ import com.meemaw.session.pages.datasource.PageDatasource;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.shared.logging.LoggingConstants;
+import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
 import java.util.Optional;
@@ -39,18 +40,29 @@ public class PageService {
    * new session is created.
    *
    * @param page CreatePageDTO payload
-   * @param userAgent browser user agent
+   * @param userAgentString as obtained from User-Agent header
    * @param ipAddress request ip address
    * @return PageIdentity
    */
   @Timed(name = "createPage", description = "A measure of how long it takes to create a page")
   @Traced
-  public Uni<PageIdentity> createPage(CreatePageDTO page, String userAgent, String ipAddress) {
+  public Uni<PageIdentity> createPage(
+      CreatePageDTO page, String userAgentString, String ipAddress) {
     UUID pageId = UUID.randomUUID();
     UUID deviceId = Optional.ofNullable(page.getDeviceId()).orElseGet(UUID::randomUUID);
     MDC.put(LoggingConstants.PAGE_ID, pageId.toString());
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, page.getOrganizationId());
+
+    UserAgentDTO userAgent = userAgentService.parse(userAgentString);
+    if (userAgent.isRobot() || userAgent.isHacker()) {
+      log.warn(
+          "[SESSION-API]: Create page attempt by robot IP: {} UserAgent: {}",
+          ipAddress,
+          userAgentString);
+
+      throw Boom.badRequest().message("You're a robot").exception();
+    }
 
     // unrecognized device; start a new session
     if (!deviceId.equals(page.getDeviceId())) {
@@ -77,14 +89,13 @@ public class PageService {
 
   @Traced
   private Uni<PageIdentity> createPageAndNewSession(
-      UUID pageId, UUID deviceId, String userAgentString, String ipAddress, CreatePageDTO page) {
+      UUID pageId, UUID deviceId, UserAgentDTO userAgent, String ipAddress, CreatePageDTO page) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
     log.info("[SESSION]: Creating new session");
 
     // TODO: move this to a async queue processing
-    UserAgentDTO userAgent = userAgentService.parse(userAgentString);
-    LocationDTO location = locationService.lookupByIp(ipAddress);
+    Location location = locationService.lookupByIp(ipAddress);
 
     return pageDatasource.createPageAndNewSession(
         pageId, sessionId, deviceId, userAgent, location, page);

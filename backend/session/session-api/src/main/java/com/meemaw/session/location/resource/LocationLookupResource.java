@@ -1,6 +1,6 @@
 package com.meemaw.session.location.resource;
 
-import com.meemaw.location.model.LocationDTO;
+import com.meemaw.session.location.model.dto.IpStackLocationDTO;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,5 +14,6 @@ public interface LocationLookupResource {
   @GET
   @Path("/{ip}")
   @Produces("application/json")
-  LocationDTO lookupByIp(@PathParam("ip") String ip, @QueryParam("access_key") String accessKey);
+  IpStackLocationDTO lookupByIp(
+      @PathParam("ip") String ip, @QueryParam("access_key") String accessKey);
 }

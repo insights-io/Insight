@@ -1,9 +1,10 @@
-package com.meemaw.session.useragent.service;
+package com.meemaw.session.useragent.service.impl;
 
 import static nl.basjes.parse.useragent.UserAgent.AGENT_NAME;
 import static nl.basjes.parse.useragent.UserAgent.DEVICE_CLASS;
 import static nl.basjes.parse.useragent.UserAgent.OPERATING_SYSTEM_NAME;
 
+import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.useragent.model.UserAgentDTO;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

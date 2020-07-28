@@ -10,6 +10,7 @@ dependencies {
     implementation project(":session:session-api-contracts")
 
     testImplementation project(":shared:testing-utils")
+    testImplementation project(":shared:testing-data")
 }
 
 configurations {

@@ -1,7 +1,7 @@
 package com.meemaw.session.events.resource.v1;
 
 import com.meemaw.auth.sso.cookie.CookieAuth;
-import com.meemaw.session.resource.v1.SessionResource;
+import com.meemaw.session.sessions.v1.SessionResource;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;

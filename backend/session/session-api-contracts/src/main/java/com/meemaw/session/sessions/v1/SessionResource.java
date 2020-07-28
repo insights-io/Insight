@@ -1,4 +1,4 @@
-package com.meemaw.session.resource.v1;
+package com.meemaw.session.sessions.v1;
 
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import com.meemaw.session.model.CreatePageDTO;
@@ -30,7 +30,7 @@ public interface SessionResource {
   @POST
   CompletionStage<Response> createPage(
       @NotNull(message = "Required") @Valid CreatePageDTO body,
-      @HeaderParam(HttpHeaders.USER_AGENT) String userAgent);
+      @HeaderParam(HttpHeaders.USER_AGENT) String userAgentString);
 
   @GET
   @CookieAuth
