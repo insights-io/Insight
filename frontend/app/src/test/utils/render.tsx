@@ -37,7 +37,7 @@ const render = <Props, T, S extends StoryConfiguration<T>>(
     replace,
     reload,
     beforePopState: sandbox.stub(),
-    prefetch: sandbox.stub(),
+    prefetch: () => Promise.resolve(),
     events: { on: sandbox.stub(), off: sandbox.stub(), emit: sandbox.stub() },
     isFallback: false,
   };
