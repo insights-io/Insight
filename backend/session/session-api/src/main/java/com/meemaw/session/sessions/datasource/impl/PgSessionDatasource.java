@@ -1,15 +1,15 @@
-package com.meemaw.session.sessions.datasource.pg;
+package com.meemaw.session.sessions.datasource.impl;
 
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.CREATED_AT;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.DEVICE_ID;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.FIELDS;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.FIELD_MAPPINGS;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.ID;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.INSERT_FIELDS;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.LOCATION;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.ORGANIZATION_ID;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.TABLE;
-import static com.meemaw.session.sessions.datasource.pg.SessionTable.USER_AGENT;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.CREATED_AT;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.DEVICE_ID;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.FIELDS;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.FIELD_MAPPINGS;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.ID;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.INSERT_FIELDS;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.LOCATION;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.ORGANIZATION_ID;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.TABLE;
+import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.USER_AGENT;
 import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

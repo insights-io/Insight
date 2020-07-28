@@ -11,26 +11,8 @@ import java.util.UUID;
 
 public interface PageDatasource {
 
-  /**
-   * @param pageId String page id
-   * @param sessionId String session id
-   * @param deviceId device id
-   * @param page CreatePageDTO page
-   * @return page identity
-   */
   Uni<PageIdentity> insertPage(UUID pageId, UUID sessionId, UUID deviceId, CreatePageDTO page);
 
-  /**
-   * Create page and new session linked to it.
-   *
-   * @param pageId page id
-   * @param sessionId session id
-   * @param deviceId device id
-   * @param userAgent parsed user agent
-   * @param location parsed location
-   * @param page page create dto
-   * @return page identity
-   */
   Uni<PageIdentity> createPageAndNewSession(
       UUID pageId,
       UUID sessionId,
@@ -39,11 +21,5 @@ public interface PageDatasource {
       Location location,
       CreatePageDTO page);
 
-  /**
-   * @param id page id
-   * @param sessionId String session id
-   * @param organizationId String organization id
-   * @return maybe page
-   */
   Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId);
 }
