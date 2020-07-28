@@ -20,8 +20,8 @@ const Logo = () => {
             src="/static/icons/icon-72x72.png"
             alt="Logo"
             className={css({
-              width: '32px',
-              ':hover': { transform: 'scale(1.25)' },
+              width: '20px',
+              ':hover': { transform: 'scale(1.35)' },
             })}
           />
         </Button>
