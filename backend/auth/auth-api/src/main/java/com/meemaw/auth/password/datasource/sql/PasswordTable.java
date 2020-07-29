@@ -1,4 +1,4 @@
-package com.meemaw.auth.password.datasource.pg;
+package com.meemaw.auth.password.datasource.sql;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

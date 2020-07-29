@@ -1,11 +1,12 @@
-package com.meemaw.auth.password.datasource.pg;
+package com.meemaw.auth.password.datasource.sql.pg;
 
-import static com.meemaw.auth.password.datasource.pg.PasswordTable.CREATED_AT;
-import static com.meemaw.auth.password.datasource.pg.PasswordTable.HASH;
-import static com.meemaw.auth.password.datasource.pg.PasswordTable.TABLE;
-import static com.meemaw.auth.password.datasource.pg.PasswordTable.USER_ID;
+import static com.meemaw.auth.password.datasource.sql.PasswordTable.CREATED_AT;
+import static com.meemaw.auth.password.datasource.sql.PasswordTable.HASH;
+import static com.meemaw.auth.password.datasource.sql.PasswordTable.TABLE;
+import static com.meemaw.auth.password.datasource.sql.PasswordTable.USER_ID;
 
 import com.meemaw.auth.password.datasource.PasswordDatasource;
+import com.meemaw.auth.password.datasource.sql.PasswordTable;
 import com.meemaw.auth.user.datasource.pg.PgUserDatasource;
 import com.meemaw.auth.user.datasource.pg.UserTable;
 import com.meemaw.auth.user.model.AuthUser;

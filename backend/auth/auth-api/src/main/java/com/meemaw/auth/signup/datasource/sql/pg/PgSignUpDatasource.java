@@ -1,18 +1,19 @@
-package com.meemaw.auth.signup.datasource.pg;
+package com.meemaw.auth.signup.datasource.sql.pg;
 
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.COMPANY;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.CREATED_AT;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.EMAIL;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.FULL_NAME;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.HASHED_PASSWORD;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.PHONE_NUMBER;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.REFERER;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.TABLE;
-import static com.meemaw.auth.signup.datasource.pg.SignUpRequestTable.TOKEN;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.COMPANY;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.CREATED_AT;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.EMAIL;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.FULL_NAME;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.HASHED_PASSWORD;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.PHONE_NUMBER;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERER;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
+import com.meemaw.auth.signup.datasource.sql.SignUpRequestTable;
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.user.datasource.pg.UserTable;
 import com.meemaw.shared.rest.exception.DatabaseException;

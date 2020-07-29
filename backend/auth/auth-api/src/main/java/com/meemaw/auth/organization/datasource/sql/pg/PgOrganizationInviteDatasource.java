@@ -1,16 +1,17 @@
-package com.meemaw.auth.organization.datasource.pg;
+package com.meemaw.auth.organization.datasource.sql.pg;
 
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.CREATED_AT;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.CREATOR_ID;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.EMAIL;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.INSERT_FIELDS;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.ORGANIZATION_ID;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.ROLE;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.TABLE;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationInviteTable.TOKEN;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.CREATOR_ID;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.EMAIL;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.ORGANIZATION_ID;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.ROLE;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.TOKEN;
 
 import com.meemaw.auth.organization.datasource.OrganizationInviteDatasource;
+import com.meemaw.auth.organization.datasource.sql.OrganizationTable;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;

@@ -1,4 +1,4 @@
-package com.meemaw.auth.signup.datasource.pg;
+package com.meemaw.auth.signup.datasource.sql;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

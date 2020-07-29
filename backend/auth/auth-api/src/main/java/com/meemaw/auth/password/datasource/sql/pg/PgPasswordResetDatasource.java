@@ -1,12 +1,12 @@
-package com.meemaw.auth.password.datasource.pg;
+package com.meemaw.auth.password.datasource.sql.pg;
 
-import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.CREATED_AT;
-import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.EMAIL;
-import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.TABLE;
-import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.TOKEN;
-import static com.meemaw.auth.password.datasource.pg.PasswordResetRequestTable.USER_ID;
+import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.CREATED_AT;
+import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.EMAIL;
+import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.TABLE;
+import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.TOKEN;
+import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.USER_ID;
 
 import com.meemaw.auth.password.datasource.PasswordResetDatasource;
 import com.meemaw.auth.password.model.PasswordResetRequest;

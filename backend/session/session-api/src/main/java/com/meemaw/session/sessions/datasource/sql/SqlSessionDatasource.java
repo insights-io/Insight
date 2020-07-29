@@ -1,34 +1,32 @@
-package com.meemaw.session.sessions.datasource.impl;
+package com.meemaw.session.sessions.datasource.sql;
 
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.CREATED_AT;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.DEVICE_ID;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.FIELDS;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.FIELD_MAPPINGS;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.ID;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.INSERT_FIELDS;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.LOCATION;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.ORGANIZATION_ID;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.TABLE;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.USER_AGENT;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.CREATED_AT;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.DEVICE_ID;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELD_MAPPINGS;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ID;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.INSERT_FIELDS;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATION;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
 import static org.jooq.impl.DSL.condition;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.query.SearchDTO;
-import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
-import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowIterator;
 import io.vertx.mutiny.sqlclient.RowSet;
-import io.vertx.mutiny.sqlclient.Transaction;
-import io.vertx.mutiny.sqlclient.Tuple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,22 +34,20 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class PgSessionDatasource implements SessionDatasource {
+public class SqlSessionDatasource implements SessionDatasource {
 
-  @Inject PgPool pgPool;
-  @Inject ObjectMapper objectMapper;
+  @Inject SqlPool sqlPool;
 
   @Override
   public Uni<Optional<UUID>> findSessionDeviceLink(String organizationId, UUID deviceId) {
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .select(ID)
             .from(TABLE)
             .where(
@@ -62,16 +58,15 @@ public class PgSessionDatasource implements SessionDatasource {
             .orderBy(CREATED_AT.desc())
             .limit(1);
 
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+    return sqlPool
+        .query(query)
         .map(this::mapSessionId)
         .onFailure()
         .invoke(this::onFindUserSessionLinkException);
   }
 
-  private Optional<UUID> mapSessionId(RowSet<Row> pgRowSet) {
-    RowIterator<Row> iterator = pgRowSet.iterator();
+  private Optional<UUID> mapSessionId(RowSet<Row> rows) {
+    RowIterator<Row> iterator = rows.iterator();
     if (!iterator.hasNext()) {
       return Optional.empty();
     }
@@ -83,30 +78,30 @@ public class PgSessionDatasource implements SessionDatasource {
     throw new DatabaseException(throwable);
   }
 
-  @SneakyThrows
   @Override
   public Uni<SessionDTO> createSession(
-      Transaction transaction,
       UUID id,
       UUID deviceId,
       String organizationId,
       Location location,
-      UserAgentDTO userAgent) {
+      UserAgentDTO userAgent,
+      SqlTransaction transaction) {
+
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
             .values(
                 id,
                 deviceId,
                 organizationId,
-                objectMapper.writeValueAsString(location),
-                objectMapper.writeValueAsString(userAgent))
+                JsonObject.mapFrom(location),
+                JsonObject.mapFrom(userAgent))
             .returning(FIELDS);
 
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+        .query(query)
         .map(rowSet -> mapSession(rowSet.iterator().next()))
         .onFailure()
         .invoke(this::onCreateSessionException);
@@ -115,14 +110,14 @@ public class PgSessionDatasource implements SessionDatasource {
   @Override
   public Uni<Optional<SessionDTO>> getSession(UUID id, String organizationId) {
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .select()
             .from(TABLE)
             .where(ID.eq(id).and(ORGANIZATION_ID.eq(organizationId)));
 
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+    return sqlPool
+        .query(query)
         .map(rowSet -> rowSet.iterator().hasNext() ? mapSession(rowSet.iterator().next()) : null)
         .map(Optional::ofNullable);
   }
@@ -132,13 +127,10 @@ public class PgSessionDatasource implements SessionDatasource {
     Query query =
         SQLSearchDTO.of(searchDTO)
             .apply(
-                SQLContext.POSTGRES.selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
+                sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
-        .map(this::mapSessions);
+    return sqlPool.query(query).map(this::mapSessions);
   }
 
   private List<SessionDTO> mapSessions(RowSet<Row> rowSet) {
@@ -149,14 +141,16 @@ public class PgSessionDatasource implements SessionDatasource {
     return collection;
   }
 
-  @SneakyThrows
   private SessionDTO mapSession(Row row) {
+    JsonObject location = new JsonObject(row.getString(LOCATION.getName()));
+    JsonObject userAgent = new JsonObject(row.getString(USER_AGENT.getName()));
+
     return new SessionDTO(
         row.getUUID(ID.getName()),
         row.getUUID(DEVICE_ID.getName()),
         row.getString(ORGANIZATION_ID.getName()),
-        objectMapper.readValue(row.getString(LOCATION.getName()), LocationDTO.class),
-        objectMapper.readValue(row.getString(USER_AGENT.getName()), UserAgentDTO.class),
+        location.mapTo(LocationDTO.class),
+        userAgent.mapTo(UserAgentDTO.class),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 

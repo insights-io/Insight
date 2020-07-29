@@ -1,48 +1,45 @@
-package com.meemaw.session.pages.datasource.impl;
+package com.meemaw.session.pages.datasource.sql;
 
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.COMPILED_TIMESTAMP;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.CREATED_AT;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.DOCTYPE;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.HEIGHT;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.ID;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.INSERT_FIELDS;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.ORGANIZATION_ID;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.REFERRER;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.SCREEN_HEIGHT;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.SCREEN_WIDTH;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.SESSION_ID;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.TABLE;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.URL;
-import static com.meemaw.session.pages.datasource.impl.PgPageTable.WIDTH;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.COMPILED_TIMESTAMP;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.CREATED_AT;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.DOCTYPE;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.HEIGHT;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.ID;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.INSERT_FIELDS;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.ORGANIZATION_ID;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.REFERRER;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SCREEN_HEIGHT;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SCREEN_WIDTH;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SESSION_ID;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.TABLE;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.URL;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.WIDTH;
 
 import com.meemaw.location.model.Location;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.pages.datasource.PageDatasource;
-import com.meemaw.session.sessions.datasource.impl.PgSessionDatasource;
+import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.useragent.model.UserAgentDTO;
 import io.smallrye.mutiny.Uni;
-import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.Transaction;
-import io.vertx.mutiny.sqlclient.Tuple;
 import java.util.Optional;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class PgPageDatasource implements PageDatasource {
+public class SqlPageDatasource implements PageDatasource {
 
-  @Inject PgPool pgPool;
-  @Inject PgSessionDatasource sessionDatasource;
+  @Inject SqlPool sqlPool;
+  @Inject SessionDatasource sessionDatasource;
 
   @Override
   public Uni<PageIdentity> createPageAndNewSession(
@@ -52,41 +49,40 @@ public class PgPageDatasource implements PageDatasource {
       UserAgentDTO userAgent,
       Location location,
       CreatePageDTO page) {
-    return pgPool
+    return sqlPool
         .begin()
         .onItem()
         .produceUni(
             transaction ->
                 createPageAndNewSession(
-                    transaction, pageId, sessionId, deviceId, userAgent, location, page));
+                    pageId, sessionId, deviceId, userAgent, location, page, transaction));
   }
 
   private Uni<PageIdentity> createPageAndNewSession(
-      Transaction transaction,
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
       UserAgentDTO userAgent,
       Location location,
-      CreatePageDTO page) {
+      CreatePageDTO page,
+      SqlTransaction transaction) {
 
     return sessionDatasource
         .createSession(
-            transaction, sessionId, deviceId, page.getOrganizationId(), location, userAgent)
+            sessionId, deviceId, page.getOrganizationId(), location, userAgent, transaction)
         .onItem()
         .produceUni(
             session ->
-                insertPage(transaction, pageId, session.getId(), session.getDeviceId(), page)
+                insertPage(pageId, session.getId(), session.getDeviceId(), page, transaction)
                     .onItem()
                     .produceUni(pageIdentity -> transaction.commit().map(ignored -> pageIdentity)));
   }
 
   private Uni<PageIdentity> insertPage(
-      Transaction transaction, UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
+      UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page, SqlTransaction transaction) {
     Query query = insertPageQuery(id, sessionId, page);
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+        .query(query)
         .map(
             rowSet ->
                 PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
@@ -97,9 +93,8 @@ public class PgPageDatasource implements PageDatasource {
   @Override
   public Uni<PageIdentity> insertPage(UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
     Query query = insertPageQuery(id, sessionId, page);
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+    return sqlPool
+        .query(query)
         .map(
             rowSet ->
                 PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
@@ -108,7 +103,8 @@ public class PgPageDatasource implements PageDatasource {
   }
 
   private Query insertPageQuery(UUID id, UUID sessionId, CreatePageDTO page) {
-    return SQLContext.POSTGRES
+    return sqlPool
+        .getContext()
         .insertInto(TABLE)
         .columns(INSERT_FIELDS)
         .values(
@@ -133,14 +129,14 @@ public class PgPageDatasource implements PageDatasource {
   @Override
   public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .select()
             .from(TABLE)
             .where(ID.eq(id).and(SESSION_ID.eq(sessionId).and(ORGANIZATION_ID.eq(organizationId))));
 
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+    return sqlPool
+        .query(query)
         .map(rowSet -> rowSet.iterator().hasNext() ? map(rowSet.iterator().next()) : null)
         .map(Optional::ofNullable)
         .onFailure()

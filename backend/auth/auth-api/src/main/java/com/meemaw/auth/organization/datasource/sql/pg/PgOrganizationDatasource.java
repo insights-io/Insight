@@ -1,11 +1,11 @@
-package com.meemaw.auth.organization.datasource.pg;
+package com.meemaw.auth.organization.datasource.sql.pg;
 
-import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.CREATED_AT;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.FIELDS;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.ID;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.INSERT_FIELDS;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.NAME;
-import static com.meemaw.auth.organization.datasource.pg.OrganizationTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.ID;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.NAME;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.TABLE;
 
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
@@ -82,12 +82,6 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
     return Optional.of(mapOrganization(pgRowSet.iterator().next()));
   }
 
-  /**
-   * Map SQL row to organization.
-   *
-   * @param row SQL row
-   * @return mapped OrganizationDTO
-   */
   public static OrganizationDTO mapOrganization(Row row) {
     return new OrganizationDTO(
         row.getString(ID.getName()),

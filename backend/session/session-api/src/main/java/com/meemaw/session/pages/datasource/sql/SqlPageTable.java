@@ -1,4 +1,4 @@
-package com.meemaw.session.pages.datasource.impl;
+package com.meemaw.session.pages.datasource.sql;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.jooq.Field;
 import org.jooq.Table;
 
-public final class PgPageTable {
+public final class SqlPageTable {
 
   public static final Table<?> TABLE = table("session.page");
 
@@ -40,5 +40,5 @@ public final class PgPageTable {
           SCREEN_WIDTH,
           COMPILED_TIMESTAMP);
 
-  private PgPageTable() {}
+  private SqlPageTable() {}
 }
