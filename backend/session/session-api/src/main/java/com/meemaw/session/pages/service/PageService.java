@@ -11,9 +11,9 @@ import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.useragent.model.UserAgentDTO;
-import io.smallrye.mutiny.Uni;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class PageService {
    */
   @Timed(name = "createPage", description = "A measure of how long it takes to create a page")
   @Traced
-  public Uni<PageIdentity> createPage(
+  public CompletionStage<PageIdentity> createPage(
       CreatePageDTO page, String userAgentString, String ipAddress) {
     UUID pageId = UUID.randomUUID();
     UUID deviceId = Optional.ofNullable(page.getDeviceId()).orElseGet(UUID::randomUUID);
@@ -73,8 +73,7 @@ public class PageService {
     // recognized device; try to link it with an existing session
     return sessionDatasource
         .findSessionDeviceLink(page.getOrganizationId(), deviceId)
-        .onItem()
-        .produceUni(
+        .thenCompose(
             maybeSessionId -> {
               if (maybeSessionId.isEmpty()) {
                 log.debug(
@@ -88,7 +87,7 @@ public class PageService {
   }
 
   @Traced
-  private Uni<PageIdentity> createPageAndNewSession(
+  private CompletionStage<PageIdentity> createPageAndNewSession(
       UUID pageId, UUID deviceId, UserAgentDTO userAgent, String ipAddress, CreatePageDTO page) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
@@ -101,7 +100,8 @@ public class PageService {
         pageId, sessionId, deviceId, userAgent, location, page);
   }
 
-  public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {
+  public CompletionStage<Optional<PageDTO>> getPage(
+      UUID id, UUID sessionId, String organizationId) {
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
     MDC.put(LoggingConstants.PAGE_ID, id.toString());

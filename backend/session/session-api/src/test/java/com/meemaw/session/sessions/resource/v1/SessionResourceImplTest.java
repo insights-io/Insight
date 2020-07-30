@@ -1,7 +1,7 @@
 package com.meemaw.session.sessions.resource.v1;
 
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.FIELDS;
-import static com.meemaw.session.sessions.datasource.impl.PgSessionTable.TABLE;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;

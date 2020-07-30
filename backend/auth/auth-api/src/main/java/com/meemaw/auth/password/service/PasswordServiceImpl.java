@@ -8,14 +8,13 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithHashedPassword;
 import com.meemaw.shared.rest.exception.BoomException;
-import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.response.Boom;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
-import io.vertx.axle.pgclient.PgPool;
-import io.vertx.axle.sqlclient.Transaction;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -35,7 +34,7 @@ public class PasswordServiceImpl implements PasswordService {
   @Inject PasswordResetDatasource passwordResetDatasource;
   @Inject UserDatasource userDatasource;
   @Inject ReactiveMailer mailer;
-  @Inject PgPool pgPool;
+  @Inject SqlPool sqlPool;
 
   @ResourcePath("password/password_reset")
   Template passwordResetTemplate;
@@ -69,18 +68,6 @@ public class PasswordServiceImpl implements PasswordService {
               }
 
               return withPassword.user();
-            })
-        .exceptionally(
-            throwable -> {
-              Throwable cause = throwable.getCause();
-              if (cause instanceof BoomException) {
-                throw (BoomException) cause;
-              }
-              log.error(
-                  "[AUTH]: Failed to retrieve user with password hash for user: {}",
-                  email,
-                  throwable);
-              throw new DatabaseException(throwable);
             });
   }
 
@@ -110,13 +97,13 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   private CompletionStage<AuthUser> forgotPassword(AuthUser authUser, String passwordResetURL) {
-    return pgPool
-        .begin()
+    return sqlPool
+        .beginTransaction()
         .thenCompose(transaction -> forgotPassword(authUser, passwordResetURL, transaction));
   }
 
   private CompletionStage<AuthUser> forgotPassword(
-      AuthUser authUser, String passwordResetURL, Transaction transaction) {
+      AuthUser authUser, String passwordResetURL, SqlTransaction transaction) {
     String email = authUser.getEmail();
     UUID userId = authUser.getId();
 
@@ -234,8 +221,8 @@ public class PasswordServiceImpl implements PasswordService {
       throw Boom.badRequest().message("Password reset request expired").exception();
     }
 
-    return pgPool
-        .begin()
+    return sqlPool
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 passwordResetDatasource
@@ -254,7 +241,7 @@ public class PasswordServiceImpl implements PasswordService {
       name = "createPassword",
       description = "A measure of how long it takes to create a password")
   public CompletionStage<Boolean> createPassword(
-      UUID userId, String email, String password, Transaction transaction) {
+      UUID userId, String email, String password, SqlTransaction transaction) {
     log.info("[AUTH]: Create password request for user {}", email);
     return passwordDatasource
         .storePassword(userId, hashPassword(password), transaction)

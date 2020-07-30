@@ -14,12 +14,12 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
-import io.vertx.axle.pgclient.PgPool;
-import io.vertx.axle.sqlclient.Transaction;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -36,7 +36,7 @@ import org.slf4j.MDC;
 @Slf4j
 public class SignUpServiceImpl implements SignUpService {
 
-  @Inject PgPool pgPool;
+  @Inject SqlPool sqlPool;
   @Inject ReactiveMailer mailer;
   @Inject SignUpDatasource signUpDatasource;
   @Inject PasswordDatasource passwordDatasource;
@@ -66,13 +66,13 @@ public class SignUpServiceImpl implements SignUpService {
             .referer(referer)
             .build();
 
-    return pgPool
-        .begin()
+    return sqlPool
+        .beginTransaction()
         .thenCompose(transaction -> signUp(serverBaseURL, signUpRequest, transaction));
   }
 
   private CompletionStage<Optional<UUID>> signUp(
-      String serverBaseURL, SignUpRequest signUpRequest, Transaction transaction) {
+      String serverBaseURL, SignUpRequest signUpRequest, SqlTransaction transaction) {
     String email = signUpRequest.getEmail();
     return signUpDatasource
         .selectIsEmailTaken(email, transaction)
@@ -133,8 +133,8 @@ public class SignUpServiceImpl implements SignUpService {
       description = "A measure of how long it takes to do complete a sign up")
   public CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUp(UUID token) {
     log.info("[AUTH]: Complete sign up attempt token: {}", token);
-    return pgPool
-        .begin()
+    return sqlPool
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 signUpDatasource
@@ -147,7 +147,7 @@ public class SignUpServiceImpl implements SignUpService {
   }
 
   private CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUpRequest(
-      SignUpRequest signUpRequest, Transaction transaction) {
+      SignUpRequest signUpRequest, SqlTransaction transaction) {
     String email = signUpRequest.getEmail();
     UUID token = signUpRequest.getToken();
     MDC.put(LoggingConstants.USER_EMAIL, email);
@@ -208,8 +208,8 @@ public class SignUpServiceImpl implements SignUpService {
   @Timed(name = "socialSignUp", description = "A measure of how long it takes to do social sign up")
   public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
     log.info("[AUTH]: Social sign up attempt");
-    return pgPool
-        .begin()
+    return sqlPool
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 organizationDatasource
