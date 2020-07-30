@@ -14,7 +14,6 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
-import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
@@ -51,45 +50,21 @@ public class SqlUserDatasource implements UserDatasource {
             .values(email, fullName, organizationId, role.toString())
             .returning(FIELDS);
 
-    return transaction
-        .query(query)
-        .thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()))
-        .exceptionally(this::onCreateUserException);
-  }
-
-  private AuthUser onCreateUserException(Throwable throwable) {
-    log.error("Failed to create user", throwable);
-    throw new DatabaseException(throwable);
+    return transaction.query(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
   }
 
   @Override
   @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(EMAIL.eq(email));
-
-    return sqlPool
-        .query(query)
-        .thenApply(this::onFindUser)
-        .exceptionally(this::onFindUserException);
+    return sqlPool.execute(query).thenApply(this::onFindUser);
   }
 
   @Override
   @Traced
   public CompletionStage<Collection<AuthUser>> findOrganizationMembers(String organizationId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
-    return sqlPool
-        .query(query)
-        .thenApply(this::onUsersFound)
-        .exceptionally(
-            throwable -> {
-              log.error("Failed to find organization users");
-              throw new DatabaseException(throwable);
-            });
-  }
-
-  private Optional<AuthUser> onFindUserException(Throwable throwable) {
-    log.error("Failed to find user", throwable);
-    throw new DatabaseException(throwable);
+    return sqlPool.execute(query).thenApply(this::onUsersFound);
   }
 
   private Optional<AuthUser> onFindUser(RowSet<Row> pgRowSet) {

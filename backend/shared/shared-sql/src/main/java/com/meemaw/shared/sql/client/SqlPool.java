@@ -11,9 +11,9 @@ public interface SqlPool {
 
   DSLContext getContext();
 
-  CompletionStage<SqlTransaction> begin();
+  CompletionStage<SqlTransaction> beginTransaction();
 
-  CompletionStage<RowSet<Row>> query(Query query);
+  CompletionStage<RowSet<Row>> execute(Query query);
 
-  CompletionStage<RowSet<Row>> query(Transaction transaction, Query query);
+  CompletionStage<RowSet<Row>> execute(Transaction transaction, Query query);
 }

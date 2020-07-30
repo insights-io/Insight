@@ -16,7 +16,6 @@ import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
-import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -59,10 +58,7 @@ public class SqlSessionDatasource implements SessionDatasource {
             .orderBy(CREATED_AT.desc())
             .limit(1);
 
-    return sqlPool
-        .query(query)
-        .thenApply(this::mapSessionId)
-        .exceptionally(this::onFindUserSessionLinkException);
+    return sqlPool.execute(query).thenApply(this::mapSessionId);
   }
 
   private Optional<UUID> mapSessionId(RowSet<Row> rows) {
@@ -71,11 +67,6 @@ public class SqlSessionDatasource implements SessionDatasource {
       return Optional.empty();
     }
     return Optional.of(iterator.next().getUUID(0));
-  }
-
-  private <T> T onFindUserSessionLinkException(Throwable throwable) {
-    log.error("Failed to findUserSessionLinkException", throwable);
-    throw new DatabaseException(throwable);
   }
 
   @Override
@@ -100,10 +91,7 @@ public class SqlSessionDatasource implements SessionDatasource {
                 JsonObject.mapFrom(userAgent))
             .returning(FIELDS);
 
-    return transaction
-        .query(query)
-        .thenApply(rowSet -> mapSession(rowSet.iterator().next()))
-        .exceptionally(this::onCreateSessionException);
+    return transaction.query(query).thenApply(rowSet -> mapSession(rowSet.iterator().next()));
   }
 
   @Override
@@ -116,7 +104,7 @@ public class SqlSessionDatasource implements SessionDatasource {
             .where(ID.eq(id).and(ORGANIZATION_ID.eq(organizationId)));
 
     return sqlPool
-        .query(query)
+        .execute(query)
         .thenApply(
             rowSet -> rowSet.iterator().hasNext() ? mapSession(rowSet.iterator().next()) : null)
         .thenApply(Optional::ofNullable);
@@ -131,7 +119,7 @@ public class SqlSessionDatasource implements SessionDatasource {
                 sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
-    return sqlPool.query(query).thenApply(this::mapSessions);
+    return sqlPool.execute(query).thenApply(this::mapSessions);
   }
 
   private List<SessionDTO> mapSessions(RowSet<Row> rowSet) {
@@ -153,10 +141,5 @@ public class SqlSessionDatasource implements SessionDatasource {
         location.mapTo(LocationDTO.class),
         userAgent.mapTo(UserAgentDTO.class),
         row.getOffsetDateTime(CREATED_AT.getName()));
-  }
-
-  private <T> T onCreateSessionException(Throwable throwable) {
-    log.error("Failed to create session", throwable);
-    throw new DatabaseException(throwable);
   }
 }

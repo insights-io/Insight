@@ -52,7 +52,7 @@ public class SqlPasswordDatasource implements PasswordDatasource {
             .columns(USER_ID, HASH)
             .values(userId, hashedPassword);
 
-    return sqlPool.query(query).thenApply(pgRowSet -> true);
+    return sqlPool.execute(query).thenApply(pgRowSet -> true);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SqlPasswordDatasource implements PasswordDatasource {
             .orderBy(PasswordTable.tableField(CREATED_AT).desc())
             .limit(1);
 
-    return sqlPool.query(query).thenApply(this::userWithPasswordFromRowSet);
+    return sqlPool.execute(query).thenApply(this::userWithPasswordFromRowSet);
   }
 
   private Optional<UserWithHashedPassword> userWithPasswordFromRowSet(RowSet<Row> rows) {

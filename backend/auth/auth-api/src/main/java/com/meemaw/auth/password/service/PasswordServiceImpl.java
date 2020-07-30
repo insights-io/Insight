@@ -8,7 +8,6 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithHashedPassword;
 import com.meemaw.shared.rest.exception.BoomException;
-import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -69,18 +68,6 @@ public class PasswordServiceImpl implements PasswordService {
               }
 
               return withPassword.user();
-            })
-        .exceptionally(
-            throwable -> {
-              Throwable cause = throwable.getCause();
-              if (cause instanceof BoomException) {
-                throw (BoomException) cause;
-              }
-              log.error(
-                  "[AUTH]: Failed to retrieve user with password hash for user: {}",
-                  email,
-                  throwable);
-              throw new DatabaseException(throwable);
             });
   }
 
@@ -111,7 +98,7 @@ public class PasswordServiceImpl implements PasswordService {
 
   private CompletionStage<AuthUser> forgotPassword(AuthUser authUser, String passwordResetURL) {
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(transaction -> forgotPassword(authUser, passwordResetURL, transaction));
   }
 
@@ -235,7 +222,7 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 passwordResetDatasource

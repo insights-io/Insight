@@ -21,7 +21,6 @@ import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.pages.datasource.PageDatasource;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
-import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.useragent.model.UserAgentDTO;
@@ -50,7 +49,7 @@ public class SqlPageDatasource implements PageDatasource {
       Location location,
       CreatePageDTO page) {
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 createPageAndNewSession(
@@ -83,8 +82,7 @@ public class SqlPageDatasource implements PageDatasource {
         .query(query)
         .thenApply(
             rowSet ->
-                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
-        .exceptionally(this::onInsertPageException);
+                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build());
   }
 
   @Override
@@ -92,11 +90,10 @@ public class SqlPageDatasource implements PageDatasource {
       UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
     Query query = insertPageQuery(id, sessionId, page);
     return sqlPool
-        .query(query)
+        .execute(query)
         .thenApply(
             rowSet ->
-                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
-        .exceptionally(this::onInsertPageException);
+                PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build());
   }
 
   private Query insertPageQuery(UUID id, UUID sessionId, CreatePageDTO page) {
@@ -118,11 +115,6 @@ public class SqlPageDatasource implements PageDatasource {
             page.getCompiledTs());
   }
 
-  private <T> T onInsertPageException(Throwable throwable) {
-    log.error("Failed to insertPage", throwable);
-    throw new DatabaseException(throwable);
-  }
-
   @Override
   public CompletionStage<Optional<PageDTO>> getPage(
       UUID id, UUID sessionId, String organizationId) {
@@ -134,10 +126,9 @@ public class SqlPageDatasource implements PageDatasource {
             .where(ID.eq(id).and(SESSION_ID.eq(sessionId).and(ORGANIZATION_ID.eq(organizationId))));
 
     return sqlPool
-        .query(query)
+        .execute(query)
         .thenApply(rowSet -> rowSet.iterator().hasNext() ? map(rowSet.iterator().next()) : null)
-        .thenApply(Optional::ofNullable)
-        .exceptionally(this::onGetPageException);
+        .thenApply(Optional::ofNullable);
   }
 
   private PageDTO map(Row row) {
@@ -154,10 +145,5 @@ public class SqlPageDatasource implements PageDatasource {
         row.getInteger(HEIGHT.getName()),
         row.getInteger(COMPILED_TIMESTAMP.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()));
-  }
-
-  private <T> T onGetPageException(Throwable throwable) {
-    log.error("Failed to get page", throwable);
-    throw new DatabaseException(throwable);
   }
 }

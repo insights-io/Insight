@@ -10,7 +10,6 @@ import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.TABL
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
-import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
@@ -43,11 +42,6 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
 
     return transaction
         .query(query)
-        .exceptionally(
-            throwable -> {
-              log.error("Failed to create organization", throwable);
-              throw new DatabaseException(throwable);
-            })
         .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
   }
 
@@ -55,7 +49,7 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
   @Traced
   public CompletionStage<Optional<Organization>> findOrganization(String id) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
-    return sqlPool.query(query).thenApply(this::mapOrganizationIfPresent);
+    return sqlPool.execute(query).thenApply(this::mapOrganizationIfPresent);
   }
 
   @Override

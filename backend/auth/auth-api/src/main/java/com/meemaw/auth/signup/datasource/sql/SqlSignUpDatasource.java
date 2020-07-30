@@ -15,8 +15,6 @@ import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.user.datasource.sql.UserTable;
-import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
@@ -57,48 +55,30 @@ public class SqlSignUpDatasource implements SignUpDatasource {
 
     return transaction
         .query(query)
-        .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID(TOKEN.getName()))
-        .exceptionally(
-            throwable -> {
-              log.error("Failed to create sign up request", throwable);
-              throw new DatabaseException(throwable);
-            });
+        .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID(TOKEN.getName()));
   }
 
   @Override
   @Traced
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(UUID token) {
-    return sqlPool.begin().thenCompose(transaction -> findSignUpRequest(token, transaction));
+    return sqlPool
+        .beginTransaction()
+        .thenCompose(transaction -> findSignUpRequest(token, transaction));
   }
 
   @Override
   @Traced
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(
       UUID token, SqlTransaction transaction) {
-    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(TOKEN.eq(token));
-
-    return transaction
-        .query(query)
-        .thenApply(SqlSignUpDatasource::maybeMapSignUpRequest)
-        .exceptionally(
-            throwable -> {
-              log.error("Failed to fetch sign up request", throwable);
-              throw new DatabaseException(throwable);
-            });
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
+    return transaction.query(query).thenApply(SqlSignUpDatasource::maybeMapSignUpRequest);
   }
 
   @Override
   @Traced
   public CompletionStage<Boolean> deleteSignUpRequest(UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token));
-    return transaction
-        .query(query)
-        .thenApply(pgRowSet -> true)
-        .exceptionally(
-            throwable -> {
-              log.error("Failed to delete sign up request", throwable);
-              throw new DatabaseException(throwable);
-            });
+    return transaction.query(query).thenApply(pgRowSet -> true);
   }
 
   @Override

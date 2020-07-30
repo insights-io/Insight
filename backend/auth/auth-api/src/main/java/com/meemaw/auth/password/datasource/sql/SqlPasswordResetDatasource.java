@@ -42,7 +42,7 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
   @Traced
   public CompletionStage<Optional<PasswordResetRequest>> findPasswordResetRequest(UUID token) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
-    return sqlPool.query(query).thenApply(this::mapMaybePasswordResetRequest);
+    return sqlPool.execute(query).thenApply(this::mapMaybePasswordResetRequest);
   }
 
   @Override

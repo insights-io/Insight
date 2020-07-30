@@ -15,14 +15,10 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.user.model.UserRole;
-import com.meemaw.shared.pg.PgError;
-import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
-import io.vertx.pgclient.PgException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +28,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -61,7 +56,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
     Query query = sqlPool.getContext().selectFrom(joined).where(TOKEN.eq(token));
 
     return sqlPool
-        .query(query)
+        .execute(query)
         .thenApply(
             rows -> {
               if (!rows.iterator().hasNext()) {
@@ -79,7 +74,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
   public CompletionStage<List<TeamInviteDTO>> find(String organizationId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
     return sqlPool
-        .query(query)
+        .execute(query)
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
@@ -91,7 +86,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
   @Traced
   public CompletionStage<Boolean> delete(UUID token) {
     Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token));
-    return sqlPool.query(query).thenApply(pgRowSet -> true);
+    return sqlPool.execute(query).thenApply(pgRowSet -> true);
   }
 
   @Override
@@ -129,32 +124,11 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
     return transaction
         .query(query)
         .thenApply(
-            pgRowSet -> {
-              Row row = pgRowSet.iterator().next();
+            rows -> {
+              Row row = rows.iterator().next();
               UUID token = row.getUUID(TOKEN.getName());
               OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
               return new TeamInviteDTO(token, email, organizationId, role, creatorId, createdAt);
-            })
-        .exceptionally(
-            throwable -> {
-              Throwable cause = throwable.getCause();
-              if (cause instanceof PgException) {
-                PgException pgException = (PgException) cause;
-                if (pgException.getCode().equals(PgError.UNIQUE_VIOLATION.getCode())) {
-                  log.error("User has already been invited user={} org={}", email, organizationId);
-                  throw Boom.status(Response.Status.CONFLICT)
-                      .message("User has already been invited")
-                      .exception();
-                }
-              }
-              log.error(
-                  "Failed to create invite user={} org={} creator={} role={}",
-                  email,
-                  organizationId,
-                  creatorId,
-                  role,
-                  throwable);
-              throw new DatabaseException(throwable);
             });
   }
 

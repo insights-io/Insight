@@ -1,5 +1,6 @@
 package com.meemaw.shared.context;
 
+import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.headers.MissingHttpHeaders;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.http.HttpServerRequest;
@@ -25,7 +26,7 @@ public final class RequestUtils {
    *
    * @param request http server request
    * @return Optional URL
-   * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
+   * @throws BoomException if malformed URL
    */
   public static Optional<URL> sneakyParseRefererURL(HttpServerRequest request) {
     return Optional.ofNullable(request.getHeader("referer")).map(RequestUtils::sneakyURL);
@@ -36,7 +37,7 @@ public final class RequestUtils {
    *
    * @param request http server request
    * @return Optional String base URL as string
-   * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
+   * @throws BoomException if malformed URL
    */
   public static Optional<String> parseRefererBaseURL(HttpServerRequest request) {
     return sneakyParseRefererURL(request).map(RequestUtils::parseBaseURL);
@@ -47,7 +48,7 @@ public final class RequestUtils {
    *
    * @param url http request url
    * @return URL
-   * @throws com.meemaw.shared.rest.exception.BoomException if malformed URL
+   * @throws BoomException if malformed URL
    */
   private static URL sneakyURL(String url) {
     try {

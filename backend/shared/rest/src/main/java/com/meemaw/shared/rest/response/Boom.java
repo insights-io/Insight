@@ -1,6 +1,5 @@
 package com.meemaw.shared.rest.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meemaw.shared.rest.exception.BoomException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -8,16 +7,12 @@ import javax.ws.rs.core.Response.StatusType;
 
 public class Boom<T> {
 
-  @JsonProperty("statusCode")
   private final int statusCode;
 
-  @JsonProperty("reason")
   private final String reason;
 
-  @JsonProperty("message")
   private String message;
 
-  @JsonProperty("errors")
   private T errors;
 
   public Boom(StatusType status) {

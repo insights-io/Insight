@@ -55,7 +55,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
         organizationId);
 
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 datasource
@@ -112,7 +112,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   public CompletionStage<Boolean> acceptTeamInvite(UUID token, InviteAcceptDTO inviteAccept) {
     log.info("[AUTH]: Accepting team invite attempt for token: {}", token);
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(transaction -> acceptTeamInvite(token, inviteAccept, transaction));
   }
 

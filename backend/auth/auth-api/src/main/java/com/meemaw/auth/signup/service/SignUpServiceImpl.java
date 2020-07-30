@@ -67,7 +67,7 @@ public class SignUpServiceImpl implements SignUpService {
             .build();
 
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(transaction -> signUp(serverBaseURL, signUpRequest, transaction));
   }
 
@@ -134,7 +134,7 @@ public class SignUpServiceImpl implements SignUpService {
   public CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUp(UUID token) {
     log.info("[AUTH]: Complete sign up attempt token: {}", token);
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 signUpDatasource
@@ -209,7 +209,7 @@ public class SignUpServiceImpl implements SignUpService {
   public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
     log.info("[AUTH]: Social sign up attempt");
     return sqlPool
-        .begin()
+        .beginTransaction()
         .thenCompose(
             transaction ->
                 organizationDatasource
