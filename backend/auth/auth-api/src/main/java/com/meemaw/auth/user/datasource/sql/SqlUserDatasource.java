@@ -1,26 +1,24 @@
-package com.meemaw.auth.user.datasource.pg;
+package com.meemaw.auth.user.datasource.sql;
 
-import static com.meemaw.auth.user.datasource.pg.UserTable.CREATED_AT;
-import static com.meemaw.auth.user.datasource.pg.UserTable.EMAIL;
-import static com.meemaw.auth.user.datasource.pg.UserTable.FIELDS;
-import static com.meemaw.auth.user.datasource.pg.UserTable.FULL_NAME;
-import static com.meemaw.auth.user.datasource.pg.UserTable.ID;
-import static com.meemaw.auth.user.datasource.pg.UserTable.INSERT_FIELDS;
-import static com.meemaw.auth.user.datasource.pg.UserTable.ORGANIZATION_ID;
-import static com.meemaw.auth.user.datasource.pg.UserTable.ROLE;
-import static com.meemaw.auth.user.datasource.pg.UserTable.TABLE;
+import static com.meemaw.auth.user.datasource.sql.UserTable.CREATED_AT;
+import static com.meemaw.auth.user.datasource.sql.UserTable.EMAIL;
+import static com.meemaw.auth.user.datasource.sql.UserTable.FIELDS;
+import static com.meemaw.auth.user.datasource.sql.UserTable.FULL_NAME;
+import static com.meemaw.auth.user.datasource.sql.UserTable.ID;
+import static com.meemaw.auth.user.datasource.sql.UserTable.INSERT_FIELDS;
+import static com.meemaw.auth.user.datasource.sql.UserTable.ORGANIZATION_ID;
+import static com.meemaw.auth.user.datasource.sql.UserTable.ROLE;
+import static com.meemaw.auth.user.datasource.sql.UserTable.TABLE;
 
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.shared.sql.SQLContext;
-import io.vertx.axle.pgclient.PgPool;
-import io.vertx.axle.sqlclient.Row;
-import io.vertx.axle.sqlclient.RowSet;
-import io.vertx.axle.sqlclient.Transaction;
-import io.vertx.axle.sqlclient.Tuple;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -30,13 +28,12 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Query;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class PgUserDatasource implements UserDatasource {
+public class SqlUserDatasource implements UserDatasource {
 
-  @Inject PgPool pgPool;
+  @Inject SqlPool sqlPool;
 
   @Override
   @Traced
@@ -45,17 +42,17 @@ public class PgUserDatasource implements UserDatasource {
       String fullName,
       String organizationId,
       UserRole role,
-      Transaction transaction) {
+      SqlTransaction transaction) {
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
             .values(email, fullName, organizationId, role.toString())
             .returning(FIELDS);
 
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+        .query(query)
         .thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()))
         .exceptionally(this::onCreateUserException);
   }
@@ -68,11 +65,10 @@ public class PgUserDatasource implements UserDatasource {
   @Override
   @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
-    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(EMAIL.eq(email));
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(EMAIL.eq(email));
 
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+    return sqlPool
+        .query(query)
         .thenApply(this::onFindUser)
         .exceptionally(this::onFindUserException);
   }
@@ -80,10 +76,9 @@ public class PgUserDatasource implements UserDatasource {
   @Override
   @Traced
   public CompletionStage<Collection<AuthUser>> findOrganizationMembers(String organizationId) {
-    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
+    return sqlPool
+        .query(query)
         .thenApply(this::onUsersFound)
         .exceptionally(
             throwable -> {
@@ -105,18 +100,12 @@ public class PgUserDatasource implements UserDatasource {
     return Optional.of(mapUser(row));
   }
 
-  private Collection<AuthUser> onUsersFound(RowSet<Row> pgRowSet) {
+  private Collection<AuthUser> onUsersFound(RowSet<Row> rows) {
     Collection<AuthUser> users = new ArrayList<>();
-    pgRowSet.forEach(row -> users.add(mapUser(row)));
+    rows.forEach(row -> users.add(mapUser(row)));
     return users;
   }
 
-  /**
-   * Map SQL row to AuthUser.
-   *
-   * @param row sql row
-   * @return mapped AuthUser
-   */
   public static AuthUser mapUser(Row row) {
     return new UserDTO(
         row.getUUID(ID.getName()),

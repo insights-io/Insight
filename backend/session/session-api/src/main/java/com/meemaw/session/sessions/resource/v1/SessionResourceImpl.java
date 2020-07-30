@@ -6,7 +6,6 @@ import com.meemaw.session.pages.service.PageService;
 import com.meemaw.session.sessions.service.SessionService;
 import com.meemaw.session.sessions.service.SessionSocketService;
 import com.meemaw.session.sessions.v1.SessionResource;
-import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
@@ -31,7 +30,6 @@ public class SessionResourceImpl implements SessionResource {
   @Inject SessionService sessionService;
   @Inject PageService pageService;
   @Inject SessionSocketService sessionSocketService;
-  @Inject UserAgentService userAgentService;
 
   @Override
   public CompletionStage<Response> createPage(CreatePageDTO body, String userAgentString) {
@@ -39,7 +37,6 @@ public class SessionResourceImpl implements SessionResource {
 
     return pageService
         .createPage(body, userAgentString, ipAddress)
-        .subscribeAsCompletionStage()
         .thenApply(
             pageIdentity -> {
               sessionSocketService.pageStart(pageIdentity.getPageId());
@@ -52,7 +49,6 @@ public class SessionResourceImpl implements SessionResource {
     String organizationId = principal.user().getOrganizationId();
     return sessionService
         .getSession(sessionId, organizationId)
-        .subscribeAsCompletionStage()
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }
@@ -62,7 +58,6 @@ public class SessionResourceImpl implements SessionResource {
     // String organizationId = principal.user().getOrganizationId();
     return pageService
         .getPage(pageId, sessionId, organizationId)
-        .subscribeAsCompletionStage()
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }
@@ -73,7 +68,6 @@ public class SessionResourceImpl implements SessionResource {
     Map<String, List<String>> queryParams = RequestUtils.map(uriInfo.getQueryParameters());
     return sessionService
         .getSessions(organizationId, SearchDTO.rhsColon(queryParams))
-        .subscribeAsCompletionStage()
         .thenApply(DataResponse::ok);
   }
 }

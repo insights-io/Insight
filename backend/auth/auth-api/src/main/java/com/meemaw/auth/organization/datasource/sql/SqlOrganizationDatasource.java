@@ -1,4 +1,4 @@
-package com.meemaw.auth.organization.datasource.sql.pg;
+package com.meemaw.auth.organization.datasource.sql;
 
 import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.CREATED_AT;
 import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.FIELDS;
@@ -11,12 +11,10 @@ import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.shared.rest.exception.DatabaseException;
-import com.meemaw.shared.sql.SQLContext;
-import io.vertx.axle.pgclient.PgPool;
-import io.vertx.axle.sqlclient.Row;
-import io.vertx.axle.sqlclient.RowSet;
-import io.vertx.axle.sqlclient.Transaction;
-import io.vertx.axle.sqlclient.Tuple;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -24,28 +22,27 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Query;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class PgOrganizationDatasource implements OrganizationDatasource {
+public class SqlOrganizationDatasource implements OrganizationDatasource {
 
-  @Inject PgPool pgPool;
+  @Inject SqlPool sqlPool;
 
   @Override
   @Traced
   public CompletionStage<Organization> createOrganization(
-      String id, String company, Transaction transaction) {
+      String id, String company, SqlTransaction transaction) {
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
             .values(id, company)
             .returning(FIELDS);
 
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+        .query(query)
         .exceptionally(
             throwable -> {
               log.error("Failed to create organization", throwable);
@@ -57,29 +54,23 @@ public class PgOrganizationDatasource implements OrganizationDatasource {
   @Override
   @Traced
   public CompletionStage<Optional<Organization>> findOrganization(String id) {
-    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(ID.eq(id));
-    return pgPool
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
-        .thenApply(this::mapOrganizationIfPresent);
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
+    return sqlPool.query(query).thenApply(this::mapOrganizationIfPresent);
   }
 
   @Override
   @Traced
   public CompletionStage<Optional<Organization>> findOrganization(
-      String id, Transaction transaction) {
-    Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(ID.eq(id));
-    return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
-        .thenApply(this::mapOrganizationIfPresent);
+      String id, SqlTransaction transaction) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
+    return transaction.query(query).thenApply(this::mapOrganizationIfPresent);
   }
 
-  private Optional<Organization> mapOrganizationIfPresent(RowSet<Row> pgRowSet) {
-    if (!pgRowSet.iterator().hasNext()) {
+  private Optional<Organization> mapOrganizationIfPresent(RowSet<Row> rows) {
+    if (!rows.iterator().hasNext()) {
       return Optional.empty();
     }
-    return Optional.of(mapOrganization(pgRowSet.iterator().next()));
+    return Optional.of(mapOrganization(rows.iterator().next()));
   }
 
   public static OrganizationDTO mapOrganization(Row row) {

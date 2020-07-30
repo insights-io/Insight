@@ -3,11 +3,9 @@ package com.meemaw.shared.sql.client.pg;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-import com.meemaw.shared.sql.exception.SqlQueryException;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
-import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
@@ -15,6 +13,8 @@ import io.vertx.mutiny.sqlclient.SqlClient;
 import io.vertx.mutiny.sqlclient.Transaction;
 import io.vertx.mutiny.sqlclient.Tuple;
 import java.util.List;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +30,12 @@ public class TracedPgPool implements SqlPool {
   @Inject PgPool pgPool;
 
   @Override
-  public Uni<SqlTransaction> begin() {
+  public CompletionStage<SqlTransaction> begin() {
     log.debug("[SQL]: Starting transaction");
-    return pgPool.begin().map(transaction -> new SqlTransaction(transaction, this));
+    return pgPool
+        .begin()
+        .map(transaction -> new SqlTransaction(transaction, this))
+        .subscribeAsCompletionStage();
   }
 
   @Override
@@ -41,16 +44,16 @@ public class TracedPgPool implements SqlPool {
   }
 
   @Override
-  public Uni<RowSet<Row>> query(Query query) {
+  public CompletionStage<RowSet<Row>> query(Query query) {
     return query(pgPool, query, tracer, getContext());
   }
 
   @Override
-  public Uni<RowSet<Row>> query(Transaction transaction, Query query) {
+  public CompletionStage<RowSet<Row>> query(Transaction transaction, Query query) {
     return query(transaction, query, tracer, getContext());
   }
 
-  public static Uni<RowSet<Row>> query(
+  public static CompletionStage<RowSet<Row>> query(
       SqlClient client, Query query, Tracer tracer, DSLContext context) {
     Span span = startQuerySpan(tracer, context);
 
@@ -63,19 +66,19 @@ public class TracedPgPool implements SqlPool {
     return client
         .preparedQuery(statement)
         .execute(Tuple.tuple(values))
-        .map(
+        .subscribeAsCompletionStage()
+        .thenApply(
             value -> {
               span.finish();
               return value;
             })
-        .onFailure()
-        .apply(
+        .exceptionally(
             throwable -> {
               Tags.ERROR.set(span, true);
               span.log(throwable.getMessage());
               span.finish();
               log.error("[SQL]: Failed to execute SQL statement: {}", statement, throwable);
-              throw new SqlQueryException(throwable, statement, values);
+              throw (CompletionException) throwable;
             });
   }
 

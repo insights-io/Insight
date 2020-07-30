@@ -22,7 +22,6 @@ import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.useragent.model.UserAgentDTO;
-import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowIterator;
@@ -32,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,8 @@ public class SqlSessionDatasource implements SessionDatasource {
   @Inject SqlPool sqlPool;
 
   @Override
-  public Uni<Optional<UUID>> findSessionDeviceLink(String organizationId, UUID deviceId) {
+  public CompletionStage<Optional<UUID>> findSessionDeviceLink(
+      String organizationId, UUID deviceId) {
     Query query =
         sqlPool
             .getContext()
@@ -60,9 +61,8 @@ public class SqlSessionDatasource implements SessionDatasource {
 
     return sqlPool
         .query(query)
-        .map(this::mapSessionId)
-        .onFailure()
-        .invoke(this::onFindUserSessionLinkException);
+        .thenApply(this::mapSessionId)
+        .exceptionally(this::onFindUserSessionLinkException);
   }
 
   private Optional<UUID> mapSessionId(RowSet<Row> rows) {
@@ -79,7 +79,7 @@ public class SqlSessionDatasource implements SessionDatasource {
   }
 
   @Override
-  public Uni<SessionDTO> createSession(
+  public CompletionStage<SessionDTO> createSession(
       UUID id,
       UUID deviceId,
       String organizationId,
@@ -102,13 +102,12 @@ public class SqlSessionDatasource implements SessionDatasource {
 
     return transaction
         .query(query)
-        .map(rowSet -> mapSession(rowSet.iterator().next()))
-        .onFailure()
-        .invoke(this::onCreateSessionException);
+        .thenApply(rowSet -> mapSession(rowSet.iterator().next()))
+        .exceptionally(this::onCreateSessionException);
   }
 
   @Override
-  public Uni<Optional<SessionDTO>> getSession(UUID id, String organizationId) {
+  public CompletionStage<Optional<SessionDTO>> getSession(UUID id, String organizationId) {
     Query query =
         sqlPool
             .getContext()
@@ -118,19 +117,21 @@ public class SqlSessionDatasource implements SessionDatasource {
 
     return sqlPool
         .query(query)
-        .map(rowSet -> rowSet.iterator().hasNext() ? mapSession(rowSet.iterator().next()) : null)
-        .map(Optional::ofNullable);
+        .thenApply(
+            rowSet -> rowSet.iterator().hasNext() ? mapSession(rowSet.iterator().next()) : null)
+        .thenApply(Optional::ofNullable);
   }
 
   @Override
-  public Uni<Collection<SessionDTO>> getSessions(String organizationId, SearchDTO searchDTO) {
+  public CompletionStage<Collection<SessionDTO>> getSessions(
+      String organizationId, SearchDTO searchDTO) {
     Query query =
         SQLSearchDTO.of(searchDTO)
             .apply(
                 sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
-    return sqlPool.query(query).map(this::mapSessions);
+    return sqlPool.query(query).thenApply(this::mapSessions);
   }
 
   private List<SessionDTO> mapSessions(RowSet<Row> rowSet) {

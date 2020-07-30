@@ -25,10 +25,10 @@ import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.useragent.model.UserAgentDTO;
-import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.sqlclient.Row;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class SqlPageDatasource implements PageDatasource {
   @Inject SessionDatasource sessionDatasource;
 
   @Override
-  public Uni<PageIdentity> createPageAndNewSession(
+  public CompletionStage<PageIdentity> createPageAndNewSession(
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
@@ -51,14 +51,13 @@ public class SqlPageDatasource implements PageDatasource {
       CreatePageDTO page) {
     return sqlPool
         .begin()
-        .onItem()
-        .produceUni(
+        .thenCompose(
             transaction ->
                 createPageAndNewSession(
                     pageId, sessionId, deviceId, userAgent, location, page, transaction));
   }
 
-  private Uni<PageIdentity> createPageAndNewSession(
+  private CompletionStage<PageIdentity> createPageAndNewSession(
       UUID pageId,
       UUID sessionId,
       UUID deviceId,
@@ -70,36 +69,34 @@ public class SqlPageDatasource implements PageDatasource {
     return sessionDatasource
         .createSession(
             sessionId, deviceId, page.getOrganizationId(), location, userAgent, transaction)
-        .onItem()
-        .produceUni(
+        .thenCompose(
             session ->
                 insertPage(pageId, session.getId(), session.getDeviceId(), page, transaction)
-                    .onItem()
-                    .produceUni(pageIdentity -> transaction.commit().map(ignored -> pageIdentity)));
+                    .thenCompose(
+                        pageIdentity -> transaction.commit().thenApply(ignored -> pageIdentity)));
   }
 
-  private Uni<PageIdentity> insertPage(
+  private CompletionStage<PageIdentity> insertPage(
       UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page, SqlTransaction transaction) {
     Query query = insertPageQuery(id, sessionId, page);
     return transaction
         .query(query)
-        .map(
+        .thenApply(
             rowSet ->
                 PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
-        .onFailure()
-        .invoke(this::onInsertPageException);
+        .exceptionally(this::onInsertPageException);
   }
 
   @Override
-  public Uni<PageIdentity> insertPage(UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
+  public CompletionStage<PageIdentity> insertPage(
+      UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page) {
     Query query = insertPageQuery(id, sessionId, page);
     return sqlPool
         .query(query)
-        .map(
+        .thenApply(
             rowSet ->
                 PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build())
-        .onFailure()
-        .invoke(this::onInsertPageException);
+        .exceptionally(this::onInsertPageException);
   }
 
   private Query insertPageQuery(UUID id, UUID sessionId, CreatePageDTO page) {
@@ -127,7 +124,8 @@ public class SqlPageDatasource implements PageDatasource {
   }
 
   @Override
-  public Uni<Optional<PageDTO>> getPage(UUID id, UUID sessionId, String organizationId) {
+  public CompletionStage<Optional<PageDTO>> getPage(
+      UUID id, UUID sessionId, String organizationId) {
     Query query =
         sqlPool
             .getContext()
@@ -137,10 +135,9 @@ public class SqlPageDatasource implements PageDatasource {
 
     return sqlPool
         .query(query)
-        .map(rowSet -> rowSet.iterator().hasNext() ? map(rowSet.iterator().next()) : null)
-        .map(Optional::ofNullable)
-        .onFailure()
-        .invoke(this::onGetPageException);
+        .thenApply(rowSet -> rowSet.iterator().hasNext() ? map(rowSet.iterator().next()) : null)
+        .thenApply(Optional::ofNullable)
+        .exceptionally(this::onGetPageException);
   }
 
   private PageDTO map(Row row) {

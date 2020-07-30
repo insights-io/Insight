@@ -1,38 +1,17 @@
 package com.meemaw.auth.password.datasource;
 
 import com.meemaw.auth.user.model.UserWithHashedPassword;
-import io.vertx.axle.sqlclient.Transaction;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
 public interface PasswordDatasource {
 
-  /**
-   * Store user password within a given transaction.
-   *
-   * @param userId UUID user id
-   * @param hashedPassword String hashed password
-   * @param transaction Transaction context
-   * @return Boolean indicating successful insert
-   */
   CompletionStage<Boolean> storePassword(
-      UUID userId, String hashedPassword, Transaction transaction);
+      UUID userId, String hashedPassword, SqlTransaction transaction);
 
-  /**
-   * Store user password.
-   *
-   * @param userId UUID user id
-   * @param hashedPassword String hashed password
-   * @return Boolean indicating successful insert
-   */
   CompletionStage<Boolean> storePassword(UUID userId, String hashedPassword);
 
-  /**
-   * Find user with its password.
-   *
-   * @param email String email address
-   * @return maybe UserWithHashedPassword
-   */
   CompletionStage<Optional<UserWithHashedPassword>> findUserWithPassword(String email);
 }

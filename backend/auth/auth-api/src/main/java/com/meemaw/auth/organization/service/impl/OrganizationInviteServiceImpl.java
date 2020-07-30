@@ -14,12 +14,12 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.rest.response.Boom;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
-import io.vertx.axle.pgclient.PgPool;
-import io.vertx.axle.sqlclient.Transaction;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -35,7 +35,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 public class OrganizationInviteServiceImpl implements OrganizationInviteService {
 
   @Inject ReactiveMailer mailer;
-  @Inject PgPool pgPool;
+  @Inject SqlPool sqlPool;
   @Inject UserDatasource userDatasource;
   @Inject OrganizationDatasource datasource;
   @Inject OrganizationInviteDatasource inviteDatasource;
@@ -54,7 +54,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
         invite.getEmail(),
         organizationId);
 
-    return pgPool
+    return sqlPool
         .begin()
         .thenCompose(
             transaction ->
@@ -86,7 +86,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
       UUID creatorId,
       TeamInviteTemplateData teamInviteTemplateData,
       String acceptInviteURL,
-      Transaction transaction) {
+      SqlTransaction transaction) {
     return inviteDatasource
         .create(organizationId, creatorId, teamInviteTemplateData, transaction)
         .thenCompose(
@@ -111,13 +111,13 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   @Traced
   public CompletionStage<Boolean> acceptTeamInvite(UUID token, InviteAcceptDTO inviteAccept) {
     log.info("[AUTH]: Accepting team invite attempt for token: {}", token);
-    return pgPool
+    return sqlPool
         .begin()
         .thenCompose(transaction -> acceptTeamInvite(token, inviteAccept, transaction));
   }
 
   private CompletionStage<Boolean> acceptTeamInvite(
-      UUID token, InviteAcceptDTO inviteAccept, Transaction transaction) {
+      UUID token, InviteAcceptDTO inviteAccept, SqlTransaction transaction) {
 
     return inviteDatasource
         .get(token, transaction)

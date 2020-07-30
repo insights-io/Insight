@@ -1,4 +1,4 @@
-package com.meemaw.auth.signup.datasource.sql.pg;
+package com.meemaw.auth.signup.datasource.sql;
 
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.AUTO_GENERATED_FIELDS;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.COMPANY;
@@ -13,16 +13,14 @@ import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
-import com.meemaw.auth.signup.datasource.sql.SignUpRequestTable;
 import com.meemaw.auth.signup.model.SignUpRequest;
-import com.meemaw.auth.user.datasource.pg.UserTable;
+import com.meemaw.auth.user.datasource.sql.UserTable;
 import com.meemaw.shared.rest.exception.DatabaseException;
 import com.meemaw.shared.sql.SQLContext;
-import io.vertx.axle.pgclient.PgPool;
-import io.vertx.axle.sqlclient.Row;
-import io.vertx.axle.sqlclient.RowSet;
-import io.vertx.axle.sqlclient.Transaction;
-import io.vertx.axle.sqlclient.Tuple;
+import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -32,20 +30,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class PgSignUpDatasource implements SignUpDatasource {
+public class SqlSignUpDatasource implements SignUpDatasource {
 
-  @Inject PgPool pgPool;
+  @Inject SqlPool sqlPool;
 
   @Override
   @Traced
   public CompletionStage<UUID> createSignUpRequest(
-      SignUpRequest signUpRequest, Transaction transaction) {
+      SignUpRequest signUpRequest, SqlTransaction transaction) {
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
             .values(
@@ -58,8 +56,7 @@ public class PgSignUpDatasource implements SignUpDatasource {
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+        .query(query)
         .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID(TOKEN.getName()))
         .exceptionally(
             throwable -> {
@@ -71,19 +68,18 @@ public class PgSignUpDatasource implements SignUpDatasource {
   @Override
   @Traced
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(UUID token) {
-    return pgPool.begin().thenCompose(transaction -> findSignUpRequest(token, transaction));
+    return sqlPool.begin().thenCompose(transaction -> findSignUpRequest(token, transaction));
   }
 
   @Override
   @Traced
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(
-      UUID token, Transaction transaction) {
+      UUID token, SqlTransaction transaction) {
     Query query = SQLContext.POSTGRES.selectFrom(TABLE).where(TOKEN.eq(token));
 
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
-        .thenApply(PgSignUpDatasource::maybeMapSignUpRequest)
+        .query(query)
+        .thenApply(SqlSignUpDatasource::maybeMapSignUpRequest)
         .exceptionally(
             throwable -> {
               log.error("Failed to fetch sign up request", throwable);
@@ -93,11 +89,10 @@ public class PgSignUpDatasource implements SignUpDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Boolean> deleteSignUpRequest(UUID token, Transaction transaction) {
-    Query query = SQLContext.POSTGRES.deleteFrom(TABLE).where(TOKEN.eq(token));
+  public CompletionStage<Boolean> deleteSignUpRequest(UUID token, SqlTransaction transaction) {
+    Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token));
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+        .query(query)
         .thenApply(pgRowSet -> true)
         .exceptionally(
             throwable -> {
@@ -108,35 +103,29 @@ public class PgSignUpDatasource implements SignUpDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Boolean> selectIsEmailTaken(String email, Transaction transaction) {
+  public CompletionStage<Boolean> selectIsEmailTaken(String email, SqlTransaction transaction) {
     Field<String> userEmail = UserTable.tableField(UserTable.EMAIL);
     Field<String> signUpRequestEmail = SignUpRequestTable.tableField(EMAIL);
 
     Query query =
-        SQLContext.POSTGRES
+        sqlPool
+            .getContext()
             .selectCount()
             .from(UserTable.TABLE.fullOuterJoin(TABLE).on(userEmail.eq(signUpRequestEmail)))
             .where(userEmail.eq(email).or(signUpRequestEmail.eq(email)));
 
     return transaction
-        .preparedQuery(query.getSQL(ParamType.NAMED))
-        .execute(Tuple.tuple(query.getBindValues()))
+        .query(query)
         .thenApply(pgRowSet -> pgRowSet.iterator().next().getInteger("count") > 0);
   }
 
-  private static Optional<SignUpRequest> maybeMapSignUpRequest(RowSet<Row> rowSet) {
-    if (!rowSet.iterator().hasNext()) {
+  private static Optional<SignUpRequest> maybeMapSignUpRequest(RowSet<Row> rows) {
+    if (!rows.iterator().hasNext()) {
       return Optional.empty();
     }
-    return Optional.of(mapSignUpRequest(rowSet.iterator().next()));
+    return Optional.of(mapSignUpRequest(rows.iterator().next()));
   }
 
-  /**
-   * Map SQL row to SignUpRequest.
-   *
-   * @param row SQL row
-   * @return mapped SignUpRequest
-   */
   public static SignUpRequest mapSignUpRequest(Row row) {
     return new SignUpRequest(
         row.getUUID(TOKEN.getName()),
