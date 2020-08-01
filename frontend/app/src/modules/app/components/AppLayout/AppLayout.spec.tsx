@@ -7,6 +7,24 @@ import { Base } from './AppLayout.stories';
 
 describe('<AppLayout />', () => {
   describe('Desktop', () => {
+    const initialWidth = window.innerWidth;
+
+    beforeAll(() => {
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 1024,
+      });
+    });
+
+    afterAll(() => {
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: initialWidth,
+      });
+    });
+
     it('Should correctly toggle sidebar', async () => {
       const { getByText, findByText, queryByText, container, push } = render(
         <Base />
