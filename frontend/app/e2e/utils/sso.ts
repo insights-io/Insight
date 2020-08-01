@@ -33,6 +33,13 @@ export const login = (
     .click(signInButton);
 };
 
+export const loginWithInsightUser = (t: TestController) => {
+  return login(t, {
+    email: config.insightUserEmail,
+    password: config.insightUserPassword,
+  });
+};
+
 type SignUpDetails = LoginCredentials & {
   fullName: string;
   company: string;

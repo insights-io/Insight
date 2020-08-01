@@ -91,7 +91,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
           $style={{ listStyle: 'none' }}
           marginLeft={0}
           marginRight={0}
-          marginBottom={theme.sizing.scale400}
+          marginBottom={theme.sizing.scale500}
           padding={0}
         >
           <NavbarItem
