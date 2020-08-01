@@ -184,7 +184,7 @@ public class OrganizationInviteResourceImplTest {
         .statusCode(409)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":409,\"reason\":\"Conflict\",\"message\":\"User has already been invited\"}}"));
+                "{\"error\":{\"statusCode\":409,\"reason\":\"Conflict\",\"message\":\"Conflict\"}}"));
 
     // accept the invite
     List<Mail> sent = mailbox.getMessagesSentTo("test-team-invitation@gmail.com");

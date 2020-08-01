@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "next",
     "dev:proxy": "PROXY=true yarn dev",
+    "dev:proxy:staging": "NEXT_PUBLIC_AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu NEXT_PUBLIC_SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu yarn dev:proxy",
     "build": "next build",
     "start": "next start",
     "test": "jest --env=jest-environment-jsdom-sixteen",
@@ -34,31 +35,31 @@
   "dependencies": {
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
-    "baseui": "9.89.0",
+    "baseui": "9.91.0",
     "date-fns": "2.15.0",
     "jaeger-client": "3.18.0",
-    "next": "9.4.4",
+    "next": "9.5.1",
     "next-cookies": "2.0.3",
     "next-pwa": "3.1.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-hook-form": "6.1.0",
+    "react-hook-form": "6.2.0",
     "react-icons": "3.10.0",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7",
-    "swr": "0.2.3"
+    "swr": "0.3.0"
   },
   "devDependencies": {
     "@insight/storybook": "0.0.0-development",
     "@insight/testing": "0.0.0-development",
     "@insight/types": "0.0.0-development",
-    "@next/bundle-analyzer": "9.4.4",
+    "@next/bundle-analyzer": "9.5.1",
     "@types/jaeger-client": "3.15.4",
-    "@types/react": "16.9.43",
+    "@types/react": "16.9.44",
     "@types/react-dom": "16.9.8",
     "@types/uuid": "8.0.0",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2",
-    "uuid": "8.2.0"
+    "uuid": "8.3.0"
   }
 }

@@ -73,5 +73,5 @@ jobs:
           SLACK_USERNAME: botsights
           SLACK_CHANNEL: github-firehose
           SLACK_TITLE: Syncing
-          SLACK_MESSAGE: 'Git commit ${{ env.GITHUB_SHA_SHORT }} pushed to {{ env.GITOPS_REPOSITORY }} :rocket:'
+          SLACK_MESSAGE: 'Git commit ${{ env.GITHUB_SHA_SHORT }} pushed to ${{ env.GITOPS_REPOSITORY }} :rocket:'
           SLACK_ICON: https://avatars0.githubusercontent.com/u/66676697?s=96&v=4

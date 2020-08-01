@@ -11,8 +11,6 @@ public class NotAllowedExceptionMapper implements ExceptionMapper<NotAllowedExce
 
   @Override
   public Response toResponse(NotAllowedException exception) {
-    return Boom.status(Response.Status.METHOD_NOT_ALLOWED)
-        .message("Method Not Allowed")
-        .response();
+    return Boom.status(Response.Status.METHOD_NOT_ALLOWED).message("Method Not Allowed").response();
   }
 }
