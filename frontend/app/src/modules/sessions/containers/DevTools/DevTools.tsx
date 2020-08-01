@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, TabOverrides, SharedProps } from 'baseui/tabs';
 import { Drawer } from 'baseui/drawer';
-import { ArrowLeft } from 'baseui/icon';
 import dynamic from 'next/dynamic';
 import { Button, SIZE, SHAPE } from 'baseui/button';
 import { useStyletron } from 'baseui';
 import { StatefulTooltip } from 'baseui/tooltip';
+import { FaTerminal } from 'react-icons/fa';
 
 type Props = {
   sessionId: string;
@@ -35,7 +35,7 @@ const DevTools = ({ sessionId }: Props) => {
   return (
     <>
       {!isOpen && (
-        <StatefulTooltip content="DevTools" showArrow>
+        <StatefulTooltip content="DevTools" showArrow onMouseEnterDelay={1000}>
           <Button
             size={SIZE.mini}
             shape={SHAPE.pill}
@@ -47,7 +47,7 @@ const DevTools = ({ sessionId }: Props) => {
             }}
             onClick={() => setIsOpen(true)}
           >
-            <ArrowLeft />
+            <FaTerminal id="devtools" />
           </Button>
         </StatefulTooltip>
       )}

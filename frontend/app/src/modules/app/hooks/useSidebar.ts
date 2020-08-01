@@ -9,7 +9,11 @@ const useSidebar = () => {
     setExpanded((prev) => !prev);
   }, []);
 
-  return { width, expanded, onCollapseItemClick };
+  const collapseSidebar = useCallback(() => {
+    setExpanded(false);
+  }, []);
+
+  return { width, expanded, onCollapseItemClick, collapseSidebar };
 };
 
 export default useSidebar;

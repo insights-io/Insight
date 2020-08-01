@@ -3,11 +3,19 @@ import { Block } from 'baseui/block';
 import { TOPBAR_HEIGHT } from 'shared/theme';
 import { useStyletron } from 'baseui';
 import { Menu } from 'baseui/icon';
+import { FaInfo } from 'react-icons/fa';
+import { PLACEMENT } from 'baseui/tooltip';
 
 import NavbarItem from '../Item';
 
 type Props = {
   onMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+};
+
+const NAVBAR_ITEM_OVERRIDES = {
+  Tooltip: {
+    placement: PLACEMENT.bottomRight,
+  },
 };
 
 const Topbar = ({ onMenuClick }: Props) => {
@@ -21,8 +29,27 @@ const Topbar = ({ onMenuClick }: Props) => {
       color={theme.colors.white}
       backgroundColor={theme.colors.black}
     >
-      <Block height="100%" display="flex" justifyContent="center">
-        <NavbarItem artwork={<Menu />} onClick={onMenuClick} />
+      <Block
+        height="100%"
+        display="flex"
+        justifyContent="center"
+        as="ul"
+        margin={0}
+        padding={0}
+        $style={{ listStyle: 'none' }}
+      >
+        <NavbarItem
+          to="/"
+          artwork={<FaInfo />}
+          text="Insights"
+          overrides={NAVBAR_ITEM_OVERRIDES}
+        />
+        <NavbarItem
+          artwork={<Menu />}
+          onClick={onMenuClick}
+          text="Open sidebar"
+          overrides={NAVBAR_ITEM_OVERRIDES}
+        />
       </Block>
     </Block>
   );

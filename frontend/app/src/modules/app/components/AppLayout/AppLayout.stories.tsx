@@ -1,14 +1,13 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
-import { action } from '@storybook/addon-actions';
 
-import Topbar from './Topbar';
+import AppLayout from './AppLayout';
 
 export default {
-  title: 'app|components/Topbar',
+  title: 'App|components/AppLayout',
   decorators: [fullHeightDecorator],
 };
 
 export const Base = () => {
-  return <Topbar onMenuClick={action('onMenuClick')} />;
+  return <AppLayout>Some content</AppLayout>;
 };

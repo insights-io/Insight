@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
 import { useStyletron } from 'baseui';
 import { Block, BlockProps } from 'baseui/block';
-import { StatefulPopover, PLACEMENT, TRIGGER_TYPE } from 'baseui/popover';
 import { OnItemSelect, StatefulMenu } from 'baseui/menu';
 import AuthApi from 'api/auth';
 import Router from 'next/router';
 import NavbarItem from 'modules/app/components/Navbar/Item';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaChartArea, FaInfo } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
 
@@ -14,97 +13,126 @@ type Props = {
   width: BlockProps['width'];
   expanded: boolean;
   onCollapseItemClick?: () => void;
+  renderLogo?: boolean;
   style?: StyleObject;
 };
 
-const Sidebar = ({ width, expanded, onCollapseItemClick, style }: Props) => {
-  const [_css, theme] = useStyletron();
+const Sidebar = React.forwardRef<HTMLDivElement, Props>(
+  ({ width, expanded, onCollapseItemClick, renderLogo, style }, ref) => {
+    const [_css, theme] = useStyletron();
 
-  const menuItems = useMemo(() => {
-    return {
-      __ungrouped: [],
-      Account: [
-        {
-          label: 'Account settings',
-          handler: () => Router.push('/account/settings'),
-        },
-        {
-          label: 'Sign out',
-          handler: () =>
-            AuthApi.sso.logout().then((_) => Router.push('/login')),
-        },
-      ],
+    const menuItems = useMemo(() => {
+      return {
+        __ungrouped: [],
+        Account: [
+          {
+            label: 'Account settings',
+            handler: () => Router.push('/account/settings'),
+          },
+          {
+            label: 'Sign out',
+            handler: () =>
+              AuthApi.sso.logout().then((_) => Router.push('/login')),
+          },
+        ],
+      };
+    }, []);
+
+    type MenuItem = typeof menuItems.Account[number];
+
+    const onItemSelect = (close: () => void): OnItemSelect => async ({
+      item,
+      event: _event,
+    }) => {
+      await (item as MenuItem).handler();
+      close();
     };
-  }, []);
 
-  type MenuItem = typeof menuItems.Account[number];
-
-  const onItemSelect = (close: () => void): OnItemSelect => async ({
-    item,
-    event: _event,
-  }) => {
-    await (item as MenuItem).handler();
-    close();
-  };
-
-  return (
-    <Block
-      as="nav"
-      display="flex"
-      overflow="hidden"
-      position="fixed"
-      height="100%"
-      width={width}
-      color={theme.colors.white}
-      backgroundColor={theme.colors.black}
-      $style={{
-        zIndex: 1,
-        transitionDuration: theme.animation.timing100,
-        transitionProperty: 'width',
-        transitionTimingFunction: theme.animation.easeInOutQuinticCurve,
-        ...style,
-      }}
-    >
+    return (
       <Block
+        ref={ref}
+        as="nav"
         display="flex"
-        justifyContent="center"
+        overflow="hidden"
+        position="fixed"
         flexDirection="column"
-        marginTop="auto"
-        width="100%"
-        marginBottom={theme.sizing.scale400}
+        height="100%"
+        width={width}
+        color={theme.colors.white}
+        backgroundColor={theme.colors.black}
+        $style={{
+          zIndex: 1,
+          transitionDuration: theme.animation.timing100,
+          transitionProperty: 'width',
+          transitionTimingFunction: theme.animation.easeInOutQuinticCurve,
+          ...style,
+        }}
       >
-        <StatefulPopover
-          showArrow
-          focusLock
-          placement={PLACEMENT.right}
-          triggerType={TRIGGER_TYPE.click}
-          content={({ close }) => (
-            <StatefulMenu
-              items={menuItems}
-              onItemSelect={onItemSelect(close)}
-            />
-          )}
-        >
-          <Block display="flex" padding={theme.sizing.scale200}>
+        <Block as="ul" $style={{ listStyle: 'none' }} margin={0} padding={0}>
+          {renderLogo && (
             <NavbarItem
-              artwork={<FaUser />}
-              text="Account settings"
+              to="/"
+              artwork={<FaInfo />}
+              text="Insights"
               showText={expanded}
             />
-          </Block>
-        </StatefulPopover>
-
-        {onCollapseItemClick && (
+          )}
           <NavbarItem
-            artwork={expanded ? <ChevronLeft /> : <ChevronRight />}
+            to="/sessions"
+            artwork={<FaChartArea />}
+            text="Sessions"
             showText={expanded}
-            text="Collapse"
-            onClick={onCollapseItemClick}
           />
-        )}
+        </Block>
+
+        <Block
+          marginTop="auto"
+          as="ul"
+          $style={{ listStyle: 'none' }}
+          marginLeft={0}
+          marginRight={0}
+          marginBottom={theme.sizing.scale400}
+          padding={0}
+        >
+          <NavbarItem
+            artwork={<FaUser id="account-settings" />}
+            text="Account settings"
+            showText={expanded}
+            overrides={{
+              Tooltip: {
+                overrides: {
+                  Inner: {
+                    style: {
+                      paddingLeft: 0,
+                      paddingRight: 0,
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                    },
+                  },
+                },
+                showArrow: false,
+                content: ({ close }) => (
+                  <StatefulMenu
+                    items={menuItems}
+                    onItemSelect={onItemSelect(close)}
+                  />
+                ),
+              },
+            }}
+          />
+
+          {onCollapseItemClick && (
+            <NavbarItem
+              artwork={expanded ? <ChevronLeft /> : <ChevronRight />}
+              showText={expanded}
+              text="Collapse"
+              onClick={onCollapseItemClick}
+            />
+          )}
+        </Block>
       </Block>
-    </Block>
-  );
-};
+    );
+  }
+);
 
 export default React.memo(Sidebar);

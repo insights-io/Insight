@@ -13,7 +13,7 @@ test('Should be able to logout', async (t) => {
   });
 
   await t
-    .click(Selector('svg[title="Menu"]'))
+    .click(Selector('svg[id="account-settings"]'))
     .click(queryByText('Sign out'))
     .expect(queryByText('Create a free account').visible)
     .ok('Should be on the login page');

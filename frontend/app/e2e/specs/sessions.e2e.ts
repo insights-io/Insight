@@ -19,7 +19,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   const lastSession = queryAllByText(/^.*less than 5 seconds ago$/);
-  const showDevToolsIcon = Selector('svg[title="Arrow Left"]');
+  const showDevToolsIcon = Selector('svg[id="devtools"]');
 
   await t
     .expect(lastSession.visible)

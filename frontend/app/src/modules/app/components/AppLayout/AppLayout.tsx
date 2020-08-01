@@ -9,6 +9,7 @@ import {
   EXPANDED_SIDEBAR_WIDTH,
 } from 'shared/theme';
 import useSidebar from 'modules/app/hooks/useSidebar';
+import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 
 import Sidebar from '../Navbar/Sidebar';
 import Topbar from '../Navbar/Topbar';
@@ -29,8 +30,18 @@ const AppLayout = ({ children, overrides }: Props) => {
   const { width = 0 } = useWindowSize();
   const [_css, theme] = useStyletron();
   const renderTopbar = width < theme.breakpoints.medium;
-  const sidebarProps = useSidebar();
+  const { collapseSidebar, ...sidebarProps } = useSidebar();
   const [sidebarVisible, setSidebarVisible] = useState(false);
+
+  const handleOnClickOutside = useCallback(() => {
+    if (renderTopbar) {
+      setSidebarVisible(false);
+    } else {
+      collapseSidebar();
+    }
+  }, [renderTopbar, collapseSidebar, setSidebarVisible]);
+
+  const sidebarRef = useOnClickOutside<HTMLDivElement>(handleOnClickOutside);
 
   const onSidebarMenuClick = useCallback(() => {
     setSidebarVisible((prev) => !prev);
@@ -42,8 +53,10 @@ const AppLayout = ({ children, overrides }: Props) => {
 
   let sidebar: React.ReactNode = (
     <Sidebar
+      ref={sidebarRef}
       width={renderTopbar ? EXPANDED_SIDEBAR_WIDTH : sidebarProps.width}
       expanded={renderTopbar ? true : sidebarProps.expanded}
+      renderLogo={!renderTopbar}
       onCollapseItemClick={
         renderTopbar ? undefined : sidebarProps.onCollapseItemClick
       }
