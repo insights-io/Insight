@@ -6,10 +6,6 @@ variable "environment" {
   type = string
 }
 
-variable "region" {
-  type = string
-}
-
 variable "zone_id" {
   type        = string
   description = "Cloudfront zone_id for which we are setting records"
