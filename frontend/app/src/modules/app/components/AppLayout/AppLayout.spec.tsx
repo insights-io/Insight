@@ -8,7 +8,9 @@ import { Base } from './AppLayout.stories';
 describe('<AppLayout />', () => {
   describe('Desktop', () => {
     it('Should correctly toggle sidebar', async () => {
-      const { findByText, container, push } = render(<Base />);
+      const { getByText, findByText, queryByText, container, push } = render(
+        <Base />
+      );
 
       userEvent.hover(container.querySelector('a[href="/"]') as HTMLElement);
       await findByText('Insights');
@@ -26,6 +28,10 @@ describe('<AppLayout />', () => {
       sandbox.assert.calledWithExactly(push, '/sessions', '/sessions', {
         shallow: undefined,
       });
+
+      // Sidebar collapses on outside click
+      userEvent.click(getByText('Some content'));
+      expect(queryByText('Sessions')).toBeNull();
     });
   });
 
@@ -39,7 +45,9 @@ describe('<AppLayout />', () => {
     });
 
     it('Should correctly toggle sidebar', async () => {
-      const { findByText, container, push } = render(<Base />);
+      const { getByText, queryByText, findByText, container, push } = render(
+        <Base />
+      );
 
       const toggleSidebarIcon = container.querySelector(
         'svg[title="Menu"]'
@@ -55,6 +63,10 @@ describe('<AppLayout />', () => {
       sandbox.assert.calledWithExactly(push, '/sessions', '/sessions', {
         shallow: undefined,
       });
+
+      // Sidebar collapses on outside click
+      userEvent.click(getByText('Some content'));
+      expect(queryByText('Sessions')).toBeNull();
     });
   });
 });

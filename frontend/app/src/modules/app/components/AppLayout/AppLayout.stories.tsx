@@ -1,5 +1,6 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
+import { Block } from 'baseui/block';
 
 import AppLayout from './AppLayout';
 
@@ -9,5 +10,11 @@ export default {
 };
 
 export const Base = () => {
-  return <AppLayout>Some content</AppLayout>;
+  return (
+    <AppLayout>
+      <Block display="flex" justifyContent="center">
+        Some content
+      </Block>
+    </AppLayout>
+  );
 };
