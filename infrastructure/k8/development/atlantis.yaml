@@ -26,11 +26,6 @@ repoConfig: |
       apply_requirements: [approved, mergeable]
   workflows:
     authenticated:
-      plan:
-        steps:
-          - run: if [ $USER_NAME != "Meemaw"  ] && [ $USER_NAME != "snuderl" ] ; then echo \"Sorry $USER_NAME, you are not authorized to plan.\" && exit 1; fi
-          - init
-          - plan
       apply:
         steps:
           - run: if [ $USER_NAME != "Meemaw" ] && [ $USER_NAME != "snuderl" ]; then echo \"Sorry $USER_NAME, you are not authorized to apply.\" && exit 1; fi
