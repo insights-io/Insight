@@ -36,11 +36,21 @@ describe('<AppLayout />', () => {
   });
 
   describe('Mobile', () => {
-    beforeEach(() => {
+    const initialWidth = window.innerWidth;
+
+    beforeAll(() => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
         value: 500,
+      });
+    });
+
+    afterAll(() => {
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: initialWidth,
       });
     });
 
