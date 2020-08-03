@@ -5,10 +5,12 @@ import { sandbox } from '@insight/testing';
 
 import { Base } from './AppLayout.stories';
 
+const { innerWidth: initialWidth } = window;
+
+console.log('INITIAL', { initialWidth });
+
 describe('<AppLayout />', () => {
   describe('Desktop', () => {
-    const initialWidth = window.innerWidth;
-
     beforeAll(() => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
@@ -54,8 +56,6 @@ describe('<AppLayout />', () => {
   });
 
   describe('Mobile', () => {
-    const initialWidth = window.innerWidth;
-
     beforeAll(() => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
