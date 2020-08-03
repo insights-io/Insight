@@ -62,7 +62,6 @@ const NavbarItem = React.forwardRef<HTMLLIElement, Props>(
       <StatefulTooltip
         content={showText ? undefined : text}
         placement={PLACEMENT.right}
-        onMouseEnterDelay={1000}
         showArrow
         {...overrides?.Tooltip}
       >

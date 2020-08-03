@@ -9,12 +9,8 @@ fixture('_app').page(config.appBaseURL);
 test('Should be able to logout', async (t) => {
   await loginWithInsightUser(t);
 
-  const accountSettingsIcon = Selector('svg[id="account-settings"]');
-
   await t
-    .expect(accountSettingsIcon.visible)
-    .ok('Account settings icon is visible')
-    .click(accountSettingsIcon)
+    .hover(Selector('svg[id="account-settings"]'))
     .click(queryByText('Sign out'))
     .expect(queryByText('Create a free account').visible)
     .ok('Should be on the login page');

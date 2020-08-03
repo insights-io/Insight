@@ -95,6 +95,13 @@ describe('<AppLayout />', () => {
       // Sidebar collapses on outside click
       userEvent.click(getByText('Some content'));
       expect(queryByText('Sessions')).toBeNull();
+
+      userEvent.click(toggleSidebarIcon);
+      await findByText('Sessions');
+
+      // Sidebar collapses on menu click
+      userEvent.click(toggleSidebarIcon);
+      expect(queryByText('Sessions')).toBeNull();
     });
   });
 });

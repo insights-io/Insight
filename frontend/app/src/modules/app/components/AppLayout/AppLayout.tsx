@@ -35,11 +35,13 @@ const AppLayout = ({ children, overrides }: Props) => {
 
   const handleOnClickOutside = useCallback(() => {
     if (renderTopbar) {
-      setSidebarVisible(false);
+      if (sidebarVisible) {
+        setSidebarVisible(false);
+      }
     } else {
       collapseSidebar();
     }
-  }, [renderTopbar, collapseSidebar, setSidebarVisible]);
+  }, [sidebarVisible, renderTopbar, collapseSidebar, setSidebarVisible]);
 
   const sidebarRef = useOnClickOutside<HTMLDivElement>(handleOnClickOutside);
 

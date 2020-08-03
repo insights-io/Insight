@@ -33,7 +33,7 @@ test('User should be able to reset password', async (t) => {
   });
 
   await t
-    .click(settingsMenu)
+    .hover(settingsMenu)
     .click(getByText('Sign out'))
     .click(forgotPasswordButton)
     .typeText(emailInput, email)
