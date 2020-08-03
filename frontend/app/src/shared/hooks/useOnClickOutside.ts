@@ -7,7 +7,6 @@ const useOnClickOutside = <T extends HTMLElement>(
 
   useEffect(() => {
     const listener = (event: MouseEvent | TouchEvent) => {
-      // Do nothing if clicking ref's element or descendent elements
       if (!ref.current || ref.current.contains(event.target as Node | null)) {
         return;
       }

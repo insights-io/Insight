@@ -78,11 +78,7 @@ const LoginPage = () => {
 
       <form onSubmit={onSubmit} noValidate>
         <Block>
-          <FormControl
-            label="Email"
-            error={errors.email?.message}
-            overrides={{ Label: { props: { htmlFor: 'email' } } }}
-          >
+          <FormControl label="Email" error={errors.email?.message}>
             <Input
               overrides={inputOverrides}
               id="email"
@@ -107,7 +103,6 @@ const LoginPage = () => {
               </Block>
             }
             error={errors.password?.message}
-            overrides={{ Label: { props: { htmlFor: 'password' } } }}
           >
             <Input
               overrides={inputOverrides}

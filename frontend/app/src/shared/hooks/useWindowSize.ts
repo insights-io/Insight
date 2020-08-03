@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useLayoutEffect } from 'react';
 
 const useWindowSize = () => {
   // eslint-disable-next-line lodash/prefer-lodash-typecheck
@@ -13,7 +13,7 @@ const useWindowSize = () => {
 
   const [windowSize, setWindowSize] = useState(getSize);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isClient) {
       return () => undefined;
     }

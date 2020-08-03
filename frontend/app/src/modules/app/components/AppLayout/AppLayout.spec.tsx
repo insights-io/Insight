@@ -13,7 +13,7 @@ describe('<AppLayout />', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
-        value: 1024,
+        value: 2000,
       });
     });
 
