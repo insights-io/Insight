@@ -7,11 +7,9 @@ import { Base } from './AppLayout.stories';
 
 const { innerWidth: initialWidth } = window;
 
-console.log('INITIAL', { initialWidth });
-
 describe('<AppLayout />', () => {
   describe('Desktop', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -19,7 +17,7 @@ describe('<AppLayout />', () => {
       });
     });
 
-    afterAll(() => {
+    afterEach(() => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -56,7 +54,7 @@ describe('<AppLayout />', () => {
   });
 
   describe('Mobile', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
@@ -64,7 +62,7 @@ describe('<AppLayout />', () => {
       });
     });
 
-    afterAll(() => {
+    afterEach(() => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
