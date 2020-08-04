@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS session.session
     id              UUID        NOT NULL UNIQUE,
     device_id       UUID        NOT NULL,
     organization_id TEXT        NOT NULL,
-    user_agent      JSON        NOT NULL,
-    location        JSON        NOT NULL,
+    user_agent      JSONB       NOT NULL,
+    location        JSONB       NOT NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     PRIMARY KEY (id, device_id, organization_id, created_at)

@@ -6,6 +6,7 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.useragent.model.UserAgentDTO;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -25,4 +26,6 @@ public interface SessionDatasource {
   CompletionStage<Optional<SessionDTO>> getSession(UUID id, String organizationId);
 
   CompletionStage<Collection<SessionDTO>> getSessions(String organizationId, SearchDTO searchDTO);
+
+  CompletionStage<Map<String, Integer>> countByCountries(String organizationId);
 }

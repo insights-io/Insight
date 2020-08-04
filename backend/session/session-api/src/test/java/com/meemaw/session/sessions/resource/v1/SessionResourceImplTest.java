@@ -14,12 +14,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
+import com.meemaw.session.insights.resource.v1.InsightsResource;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.test.matchers.SameJSON;
 import com.meemaw.test.rest.data.UserAgentData;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -29,6 +31,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
 import java.io.IOException;
@@ -69,6 +72,9 @@ public class SessionResourceImplTest {
           .latitude(36.667999267578125)
           .longitude(-78.38899993896484)
           .build();
+
+  private static final UserAgentDTO MOCKED_USER_AGENT =
+      new UserAgentDTO("Desktop", "Mac OS X", "Chrome");
 
   @Inject ObjectMapper objectMapper;
   @Inject PgPool pgPool;
@@ -238,11 +244,17 @@ public class SessionResourceImplTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals(
-        new UserAgentDTO("Desktop", "Mac OS X", "Chrome"),
-        sessions.getData().get(0).getUserAgent());
+    assertEquals(MOCKED_USER_AGENT, sessions.getData().get(0).getUserAgent());
 
     assertEquals(MOCKED_LOCATION, sessions.getData().get(0).getLocation());
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.join("/", InsightsResource.PATH, "by_country"))
+        .then()
+        .statusCode(200)
+        .body(SameJSON.sameJson("{\"data\": {\"United States\": 2}}"));
   }
 
   @Test
@@ -267,8 +279,8 @@ public class SessionResourceImplTest {
                 sessionId,
                 deviceId,
                 organizationId,
-                "127.0.0.1",
-                "userAgent",
+                JsonObject.mapFrom(MOCKED_LOCATION),
+                JsonObject.mapFrom(MOCKED_USER_AGENT),
                 OffsetDateTime.ofInstant(
                     Instant.now().minus(31, ChronoUnit.MINUTES), ZoneOffset.UTC))
             .returning(FIELDS);

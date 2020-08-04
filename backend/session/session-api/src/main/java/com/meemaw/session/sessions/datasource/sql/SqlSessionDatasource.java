@@ -7,6 +7,7 @@ import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELD_M
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ID;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.INSERT_FIELDS;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATION;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATION__COUNTRY_NAME;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
@@ -27,7 +28,9 @@ import io.vertx.mutiny.sqlclient.RowIterator;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -35,6 +38,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
+import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
@@ -67,6 +71,26 @@ public class SqlSessionDatasource implements SessionDatasource {
       return Optional.empty();
     }
     return Optional.of(iterator.next().getUUID(0));
+  }
+
+  @Override
+  public CompletionStage<Map<String, Integer>> countByCountries(String organizationId) {
+    Query query =
+        sqlPool
+            .getContext()
+            .select(LOCATION__COUNTRY_NAME, DSL.count())
+            .from(TABLE)
+            .where(ORGANIZATION_ID.eq(organizationId))
+            .groupBy(LOCATION__COUNTRY_NAME);
+
+    return sqlPool
+        .execute(query)
+        .thenApply(
+            rows -> {
+              Map<String, Integer> result = new HashMap<>(rows.size());
+              rows.forEach(row -> result.put(row.getString(0), row.getInteger(1)));
+              return result;
+            });
   }
 
   @Override
@@ -131,8 +155,8 @@ public class SqlSessionDatasource implements SessionDatasource {
   }
 
   private SessionDTO mapSession(Row row) {
-    JsonObject location = new JsonObject(row.getString(LOCATION.getName()));
-    JsonObject userAgent = new JsonObject(row.getString(USER_AGENT.getName()));
+    JsonObject location = (JsonObject) row.getValue(LOCATION.getName());
+    JsonObject userAgent = (JsonObject) row.getValue(USER_AGENT.getName());
 
     return new SessionDTO(
         row.getUUID(ID.getName()),
