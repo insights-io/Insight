@@ -31,5 +31,5 @@ test('Should be able to navigate', async (t) => {
     .eql(`${config.appBaseURL}/sessions`)
     .click(Sidebar.homeItem)
     .expect(getLocation())
-    .eql(config.appBaseURL);
+    .eql(`${config.appBaseURL}/`);
 });

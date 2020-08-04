@@ -37,9 +37,10 @@ describe('<AppLayout />', () => {
         'svg[id="sidebar--togle"]'
       ) as HTMLElement;
       userEvent.hover(toggleSidebarIcon);
-      await findByText('Collapse');
+      await findByText('Expand');
 
       userEvent.click(toggleSidebarIcon);
+      await findByText('Collapse');
       const sessionsItem = await findByText('Sessions');
 
       userEvent.click(sessionsItem);
