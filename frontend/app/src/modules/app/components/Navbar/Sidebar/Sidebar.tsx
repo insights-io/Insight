@@ -135,7 +135,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
                 )
               }
               showText={expanded}
-              text="Collapse"
+              text={expanded ? 'Collapse' : 'Expand'}
               onClick={onCollapseItemClick}
             />
           )}
