@@ -8,6 +8,16 @@ const findEnclosingSvg = (node: HTMLElement): HTMLElement | null => {
   return next as HTMLElement;
 };
 
+const svgShapes = new Set([
+  'path',
+  'rect',
+  'circle',
+  'ellipse',
+  'line',
+  'polyline',
+  'polygon',
+]);
+
 const useOnClickOutside = <T extends HTMLElement>(
   handler: (ev: MouseEvent) => void
 ) => {
@@ -26,23 +36,13 @@ const useOnClickOutside = <T extends HTMLElement>(
       }
 
       let svgTarget: HTMLElement | null = target;
-      if (
-        [
-          'path',
-          'rect',
-          'circle',
-          'ellipse',
-          'line',
-          'polyline',
-          'polygon',
-        ].includes(target.nodeName)
-      ) {
+      if (svgShapes.has(target.nodeName)) {
         svgTarget = findEnclosingSvg(target);
       }
 
       if (svgTarget && svgTarget.nodeName === 'svg') {
         const id = svgTarget.getAttribute('id');
-        if (current.querySelector(`svg[id="${id}"]`)) {
+        if (id && current.querySelector(`svg[id="${id}"]`)) {
           return;
         }
       }
