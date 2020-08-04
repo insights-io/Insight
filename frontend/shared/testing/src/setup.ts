@@ -2,6 +2,19 @@
 
 export const setupEnvironment = () => {
   const originalConsoleWarn = console.warn;
+  const originalConsoleError = console.error;
+
+  console.error = (...args: unknown[]) => {
+    const msg = args.join(' ');
+
+    ['Warning: Invalid DOM property'].forEach((pattern) => {
+      if (String(msg).match(pattern)) {
+        throw new Error(msg);
+      }
+    });
+
+    originalConsoleError(...args);
+  };
 
   console.warn = (...args: unknown[]) => {
     const msg = args.join(' ');

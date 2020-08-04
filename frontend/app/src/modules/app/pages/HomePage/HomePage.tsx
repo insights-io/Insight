@@ -1,7 +1,6 @@
 import React from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import useSessions from 'modules/sessions/hooks/useSessions';
-import { H5 } from 'baseui/typography';
 import { useStyletron } from 'baseui';
 import Link from 'next/link';
 import useAuth from 'modules/auth/hooks/useAuth';
@@ -26,18 +25,19 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
   return (
     <AppLayout
       overrides={{
-        MainContent: {
-          style: {
-            padding: theme.sizing.scale600,
-            background: theme.colors.mono300,
-          },
-        },
+        MainContent: { style: { background: theme.colors.mono300 } },
       }}
     >
       {hasSessions ? (
         <>
-          <H5 margin={0}>Sessions</H5>
-          <ul className={css({ paddingLeft: 0, overflow: 'auto' })}>
+          <ul
+            className={css({
+              paddingLeft: 0,
+              marginBottom: 0,
+              marginTop: 0,
+              overflow: 'auto',
+            })}
+          >
             {sessions.map((session) => {
               return (
                 <Link

@@ -13,7 +13,7 @@ describe('<SessionPage />', () => {
     );
 
     const toggleDevToolsIcon = container.querySelector(
-      'svg[title="Arrow Left"]'
+      'svg[id="devtools"]'
     ) as SVGElement;
 
     userEvent.click(toggleDevToolsIcon);

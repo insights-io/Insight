@@ -7,19 +7,16 @@ import {
 } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
-import { login } from '../utils';
+import { loginWithInsightUser } from '../utils';
 import config from '../config';
 
 fixture('/sessions').page(config.appBaseURL);
 
 test('Should be able to see sessions for Insight logged in user', async (t) => {
-  await login(t, {
-    email: config.insightUserEmail,
-    password: config.insightUserPassword,
-  });
+  await loginWithInsightUser(t);
 
   const lastSession = queryAllByText(/^.*less than 5 seconds ago$/);
-  const showDevToolsIcon = Selector('svg[title="Arrow Left"]');
+  const showDevToolsIcon = Selector('svg[id="devtools"]');
 
   await t
     .expect(lastSession.visible)

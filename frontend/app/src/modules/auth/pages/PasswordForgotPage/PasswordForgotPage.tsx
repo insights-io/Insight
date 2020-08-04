@@ -74,7 +74,6 @@ const PasswordForgotPage = () => {
           <form onSubmit={onSubmit} noValidate>
             <Block>
               <FormControl
-                overrides={{ Label: { props: { for: 'email' } } }}
                 label={
                   <Block display="flex" justifyContent="space-between">
                     <span>Email</span>

@@ -21,7 +21,7 @@ const emailSentMessage = getByText(
 fixture(page).page(`${config.appBaseURL}`);
 
 test('User should be able to reset password', async (t) => {
-  const settingsMenu = Selector('svg[title="Menu"]');
+  const settingsMenu = Selector('svg[id="account-settings"]');
   const password = uuid();
   const email = `miha.novak+${uuid()}@gmail.com`;
 
@@ -33,7 +33,7 @@ test('User should be able to reset password', async (t) => {
   });
 
   await t
-    .click(settingsMenu)
+    .hover(settingsMenu)
     .click(getByText('Sign out'))
     .click(forgotPasswordButton)
     .typeText(emailInput, email)

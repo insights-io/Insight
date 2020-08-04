@@ -19,7 +19,7 @@ export type Authenticated = {
 export const authenticated = async (
   context: GetServerSidePropsContext,
   requestSpan: Span
-): Promise<Authenticated | unknown> => {
+): Promise<Authenticated | undefined> => {
   const { SessionId } = nextCookie(context);
   const pathname = context.req.url;
   const span = getTracer().startSpan('authMiddleware.authenticated', {
@@ -33,7 +33,7 @@ export const authenticated = async (
     }
     context.res.writeHead(302, { Location, ...headers });
     context.res.end();
-    throw new Error('Unauthorized');
+    return undefined;
   };
 
   if (!SessionId) {

@@ -1,9 +1,8 @@
 import React from 'react';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
-  Authenticated,
 } from 'modules/auth/middleware/authMiddleware';
 import { SessionDTO, APIErrorDataResponse } from '@insight/types';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
@@ -27,15 +26,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const requestSpan = startRequestSpan(context.req);
   const sessionId = params?.id as string;
   try {
-    const { user, SessionId } = (await authenticated(
-      context,
-      requestSpan
-    )) as Authenticated;
+    const authResponse = await authenticated(context, requestSpan);
+    if (!authResponse) {
+      return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
+    }
+
     const session = await SessionApi.getSession(sessionId, {
       baseURL: process.env.SESSION_API_BASE_URL,
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${SessionId}`,
+        cookie: `SessionId=${authResponse.SessionId}`,
       },
     }).catch(async (error) => {
       const errorDTO: APIErrorDataResponse = await error.response.json();
@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       }
       throw error;
     });
-    return { props: { sessionId, user, session } };
+    return { props: { sessionId, user: authResponse.user, session } };
   } finally {
     requestSpan.finish();
   }
