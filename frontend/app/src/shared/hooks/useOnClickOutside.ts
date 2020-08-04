@@ -41,7 +41,7 @@ const useOnClickOutside = <T extends HTMLElement>(
       }
 
       if (svgTarget && svgTarget.nodeName === 'svg') {
-        const id = target.getAttribute('id');
+        const id = svgTarget.getAttribute('id');
         if (current.querySelector(`svg[id="${id}"]`)) {
           return;
         }
