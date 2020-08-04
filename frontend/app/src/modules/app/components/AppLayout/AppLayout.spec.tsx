@@ -13,7 +13,7 @@ describe('<AppLayout />', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
-        value: 2000,
+        value: 1024,
       });
     });
 
@@ -26,19 +26,12 @@ describe('<AppLayout />', () => {
     });
 
     it('Should correctly toggle sidebar', async () => {
-      const {
-        getByText,
-        findByText,
-        queryByText,
-        container,
-        push,
-        debug,
-      } = render(<Base />);
+      const { getByText, findByText, queryByText, container, push } = render(
+        <Base />
+      );
 
       userEvent.hover(container.querySelector('a[href="/"]') as HTMLElement);
       await findByText('Insights');
-
-      debug();
 
       const toggleSidebarIcon = container.querySelector(
         'svg[id="sidebar--togle"]'
