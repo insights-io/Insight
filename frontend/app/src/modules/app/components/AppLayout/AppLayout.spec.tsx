@@ -26,15 +26,22 @@ describe('<AppLayout />', () => {
     });
 
     it('Should correctly toggle sidebar', async () => {
-      const { getByText, findByText, queryByText, container, push } = render(
-        <Base />
-      );
+      const {
+        getByText,
+        findByText,
+        queryByText,
+        container,
+        push,
+        debug,
+      } = render(<Base />);
 
       userEvent.hover(container.querySelector('a[href="/"]') as HTMLElement);
       await findByText('Insights');
 
+      debug();
+
       const toggleSidebarIcon = container.querySelector(
-        'svg[title="Chevron Right"]'
+        'svg[id="sidebar--togle"]'
       ) as HTMLElement;
       userEvent.hover(toggleSidebarIcon);
       await findByText('Collapse');

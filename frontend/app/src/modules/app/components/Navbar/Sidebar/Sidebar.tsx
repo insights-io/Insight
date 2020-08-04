@@ -123,7 +123,17 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
 
           {onCollapseItemClick && (
             <NavbarItem
-              artwork={expanded ? <ChevronLeft /> : <ChevronRight />}
+              artwork={
+                expanded ? (
+                  <ChevronLeft
+                    overrides={{ Svg: { props: { id: 'sidebar--togle' } } }}
+                  />
+                ) : (
+                  <ChevronRight
+                    overrides={{ Svg: { props: { id: 'sidebar--togle' } } }}
+                  />
+                )
+              }
               showText={expanded}
               text="Collapse"
               onClick={onCollapseItemClick}
