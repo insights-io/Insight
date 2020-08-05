@@ -7,7 +7,6 @@ import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELD_M
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ID;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.INSERT_FIELDS;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATION;
-import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATION__COUNTRY_NAME;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
@@ -20,6 +19,7 @@ import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLGroupByQuery;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.useragent.model.UserAgentDTO;
 import io.vertx.core.json.JsonObject;
@@ -37,8 +37,8 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
@@ -74,22 +74,36 @@ public class SqlSessionDatasource implements SessionDatasource {
   }
 
   @Override
-  public CompletionStage<Map<String, Integer>> countByCountries(String organizationId) {
+  public CompletionStage<Collection<Map<String, ?>>> count(
+      String organizationId, SearchDTO searchDTO) {
+    List<Field<?>> columns = SQLGroupByQuery.of(searchDTO.getGroupBy()).fieldsWithCount();
+
     Query query =
-        sqlPool
-            .getContext()
-            .select(LOCATION__COUNTRY_NAME, DSL.count())
-            .from(TABLE)
-            .where(ORGANIZATION_ID.eq(organizationId))
-            .groupBy(LOCATION__COUNTRY_NAME);
+        SQLSearchDTO.of(searchDTO)
+            .apply(
+                sqlPool
+                    .getContext()
+                    .select(columns)
+                    .from(TABLE)
+                    .where(ORGANIZATION_ID.eq(organizationId)));
 
     return sqlPool
         .execute(query)
         .thenApply(
             rows -> {
-              Map<String, Integer> result = new HashMap<>(rows.size());
-              rows.forEach(row -> result.put(row.getString(0), row.getInteger(1)));
-              return result;
+              Collection<Map<String, ?>> results = new ArrayList<>(rows.size());
+              rows.forEach(
+                  row -> {
+                    Map<String, Object> node = new HashMap<>(columns.size());
+                    node.put("count", row.getInteger("count"));
+                    for (int i = 0; i < columns.size() - 1; i++) {
+                      String column = columns.get(i).getName();
+                      node.put(column, row.getString(column));
+                    }
+                    results.add(node);
+                  });
+
+              return results;
             });
   }
 

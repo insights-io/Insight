@@ -77,7 +77,7 @@ describe('<AppLayout />', () => {
       );
 
       const toggleSidebarIcon = container.querySelector(
-        'svg[title="Menu"]'
+        'svg[id="toggle-sidebar"]'
       ) as HTMLElement;
 
       userEvent.hover(toggleSidebarIcon);

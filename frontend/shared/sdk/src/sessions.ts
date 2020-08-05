@@ -27,6 +27,45 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
         .json<DataResponse<SessionDTO>>()
         .then((dataResponse) => dataResponse.data);
     },
+
+    countByCountries: ({
+      baseURL = sessionApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .get(
+          `${baseURL}/v1/sessions/insights/count?group_by=location.countryName`,
+          { credentials: 'include', ...rest }
+        )
+        .json<
+          DataResponse<{ count: number; 'location.countryName': string }[]>
+        >()
+        .then((dataResponse) =>
+          dataResponse.data.reduce((acc, entry) => {
+            return { ...acc, [entry['location.countryName']]: entry.count };
+          }, {} as Record<string, number>)
+        );
+    },
+
+    countByDeviceClass: ({
+      baseURL = sessionApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .get(
+          `${baseURL}/v1/sessions/insights/count?group_by=user_agent.deviceClass`,
+          { credentials: 'include', ...rest }
+        )
+        .json<
+          DataResponse<{ count: number; 'user_agent.deviceClass': string }[]>
+        >()
+        .then((dataResponse) =>
+          dataResponse.data.reduce((acc, entry) => {
+            return { ...acc, [entry['user_agent.deviceClass']]: entry.count };
+          }, {} as Record<string, number>)
+        );
+    },
+
     getSessions: ({
       baseURL = sessionApiBaseURL,
       ...rest

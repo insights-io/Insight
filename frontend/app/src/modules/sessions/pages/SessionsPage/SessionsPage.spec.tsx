@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { sandbox } from '@insight/testing';
 import { INSIGHT_SESSION } from 'test/data';
 
-import { NoSessions, WithSessions } from './HomePage.stories';
+import { NoSessions, WithSessions } from './SessionsPage.stories';
 
 describe('<HomePage />', () => {
   it('Should render recording snippet on no sessions', async () => {

@@ -17,7 +17,7 @@ public interface InsightsResource {
   String PATH = "/v1/sessions/insights";
 
   @GET
-  @Path("by_country")
+  @Path("count")
   @CookieAuth
-  CompletionStage<Response> byCountry();
+  CompletionStage<Response> count();
 }

@@ -35,13 +35,13 @@ const useOnClickOutside = <T extends HTMLElement>(
         return;
       }
 
-      let svgTarget: HTMLElement | null = target;
+      let maybeSvgTarget: HTMLElement | null = target;
       if (svgShapes.has(target.nodeName)) {
-        svgTarget = findEnclosingSvg(target);
+        maybeSvgTarget = findEnclosingSvg(target);
       }
 
-      if (svgTarget && svgTarget.nodeName === 'svg') {
-        const id = svgTarget.getAttribute('id');
+      if (maybeSvgTarget && maybeSvgTarget.nodeName === 'svg') {
+        const id = maybeSvgTarget.getAttribute('id');
         if (id && current.querySelector(`svg[id="${id}"]`)) {
           return;
         }

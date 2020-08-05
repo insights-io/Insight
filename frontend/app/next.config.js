@@ -33,7 +33,6 @@ const env = {
 const nextConfig = {
   env,
   webpack: (config, _config) => config,
-  experimental: { optionalCatchAll: true },
   pwa: {
     dest: 'public',
     disable: true,

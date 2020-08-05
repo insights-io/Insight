@@ -7,6 +7,7 @@ import java.util.Map;
 import org.jooq.Field;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
+import org.jooq.impl.DSL;
 
 public interface SQLFilterExpression extends FilterExpression {
 
@@ -38,5 +39,15 @@ public interface SQLFilterExpression extends FilterExpression {
     } else {
       return new SQLTermFilterExpression((TermFilterExpression) filterExpression);
     }
+  }
+
+  static Field<?> field(String field) {
+    String[] split = field.split("\\.");
+    String result = split[0];
+
+    for (int i = 1; i < split.length; i++) {
+      result = String.format("%s ->> '%s'", result, split[i]);
+    }
+    return DSL.field(result);
   }
 }

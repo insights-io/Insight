@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jooq.Field;
 import org.jooq.Table;
-import org.jooq.impl.DSL;
 
 public final class SqlSessionTable {
 
@@ -23,9 +22,6 @@ public final class SqlSessionTable {
   public static final Field<String> ORGANIZATION_ID = field("organization_id", String.class);
   public static final Field<JsonObject> USER_AGENT = field("user_agent", JSON_OBJECT_DATA_TYPE);
   public static final Field<JsonObject> LOCATION = field("location", JSON_OBJECT_DATA_TYPE);
-  public static final Field<?> LOCATION__COUNTRY_NAME =
-      DSL.field(LOCATION.getName() + " ->> 'countryName'");
-
   public static final Field<UUID> DEVICE_ID = field("device_id", UUID.class);
   public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 

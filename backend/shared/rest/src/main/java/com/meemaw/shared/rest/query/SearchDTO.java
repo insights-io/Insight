@@ -9,6 +9,7 @@ import lombok.Value;
 public class SearchDTO {
 
   FilterExpression filter;
+  GroupByQuery groupBy;
   SortQuery sort;
   int limit;
 

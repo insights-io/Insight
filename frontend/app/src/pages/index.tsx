@@ -5,20 +5,25 @@ import {
 } from 'modules/auth/middleware/authMiddleware';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
+import InsightsPage from 'modules/insights/pages/InsightsPage';
+import { mapUser } from '@insight/sdk';
 import { SessionApi } from 'api';
-import { SessionDTO } from '@insight/types';
-import { mapSession, mapUser } from '@insight/sdk';
-import HomePage from 'modules/app/pages/HomePage';
 
 type Props = AuthenticatedServerSideProps & {
-  sessions: SessionDTO[];
+  countByCountry: Record<string, number>;
+  countByDeviceClass: Record<string, number>;
 };
 
-const Home = ({ user: initialUser, sessions: initialSessions }: Props) => {
+const Home = ({
+  user: initialUser,
+  countByCountry,
+  countByDeviceClass,
+}: Props) => {
   return (
-    <HomePage
+    <InsightsPage
       user={mapUser(initialUser)}
-      sessions={initialSessions.map(mapSession)}
+      countByCountry={countByCountry}
+      countByDeviceClass={countByDeviceClass}
     />
   );
 };
@@ -32,7 +37,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
   }
 
-  const sessions = await SessionApi.getSessions({
+  const countByCountryPromise = SessionApi.countByCountries({
     baseURL: process.env.SESSION_API_BASE_URL,
     headers: {
       ...prepareCrossServiceHeaders(requestSpan),
@@ -40,7 +45,22 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     },
   });
 
-  return { props: { user: authResponse.user, sessions } };
+  const countByDeviceClassPromise = SessionApi.countByDeviceClass({
+    baseURL: process.env.SESSION_API_BASE_URL,
+    headers: {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    },
+  });
+
+  const [countByCountry, countByDeviceClass] = await Promise.all([
+    countByCountryPromise,
+    countByDeviceClassPromise,
+  ]);
+
+  return {
+    props: { user: authResponse.user, countByCountry, countByDeviceClass },
+  };
 };
 
 export default Home;

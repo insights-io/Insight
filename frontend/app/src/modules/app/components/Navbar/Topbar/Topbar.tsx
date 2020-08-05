@@ -2,8 +2,7 @@ import React from 'react';
 import { Block } from 'baseui/block';
 import { TOPBAR_HEIGHT } from 'shared/theme';
 import { useStyletron } from 'baseui';
-import { Menu } from 'baseui/icon';
-import { FaInfo } from 'react-icons/fa';
+import { FaInfo, FaBars } from 'react-icons/fa';
 import { PLACEMENT } from 'baseui/tooltip';
 
 import NavbarItem from '../Item';
@@ -39,16 +38,17 @@ const Topbar = ({ onMenuClick }: Props) => {
         $style={{ listStyle: 'none' }}
       >
         <NavbarItem
+          artwork={<FaBars id="toggle-sidebar" />}
+          onClick={onMenuClick}
+          text="Open sidebar"
+          overrides={NAVBAR_ITEM_OVERRIDES}
+        />
+        <NavbarItem
           to="/"
           artwork={<FaInfo />}
           text="Insights"
           overrides={NAVBAR_ITEM_OVERRIDES}
-        />
-        <NavbarItem
-          artwork={<Menu />}
-          onClick={onMenuClick}
-          text="Open sidebar"
-          overrides={NAVBAR_ITEM_OVERRIDES}
+          showText
         />
       </Block>
     </Block>

@@ -251,10 +251,29 @@ public class SessionResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.join("/", InsightsResource.PATH, "by_country"))
+        .get(String.join("/", InsightsResource.PATH, "count?group_by=location.countryName"))
         .then()
         .statusCode(200)
-        .body(SameJSON.sameJson("{\"data\": {\"United States\": 2}}"));
+        .body(
+            SameJSON.sameJson(
+                "{\"data\":[{\"count\":2,\"location.countryName\":\"United States\"}]}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.join("/", InsightsResource.PATH, "count?group_by=user_agent.deviceClass"))
+        .then()
+        .statusCode(200)
+        .body(
+            SameJSON.sameJson("{\"data\":[{\"count\":2,\"user_agent.deviceClass\":\"Desktop\"}]}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(String.join("/", InsightsResource.PATH, "count"))
+        .then()
+        .statusCode(200)
+        .body(SameJSON.sameJson("{\"data\":[{\"count\":2}]}"));
   }
 
   @Test
