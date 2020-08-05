@@ -64,6 +64,12 @@ public class JsonObjectBinding implements Binding<Object, JsonObject> {
         .setString(ctx.index(), Objects.toString(ctx.convert(converter()).value(), null));
   }
 
+  // Setting a value on a JDBC SQLOutput (useful for Oracle OBJECT types)
+  @Override
+  public void set(BindingSetSQLOutputContext<JsonObject> ctx) throws SQLException {
+    throw new SQLFeatureNotSupportedException();
+  }
+
   // Getting a String value from a JDBC ResultSet and converting that to a JsonObject
   @Override
   public void get(BindingGetResultSetContext<JsonObject> ctx) throws SQLException {
@@ -74,12 +80,6 @@ public class JsonObjectBinding implements Binding<Object, JsonObject> {
   @Override
   public void get(BindingGetStatementContext<JsonObject> ctx) throws SQLException {
     ctx.convert(converter()).value(ctx.statement().getString(ctx.index()));
-  }
-
-  // Setting a value on a JDBC SQLOutput (useful for Oracle OBJECT types)
-  @Override
-  public void set(BindingSetSQLOutputContext<JsonObject> ctx) throws SQLException {
-    throw new SQLFeatureNotSupportedException();
   }
 
   // Getting a value from a JDBC SQLInput (useful for Oracle OBJECT types)

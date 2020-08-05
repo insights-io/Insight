@@ -13,7 +13,8 @@ export const Base = () => {
   return (
     <InsightsPage
       user={INSIGHT_ADMIN}
-      countByCountry={{ Slovenia: 1, Crotia: 5, Hungary: 3, Germany: 4 }}
+      countByCountry={{ Slovenia: 1, Croatia: 5, Hungary: 3, Germany: 4 }}
+      countByDeviceClass={{ Phone: 10, Desktop: 20 }}
     />
   );
 };
