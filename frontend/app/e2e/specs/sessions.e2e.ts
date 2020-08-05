@@ -10,7 +10,7 @@ import { Selector } from 'testcafe';
 import { loginWithInsightUser } from '../utils';
 import config from '../config';
 
-fixture('/sessions').page(config.appBaseURL);
+fixture('/sessions').page(`${config.appBaseURL}/sessions`);
 
 test('Should be able to see sessions for Insight logged in user', async (t) => {
   await loginWithInsightUser(t);
