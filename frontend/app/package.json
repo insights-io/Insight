@@ -33,6 +33,7 @@
     "prebuild": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/service-proxy build\" \"yarn workspace @insight/storybook build\" \"yarn workspace @insight/testing build\" \"yarn workspace @insight/sdk build\""
   },
   "dependencies": {
+    "@amcharts/amcharts4": "4.9.34",
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
     "baseui": "9.92.0",

@@ -5,7 +5,7 @@ import { OnItemSelect, StatefulMenu } from 'baseui/menu';
 import AuthApi from 'api/auth';
 import Router from 'next/router';
 import NavbarItem from 'modules/app/components/Navbar/Item';
-import { FaUser, FaChartArea, FaInfo } from 'react-icons/fa';
+import { FaUser, FaListUl, FaInfo } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
 
@@ -79,7 +79,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
           )}
           <NavbarItem
             to="/sessions"
-            artwork={<FaChartArea />}
+            artwork={<FaListUl />}
             text="Sessions"
             showText={expanded}
           />

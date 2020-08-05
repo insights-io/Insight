@@ -1,8 +1,10 @@
 package com.meemaw.session.sessions.datasource.sql;
 
+import static com.meemaw.shared.sql.SQLContext.JSON_OBJECT_DATA_TYPE;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
+import io.vertx.core.json.JsonObject;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +20,8 @@ public final class SqlSessionTable {
 
   public static final Field<UUID> ID = field("id", UUID.class);
   public static final Field<String> ORGANIZATION_ID = field("organization_id", String.class);
-  public static final Field<String> USER_AGENT = field("user_agent", String.class);
-  public static final Field<String> LOCATION = field("location", String.class);
+  public static final Field<JsonObject> USER_AGENT = field("user_agent", JSON_OBJECT_DATA_TYPE);
+  public static final Field<JsonObject> LOCATION = field("location", JSON_OBJECT_DATA_TYPE);
   public static final Field<UUID> DEVICE_ID = field("device_id", UUID.class);
   public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 

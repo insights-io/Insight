@@ -3,6 +3,7 @@ package com.meemaw.shared.rest.query.rhs.colon;
 import com.meemaw.shared.rest.query.BooleanFilterExpression;
 import com.meemaw.shared.rest.query.BooleanOperation;
 import com.meemaw.shared.rest.query.FilterExpression;
+import com.meemaw.shared.rest.query.GroupByQuery;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.SortDirection;
 import com.meemaw.shared.rest.query.SortQuery;
@@ -21,6 +22,10 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public final class RHSColonParser {
 
+  private static final String LIMIT_PARAM = "limit";
+  private static final String SORT_BY_PARAM = "sort_by";
+  private static final String GROUP_BY_PARAM = "group_by";
+
   private RHSColonParser() {}
 
   /**
@@ -32,14 +37,17 @@ public final class RHSColonParser {
   public static SearchDTO parse(Map<String, List<String>> params) {
     List<FilterExpression> expressions = new ArrayList<>(params.size());
     List<Pair<String, SortDirection>> sorts = Collections.emptyList();
+    List<String> groupBy = Collections.emptyList();
     int limit = 0;
 
     for (Entry<String, List<String>> entry : params.entrySet()) {
       String name = entry.getKey();
-      if ("limit".equals(name)) {
+      if (LIMIT_PARAM.equals(name)) {
         limit = Integer.parseInt(entry.getValue().get(0));
-      } else if ("sort_by".equals(name)) {
+      } else if (SORT_BY_PARAM.equals(name)) {
         sorts = parseSorts(entry.getValue().get(0));
+      } else if (GROUP_BY_PARAM.equals(name)) {
+        groupBy = List.of(entry.getValue().get(0).split(","));
       } else {
         List<FilterExpression> termFilterExpressions =
             entry.getValue().stream()
@@ -53,7 +61,8 @@ public final class RHSColonParser {
     BooleanFilterExpression<?> rootFilterExpression =
         new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
 
-    return new SearchDTO(rootFilterExpression, new SortQuery(sorts), limit);
+    return new SearchDTO(
+        rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit);
   }
 
   private static List<Pair<String, SortDirection>> parseSorts(String text) {

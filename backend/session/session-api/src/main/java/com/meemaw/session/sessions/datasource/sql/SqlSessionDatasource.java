@@ -19,6 +19,7 @@ import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLGroupByQuery;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.useragent.model.UserAgentDTO;
 import io.vertx.core.json.JsonObject;
@@ -27,13 +28,16 @@ import io.vertx.mutiny.sqlclient.RowIterator;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Field;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -67,6 +71,40 @@ public class SqlSessionDatasource implements SessionDatasource {
       return Optional.empty();
     }
     return Optional.of(iterator.next().getUUID(0));
+  }
+
+  @Override
+  public CompletionStage<Collection<Map<String, ?>>> count(
+      String organizationId, SearchDTO searchDTO) {
+    List<Field<?>> columns = SQLGroupByQuery.of(searchDTO.getGroupBy()).fieldsWithCount();
+
+    Query query =
+        SQLSearchDTO.of(searchDTO)
+            .apply(
+                sqlPool
+                    .getContext()
+                    .select(columns)
+                    .from(TABLE)
+                    .where(ORGANIZATION_ID.eq(organizationId)));
+
+    return sqlPool
+        .execute(query)
+        .thenApply(
+            rows -> {
+              Collection<Map<String, ?>> results = new ArrayList<>(rows.size());
+              rows.forEach(
+                  row -> {
+                    Map<String, Object> node = new HashMap<>(columns.size());
+                    node.put("count", row.getInteger("count"));
+                    for (int i = 0; i < columns.size() - 1; i++) {
+                      String column = columns.get(i).getName();
+                      node.put(column, row.getString(column));
+                    }
+                    results.add(node);
+                  });
+
+              return results;
+            });
   }
 
   @Override
@@ -131,8 +169,8 @@ public class SqlSessionDatasource implements SessionDatasource {
   }
 
   private SessionDTO mapSession(Row row) {
-    JsonObject location = new JsonObject(row.getString(LOCATION.getName()));
-    JsonObject userAgent = new JsonObject(row.getString(USER_AGENT.getName()));
+    JsonObject location = (JsonObject) row.getValue(LOCATION.getName());
+    JsonObject userAgent = (JsonObject) row.getValue(USER_AGENT.getName());
 
     return new SessionDTO(
         row.getUUID(ID.getName()),
