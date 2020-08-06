@@ -18,6 +18,7 @@ public class LocationDTO implements Location {
   String regionName;
   String city;
   String zip;
+  String continentName;
   double latitude;
   double longitude;
 }

@@ -1,37 +1,14 @@
-import React, { useLayoutEffect, useMemo } from 'react';
-import { createChart, PieChart, PieSeries } from 'shared/utils/charting';
+import React from 'react';
+import GroupByPieChart, {
+  GroupByData,
+} from 'modules/insights/components/charts/GroupByPieChart';
 
 type Props = {
-  data: Record<string, number>;
+  data: GroupByData;
 };
 
-type ChartDataRow = {
-  deviceClass: string;
-  count: number;
+const CountByDeviceClassChart = ({ data }: Props) => {
+  return <GroupByPieChart id="count-by-device-class-chart" data={data} />;
 };
 
-const CountByDeviceClass = ({ data }: Props) => {
-  const id = 'count-by-device-class-chart';
-  const chartData = useMemo(() => {
-    return Object.keys(data).reduce((acc, deviceClass) => {
-      return [...acc, { deviceClass, count: data[deviceClass] }];
-    }, [] as ChartDataRow[]);
-  }, [data]);
-
-  useLayoutEffect(() => {
-    const chart = createChart(id, PieChart);
-    chart.data = chartData;
-
-    const pieSeries = chart.series.push(new PieSeries());
-    pieSeries.dataFields.value = 'count';
-    pieSeries.dataFields.category = 'deviceClass';
-
-    return () => {
-      chart.dispose();
-    };
-  }, [chartData]);
-
-  return <div id={id} style={{ width: '100%', height: '100%' }} />;
-};
-
-export default CountByDeviceClass;
+export default CountByDeviceClassChart;

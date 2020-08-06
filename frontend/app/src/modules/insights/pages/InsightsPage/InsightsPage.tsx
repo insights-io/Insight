@@ -4,6 +4,7 @@ import { User } from '@insight/types';
 import CountByCountry from 'modules/insights/components/CountByCountry';
 import CountByDeviceClass from 'modules/insights/components/CountByDeviceClass';
 import { Block } from 'baseui/block';
+import useWindowSize from 'shared/hooks/useWindowSize';
 
 type Props = {
   user: User;
@@ -16,9 +17,10 @@ const InsightsPage = ({
   countByDeviceClass,
   user: _user,
 }: Props) => {
+  const { width = 0 } = useWindowSize();
   return (
     <AppLayout>
-      <Block display="flex">
+      <Block display="flex" flexDirection={width < 910 ? 'column' : 'row'}>
         <CountByCountry
           data={countByCountry}
           overrides={{ Root: { overrides: { Root: { style: { flex: 1 } } } } }}

@@ -69,6 +69,7 @@ public class SessionResourceImplTest {
           .city("Boydton")
           .countryName("United States")
           .regionName("Virginia")
+          .continentName("North America")
           .latitude(36.667999267578125)
           .longitude(-78.38899993896484)
           .build();
