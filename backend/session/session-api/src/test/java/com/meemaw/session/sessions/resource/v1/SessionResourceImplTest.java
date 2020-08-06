@@ -14,14 +14,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
-import com.meemaw.session.insights.resource.v1.InsightsResource;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
-import com.meemaw.test.matchers.SameJSON;
 import com.meemaw.test.rest.data.UserAgentData;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -69,6 +67,7 @@ public class SessionResourceImplTest {
           .city("Boydton")
           .countryName("United States")
           .regionName("Virginia")
+          .continentName("North America")
           .latitude(36.667999267578125)
           .longitude(-78.38899993896484)
           .build();
@@ -245,35 +244,7 @@ public class SessionResourceImplTest {
             .as(new TypeRef<>() {});
 
     assertEquals(MOCKED_USER_AGENT, sessions.getData().get(0).getUserAgent());
-
     assertEquals(MOCKED_LOCATION, sessions.getData().get(0).getLocation());
-
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.join("/", InsightsResource.PATH, "count?group_by=location.countryName"))
-        .then()
-        .statusCode(200)
-        .body(
-            SameJSON.sameJson(
-                "{\"data\":[{\"count\":2,\"location.countryName\":\"United States\"}]}"));
-
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.join("/", InsightsResource.PATH, "count?group_by=user_agent.deviceClass"))
-        .then()
-        .statusCode(200)
-        .body(
-            SameJSON.sameJson("{\"data\":[{\"count\":2,\"user_agent.deviceClass\":\"Desktop\"}]}"));
-
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.join("/", InsightsResource.PATH, "count"))
-        .then()
-        .statusCode(200)
-        .body(SameJSON.sameJson("{\"data\":[{\"count\":2}]}"));
   }
 
   @Test

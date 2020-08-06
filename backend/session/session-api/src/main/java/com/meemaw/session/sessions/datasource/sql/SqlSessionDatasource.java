@@ -12,6 +12,10 @@ import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
 import static org.jooq.impl.DSL.condition;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
@@ -28,9 +32,7 @@ import io.vertx.mutiny.sqlclient.RowIterator;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -45,6 +47,7 @@ import org.jooq.Query;
 public class SqlSessionDatasource implements SessionDatasource {
 
   @Inject SqlPool sqlPool;
+  @Inject ObjectMapper objectMapper;
 
   @Override
   public CompletionStage<Optional<UUID>> findSessionDeviceLink(
@@ -74,8 +77,7 @@ public class SqlSessionDatasource implements SessionDatasource {
   }
 
   @Override
-  public CompletionStage<Collection<Map<String, ?>>> count(
-      String organizationId, SearchDTO searchDTO) {
+  public CompletionStage<JsonNode> count(String organizationId, SearchDTO searchDTO) {
     List<Field<?>> columns = SQLGroupByQuery.of(searchDTO.getGroupBy()).fieldsWithCount();
 
     Query query =
@@ -85,16 +87,17 @@ public class SqlSessionDatasource implements SessionDatasource {
                     .getContext()
                     .select(columns)
                     .from(TABLE)
-                    .where(ORGANIZATION_ID.eq(organizationId)));
+                    .where(ORGANIZATION_ID.eq(organizationId)),
+                FIELD_MAPPINGS);
 
     return sqlPool
         .execute(query)
         .thenApply(
             rows -> {
-              Collection<Map<String, ?>> results = new ArrayList<>(rows.size());
+              ArrayNode results = objectMapper.createArrayNode();
               rows.forEach(
                   row -> {
-                    Map<String, Object> node = new HashMap<>(columns.size());
+                    ObjectNode node = objectMapper.createObjectNode();
                     node.put("count", row.getInteger("count"));
                     for (int i = 0; i < columns.size() - 1; i++) {
                       String column = columns.get(i).getName();
@@ -102,6 +105,10 @@ public class SqlSessionDatasource implements SessionDatasource {
                     }
                     results.add(node);
                   });
+
+              if (columns.size() == 1) {
+                return results.get(0);
+              }
 
               return results;
             });

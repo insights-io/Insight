@@ -100,7 +100,7 @@ const AppLayout = ({ children, overrides }: Props) => {
         flexDirection="column"
         flex="1"
         position="absolute"
-        overflow="hidden"
+        overflow="auto"
         $style={contentContainerStyle}
       >
         {children}

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Card, StyledBody, CardProps } from 'baseui/card';
-import { Block } from 'baseui/block';
-import { HeadingSmall } from 'baseui/typography';
+import { CardProps } from 'baseui/card';
 import dynamic from 'next/dynamic';
+import type { GroupByData } from 'modules/insights/components/charts/GroupByPieChart';
+import GroupByCard from 'modules/insights/components/GroupByCard';
 
 type Props = {
-  data: Record<string, number>;
+  data: GroupByData;
   overrides?: {
     Root?: CardProps;
   };
@@ -18,14 +18,12 @@ const CountByDeviceClassChart = dynamic(
 
 const CountByCountry = ({ data, overrides }: Props) => {
   return (
-    <Card {...overrides?.Root}>
-      <StyledBody>
-        <Block display="flex" justifyContent="center" marginBottom="24px">
-          <HeadingSmall>By device</HeadingSmall>
-        </Block>
-        <CountByDeviceClassChart data={data} />
-      </StyledBody>
-    </Card>
+    <GroupByCard
+      heading="By device"
+      data={data}
+      overrides={overrides}
+      GroupByChartComponent={CountByDeviceClassChart}
+    />
   );
 };
 

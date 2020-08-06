@@ -15,6 +15,7 @@ export const Base = () => {
       user={INSIGHT_ADMIN}
       countByCountry={{ Slovenia: 1, Croatia: 5, Hungary: 3, Germany: 4 }}
       countByDeviceClass={{ Phone: 10, Desktop: 20 }}
+      countByContinent={{ 'North America': 2, Europe: 3 }}
     />
   );
 };

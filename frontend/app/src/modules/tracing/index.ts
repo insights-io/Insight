@@ -41,6 +41,7 @@ export const startRequestSpan = (req: IncomingMessage): Span => {
     tags: {
       [Tags.HTTP_URL]: url,
       [Tags.HTTP_METHOD]: method,
+      [Tags.SPAN_KIND]: Tags.SPAN_KIND_RPC_SERVER,
     },
   });
 };

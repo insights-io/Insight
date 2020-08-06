@@ -9,20 +9,20 @@ type Props = {
   overrides?: { Root?: CardProps };
 };
 
-const CountByCountryChart = dynamic(
-  () => import('modules/insights/components/charts/CountByCountry'),
+const CountByContinentChart = dynamic(
+  () => import('modules/insights/components/charts/CountByContinent'),
   { ssr: false }
 );
 
-const CountByCountry = ({ data, overrides }: Props) => {
+const CountByContinent = ({ data, overrides }: Props) => {
   return (
     <GroupByCard
-      heading="By country"
+      heading="By continent"
       data={data}
       overrides={overrides}
-      GroupByChartComponent={CountByCountryChart}
+      GroupByChartComponent={CountByContinentChart}
     />
   );
 };
 
-export default CountByCountry;
+export default CountByContinent;

@@ -7,8 +7,8 @@ type Props = {
   data: GroupByData;
 };
 
-const CountByDeviceClassChart = ({ data }: Props) => {
-  return <GroupByPieChart id="count-by-device-class-chart" data={data} />;
+const CountByContinentChart = ({ data }: Props) => {
+  return <GroupByPieChart id="count-by-continent-chart" data={data} />;
 };
 
-export default CountByDeviceClassChart;
+export default CountByContinentChart;

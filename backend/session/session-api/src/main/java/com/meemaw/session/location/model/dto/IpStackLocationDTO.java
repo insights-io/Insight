@@ -21,6 +21,9 @@ public class IpStackLocationDTO implements Location {
   double longitude;
   String city;
 
+  @JsonProperty("continent_name")
+  String continentName;
+
   @JsonProperty("country_name")
   String countryName;
 
@@ -37,6 +40,7 @@ public class IpStackLocationDTO implements Location {
         .city(city)
         .countryName(countryName)
         .regionName(regionName)
+        .continentName(continentName)
         .build();
   }
 }
