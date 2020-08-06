@@ -28,23 +28,25 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
         .then((dataResponse) => dataResponse.data);
     },
 
-    countByCountries: ({
+    countByLocation: ({
       baseURL = sessionApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
       return ky
         .get(
-          `${baseURL}/v1/sessions/insights/count?group_by=location.countryName`,
+          `${baseURL}/v1/sessions/insights/count?group_by=location.countryName,location.continentName`,
           { credentials: 'include', ...rest }
         )
         .json<
-          DataResponse<{ count: number; 'location.countryName': string }[]>
+          DataResponse<
+            {
+              count: number;
+              'location.countryName': string;
+              'location.continentName': string;
+            }[]
+          >
         >()
-        .then((dataResponse) =>
-          dataResponse.data.reduce((acc, entry) => {
-            return { ...acc, [entry['location.countryName']]: entry.count };
-          }, {} as Record<string, number>)
-        );
+        .then((dataResponse) => dataResponse.data);
     },
 
     countByDeviceClass: ({
@@ -59,11 +61,11 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
         .json<
           DataResponse<{ count: number; 'user_agent.deviceClass': string }[]>
         >()
-        .then((dataResponse) =>
-          dataResponse.data.reduce((acc, entry) => {
+        .then((dataResponse) => {
+          return dataResponse.data.reduce((acc, entry) => {
             return { ...acc, [entry['user_agent.deviceClass']]: entry.count };
-          }, {} as Record<string, number>)
-        );
+          }, {} as Record<string, number>);
+        });
     },
 
     getSessions: ({

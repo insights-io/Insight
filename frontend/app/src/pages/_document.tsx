@@ -60,6 +60,10 @@ class InsightDocument extends Document<Props> {
           />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#000000" />
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover"
+          />
 
           <link rel="shortcut icon" href="/static/favicon.ico" />
           <link rel="manifest" href="/static/manifest.json" />

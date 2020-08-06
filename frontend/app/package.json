@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@amcharts/amcharts4": "4.9.34",
+    "@amcharts/amcharts4-geodata": "4.1.17",
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
     "baseui": "9.93.0",

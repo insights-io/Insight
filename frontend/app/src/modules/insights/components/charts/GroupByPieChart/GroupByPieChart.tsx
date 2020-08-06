@@ -36,6 +36,7 @@ const GroupByPieChart = ({ id, data }: Props) => {
     pieSeries.dataFields.value = 'count';
     pieSeries.dataFields.category = 'groupBy';
 
+    chart.radius = percent(50);
     pieSeries.slices.template.stroke = color('#fff');
     pieSeries.slices.template.strokeOpacity = 1;
 
