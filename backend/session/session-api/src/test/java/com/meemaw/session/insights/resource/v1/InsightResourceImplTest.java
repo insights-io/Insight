@@ -14,6 +14,7 @@ import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @TestInstance(Lifecycle.PER_CLASS)
 public class InsightResourceImplTest {
 
+  private static OffsetDateTime createdAt;
   private static final AtomicBoolean hasBeenSetup = new AtomicBoolean(false);
 
   @Inject SessionDatasource sessionDatasource;
@@ -38,10 +40,14 @@ public class InsightResourceImplTest {
 
   @Test
   public void get_session_insights__should_return_count__on_empty_request() {
+    String path =
+        String.format(
+            String.join("/", InsightsResource.PATH, "count?created_at=gte:%s"), createdAt);
+
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.join("/", InsightsResource.PATH, "count"))
+        .get(path)
         .then()
         .statusCode(200)
         .body(SameJSON.sameJson("{\"data\":{\"count\":5}}"));
@@ -49,10 +55,18 @@ public class InsightResourceImplTest {
 
   @Test
   public void get_session_insights__should_return_counts__on_group_by_country() {
+    String path =
+        String.format(
+            String.join(
+                "/",
+                InsightsResource.PATH,
+                "count?group_by=location.countryName&created_at=gte:%s"),
+            createdAt);
+
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.join("/", InsightsResource.PATH, "count?group_by=location.countryName"))
+        .get(path)
         .then()
         .statusCode(200)
         .body(
@@ -62,14 +76,18 @@ public class InsightResourceImplTest {
 
   @Test
   public void get_session_insights__should_return_counts__on_group_by_country_and_continent() {
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(
+    String path =
+        String.format(
             String.join(
                 "/",
                 InsightsResource.PATH,
-                "count?group_by=location.countryName,location.continentName"))
+                "count?group_by=location.countryName,location.continentName&created_at=gte:%s"),
+            createdAt);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(path)
         .then()
         .statusCode(200)
         .body(
@@ -79,10 +97,18 @@ public class InsightResourceImplTest {
 
   @Test
   public void get_session_insights__should_return_counts__on_group_by_device() {
+    String path =
+        String.format(
+            String.join(
+                "/",
+                InsightsResource.PATH,
+                "count?group_by=user_agent.deviceClass&created_at=gte:%s"),
+            createdAt);
+
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(String.join("/", InsightsResource.PATH, "count?group_by=user_agent.deviceClass"))
+        .get(path)
         .then()
         .statusCode(200)
         .body(
@@ -96,6 +122,8 @@ public class InsightResourceImplTest {
       return;
     }
 
+    UUID firstSessionId = UUID.randomUUID();
+
     sqlPool
         .beginTransaction()
         .thenCompose(
@@ -103,7 +131,7 @@ public class InsightResourceImplTest {
                 CompletableFuture.allOf(
                         sessionDatasource
                             .createSession(
-                                UUID.randomUUID(),
+                                firstSessionId,
                                 UUID.randomUUID(),
                                 INSIGHT_ORGANIZATION_ID,
                                 LocationDTO.builder()
@@ -164,5 +192,13 @@ public class InsightResourceImplTest {
                     .thenCompose(ignored -> transaction.commit()))
         .toCompletableFuture()
         .join();
+
+    createdAt =
+        sessionDatasource
+            .getSession(firstSessionId, INSIGHT_ORGANIZATION_ID)
+            .toCompletableFuture()
+            .join()
+            .get()
+            .getCreatedAt();
   }
 }

@@ -87,7 +87,8 @@ public class SqlSessionDatasource implements SessionDatasource {
                     .getContext()
                     .select(columns)
                     .from(TABLE)
-                    .where(ORGANIZATION_ID.eq(organizationId)));
+                    .where(ORGANIZATION_ID.eq(organizationId)),
+                FIELD_MAPPINGS);
 
     return sqlPool
         .execute(query)
