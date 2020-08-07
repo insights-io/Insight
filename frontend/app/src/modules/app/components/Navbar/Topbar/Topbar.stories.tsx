@@ -10,5 +10,9 @@ export default {
 };
 
 export const Base = () => {
-  return <Topbar onMenuClick={action('onMenuClick')} />;
+  return <Topbar onMenuClick={action('onMenuClick')} sidebarVisible={false} />;
+};
+
+export const SidebarVisible = () => {
+  return <Topbar onMenuClick={action('onMenuClick')} sidebarVisible />;
 };

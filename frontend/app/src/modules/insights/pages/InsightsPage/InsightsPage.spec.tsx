@@ -7,7 +7,7 @@ describe('<InsightsPage />', () => {
   it('Should render charts', () => {
     const { queryByText } = render(<Base />);
 
-    expect(queryByText('By country')).toBeInTheDocument();
-    expect(queryByText('By device')).toBeInTheDocument();
+    expect(queryByText('Location distribution')).toBeInTheDocument();
+    expect(queryByText('Device distribution')).toBeInTheDocument();
   });
 });

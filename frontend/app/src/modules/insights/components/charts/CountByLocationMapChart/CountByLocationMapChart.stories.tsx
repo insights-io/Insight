@@ -11,15 +11,28 @@ export default {
 export const Base = () => {
   return (
     <CountByLocationMapChart
-      data={{
-        'North America': [
-          { 'location.countryName': 'United Stated', count: 2 },
-        ],
-        Europe: [
-          { 'location.countryName': 'Slovenia', count: 2 },
-          { 'location.countryName': 'Croatia', count: 1 },
-        ],
-      }}
+      data={[
+        {
+          count: 1,
+          'location.countryName': 'Canada',
+          'location.continentName': 'North America',
+        },
+        {
+          count: 1,
+          'location.countryName': 'Croatia',
+          'location.continentName': 'Europe',
+        },
+        {
+          count: 2,
+          'location.countryName': 'Slovenia',
+          'location.continentName': 'Europe',
+        },
+        {
+          count: 1,
+          'location.countryName': 'United States',
+          'location.continentName': 'North America',
+        },
+      ]}
     />
   );
 };

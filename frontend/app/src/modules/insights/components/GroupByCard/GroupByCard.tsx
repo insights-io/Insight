@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, StyledBody, CardProps } from 'baseui/card';
 import { Block } from 'baseui/block';
-import { HeadingSmall } from 'baseui/typography';
+import { HeadingXSmall } from 'baseui/typography';
 import type { GroupByData } from 'modules/insights/components/charts/GroupByPieChart';
+import Divider from 'shared/components/Divider';
 
 type Props = {
   data: GroupByData;
@@ -24,9 +25,10 @@ const GroupByCard = ({
   return (
     <Card {...overrides?.Root}>
       <StyledBody>
-        <Block display="flex" justifyContent="center" marginBottom="24px">
-          <HeadingSmall margin={0}>{heading}</HeadingSmall>
+        <Block display="flex" padding="12px">
+          <HeadingXSmall margin={0}>{heading}</HeadingXSmall>
         </Block>
+        <Divider marginTop={0} />
         <Block height="300px">
           <GroupByChartComponent data={data} />
         </Block>

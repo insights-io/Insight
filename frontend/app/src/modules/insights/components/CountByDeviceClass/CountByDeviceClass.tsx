@@ -19,7 +19,7 @@ const CountByDeviceClassChart = dynamic(
 const CountByCountry = ({ data, overrides }: Props) => {
   return (
     <GroupByCard
-      heading="By device"
+      heading="Device distribution"
       data={data}
       overrides={overrides}
       GroupByChartComponent={CountByDeviceClassChart}

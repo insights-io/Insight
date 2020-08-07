@@ -1,6 +1,12 @@
 package com.meemaw.shared.sql.rest.query;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.shared.rest.query.GroupByQuery;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,5 +38,28 @@ public class SQLGroupByQuery {
 
   public static SQLGroupByQuery of(GroupByQuery groupBy) {
     return new SQLGroupByQuery(groupBy);
+  }
+
+  public JsonNode asJsonNode(RowSet<Row> rows, ObjectMapper objectMapper) {
+    List<Field<?>> columns = fieldsWithCount();
+    if (1 == columns.size()) {
+      ObjectNode node = objectMapper.createObjectNode();
+      node.put("count", rows.iterator().next().getInteger("count"));
+      return node;
+    }
+
+    ArrayNode results = objectMapper.createArrayNode();
+    rows.forEach(
+        row -> {
+          ObjectNode node = objectMapper.createObjectNode();
+          node.put("count", row.getInteger("count"));
+          for (int i = 0; i < columns.size() - 1; i++) {
+            String column = columns.get(i).getName();
+            node.put(column, row.getString(column));
+          }
+          results.add(node);
+        });
+
+    return results;
   }
 }

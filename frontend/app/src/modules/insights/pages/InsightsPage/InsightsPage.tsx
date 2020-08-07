@@ -1,44 +1,49 @@
 import React from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import { User } from '@insight/types';
-import CountByCountry from 'modules/insights/components/CountByCountry';
 import CountByDeviceClass from 'modules/insights/components/CountByDeviceClass';
 import { Block } from 'baseui/block';
-import useWindowSize from 'shared/hooks/useWindowSize';
-import CountByContinent from 'modules/insights/components/CountByContinent';
+import { CardProps } from 'baseui/card';
+import LocationDistribution from 'modules/insights/components/LocationDistribution';
+import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
+import { useStyletron } from 'baseui';
 
 type Props = {
   user: User;
-  countByCountry: Record<string, number>;
+  countByLocation: CountByLocation;
   countByDeviceClass: Record<string, number>;
-  countByContinent: Record<string, number>;
 };
 
 const countByCardOverrides = {
-  Root: { overrides: { Root: { style: { flex: 1 } } } },
+  Root: {
+    overrides: {
+      Contents: {
+        style: { marginTop: 0, marginLeft: 0, marginBottom: 0, marginRight: 0 },
+      },
+      Root: { style: { flex: 1 } },
+    },
+  } as CardProps,
 };
 
 const InsightsPage = ({
-  countByCountry,
+  countByLocation,
   countByDeviceClass,
-  countByContinent,
   user: _user,
 }: Props) => {
-  const { width = 0 } = useWindowSize();
+  const [_css, theme] = useStyletron();
   return (
-    <AppLayout>
-      <Block display="flex" flexDirection={width < 910 ? 'column' : 'row'}>
-        <CountByCountry
-          data={countByCountry}
-          overrides={countByCardOverrides}
-        />
-        <CountByContinent
-          data={countByContinent}
-          overrides={countByCardOverrides}
-        />
-      </Block>
-
-      <Block display="flex" width="100%">
+    <AppLayout
+      overrides={{
+        MainContent: {
+          style: {
+            padding: theme.sizing.scale600,
+            background: theme.colors.mono300,
+          },
+        },
+      }}
+    >
+      <LocationDistribution countByLocation={countByLocation} />
+      <Block display="flex" width="100%" marginTop={theme.sizing.scale600}>
         <CountByDeviceClass
           data={countByDeviceClass}
           overrides={countByCardOverrides}
