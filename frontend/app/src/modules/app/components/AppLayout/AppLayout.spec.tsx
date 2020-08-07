@@ -76,7 +76,7 @@ describe('<AppLayout />', () => {
         <Base />
       );
 
-      const toggleSidebarIcon = container.querySelector(
+      let toggleSidebarIcon = container.querySelector(
         'svg[id="toggle-sidebar"]'
       ) as HTMLElement;
 
@@ -95,8 +95,16 @@ describe('<AppLayout />', () => {
       userEvent.click(getByText('Some content'));
       expect(queryByText('Sessions')).toBeNull();
 
+      toggleSidebarIcon = container.querySelector(
+        'svg[id="toggle-sidebar"]'
+      ) as HTMLElement;
+
       userEvent.click(toggleSidebarIcon);
       await findByText('Sessions');
+
+      toggleSidebarIcon = container.querySelector(
+        'svg[id="toggle-sidebar"]'
+      ) as HTMLElement;
 
       // Sidebar collapses on menu click
       userEvent.click(toggleSidebarIcon);
