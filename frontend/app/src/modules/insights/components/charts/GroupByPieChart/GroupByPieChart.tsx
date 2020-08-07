@@ -13,6 +13,8 @@ export type GroupByData = Record<string, number>;
 type Props = {
   id: string;
   data: GroupByData;
+  width?: string;
+  height?: string;
 };
 
 type ChartDataRow = {
@@ -20,7 +22,12 @@ type ChartDataRow = {
   groupBy: string;
 };
 
-const GroupByPieChart = ({ id, data }: Props) => {
+const GroupByPieChart = ({
+  id,
+  data,
+  width = '100%',
+  height = '100%',
+}: Props) => {
   const chartData = useMemo(() => {
     return Object.keys(data).reduce((acc, groupBy) => {
       return [...acc, { groupBy, count: data[groupBy] }];
@@ -52,7 +59,7 @@ const GroupByPieChart = ({ id, data }: Props) => {
     };
   }, [id, chartData]);
 
-  return <div id={id} style={{ width: '100%', height: '100%' }} />;
+  return <div id={id} style={{ width, height }} />;
 };
 
 export default React.memo(GroupByPieChart);

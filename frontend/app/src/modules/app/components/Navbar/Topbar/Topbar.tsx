@@ -2,13 +2,14 @@ import React from 'react';
 import { Block } from 'baseui/block';
 import { TOPBAR_HEIGHT } from 'shared/theme';
 import { useStyletron } from 'baseui';
-import { FaInfo, FaBars } from 'react-icons/fa';
+import { FaInfo, FaBars, FaTimes } from 'react-icons/fa';
 import { PLACEMENT } from 'baseui/tooltip';
 
 import NavbarItem from '../Item';
 
 type Props = {
   onMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  sidebarVisible: boolean;
 };
 
 const NAVBAR_ITEM_OVERRIDES = {
@@ -17,8 +18,9 @@ const NAVBAR_ITEM_OVERRIDES = {
   },
 };
 
-const Topbar = ({ onMenuClick }: Props) => {
+const Topbar = ({ onMenuClick, sidebarVisible }: Props) => {
   const [_css, theme] = useStyletron();
+  const ToggleSidebarIcon = sidebarVisible ? FaTimes : FaBars;
 
   return (
     <Block
@@ -38,7 +40,7 @@ const Topbar = ({ onMenuClick }: Props) => {
         $style={{ listStyle: 'none' }}
       >
         <NavbarItem
-          artwork={<FaBars id="toggle-sidebar" />}
+          artwork={<ToggleSidebarIcon id="toggle-sidebar" />}
           onClick={onMenuClick}
           text="Open sidebar"
           overrides={NAVBAR_ITEM_OVERRIDES}

@@ -1,18 +1,16 @@
 import React from 'react';
-import { INSIGHT_ADMIN } from 'test/data';
 import { fullHeightDecorator } from '@insight/storybook';
 
-import InsightsPage from './InsightsPage';
+import LocationDistribution from './LocationDistribution';
 
 export default {
-  title: 'insights|pages/InsightsPage',
+  title: 'insights|components/LocationDistribution',
   decorators: [fullHeightDecorator],
 };
 
 export const Base = () => {
   return (
-    <InsightsPage
-      user={INSIGHT_ADMIN}
+    <LocationDistribution
       countByLocation={[
         {
           count: 1,
@@ -35,7 +33,6 @@ export const Base = () => {
           'location.continentName': 'North America',
         },
       ]}
-      countByDeviceClass={{ Phone: 10, Desktop: 20 }}
     />
   );
 };

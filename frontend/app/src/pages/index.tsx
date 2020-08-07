@@ -8,25 +8,23 @@ import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import InsightsPage from 'modules/insights/pages/InsightsPage';
 import { mapUser } from '@insight/sdk';
 import { SessionApi } from 'api';
+import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 
 type Props = AuthenticatedServerSideProps & {
-  countByCountry: Record<string, number>;
+  countByLocation: CountByLocation;
   countByDeviceClass: Record<string, number>;
-  countByContinent: Record<string, number>;
 };
 
 const Home = ({
   user: initialUser,
-  countByCountry,
+  countByLocation,
   countByDeviceClass,
-  countByContinent,
 }: Props) => {
   return (
     <InsightsPage
       user={mapUser(initialUser)}
-      countByCountry={countByCountry}
+      countByLocation={countByLocation}
       countByDeviceClass={countByDeviceClass}
-      countByContinent={countByContinent}
     />
   );
 };
@@ -61,21 +59,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     countByDeviceClassPromise,
   ]);
 
-  const countByCountry = countByLocation.reduce((acc, entry) => {
-    return { ...acc, [entry['location.countryName']]: entry.count };
-  }, {} as Record<string, number>);
-
-  const countByContinent = countByLocation.reduce((acc, entry) => {
-    const key = entry['location.continentName'];
-    const count = (acc[key] || 0) + entry.count;
-    return { ...acc, [key]: count };
-  }, {} as Record<string, number>);
-
   return {
     props: {
       user: authResponse.user,
-      countByCountry,
-      countByContinent,
+      countByLocation,
       countByDeviceClass,
     },
   };

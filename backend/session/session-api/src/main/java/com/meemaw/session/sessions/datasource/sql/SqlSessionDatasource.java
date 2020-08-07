@@ -14,8 +14,6 @@ import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
@@ -39,7 +37,6 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.Field;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -78,40 +75,19 @@ public class SqlSessionDatasource implements SessionDatasource {
 
   @Override
   public CompletionStage<JsonNode> count(String organizationId, SearchDTO searchDTO) {
-    List<Field<?>> columns = SQLGroupByQuery.of(searchDTO.getGroupBy()).fieldsWithCount();
+    SQLGroupByQuery sqlGroupByQuery = SQLGroupByQuery.of(searchDTO.getGroupBy());
 
     Query query =
         SQLSearchDTO.of(searchDTO)
             .apply(
                 sqlPool
                     .getContext()
-                    .select(columns)
+                    .select(sqlGroupByQuery.fieldsWithCount())
                     .from(TABLE)
                     .where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
-    return sqlPool
-        .execute(query)
-        .thenApply(
-            rows -> {
-              ArrayNode results = objectMapper.createArrayNode();
-              rows.forEach(
-                  row -> {
-                    ObjectNode node = objectMapper.createObjectNode();
-                    node.put("count", row.getInteger("count"));
-                    for (int i = 0; i < columns.size() - 1; i++) {
-                      String column = columns.get(i).getName();
-                      node.put(column, row.getString(column));
-                    }
-                    results.add(node);
-                  });
-
-              if (columns.size() == 1) {
-                return results.get(0);
-              }
-
-              return results;
-            });
+    return sqlPool.execute(query).thenApply(rows -> sqlGroupByQuery.asJsonNode(rows, objectMapper));
   }
 
   @Override

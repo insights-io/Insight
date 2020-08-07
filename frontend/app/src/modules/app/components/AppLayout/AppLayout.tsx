@@ -50,7 +50,7 @@ const AppLayout = ({ children, overrides }: Props) => {
   }, []);
 
   const topbar = renderTopbar ? (
-    <Topbar onMenuClick={onSidebarMenuClick} />
+    <Topbar onMenuClick={onSidebarMenuClick} sidebarVisible={sidebarVisible} />
   ) : null;
 
   let sidebar: React.ReactNode = (
