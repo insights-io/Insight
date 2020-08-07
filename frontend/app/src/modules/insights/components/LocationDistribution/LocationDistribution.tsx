@@ -1,6 +1,6 @@
 import React, { useState, useMemo, ReactText } from 'react';
 import { Card, StyledBody } from 'baseui/card';
-import { Block } from 'baseui/block';
+import { Block, BlockProps } from 'baseui/block';
 import { HeadingXSmall } from 'baseui/typography';
 import { useStyletron } from 'baseui';
 import dynamic from 'next/dynamic';
@@ -53,7 +53,20 @@ const LocationDistribution = ({ countByLocation }: Props) => {
   );
 
   const isColumnOriented = width < 910;
+  const isHeadingStacked = width < 460;
   const tabHeight = '400px';
+
+  const headingStyles: BlockProps = isHeadingStacked
+    ? {
+        marginBottom: theme.sizing.scale500,
+        marginTop: theme.sizing.scale500,
+        marginLeft: theme.sizing.scale500,
+      }
+    : {
+        position: 'absolute',
+        top: theme.sizing.scale500,
+        left: theme.sizing.scale500,
+      };
 
   return (
     <Card
@@ -78,12 +91,7 @@ const LocationDistribution = ({ countByLocation }: Props) => {
       }}
     >
       <StyledBody>
-        <HeadingXSmall
-          margin={0}
-          position="absolute"
-          top={theme.sizing.scale500}
-          left={theme.sizing.scale500}
-        >
+        <HeadingXSmall margin={0} {...headingStyles}>
           Location distribution
         </HeadingXSmall>
 
@@ -96,7 +104,9 @@ const LocationDistribution = ({ countByLocation }: Props) => {
           renderAll={false}
           overrides={{
             TabList: {
-              style: { justifyContent: 'flex-end' },
+              style: {
+                justifyContent: isHeadingStacked ? 'flex-start' : 'flex-end',
+              },
             },
           }}
         >
