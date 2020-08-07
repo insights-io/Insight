@@ -6,9 +6,7 @@ import { useStyletron } from 'baseui';
 import dynamic from 'next/dynamic';
 import { Tabs, Tab } from 'baseui/tabs-motion';
 import useWindowSize from 'shared/hooks/useWindowSize';
-
-import { CountByLocation } from '../charts/CountByLocationMapChart/utils';
-import CountByLocationDataTable from '../tables/CountByLocationDataTable';
+import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 
 const CountByCountryChart = dynamic(
   () => import('modules/insights/components/charts/CountByCountry'),
@@ -22,6 +20,11 @@ const CountByContinentChart = dynamic(
 
 const CountByLocationMapChart = dynamic(
   () => import('modules/insights/components/charts/CountByLocationMapChart'),
+  { ssr: false }
+);
+
+const CountByLocationDataTable = dynamic(
+  () => import('modules/insights/components/tables/CountByLocationDataTable'),
   { ssr: false }
 );
 
