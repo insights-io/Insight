@@ -48,7 +48,7 @@ public class RHSColorParserSqlTest {
     String input = "http://www.abc.com?field1=lte:123&sort_by=+field2,-age&field2=gte:matej";
     SearchDTO searchDTO =
         RHSColonParser.parse(
-            RHSColonParser.queryParams(new URL(input)), Set.of("field1", "field2"));
+            RHSColonParser.queryParams(new URL(input)), Set.of("field1", "field2", "age"));
 
     Query query =
         SQLSearchDTO.of(searchDTO).apply(select().from(table("session.session")), FIELD_MAPPINGS);
