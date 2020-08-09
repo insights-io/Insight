@@ -104,6 +104,23 @@ public class EventsResourceImplTest {
   }
 
   @Test
+  public void events_search__should_throw__on_unsupported_fields() {
+    String path =
+        String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID)
+            + "?random=gte:aba&aba=gtecaba&group_by=another&sort_by=hehe&limit=not_string";
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(path)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"ehe\":\"Unexpected field in sort_by query\"}}}}"));
+  }
+
+  @Test
   public void events_search_should_return_all_events() throws IOException, URISyntaxException {
     given()
         .when()
