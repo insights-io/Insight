@@ -1,5 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
+import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
@@ -8,7 +9,6 @@ import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
-import com.meemaw.test.matchers.SameJSON;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
@@ -39,6 +39,25 @@ public class InsightResourceImplTest {
   @Inject SqlPool sqlPool;
 
   @Test
+  public void get_session_insights__should_throw__on_unsupported_fields() {
+    String path =
+        String.join(
+            "/",
+            InsightsResource.PATH,
+            "count?random=gte:aba&aba=gtecaba&group_by=another&sort_by=hehe&limit=not_string");
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(path)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"ehe\":\"Unexpected field in sort_by query\"}}}}"));
+  }
+
+  @Test
   public void get_session_insights__should_return_count__on_empty_request() {
     String path =
         String.format(
@@ -50,7 +69,7 @@ public class InsightResourceImplTest {
         .get(path)
         .then()
         .statusCode(200)
-        .body(SameJSON.sameJson("{\"data\":{\"count\":5}}"));
+        .body(sameJson("{\"data\":{\"count\":5}}"));
   }
 
   @Test
@@ -70,7 +89,7 @@ public class InsightResourceImplTest {
         .then()
         .statusCode(200)
         .body(
-            SameJSON.sameJson(
+            sameJson(
                 "{\"data\":[{\"count\":1,\"location.countryName\":\"Canada\"},{\"count\":1,\"location.countryName\":\"Croatia\"},{\"count\":2,\"location.countryName\":\"Slovenia\"},{\"count\":1,\"location.countryName\":\"United States\"}]}"));
   }
 
@@ -91,7 +110,7 @@ public class InsightResourceImplTest {
         .then()
         .statusCode(200)
         .body(
-            SameJSON.sameJson(
+            sameJson(
                 "{\"data\":[{\"count\":1,\"location.countryName\":\"Canada\",\"location.continentName\":\"North America\"},{\"count\":1,\"location.countryName\":\"Croatia\",\"location.continentName\":\"Europe\"},{\"count\":2,\"location.countryName\":\"Slovenia\",\"location.continentName\":\"Europe\"},{\"count\":1,\"location.countryName\":\"United States\",\"location.continentName\":\"North America\"}]}"));
   }
 
@@ -112,7 +131,7 @@ public class InsightResourceImplTest {
         .then()
         .statusCode(200)
         .body(
-            SameJSON.sameJson(
+            sameJson(
                 "{\"data\":[{\"count\":1,\"user_agent.deviceClass\":\"Desktop\"},{\"count\":4,\"user_agent.deviceClass\":\"Phone\"}]}"));
   }
 
