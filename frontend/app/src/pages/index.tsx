@@ -33,39 +33,43 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   const requestSpan = startRequestSpan(context.req);
-  const authResponse = await authenticated(context, requestSpan);
-  if (!authResponse) {
-    return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
+  try {
+    const authResponse = await authenticated(context, requestSpan);
+    if (!authResponse) {
+      return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
+    }
+
+    const countByLocationPromise = SessionApi.countByLocation({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers: {
+        ...prepareCrossServiceHeaders(requestSpan),
+        cookie: `SessionId=${authResponse.SessionId}`,
+      },
+    });
+
+    const countByDeviceClassPromise = SessionApi.countByDeviceClass({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers: {
+        ...prepareCrossServiceHeaders(requestSpan),
+        cookie: `SessionId=${authResponse.SessionId}`,
+      },
+    });
+
+    const [countByLocation, countByDeviceClass] = await Promise.all([
+      countByLocationPromise,
+      countByDeviceClassPromise,
+    ]);
+
+    return {
+      props: {
+        user: authResponse.user,
+        countByLocation,
+        countByDeviceClass,
+      },
+    };
+  } finally {
+    requestSpan.finish();
   }
-
-  const countByLocationPromise = SessionApi.countByLocation({
-    baseURL: process.env.SESSION_API_BASE_URL,
-    headers: {
-      ...prepareCrossServiceHeaders(requestSpan),
-      cookie: `SessionId=${authResponse.SessionId}`,
-    },
-  });
-
-  const countByDeviceClassPromise = SessionApi.countByDeviceClass({
-    baseURL: process.env.SESSION_API_BASE_URL,
-    headers: {
-      ...prepareCrossServiceHeaders(requestSpan),
-      cookie: `SessionId=${authResponse.SessionId}`,
-    },
-  });
-
-  const [countByLocation, countByDeviceClass] = await Promise.all([
-    countByLocationPromise,
-    countByDeviceClassPromise,
-  ]);
-
-  return {
-    props: {
-      user: authResponse.user,
-      countByLocation,
-      countByDeviceClass,
-    },
-  };
 };
 
 export default Home;
