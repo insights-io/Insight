@@ -20,6 +20,9 @@ ENV NEXT_PUBLIC_TRY_BASE_URL=$try_app_base_url
 ARG bootstrap_script=https://static.dev.snuderls.eu/b/local.insight.js
 ENV BOOTSTRAP_SCRIPT=$bootstrap_script
 
+ARG jaeger_agent_host=jaeger
+ENV JAEGER_AGENT_HOST=$jaeger_agent_host
+
 COPY package.json yarn.lock tsconfig.json /src/
 COPY frontend/app/package.json /src/frontend/app/package.json
 COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json

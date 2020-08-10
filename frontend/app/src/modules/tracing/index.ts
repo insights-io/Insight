@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { IncomingMessage } from 'http';
 
-import { initTracer } from 'jaeger-client';
+import { initTracer, TracingConfig } from 'jaeger-client';
 import {
   Tracer,
   Span,
@@ -14,19 +14,21 @@ let _tracer: Tracer | undefined;
 
 export const getTracer = (): Tracer => {
   if (!_tracer) {
-    _tracer = initTracer(
-      {
-        serviceName: 'frontend-app',
-        sampler: { type: 'const', param: 1 },
-        reporter: {
-          flushIntervalMs: 1000,
-          agentHost: process.env.JAEGER_AGENT_HOST as string,
-          agentPort: parseInt(process.env.JAEGER_AGENT_PORT as string, 10),
-          logSpans: true,
-        },
+    const config: TracingConfig = {
+      serviceName: 'frontend-app',
+      sampler: { type: 'const', param: 1 },
+      reporter: {
+        flushIntervalMs: 1000,
+        agentHost: process.env.JAEGER_AGENT_HOST as string,
+        agentPort: parseInt(process.env.JAEGER_AGENT_PORT as string, 10),
+        logSpans: true,
       },
-      {}
-    );
+    };
+
+    _tracer = initTracer(config, {});
+
+    // eslint-disable-next-line no-console
+    console.log('[TRACING]: init', config);
   }
   return _tracer;
 };
