@@ -25,9 +25,6 @@ spec:
       containers:
         - image: insightio/frontend-app
           name: app
-          env:
-            - name: JAEGER_AGENT_HOST
-              value: jaeger-agent.monitoring
           ports:
             - containerPort: 3000
               name: http
