@@ -3,6 +3,7 @@ package com.meemaw.session.sessions.resource.v1;
 import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.pages.service.PageService;
+import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.session.sessions.service.SessionService;
 import com.meemaw.session.sessions.service.SessionSocketService;
 import com.meemaw.session.sessions.v1.SessionResource;
@@ -10,8 +11,6 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -65,9 +64,10 @@ public class SessionResourceImpl implements SessionResource {
   @Override
   public CompletionStage<Response> getSessions() {
     String organizationId = principal.user().getOrganizationId();
-    Map<String, List<String>> queryParams = RequestUtils.map(uriInfo.getQueryParameters());
-    return sessionService
-        .getSessions(organizationId, SearchDTO.rhsColon(queryParams))
-        .thenApply(DataResponse::ok);
+    SearchDTO searchDTO =
+        SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS)
+            .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
+
+    return sessionService.getSessions(organizationId, searchDTO).thenApply(DataResponse::ok);
   }
 }

@@ -1,80 +1,119 @@
 package com.meemaw.shared.rest.query.rhs.colon;
 
+import com.meemaw.shared.rest.exception.GroupBySearchParseException;
+import com.meemaw.shared.rest.exception.SortBySearchParseException;
+import com.meemaw.shared.rest.query.AbstractQueryParser;
 import com.meemaw.shared.rest.query.BooleanFilterExpression;
 import com.meemaw.shared.rest.query.BooleanOperation;
 import com.meemaw.shared.rest.query.FilterExpression;
-import com.meemaw.shared.rest.query.GroupByQuery;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.SortDirection;
-import com.meemaw.shared.rest.query.SortQuery;
 import com.meemaw.shared.rest.query.TermFilterExpression;
 import com.meemaw.shared.rest.query.TermOperation;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
-public final class RHSColonParser {
+public final class RHSColonParser extends AbstractQueryParser {
 
-  private static final String LIMIT_PARAM = "limit";
-  private static final String SORT_BY_PARAM = "sort_by";
-  private static final String GROUP_BY_PARAM = "group_by";
-
-  private RHSColonParser() {}
-
-  /**
-   * Build search dto from query params.
-   *
-   * @param params query params
-   * @return search dto
-   */
-  public static SearchDTO parse(Map<String, List<String>> params) {
-    List<FilterExpression> expressions = new ArrayList<>(params.size());
-    List<Pair<String, SortDirection>> sorts = Collections.emptyList();
-    List<String> groupBy = Collections.emptyList();
-    int limit = 0;
-
-    for (Entry<String, List<String>> entry : params.entrySet()) {
-      String name = entry.getKey();
-      if (LIMIT_PARAM.equals(name)) {
-        limit = Integer.parseInt(entry.getValue().get(0));
-      } else if (SORT_BY_PARAM.equals(name)) {
-        sorts = parseSorts(entry.getValue().get(0));
-      } else if (GROUP_BY_PARAM.equals(name)) {
-        groupBy = List.of(entry.getValue().get(0).split(","));
-      } else {
-        List<FilterExpression> termFilterExpressions =
-            entry.getValue().stream()
-                .map(value -> extractTermFilterExpression(name, value))
-                .collect(Collectors.toList());
-
-        expressions.add(new BooleanFilterExpression<>(BooleanOperation.OR, termFilterExpressions));
-      }
-    }
-
-    BooleanFilterExpression<?> rootFilterExpression =
-        new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
-
-    return new SearchDTO(
-        rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit);
+  RHSColonParser(Set<String> allowedFields) {
+    super(allowedFields);
   }
 
-  private static List<Pair<String, SortDirection>> parseSorts(String text) {
+  @Override
+  public void process(Entry<String, List<String>> entry) {
+    String fieldName = entry.getKey();
+
+    if (LIMIT_PARAM.equals(fieldName)) {
+      try {
+        limit = Integer.parseInt(entry.getValue().get(0));
+      } catch (NumberFormatException ex) {
+        errors.put(LIMIT_PARAM, NUMBER_FORMAT_EXCEPTION_ERROR);
+      }
+    } else if (SORT_BY_PARAM.equals(fieldName)) {
+      try {
+        sorts = parseSorts(entry.getValue().get(0), allowedFields);
+      } catch (SortBySearchParseException ex) {
+        errors.put(SORT_BY_PARAM, ex.getErrors());
+      }
+    } else if (GROUP_BY_PARAM.equals(fieldName)) {
+      try {
+        groupBy = parseGroupBy(entry, allowedFields);
+      } catch (GroupBySearchParseException ex) {
+        errors.put(GROUP_BY_PARAM, ex.getErrors());
+      }
+    } else if (allowedFields.contains(fieldName)) {
+      List<FilterExpression> termFilterExpressions =
+          entry.getValue().stream()
+              .map(value -> extractTermFilterExpression(fieldName, value))
+              .collect(Collectors.toList());
+
+      expressions.add(new BooleanFilterExpression<>(BooleanOperation.OR, termFilterExpressions));
+    } else {
+      errors.put(fieldName, UNEXPECTED_FIELD_ERROR);
+    }
+  }
+
+  public static SearchDTO parse(Map<String, List<String>> params, Set<String> allowedFields) {
+    RHSColonParser parser = new RHSColonParser(allowedFields);
+
+    for (Entry<String, List<String>> entry : params.entrySet()) {
+      parser.process(entry);
+    }
+
+    return parser.searchDTO();
+  }
+
+  private static List<String> parseGroupBy(
+      Entry<String, List<String>> entry, Set<String> allowedFields)
+      throws GroupBySearchParseException {
+    List<String> groupBy = List.of(entry.getValue().get(0).split(","));
+    Map<String, String> groupByErrors = new HashMap<>();
+    groupBy.forEach(
+        groupByField -> {
+          if (!allowedFields.contains(groupByField)) {
+            groupByErrors.put(groupByField, GROUP_BY_PARAM_ERROR);
+          }
+        });
+
+    if (!groupByErrors.isEmpty()) {
+      throw new GroupBySearchParseException(groupByErrors);
+    }
+
+    return groupBy;
+  }
+
+  private static List<Pair<String, SortDirection>> parseSorts(
+      String text, Set<String> allowedFields) throws SortBySearchParseException {
     String[] fields = text.split(",");
     List<Pair<String, SortDirection>> sorts = new ArrayList<>(fields.length);
+    Map<String, String> errors = new HashMap<>();
+
     for (String fieldWithDirection : fields) {
       SortDirection sortDirection = SortDirection.ASC;
       if (fieldWithDirection.charAt(0) == SortDirection.DESC.getSymbol()) {
         sortDirection = SortDirection.DESC;
       }
-      sorts.add(Pair.of(fieldWithDirection.substring(1), sortDirection));
+      String fieldName = fieldWithDirection.substring(1);
+      if (!allowedFields.contains(fieldName)) {
+        errors.put(fieldName, SORT_BY_PARAM_ERROR);
+      } else {
+        sorts.add(Pair.of(fieldName, sortDirection));
+      }
     }
+
+    if (!errors.isEmpty()) {
+      throw new SortBySearchParseException(errors);
+    }
+
     return sorts;
   }
 
@@ -89,12 +128,6 @@ public final class RHSColonParser {
     return Pair.of(op, text.substring(colon + 1));
   }
 
-  /**
-   * Parse query params from url.
-   *
-   * @param url url
-   * @return query params
-   */
   public static Map<String, List<String>> queryParams(URL url) {
     final Map<String, List<String>> queryParams = new LinkedHashMap<>();
     if (url.getQuery() == null) {
@@ -102,8 +135,8 @@ public final class RHSColonParser {
     }
     final String[] pairs = url.getQuery().split("&");
     for (String pair : pairs) {
-      final int idx = pair.indexOf('=');
-      final String key = idx > 0 ? pair.substring(0, idx) : pair;
+      int idx = pair.indexOf('=');
+      String key = idx > 0 ? pair.substring(0, idx) : pair;
       if (!queryParams.containsKey(key)) {
         queryParams.put(key, new LinkedList<>());
       }

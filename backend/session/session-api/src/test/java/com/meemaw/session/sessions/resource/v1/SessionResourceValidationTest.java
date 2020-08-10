@@ -2,6 +2,7 @@ package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
+import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -124,6 +125,23 @@ public class SessionResourceValidationTest {
     cookieExpect401(SessionResource.PATH, null);
     cookieExpect401(SessionResource.PATH, "random");
     cookieExpect401(SessionResource.PATH, SsoSession.newIdentifier());
+  }
+
+  @Test
+  public void get_sessions__should_throw__on_unsupported_fields() {
+    String path =
+        SessionResource.PATH
+            + "?random=gte:aba&aba=gtecaba&group_by=another&sort_by=hehe&limit=not_string";
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(path)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"ehe\":\"Unexpected field in sort_by query\"}}}}"));
   }
 
   @Test

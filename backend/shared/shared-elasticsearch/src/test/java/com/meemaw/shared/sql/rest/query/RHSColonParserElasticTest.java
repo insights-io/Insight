@@ -7,6 +7,8 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.rhs.colon.RHSColonParser;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Set;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +17,9 @@ public class RHSColonParserElasticTest {
   @Test
   public void should_correctly_parse_rhs_colon_query_to_elastic() throws MalformedURLException {
     String input = "http://www.abc.com?field1=lte:123&limit=200&field2.t=eq:aba";
-    SearchDTO searchDTO = RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)));
+    SearchDTO searchDTO =
+        RHSColonParser.parse(
+            RHSColonParser.queryParams(new URL(input)), Set.of("field1", "field2.t"));
 
     SearchSourceBuilder query = ElasticSearchDTO.of(searchDTO).apply();
     assertEquals(
@@ -27,7 +31,8 @@ public class RHSColonParserElasticTest {
   public void should_correctly_parse_rhs_colon_empty_query_to_elastic()
       throws MalformedURLException {
     String input = "http://www.abc.com";
-    SearchDTO searchDTO = RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)));
+    SearchDTO searchDTO =
+        RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)), Collections.emptySet());
 
     SearchSourceBuilder query = ElasticSearchDTO.of(searchDTO).apply();
     assertEquals(
