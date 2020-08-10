@@ -35,20 +35,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   const requestSpan = startRequestSpan(context.req);
-  const token = context.query.token as string | undefined;
+  try {
+    const token = context.query.token as string | undefined;
 
-  if (!token) {
-    return { props: { exists: false } };
-  }
+    if (!token) {
+      return { props: { exists: false } };
+    }
 
-  const response = await AuthApi.password.resetExists(token, {
-    baseURL: process.env.AUTH_API_BASE_URL,
-    headers: prepareCrossServiceHeaders(requestSpan),
-  });
-  if (response.data === false) {
-    return { props: { exists: false } };
+    const response = await AuthApi.password.resetExists(token, {
+      baseURL: process.env.AUTH_API_BASE_URL,
+      headers: prepareCrossServiceHeaders(requestSpan),
+    });
+    if (response.data === false) {
+      return { props: { exists: false } };
+    }
+    return { props: { exists: true, token } };
+  } finally {
+    requestSpan.finish();
   }
-  return { props: { exists: true, token } };
 };
 
 export default PasswordReset;

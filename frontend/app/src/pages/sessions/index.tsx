@@ -27,20 +27,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   const requestSpan = startRequestSpan(context.req);
-  const authResponse = await authenticated(context, requestSpan);
-  if (!authResponse) {
-    return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
+  try {
+    const authResponse = await authenticated(context, requestSpan);
+    if (!authResponse) {
+      return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
+    }
+
+    const sessions = await SessionApi.getSessions({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers: {
+        ...prepareCrossServiceHeaders(requestSpan),
+        cookie: `SessionId=${authResponse.SessionId}`,
+      },
+    });
+
+    return { props: { user: authResponse.user, sessions } };
+  } finally {
+    requestSpan.finish();
   }
-
-  const sessions = await SessionApi.getSessions({
-    baseURL: process.env.SESSION_API_BASE_URL,
-    headers: {
-      ...prepareCrossServiceHeaders(requestSpan),
-      cookie: `SessionId=${authResponse.SessionId}`,
-    },
-  });
-
-  return { props: { user: authResponse.user, sessions } };
 };
 
 export default Sessions;
