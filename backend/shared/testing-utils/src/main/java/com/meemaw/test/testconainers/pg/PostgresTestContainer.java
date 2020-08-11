@@ -1,5 +1,6 @@
 package com.meemaw.test.testconainers.pg;
 
+import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ADMIN_ID;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -173,8 +174,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
             .insertInto(table("auth.password"))
             .columns(field("user_id", UUID.class), field("hash", String.class))
             .values(
-                UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b"),
-                "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
+                INSIGHT_ADMIN_ID, "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
 
     client()
         .preparedQuery(query.getSQL(ParamType.NAMED))
