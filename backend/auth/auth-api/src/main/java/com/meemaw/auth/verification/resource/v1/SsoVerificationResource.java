@@ -1,7 +1,8 @@
-package com.meemaw.auth.sso.resource.v1;
+package com.meemaw.auth.verification.resource.v1;
 
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import com.meemaw.auth.sso.model.TFASetupCompleteDTO;
+import com.meemaw.auth.sso.resource.v1.SsoResource;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

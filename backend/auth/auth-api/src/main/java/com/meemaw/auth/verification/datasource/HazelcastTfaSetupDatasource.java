@@ -14,7 +14,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Slf4j
 @ApplicationScoped
-public class HazelcastVerificationDatasource implements VerificationDatasource {
+public class HazelcastTfaSetupDatasource implements TfaSetupDatasource {
 
   private IMap<UUID, String> userTfaSetupSecretMap;
 
@@ -40,5 +40,10 @@ public class HazelcastVerificationDatasource implements VerificationDatasource {
   @Override
   public CompletionStage<Void> storeTfaSetupSecret(UUID userId, String secret) {
     return userTfaSetupSecretMap.setAsync(userId, secret, 10, TimeUnit.MINUTES);
+  }
+
+  @Override
+  public CompletionStage<String> removeTfaSetupSecret(UUID userId) {
+    return userTfaSetupSecretMap.removeAsync(userId);
   }
 }

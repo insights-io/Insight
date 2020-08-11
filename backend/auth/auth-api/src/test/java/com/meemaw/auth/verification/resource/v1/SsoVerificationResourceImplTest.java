@@ -1,4 +1,4 @@
-package com.meemaw.auth.sso.resource.v1;
+package com.meemaw.auth.verification.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ADMIN_ID;
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.TFASetupCompleteDTO;
-import com.meemaw.auth.verification.datasource.VerificationDatasource;
+import com.meemaw.auth.verification.datasource.TfaSetupDatasource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class SsoVerificationResourceImplTest {
 
-  @Inject VerificationDatasource verificationDatasource;
+  @Inject TfaSetupDatasource verificationDatasource;
   @Inject MockMailbox mailbox;
   @Inject ObjectMapper objectMapper;
 
@@ -180,5 +180,27 @@ public class SsoVerificationResourceImplTest {
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":true}"));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .body(JacksonMapper.get().writeValueAsString(new TFASetupCompleteDTO(10)))
+        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"QR code expired\"}}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .get(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"TFA already set up\"}}"));
   }
 }
