@@ -10,6 +10,7 @@ import com.meemaw.auth.user.model.TfaSetup;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -27,20 +28,7 @@ public class SqlUserTfaDatasource implements UserTfaDatasource {
   @Override
   public CompletionStage<Optional<TfaSetup>> get(UUID userId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(USER_ID.eq(userId));
-    return sqlPool
-        .execute(query)
-        .thenApply(
-            rows -> {
-              if (!rows.iterator().hasNext()) {
-                return Optional.empty();
-              }
-
-              Row row = rows.iterator().next();
-              return Optional.of(
-                  new TfaSetup(
-                      row.getString(SECRET.getName()),
-                      row.getOffsetDateTime(CREATED_AT.getName())));
-            });
+    return sqlPool.execute(query).thenApply(SqlUserTfaDatasource::maybeMapTfaSetup);
   }
 
   @Override
@@ -55,9 +43,21 @@ public class SqlUserTfaDatasource implements UserTfaDatasource {
 
     return transaction
         .query(query)
-        .thenApply(
-            rows ->
-                new TfaSetup(
-                    secret, rows.iterator().next().getOffsetDateTime(CREATED_AT.getName())));
+        .thenApply(rows -> rows.iterator().next())
+        .thenApply(row -> new TfaSetup(secret, row.getOffsetDateTime(CREATED_AT.getName())));
+  }
+
+  public static Optional<TfaSetup> maybeMapTfaSetup(RowSet<Row> rows) {
+    if (!rows.iterator().hasNext()) {
+      return Optional.empty();
+    }
+
+    Row row = rows.iterator().next();
+    return Optional.of(mapTfaSetup(row));
+  }
+
+  public static TfaSetup mapTfaSetup(Row row) {
+    return new TfaSetup(
+        row.getString(SECRET.getName()), row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }
