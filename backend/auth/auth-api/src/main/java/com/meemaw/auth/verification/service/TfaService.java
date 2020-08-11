@@ -4,6 +4,7 @@ import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.TfaSetup;
 import com.meemaw.auth.verification.datasource.TfaSetupDatasource;
+import com.meemaw.auth.verification.model.TfaSetupStart;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -24,7 +25,7 @@ public class TfaService {
   @Inject TfaSetupDatasource tfaSetupDatasource;
   @Inject SqlPool sqlPool;
 
-  public CompletionStage<String> tfaSetup(UUID userId, String email) {
+  public CompletionStage<TfaSetupStart> tfaSetupStart(UUID userId, String email) {
     log.info("[AUTH]: TFA setup request for user={}", userId);
     return userTfaDatasource
         .get(userId)
@@ -41,7 +42,7 @@ public class TfaService {
                   .thenApply(
                       nothing -> {
                         String keyId = String.format("%s:%s", ISSUER, email);
-                        return generateQrImageUrl(keyId, secret, ISSUER);
+                        return new TfaSetupStart(generateQrImageUrl(keyId, secret, ISSUER));
                       });
             });
   }

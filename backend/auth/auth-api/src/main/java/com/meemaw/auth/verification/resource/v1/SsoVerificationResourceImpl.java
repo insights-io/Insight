@@ -5,7 +5,6 @@ import com.meemaw.auth.sso.model.TFASetupCompleteDTO;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.verification.service.TfaService;
 import com.meemaw.shared.rest.response.DataResponse;
-import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -20,9 +19,7 @@ public class SsoVerificationResourceImpl implements SsoVerificationResource {
   @Override
   public CompletionStage<Response> tfaSetupStart() {
     AuthUser user = principal.user();
-    return tfaService
-        .tfaSetup(user.getId(), user.getEmail())
-        .thenApply(qrImageUrl -> DataResponse.ok(Map.of("qrImageUrl", qrImageUrl)));
+    return tfaService.tfaSetupStart(user.getId(), user.getEmail()).thenApply(DataResponse::ok);
   }
 
   @Override

@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path(SsoVerificationResource.PATH)
+@Produces(MediaType.APPLICATION_JSON)
 public interface SsoVerificationResource {
 
   String PATH = SsoResource.PATH + "/verification";
@@ -22,13 +23,11 @@ public interface SsoVerificationResource {
   @GET
   @Path("setup-tfa")
   @CookieAuth
-  @Produces(MediaType.APPLICATION_JSON)
   CompletionStage<Response> tfaSetupStart();
 
   @POST
   @Path("setup-tfa")
   @CookieAuth
-  @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   CompletionStage<Response> tfaSetupComplete(
       @NotNull(message = "Required") @Valid TFASetupCompleteDTO body);
