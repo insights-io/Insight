@@ -26,9 +26,9 @@
     "@insight/types": "0.0.0-development"
   },
   "dependencies": {
-    "@storybook/addon-actions": "5.3.19",
-    "@storybook/addon-knobs": "5.3.19",
+    "@storybook/addon-actions": "6.0.4",
+    "@storybook/addon-knobs": "6.0.4",
     "@storybook/preset-typescript": "3.0.0",
-    "@storybook/react": "5.3.19"
+    "@storybook/react": "6.0.4"
   }
 }
