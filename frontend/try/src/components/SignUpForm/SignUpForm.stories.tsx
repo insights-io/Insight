@@ -7,7 +7,7 @@ import { mockApiError } from '@insight/storybook';
 import SignUpForm, { Props } from './SignUpForm';
 
 export default {
-  title: 'SignUpForm',
+  title: 'components/SignUpForm',
 };
 
 type StoryProps = Pick<Props, 'onSubmit'>;

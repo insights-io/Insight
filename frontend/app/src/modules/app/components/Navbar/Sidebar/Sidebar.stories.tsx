@@ -5,7 +5,7 @@ import useSidebar from 'modules/app/hooks/useSidebar';
 import Sidebar from './Sidebar';
 
 export default {
-  title: 'app|components/Sidebar',
+  title: 'app/components/Sidebar',
   decorators: [fullHeightDecorator],
 };
 

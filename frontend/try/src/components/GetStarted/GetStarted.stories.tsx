@@ -5,7 +5,7 @@ import AuthApi from 'api/auth';
 import GetStarted from './GetStarted';
 
 export default {
-  title: 'GetStarted',
+  title: 'components/GetStarted',
 };
 
 export const Base = () => {

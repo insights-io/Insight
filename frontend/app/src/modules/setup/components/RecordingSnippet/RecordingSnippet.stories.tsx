@@ -3,7 +3,7 @@ import React from 'react';
 import RecordingSnippet from './RecordingSnippet';
 
 export default {
-  title: 'Setup|RecordingSnippet',
+  title: 'setup/components/RecordingSnippet',
 };
 
 export const Base = () => {

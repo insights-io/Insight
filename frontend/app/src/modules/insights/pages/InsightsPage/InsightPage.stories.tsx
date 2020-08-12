@@ -5,7 +5,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import InsightsPage from './InsightsPage';
 
 export default {
-  title: 'insights|pages/InsightsPage',
+  title: 'insights/pages/InsightsPage',
   decorators: [fullHeightDecorator],
 };
 

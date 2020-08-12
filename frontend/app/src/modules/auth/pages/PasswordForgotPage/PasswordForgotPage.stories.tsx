@@ -5,7 +5,7 @@ import { AuthApi } from 'api';
 import PasswordForgotPage from './PasswordForgotPage';
 
 export default {
-  title: 'auth|pages/PasswordForgotPage',
+  title: 'auth/pages/PasswordForgotPage',
 };
 
 export const Base = () => {

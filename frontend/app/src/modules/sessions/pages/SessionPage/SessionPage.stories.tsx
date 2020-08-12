@@ -11,7 +11,7 @@ import { SessionApi } from 'api';
 import SessionPage from './SessionPage';
 
 export default {
-  title: 'sessions|pages/SessionPage',
+  title: 'sessions/pages/SessionPage',
   decorators: [fullHeightDecorator],
 };
 

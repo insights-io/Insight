@@ -6,7 +6,7 @@ import { INSIGHT_SESSION, CONSOLE_EVENTS, ERROR_EVENTS } from 'test/data';
 import SessionDetails from './SessionDetails';
 
 export default {
-  title: 'SessionDetails',
+  title: 'sessions/components/SessionDetails',
 };
 
 export const Base = () => {

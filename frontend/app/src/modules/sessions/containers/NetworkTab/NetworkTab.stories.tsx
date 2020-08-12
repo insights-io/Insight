@@ -6,7 +6,7 @@ import NetworkTab from 'modules/sessions/containers/NetworkTab';
 import noop from 'lodash/noop';
 
 export default {
-  title: 'sessions|containers/NetworkTab',
+  title: 'sessions/containers/NetworkTab',
   decorators: [fullHeightDecorator],
 };
 

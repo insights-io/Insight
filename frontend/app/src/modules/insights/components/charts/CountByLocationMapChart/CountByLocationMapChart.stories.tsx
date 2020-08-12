@@ -4,7 +4,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import CountByLocationMapChart from './CountByLocationMapChart';
 
 export default {
-  title: 'insights|components/CountByLocationMapChart',
+  title: 'insights/components/CountByLocationMapChart',
   decorators: [fullHeightDecorator],
 };
 

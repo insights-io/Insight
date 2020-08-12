@@ -27,8 +27,9 @@
   },
   "dependencies": {
     "@storybook/addon-actions": "6.0.4",
-    "@storybook/addon-knobs": "6.0.4",
-    "@storybook/preset-typescript": "3.0.0",
-    "@storybook/react": "6.0.4"
+    "@storybook/addon-essentials": "6.0.4",
+    "@storybook/addon-links": "6.0.4",
+    "@storybook/react": "6.0.4",
+    "@storybook/addon-controls": "6.0.4"
   }
 }

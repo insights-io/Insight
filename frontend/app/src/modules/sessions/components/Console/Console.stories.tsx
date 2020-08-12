@@ -4,7 +4,7 @@ import { CONSOLE_EVENTS, ERROR_EVENTS } from 'test/data';
 import Console from './Console';
 
 export default {
-  title: 'sessions|components/Console',
+  title: 'sessions/components/Console',
 };
 
 export const Base = () => {

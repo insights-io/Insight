@@ -6,7 +6,7 @@ import { ResponsePromise } from 'ky';
 import Login from './LoginPage';
 
 export default {
-  title: 'Auth|pages/LoginPage',
+  title: 'Auth/pages/LoginPage',
 };
 
 export const Base = () => {
