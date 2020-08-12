@@ -11,4 +11,8 @@ public interface TfaSetupDatasource {
   CompletionStage<Void> storeTfaSetupSecret(UUID userId, String secret);
 
   CompletionStage<String> removeTfaSetupSecret(UUID userId);
+
+  CompletionStage<String> createTfaClientId(UUID userId);
+
+  CompletionStage<Optional<UUID>> retrieveUserIdFromTfaClientId(String tfaClientId);
 }

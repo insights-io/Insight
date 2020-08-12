@@ -1,6 +1,7 @@
 package com.meemaw.auth.verification.service;
 
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
+import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.TfaSetup;
 import com.meemaw.auth.verification.datasource.TfaSetupDatasource;
@@ -24,6 +25,44 @@ public class TfaService {
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject TfaSetupDatasource tfaSetupDatasource;
   @Inject SqlPool sqlPool;
+  @Inject SsoService ssoService;
+
+  public CompletionStage<String> tfaComplete(int code, String tfaClientId) {
+    return tfaSetupDatasource
+        .retrieveUserIdFromTfaClientId(tfaClientId)
+        .thenCompose(
+            maybeUserId -> {
+              UUID userId =
+                  maybeUserId.orElseThrow(
+                      () -> Boom.badRequest().message("Session expired").exception());
+
+              return userTfaDatasource
+                  .get(userId)
+                  .thenCompose(
+                      maybeTfaSetup -> {
+                        TfaSetup tfaSetup =
+                            maybeTfaSetup.orElseThrow(
+                                () -> Boom.badRequest().message("TFA not configured").exception());
+
+                        try {
+                          boolean isValid =
+                              TimeBasedOneTimePasswordUtil.validateCurrentNumber(
+                                  tfaSetup.getSecret(), code, 0);
+                          if (!isValid) {
+                            throw Boom.badRequest().message("Invalid code").exception();
+                          }
+
+                          return ssoService.createSession(userId);
+                        } catch (GeneralSecurityException ex) {
+                          log.error(
+                              "[AUTH]: Something went wrong while validating TFA code for user={}",
+                              userId,
+                              ex);
+                          throw Boom.serverError().exception(ex);
+                        }
+                      });
+            });
+  }
 
   public CompletionStage<TfaSetupStart> tfaSetupStart(UUID userId, String email) {
     log.info("[AUTH]: TFA setup request for user={}", userId);
@@ -47,7 +86,7 @@ public class TfaService {
             });
   }
 
-  public CompletionStage<TfaSetup> tfaComplete(UUID userId, int code) {
+  public CompletionStage<TfaSetup> tfaSetupComplete(UUID userId, int code) {
     log.info("[AUTH]: TFA setup complete request for user={}", userId);
     return tfaSetupDatasource
         .getTfaSetupSecret(userId)

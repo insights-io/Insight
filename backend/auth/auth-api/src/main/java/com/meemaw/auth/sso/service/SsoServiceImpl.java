@@ -3,9 +3,11 @@ package com.meemaw.auth.sso.service;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
 import com.meemaw.auth.sso.datasource.SsoDatasource;
+import com.meemaw.auth.sso.model.LoginResult;
 import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.verification.datasource.TfaSetupDatasource;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.Optional;
@@ -28,10 +30,13 @@ public class SsoServiceImpl implements SsoService {
   @Inject PasswordService passwordService;
   @Inject UserDatasource userDatasource;
   @Inject SignUpService signUpService;
+  @Inject TfaSetupDatasource tfaSetupDatasource;
 
   @Override
   @Traced
-  @Timed(name = "createSession", description = "A measure of how long it takes to create session")
+  @Timed(
+      name = "createSessionForUser",
+      description = "A measure of how long it takes to create session for user")
   public CompletionStage<String> createSession(AuthUser user) {
     MDC.put(LoggingConstants.USER_ID, user.getId().toString());
     MDC.put(LoggingConstants.USER_EMAIL, user.getEmail());
@@ -44,6 +49,21 @@ public class SsoServiceImpl implements SsoService {
               MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
               return sessionId;
             });
+  }
+
+  @Override
+  @Traced
+  @Timed(
+      name = "createSessionForUserId",
+      description = "A measure of how long it takes to create session for user id")
+  public CompletionStage<String> createSession(UUID userId) {
+    return userDatasource
+        .findUser(userId)
+        .thenCompose(
+            maybeUser ->
+                createSession(
+                    maybeUser.orElseThrow(
+                        () -> Boom.notFound().message("User not found").exception())));
   }
 
   @Override
@@ -105,19 +125,31 @@ public class SsoServiceImpl implements SsoService {
   @Override
   @Traced
   @Timed(name = "login", description = "A measure of how long it takes to do a login")
-  public CompletionStage<String> login(String email, String password, String ipAddress) {
+  public CompletionStage<LoginResult> login(String email, String password, String ipAddress) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     log.info("[AUTH]: Login attempt for user: {}", email);
     return passwordService
         .verifyPassword(email, password)
         .thenCompose(
-            authUser ->
-                this.createSession(authUser)
+            userWithLoginInformation -> {
+              if (!userWithLoginInformation.isTfaConfigured()) {
+                return this.createSession(userWithLoginInformation.user())
                     .thenApply(
                         sessionId -> {
                           log.info("[AUTH]: Successful login for user: {}", email);
-                          return sessionId;
-                        }));
+                          return LoginResult.builder().sessionId(sessionId).build();
+                        });
+              }
+              UUID userId = userWithLoginInformation.getId();
+              MDC.put(LoggingConstants.USER_ID, userId.toString());
+              MDC.put(
+                  LoggingConstants.ORGANIZATION_ID, userWithLoginInformation.getOrganizationId());
+
+              log.info("[AUTH]: TFA challenge for user: {}", userId);
+              return tfaSetupDatasource
+                  .createTfaClientId(userId)
+                  .thenApply(tfaClientId -> LoginResult.builder().tfaClientId(tfaClientId).build());
+            });
   }
 
   @Override

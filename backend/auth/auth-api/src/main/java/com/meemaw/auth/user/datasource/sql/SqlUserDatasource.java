@@ -21,6 +21,7 @@ import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -57,6 +58,13 @@ public class SqlUserDatasource implements UserDatasource {
   @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(EMAIL.eq(email));
+    return sqlPool.execute(query).thenApply(this::onFindUser);
+  }
+
+  @Override
+  @Traced
+  public CompletionStage<Optional<AuthUser>> findUser(UUID userId) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(userId));
     return sqlPool.execute(query).thenApply(this::onFindUser);
   }
 

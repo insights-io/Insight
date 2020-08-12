@@ -1,6 +1,6 @@
 package com.meemaw.auth.password.datasource;
 
-import com.meemaw.auth.user.model.UserWithHashedPassword;
+import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,5 +13,5 @@ public interface PasswordDatasource {
 
   CompletionStage<Boolean> storePassword(UUID userId, String hashedPassword);
 
-  CompletionStage<Optional<UserWithHashedPassword>> findUserWithPassword(String email);
+  CompletionStage<Optional<UserWithLoginInformation>> findUserWithLoginInformation(String email);
 }

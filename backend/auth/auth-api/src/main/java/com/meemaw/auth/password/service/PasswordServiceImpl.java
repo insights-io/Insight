@@ -6,7 +6,7 @@ import com.meemaw.auth.password.datasource.PasswordResetDatasource;
 import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.UserWithHashedPassword;
+import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
@@ -44,19 +44,19 @@ public class PasswordServiceImpl implements PasswordService {
   @Timed(
       name = "verifyPassword",
       description = "A measure of how long it takes to verify a password")
-  public CompletionStage<AuthUser> verifyPassword(String email, String password) {
+  public CompletionStage<UserWithLoginInformation> verifyPassword(String email, String password) {
     log.info("[AUTH]: verify password request for user: {}", email);
     return passwordDatasource
-        .findUserWithPassword(email)
+        .findUserWithLoginInformation(email)
         .thenApply(
             maybeUserWithPasswordHash -> {
-              UserWithHashedPassword withPassword =
+              UserWithLoginInformation withLoginInformation =
                   maybeUserWithPasswordHash.orElseThrow(
                       () -> {
                         throw Boom.badRequest().message("Invalid email or password").exception();
                       });
 
-              String hashedPassword = withPassword.getPassword();
+              String hashedPassword = withLoginInformation.getPassword();
               if (hashedPassword == null) {
                 log.info("[AUTH]: Could not associate password with user={}", email);
                 throw Boom.badRequest().message("Invalid email or password").exception();
@@ -67,7 +67,7 @@ public class PasswordServiceImpl implements PasswordService {
                 throw Boom.badRequest().message("Invalid email or password").exception();
               }
 
-              return withPassword.user();
+              return withLoginInformation;
             });
   }
 
@@ -187,10 +187,10 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     return passwordDatasource
-        .findUserWithPassword(email)
+        .findUserWithLoginInformation(email)
         .thenCompose(
             maybeUserWithPasswordHash -> {
-              UserWithHashedPassword userWithHashedPassword =
+              UserWithLoginInformation withLoginInformation =
                   maybeUserWithPasswordHash.orElseThrow(
                       () -> {
                         throw Boom.notFound().exception();
@@ -202,7 +202,7 @@ public class PasswordServiceImpl implements PasswordService {
                * have it. User without a password should go through a password reset flow to get
                * one.
                */
-              String hashedPassword = userWithHashedPassword.getPassword();
+              String hashedPassword = withLoginInformation.getPassword();
               if (hashedPassword == null || !BCrypt.checkpw(currentPassword, hashedPassword)) {
                 throw Boom.badRequest().message("Current password miss match").exception();
               }
