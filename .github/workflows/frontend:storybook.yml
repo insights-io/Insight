@@ -39,13 +39,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: frontend/app/storybook-static
-          TARGET_FOLDER: app/master
+          TARGET_FOLDER: app/storybook/master
       - uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: frontend/try/storybook-static
-          TARGET_FOLDER: try/master
+          TARGET_FOLDER: try/storybook/master
       - uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
