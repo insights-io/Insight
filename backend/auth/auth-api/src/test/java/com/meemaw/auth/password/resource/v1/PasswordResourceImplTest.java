@@ -281,7 +281,8 @@ public class PasswordResourceImplTest {
         .param("password", oldPassword)
         .post(SsoResource.PATH + "/login")
         .then()
-        .statusCode(204);
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"));
 
     List<Mail> sent = mailbox.getMessagesSentTo(signUpEmail);
     assertEquals(2, sent.size());
@@ -317,8 +318,9 @@ public class PasswordResourceImplTest {
         .body(resetPasswordPayload)
         .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token))
         .then()
-        .statusCode(204)
-        .cookie(SsoSession.COOKIE_NAME);
+        .statusCode(200)
+        .cookie(SsoSession.COOKIE_NAME)
+        .body(sameJson("{\"data\": true}"));
 
     // login with "oldPassword" should fail
     given()
@@ -341,7 +343,8 @@ public class PasswordResourceImplTest {
         .param("password", newPassword)
         .post(SsoResource.PATH + "/login")
         .then()
-        .statusCode(204)
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
         .cookie(SsoSession.COOKIE_NAME);
 
     // trying to do reset with same token again should fail

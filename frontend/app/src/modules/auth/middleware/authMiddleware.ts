@@ -37,7 +37,7 @@ export const authenticated = async (
   };
 
   if (!SessionId) {
-    span.log({ message: 'Missing session id' });
+    span.log({ message: 'Missing SessionId' });
     span.finish();
     return redirectToLogin();
   }

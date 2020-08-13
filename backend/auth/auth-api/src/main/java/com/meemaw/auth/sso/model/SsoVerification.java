@@ -1,5 +1,7 @@
 package com.meemaw.auth.sso.model;
 
+import com.meemaw.auth.sso.model.dto.VerificationResponseDTO;
+import com.meemaw.shared.rest.response.DataResponse;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -37,6 +39,8 @@ public class SsoVerification {
   }
 
   public static Response cookieResponse(String value, String cookieDomain) {
-    return Response.noContent().cookie(SsoVerification.cookie(value, cookieDomain)).build();
+    return DataResponse.okBuilder(new VerificationResponseDTO(value))
+        .cookie(SsoVerification.cookie(value, cookieDomain))
+        .build();
   }
 }

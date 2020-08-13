@@ -86,7 +86,11 @@ public final class SsoTestSetupUtils {
             .when()
             .get(parseLink(mailbox.getMessagesSentTo(signUpRequestDTO.getEmail()).get(0)));
 
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
+    response
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
+        .cookie(SsoSession.COOKIE_NAME);
     return extractSessionCookie(response).getValue();
   }
 
@@ -147,7 +151,11 @@ public final class SsoTestSetupUtils {
             .param("password", password)
             .post(uri);
 
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
+    response
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
+        .cookie(SsoSession.COOKIE_NAME);
     return extractSessionCookie(response).getValue();
   }
 

@@ -14,6 +14,8 @@ import {
 
 import { RequestOptions } from './types';
 
+type LoginResponseDTO = boolean | { verificationId: string };
+
 export const mapUser = (user: User | UserDTO): User => {
   return { ...user, createdAt: new Date(user.createdAt) };
 };
@@ -40,11 +42,13 @@ export const createAuthClient = (authApiBaseURL: string) => {
       const body = new URLSearchParams();
       body.set('email', email);
       body.set('password', password);
-      return ky.post(`${baseURL}/v1/sso/login`, {
-        body,
-        credentials: 'include',
-        ...rest,
-      });
+      return ky
+        .post(`${baseURL}/v1/sso/login`, {
+          body,
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<LoginResponseDTO>>();
     },
     session: (
       sessionId: string,

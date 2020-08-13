@@ -282,8 +282,13 @@ public class SsoVerificationResourceImplTest {
             .param("password", password)
             .post(SsoResource.PATH + "/login");
 
-    response.then().statusCode(204).cookie(SsoVerification.COOKIE_NAME);
     String verificationId = response.detailedCookie(SsoVerification.COOKIE_NAME).getValue();
+
+    response
+        .then()
+        .statusCode(200)
+        .body(sameJson(String.format("{\"data\": {\"verificationId\": \"%s\"}}", verificationId)))
+        .cookie(SsoVerification.COOKIE_NAME, verificationId);
 
     response =
         given()
@@ -295,7 +300,8 @@ public class SsoVerificationResourceImplTest {
 
     response
         .then()
-        .statusCode(204)
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
         .cookie(SsoSession.COOKIE_NAME)
         .cookie(SsoVerification.COOKIE_NAME, "");
 

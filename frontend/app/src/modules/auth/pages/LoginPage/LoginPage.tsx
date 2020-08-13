@@ -31,7 +31,7 @@ const LoginPage = () => {
   const [_css, theme] = useStyletron();
   const { register, handleSubmit, errors } = useForm<FormData>();
   const inputOverrides = createInputOverrides(theme);
-  const { dest = encodeURIComponent('/') } = router.query;
+  const { dest = '/' } = router.query;
   const [formError, setFormError] = useState<APIError | undefined>();
 
   const onSubmit = handleSubmit((formData) => {
@@ -42,7 +42,15 @@ const LoginPage = () => {
 
     AuthApi.sso
       .login(formData.email, formData.password)
-      .then((_) => router.replace(decodeURIComponent(dest as string)))
+      .then((response) => {
+        if (response.data === true) {
+          router.replace(dest as string);
+        } else {
+          router.replace(
+            `/login/verification?dest=${encodeURIComponent(dest as string)}`
+          );
+        }
+      })
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
