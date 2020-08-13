@@ -4,7 +4,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import LocationDistribution from './LocationDistribution';
 
 export default {
-  title: 'insights|components/LocationDistribution',
+  title: 'insights/components/LocationDistribution',
   decorators: [fullHeightDecorator],
 };
 

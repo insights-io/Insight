@@ -5,7 +5,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import SessionsPage from './SessionsPage';
 
 export default {
-  title: 'sessions|pages/SessionsPage',
+  title: 'sessions/pages/SessionsPage',
   decorators: [fullHeightDecorator],
 };
 

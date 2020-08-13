@@ -5,7 +5,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import NetworkTab from './NetworkTab';
 
 export default {
-  title: 'sessions|components/NetworkTab',
+  title: 'sessions/components/NetworkTab',
   decorators: [fullHeightDecorator],
 };
 

@@ -20,15 +20,17 @@
     "build": "tsdx build --tsconfig tsconfig.build.json",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
-    "prettier": "prettier -l 'src/**/*'"
+    "prettier": "prettier -l 'src/**/*'",
+    "storybook:build": "build-storybook"
   },
   "devDependencies": {
     "@insight/types": "0.0.0-development"
   },
   "dependencies": {
-    "@storybook/addon-actions": "5.3.19",
-    "@storybook/addon-knobs": "5.3.19",
-    "@storybook/preset-typescript": "3.0.0",
-    "@storybook/react": "5.3.19"
+    "@storybook/addon-actions": "6.0.5",
+    "@storybook/addon-essentials": "6.0.5",
+    "@storybook/addon-links": "6.0.5",
+    "@storybook/react": "6.0.5",
+    "@storybook/addon-controls": "6.0.5"
   }
 }

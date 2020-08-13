@@ -5,7 +5,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import AccountSettingsPage from './AccountSettingsPage';
 
 export default {
-  title: 'settings|pages/AccountSettingsPage',
+  title: 'settings/pages/AccountSettingsPage',
   decorators: [fullHeightDecorator],
 };
 

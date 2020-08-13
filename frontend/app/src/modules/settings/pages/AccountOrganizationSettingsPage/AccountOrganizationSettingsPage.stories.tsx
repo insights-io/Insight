@@ -5,7 +5,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import AccountOrganizationSettingsPage from './AccountOrganizationSettingsPage';
 
 export default {
-  title: 'settings|pages/AccountOrganizationSettingsPage',
+  title: 'settings/pages/AccountOrganizationSettingsPage',
   decorators: [fullHeightDecorator],
 };
 
