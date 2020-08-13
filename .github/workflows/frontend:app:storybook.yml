@@ -1,7 +1,6 @@
 ---
 on:
-  pull_request:
-    branches: [master]
+  push:
     paths:
       - '.github/workflows/frontend:app:storybook.yml'
       - 'frontend/app/**'
