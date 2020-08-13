@@ -1,4 +1,4 @@
-package com.meemaw.auth.sso.model;
+package com.meemaw.auth.sso.model.dto;
 
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;

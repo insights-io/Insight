@@ -3,11 +3,13 @@ package com.meemaw.auth.sso.service;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
 import com.meemaw.auth.sso.datasource.SsoDatasource;
+import com.meemaw.auth.sso.datasource.SsoVerificationDatasource;
+import com.meemaw.auth.sso.model.DirectLoginResult;
 import com.meemaw.auth.sso.model.LoginResult;
 import com.meemaw.auth.sso.model.SsoUser;
+import com.meemaw.auth.sso.model.VerificationLoginResult;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.verification.datasource.TfaSetupDatasource;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.Optional;
@@ -30,7 +32,7 @@ public class SsoServiceImpl implements SsoService {
   @Inject PasswordService passwordService;
   @Inject UserDatasource userDatasource;
   @Inject SignUpService signUpService;
-  @Inject TfaSetupDatasource tfaSetupDatasource;
+  @Inject SsoVerificationDatasource ssoVerificationDatasource;
 
   @Override
   @Traced
@@ -132,12 +134,13 @@ public class SsoServiceImpl implements SsoService {
         .verifyPassword(email, password)
         .thenCompose(
             userWithLoginInformation -> {
+              AuthUser user = userWithLoginInformation.user();
               if (!userWithLoginInformation.isTfaConfigured()) {
-                return this.createSession(userWithLoginInformation.user())
+                return this.createSession(user)
                     .thenApply(
                         sessionId -> {
                           log.info("[AUTH]: Successful login for user: {}", email);
-                          return LoginResult.builder().sessionId(sessionId).build();
+                          return new DirectLoginResult(sessionId);
                         });
               }
               UUID userId = userWithLoginInformation.getId();
@@ -146,9 +149,9 @@ public class SsoServiceImpl implements SsoService {
                   LoggingConstants.ORGANIZATION_ID, userWithLoginInformation.getOrganizationId());
 
               log.info("[AUTH]: TFA challenge for user: {}", userId);
-              return tfaSetupDatasource
-                  .createTfaClientId(userId)
-                  .thenApply(tfaClientId -> LoginResult.builder().tfaClientId(tfaClientId).build());
+              return ssoVerificationDatasource
+                  .createVerificationId(userId)
+                  .thenApply(VerificationLoginResult::new);
             });
   }
 

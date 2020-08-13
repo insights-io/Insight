@@ -1,9 +1,8 @@
-package com.meemaw.auth.verification.resource.v1;
+package com.meemaw.auth.sso.resource.v1;
 
 import com.meemaw.auth.sso.cookie.CookieAuth;
-import com.meemaw.auth.sso.model.TfaClientId;
-import com.meemaw.auth.sso.model.TfaCompleteDTO;
-import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.model.SsoVerification;
+import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -39,6 +38,7 @@ public interface SsoVerificationResource {
   @Path("complete-tfa")
   @Consumes(MediaType.APPLICATION_JSON)
   CompletionStage<Response> tfaComplete(
-      @NotBlank(message = "Required") @CookieParam(TfaClientId.COOKIE_NAME) String tfaClientId,
+      @NotBlank(message = "Required") @CookieParam(SsoVerification.COOKIE_NAME)
+          String verificationId,
       @NotNull(message = "Required") @Valid TfaCompleteDTO body);
 }

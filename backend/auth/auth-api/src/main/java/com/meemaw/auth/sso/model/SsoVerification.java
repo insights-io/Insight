@@ -4,11 +4,11 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 
-public class TfaClientId {
+public class SsoVerification {
 
   private static final String COOKIE_PATH = "/";
 
-  public static final String COOKIE_NAME = "TfaClientId";
+  public static final String COOKIE_NAME = "VerificationId";
 
   private static final int SECONDS_IN_DAY = 60 * 60 * 24;
 
@@ -18,7 +18,7 @@ public class TfaClientId {
   // Number of characters in cookie
   public static final int SIZE = 50;
 
-  private TfaClientId() {}
+  private SsoVerification() {}
 
   public static NewCookie cookie(String sessionId, String domain) {
     return newCookie(sessionId, domain, TTL);
@@ -37,6 +37,6 @@ public class TfaClientId {
   }
 
   public static Response cookieResponse(String value, String cookieDomain) {
-    return Response.noContent().cookie(TfaClientId.cookie(value, cookieDomain)).build();
+    return Response.noContent().cookie(SsoVerification.cookie(value, cookieDomain)).build();
   }
 }

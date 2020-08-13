@@ -1,11 +1,10 @@
-package com.meemaw.auth.verification.service;
+package com.meemaw.auth.sso.service;
 
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
-import com.meemaw.auth.sso.service.SsoService;
+import com.meemaw.auth.sso.datasource.SsoVerificationDatasource;
+import com.meemaw.auth.sso.model.dto.TfaSetupStartDTO;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.TfaSetup;
-import com.meemaw.auth.verification.datasource.TfaSetupDatasource;
-import com.meemaw.auth.verification.model.TfaSetupStart;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -15,26 +14,28 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 @Slf4j
-public class TfaService {
+public class SsoTfaService {
 
-  private static final String ISSUER = "Insight";
+  @ConfigProperty(name = "sso.verification.issuer")
+  String issuer;
 
   @Inject UserTfaDatasource userTfaDatasource;
-  @Inject TfaSetupDatasource tfaSetupDatasource;
+  @Inject SsoVerificationDatasource ssoVerificationDatasource;
   @Inject SqlPool sqlPool;
   @Inject SsoService ssoService;
 
-  public CompletionStage<String> tfaComplete(int code, String tfaClientId) {
-    return tfaSetupDatasource
-        .retrieveUserIdFromTfaClientId(tfaClientId)
+  public CompletionStage<String> tfaComplete(int code, String verificationId) {
+    return ssoVerificationDatasource
+        .retrieveUserByVerificationId(verificationId)
         .thenCompose(
-            maybeUserId -> {
+            maybeUser -> {
               UUID userId =
-                  maybeUserId.orElseThrow(
-                      () -> Boom.badRequest().message("Session expired").exception());
+                  maybeUser.orElseThrow(
+                      () -> Boom.badRequest().message("Verification session expired").exception());
 
               return userTfaDatasource
                   .get(userId)
@@ -52,7 +53,9 @@ public class TfaService {
                             throw Boom.badRequest().message("Invalid code").exception();
                           }
 
-                          return ssoService.createSession(userId);
+                          return ssoVerificationDatasource
+                              .deleteVerificationId(verificationId)
+                              .thenCompose(ignored -> ssoService.createSession(userId));
                         } catch (GeneralSecurityException ex) {
                           log.error(
                               "[AUTH]: Something went wrong while validating TFA code for user={}",
@@ -64,7 +67,7 @@ public class TfaService {
             });
   }
 
-  public CompletionStage<TfaSetupStart> tfaSetupStart(UUID userId, String email) {
+  public CompletionStage<TfaSetupStartDTO> tfaSetupStart(UUID userId, String email) {
     log.info("[AUTH]: TFA setup request for user={}", userId);
     return userTfaDatasource
         .get(userId)
@@ -76,19 +79,19 @@ public class TfaService {
               }
 
               String secret = TimeBasedOneTimePasswordUtil.generateBase32Secret();
-              return tfaSetupDatasource
-                  .storeTfaSetupSecret(userId, secret)
+              return ssoVerificationDatasource
+                  .setTfaSetupSecret(userId, secret)
                   .thenApply(
                       nothing -> {
-                        String keyId = String.format("%s:%s", ISSUER, email);
-                        return new TfaSetupStart(generateQrImageUrl(keyId, secret, ISSUER));
+                        String keyId = String.format("%s:%s", issuer, email);
+                        return new TfaSetupStartDTO(generateQrImageUrl(keyId, secret, issuer));
                       });
             });
   }
 
   public CompletionStage<TfaSetup> tfaSetupComplete(UUID userId, int code) {
     log.info("[AUTH]: TFA setup complete request for user={}", userId);
-    return tfaSetupDatasource
+    return ssoVerificationDatasource
         .getTfaSetupSecret(userId)
         .thenCompose(
             maybeSecret -> {
@@ -130,8 +133,8 @@ public class TfaService {
         .store(userId, secret, transaction)
         .thenCompose(
             tfaSetup ->
-                tfaSetupDatasource
-                    .removeTfaSetupSecret(userId)
+                ssoVerificationDatasource
+                    .deleteTfaSetupSecret(userId)
                     .thenCompose(ignored1 -> transaction.commit().thenApply(ignored2 -> tfaSetup)));
   }
 
