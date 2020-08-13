@@ -30,9 +30,21 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install & build 🏗️
         run: |
-          yarn workspace @insight/shared-storybook storybook:build
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+          yarn install --frozen-lockfile
+          yarn concurrently "yarn workspace @insight/app storybook:build" "yarn workspace @insight/try storybook:build" "yarn workspace @insight/shared-storybook storybook:build"
+      - uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: frontend/app/storybook-static
+          TARGET_FOLDER: app/master
+      - uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: frontend/try/storybook-static
+          TARGET_FOLDER: try/master
+      - uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
