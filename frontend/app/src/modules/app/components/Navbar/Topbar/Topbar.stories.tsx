@@ -9,7 +9,7 @@ export default {
   decorators: [fullHeightDecorator],
 };
 
-export const Controlled = (props: Partial<Props>) => {
+export const Controlled = (props: Pick<Props, 'sidebarVisible'>) => {
   return <Topbar onMenuClick={action('onMenuClick')} {...props} />;
 };
 Controlled.args = { sidebarVisible: true };
