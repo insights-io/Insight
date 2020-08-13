@@ -7,7 +7,7 @@ import noop from 'lodash/noop';
 import DevTools from './DevTools';
 
 export default {
-  title: 'sessions|containers/DevTools',
+  title: 'sessions/containers/DevTools',
   decorators: [fullHeightDecorator],
 };
 

@@ -7,7 +7,7 @@ import { PLACEMENT } from 'baseui/tooltip';
 
 import NavbarItem from '../Item';
 
-type Props = {
+export type Props = {
   onMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   sidebarVisible: boolean;
 };

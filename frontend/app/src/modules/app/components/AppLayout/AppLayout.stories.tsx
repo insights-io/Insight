@@ -5,7 +5,7 @@ import { Block } from 'baseui/block';
 import AppLayout from './AppLayout';
 
 export default {
-  title: 'App|components/AppLayout',
+  title: 'App/components/AppLayout',
   decorators: [fullHeightDecorator],
 };
 

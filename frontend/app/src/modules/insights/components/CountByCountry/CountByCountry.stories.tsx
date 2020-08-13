@@ -4,7 +4,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import CountByCountry from './CountByCountry';
 
 export default {
-  title: 'insights|components/CountByCountry',
+  title: 'insights/components/CountByCountry',
   decorators: [fullHeightDecorator],
 };
 

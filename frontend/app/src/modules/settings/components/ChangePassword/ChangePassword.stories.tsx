@@ -5,7 +5,7 @@ import AuthApi from 'api/auth';
 import ChangePassword from './ChangePassword';
 
 export default {
-  title: 'settings|ChangePassword',
+  title: 'settings/components/ChangePassword',
 };
 
 export const Base = () => {

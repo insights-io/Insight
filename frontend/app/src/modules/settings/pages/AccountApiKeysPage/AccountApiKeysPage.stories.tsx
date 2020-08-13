@@ -5,7 +5,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import AccountApiKeysPage from './AccountApiKeysPage';
 
 export default {
-  title: 'settings|pages/AccountApiKeysPage',
+  title: 'settings/pages/AccountApiKeysPage',
   decorators: [fullHeightDecorator],
 };
 

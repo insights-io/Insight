@@ -4,7 +4,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import ErrorPage from './ErrorPage';
 
 export default {
-  title: 'app|pages/ErrorPage',
+  title: 'app/pages/ErrorPage',
   decorators: [fullHeightDecorator],
 };
 
