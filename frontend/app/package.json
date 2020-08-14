@@ -37,7 +37,7 @@
     "@amcharts/amcharts4-geodata": "4.1.17",
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
-    "baseui": "9.95.0",
+    "baseui": "9.95.1",
     "date-fns": "2.15.0",
     "jaeger-client": "3.18.1",
     "next": "9.5.2",
