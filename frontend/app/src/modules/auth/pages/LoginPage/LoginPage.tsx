@@ -61,7 +61,7 @@ const LoginPage = () => {
   return (
     <AuthPageLayout>
       <Head>
-        <title>Insight | Sign up</title>
+        <title>Insight | Login</title>
       </Head>
 
       <a
