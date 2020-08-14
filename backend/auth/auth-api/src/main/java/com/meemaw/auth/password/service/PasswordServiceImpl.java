@@ -7,7 +7,6 @@ import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
-import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -46,7 +45,7 @@ public class PasswordServiceImpl implements PasswordService {
       description = "A measure of how long it takes to verify a password")
   public CompletionStage<UserWithLoginInformation> verifyPassword(String email, String password) {
     log.info("[AUTH]: verify password request for user: {}", email);
-    return passwordDatasource
+    return userDatasource
         .findUserWithLoginInformation(email)
         .thenApply(
             maybeUserWithPasswordHash -> {
@@ -158,10 +157,7 @@ public class PasswordServiceImpl implements PasswordService {
         .thenApply(
             maybePasswordRequest ->
                 maybePasswordRequest.orElseThrow(
-                    () -> {
-                      throw new BoomException(
-                          Boom.notFound().message("Password reset request not found"));
-                    }))
+                    () -> Boom.notFound().message("Password reset request not found").exception()))
         .thenCompose(passwordResetRequest -> reset(passwordResetRequest, password));
   }
 
@@ -186,15 +182,12 @@ public class PasswordServiceImpl implements PasswordService {
       throw Boom.badRequest().message("Passwords must match!").exception();
     }
 
-    return passwordDatasource
+    return userDatasource
         .findUserWithLoginInformation(email)
         .thenCompose(
             maybeUserWithPasswordHash -> {
               UserWithLoginInformation withLoginInformation =
-                  maybeUserWithPasswordHash.orElseThrow(
-                      () -> {
-                        throw Boom.notFound().exception();
-                      });
+                  maybeUserWithPasswordHash.orElseThrow(() -> Boom.notFound().exception());
 
               /*
                * If user signed up with social login he does not have a password yet.

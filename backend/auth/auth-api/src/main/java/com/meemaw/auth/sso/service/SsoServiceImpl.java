@@ -10,6 +10,7 @@ import com.meemaw.auth.sso.model.SsoUser;
 import com.meemaw.auth.sso.model.VerificationLoginResult;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.Optional;
@@ -133,54 +134,72 @@ public class SsoServiceImpl implements SsoService {
     return passwordService
         .verifyPassword(email, password)
         .thenCompose(
-            userWithLoginInformation -> {
-              AuthUser user = userWithLoginInformation.user();
-              if (!userWithLoginInformation.isTfaConfigured()) {
-                return this.createSession(user)
-                    .thenApply(
-                        sessionId -> {
-                          log.info("[AUTH]: Successful login for user: {}", email);
-                          return new DirectLoginResult(sessionId);
-                        });
-              }
-              UUID userId = userWithLoginInformation.getId();
-              MDC.put(LoggingConstants.USER_ID, userId.toString());
-              MDC.put(
-                  LoggingConstants.ORGANIZATION_ID, userWithLoginInformation.getOrganizationId());
+            userWithLoginInformation ->
+                authenticate(
+                    userWithLoginInformation.user(), userWithLoginInformation.isTfaConfigured()));
+  }
 
-              log.info("[AUTH]: TFA challenge for user: {}", userId);
-              return ssoVerificationDatasource
-                  .createVerificationId(userId)
-                  .thenApply(VerificationLoginResult::new);
+  private CompletionStage<LoginResult> authenticate(AuthUser user, boolean requiresConfiguration) {
+    UUID userId = user.getId();
+    String organizationId = user.getOrganizationId();
+    MDC.put(LoggingConstants.USER_ID, userId.toString());
+    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+
+    if (!requiresConfiguration) {
+      return this.createSession(user)
+          .thenApply(
+              sessionId -> {
+                log.info("[AUTH]: Successful login for user={}", userId);
+                return new DirectLoginResult(sessionId);
+              });
+    }
+
+    return ssoVerificationDatasource
+        .createVerificationId(userId)
+        .thenApply(
+            verificationId -> {
+              log.info("[AUTH]: Verification {} for user {}", verificationId, userId);
+              return new VerificationLoginResult(verificationId);
             });
   }
 
   @Override
   @Traced
   @Timed(name = "socialLogin", description = "A measure of how long it takes to do social login")
-  public CompletionStage<String> socialLogin(String email, String fullName) {
+  public CompletionStage<LoginResult> socialLogin(String email, String fullName) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     log.info("[AUTH]: Social login attempt for user: {}", email);
     return socialFindOrSignUpUser(email, fullName)
-        .thenCompose(this::createSession)
+        .thenCompose(
+            userWithLoginInformation ->
+                authenticate(
+                    userWithLoginInformation.user(), userWithLoginInformation.isTfaConfigured()))
         .thenApply(
-            sessionId -> {
+            loginResult -> {
               log.info("[AUTH]: Successful social login for user: {}", email);
-              return sessionId;
+              return loginResult;
             });
   }
 
-  private CompletionStage<AuthUser> socialFindOrSignUpUser(String email, String fullName) {
+  private CompletionStage<UserWithLoginInformation> socialFindOrSignUpUser(
+      String email, String fullName) {
     return userDatasource
-        .findUser(email)
+        .findUserWithLoginInformation(email)
         .thenCompose(
-            maybeUser -> {
-              if (maybeUser.isPresent()) {
-                AuthUser user = maybeUser.get();
+            maybeUserWithLoginInformation -> {
+              if (maybeUserWithLoginInformation.isPresent()) {
+                UserWithLoginInformation user = maybeUserWithLoginInformation.get();
                 log.info("[AUTH]: Social login linked with an existing user: {}", user.getId());
                 return CompletableFuture.completedFuture(user);
               }
-              return signUpService.socialSignUp(email, fullName);
+
+              return signUpService
+                  .socialSignUp(email, fullName)
+                  .thenApply(
+                      authUser -> {
+                        log.info("[AUTH]: User email={} signed up through social sign in", email);
+                        return UserWithLoginInformation.fresh(authUser);
+                      });
             });
   }
 }

@@ -50,6 +50,16 @@ export const createAuthClient = (authApiBaseURL: string) => {
         })
         .json<DataResponse<LoginResponseDTO>>();
     },
+    tfaComplete: (
+      code: number,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky.post(`${baseURL}/v1/sso/verification/complete-tfa`, {
+        json: { code },
+        credentials: 'include',
+        ...rest,
+      });
+    },
     session: (
       sessionId: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}

@@ -19,4 +19,16 @@ public class UserWithLoginInformation {
   public AuthUser user() {
     return new UserDTO(id, email, fullName, role, organizationId, createdAt);
   }
+
+  public static UserWithLoginInformation fresh(AuthUser user) {
+    return new UserWithLoginInformation(
+        user.getId(),
+        user.getEmail(),
+        user.getFullName(),
+        user.getRole(),
+        user.getOrganizationId(),
+        user.getCreatedAt(),
+        null,
+        false);
+  }
 }

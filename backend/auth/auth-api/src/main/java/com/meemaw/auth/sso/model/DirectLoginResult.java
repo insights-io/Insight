@@ -1,15 +1,20 @@
 package com.meemaw.auth.sso.model;
 
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.NewCookie;
 import lombok.Value;
 
 @Value
-public class DirectLoginResult implements LoginResult {
+public class DirectLoginResult implements LoginResult<Boolean> {
 
   String sessionId;
 
   @Override
-  public Response response(String cookieDomain) {
-    return SsoSession.cookieResponse(sessionId, cookieDomain);
+  public Boolean getData() {
+    return true;
+  }
+
+  @Override
+  public NewCookie cookie(String cookieDomain) {
+    return SsoSession.cookie(sessionId, cookieDomain);
   }
 }

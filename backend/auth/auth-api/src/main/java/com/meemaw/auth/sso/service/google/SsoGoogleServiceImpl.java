@@ -86,9 +86,9 @@ public class SsoGoogleServiceImpl implements SsoGoogleService {
               return ssoService
                   .socialLogin(email, fullName)
                   .thenApply(
-                      sessionId -> {
+                      loginResult -> {
                         log.info("[AUTH]: User authenticated via Google OAuth email: {}", email);
-                        return new SsoSocialLogin(sessionId, location, cookieDomain);
+                        return new SsoSocialLogin(loginResult, location, cookieDomain);
                       });
             });
   }

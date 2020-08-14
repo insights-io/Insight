@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.SsoVerification;
 import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
 import com.meemaw.auth.sso.service.SsoTfaService;
+import com.meemaw.auth.sso.service.exception.VerificationSessionExpiredException;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -45,6 +46,15 @@ public class SsoVerificationResourceImpl implements SsoVerificationResource {
             sessionId ->
                 SsoSession.cookieResponseBuilder(sessionId, cookieDomain)
                     .cookie(SsoVerification.clearCookie(cookieDomain))
-                    .build());
+                    .build())
+        .exceptionally(
+            throwable -> {
+              if (throwable.getCause() instanceof VerificationSessionExpiredException) {
+                return ((VerificationSessionExpiredException) throwable.getCause())
+                    .response(cookieDomain);
+              }
+
+              throw (RuntimeException) throwable;
+            });
   }
 }

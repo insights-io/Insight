@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.resource.v1.google;
 
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.model.LoginResult;
 import com.meemaw.auth.sso.service.google.SsoGoogleService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
@@ -47,13 +47,13 @@ public class SsoGoogleResourceImpl implements SsoGoogleResource {
         .oauth2callback(state, sessionState, code, getRedirectUri())
         .thenApply(
             ssoSocialLogin -> {
+              LoginResult<?> loginResult = ssoSocialLogin.getLoginResult();
               String location = ssoSocialLogin.getLocation();
-              String sessionId = ssoSocialLogin.getSessionId();
               String cookieDomain = ssoSocialLogin.getCookieDomain();
 
               return Response.status(Status.FOUND)
                   .header("Location", location)
-                  .cookie(SsoSession.cookie(sessionId, cookieDomain))
+                  .cookie(loginResult.cookie(cookieDomain))
                   .build();
             });
   }

@@ -3,12 +3,14 @@ package com.meemaw.auth.sso.service;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import com.meemaw.auth.sso.datasource.SsoVerificationDatasource;
 import com.meemaw.auth.sso.model.dto.TfaSetupStartDTO;
+import com.meemaw.auth.sso.service.exception.VerificationSessionExpiredException;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.TfaSetup;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.security.GeneralSecurityException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -35,7 +37,10 @@ public class SsoTfaService {
             maybeUser -> {
               UUID userId =
                   maybeUser.orElseThrow(
-                      () -> Boom.badRequest().message("Verification session expired").exception());
+                      () -> {
+                        log.info("[AUTH]: Verification session {} expired", verificationId);
+                        throw new VerificationSessionExpiredException();
+                      });
 
               return userTfaDatasource
                   .get(userId)
@@ -43,14 +48,24 @@ public class SsoTfaService {
                       maybeTfaSetup -> {
                         TfaSetup tfaSetup =
                             maybeTfaSetup.orElseThrow(
-                                () -> Boom.badRequest().message("TFA not configured").exception());
+                                () -> {
+                                  log.info(
+                                      "[AUTH]: TFA complete attempt for user={} with no TFA configured",
+                                      userId);
+                                  throw Boom.badRequest().message("TFA not configured").exception();
+                                });
 
                         try {
+                          String base32secret = tfaSetup.getSecret();
                           boolean isValid =
                               TimeBasedOneTimePasswordUtil.validateCurrentNumber(
-                                  tfaSetup.getSecret(), code, 0);
+                                  base32secret, code, 0);
                           if (!isValid) {
-                            throw Boom.badRequest().message("Invalid code").exception();
+                            log.info(
+                                "[AUTH]: Invalid code for TFA verification for user={}", userId);
+                            throw Boom.badRequest()
+                                .errors(Map.of("code", "Invalid code"))
+                                .exception();
                           }
 
                           return ssoVerificationDatasource

@@ -290,6 +290,18 @@ public class SsoVerificationResourceImplTest {
         .body(sameJson(String.format("{\"data\": {\"verificationId\": \"%s\"}}", verificationId)))
         .cookie(SsoVerification.COOKIE_NAME, verificationId);
 
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoVerification.COOKIE_NAME, verificationId)
+        .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(10)))
+        .post(SsoVerificationResourceImpl.PATH + "/complete-tfa")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
+
     response =
         given()
             .when()
@@ -328,6 +340,7 @@ public class SsoVerificationResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Verification session expired\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Verification session expired\"}}"))
+        .cookie(SsoVerification.COOKIE_NAME, "");
   }
 }
