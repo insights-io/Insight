@@ -77,8 +77,8 @@ public class SqlSignUpDatasource implements SignUpDatasource {
   @Override
   @Traced
   public CompletionStage<Boolean> deleteSignUpRequest(UUID token, SqlTransaction transaction) {
-    Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token));
-    return transaction.query(query).thenApply(pgRowSet -> true);
+    Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token)).returning(TOKEN);
+    return transaction.query(query).thenApply(rows -> rows.iterator().hasNext());
   }
 
   @Override

@@ -60,6 +60,49 @@ export const createAuthClient = (authApiBaseURL: string) => {
         ...rest,
       });
     },
+    tfaSetupStart: ({
+      baseURL = authApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .get(`${baseURL}/v1/user/tfa/setup`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<{ qrImage: string }>>();
+    },
+    tfaSetupComplete: (
+      code: number,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .post(`${baseURL}/v1/user/tfa/setup`, {
+          json: { code },
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<{ createdAt: string }>>();
+    },
+    tfaDisable: ({
+      baseURL = authApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .delete(`${baseURL}/v1/user/tfa`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<boolean>>();
+    },
+    tfa: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+      return ky
+        .get(`${baseURL}/v1/user/tfa`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<{ createdAt: string }>>()
+        .then((response) => response.data);
+    },
     session: (
       sessionId: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}

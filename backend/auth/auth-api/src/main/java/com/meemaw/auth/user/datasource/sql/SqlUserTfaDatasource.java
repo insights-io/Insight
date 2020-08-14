@@ -17,6 +17,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -26,12 +27,22 @@ public class SqlUserTfaDatasource implements UserTfaDatasource {
   @Inject SqlPool sqlPool;
 
   @Override
+  @Traced
   public CompletionStage<Optional<TfaSetup>> get(UUID userId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(USER_ID.eq(userId));
     return sqlPool.execute(query).thenApply(SqlUserTfaDatasource::maybeMapTfaSetup);
   }
 
   @Override
+  @Traced
+  public CompletionStage<Boolean> delete(UUID userId) {
+    Query query =
+        sqlPool.getContext().deleteFrom(TABLE).where(USER_ID.eq(userId)).returning(CREATED_AT);
+    return sqlPool.execute(query).thenApply(rows -> rows.iterator().hasNext());
+  }
+
+  @Override
+  @Traced
   public CompletionStage<TfaSetup> store(UUID userId, String secret, SqlTransaction transaction) {
     Query query =
         sqlPool

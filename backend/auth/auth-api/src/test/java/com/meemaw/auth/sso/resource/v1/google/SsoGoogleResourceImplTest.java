@@ -15,11 +15,10 @@ import com.meemaw.auth.sso.model.SsoVerification;
 import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
-import com.meemaw.auth.sso.resource.v1.SsoVerificationResourceImpl;
 import com.meemaw.auth.sso.service.google.SsoGoogleClient;
 import com.meemaw.auth.sso.service.google.SsoGoogleService;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.shared.rest.response.DataResponse;
+import com.meemaw.auth.user.resource.v1.UserTfaResource;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.setup.SsoTestSetupUtils;
@@ -27,13 +26,11 @@ import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -256,15 +253,12 @@ public class SsoGoogleResourceImplTest {
     String password = "sso-login-tfa-full-flow";
     String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
 
-    DataResponse<Map<String, String>> dataResponse =
-        given()
-            .when()
-            .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(SsoVerificationResourceImpl.PATH + "/setup-tfa")
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(new TypeRef<>() {});
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .get(UserTfaResource.PATH + "/setup")
+        .then()
+        .statusCode(200);
 
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     String secret =
@@ -276,10 +270,9 @@ public class SsoGoogleResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+        .statusCode(200);
 
     QuarkusMock.installMockForInstance(new MockedSsoGoogleClient(email), ssoGoogleClient);
     String state = ssoGoogleService.secureState("https://www.insight.io/my_path");

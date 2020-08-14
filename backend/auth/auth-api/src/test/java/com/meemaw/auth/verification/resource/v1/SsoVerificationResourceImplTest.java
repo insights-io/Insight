@@ -13,9 +13,14 @@ import com.meemaw.auth.sso.datasource.SsoVerificationDatasource;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.SsoVerification;
 import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
+import com.meemaw.auth.sso.model.dto.TfaSetupStartDTO;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.sso.resource.v1.SsoVerificationResourceImpl;
 import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.auth.user.datasource.UserTfaDatasource;
+import com.meemaw.auth.user.model.dto.TfaSetupDTO;
+import com.meemaw.auth.user.resource.v1.UserTfaResource;
+import com.meemaw.shared.io.IoUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.SsoTestSetupUtils;
@@ -25,8 +30,8 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -42,13 +47,14 @@ public class SsoVerificationResourceImplTest {
   @Inject SsoVerificationDatasource verificationDatasource;
   @Inject MockMailbox mailbox;
   @Inject ObjectMapper objectMapper;
+  @Inject UserTfaDatasource userTfaDatasource;
 
   @Test
   public void get_setup_tfa__should_throw__when_not_authenticated() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
-        .get(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .get(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(401)
         .body(
@@ -61,7 +67,7 @@ public class SsoVerificationResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(401)
         .body(
@@ -74,7 +80,7 @@ public class SsoVerificationResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(415)
         .body(
@@ -88,7 +94,7 @@ public class SsoVerificationResourceImplTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(400)
         .body(
@@ -103,7 +109,7 @@ public class SsoVerificationResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
         .body("{}")
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(400)
         .body(
@@ -126,7 +132,7 @@ public class SsoVerificationResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(10)))
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(400)
         .body(
@@ -189,17 +195,16 @@ public class SsoVerificationResourceImplTest {
   }
 
   @Test
-  public void setup_tfa__should_work__on_full_flow()
-      throws JsonProcessingException, GeneralSecurityException {
+  public void setup_tfa__should_work__on_full_flow() throws IOException, GeneralSecurityException {
     String email = "setup-tfa-full-flow@gmail.com";
     String password = "setup-tfa-full-flow";
     String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
 
-    DataResponse<Map<String, String>> dataResponse =
+    DataResponse<TfaSetupStartDTO> dataResponse =
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+            .get(UserTfaResource.PATH + "/setup")
             .then()
             .statusCode(200)
             .extract()
@@ -208,15 +213,16 @@ public class SsoVerificationResourceImplTest {
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     String secret =
         verificationDatasource.getTfaSetupSecret(userId).toCompletableFuture().join().get();
-    String qrImageUrl = dataResponse.getData().get("qrImageUrl");
+    String qrImage = dataResponse.getData().getQrImage();
 
-    assertEquals(
+    String expectedQrImageUrl =
         "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=200x200&chld=M|0&cht=qr&chl=otpauth://totp/Insight:"
             + email
             + "?secret="
             + secret
-            + "&issuer=Insight",
-        qrImageUrl);
+            + "&issuer=Insight";
+
+    assertEquals(IoUtils.base64encodeImage(expectedQrImageUrl), qrImage);
 
     // Fails on invalid code
     given()
@@ -224,7 +230,7 @@ public class SsoVerificationResourceImplTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(15)))
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(400)
         .body(
@@ -234,22 +240,26 @@ public class SsoVerificationResourceImplTest {
     int tfaCode = (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret);
 
     // Works on valid code
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+    Response response =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
+            .post(UserTfaResource.PATH + "/setup");
+
+    DataResponse<TfaSetupDTO> responseData = response.as(new TypeRef<>() {});
+    response
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+        .body(sameJson(JacksonMapper.get().writeValueAsString(responseData)));
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(10)))
-        .post(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .post(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(400)
         .body(
@@ -259,7 +269,7 @@ public class SsoVerificationResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .get(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(400)
         .body(
@@ -274,7 +284,7 @@ public class SsoVerificationResourceImplTest {
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
 
-    Response response =
+    response =
         given()
             .when()
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -322,7 +332,7 @@ public class SsoVerificationResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(SsoVerificationResourceImpl.PATH + "/setup-tfa")
+        .get(UserTfaResource.PATH + "/setup")
         .then()
         .statusCode(400)
         .body(

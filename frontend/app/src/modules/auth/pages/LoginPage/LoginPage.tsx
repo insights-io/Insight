@@ -33,6 +33,7 @@ const LoginPage = () => {
   const inputOverrides = createInputOverrides(theme);
   const { dest = '/' } = router.query;
   const [formError, setFormError] = useState<APIError | undefined>();
+  const encodedDestination = encodeURIComponent(dest as string);
 
   const onSubmit = handleSubmit((formData) => {
     if (isSubmitting) {
@@ -46,9 +47,7 @@ const LoginPage = () => {
         if (response.data === true) {
           router.replace(dest as string);
         } else {
-          router.replace(
-            `/login/verification?dest=${encodeURIComponent(dest as string)}`
-          );
+          router.replace(`/login/verification?dest=${encodedDestination}`);
         }
       })
       .catch(async (error) => {
@@ -65,7 +64,7 @@ const LoginPage = () => {
       </Head>
 
       <a
-        href={`${authApiBaseURL}/v1/sso/google/signin?dest=${dest}`}
+        href={`${authApiBaseURL}/v1/sso/google/signin?dest=${encodedDestination}`}
         style={{ textDecoration: 'none' }}
       >
         <Button

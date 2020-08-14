@@ -10,5 +10,7 @@ public interface UserTfaDatasource {
 
   CompletionStage<Optional<TfaSetup>> get(UUID userId);
 
+  CompletionStage<Boolean> delete(UUID userId);
+
   CompletionStage<TfaSetup> store(UUID userId, String secret, SqlTransaction sqlTransaction);
 }

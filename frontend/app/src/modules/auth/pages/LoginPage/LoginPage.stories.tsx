@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
-import { ResponsePromise } from 'ky';
+import { DataResponse } from '@insight/types';
 
 import Login from './LoginPage';
 
@@ -16,8 +16,8 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox.stub(AuthApi.sso, 'login').callsFake(() => {
       return new Promise((resolve) =>
-        setTimeout(resolve, 10)
-      ) as ResponsePromise;
+        setTimeout(() => resolve({ data: true }), 10)
+      );
     });
   },
 });
@@ -36,7 +36,7 @@ InvalidPassword.story = configureStory({
 
       return new Promise((_resolve, reject) =>
         setTimeout(() => reject(error), 10)
-      ) as ResponsePromise;
+      ) as Promise<DataResponse<boolean>>;
     });
   },
 });

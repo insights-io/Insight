@@ -6,9 +6,11 @@ import com.meemaw.auth.sso.model.dto.TfaSetupStartDTO;
 import com.meemaw.auth.sso.service.exception.VerificationSessionExpiredException;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.TfaSetup;
+import com.meemaw.shared.io.IoUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.UUID;
@@ -21,6 +23,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 @Slf4j
 public class SsoTfaService {
+
+  private static final Map<String, String> INVALID_CODE_ERRORS = Map.of("code", "Invalid code");
 
   @ConfigProperty(name = "sso.verification.issuer")
   String issuer;
@@ -63,9 +67,7 @@ public class SsoTfaService {
                           if (!isValid) {
                             log.info(
                                 "[AUTH]: Invalid code for TFA verification for user={}", userId);
-                            throw Boom.badRequest()
-                                .errors(Map.of("code", "Invalid code"))
-                                .exception();
+                            throw Boom.badRequest().errors(INVALID_CODE_ERRORS).exception();
                           }
 
                           return ssoVerificationDatasource
@@ -79,6 +81,19 @@ public class SsoTfaService {
                           throw Boom.serverError().exception(ex);
                         }
                       });
+            });
+  }
+
+  public CompletionStage<Boolean> tfaSetupDisable(UUID userId) {
+    log.info("[AUTH]: TFA setup disable request for user={}", userId);
+    return userTfaDatasource
+        .delete(userId)
+        .thenApply(
+            deleted -> {
+              if (deleted) {
+                log.info("[AUTH]: TFA setup disabled for user={}", userId);
+              }
+              return deleted;
             });
   }
 
@@ -99,7 +114,14 @@ public class SsoTfaService {
                   .thenApply(
                       nothing -> {
                         String keyId = String.format("%s:%s", issuer, email);
-                        return new TfaSetupStartDTO(generateQrImageUrl(keyId, secret, issuer));
+                        String imageURL = generateQrImageUrl(keyId, secret, issuer);
+                        try {
+                          return new TfaSetupStartDTO(IoUtils.base64encodeImage(imageURL));
+                        } catch (IOException ex) {
+                          log.error(
+                              "[AUTH]: Failed to Base64 encode TFA QR image={}", imageURL, ex);
+                          throw Boom.serverError().exception(ex);
+                        }
                       });
             });
   }
@@ -121,7 +143,7 @@ public class SsoTfaService {
 
                 if (!isValid) {
                   log.debug("[AUTH]: TFA setup complete invalid code for user={}", userId);
-                  throw Boom.badRequest().message("Invalid code").exception();
+                  throw Boom.badRequest().errors(INVALID_CODE_ERRORS).exception();
                 }
 
                 return sqlPool
