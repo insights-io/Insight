@@ -41,6 +41,14 @@ import org.jooq.Query;
 @Slf4j
 public class SqlUserDatasource implements UserDatasource {
 
+  private static final List<Field<?>> USER_WITH_LOGIN_INFORMATION_FIELDS =
+      Stream.concat(
+              UserTable.TABLE_FIELDS.stream(),
+              Stream.of(
+                  PasswordTable.tableAliasField(HASH),
+                  TFASetupTable.tableAliasField(TFASetupTable.SECRET)))
+          .collect(Collectors.toUnmodifiableList());
+
   @Inject SqlPool sqlPool;
 
   @Override
@@ -106,14 +114,6 @@ public class SqlUserDatasource implements UserDatasource {
         row.getString(ORGANIZATION_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
-
-  private static final List<Field<?>> USER_WITH_LOGIN_INFORMATION_FIELDS =
-      Stream.concat(
-              UserTable.TABLE_FIELDS.stream(),
-              Stream.of(
-                  PasswordTable.tableAliasField(HASH),
-                  TFASetupTable.tableAliasField(TFASetupTable.SECRET)))
-          .collect(Collectors.toUnmodifiableList());
 
   @Override
   @Traced

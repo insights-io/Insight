@@ -84,6 +84,17 @@ public class SsoTfaService {
             });
   }
 
+  private CompletionStage<TfaSetup> tfaComplete(
+      UUID userId, String secret, SqlTransaction transaction) {
+    return userTfaDatasource
+        .store(userId, secret, transaction)
+        .thenCompose(
+            tfaSetup ->
+                ssoVerificationDatasource
+                    .deleteTfaSetupSecret(userId)
+                    .thenCompose(ignored1 -> transaction.commit().thenApply(ignored2 -> tfaSetup)));
+  }
+
   public CompletionStage<Boolean> tfaSetupDisable(UUID userId) {
     log.info("[AUTH]: TFA setup disable request for user={}", userId);
     return userTfaDatasource
@@ -159,20 +170,9 @@ public class SsoTfaService {
                     "[AUTH]: Something went wrong while trying to complete TFA setup for user={}",
                     userId,
                     ex);
-                throw Boom.serverError().message(ex.getMessage()).exception();
+                throw Boom.serverError().message(ex.getMessage()).exception(ex);
               }
             });
-  }
-
-  private CompletionStage<TfaSetup> tfaComplete(
-      UUID userId, String secret, SqlTransaction transaction) {
-    return userTfaDatasource
-        .store(userId, secret, transaction)
-        .thenCompose(
-            tfaSetup ->
-                ssoVerificationDatasource
-                    .deleteTfaSetupSecret(userId)
-                    .thenCompose(ignored1 -> transaction.commit().thenApply(ignored2 -> tfaSetup)));
   }
 
   private String generateQrImageUrl(String keyId, String secret, String issuer) {

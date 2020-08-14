@@ -235,7 +235,7 @@ public class SsoVerificationResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Invalid code\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
 
     int tfaCode = (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret);
 

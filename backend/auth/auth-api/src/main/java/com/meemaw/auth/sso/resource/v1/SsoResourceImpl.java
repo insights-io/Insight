@@ -26,7 +26,7 @@ public class SsoResourceImpl implements SsoResource {
 
     return ssoService
         .login(email, password, ipAddress)
-        .thenApply(loginResult -> loginResult.response(cookieDomain));
+        .thenApply(loginResult -> loginResult.loginResponse(cookieDomain));
   }
 
   @Override
