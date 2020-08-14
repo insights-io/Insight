@@ -1,4 +1,12 @@
-# try
+# Try
+
+[![storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://insights-io.github.io/Insight/try/storybook/master/)
+
+Sign up page for Insight. Deployed on a separate domain: https://try.insight.<>
+
+## Storybook
+
+You can find up to date Storybooks [here](https://insights-io.github.io/Insight/try/storybook/master/).
 
 ## Testing with locally build tracking script
 
