@@ -10,4 +10,5 @@ export type APIError = {
   statusCode: number;
   reason: string;
   message: string;
+  errors?: Record<string, string>;
 };

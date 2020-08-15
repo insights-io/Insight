@@ -5,6 +5,7 @@ import { User } from '@insight/types';
 import { useStyletron } from 'baseui';
 
 import ChangePassword from '../ChangePassword';
+import Security from '../Security';
 
 type Props = {
   user: User | undefined;
@@ -16,20 +17,26 @@ const UserSettings = ({ user, loading }: Props) => {
 
   return (
     <Block display="flex">
-      <Block display="flex" flex="1">
-        <Block width="100%" height="fit-content">
-          <Table
-            isLoading={loading}
-            columns={['User Information']}
-            data={[
-              ['Full name', user?.fullName],
-              ['Email', user?.email],
-              ['Organization ID', user?.organizationId],
-              ['Member since', user?.createdAt.toLocaleDateString()],
-            ]}
-          />
+      <Block display="flex" flexDirection="column" flex="1">
+        <Block display="flex" flex="1">
+          <Block width="100%" height="fit-content">
+            <Table
+              isLoading={loading}
+              columns={['User Information']}
+              data={[
+                ['Full name', user?.fullName],
+                ['Email', user?.email],
+                ['Organization ID', user?.organizationId],
+                ['Member since', user?.createdAt.toLocaleDateString()],
+              ]}
+            />
+          </Block>
+        </Block>
+        <Block>
+          <Security />
         </Block>
       </Block>
+
       <ChangePassword
         overrides={{
           Root: {

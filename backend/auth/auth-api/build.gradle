@@ -8,6 +8,7 @@ dependencies {
     implementation 'io.smallrye.reactive:smallrye-mutiny-vertx-web-client'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation "com.hazelcast:hazelcast:${hazelcastVersion}"
+    implementation 'com.j256.two-factor-auth:two-factor-auth:1.0'
     implementation project(":auth:auth-cookie")
     implementation project(":auth:auth-api-contracts")
     implementation project(":shared:rest-api")

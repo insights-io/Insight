@@ -10,8 +10,8 @@ import {
   signInButton,
   getLocation,
   forgotPasswordButton,
-} from '../utils';
-import config from '../config';
+} from '../../utils';
+import config from '../../config';
 
 fixture('/login').page(config.appBaseURL);
 

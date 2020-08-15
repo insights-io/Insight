@@ -18,6 +18,6 @@ public class PostgresFlywayTestContainer<SELF extends PostgresFlywayTestContaine
         .withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS)
         .withLogConsumer(new Slf4jLogConsumer(log))
         .waitingFor(
-            Wait.forLogMessage("^Successfully applied (.*) migration to schema \"(.*)\".*$", 1));
+            Wait.forLogMessage("^Successfully applied (.*) migrations? to schema \"(.*)\".*$", 1));
   }
 }

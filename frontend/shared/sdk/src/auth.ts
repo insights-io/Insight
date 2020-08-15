@@ -14,6 +14,8 @@ import {
 
 import { RequestOptions } from './types';
 
+type LoginResponseDTO = boolean | { verificationId: string };
+
 export const mapUser = (user: User | UserDTO): User => {
   return { ...user, createdAt: new Date(user.createdAt) };
 };
@@ -40,11 +42,77 @@ export const createAuthClient = (authApiBaseURL: string) => {
       const body = new URLSearchParams();
       body.set('email', email);
       body.set('password', password);
-      return ky.post(`${baseURL}/v1/sso/login`, {
-        body,
+      return ky
+        .post(`${baseURL}/v1/sso/login`, {
+          body,
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<LoginResponseDTO>>();
+    },
+    tfaComplete: (
+      code: number,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky.post(`${baseURL}/v1/sso/verification/complete-tfa`, {
+        json: { code },
         credentials: 'include',
         ...rest,
       });
+    },
+    tfaSetupStart: ({
+      baseURL = authApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .get(`${baseURL}/v1/user/tfa/setup`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<{ qrImage: string }>>();
+    },
+    tfaSetupComplete: (
+      code: number,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .post(`${baseURL}/v1/user/tfa/setup`, {
+          json: { code },
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<{ createdAt: string }>>();
+    },
+    tfaDisable: ({
+      baseURL = authApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .delete(`${baseURL}/v1/user/tfa`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<boolean>>();
+    },
+    tfa: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+      return ky
+        .get(`${baseURL}/v1/user/tfa`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<{ createdAt: string }>>()
+        .then((response) => response.data);
+    },
+    verification: (
+      verificationId: string,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .get(`${baseURL}/v1/sso/verification`, {
+          searchParams: { id: verificationId },
+          ...rest,
+        })
+        .json<DataResponse<boolean>>();
     },
     session: (
       sessionId: string,

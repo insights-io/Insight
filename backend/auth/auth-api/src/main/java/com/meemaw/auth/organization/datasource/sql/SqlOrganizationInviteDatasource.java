@@ -85,8 +85,8 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
   @Override
   @Traced
   public CompletionStage<Boolean> delete(UUID token) {
-    Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token));
-    return sqlPool.execute(query).thenApply(pgRowSet -> true);
+    Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token)).returning(TOKEN);
+    return sqlPool.execute(query).thenApply(pgRowSet -> pgRowSet.iterator().hasNext());
   }
 
   @Override

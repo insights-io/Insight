@@ -15,6 +15,7 @@ import io.quarkus.mailer.MockMailbox;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
@@ -27,6 +28,8 @@ public final class SsoTestSetupUtils {
   public static final String INSIGHT_ORGANIZATION_ID = "000000";
   public static final String INSIGHT_ADMIN_EMAIL = "admin@insight.io";
   public static final String INSIGHT_ADMIN_PASSWORD = "superDuperPassword123";
+  public static final UUID INSIGHT_ADMIN_ID =
+      UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b");
 
   private SsoTestSetupUtils() {}
 
@@ -83,7 +86,11 @@ public final class SsoTestSetupUtils {
             .when()
             .get(parseLink(mailbox.getMessagesSentTo(signUpRequestDTO.getEmail()).get(0)));
 
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
+    response
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
+        .cookie(SsoSession.COOKIE_NAME);
     return extractSessionCookie(response).getValue();
   }
 
@@ -144,7 +151,11 @@ public final class SsoTestSetupUtils {
             .param("password", password)
             .post(uri);
 
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
+    response
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
+        .cookie(SsoSession.COOKIE_NAME);
     return extractSessionCookie(response).getValue();
   }
 

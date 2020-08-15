@@ -4,17 +4,21 @@ import java.util.Objects;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@AllArgsConstructor
-public class DataResponse<T> {
+@EqualsAndHashCode(callSuper = true)
+public class DataResponse<T> extends OkDataResponse<T> {
 
-  T data;
   Boom<?> error;
+
+  public DataResponse(T data, Boom boom) {
+    super(data);
+    this.error = boom;
+  }
 
   public static <T> DataResponse<T> data(T data) {
     return new DataResponse<>(Objects.requireNonNull(data), null);
@@ -40,7 +44,6 @@ public class DataResponse<T> {
     return Response.status(statusCode).entity(this).type(MediaType.APPLICATION_JSON);
   }
 
-  /** @return */
   public Response.ResponseBuilder builder() {
     return Response.status(Objects.requireNonNull(error).getStatusCode())
         .entity(this)

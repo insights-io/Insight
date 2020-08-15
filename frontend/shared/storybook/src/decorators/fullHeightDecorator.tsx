@@ -8,11 +8,11 @@ function fullHeightDecorator<T>(storyFn: StoryFn<T>, context: StoryContext) {
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
           __html: `
-            html, body, #root, #root > div:first-child { height: 100%; }
-            .sb-show-main { margin: 0px; }
+            html, body, #root, #root > div:first-child { height: 100% !important; }
+            .sb-show-main { margin: 0px !important; padding: 0px !important; }
             #root > div:first-child {
-              display: flex;
-              flex-direction: column;
+              display: flex !important;
+              flex-direction: column !important;
             }
         `,
         }}

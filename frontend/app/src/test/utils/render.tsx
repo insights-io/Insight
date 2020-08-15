@@ -10,7 +10,7 @@ import { sandbox } from '@insight/testing';
 
 type RenderOptions = Partial<BaseRouter>;
 
-type RenderableComponent<
+export type RenderableComponent<
   Props,
   T,
   S extends StoryConfiguration<T>

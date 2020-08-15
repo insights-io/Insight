@@ -27,6 +27,7 @@ public interface SsoResource {
   @POST
   @Path("login")
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(MediaType.APPLICATION_JSON)
   CompletionStage<Response> login(
       @NotBlank(message = "Required") @Email @FormParam("email") String email,
       @Password @FormParam("password") String password);

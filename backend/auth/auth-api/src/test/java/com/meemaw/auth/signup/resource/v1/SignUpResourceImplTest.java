@@ -199,7 +199,8 @@ public class SignUpResourceImplTest {
         .when()
         .get(String.join("/", SignUpResource.PATH, token, "complete"))
         .then()
-        .statusCode(204)
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
         .cookie(SsoSession.COOKIE_NAME);
 
     // verify that the SignUpRequest does not exist anymore
