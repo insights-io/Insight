@@ -29,7 +29,7 @@ const emailSentMessage = getByText(
 test('Should be able to complete full TFA flo after password reset', async (t) => {
   await t.expect(getLocation()).eql(`${config.appBaseURL}/login?dest=%2F`);
   const password = uuid();
-  const email = `loginverificationpasswordresetfullflow+${uuid()}@gmail.com`;
+  const email = `${uuid()}@gmail.com`;
   await signUpAndLogin(t, {
     fullName: 'Miha Novak',
     company: 'Insight',
@@ -96,7 +96,7 @@ test('Should be able to complete full TFA flow', async (t) => {
   await t.expect(getLocation()).eql(`${config.appBaseURL}/login?dest=%2F`);
 
   const password = uuid();
-  const email = `loginverificationfullflow+${uuid()}@gmail.com`;
+  const email = `${uuid()}@gmail.com`;
   await signUpAndLogin(t, {
     fullName: 'Miha Novak',
     company: 'Insight',
