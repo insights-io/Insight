@@ -103,6 +103,17 @@ export const createAuthClient = (authApiBaseURL: string) => {
         .json<DataResponse<{ createdAt: string }>>()
         .then((response) => response.data);
     },
+    verification: (
+      verificationId: string,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .get(`${baseURL}/v1/sso/verification`, {
+          searchParams: { id: verificationId },
+          ...rest,
+        })
+        .json<DataResponse<boolean>>();
+    },
     session: (
       sessionId: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}

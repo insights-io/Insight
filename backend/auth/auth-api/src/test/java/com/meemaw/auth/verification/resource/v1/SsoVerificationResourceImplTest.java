@@ -16,11 +16,13 @@ import com.meemaw.auth.sso.model.SsoVerification;
 import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
 import com.meemaw.auth.sso.model.dto.TfaSetupStartDTO;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.resource.v1.SsoVerificationResource;
 import com.meemaw.auth.sso.resource.v1.SsoVerificationResourceImpl;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.dto.TfaSetupDTO;
 import com.meemaw.auth.user.resource.v1.UserTfaResource;
+import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.io.IoUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
@@ -49,6 +51,32 @@ public class SsoVerificationResourceImplTest {
   @Inject MockMailbox mailbox;
   @Inject ObjectMapper objectMapper;
   @Inject UserTfaDatasource userTfaDatasource;
+
+  @Test
+  public void get_verification__should_throw__when_no_verification_cookie() {
+    given()
+        .when()
+        .get(SsoVerificationResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"id\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void get_verification__should_throw_and_clear_cookie__when_missing_verification() {
+    given()
+        .when()
+        .queryParam("id", "random")
+        .get(SsoVerificationResource.PATH)
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"))
+        .cookie(SsoVerification.COOKIE_NAME, "");
+  }
 
   @Test
   public void get_setup_tfa__should_throw__when_not_authenticated() {
@@ -201,27 +229,8 @@ public class SsoVerificationResourceImplTest {
     String email = "tfa-complete-not-configured-flow@gmail.com";
     String password = "tfa-complete-not-configured-flow";
     String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
-
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(UserTfaResource.PATH + "/setup")
-        .then()
-        .statusCode(200);
-
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret =
-        verificationDatasource.getTfaSetupSecret(userId).toCompletableFuture().join().get();
-    int tfaCode = (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret);
-
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
-        .post(UserTfaResource.PATH + "/setup")
-        .then()
-        .statusCode(200);
+    String secret = AuthApiSetupUtils.setupTfa(userId, sessionId, verificationDatasource);
 
     given()
         .when()
@@ -248,7 +257,11 @@ public class SsoVerificationResourceImplTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoVerification.COOKIE_NAME, verificationId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(
+                    new TfaCompleteDTO(
+                        (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret))))
         .post(SsoVerificationResourceImpl.PATH + "/complete-tfa")
         .then()
         .statusCode(400)

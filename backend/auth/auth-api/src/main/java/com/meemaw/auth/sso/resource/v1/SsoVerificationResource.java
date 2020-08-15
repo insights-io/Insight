@@ -8,9 +8,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -27,4 +29,7 @@ public interface SsoVerificationResource {
       @NotBlank(message = "Required") @CookieParam(SsoVerification.COOKIE_NAME)
           String verificationId,
       @NotNull(message = "Required") @Valid TfaCompleteDTO body);
+
+  @GET
+  CompletionStage<Response> get(@NotNull(message = "Required") @QueryParam("id") String id);
 }

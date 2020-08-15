@@ -10,11 +10,18 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
+import com.meemaw.auth.sso.datasource.SsoVerificationDatasource;
 import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.model.SsoVerification;
+import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.resource.v1.SsoVerificationResourceImpl;
+import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
@@ -22,6 +29,7 @@ import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -53,8 +61,9 @@ public class PasswordResourceImplTest {
       String.join("/", PasswordResource.PATH, "password_reset", "%s", "exists");
 
   @Inject MockMailbox mailbox;
-
   @Inject ObjectMapper objectMapper;
+  @Inject UserDatasource userDatasource;
+  @Inject SsoVerificationDatasource verificationDatasource;
 
   @BeforeEach
   void init() {
@@ -264,6 +273,64 @@ public class PasswordResourceImplTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Password reset request not found\"}}"));
+  }
+
+  @Test
+  public void password_reset_flow__should_require_verification__if_tfa_setup()
+      throws JsonProcessingException, GeneralSecurityException {
+    String email = "reset-password-flow-tfa@gmail.com";
+    String password = "superHardPassword";
+    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
+    String secret = AuthApiSetupUtils.setupTfa(userId, sessionId, verificationDatasource);
+
+    // init flow
+    PasswordResourceImplTest.passwordForgot(email, objectMapper);
+
+    String newPassword = "superDuperNewFancyPassword";
+    String resetPasswordPayload =
+        objectMapper.writeValueAsString(new PasswordResetRequestDTO(newPassword));
+
+    List<Mail> sent = mailbox.getMessagesSentTo(email);
+    assertEquals(2, sent.size());
+    Mail actual = sent.get(1);
+    assertEquals("Insight Support <support@insight.com>", actual.getFrom());
+
+    Document doc = Jsoup.parse(actual.getHtml());
+    Elements link = doc.select("a");
+    String passwordForgotLink = link.attr("href");
+
+    Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(passwordForgotLink);
+    tokenMatcher.matches();
+    String token = tokenMatcher.group(1);
+
+    // password reset should go into authentication flow
+    Response response =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(resetPasswordPayload)
+            .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token));
+
+    response.then().statusCode(200).cookie(SsoVerification.COOKIE_NAME);
+    String verificationId = response.getDetailedCookie(SsoVerification.COOKIE_NAME).getValue();
+
+    // Complete tfa flow
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoVerification.COOKIE_NAME, verificationId)
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(
+                    new TfaCompleteDTO(
+                        (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret))))
+        .post(SsoVerificationResourceImpl.PATH + "/complete-tfa")
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":true}"))
+        .cookie(SsoVerification.COOKIE_NAME, "")
+        .cookie(SsoSession.COOKIE_NAME);
   }
 
   @Test
