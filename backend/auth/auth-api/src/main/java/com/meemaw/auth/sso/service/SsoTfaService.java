@@ -56,7 +56,9 @@ public class SsoTfaService {
                                   log.info(
                                       "[AUTH]: TFA complete attempt for user={} with no TFA configured",
                                       userId);
-                                  throw Boom.badRequest().message("TFA not configured").exception();
+                                  // TODO: add test case for this
+                                  throw new VerificationSessionExpiredException(
+                                      "TFA not configured");
                                 });
 
                         try {

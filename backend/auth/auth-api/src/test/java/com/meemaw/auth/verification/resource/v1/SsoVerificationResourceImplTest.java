@@ -5,6 +5,7 @@ import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromA
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -195,6 +196,69 @@ public class SsoVerificationResourceImplTest {
   }
 
   @Test
+  public void complete_tfa__should_throw_and_clear_cookie__when_tfa_not_configured()
+      throws JsonProcessingException, GeneralSecurityException {
+    String email = "tfa-complete-not-configured-flow@gmail.com";
+    String password = "tfa-complete-not-configured-flow";
+    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .get(UserTfaResource.PATH + "/setup")
+        .then()
+        .statusCode(200);
+
+    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
+    String secret =
+        verificationDatasource.getTfaSetupSecret(userId).toCompletableFuture().join().get();
+    int tfaCode = (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret);
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
+        .post(UserTfaResource.PATH + "/setup")
+        .then()
+        .statusCode(200);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(SsoResource.PATH + "/logout")
+        .then()
+        .statusCode(204)
+        .cookie(SsoSession.COOKIE_NAME, "");
+
+    Response response =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("email", email)
+            .param("password", password)
+            .post(SsoResource.PATH + "/login");
+
+    String verificationId = response.detailedCookie(SsoVerification.COOKIE_NAME).getValue();
+
+    assertTrue(userTfaDatasource.delete(userId).toCompletableFuture().join());
+
+    // Complete when tfa is not set up should clean up verification id
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoVerification.COOKIE_NAME, verificationId)
+        .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
+        .post(SsoVerificationResourceImpl.PATH + "/complete-tfa")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"TFA not configured\"}}"))
+        .cookie(SsoVerification.COOKIE_NAME, "");
+  }
+
+  @Test
   public void setup_tfa__should_work__on_full_flow() throws IOException, GeneralSecurityException {
     String email = "setup-tfa-full-flow@gmail.com";
     String password = "setup-tfa-full-flow";
@@ -224,7 +288,7 @@ public class SsoVerificationResourceImplTest {
 
     assertEquals(IoUtils.base64encodeImage(expectedQrImageUrl), qrImage);
 
-    // Fails on invalid code
+    // Complete tfa setup fails on invalid code
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -239,7 +303,7 @@ public class SsoVerificationResourceImplTest {
 
     int tfaCode = (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret);
 
-    // Works on valid code
+    // Complete tfa setup works on valid code
     Response response =
         given()
             .when()

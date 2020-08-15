@@ -8,8 +8,12 @@ import javax.ws.rs.core.Response;
 
 public class VerificationSessionExpiredException extends BoomException {
 
+  public VerificationSessionExpiredException(String message) {
+    super(Boom.badRequest().message(message));
+  }
+
   public VerificationSessionExpiredException() {
-    super(Boom.badRequest().message("Verification session expired"));
+    this("Verification session expired");
   }
 
   public Response response(String cookieDomain) {

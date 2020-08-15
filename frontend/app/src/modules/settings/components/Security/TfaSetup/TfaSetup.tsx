@@ -43,7 +43,7 @@ const TfaSetup = () => {
         if (dataResponse.data) {
           mutate({ createdAt: undefined }, false);
           toaster.warning(
-            'Two factor authentication has been successfully',
+            'Two factor authentication has been successfully disabled',
             {}
           );
         }
