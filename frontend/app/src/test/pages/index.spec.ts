@@ -3,8 +3,7 @@ import { AuthApi, SessionApi } from 'api';
 import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
 import { INSIGHT_ADMIN } from 'test/data';
 import { mockServerSideRequest } from 'test/utils/next';
-
-import { getServerSideProps } from './index';
+import { getServerSideProps } from 'pages/index';
 
 describe('pages/index', () => {
   it('Injects correct server side data', async () => {
