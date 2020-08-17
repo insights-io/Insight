@@ -39,7 +39,9 @@ test('Should be able to complete full TFA flo after password reset', async (t) =
 
   await t
     .hover(Sidebar.accountSettingsItem)
-    .click(queryByText('Account settings'))
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .expect(getLocation())
     .eql(`${config.appBaseURL}/account/settings`)
     .click(queryByText('Two factor authentication'))
@@ -63,6 +65,9 @@ test('Should be able to complete full TFA flo after password reset', async (t) =
     )
     .ok('Should display positive message')
     .hover(Sidebar.accountSettingsItem)
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .click(queryByText('Sign out'))
     .click(forgotPasswordButton)
     .typeText(emailInput, email)
@@ -83,6 +88,9 @@ test('Should be able to complete full TFA flo after password reset', async (t) =
     .typeText(codeInput, totp({ secret: tfaSecret, encoding: 'base32' }))
     .click(queryByText('Submit'))
     .hover(Sidebar.accountSettingsItem)
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .click(queryByText('Account settings'))
     .click(queryByText(/Two factor authentication.*/))
     .expect(
@@ -106,6 +114,9 @@ test('Should be able to complete full TFA flow', async (t) => {
 
   await t
     .hover(Sidebar.accountSettingsItem)
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .click(queryByText('Account settings'))
     .expect(getLocation())
     .eql(`${config.appBaseURL}/account/settings`)
@@ -130,6 +141,9 @@ test('Should be able to complete full TFA flow', async (t) => {
     )
     .ok('Should display positive message')
     .hover(Sidebar.accountSettingsItem)
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .click(queryByText('Sign out'));
 
   await login(t, { email, password })
@@ -144,6 +158,9 @@ test('Should be able to complete full TFA flow', async (t) => {
     .typeText(codeInput, totp({ secret: tfaSecret, encoding: 'base32' }))
     .click(queryByText('Submit'))
     .hover(Sidebar.accountSettingsItem)
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .click(queryByText('Account settings'))
     .click(queryByText(/Two factor authentication.*/))
     .expect(

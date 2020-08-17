@@ -11,6 +11,9 @@ test('Should be able to navigate', async (t) => {
 
   await t
     .hover(Sidebar.accountSettingsItem)
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .click(queryByText('Sign out'))
     .expect(queryByText('Create a free account').visible)
     .ok('Should be on the login page');
