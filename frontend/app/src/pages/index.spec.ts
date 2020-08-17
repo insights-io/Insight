@@ -1,23 +1,10 @@
-import { IncomingMessage, ServerResponse } from 'http';
-
 import { sandbox } from '@insight/testing';
 import { AuthApi, SessionApi } from 'api';
 import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
 import { INSIGHT_ADMIN } from 'test/data';
+import { mockServerSideRequest } from 'test/utils/next';
 
 import { getServerSideProps } from './index';
-
-const mockRequest = () => {
-  const writeHead = sandbox.stub();
-  const end = sandbox.stub();
-  const res = ({ writeHead, end } as unknown) as ServerResponse;
-  const req = {
-    url: '/',
-    method: 'GET',
-  } as IncomingMessage;
-
-  return { req, res, writeHead, end };
-};
 
 describe('pages/index', () => {
   it('Injects correct server side data', async () => {
@@ -35,7 +22,7 @@ describe('pages/index', () => {
       .stub(SessionApi, 'countByDeviceClass')
       .resolves(COUNT_BY_DEVICE);
 
-    const { req, res } = mockRequest();
+    const { req, res } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
     sandbox.assert.calledWithMatch(getSessionStub, '123', {
@@ -59,7 +46,7 @@ describe('pages/index', () => {
   });
 
   it('Should redirect to login if no SessionId', async () => {
-    const { req, res, writeHead, end } = mockRequest();
+    const { req, res, writeHead, end } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({ query: {}, req, res });
     sandbox.assert.calledWithExactly(writeHead, 302, {
       Location: '/login?dest=%2F',
@@ -70,7 +57,7 @@ describe('pages/index', () => {
 
   it('Should redirect to verification if no SessionId but VerificationId', async () => {
     sandbox.stub(document, 'cookie').value('VerificationId=123');
-    const { req, res, writeHead, end } = mockRequest();
+    const { req, res, writeHead, end } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
     sandbox.assert.calledWithExactly(writeHead, 302, {
@@ -87,7 +74,7 @@ describe('pages/index', () => {
       headers: { get: sandbox.stub() },
     } as unknown) as Response);
 
-    const { req, res, writeHead, end } = mockRequest();
+    const { req, res, writeHead, end } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
     sandbox.assert.calledWithExactly(writeHead, 302, {
@@ -108,7 +95,7 @@ describe('pages/index', () => {
       headers: { get: sandbox.stub() },
     } as unknown) as Response);
 
-    const { req, res, writeHead, end } = mockRequest();
+    const { req, res, writeHead, end } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
     sandbox.assert.calledWithExactly(writeHead, 302, {
