@@ -1,4 +1,9 @@
-import { getByPlaceholderText, getByText } from '@testing-library/testcafe';
+import {
+  getByPlaceholderText,
+  getByText,
+  queryByText,
+} from '@testing-library/testcafe';
+import { totp } from 'speakeasy';
 
 import config from '../config';
 
@@ -73,4 +78,23 @@ export const signUpAndLogin = async (
   await t.navigateTo(config.tryBaseURL);
   await signUp(t, data);
   return signUpVerifyEmail(t);
+};
+
+export const totpLogin = async (
+  t: TestController,
+  tfaSecret: string,
+  codeInput: Selector
+) => {
+  let isValid = false;
+  while (!isValid) {
+    // eslint-disable-next-line no-await-in-loop
+    await t
+      .typeText(codeInput, totp({ secret: tfaSecret, encoding: 'base32' }))
+      .click(queryByText('Submit'));
+    // eslint-disable-next-line no-await-in-loop
+    isValid = !(await queryByText('Invalid code').visible);
+  }
+  return t
+    .expect(codeInput.visible)
+    .notOk('Code input should not be visible anymore');
 };

@@ -15,6 +15,7 @@ import {
   startPasswordResetButton,
   findLinkFromDockerLog,
   finishPasswordResetButton,
+  totpLogin,
 } from '../../utils';
 import { Sidebar } from '../../pages';
 import { getQrImageData } from '../../utils/io';
@@ -26,8 +27,9 @@ const emailSentMessage = getByText(
   'If your email address is associated with an Insight account, you will be receiving a password reset request shortly.'
 );
 
-test('Should be able to complete full TFA flo after password reset', async (t) => {
+test('Should be able to complete full TFA flow after password reset', async (t) => {
   await t.expect(getLocation()).eql(`${config.appBaseURL}/login?dest=%2F`);
+
   const password = uuid();
   const email = `${uuid()}@gmail.com`;
   await signUpAndLogin(t, {
@@ -85,9 +87,10 @@ test('Should be able to complete full TFA flo after password reset', async (t) =
     .typeText(passwordInput, newPassword)
     .click(finishPasswordResetButton)
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/login/verification?dest=%2F`)
-    .typeText(codeInput, totp({ secret: tfaSecret, encoding: 'base32' }))
-    .click(queryByText('Submit'))
+    .eql(`${config.appBaseURL}/login/verification?dest=%2F`);
+
+  await totpLogin(t, tfaSecret, codeInput);
+  await t
     .hover(Sidebar.accountSettingsItem)
     .expect(queryByText('Account settings').visible)
     .ok('Should display text on hover')
@@ -155,9 +158,10 @@ test('Should be able to complete full TFA flow', async (t) => {
     )
     .ok('should display message')
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/login/verification?dest=%2F`)
-    .typeText(codeInput, totp({ secret: tfaSecret, encoding: 'base32' }))
-    .click(queryByText('Submit'))
+    .eql(`${config.appBaseURL}/login/verification?dest=%2F`);
+
+  await totpLogin(t, tfaSecret, codeInput);
+  await t
     .hover(Sidebar.accountSettingsItem)
     .expect(queryByText('Account settings').visible)
     .ok('Should display text on hover')
