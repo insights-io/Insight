@@ -1,6 +1,5 @@
-import { getByText } from '@testing-library/testcafe';
+import { getByText, queryByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
-import { Selector } from 'testcafe';
 
 import config from '../config';
 import {
@@ -12,6 +11,7 @@ import {
   startPasswordResetButton,
   forgotPasswordButton,
 } from '../utils';
+import { Sidebar } from '../pages';
 
 const page = '/password-forgot';
 const emailSentMessage = getByText(
@@ -21,7 +21,6 @@ const emailSentMessage = getByText(
 fixture(page).page(`${config.appBaseURL}`);
 
 test('User should be able to reset password', async (t) => {
-  const settingsMenu = Selector('svg[id="account-settings"]');
   const password = uuid();
   const email = `miha.novak+${uuid()}@gmail.com`;
 
@@ -33,7 +32,10 @@ test('User should be able to reset password', async (t) => {
   });
 
   await t
-    .hover(settingsMenu)
+    .hover(Sidebar.accountSettingsItem)
+    .expect(queryByText('Account settings').visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettingsItem)
     .click(getByText('Sign out'))
     .click(forgotPasswordButton)
     .typeText(emailInput, email)
@@ -49,7 +51,7 @@ test('User should be able to reset password', async (t) => {
     .ok('Password input is visible')
     .typeText(passwordInput, newPassword)
     .click(finishPasswordResetButton)
-    .expect(settingsMenu.visible)
+    .expect(Sidebar.accountSettingsItem.visible)
     .ok('Should be signed in to app');
 });
 

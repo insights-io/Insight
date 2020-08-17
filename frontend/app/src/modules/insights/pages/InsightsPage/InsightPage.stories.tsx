@@ -1,6 +1,7 @@
 import React from 'react';
 import { INSIGHT_ADMIN } from 'test/data';
 import { fullHeightDecorator } from '@insight/storybook';
+import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
 
 import InsightsPage from './InsightsPage';
 
@@ -13,29 +14,8 @@ export const Base = () => {
   return (
     <InsightsPage
       user={INSIGHT_ADMIN}
-      countByLocation={[
-        {
-          count: 1,
-          'location.countryName': 'Canada',
-          'location.continentName': 'North America',
-        },
-        {
-          count: 1,
-          'location.countryName': 'Croatia',
-          'location.continentName': 'Europe',
-        },
-        {
-          count: 2,
-          'location.countryName': 'Slovenia',
-          'location.continentName': 'Europe',
-        },
-        {
-          count: 1,
-          'location.countryName': 'United States',
-          'location.continentName': 'North America',
-        },
-      ]}
-      countByDeviceClass={{ Phone: 10, Desktop: 20 }}
+      countByLocation={COUNT_BY_LOCATION}
+      countByDeviceClass={COUNT_BY_DEVICE}
     />
   );
 };
