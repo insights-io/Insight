@@ -40,7 +40,8 @@ const LocationDistribution = ({ countByLocation }: Props) => {
   const countByCountry = useMemo(
     () =>
       countByLocation.reduce((acc, entry) => {
-        return { ...acc, [entry['location.countryName']]: entry.count };
+        const key = entry['location.countryName'];
+        return { ...acc, [key]: entry.count };
       }, {} as Record<string, number>),
     [countByLocation]
   );

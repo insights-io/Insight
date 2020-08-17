@@ -1,5 +1,6 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
+import { GROUP_BY_COUNTRY } from 'test/data/sessions';
 
 import CountByCountry from './CountByCountry';
 
@@ -9,7 +10,5 @@ export default {
 };
 
 export const Base = () => {
-  return (
-    <CountByCountry data={{ Slovenia: 1, Crotia: 5, Hungary: 3, Germany: 4 }} />
-  );
+  return <CountByCountry data={GROUP_BY_COUNTRY} />;
 };
