@@ -35,3 +35,8 @@ export const COUNT_BY_LOCATION: CountByLocation = [
     'location.continentName': 'North America',
   },
 ];
+
+export const COUNT_BY_DEVICE: Record<string, number> = {
+  Phone: 10,
+  Desktop: 20,
+};
