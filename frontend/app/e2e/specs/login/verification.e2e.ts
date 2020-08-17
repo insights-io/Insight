@@ -42,6 +42,7 @@ test('Should be able to complete full TFA flo after password reset', async (t) =
     .expect(queryByText('Account settings').visible)
     .ok('Should display text on hover')
     .click(Sidebar.accountSettingsItem)
+    .click(queryByText('Account settings'))
     .expect(getLocation())
     .eql(`${config.appBaseURL}/account/settings`)
     .click(queryByText('Two factor authentication'))
