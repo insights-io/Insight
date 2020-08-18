@@ -11,10 +11,9 @@ import { ChevronRight } from 'baseui/icon';
 import { IconType } from 'react-icons/lib';
 import { ListChildComponentProps } from 'react-window';
 import Link from 'next/link';
+import SesssionListItemSkeleton from 'modules/sessions/components/SessionListItemSkeleton';
 
-type Props = Pick<ListChildComponentProps, 'style'> & {
-  session: Session;
-};
+type Props = ListChildComponentProps;
 
 const USER_AGENT_DEVICE_ICON_LOOKUP: Record<
   UserAgentDTO['browserName'],
@@ -24,9 +23,21 @@ const USER_AGENT_DEVICE_ICON_LOOKUP: Record<
   Phone: FaMobileAlt,
 };
 
-const SessionListItem = ({ session, style }: Props) => {
-  const { id, createdAt, location, userAgent } = session;
+const SessionListItem = ({ data, index, style }: Props) => {
   const [css, theme] = useStyletron();
+  const sessions = data as Session[];
+
+  const listItemStyle = {
+    borderRadius: theme.sizing.scale100,
+    ...style,
+    top: `${style.top}px`,
+  };
+
+  if (index >= sessions.length) {
+    return <SesssionListItemSkeleton style={listItemStyle} />;
+  }
+
+  const { id, createdAt, location, userAgent } = sessions[index];
 
   const createdAtText = formatDistanceToNow(createdAt, {
     includeSeconds: true,
@@ -51,10 +62,8 @@ const SessionListItem = ({ session, style }: Props) => {
           overrides={{
             Root: {
               style: {
+                ...listItemStyle,
                 ':hover': { background: theme.colors.primary200 },
-                borderRadius: theme.sizing.scale100,
-                ...style,
-                top: `${style.top}px`,
               },
             },
           }}

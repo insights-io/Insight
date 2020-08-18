@@ -2,20 +2,24 @@ import React from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import useSessions from 'modules/sessions/hooks/useSessions';
 import { useStyletron } from 'baseui';
-import Link from 'next/link';
 import useAuth from 'modules/auth/hooks/useAuth';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
 import { Session, User } from '@insight/types';
-import SessionListItem from 'modules/sessions/components/SessionListItem';
+import SessionList from 'modules/sessions/containers/SessionList';
 
 type Props = {
   user: User;
   sessions: Session[];
+  sessionCount: number;
 };
 
-const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
-  const [css, theme] = useStyletron();
+const HomePage = ({
+  user: initialUser,
+  sessions: initialSessions,
+  sessionCount,
+}: Props) => {
+  const [_css, theme] = useStyletron();
   const { user } = useAuth(initialUser);
   const { data: sessions, loading: loadingSessions } = useSessions(
     initialSessions
@@ -29,30 +33,10 @@ const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
       }}
     >
       {hasSessions ? (
-        <>
-          <ul
-            className={css({
-              paddingLeft: 0,
-              marginBottom: 0,
-              marginTop: 0,
-              overflow: 'auto',
-            })}
-          >
-            {sessions.map((session) => {
-              return (
-                <Link
-                  href="/sessions/[id]"
-                  as={`sessions/${session.id}`}
-                  key={session.id}
-                >
-                  <a className={css({ color: 'inherit' })}>
-                    <SessionListItem session={session} />
-                  </a>
-                </Link>
-              );
-            })}
-          </ul>
-        </>
+        <SessionList
+          initialSessions={initialSessions}
+          sessionCount={sessionCount}
+        />
       ) : (
         user && (
           <RecordingSnippet

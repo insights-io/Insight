@@ -13,7 +13,7 @@ const NetworkTabContainer = ({ sessionId }: Props) => {
     `NetworkTab.sessions/${sessionId}/events/search`,
     () =>
       SessionApi.events.search(sessionId, {
-        searchParams: { 'event.e': ['eq:11'], limit: 1000 },
+        search: { 'event.e': ['eq:11'], limit: 1000 },
       }),
     { refreshWhenHidden: true, refreshInterval: 5000 }
   );

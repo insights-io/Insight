@@ -19,7 +19,7 @@ describe('<NetworkTabContainer />', () => {
     await findAllByText('xmlhttprequest');
 
     sandbox.assert.calledWithExactly(searchStub, '10', {
-      searchParams: { 'event.e': ['eq:11'], limit: 1000 },
+      search: { 'event.e': ['eq:11'], limit: 1000 },
     });
   });
 });
