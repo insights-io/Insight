@@ -67,11 +67,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ]);
 
     return {
-      props: {
-        user: authResponse.user,
-        countByLocation,
-        countByDeviceClass,
-      },
+      props: { user: authResponse.user, countByLocation, countByDeviceClass },
     };
   } finally {
     requestSpan.finish();

@@ -12,13 +12,19 @@ import SessionsPage from 'modules/sessions/pages/SessionsPage';
 
 type Props = AuthenticatedServerSideProps & {
   sessions: SessionDTO[];
+  sessionCount: number;
 };
 
-const Sessions = ({ user: initialUser, sessions: initialSessions }: Props) => {
+const Sessions = ({
+  user: initialUser,
+  sessions: initialSessions,
+  sessionCount,
+}: Props) => {
   return (
     <SessionsPage
       user={mapUser(initialUser)}
       sessions={initialSessions.map(mapSession)}
+      sessionCount={sessionCount}
     />
   );
 };
@@ -33,15 +39,29 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const sessions = await SessionApi.getSessions({
+    const sessionsPromise = await SessionApi.getSessions({
       baseURL: process.env.SESSION_API_BASE_URL,
+      search: { sort_by: ['-created_at'], limit: 20 },
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
         cookie: `SessionId=${authResponse.SessionId}`,
       },
     });
 
-    return { props: { user: authResponse.user, sessions } };
+    const sessionCountPromise = SessionApi.count({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers: {
+        ...prepareCrossServiceHeaders(requestSpan),
+        cookie: `SessionId=${authResponse.SessionId}`,
+      },
+    }).then((dataResponse) => dataResponse.count);
+
+    const [sessions, sessionCount] = await Promise.all([
+      sessionsPromise,
+      sessionCountPromise,
+    ]);
+
+    return { props: { user: authResponse.user, sessions, sessionCount } };
   } finally {
     requestSpan.finish();
   }

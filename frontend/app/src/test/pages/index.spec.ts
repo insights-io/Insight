@@ -2,10 +2,12 @@ import { sandbox } from '@insight/testing';
 import { AuthApi, SessionApi } from 'api';
 import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
 import { INSIGHT_ADMIN } from 'test/data';
-import { mockServerSideRequest } from 'test/utils/next';
+import { mockServerSideRequest, authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/index';
 
 describe('pages/index', () => {
+  authenticatedTestCases(getServerSideProps);
+
   it('Injects correct server side data', async () => {
     sandbox.stub(document, 'cookie').value('SessionId=123');
     const getSessionStub = sandbox.stub(AuthApi.sso, 'session').resolves(({
@@ -42,68 +44,5 @@ describe('pages/index', () => {
         countByDeviceClass: COUNT_BY_DEVICE,
       },
     });
-  });
-
-  it('Should redirect to login if no SessionId', async () => {
-    const { req, res, writeHead, end } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
-    sandbox.assert.calledWithExactly(writeHead, 302, {
-      Location: '/login?dest=%2F',
-    });
-    sandbox.assert.calledWithExactly(end);
-    expect(serverSideProps).toEqual({ props: {} });
-  });
-
-  it('Should redirect to verification if no SessionId but VerificationId', async () => {
-    sandbox.stub(document, 'cookie').value('VerificationId=123');
-    const { req, res, writeHead, end } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
-
-    sandbox.assert.calledWithExactly(writeHead, 302, {
-      Location: '/login/verification?dest=%2F',
-    });
-    sandbox.assert.calledWithExactly(end);
-    expect(serverSideProps).toEqual({ props: {} });
-  });
-
-  it('Should redirect to login on expired session', async () => {
-    sandbox.stub(document, 'cookie').value('SessionId=123');
-    const getSessionStub = sandbox.stub(AuthApi.sso, 'session').resolves(({
-      status: 204,
-      headers: { get: sandbox.stub() },
-    } as unknown) as Response);
-
-    const { req, res, writeHead, end } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
-
-    sandbox.assert.calledWithExactly(writeHead, 302, {
-      Location: '/login?dest=%2F',
-      'set-cookie': undefined,
-    });
-    sandbox.assert.calledWithExactly(end);
-    sandbox.assert.calledWithMatch(getSessionStub, '123', {
-      baseURL: undefined,
-    });
-    expect(serverSideProps).toEqual({ props: {} });
-  });
-
-  it('Should redirect to verification on expired session and VerificationId', async () => {
-    sandbox.stub(document, 'cookie').value('SessionId=123;VerificationId=1234');
-    const getSessionStub = sandbox.stub(AuthApi.sso, 'session').resolves(({
-      status: 204,
-      headers: { get: sandbox.stub() },
-    } as unknown) as Response);
-
-    const { req, res, writeHead, end } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
-
-    sandbox.assert.calledWithExactly(writeHead, 302, {
-      Location: '/login/verification?dest=%2F',
-    });
-    sandbox.assert.calledWithExactly(end);
-    sandbox.assert.calledWithMatch(getSessionStub, '123', {
-      baseURL: undefined,
-    });
-    expect(serverSideProps).toEqual({ props: {} });
   });
 });

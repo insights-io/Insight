@@ -3,10 +3,25 @@ import { render } from 'test/utils';
 import userEvent from '@testing-library/user-event';
 import { sandbox } from '@insight/testing';
 import { INSIGHT_SESSION } from 'test/data';
+import { clearCache } from 'modules/sessions/hooks/useSessions';
+import { AutoSizerProps } from 'react-virtualized-auto-sizer';
 
 import { NoSessions, WithSessions } from './SessionsPage.stories';
 
-describe('<HomePage />', () => {
+jest.mock('react-virtualized-auto-sizer', () => {
+  return {
+    __esModule: true,
+    default: ({ children }: AutoSizerProps) => {
+      return children({ width: 1000, height: 1000 });
+    },
+  };
+});
+
+describe('<SessionsPage />', () => {
+  beforeEach(() => {
+    clearCache();
+  });
+
   it('Should render recording snippet on no sessions', async () => {
     const { findByText } = render(<NoSessions />);
 

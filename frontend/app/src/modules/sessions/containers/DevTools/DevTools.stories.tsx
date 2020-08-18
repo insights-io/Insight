@@ -20,7 +20,7 @@ Base.story = configureStory({
       .stub(SessionApi.events, 'search')
       .callsFake((_sessionId, options) => {
         if (
-          JSON.stringify(options?.searchParams?.['event.e']) ===
+          JSON.stringify(options?.search?.['event.e']) ===
           JSON.stringify(['gte:9', 'lte:10'])
         ) {
           return Promise.resolve([
