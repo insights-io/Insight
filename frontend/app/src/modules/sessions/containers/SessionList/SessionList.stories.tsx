@@ -10,5 +10,10 @@ export default {
 };
 
 export const Base = () => {
-  return <SessionList sessions={INSIGHT_SESSIONS} />;
+  return (
+    <SessionList
+      initialSessions={INSIGHT_SESSIONS}
+      sessionCount={INSIGHT_SESSIONS.length}
+    />
+  );
 };

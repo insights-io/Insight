@@ -10,9 +10,15 @@ export default {
 };
 
 export const NoSessions = () => {
-  return <SessionsPage user={INSIGHT_ADMIN} sessions={[]} />;
+  return <SessionsPage user={INSIGHT_ADMIN} sessions={[]} sessionCount={0} />;
 };
 
 export const WithSessions = () => {
-  return <SessionsPage user={INSIGHT_ADMIN} sessions={INSIGHT_SESSIONS} />;
+  return (
+    <SessionsPage
+      user={INSIGHT_ADMIN}
+      sessions={INSIGHT_SESSIONS}
+      sessionCount={INSIGHT_SESSIONS.length}
+    />
+  );
 };

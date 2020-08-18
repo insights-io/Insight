@@ -23,14 +23,13 @@ const SessionList = ({ initialSessions, sessionCount }: Props) => {
       loadMoreItems={loadMoreItems}
     >
       {({ onItemsRendered, ref }) => (
-        <AutoSizer>
+        <AutoSizer ref={ref}>
           {({ height, width }) => (
             <FixedSizeList
               height={height}
               itemCount={sessionCount}
               itemSize={73}
               onItemsRendered={onItemsRendered}
-              ref={ref}
               width={width}
               itemData={sessions}
             >

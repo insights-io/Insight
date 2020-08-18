@@ -7,6 +7,10 @@ import { cache } from 'swr';
 const EMPTY_LIST: Session[] = [];
 const CACHE_KEY = 'useSessions';
 
+export const clearCache = () => {
+  return cache.delete(CACHE_KEY);
+};
+
 const useSessions = (initialData?: Session[]) => {
   const [data, setData] = useState(
     () => (cache.get(CACHE_KEY) as Session[]) || initialData
