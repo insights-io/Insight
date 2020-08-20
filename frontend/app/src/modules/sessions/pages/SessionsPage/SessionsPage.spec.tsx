@@ -33,9 +33,13 @@ describe('<SessionsPage />', () => {
       getSessionCountStub,
       getSessionsStub,
     } = WithSessions.story.setupMocks(sandbox);
-    const { queryByText, getByText, queryAllByText, container } = render(
-      <WithSessions />
-    );
+    const {
+      queryByText,
+      getByText,
+      queryAllByText,
+      container,
+      findByText,
+    } = render(<WithSessions />);
 
     expect(queryAllByText('Mac OS X • Chrome').length).toEqual(2);
     expect(queryAllByText('Android • Chrome').length).toEqual(1);
@@ -98,8 +102,8 @@ describe('<SessionsPage />', () => {
       });
     });
 
+    await findByText(ljubljanaLocation);
     expect(queryAllByText('Mac OS X • Chrome').length).toEqual(1);
-    expect(queryByText(ljubljanaLocation)).toBeInTheDocument();
 
     const removeFilterIcon = container.querySelector(
       'svg[title="Delete"]'
@@ -119,15 +123,19 @@ describe('<SessionsPage />', () => {
       });
     });
 
+    await findByText(boydtonLocation);
     expect(queryAllByText('Mac OS X • Chrome').length).toEqual(2);
     expect(queryAllByText('Android • Chrome').length).toEqual(1);
   });
 
-  it('Should be able to navigate to a session details page', () => {
-    const { getByText, push } = render(<WithSessions />);
+  it('Should be able to navigate to a session details page', async () => {
+    WithSessions.story.setupMocks(sandbox);
+    const { findByText, push } = render(<WithSessions />);
 
     userEvent.click(
-      getByText('Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago')
+      await findByText(
+        'Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago'
+      )
     );
 
     sandbox.assert.calledWithExactly(
