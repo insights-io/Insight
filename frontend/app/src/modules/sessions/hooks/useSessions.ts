@@ -1,49 +1,201 @@
 import SessionApi from 'api/session';
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import {
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+  useReducer,
+  Reducer,
+} from 'react';
 import { Session } from '@insight/types';
 import { mapSession } from '@insight/sdk';
-import { cache } from 'swr';
+import debounce from 'lodash/debounce';
+import { UnreachableCaseError } from 'shared/utils/error';
+import { SessionSearchBean } from '@insight/sdk/dist/sessions';
+
+import { DateRange } from '../components/SessionSearch/utils';
+import { SessionFilter } from '../components/SessionSearch/SessionFilters/utils';
 
 const EMPTY_LIST: Session[] = [];
-const CACHE_KEY = 'useSessions';
+const EMPTY_FILTER: Filter = { filters: [] };
 
-export const clearCache = () => {
-  return cache.delete(CACHE_KEY);
+type Filter = {
+  dateRange?: DateRange;
+  filters: SessionFilter[];
 };
 
-const useSessions = (initialData?: Session[]) => {
-  const [data, setData] = useState(
-    () => (cache.get(CACHE_KEY) as Session[]) || initialData
+type State = {
+  data: Session[];
+  count: number;
+  fetchingStartIndex: number | undefined;
+};
+
+const actionTypes = {
+  SET_SESSIONS: 'SET_SESSIONS',
+  SET_FETCHING_START_INDEX: 'SET_FETCHING_START_INDEX',
+  ADD_SESSIONS: 'ADD_SESSIONS',
+  SET_COUNT: 'SET_COUNT',
+} as const;
+
+type StateAction =
+  | {
+      type: typeof actionTypes.SET_SESSIONS;
+      sessions: Session[];
+    }
+  | {
+      type: typeof actionTypes.ADD_SESSIONS;
+      sessions: Session[];
+    }
+  | {
+      type: typeof actionTypes.SET_COUNT;
+      sessions: Session[];
+      count: number;
+    }
+  | { type: typeof actionTypes.SET_FETCHING_START_INDEX; index: number };
+
+const stateReducer: Reducer<State, StateAction> = (state, action) => {
+  switch (action.type) {
+    case actionTypes.SET_SESSIONS:
+      return {
+        ...state,
+        count: action.sessions.length,
+        data: action.sessions,
+        fetchingStartIndex: undefined,
+      };
+    case actionTypes.SET_COUNT:
+      return { ...state, count: action.count, data: action.sessions };
+    case actionTypes.ADD_SESSIONS: {
+      const data = [...state.data, ...action.sessions];
+      return {
+        ...state,
+        data,
+        fetchingStartIndex: undefined,
+      };
+    }
+    case actionTypes.SET_FETCHING_START_INDEX:
+      return { ...state, fetchingStartIndex: action.index };
+    default:
+      throw new UnreachableCaseError(action);
+  }
+};
+
+const getSearchQuery = ({ dateRange, filters }: Filter): SessionSearchBean => {
+  const searchBean: SessionSearchBean = {};
+  const createdAt = [];
+  if (dateRange?.from) {
+    createdAt.push(`gte:${dateRange.from.toISOString()}`);
+  }
+  if (dateRange?.to) {
+    createdAt.push(`lte:${dateRange.to.toISOString()}`);
+  }
+
+  if (createdAt.length > 0) {
+    searchBean.created_at = createdAt;
+  }
+
+  filters.forEach((f) => {
+    if (f.key) {
+      searchBean[f.key] = `eq:${f.value}`;
+    }
+  });
+
+  return searchBean;
+};
+
+const useSessions = (
+  initialSessions: Session[],
+  initialSessionCount: number,
+  filter: Filter = EMPTY_FILTER
+) => {
+  const isMounted = useRef(false);
+  const [{ data, fetchingStartIndex, count }, dispatch] = useReducer(
+    stateReducer,
+    undefined,
+    () => {
+      return {
+        fetchingStartIndex: undefined,
+        data: initialSessions,
+        count: initialSessionCount,
+      };
+    }
   );
+
   const sessions = useMemo(() => data || EMPTY_LIST, [data]);
-  const [fetchingFrom, setFetchingFrom] = useState<number | undefined>(
-    undefined
+
+  const onFilterChange = useMemo(
+    () =>
+      debounce(async (paramFilter: Filter) => {
+        dispatch({
+          type: actionTypes.SET_SESSIONS,
+          sessions: [],
+        });
+
+        const search = getSearchQuery(paramFilter);
+        const countPromise = SessionApi.count({
+          search: getSearchQuery(paramFilter),
+        }).then((resp) => resp.count);
+        const sessionsPromise = SessionApi.getSessions({
+          search: {
+            ...search,
+            sort_by: ['-created_at'],
+            limit: 20,
+          },
+        }).then((s) => s.map(mapSession));
+
+        Promise.all([countPromise, sessionsPromise]).then(
+          ([nextCount, nextSessions]) => {
+            dispatch({
+              type: actionTypes.SET_COUNT,
+              count: nextCount,
+              sessions: nextSessions,
+            });
+          }
+        );
+      }, 500),
+    []
   );
 
   useEffect(() => {
-    cache.set(CACHE_KEY, sessions);
-  }, [sessions]);
+    if (isMounted.current) {
+      onFilterChange(filter);
+    } else {
+      isMounted.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(filter), onFilterChange]);
 
   const loadMoreItems = useCallback(
     async (startIndex: number, endIndex: number) => {
-      if (sessions.length !== startIndex || startIndex === fetchingFrom) {
+      if (sessions.length !== startIndex || startIndex === fetchingStartIndex) {
         return;
       }
 
-      const lastSession = sessions[sessions.length - 1];
-      const limit = endIndex - startIndex + 1;
-      setFetchingFrom(startIndex);
-      const newSessions = await SessionApi.getSessions({
-        search: {
-          sort_by: ['-created_at'],
-          limit,
-          created_at: [`lte:${lastSession.createdAt.toISOString()}`],
-        },
-      }).then((response) => response.map(mapSession));
-      setData((prev) => (prev ? [...prev, ...newSessions] : newSessions));
-      setFetchingFrom(undefined);
+      dispatch({
+        type: actionTypes.SET_FETCHING_START_INDEX,
+        index: startIndex,
+      });
+
+      const search: SessionSearchBean = {
+        sort_by: ['-created_at'],
+        limit: endIndex - startIndex + 1,
+      };
+
+      if (sessions.length > 0) {
+        search.created_at = [
+          `lte:${sessions[sessions.length - 1].createdAt.toISOString()}`,
+        ];
+      }
+
+      SessionApi.getSessions({ search })
+        .then((response) => response.map(mapSession))
+        .then((newSessions) =>
+          dispatch({
+            type: actionTypes.ADD_SESSIONS,
+            sessions: newSessions,
+          })
+        );
     },
-    [setData, sessions, fetchingFrom]
+    [sessions, fetchingStartIndex]
   );
 
   const isItemLoaded = useCallback(
@@ -55,7 +207,14 @@ const useSessions = (initialData?: Session[]) => {
 
   const loading = useMemo(() => data === undefined, [data]);
 
-  return { data: sessions, loading, loadMoreItems, isItemLoaded };
+  return {
+    data: sessions,
+    loading,
+    count,
+    loadMoreItems,
+    isItemLoaded,
+    isLoadingMore: fetchingStartIndex !== undefined,
+  };
 };
 
 export default useSessions;

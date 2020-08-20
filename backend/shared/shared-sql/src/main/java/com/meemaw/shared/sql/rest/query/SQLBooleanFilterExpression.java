@@ -15,28 +15,23 @@ public class SQLBooleanFilterExpression implements SQLFilterExpression {
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
-  public SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> fields) {
+  public SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> mappings) {
     List<FilterExpression> children = expression.getChildren();
     if (children.isEmpty()) {
       return query;
     }
-    SelectConditionStep<?> subQuery = SQLFilterExpression.of(children.get(0)).sql(query, fields);
+    SelectConditionStep<?> subQuery = SQLFilterExpression.of(children.get(0)).sql(query, mappings);
 
     for (int i = 1; i < children.size(); i++) {
       SQLFilterExpression filterExpression = SQLFilterExpression.of(children.get(i));
       if (filterExpression instanceof SQLBooleanFilterExpression) {
-        subQuery = ((SQLBooleanFilterExpression) filterExpression).sql(query, fields);
+        subQuery = ((SQLBooleanFilterExpression) filterExpression).sql(query, mappings);
       } else if (filterExpression instanceof SQLTermFilterExpression) {
         SQLTermFilterExpression termFilterExpression = (SQLTermFilterExpression) filterExpression;
         String fieldName = termFilterExpression.getExpression().getField();
-
-        if (fields.containsKey(fieldName)) {
-          subQuery =
-              SQLBooleanOperation.of(expression.getOperation())
-                  .apply(subQuery, termFilterExpression.condition(fields.get(fieldName)));
-        }
-      } else {
-        throw new IllegalStateException("Unsupported filter expression");
+        subQuery =
+            SQLBooleanOperation.of(expression.getOperation())
+                .apply(subQuery, termFilterExpression.condition(mappings.get(fieldName)));
       }
     }
 

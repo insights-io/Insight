@@ -28,4 +28,7 @@ public interface SessionDatasource {
   CompletionStage<Collection<SessionDTO>> getSessions(String organizationId, SearchDTO searchDTO);
 
   CompletionStage<JsonNode> count(String organizationId, SearchDTO searchDTO);
+
+  CompletionStage<Collection<String>> distinct(
+      Collection<String> on, String organizationId, SearchDTO searchDTO);
 }

@@ -19,8 +19,9 @@ public class SQLTermFilterExpression<T> implements SQLFilterExpression {
 
   @SuppressWarnings("unchecked")
   @Override
-  public SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> fields) {
-    Field<T> sqlField = (Field<T>) fields.get(expression.getField());
-    return ((SelectJoinStep<?>) query).where(condition(sqlField));
+  public SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> mappings) {
+    Field<T> sqlField = (Field<T>) mappings.get(expression.getField());
+    return ((SelectJoinStep<?>) query)
+        .where(condition(SQLFilterExpression.sqlFilterField(sqlField)));
   }
 }

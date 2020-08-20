@@ -36,6 +36,7 @@ public class LocationServiceImpl implements LocationService {
       return LocationDTO.builder().ip(ip).build();
     }
 
+    // TODO: better check to determine local addresses
     if (ip.equals(LOCALHOST_IPV4) || ip.equals(LOCALHOST_IPV6)) {
       ip = whatIsMyIpResource.get();
       log.info("[LOCATION]: Resolved localhost to public IP: {}", ip);

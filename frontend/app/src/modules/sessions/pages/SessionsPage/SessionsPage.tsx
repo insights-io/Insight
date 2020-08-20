@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
-import useSessions from 'modules/sessions/hooks/useSessions';
 import { useStyletron } from 'baseui';
 import useAuth from 'modules/auth/hooks/useAuth';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
 import { Session, User } from '@insight/types';
 import SessionList from 'modules/sessions/containers/SessionList';
+import SessionSearch from 'modules/sessions/components/SessionSearch';
+import { Block } from 'baseui/block';
+import {
+  DateRange,
+  createDateRange,
+} from 'modules/sessions/components/SessionSearch/utils';
+import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 
 type Props = {
   user: User;
@@ -21,22 +27,39 @@ const HomePage = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
   const { user } = useAuth(initialUser);
-  const { data: sessions, loading: loadingSessions } = useSessions(
-    initialSessions
+  const hasSessions = initialSessions.length > 0;
+  const [dateRange, setDataRange] = useState<DateRange>(() =>
+    createDateRange('all-time')
   );
-  const hasSessions = loadingSessions || sessions.length > 0;
+  const [validFilters, setValidFilters] = useState<SessionFilter[]>([]);
 
   return (
     <AppLayout
       overrides={{
-        MainContent: { style: { background: theme.colors.mono300 } },
+        MainContent: {
+          style: {
+            background: theme.colors.mono300,
+            padding: theme.sizing.scale400,
+          },
+        },
       }}
     >
       {hasSessions ? (
-        <SessionList
-          initialSessions={initialSessions}
-          sessionCount={sessionCount}
-        />
+        <>
+          <SessionSearch
+            onDateRangeChange={setDataRange}
+            onValidFiltersUpdate={setValidFilters}
+            validFilters={validFilters}
+          />
+          <Block marginTop={theme.sizing.scale400} height="100%">
+            <SessionList
+              initialSessions={initialSessions}
+              initialSessionCount={sessionCount}
+              dateRange={dateRange}
+              filters={validFilters}
+            />
+          </Block>
+        </>
       ) : (
         user && (
           <RecordingSnippet
