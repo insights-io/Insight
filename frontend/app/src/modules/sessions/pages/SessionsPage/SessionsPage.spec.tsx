@@ -44,13 +44,9 @@ describe('<SessionsPage />', () => {
       getSessionCountStub,
       getSessionsStub,
     } = WithSessions.story.setupMocks(sandbox);
-    const {
-      queryByText,
-      getByText,
-      queryAllByText,
-      container,
-      findByText,
-    } = render(<WithSessions />);
+    const { queryByText, getByText, queryAllByText, container } = render(
+      <WithSessions />
+    );
 
     expect(queryAllByText(MAC_CHROME).length).toEqual(2);
     expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
@@ -106,7 +102,7 @@ describe('<SessionsPage />', () => {
     });
 
     expect(queryAllByText(MAC_CHROME).length).toEqual(1);
-    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(0);
 
     const removeFilterIcon = container.querySelector(
       'svg[title="Delete"]'
