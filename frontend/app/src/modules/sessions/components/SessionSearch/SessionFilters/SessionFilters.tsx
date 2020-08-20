@@ -24,7 +24,7 @@ const SessionFilters = ({ onChange }: Props) => {
   }, [validFilters, onChange]);
 
   return (
-    <ul className={css({ padding: 0 })}>
+    <ul className={css({ padding: 0, margin: 0 })}>
       {filters.map((filter, index) => {
         return (
           <SessionFilterRow

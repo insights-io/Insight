@@ -7,6 +7,7 @@ import { StatefulPopover, PLACEMENT } from 'baseui/popover';
 import { Button, KIND, SIZE, SHAPE } from 'baseui/button';
 import AutocompleteInput from 'shared/components/AutocompleteInput';
 import { Plus, Delete } from 'baseui/icon';
+import VerticalAligned from 'shared/components/VerticalAligned';
 
 import useAutocomplete from './useAutocomplete';
 import {
@@ -67,16 +68,11 @@ const SessionFilterRow = ({
         ':hover': { background: theme.colors.mono400 },
       }}
     >
-      <Block display="flex">
+      <Block display="flex" flex="1">
         {index > 0 && (
-          <Block
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            marginRight="10px"
-          >
+          <VerticalAligned marginRight={theme.sizing.scale400}>
             and
-          </Block>
+          </VerticalAligned>
         )}
         <StatefulPopover
           placement={PLACEMENT.bottom}
@@ -86,11 +82,7 @@ const SessionFilterRow = ({
               overrides={{ Option: { component: OptionWithIcon } }}
               onItemSelect={({ item }) => {
                 const typedItem = item as FilterOption;
-                onUpdateFilter({
-                  id,
-                  key: typedItem.key,
-                  value: '',
-                });
+                onUpdateFilter({ id, key: typedItem.key, value: '' });
                 close();
               }}
             />
@@ -101,21 +93,18 @@ const SessionFilterRow = ({
               'Filter event by...'
             ) : (
               <>
-                <option.icon style={{ marginRight: '12px' }} />
+                <option.icon style={{ marginRight: theme.sizing.scale400 }} />
                 {option.label}
               </>
             )}
           </Button>
         </StatefulPopover>
-        <Block
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          marginLeft="8px"
+        <VerticalAligned marginLeft="8px">is</VerticalAligned>
+        <VerticalAligned
+          flex="1"
+          maxWidth="250px"
+          marginLeft={theme.sizing.scale400}
         >
-          is
-        </Block>
-        <Block width="200px" marginLeft="8px">
           <AutocompleteInput
             placeholder="Type something"
             size={SIZE.mini}
@@ -128,10 +117,11 @@ const SessionFilterRow = ({
             }}
             options={autocompleteOptions}
           />
-        </Block>
+        </VerticalAligned>
       </Block>
-      <Block display="flex" flexDirection="column" justifyContent="center">
-        <Block>
+
+      <VerticalAligned marginLeft={theme.sizing.scale400}>
+        <Block display="flex" justifyContent="flex-end">
           <Button
             size={SIZE.mini}
             kind={KIND.tertiary}
@@ -149,7 +139,7 @@ const SessionFilterRow = ({
             <Delete />
           </Button>
         </Block>
-      </Block>
+      </VerticalAligned>
     </Block>
   );
 };
