@@ -3,8 +3,8 @@ import { Block, BlockProps } from 'baseui/block';
 
 export type Props = Omit<BlockProps, 'display'>;
 
-const Flex = (props: Props) => {
-  return <Block {...props} display="flex" />;
-};
+const Flex = React.forwardRef<HTMLElement, Props>((props, ref) => {
+  return <Block {...props} display="flex" ref={ref} />;
+});
 
 export default Flex;

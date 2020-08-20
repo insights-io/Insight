@@ -9,23 +9,21 @@ type Props = {
   disabled?: boolean;
 };
 
-const FormTfaInput = ({
-  code,
-  handleChange,
-  error,
-  disabled = false,
-}: Props) => {
-  return (
-    <FormControl label="Google verification code" error={error}>
-      <PinCode
-        autoFocus
-        disabled={disabled}
-        error={error !== undefined}
-        onChange={(data) => handleChange(data.values)}
-        values={code}
-      />
-    </FormControl>
-  );
-};
+const FormTfaInput = React.forwardRef<HTMLInputElement, Props>(
+  ({ code, handleChange, error, disabled = false }, ref) => {
+    return (
+      <FormControl label="Google verification code" error={error}>
+        <PinCode
+          inputRef={ref}
+          autoFocus
+          disabled={disabled}
+          error={error !== undefined}
+          onChange={(data) => handleChange(data.values)}
+          values={code}
+        />
+      </FormControl>
+    );
+  }
+);
 
 export default FormTfaInput;
