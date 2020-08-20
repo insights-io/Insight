@@ -2,13 +2,14 @@ package com.meemaw.shared.ip;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.stream.Stream;
 
 public final class IpUtils {
 
   private IpUtils() {}
 
   public static boolean isLocalAddress(String ip) throws UnknownHostException {
-    InetAddress address = InetAddress.getAllByName(ip)[0];
-    return address.isSiteLocalAddress() || address.isLoopbackAddress();
+    return Stream.of(InetAddress.getAllByName(ip))
+        .allMatch(address -> address.isSiteLocalAddress() || address.isLoopbackAddress());
   }
 }

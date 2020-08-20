@@ -20,13 +20,11 @@ jest.mock('react-virtualized-auto-sizer', () => {
 const MAC_CHROME = 'Mac OS X • Chrome';
 const ANDROID_CHROME = 'Android • Chrome';
 
-const ljubljanaLocation =
-  'Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago';
-
-const boydtonLocation =
+const LJUBLJANA_LOCATION = /^Ljubljana, Slovenia - 82.192.62.51 - less than [1-9][0-9]* seconds ago$/;
+const BOYDTON_LOCATION =
   'Boydton, Virginia, United States - 13.77.88.76 - about 1 hour ago';
 
-const uknownLocation = 'Unknown location - 13.77.88.76 - 1 day ago';
+const UNKNOWN_LOCATION = 'Unknown location - 13.77.88.76 - 1 day ago';
 
 describe('<SessionsPage />', () => {
   it('Should render recording snippet on no sessions', async () => {
@@ -51,9 +49,9 @@ describe('<SessionsPage />', () => {
     expect(queryAllByText(MAC_CHROME).length).toEqual(2);
     expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
 
-    expect(queryByText(ljubljanaLocation)).toBeInTheDocument();
-    expect(queryByText(boydtonLocation)).toBeInTheDocument();
-    expect(queryByText(uknownLocation)).toBeInTheDocument();
+    expect(queryByText(LJUBLJANA_LOCATION)).toBeInTheDocument();
+    expect(queryByText(BOYDTON_LOCATION)).toBeInTheDocument();
+    expect(queryByText(UNKNOWN_LOCATION)).toBeInTheDocument();
 
     userEvent.click(getByText('0 Filters'));
     userEvent.click(getByText('Filter event by...'));
@@ -130,7 +128,7 @@ describe('<SessionsPage />', () => {
     WithSessions.story.setupMocks(sandbox);
     const { findByText, push } = render(<WithSessions />);
 
-    userEvent.click(await findByText(ljubljanaLocation));
+    userEvent.click(await findByText(LJUBLJANA_LOCATION));
 
     sandbox.assert.calledWithExactly(
       push,
