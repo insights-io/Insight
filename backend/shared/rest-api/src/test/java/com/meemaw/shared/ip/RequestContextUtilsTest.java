@@ -1,7 +1,8 @@
-package com.meemaw.shared.context;
+package com.meemaw.shared.ip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.shared.context.RequestContextUtils;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import javax.ws.rs.GET;

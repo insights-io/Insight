@@ -17,6 +17,9 @@ jest.mock('react-virtualized-auto-sizer', () => {
   };
 });
 
+const MAC_CHROME = 'Mac OS X • Chrome';
+const ANDROID_CHROME = 'Android • Chrome';
+
 const ljubljanaLocation =
   'Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago';
 
@@ -46,12 +49,11 @@ describe('<SessionsPage />', () => {
       getByText,
       queryAllByText,
       container,
-      debug,
       findByText,
     } = render(<WithSessions />);
 
-    expect(queryAllByText('Mac OS X • Chrome').length).toEqual(2);
-    expect(queryAllByText('Android • Chrome').length).toEqual(1);
+    expect(queryAllByText(MAC_CHROME).length).toEqual(2);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
 
     expect(queryByText(ljubljanaLocation)).toBeInTheDocument();
     expect(queryByText(boydtonLocation)).toBeInTheDocument();
@@ -80,8 +82,8 @@ describe('<SessionsPage />', () => {
       });
     });
 
-    expect(queryAllByText('Mac OS X • Chrome').length).toEqual(0);
-    expect(queryAllByText('Android • Chrome').length).toEqual(0);
+    expect(queryAllByText(MAC_CHROME).length).toEqual(0);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(0);
 
     const clearTextIcon = container.querySelector(
       'svg[aria-label="Clear value"]'
@@ -103,10 +105,8 @@ describe('<SessionsPage />', () => {
       });
     });
 
-    debug();
-
-    await findByText(ljubljanaLocation);
-    expect(queryAllByText('Mac OS X • Chrome').length).toEqual(1);
+    expect(queryAllByText(MAC_CHROME).length).toEqual(1);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
 
     const removeFilterIcon = container.querySelector(
       'svg[title="Delete"]'
@@ -126,9 +126,8 @@ describe('<SessionsPage />', () => {
       });
     });
 
-    await findByText(boydtonLocation);
-    expect(queryAllByText('Mac OS X • Chrome').length).toEqual(2);
-    expect(queryAllByText('Android • Chrome').length).toEqual(1);
+    expect(queryAllByText(MAC_CHROME).length).toEqual(2);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
   });
 
   it('Should be able to navigate to a session details page', async () => {
