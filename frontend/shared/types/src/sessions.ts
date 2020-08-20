@@ -8,6 +8,7 @@ export type LocationDTO = {
   ip: string;
   countryName?: string;
   regionName?: string;
+  continentName?: string;
   city?: string;
   zip?: string;
   latitude?: number;

@@ -14,15 +14,11 @@ export type Props = {
     from: Date | undefined;
     to: Date | undefined;
   }) => void;
-  onValidFiltersUpdate: (filters: SessionFilter[]) => void;
-  validFilters: SessionFilter[];
+  setFilters: (filters: SessionFilter[]) => void;
+  filters: SessionFilter[];
 };
 
-const SessionSearch = ({
-  onDateRangeChange,
-  validFilters,
-  onValidFiltersUpdate,
-}: Props) => {
+const SessionSearch = ({ onDateRangeChange, filters, setFilters }: Props) => {
   const [_css, theme] = useStyletron();
   const [showFilters, setShowFilters] = useState(false);
 
@@ -41,7 +37,7 @@ const SessionSearch = ({
           onClick={() => setShowFilters((prev) => !prev)}
           shape={SHAPE.pill}
         >
-          {validFilters.length} Filters
+          {filters.length} Filters
           <Filter
             overrides={{
               Svg: { style: { marginLeft: theme.sizing.scale600 } },
@@ -51,7 +47,7 @@ const SessionSearch = ({
       </Block>
       {showFilters && (
         <Block marginTop={theme.sizing.scale600}>
-          <SessionFilters onValidFiltersUpdate={onValidFiltersUpdate} />
+          <SessionFilters onChange={setFilters} />
         </Block>
       )}
     </Block>

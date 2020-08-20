@@ -11,17 +11,17 @@ const useSessionFilters = () => {
     setFilters((prev) => [...prev, generateNewFilter()]);
   }, []);
 
-  const onDelete = (id: string) => {
+  const onDelete = useCallback((id: string) => {
     setFilters((prev) =>
       prev.length === 1
         ? [generateNewFilter()]
         : prev.filter((f) => f.id !== id)
     );
-  };
+  }, []);
 
-  const onUpdateFilter = (filter: SessionFilter) => {
+  const onUpdateFilter = useCallback((filter: SessionFilter) => {
     setFilters((prev) => prev.map((f) => (f.id === filter.id ? filter : f)));
-  };
+  }, []);
 
   const validFilters = useMemo(
     () => filters.filter((f) => f.key !== undefined && f.value !== ''),

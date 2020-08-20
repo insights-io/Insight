@@ -23,7 +23,10 @@ export type SessionSearchBean = SearchBean & {
   'location.ip'?: QueryParam;
 };
 
-type SessionsSearchRequestOptions = Omit<RequestOptions, 'searchParams'> & {
+export type SessionsSearchRequestOptions = Omit<
+  RequestOptions,
+  'searchParams'
+> & {
   search?: SessionSearchBean;
 };
 

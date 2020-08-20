@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, SelectProps } from 'baseui/select';
+import { Select, SelectProps, STATE_CHANGE_TYPE } from 'baseui/select';
 
 type Props = Omit<
   SelectProps,
@@ -16,7 +16,7 @@ const AutocompleteInput = ({ onChange, value, options, ...rest }: Props) => {
       valueKey="label"
       onChange={(params) => {
         const nextValue = params.option ? (params.option.label as string) : '';
-        if (params.type === 'remove' && nextValue) {
+        if (params.type === STATE_CHANGE_TYPE.remove && nextValue) {
           onChange(nextValue.substring(0, nextValue.length - 1));
         } else {
           onChange(nextValue);

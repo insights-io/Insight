@@ -31,7 +31,7 @@ const HomePage = ({
   const [dateRange, setDataRange] = useState<DateRange>(() =>
     createDateRange('all-time')
   );
-  const [validFilters, setValidFilters] = useState<SessionFilter[]>([]);
+  const [filters, setFilters] = useState<SessionFilter[]>([]);
 
   return (
     <AppLayout
@@ -48,15 +48,15 @@ const HomePage = ({
         <>
           <SessionSearch
             onDateRangeChange={setDataRange}
-            onValidFiltersUpdate={setValidFilters}
-            validFilters={validFilters}
+            setFilters={setFilters}
+            filters={filters}
           />
           <Block marginTop={theme.sizing.scale400} height="100%">
             <SessionList
               initialSessions={initialSessions}
               initialSessionCount={sessionCount}
               dateRange={dateRange}
-              filters={validFilters}
+              filters={filters}
             />
           </Block>
         </>
