@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@amcharts/amcharts4-geodata/-/amcharts4-geodata-4.1.17.tgz#4c2a3c46254763f8abce887375f4ba9185bff94f"
   integrity sha512-ylzshiOq/aMRlVrRq8dOznZP7fp4xg/XkmhTjGm2dN6O1WqvoVBBOOnGyzrmb2gBlqN5zj59PQyOqSDyQUNe/Q==
 
-"@amcharts/amcharts4@4.9.35":
-  version "4.9.35"
-  resolved "https://registry.yarnpkg.com/@amcharts/amcharts4/-/amcharts4-4.9.35.tgz#8f6a65d96815ad9db67222af7399aa4b05666bed"
-  integrity sha512-+iYmGxXjpZUZeCN6oB3LpeBuJgmavIOphmLuDEpsPx8GKGOObm0QRq/bUz2GJwgncpR3sQ7rxOghJMRYvlgNcg==
+"@amcharts/amcharts4@4.9.36":
+  version "4.9.36"
+  resolved "https://registry.yarnpkg.com/@amcharts/amcharts4/-/amcharts4-4.9.36.tgz#fe6d221f0eeafb6780214a1688deec0e45aa3863"
+  integrity sha512-UF6r1qMxMllcgl1QMH0WZBQVbsImOp80bBaRCcdpgxXYtz2oBvwDzBT56ReMbNFEnNW+0xEvfzPQpeet6IZzag==
   dependencies:
     "@babel/runtime" "^7.6.3"
     "@types/regression" "^2.0.0"
