@@ -1,7 +1,8 @@
-package com.meemaw.shared.context;
+package com.meemaw.shared.ip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.shared.context.RequestUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;

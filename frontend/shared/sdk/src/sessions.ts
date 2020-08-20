@@ -13,11 +13,21 @@ export const mapSession = (sessionDTO: SessionDTO | Session): Session => {
   return { ...sessionDTO, createdAt: new Date(sessionDTO.createdAt) };
 };
 
-type SessionsSearchRequestOptions = Omit<RequestOptions, 'searchParams'> & {
-  search?: SearchBean & {
-    // eslint-disable-next-line camelcase
-    created_at?: QueryParam;
-  };
+export type SessionSearchBean = SearchBean & {
+  // eslint-disable-next-line camelcase
+  created_at?: QueryParam;
+  'location.countryName'?: QueryParam;
+  'location.continentName'?: QueryParam;
+  'location.city'?: QueryParam;
+  'location.regionName'?: QueryParam;
+  'location.ip'?: QueryParam;
+};
+
+export type SessionsSearchRequestOptions = Omit<
+  RequestOptions,
+  'searchParams'
+> & {
+  search?: SessionSearchBean;
 };
 
 export const createSessionsClient = (sessionApiBaseURL: string) => {
@@ -50,6 +60,23 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
         .then((dataResponse) => dataResponse.data);
     },
     count,
+    distinct: (
+      on: string,
+      { baseURL = sessionApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      const searchQuery = querystring({ on });
+      return ky
+        .get(`${baseURL}/v1/sessions/insights/distinct${searchQuery}`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<(string | null)[]>>()
+        .then(
+          (dataResponse) =>
+            dataResponse.data.filter((v) => v !== null) as string[]
+        );
+    },
+
     countByLocation: (params: RequestOptions = {}) => {
       return count<
         {

@@ -10,6 +10,7 @@ import {
 } from 'shared/theme';
 import useSidebar from 'modules/app/hooks/useSidebar';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
+import FlexColumn from 'shared/components/FlexColumn';
 
 import Sidebar from '../Navbar/Sidebar';
 import Topbar from '../Navbar/Topbar';
@@ -95,16 +96,14 @@ const AppLayout = ({ children, overrides }: Props) => {
     <Block height="100%" display="flex" $style={rootStyles}>
       {topbar}
       {sidebar}
-      <Block
-        display="flex"
-        flexDirection="column"
+      <FlexColumn
         flex="1"
         position="absolute"
         overflow="auto"
         $style={contentContainerStyle}
       >
         {children}
-      </Block>
+      </FlexColumn>
     </Block>
   );
 };

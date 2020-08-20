@@ -6,6 +6,8 @@ import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.DataResponse;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -26,5 +28,16 @@ public class InsightsResourceImpl implements InsightsResource {
             .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
 
     return sessionDatasource.count(organizationId, searchDTO).thenApply(DataResponse::ok);
+  }
+
+  @Override
+  public CompletionStage<Response> distinct(List<String> on) {
+    String organizationId = insightPrincipal.user().getOrganizationId();
+    Map<String, List<String>> params = RequestUtils.map(uriInfo.getQueryParameters());
+    params.remove(ON);
+    SearchDTO searchDTO =
+        SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS).rhsColon(params);
+
+    return sessionDatasource.distinct(on, organizationId, searchDTO).thenApply(DataResponse::ok);
   }
 }

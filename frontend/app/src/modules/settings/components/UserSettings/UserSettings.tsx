@@ -3,6 +3,7 @@ import { Block } from 'baseui/block';
 import { Table } from 'baseui/table';
 import { User } from '@insight/types';
 import { useStyletron } from 'baseui';
+import FlexColumn from 'shared/components/FlexColumn';
 
 import ChangePassword from '../ChangePassword';
 import Security from '../Security';
@@ -17,7 +18,7 @@ const UserSettings = ({ user, loading }: Props) => {
 
   return (
     <Block display="flex">
-      <Block display="flex" flexDirection="column" flex="1">
+      <FlexColumn flex="1">
         <Block display="flex" flex="1">
           <Block width="100%" height="fit-content">
             <Table
@@ -35,7 +36,7 @@ const UserSettings = ({ user, loading }: Props) => {
         <Block>
           <Security />
         </Block>
-      </Block>
+      </FlexColumn>
 
       <ChangePassword
         overrides={{

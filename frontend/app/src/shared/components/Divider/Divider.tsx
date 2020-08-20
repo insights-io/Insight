@@ -4,10 +4,11 @@ import { Block, BlockProps } from 'baseui/block';
 
 type Props = BlockProps;
 
-const Divider = (props: Props) => {
+const Divider = React.forwardRef<HTMLElement, Props>((props, ref) => {
   const [_css, theme] = useStyletron();
   return (
     <Block
+      ref={ref}
       height="1px"
       marginTop={theme.sizing.scale800}
       marginBottom={theme.sizing.scale800}
@@ -15,6 +16,6 @@ const Divider = (props: Props) => {
       {...props}
     />
   );
-};
+});
 
 export default Divider;

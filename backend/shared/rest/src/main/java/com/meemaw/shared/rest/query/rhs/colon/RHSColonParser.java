@@ -56,7 +56,7 @@ public final class RHSColonParser extends AbstractQueryParser {
               .map(value -> extractTermFilterExpression(fieldName, value))
               .collect(Collectors.toList());
 
-      expressions.add(new BooleanFilterExpression<>(BooleanOperation.OR, termFilterExpressions));
+      expressions.add(new BooleanFilterExpression<>(BooleanOperation.AND, termFilterExpressions));
     } else {
       errors.put(fieldName, UNEXPECTED_FIELD_ERROR);
     }

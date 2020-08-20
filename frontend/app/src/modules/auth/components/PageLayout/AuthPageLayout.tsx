@@ -2,6 +2,8 @@ import React from 'react';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H1, H2 } from 'baseui/typography';
+import VerticalAligned from 'shared/components/VerticalAligned';
+import FlexColumn from 'shared/components/FlexColumn';
 
 type Props = {
   children: React.ReactNode;
@@ -11,16 +13,13 @@ type Props = {
 const AuthPageLayout = ({ children, subtitle }: Props) => {
   const [_css, theme] = useStyletron();
   return (
-    <Block display="flex" flexDirection="column" height="100%">
-      <Block
+    <FlexColumn height="100%">
+      <VerticalAligned
         height="100%"
         width="100%"
         maxWidth="720px"
         marginLeft="auto"
         marginRight="auto"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
         padding={theme.sizing.scale600}
       >
         <Block
@@ -45,8 +44,8 @@ const AuthPageLayout = ({ children, subtitle }: Props) => {
         </Block>
 
         {children}
-      </Block>
-    </Block>
+      </VerticalAligned>
+    </FlexColumn>
   );
 };
 

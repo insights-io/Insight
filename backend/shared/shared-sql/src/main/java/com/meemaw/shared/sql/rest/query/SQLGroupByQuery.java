@@ -29,7 +29,8 @@ public class SQLGroupByQuery {
   }
 
   private Stream<Field<?>> fields() {
-    return groupBy.getFields().stream().map(field -> SQLFilterExpression.field(field).as(field));
+    return groupBy.getFields().stream()
+        .map(field -> SQLFilterExpression.sqlFilterField(field, String.class).as(field));
   }
 
   public List<Field<?>> fieldsWithCount() {

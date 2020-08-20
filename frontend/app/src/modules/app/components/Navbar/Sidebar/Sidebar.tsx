@@ -9,6 +9,7 @@ import { FaUser, FaListUl, FaInfo } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
 import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
+import FlexColumn from 'shared/components/FlexColumn';
 
 type Props = {
   width: BlockProps['width'];
@@ -50,13 +51,11 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
     };
 
     return (
-      <Block
+      <FlexColumn
         ref={ref}
         as="nav"
-        display="flex"
         overflow="hidden"
         position="fixed"
-        flexDirection="column"
         height="100%"
         width={width}
         color={theme.colors.white}
@@ -144,7 +143,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
             />
           )}
         </Block>
-      </Block>
+      </FlexColumn>
     );
   }
 );

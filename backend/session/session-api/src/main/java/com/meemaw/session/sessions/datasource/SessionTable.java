@@ -9,8 +9,11 @@ public final class SessionTable {
   public static final String USER_AGENT = "user_agent";
   public static final String USER_AGENT__DEVICE_CLASS = String.join(".", USER_AGENT, "deviceClass");
   public static final String LOCATION = "location";
-  public static final String LOCATION__COUNTRY_NAME = String.join(".", LOCATION, "countryName");
-  public static final String LOCATION__CONTINENT_NAME = String.join(".", LOCATION, "continentName");
+  public static final String LOCATION__COUNTRY = String.join(".", LOCATION, "countryName");
+  public static final String LOCATION__CITY = String.join(".", LOCATION, "city");
+  public static final String LOCATION__REGION = String.join(".", LOCATION, "regionName");
+  public static final String LOCATION__CONTINENT = String.join(".", LOCATION, "continentName");
+  public static final String LOCATION__IP = String.join(".", LOCATION, "ip");
   public static final String DEVICE_ID = "device_id";
   public static final String CREATED_AT = "created_at";
 
@@ -20,8 +23,11 @@ public final class SessionTable {
           ORGANIZATION_ID,
           DEVICE_ID,
           CREATED_AT,
-          LOCATION__COUNTRY_NAME,
-          LOCATION__CONTINENT_NAME,
+          LOCATION__COUNTRY,
+          LOCATION__CONTINENT,
+          LOCATION__IP,
+          LOCATION__CITY,
+          LOCATION__REGION,
           USER_AGENT__DEVICE_CLASS);
 
   private SessionTable() {}

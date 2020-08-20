@@ -10,6 +10,7 @@ import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATIO
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
+import static com.meemaw.shared.sql.rest.query.SQLFilterExpression.sqlSelectField;
 import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,9 +35,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Field;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -88,6 +91,34 @@ public class SqlSessionDatasource implements SessionDatasource {
                 FIELD_MAPPINGS);
 
     return sqlPool.execute(query).thenApply(rows -> sqlGroupByQuery.asJsonNode(rows, objectMapper));
+  }
+
+  @Override
+  public CompletionStage<Collection<String>> distinct(
+      Collection<String> on, String organizationId, SearchDTO searchDTO) {
+    List<Field<?>> fields =
+        on.stream().map(f -> sqlSelectField(f, String.class)).collect(Collectors.toList());
+
+    Query query =
+        SQLSearchDTO.of(searchDTO)
+            .apply(
+                sqlPool
+                    .getContext()
+                    .selectDistinct(fields)
+                    .from(TABLE)
+                    .where(ORGANIZATION_ID.eq(organizationId)),
+                FIELD_MAPPINGS);
+
+    return sqlPool
+        .execute(query)
+        .thenApply(
+            rows -> {
+              Collection<String> values = new ArrayList<>(rows.size());
+              for (Row row : rows) {
+                values.add(row.getString(0));
+              }
+              return values;
+            });
   }
 
   @Override
