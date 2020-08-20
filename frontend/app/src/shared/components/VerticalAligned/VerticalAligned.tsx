@@ -1,11 +1,11 @@
 import React from 'react';
 
-import Flex, { Props as FlexProps } from '../Flex';
+import FlexColumn, { Props as FlexColumnProps } from '../FlexColumn';
 
-type Props = Omit<FlexProps, 'justifyContent' | 'flexDirection'>;
+type Props = Omit<FlexColumnProps, 'justifyContent'>;
 
 const VerticalAligned = (props: Props) => {
-  return <Flex {...props} justifyContent="center" flexDirection="column" />;
+  return <FlexColumn {...props} justifyContent="center" />;
 };
 
 export default VerticalAligned;
