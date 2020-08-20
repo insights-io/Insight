@@ -1,6 +1,7 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
 import { INSIGHT_SESSIONS } from 'test/data';
+import { createDateRange } from 'modules/sessions/components/SessionSearch/utils';
 
 import SessionList from './SessionList';
 
@@ -13,7 +14,9 @@ export const Base = () => {
   return (
     <SessionList
       initialSessions={INSIGHT_SESSIONS}
-      sessionCount={INSIGHT_SESSIONS.length}
+      initialSessionCount={INSIGHT_SESSIONS.length}
+      dateRange={createDateRange('all-time')}
+      filters={[]}
     />
   );
 };

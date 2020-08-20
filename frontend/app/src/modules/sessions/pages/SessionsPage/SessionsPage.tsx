@@ -23,7 +23,7 @@ type Props = {
 const HomePage = ({
   user: initialUser,
   sessions: initialSessions,
-  sessionCount,
+  sessionCount: initialSessionCount,
 }: Props) => {
   const [_css, theme] = useStyletron();
   const { user } = useAuth(initialUser);
@@ -54,7 +54,7 @@ const HomePage = ({
           <Block marginTop={theme.sizing.scale400} height="100%">
             <SessionList
               initialSessions={initialSessions}
-              initialSessionCount={sessionCount}
+              initialSessionCount={initialSessionCount}
               dateRange={dateRange}
               filters={filters}
             />
