@@ -22,8 +22,18 @@ public final class SqlSessionTable {
   public static final Field<UUID> ID = field(SessionTable.ID, UUID.class);
   public static final Field<String> ORGANIZATION_ID =
       field(SessionTable.ORGANIZATION_ID, String.class);
+
+  /* User agent fields */
   public static final Field<JsonObject> USER_AGENT =
       field(SessionTable.USER_AGENT, JSON_OBJECT_DATA_TYPE);
+  public static final Field<String> USER_AGENT__DEVICE_CLASS =
+      field(SessionTable.USER_AGENT__DEVICE_CLASS, String.class);
+  public static final Field<String> USER_AGENT__BROWSER =
+      field(SessionTable.USER_AGENT__BROWSER, String.class);
+  public static final Field<String> USER_AGENT_OPERATING_SYSTEM_ =
+      field(SessionTable.USER_AGENT__OPERATING_SYSTEM, String.class);
+
+  /* Location fields */
   public static final Field<JsonObject> LOCATION =
       field(SessionTable.LOCATION, JSON_OBJECT_DATA_TYPE);
   public static final Field<String> LOCATION__CITY =
@@ -57,7 +67,10 @@ public final class SqlSessionTable {
                   LOCATION__COUNTRY,
                   LOCATION__CONTINENT,
                   LOCATION__REGION,
-                  LOCATION_IP))
+                  LOCATION_IP,
+                  USER_AGENT__DEVICE_CLASS,
+                  USER_AGENT__BROWSER,
+                  USER_AGENT_OPERATING_SYSTEM_))
           .collect(Collectors.toMap(Field::getName, f -> f));
 
   private SqlSessionTable() {}
