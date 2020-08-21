@@ -21,6 +21,9 @@ export type SessionSearchBean = SearchBean & {
   'location.city'?: QueryParam;
   'location.regionName'?: QueryParam;
   'location.ip'?: QueryParam;
+  'user_agent.browserName'?: QueryParam;
+  'user_agent.operatingSystemName'?: QueryParam;
+  'user_agent.deviceClass'?: QueryParam;
 };
 
 export type SessionsSearchRequestOptions = Omit<
