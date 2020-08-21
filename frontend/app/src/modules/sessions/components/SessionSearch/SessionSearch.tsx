@@ -4,6 +4,7 @@ import { Filter } from 'baseui/icon';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
 import { createBorderRadius } from 'shared/styles/input';
+import Flex from 'shared/components/Flex';
 
 import DateSearch from './DateSearch';
 import SessionFilters from './SessionFilters';
@@ -28,7 +29,7 @@ const SessionSearch = ({ onDateRangeChange, filters, setFilters }: Props) => {
       padding={theme.sizing.scale400}
       $style={createBorderRadius(theme)}
     >
-      <Block display="flex">
+      <Flex>
         <DateSearch theme={theme} onDateRangeChange={onDateRangeChange} />
 
         <Button
@@ -44,14 +45,15 @@ const SessionSearch = ({ onDateRangeChange, filters, setFilters }: Props) => {
             }}
           />
         </Button>
+      </Flex>
+      <Block
+        marginTop={theme.sizing.scale600}
+        display={showFilters ? undefined : 'none'}
+      >
+        <SessionFilters onChange={setFilters} />
       </Block>
-      {showFilters && (
-        <Block marginTop={theme.sizing.scale600}>
-          <SessionFilters onChange={setFilters} />
-        </Block>
-      )}
     </Block>
   );
 };
 
-export default SessionSearch;
+export default React.memo(SessionSearch);

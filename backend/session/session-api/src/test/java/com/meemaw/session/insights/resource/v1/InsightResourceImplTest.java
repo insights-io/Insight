@@ -209,6 +209,60 @@ public class InsightResourceImplTest {
         .body(sameJson("{\"data\":[null,\"Podravska\",\"Washington\"]}"));
   }
 
+  @Test
+  public void get_session_insights_distinct__should_return_browser_name() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "user_agent.browserName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Chrome\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_operating_system_name() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "user_agent.operatingSystemName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Mac OS X\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_device_class() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "user_agent.deviceClass")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Desktop\",\"Phone\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_throw__when_unexpected_fields() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "random")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"random\":\"Unexpected field\"}}}"));
+  }
+
   @BeforeEach
   void init() {
     if (hasBeenSetup.getAndSet(true)) {
