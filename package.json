@@ -44,7 +44,7 @@
     "jest-environment-jsdom-sixteen": "1.0.3",
     "lerna": "3.22.1",
     "prettier": "2.0.5",
-    "pretty-quick": "2.0.1",
+    "pretty-quick": "3.0.0",
     "serve": "11.3.2",
     "sinon": "9.0.3",
     "testcafe": "1.9.1",
