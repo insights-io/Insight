@@ -1,9 +1,7 @@
 import { ClientFunction } from 'testcafe';
 
-export const getQrImageData = ClientFunction(() => {
-  const image = document.querySelector(
-    'img[alt="TFA QR code"]'
-  ) as HTMLImageElement;
+export const getQrImageData = ClientFunction((img: string) => {
+  const image = document.querySelector(img) as HTMLImageElement;
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');

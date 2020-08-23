@@ -1,38 +1,28 @@
-import { queryByText, getByText } from '@testing-library/testcafe';
-import { Selector } from 'testcafe';
-import jsQR from 'jsqr';
-import { totp } from 'speakeasy';
+import { getByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
 import config from '../../config';
+import { getLocation, findLinkFromDockerLog } from '../../utils';
 import {
-  getLocation,
-  passwordInput,
-  signUpAndLogin,
-  login,
-  forgotPasswordButton,
-  emailInput,
-  startPasswordResetButton,
-  findLinkFromDockerLog,
-  finishPasswordResetButton,
-  totpLogin,
-} from '../../utils';
-import { Sidebar } from '../../pages';
-import { getQrImageData } from '../../utils/io';
+  Sidebar,
+  AccountSettingsPage,
+  SignUpPage,
+  LoginPage,
+  VerificationPage,
+  PasswordForgotPage,
+  PasswordResetPage,
+} from '../../pages';
 
-fixture('/login/verification').page(`${config.appBaseURL}/login/verification`);
+fixture('/login/verification').page(VerificationPage.path);
 
-const codeInput = Selector('input[aria-label="Please enter your pin code"]');
 const emailSentMessage = getByText(
   'If your email address is associated with an Insight account, you will be receiving a password reset request shortly.'
 );
 
 test('Should be able to complete full TFA flow after password reset', async (t) => {
   await t.expect(getLocation()).eql(`${config.appBaseURL}/login?dest=%2F`);
-
-  const password = uuid();
-  const email = `${uuid()}@gmail.com`;
-  await signUpAndLogin(t, {
+  const { password, email } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, {
     fullName: 'Miha Novak',
     company: 'Insight',
     email,
@@ -40,41 +30,38 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
   });
 
   await t
-    .hover(Sidebar.accountSettingsItem)
-    .expect(queryByText('Account settings').visible)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
-    .click(Sidebar.accountSettingsItem)
-    .click(queryByText('Account settings'))
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/account/settings`)
-    .click(queryByText('Two factor authentication'))
-    .typeText(codeInput, '111111')
-    .click(queryByText('Submit'))
-    .expect(queryByText('Invalid code').visible)
+    .eql(AccountSettingsPage.path)
+    .click(AccountSettingsPage.twoFactorAuthentication)
+    .typeText(AccountSettingsPage.tfa.codeInput, '111111')
+    .click(AccountSettingsPage.tfa.submitButton)
+    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .ok('Should display invalid code error');
 
-  const imageData = await getQrImageData();
-  const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
-  const tfaSecret = qrCode.data.split('?secret=')[1];
-
+  const tfaSecret = await AccountSettingsPage.tfa.extractQrCodeSecret();
   await t
-    .typeText(codeInput, totp({ secret: tfaSecret, encoding: 'base32' }))
-    .expect(queryByText('Invalid code').value)
-    .notOk('Should invalidate error on typing')
-    .click(queryByText('Submit'))
-    .expect(
-      queryByText('Two factor authentication has been successfully set up')
-        .visible
+    .typeText(
+      AccountSettingsPage.tfa.codeInput,
+      VerificationPage.totp(tfaSecret)
     )
+    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
+    .notOk('Should invalidate error on typing')
+    .click(AccountSettingsPage.tfa.submitButton)
+    .expect(AccountSettingsPage.tfa.enabledToast.visible)
     .ok('Should display positive message')
-    .hover(Sidebar.accountSettingsItem)
-    .expect(queryByText('Account settings').visible)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
-    .click(Sidebar.accountSettingsItem)
-    .click(queryByText('Sign out'))
-    .click(forgotPasswordButton)
-    .typeText(emailInput, email)
-    .click(startPasswordResetButton)
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.signOut)
+    .click(LoginPage.forgotPasswordButton)
+    .typeText(PasswordForgotPage.emailInput, email)
+    .click(PasswordForgotPage.submitButton)
     .expect(emailSentMessage.visible)
     .ok('Should display nice message that email has been sent');
 
@@ -82,34 +69,29 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
   const newPassword = uuid();
   await t
     .navigateTo(passwordResetLink)
-    .expect(passwordInput.visible)
+    .expect(PasswordResetPage.passwordInput.visible)
     .ok('Password input is visible')
-    .typeText(passwordInput, newPassword)
-    .click(finishPasswordResetButton)
+    .typeText(PasswordResetPage.passwordInput, newPassword)
+    .click(PasswordResetPage.submitButton)
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/login/verification?dest=%2F`);
+    .eql(`${VerificationPage.path}?dest=%2F`);
 
-  await totpLogin(t, tfaSecret, codeInput);
+  await VerificationPage.totpLogin(t, tfaSecret);
   await t
-    .hover(Sidebar.accountSettingsItem)
-    .expect(queryByText('Account settings').visible)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
-    .click(Sidebar.accountSettingsItem)
-    .click(queryByText('Account settings'))
-    .click(queryByText(/Two factor authentication.*/))
-    .expect(
-      queryByText('Two factor authentication has been successfully disabled')
-        .visible
-    )
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
+    .click(AccountSettingsPage.twoFactorAuthentication)
+    .expect(AccountSettingsPage.tfa.disabledToast.visible)
     .ok('Should display message that TFA is disabled');
 });
 
 test('Should be able to complete full TFA flow', async (t) => {
   await t.expect(getLocation()).eql(`${config.appBaseURL}/login?dest=%2F`);
-
-  const password = uuid();
-  const email = `${uuid()}@gmail.com`;
-  await signUpAndLogin(t, {
+  const { email, password } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, {
     fullName: 'Miha Novak',
     company: 'Insight',
     email,
@@ -117,60 +99,50 @@ test('Should be able to complete full TFA flow', async (t) => {
   });
 
   await t
-    .hover(Sidebar.accountSettingsItem)
-    .expect(queryByText('Account settings').visible)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
-    .click(Sidebar.accountSettingsItem)
-    .click(queryByText('Account settings'))
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/account/settings`)
-    .click(queryByText('Two factor authentication'))
-    .typeText(codeInput, '111111')
-    .click(queryByText('Submit'))
-    .expect(queryByText('Invalid code').visible)
+    .eql(AccountSettingsPage.path)
+    .click(AccountSettingsPage.twoFactorAuthentication)
+    .typeText(AccountSettingsPage.tfa.codeInput, '111111')
+    .click(AccountSettingsPage.tfa.submitButton)
+    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .ok('Should display invalid code error');
 
-  const imageData = await getQrImageData();
-  const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
-  const tfaSecret = qrCode.data.split('?secret=')[1];
-
+  const tfaSecret = await AccountSettingsPage.tfa.extractQrCodeSecret();
   await t
-    .typeText(codeInput, totp({ secret: tfaSecret, encoding: 'base32' }))
-    .expect(queryByText('Invalid code').value)
+    .typeText(
+      AccountSettingsPage.tfa.codeInput,
+      VerificationPage.totp(tfaSecret)
+    )
+    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .notOk('Should invalidate error on typing')
-    .click(queryByText('Submit'))
-    .expect(
-      queryByText('Two factor authentication has been successfully set up')
-        .visible
-    )
+    .click(AccountSettingsPage.tfa.submitButton)
+    .expect(AccountSettingsPage.tfa.enabledToast.visible)
     .ok('Should display positive message')
-    .hover(Sidebar.accountSettingsItem)
-    .expect(queryByText('Account settings').visible)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
-    .click(Sidebar.accountSettingsItem)
-    .click(queryByText('Sign out'));
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.signOut);
 
-  await login(t, { email, password })
-    .expect(
-      queryByText(
-        'To protect your account, please complete the following verification.'
-      ).visible
-    )
-    .ok('should display message')
+  await LoginPage.login(t, { email, password })
+    .expect(VerificationPage.message.visible)
+    .ok('should display help message')
     .expect(getLocation())
     .eql(`${config.appBaseURL}/login/verification?dest=%2F`);
 
-  await totpLogin(t, tfaSecret, codeInput);
+  await VerificationPage.totpLogin(t, tfaSecret);
   await t
-    .hover(Sidebar.accountSettingsItem)
-    .expect(queryByText('Account settings').visible)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
-    .click(Sidebar.accountSettingsItem)
-    .click(queryByText('Account settings'))
-    .click(queryByText(/Two factor authentication.*/))
-    .expect(
-      queryByText('Two factor authentication has been successfully disabled')
-        .visible
-    )
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
+    .click(AccountSettingsPage.twoFactorAuthentication)
+    .expect(AccountSettingsPage.tfa.disabledToast.visible)
     .ok('Should display message that TFA is disabled');
 });
