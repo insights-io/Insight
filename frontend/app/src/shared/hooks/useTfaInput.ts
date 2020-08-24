@@ -48,10 +48,9 @@ const useTfaInput = <T>({ submitAction, handleError }: Props<T>) => {
 
   const handleChange = (values: string[]) => {
     setCode(values);
+    setApiError(undefined);
     if (!values.includes('')) {
       submitButtonRef.current?.focus();
-    } else {
-      setApiError(undefined);
     }
   };
 

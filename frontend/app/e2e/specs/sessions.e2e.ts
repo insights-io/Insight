@@ -7,13 +7,13 @@ import {
 } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
-import { loginWithInsightUser } from '../utils';
-import config from '../config';
+import { LoginPage } from '../pages';
+import SessionsPage from '../pages/SessionsPage';
 
-fixture('/sessions').page(`${config.appBaseURL}/sessions`);
+fixture('/sessions').page(SessionsPage.path);
 
 test('Should be able to see sessions for Insight logged in user', async (t) => {
-  await loginWithInsightUser(t);
+  await LoginPage.loginWithInsightUser(t);
 
   const lastSession = queryAllByText(/^.*less than 5 seconds ago$/);
   const showDevToolsIcon = Selector('svg[id="devtools"]');

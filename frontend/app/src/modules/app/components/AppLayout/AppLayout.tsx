@@ -23,6 +23,7 @@ type Props = {
     };
     MainContent?: {
       style?: $StyleProp<BlockProps>;
+      className?: string;
     };
   };
 };
@@ -100,6 +101,7 @@ const AppLayout = ({ children, overrides }: Props) => {
         flex="1"
         position="absolute"
         overflow="auto"
+        className={overrides?.MainContent?.className}
         $style={contentContainerStyle}
       >
         {children}
