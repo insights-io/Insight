@@ -14,7 +14,7 @@ import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
-import com.meemaw.auth.user.datasource.sql.UserTable;
+import com.meemaw.auth.user.datasource.sql.SqlUserTable;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
@@ -84,14 +84,14 @@ public class SqlSignUpDatasource implements SignUpDatasource {
   @Override
   @Traced
   public CompletionStage<Boolean> selectIsEmailTaken(String email, SqlTransaction transaction) {
-    Field<String> userEmail = UserTable.tableField(UserTable.EMAIL);
+    Field<String> userEmail = SqlUserTable.tableField(SqlUserTable.EMAIL);
     Field<String> signUpRequestEmail = SignUpRequestTable.tableField(EMAIL);
 
     Query query =
         sqlPool
             .getContext()
             .selectCount()
-            .from(UserTable.TABLE.fullOuterJoin(TABLE).on(userEmail.eq(signUpRequestEmail)))
+            .from(SqlUserTable.TABLE.fullOuterJoin(TABLE).on(userEmail.eq(signUpRequestEmail)))
             .where(userEmail.eq(email).or(signUpRequestEmail.eq(email)));
 
     return transaction

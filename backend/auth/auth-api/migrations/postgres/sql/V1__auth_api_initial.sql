@@ -81,6 +81,17 @@ CREATE TABLE IF NOT EXISTS auth.organization_invite
     CONSTRAINT email_length CHECK (length(auth.organization_invite.email) < 255)
 );
 
+CREATE TABLE auth.user_tfa_setup
+(
+    user_id    UUID        NOT NULL,
+    params     JSONB       NOT NULL,
+    method     TEXT        NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    PRIMARY KEY (user_id, method),
+    FOREIGN KEY (user_id) REFERENCES auth.user (id)
+);
+
 /* Bootstrap Insight organization */
 INSERT INTO auth.organization(id, name)
 VALUES ('000000', 'Insight');

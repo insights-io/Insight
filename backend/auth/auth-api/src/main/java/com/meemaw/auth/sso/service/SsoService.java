@@ -33,7 +33,7 @@ public interface SsoService {
                     : logoutUserFromAllDevices(maybeUser.get().getId()));
   }
 
-  CompletionStage<LoginResult> login(String email, String password, String ipAddress);
+  CompletionStage<LoginResult<?>> login(String email, String password, String ipAddress);
 
-  CompletionStage<LoginResult> socialLogin(String email, String fullName);
+  CompletionStage<LoginResult<?>> socialLogin(String email, String fullName);
 }

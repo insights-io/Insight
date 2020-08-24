@@ -51,9 +51,7 @@ public class PasswordServiceImpl implements PasswordService {
             maybeUserWithPasswordHash -> {
               UserWithLoginInformation withLoginInformation =
                   maybeUserWithPasswordHash.orElseThrow(
-                      () -> {
-                        throw Boom.badRequest().message("Invalid email or password").exception();
-                      });
+                      () -> Boom.badRequest().message("Invalid email or password").exception());
 
               String hashedPassword = withLoginInformation.getPassword();
               if (hashedPassword == null) {
@@ -62,7 +60,7 @@ public class PasswordServiceImpl implements PasswordService {
               }
 
               if (!BCrypt.checkpw(password, hashedPassword)) {
-                log.info("[AUTH]: Failed to verify password for user user: {}", email);
+                log.info("[AUTH]: Failed to verify password for user user={}", email);
                 throw Boom.badRequest().message("Invalid email or password").exception();
               }
 
@@ -84,9 +82,9 @@ public class PasswordServiceImpl implements PasswordService {
         .findUser(email)
         .thenCompose(
             maybeUser -> {
-              // Don't leak that email is in use
+              // Don't leak that email is already in use
               if (maybeUser.isEmpty()) {
-                log.info("[AUTH]: No user associated with email: {}", email);
+                log.info("[AUTH]: No user associated with email={}", email);
                 return CompletableFuture.completedStage(maybeUser);
               }
 

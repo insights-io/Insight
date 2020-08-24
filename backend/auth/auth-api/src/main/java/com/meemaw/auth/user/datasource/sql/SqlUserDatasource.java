@@ -2,17 +2,19 @@ package com.meemaw.auth.user.datasource.sql;
 
 import static com.meemaw.auth.password.datasource.sql.PasswordTable.HASH;
 import static com.meemaw.auth.password.datasource.sql.PasswordTable.TABLE_ALIAS;
-import static com.meemaw.auth.user.datasource.sql.UserTable.CREATED_AT;
-import static com.meemaw.auth.user.datasource.sql.UserTable.EMAIL;
-import static com.meemaw.auth.user.datasource.sql.UserTable.FIELDS;
-import static com.meemaw.auth.user.datasource.sql.UserTable.FULL_NAME;
-import static com.meemaw.auth.user.datasource.sql.UserTable.ID;
-import static com.meemaw.auth.user.datasource.sql.UserTable.INSERT_FIELDS;
-import static com.meemaw.auth.user.datasource.sql.UserTable.ORGANIZATION_ID;
-import static com.meemaw.auth.user.datasource.sql.UserTable.ROLE;
-import static com.meemaw.auth.user.datasource.sql.UserTable.TABLE;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.CREATED_AT;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.EMAIL;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.FIELDS;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.FULL_NAME;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ID;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.INSERT_FIELDS;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ORGANIZATION_ID;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.PHONE_NUMBER;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ROLE;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE;
 
 import com.meemaw.auth.password.datasource.sql.PasswordTable;
+import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
@@ -43,10 +45,12 @@ public class SqlUserDatasource implements UserDatasource {
 
   private static final List<Field<?>> USER_WITH_LOGIN_INFORMATION_FIELDS =
       Stream.concat(
-              UserTable.TABLE_FIELDS.stream(),
+              SqlUserTable.TABLE_FIELDS.stream(),
               Stream.of(
                   PasswordTable.tableAliasField(HASH),
-                  TFASetupTable.tableAliasField(TFASetupTable.SECRET)))
+                  SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.PARAMS),
+                  SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.METHOD),
+                  SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.CREATED_AT)))
           .collect(Collectors.toUnmodifiableList());
 
   @Inject SqlPool sqlPool;
@@ -58,13 +62,14 @@ public class SqlUserDatasource implements UserDatasource {
       String fullName,
       String organizationId,
       UserRole role,
+      String phoneNumber,
       SqlTransaction transaction) {
     Query query =
         sqlPool
             .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(email, fullName, organizationId, role.toString())
+            .values(email, fullName, organizationId, role.toString(), phoneNumber)
             .returning(FIELDS);
 
     return transaction.query(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
@@ -112,27 +117,27 @@ public class SqlUserDatasource implements UserDatasource {
         row.getString(FULL_NAME.getName()),
         UserRole.valueOf(row.getString(ROLE.getName())),
         row.getString(ORGANIZATION_ID.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()));
+        row.getOffsetDateTime(CREATED_AT.getName()),
+        row.getString(PHONE_NUMBER.getName()));
   }
 
   @Override
   @Traced
   public CompletionStage<Optional<UserWithLoginInformation>> findUserWithLoginInformation(
       String email) {
-
     Query query =
         sqlPool
             .getContext()
             .select(USER_WITH_LOGIN_INFORMATION_FIELDS)
             .from(
-                UserTable.TABLE
+                SqlUserTable.TABLE
                     .leftJoin(TABLE_ALIAS)
-                    .on(UserTable.USER_TABLE_ID.eq(PasswordTable.TABLE_ALIAS_USER_ID))
-                    .leftJoin(TFASetupTable.TABLE_ALIAS)
-                    .on(UserTable.USER_TABLE_ID.eq(TFASetupTable.TABLE_ALIAS_USER_ID)))
-            .where(UserTable.EMAIL.eq(email))
+                    .on(SqlUserTable.USER_TABLE_ID.eq(PasswordTable.TABLE_ALIAS_USER_ID))
+                    .leftJoin(SqlTfaSetupTable.TABLE_ALIAS)
+                    .on(SqlUserTable.USER_TABLE_ID.eq(SqlTfaSetupTable.TABLE_ALIAS_USER_ID)))
+            .where(SqlUserTable.EMAIL.eq(email))
             .orderBy(PasswordTable.TABLE_ALIAS_CREATED_AT.desc())
-            .limit(1);
+            .limit(2);
 
     return sqlPool.execute(query).thenApply(this::userWithLoginInformationFromRowSet);
   }
@@ -141,21 +146,27 @@ public class SqlUserDatasource implements UserDatasource {
     if (!rows.iterator().hasNext()) {
       return Optional.empty();
     }
-    return Optional.of(mapUserWithHashedPassword(rows.iterator().next()));
-  }
 
-  public static UserWithLoginInformation mapUserWithHashedPassword(Row row) {
-    AuthUser user = SqlUserDatasource.mapUser(row);
-    boolean tfaConfigured = row.getString(TFASetupTable.SECRET.getName()) != null;
+    Row firstRow = rows.iterator().next();
+    AuthUser user = SqlUserDatasource.mapUser(firstRow);
+    String password = firstRow.getString(HASH.getName());
 
-    return new UserWithLoginInformation(
-        user.getId(),
-        user.getEmail(),
-        user.getFullName(),
-        user.getRole(),
-        user.getOrganizationId(),
-        user.getCreatedAt(),
-        row.getString(HASH.getName()),
-        tfaConfigured);
+    List<TfaMethod> tfaMethods = new ArrayList<>(rows.size());
+    for (Row row : rows) {
+      Optional.ofNullable(row.getString(SqlTfaSetupTable.METHOD.getName()))
+          .ifPresent(method -> tfaMethods.add(TfaMethod.fromString(method)));
+    }
+
+    return Optional.of(
+        new UserWithLoginInformation(
+            user.getId(),
+            user.getEmail(),
+            user.getFullName(),
+            user.getRole(),
+            user.getOrganizationId(),
+            user.getCreatedAt(),
+            user.getPhoneNumber(),
+            password,
+            tfaMethods));
   }
 }
