@@ -2,6 +2,7 @@ import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
 import { TFA_SETUP_QR_IMAGE } from 'test/data';
+import { SWRConfig } from 'swr';
 
 import Security from './Security';
 
@@ -10,54 +11,60 @@ export default {
 };
 
 export const TfaEnabled = () => {
-  return <Security />;
+  return (
+    <SWRConfig value={{ dedupingInterval: 0 }}>
+      <Security />
+    </SWRConfig>
+  );
 };
 TfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      get: sandbox
-        .stub(AuthApi.sso, 'tfa')
-        .resolves({ createdAt: new Date().toUTCString() }),
-      setupStart: sandbox.stub(AuthApi.sso, 'tfaSetupStart').resolves({
+      listSetups: sandbox
+        .stub(AuthApi.tfa, 'listSetups')
+        .resolves([{ createdAt: new Date().toUTCString(), method: 'totp' }]),
+      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox
-        .stub(AuthApi.sso, 'tfaSetupComplete')
-        .resolves({ data: { createdAt: new Date().toISOString() } }),
+      setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
+        data: { createdAt: new Date().toISOString(), method: 'totp' },
+      }),
     };
   },
 });
 
 export const TfaDisabled = () => {
-  return <Security />;
+  return (
+    <SWRConfig value={{ dedupingInterval: 0 }}>
+      <Security />
+    </SWRConfig>
+  );
 };
 TfaDisabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      get: sandbox.stub(AuthApi.sso, 'tfa').rejects(
-        mockApiError({
-          message: 'Not Found',
-          reason: 'Not Found',
-          statusCode: 404,
-        })
-      ),
-      setupStart: sandbox.stub(AuthApi.sso, 'tfaSetupStart').resolves({
+      listSetups: sandbox.stub(AuthApi.tfa, 'listSetups').resolves([]),
+      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox
-        .stub(AuthApi.sso, 'tfaSetupComplete')
-        .resolves({ data: { createdAt: new Date().toISOString() } }),
+      setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
+        data: { createdAt: new Date().toISOString(), method: 'totp' },
+      }),
     };
   },
 });
 
-export const Error = () => {
-  return <Security />;
+export const WithError = () => {
+  return (
+    <SWRConfig value={{ dedupingInterval: 0 }}>
+      <Security />
+    </SWRConfig>
+  );
 };
-Error.story = configureStory({
+WithError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      get: sandbox.stub(AuthApi.sso, 'tfa').rejects(
+      listSetups: sandbox.stub(AuthApi.tfa, 'listSetups').rejects(
         mockApiError({
           message: 'Internal Server Error',
           reason: 'Internal Server Error',

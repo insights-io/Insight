@@ -149,6 +149,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                   inviteAccept.getFullName(),
                   teamInvite.getOrganizationId(),
                   role,
+                  null,
                   transaction);
             })
         .thenCompose(

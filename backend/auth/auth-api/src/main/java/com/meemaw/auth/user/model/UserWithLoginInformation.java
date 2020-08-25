@@ -1,6 +1,9 @@
 package com.meemaw.auth.user.model;
 
+import com.meemaw.auth.tfa.TfaMethod;
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import lombok.Value;
 
@@ -13,11 +16,12 @@ public class UserWithLoginInformation {
   UserRole role;
   String organizationId;
   OffsetDateTime createdAt;
+  String phoneNumber;
   String password;
-  boolean tfaConfigured;
+  List<TfaMethod> tfaMethods;
 
   public AuthUser user() {
-    return new UserDTO(id, email, fullName, role, organizationId, createdAt);
+    return new UserDTO(id, email, fullName, role, organizationId, createdAt, phoneNumber);
   }
 
   public static UserWithLoginInformation fresh(AuthUser user) {
@@ -28,7 +32,8 @@ public class UserWithLoginInformation {
         user.getRole(),
         user.getOrganizationId(),
         user.getCreatedAt(),
+        user.getPhoneNumber(),
         null,
-        false);
+        Collections.emptyList());
   }
 }

@@ -24,14 +24,14 @@ const VerificationPage = () => {
     apiError,
   } = useTfaInput({
     submitAction: (data) => {
-      return AuthApi.sso
-        .tfaComplete(data)
+      return AuthApi.tfa
+        .challengeComplete('totp', data)
         .then((_) => router.replace(dest as string));
     },
     handleError: (errorDTO, setError) => {
       if (
-        errorDTO.error.message === 'Verification session expired' ||
-        errorDTO.error?.errors?.verificationId === 'Required'
+        errorDTO.error.message === 'TFA challenge session expired' ||
+        errorDTO.error?.errors?.challengeId === 'Required'
       ) {
         router.replace(`/login?dest=${encodeURIComponent(dest as string)}`);
       } else {

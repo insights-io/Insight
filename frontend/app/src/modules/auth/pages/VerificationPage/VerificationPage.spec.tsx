@@ -8,8 +8,8 @@ import { waitFor } from '@testing-library/react';
 import {
   Base,
   WithInvalidCodeError,
-  WithMissingVerificationIdError,
-  WithExpiredVerificationError,
+  WithMissingChallengeIdError,
+  WithExpiredChallengeError,
 } from './VerificationPage.stories';
 
 describe('<VerificationPage />', () => {
@@ -28,7 +28,7 @@ describe('<VerificationPage />', () => {
   };
 
   it('should redirect to dest on success', async () => {
-    Base.story.setupMocks(sandbox);
+    const { challengeComplete } = Base.story.setupMocks(sandbox);
     const { codeInput, submitButton, replace } = renderVerificationPage(
       <Base />
     );
@@ -37,12 +37,15 @@ describe('<VerificationPage />', () => {
     userEvent.click(submitButton);
 
     await waitFor(() => {
+      sandbox.assert.calledWithExactly(challengeComplete, 'totp', 123456);
       sandbox.assert.calledWithExactly(replace, '/');
     });
   });
 
   it('Should handle invalid code error', async () => {
-    WithInvalidCodeError.story.setupMocks(sandbox);
+    const { challengeComplete } = WithInvalidCodeError.story.setupMocks(
+      sandbox
+    );
     const { codeInput, submitButton, findByText } = renderVerificationPage(
       <WithInvalidCodeError />
     );
@@ -51,32 +54,39 @@ describe('<VerificationPage />', () => {
     userEvent.click(submitButton);
 
     await findByText('Invalid code');
+    sandbox.assert.calledWithExactly(challengeComplete, 'totp', 123456);
   });
 
-  it('Should handle missing verification id error', async () => {
-    WithExpiredVerificationError.story.setupMocks(sandbox);
+  it('Should handle missing challangeId id error', async () => {
+    const { challengeComplete } = WithExpiredChallengeError.story.setupMocks(
+      sandbox
+    );
     const { codeInput, submitButton, replace } = renderVerificationPage(
-      <WithExpiredVerificationError />
+      <WithExpiredChallengeError />
     );
 
     userEvent.type(codeInput, '123456');
     userEvent.click(submitButton);
 
     await waitFor(() => {
+      sandbox.assert.calledWithExactly(challengeComplete, 'totp', 123456);
       sandbox.assert.calledWithExactly(replace, '/login?dest=%2F');
     });
   });
 
-  it('Should handle expired verification session error', async () => {
-    WithMissingVerificationIdError.story.setupMocks(sandbox);
+  it('Should handle expired challenge session error', async () => {
+    const { challengeComplete } = WithMissingChallengeIdError.story.setupMocks(
+      sandbox
+    );
     const { codeInput, submitButton, replace } = renderVerificationPage(
-      <WithMissingVerificationIdError />
+      <WithMissingChallengeIdError />
     );
 
     userEvent.type(codeInput, '123456');
     userEvent.click(submitButton);
 
     await waitFor(() => {
+      sandbox.assert.calledWithExactly(challengeComplete, 'totp', 123456);
       sandbox.assert.calledWithExactly(replace, '/login?dest=%2F');
     });
   });

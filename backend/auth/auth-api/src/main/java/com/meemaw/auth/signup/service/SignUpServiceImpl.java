@@ -169,6 +169,7 @@ public class SignUpServiceImpl implements SignUpService {
                         signUpRequest.getFullName(),
                         organization.getId(),
                         UserRole.ADMIN,
+                        signUpRequest.getPhoneNumber(),
                         transaction)
                     .thenCompose(
                         createdUser ->
@@ -222,6 +223,7 @@ public class SignUpServiceImpl implements SignUpService {
                                     fullName,
                                     organization.getId(),
                                     UserRole.ADMIN,
+                                    null,
                                     transaction)
                                 .thenCompose(
                                     user -> transaction.commit().thenApply(ignored -> user))));
