@@ -38,11 +38,11 @@ export type TfaSetupDTO = {
   createdAt: string;
 };
 
-type TfaTotpSetupStartDTO = {
+export type TfaTotpSetupStartDTO = {
   qrImage: string;
 };
 
-type TfaSmsSetupStartDTO = {
+export type TfaSmsSetupStartDTO = {
   validitySeconds: number;
 };
 
@@ -95,10 +95,40 @@ export const createAuthClient = (authApiBaseURL: string) => {
         ...rest,
       });
     },
-    smsSetupStart: (options?: RequestOptions) =>
-      tfaSetupStart<TfaSmsSetupStartDTO>('sms', options),
-    totpSetupStart: (options?: RequestOptions) =>
-      tfaSetupStart<TfaTotpSetupStartDTO>('totp', options),
+    sms: {
+      setupStart: (options?: RequestOptions) =>
+        tfaSetupStart<TfaSmsSetupStartDTO>('sms', options),
+      setupSendCode: ({
+        baseURL = authApiBaseURL,
+        ...rest
+      }: RequestOptions = {}) => {
+        return ky
+          .post(`${baseURL}/v1/tfa/sms/send_code`, {
+            credentials: 'include',
+            ...rest,
+          })
+          .json<DataResponse<TfaSmsSetupStartDTO>>()
+          .then((dataResponse) => dataResponse.data);
+      },
+      challengeSendCode: ({
+        baseURL = authApiBaseURL,
+        ...rest
+      }: RequestOptions = {}) => {
+        return ky
+          .post(`${baseURL}/v1/tfa/challenge/sms/send_code`, {
+            credentials: 'include',
+            ...rest,
+          })
+          .json<DataResponse<TfaSmsSetupStartDTO>>()
+          .then((dataResponse) => dataResponse.data);
+      },
+    },
+
+    totp: {
+      setupStart: (options?: RequestOptions) =>
+        tfaSetupStart<TfaTotpSetupStartDTO>('totp', options),
+    },
+
     setupComplete: (
       method: TfaMethod,
       code: number,
@@ -110,7 +140,8 @@ export const createAuthClient = (authApiBaseURL: string) => {
           credentials: 'include',
           ...rest,
         })
-        .json<DataResponse<TfaSetupDTO>>();
+        .json<DataResponse<TfaSetupDTO>>()
+        .then((dataResponse) => dataResponse.data);
     },
     disable: (
       method: TfaMethod,
@@ -132,7 +163,8 @@ export const createAuthClient = (authApiBaseURL: string) => {
           searchParams: { id },
           ...rest,
         })
-        .json<DataResponse<boolean>>();
+        .json<DataResponse<TfaMethod[]>>()
+        .then((dataResponse) => dataResponse.data);
     },
   };
 

@@ -6,13 +6,18 @@ type Props = {
   code: string[];
   handleChange: (code: string[]) => void;
   error: React.ReactNode | undefined;
+  label: string;
   disabled?: boolean;
 };
 
-const FormTfaInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ code, handleChange, error, disabled = false }, ref) => {
+const CodeInput = React.forwardRef<HTMLInputElement, Props>(
+  ({ code, handleChange, label, error, disabled = false }, ref) => {
     return (
-      <FormControl label="Google verification code" error={error}>
+      <FormControl
+        label={label}
+        error={error}
+        overrides={{ ControlContainer: { style: { marginBottom: 0 } } }}
+      >
         <PinCode
           inputRef={ref}
           autoFocus
@@ -26,4 +31,4 @@ const FormTfaInput = React.forwardRef<HTMLInputElement, Props>(
   }
 );
 
-export default FormTfaInput;
+export default CodeInput;

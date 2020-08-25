@@ -12,25 +12,35 @@ class AccountSettings {
   /* Selectors */
   private readonly container = within('div.account-settings');
   public readonly title = this.container.queryByText('Account settings');
-  public readonly twoFactorAuthentication = this.container.queryByText(
-    /Two factor authentication.*/
-  );
 
   public readonly tfa = {
     codeInput: Verification.codeInput,
     submitButton: Verification.submitButton,
     invalidCodeError: Verification.invalidCodeError,
-    disabledToast: queryByText(
-      'Two factor authentication has been successfully disabled'
-    ),
-    enabledToast: queryByText(
-      'Two factor authentication has been successfully set up'
-    ),
-    extractQrCodeSecret: async () => {
-      const imageData = await getImageData('img[alt="TFA QR code"]');
-      const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
-      const tfaSecret = qrCode.data.split('?secret=')[1];
-      return tfaSecret;
+    disableSubmitButton: queryByText('Yes'),
+    sms: {
+      checkbox: this.container.queryByText('Text message'),
+      disabledToast: queryByText(
+        'Text message two factor authentication disabled'
+      ),
+      enabledToast: queryByText(
+        'Text message two factor authentication enabled'
+      ),
+    },
+    totp: {
+      checkbox: this.container.queryByText('Authy / Google Authenticator'),
+      disabledToast: queryByText(
+        'Authy / Google Authenticator two factor authentication disabled'
+      ),
+      enabledToast: queryByText(
+        'Authy / Google Authenticator two factor authentication enabled'
+      ),
+      extractQrCodeSecret: async () => {
+        const imageData = await getImageData('img[alt="TFA QR code"]');
+        const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
+        const tfaSecret = qrCode.data.split('?secret=')[1];
+        return tfaSecret;
+      },
     },
   };
 }

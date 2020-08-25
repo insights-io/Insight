@@ -42,9 +42,12 @@ public class TfaSmsProvider extends AbstractTfaProvider<TfaSmsSetupStartDTO> {
         .getCode(userId)
         .thenApply(
             maybeCode -> {
-              int expectedCode =
-                  maybeCode.orElseThrow(() -> Boom.notFound().message("Code expired").exception());
-              return expectedCode == actualCode;
+              if (maybeCode.isEmpty()) {
+                log.info("[AUTH]: Tried to validate TFA SMS, but code is missing user={}", userId);
+                return false;
+              }
+
+              return maybeCode.get() == actualCode;
             });
   }
 

@@ -5,6 +5,7 @@ import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.model.TfaSetup;
 import com.meemaw.auth.tfa.setup.service.TfaSetupService;
+import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
@@ -19,6 +20,7 @@ public class TfaResourceImpl implements TfaResource {
   @Inject InsightPrincipal principal;
   @Inject TfaSetupService tfaSetupService;
   @Inject UserTfaDatasource userTfaDatasource;
+  @Inject TfaSmsProvider tfaSmsProvider;
 
   @Override
   public CompletionStage<Response> list() {
@@ -64,5 +66,12 @@ public class TfaResourceImpl implements TfaResource {
     return tfaSetupService
         .tfaSetupComplete(method, user.getId(), body.getCode())
         .thenApply(tfaSetup -> DataResponse.ok(tfaSetup.dto()));
+  }
+
+  @Override
+  public CompletionStage<Response> sendCode() {
+    AuthUser user = principal.user();
+    String phoneNumber = user.getPhoneNumber();
+    return tfaSmsProvider.prepareChallenge(user.getId(), phoneNumber).thenApply(DataResponse::ok);
   }
 }

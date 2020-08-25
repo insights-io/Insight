@@ -9,9 +9,9 @@ import {
   WithSetupStartError,
   WithInvalidCodeError,
   WithQrCodeExpiredError,
-} from './TfaSetupModal.stories';
+} from './TimeBasedTwoFactorAuthenticationSetupModal.stories';
 
-describe('<TfaSetupModal />', () => {
+describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
   const renderTfaSetupModal = <Props, T, S extends StoryConfiguration<T>>(
     component: RenderableComponent<Props, T, S>
   ) => {

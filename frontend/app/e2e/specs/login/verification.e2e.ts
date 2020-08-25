@@ -31,13 +31,13 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
     .click(Sidebar.accountSettings.accountSettings)
     .expect(getLocation())
     .eql(AccountSettingsPage.path)
-    .click(AccountSettingsPage.twoFactorAuthentication)
+    .click(AccountSettingsPage.tfa.totp.checkbox)
     .typeText(AccountSettingsPage.tfa.codeInput, '111111')
     .click(AccountSettingsPage.tfa.submitButton)
     .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsPage.tfa.extractQrCodeSecret();
+  const tfaSecret = await AccountSettingsPage.tfa.totp.extractQrCodeSecret();
   await t
     .typeText(
       AccountSettingsPage.tfa.codeInput,
@@ -46,7 +46,7 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
     .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .notOk('Should invalidate error on typing')
     .click(AccountSettingsPage.tfa.submitButton)
-    .expect(AccountSettingsPage.tfa.enabledToast.visible)
+    .expect(AccountSettingsPage.tfa.totp.enabledToast.visible)
     .ok('Should display positive message')
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)
@@ -77,8 +77,9 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
     .ok('Should display text on hover')
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
-    .click(AccountSettingsPage.twoFactorAuthentication)
-    .expect(AccountSettingsPage.tfa.disabledToast.visible)
+    .click(AccountSettingsPage.tfa.totp.checkbox)
+    .click(AccountSettingsPage.tfa.disableSubmitButton)
+    .expect(AccountSettingsPage.tfa.totp.disabledToast.visible)
     .ok('Should display message that TFA is disabled');
 });
 
@@ -100,13 +101,13 @@ test('Should be able to complete full TFA flow', async (t) => {
     .click(Sidebar.accountSettings.accountSettings)
     .expect(getLocation())
     .eql(AccountSettingsPage.path)
-    .click(AccountSettingsPage.twoFactorAuthentication)
+    .click(AccountSettingsPage.tfa.totp.checkbox)
     .typeText(AccountSettingsPage.tfa.codeInput, '111111')
     .click(AccountSettingsPage.tfa.submitButton)
     .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsPage.tfa.extractQrCodeSecret();
+  const tfaSecret = await AccountSettingsPage.tfa.totp.extractQrCodeSecret();
   await t
     .typeText(
       AccountSettingsPage.tfa.codeInput,
@@ -115,7 +116,7 @@ test('Should be able to complete full TFA flow', async (t) => {
     .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .notOk('Should invalidate error on typing')
     .click(AccountSettingsPage.tfa.submitButton)
-    .expect(AccountSettingsPage.tfa.enabledToast.visible)
+    .expect(AccountSettingsPage.tfa.totp.enabledToast.visible)
     .ok('Should display positive message')
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)
@@ -136,7 +137,7 @@ test('Should be able to complete full TFA flow', async (t) => {
     .ok('Should display text on hover')
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
-    .click(AccountSettingsPage.twoFactorAuthentication)
-    .expect(AccountSettingsPage.tfa.disabledToast.visible)
+    .click(AccountSettingsPage.tfa.totp.checkbox)
+    .expect(AccountSettingsPage.tfa.totp.disabledToast.visible)
     .ok('Should display message that TFA is disabled');
 });

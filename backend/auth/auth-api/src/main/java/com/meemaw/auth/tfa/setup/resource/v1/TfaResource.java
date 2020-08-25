@@ -47,4 +47,9 @@ public interface TfaResource {
   CompletionStage<Response> tfaSetupComplete(
       @PathParam("method") TfaMethod method,
       @NotNull(message = "Required") @Valid TfaChallengeCompleteDTO body);
+
+  @POST
+  @Path("sms/send_code")
+  @CookieAuth
+  CompletionStage<Response> sendCode();
 }

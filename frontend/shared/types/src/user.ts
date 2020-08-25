@@ -7,6 +7,7 @@ export type UserDTO = {
   fullName: string;
   createdAt: string;
   organizationId: string;
+  phoneNumber: string | null;
 };
 
 export type User = Omit<UserDTO, 'createdAt'> & {

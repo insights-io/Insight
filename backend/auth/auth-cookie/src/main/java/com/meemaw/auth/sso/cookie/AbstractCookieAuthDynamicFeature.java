@@ -71,24 +71,25 @@ public abstract class AbstractCookieAuthDynamicFeature implements DynamicFeature
       MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
       Optional<T> maybeUser = findSession(sessionId).toCompletableFuture().join();
       T user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
-      setUserContext(user);
-
+      setUserContext(user, sessionId);
       boolean isSecure = RequestContextUtils.getServerBaseURL(ctx).startsWith("https");
       ctx.setSecurityContext(new InsightSecurityContext(user, isSecure));
       principal.user(user);
       log.debug("Successfully authenticated");
     }
 
-    private void setUserContext(AuthUser user) {
+    private void setUserContext(AuthUser user, String sessionId) {
       Span span = tracer.activeSpan();
       String userId = user.getId().toString();
       String role = user.getRole().toString();
       String organizationId = user.getOrganizationId();
 
+      MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
       MDC.put(LoggingConstants.USER_ID, userId);
       MDC.put(LoggingConstants.USER_ROLE, role);
       MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
+      span.setTag(LoggingConstants.SSO_SESSION_ID, sessionId);
       span.setTag(LoggingConstants.USER_ID, userId);
       span.setTag(LoggingConstants.USER_ROLE, role);
       span.setTag(LoggingConstants.ORGANIZATION_ID, organizationId);

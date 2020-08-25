@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
-import { TFA_SETUP_QR_IMAGE } from 'test/data';
+import { INSIGHT_ADMIN, TFA_SETUP_QR_IMAGE } from 'test/data';
 import { SWRConfig } from 'swr';
 
 import Security from './Security';
@@ -13,7 +13,7 @@ export default {
 export const TfaEnabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <Security />
+      <Security user={INSIGHT_ADMIN} />
     </SWRConfig>
   );
 };
@@ -36,7 +36,7 @@ TfaEnabled.story = configureStory({
 export const TfaDisabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <Security />
+      <Security user={INSIGHT_ADMIN} />
     </SWRConfig>
   );
 };
@@ -57,7 +57,7 @@ TfaDisabled.story = configureStory({
 export const WithError = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <Security />
+      <Security user={INSIGHT_ADMIN} />
     </SWRConfig>
   );
 };

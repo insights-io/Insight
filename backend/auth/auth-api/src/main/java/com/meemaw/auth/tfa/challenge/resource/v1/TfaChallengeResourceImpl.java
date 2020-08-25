@@ -7,8 +7,10 @@ import com.meemaw.auth.tfa.challenge.datasource.TfaChallengeDatasource;
 import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
 import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
+import com.meemaw.auth.tfa.setup.model.TfaSetup;
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -16,6 +18,7 @@ import io.vertx.core.http.HttpServerRequest;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -27,8 +30,9 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
   @Inject TfaChallengeService tfaChallengeService;
   @Inject TfaChallengeDatasource tfaChallengeDatasource;
   @Inject UserDatasource userDatasource;
-  @Context HttpServerRequest request;
   @Inject TfaSmsProvider tfaSmsProvider;
+  @Inject UserTfaDatasource userTfaDatasource;
+  @Context HttpServerRequest request;
 
   @Override
   public CompletionStage<Response> complete(
@@ -59,12 +63,17 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return tfaChallengeDatasource
         .retrieveUser(challengeId)
-        .thenApply(
+        .thenCompose(
             maybeUserId -> {
               if (maybeUserId.isEmpty()) {
-                return challengeNotFoundResponse(cookieDomain);
+                return CompletableFuture.completedStage(challengeNotFoundResponse(cookieDomain));
               }
-              return DataResponse.ok(true);
+              return userTfaDatasource
+                  .list(maybeUserId.get())
+                  .thenApply(
+                      setups ->
+                          setups.stream().map(TfaSetup::getMethod).collect(Collectors.toList()))
+                  .thenApply(DataResponse::ok);
             });
   }
 
