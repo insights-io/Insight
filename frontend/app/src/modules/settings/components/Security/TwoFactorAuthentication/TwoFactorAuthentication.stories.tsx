@@ -29,8 +29,8 @@ TfaEnabled.story = configureStory({
       setupComplete: sandbox
         .stub(AuthApi.tfa, 'setupComplete')
         .resolves({ createdAt: new Date().toISOString(), method: 'totp' }),
-      sendSmsCode: sandbox
-        .stub(AuthApi.tfa.sms, 'sendCode')
+      setupSendSmsCode: sandbox
+        .stub(AuthApi.tfa.sms, 'setupSendCode')
         .resolves({ validitySeconds: 60 }),
     };
   },

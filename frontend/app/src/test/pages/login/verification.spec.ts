@@ -9,7 +9,7 @@ describe('pages/login/verification', () => {
     sandbox.stub(document, 'cookie').value('ChallengeId=123');
     const getChallengeStub = sandbox
       .stub(AuthApi.tfa, 'getChallenge')
-      .resolves({ data: true });
+      .resolves(['totp']);
 
     const { req, res, writeHead } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({ query: {}, req, res });
@@ -19,7 +19,7 @@ describe('pages/login/verification', () => {
     });
 
     sandbox.assert.notCalled(writeHead);
-    expect(serverSideProps).toEqual({ props: {} });
+    expect(serverSideProps).toEqual({ props: { methods: ['totp'] } });
   });
 
   it('Should redirect to login when missing challengeId cookie', async () => {
