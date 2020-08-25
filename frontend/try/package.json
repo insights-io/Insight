@@ -39,7 +39,7 @@
     "next": "9.5.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-hook-form": "6.5.2",
+    "react-hook-form": "6.5.3",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7"
   },
