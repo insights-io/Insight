@@ -7,7 +7,6 @@ import com.meemaw.auth.tfa.challenge.datasource.TfaChallengeDatasource;
 import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
 import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
-import com.meemaw.auth.tfa.setup.model.TfaSetup;
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
@@ -18,7 +17,6 @@ import io.vertx.core.http.HttpServerRequest;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -68,12 +66,7 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
               if (maybeUserId.isEmpty()) {
                 return CompletableFuture.completedStage(challengeNotFoundResponse(cookieDomain));
               }
-              return userTfaDatasource
-                  .list(maybeUserId.get())
-                  .thenApply(
-                      setups ->
-                          setups.stream().map(TfaSetup::getMethod).collect(Collectors.toList()))
-                  .thenApply(DataResponse::ok);
+              return userTfaDatasource.listMethods(maybeUserId.get()).thenApply(DataResponse::ok);
             });
   }
 
