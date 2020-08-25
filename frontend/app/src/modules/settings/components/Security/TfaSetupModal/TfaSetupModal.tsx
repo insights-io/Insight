@@ -9,11 +9,7 @@ import { APIError, APIErrorDataResponse } from '@insight/types';
 import FormError from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 
-export type Props = {
-  isOpen: boolean;
-  onClose: () => void;
-  onTfaConfigured: (tfaSetup: { createdAt: string }) => void;
-};
+import { Props } from './types';
 
 const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
   const [setupStartError, setSetupStartError] = useState<APIError>();
@@ -28,8 +24,8 @@ const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
     apiError,
   } = useTfaInput({
     submitAction: (data) => {
-      return AuthApi.sso
-        .tfaSetupComplete(data)
+      return AuthApi.tfa
+        .setupComplete('totp', data)
         .then((dataResponse) => onTfaConfigured(dataResponse.data));
     },
     handleError: (error, setError) => {
@@ -38,9 +34,9 @@ const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
   });
 
   useEffect(() => {
-    if (!qrImage) {
-      AuthApi.sso
-        .tfaSetupStart()
+    if (!qrImage && isOpen) {
+      AuthApi.tfa
+        .totpSetupStart()
         .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
         .catch(async (error) => {
           const errorDTO: APIErrorDataResponse = await error.response.json();

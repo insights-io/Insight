@@ -19,48 +19,60 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso, 'tfaComplete').resolves({} as Response);
+    return {
+      challengeComplete: sandbox
+        .stub(AuthApi.tfa, 'challengeComplete')
+        .resolves({} as Response),
+    };
   },
 });
 
-export const WithMissingVerificationIdError = () => {
+export const WithMissingChallengeIdError = () => {
   return <VerificationPage />;
 };
-WithMissingVerificationIdError.story = configureStory({
+WithMissingChallengeIdError.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso, 'tfaComplete').callsFake(() => {
-      const apiError = mockApiError({
-        statusCode: 400,
-        reason: 'Bad Request',
-        message: 'Bad Request',
-        errors: {
-          verificationId: 'Required',
-        },
-      });
+    return {
+      challengeComplete: sandbox
+        .stub(AuthApi.tfa, 'challengeComplete')
+        .callsFake(() => {
+          const apiError = mockApiError({
+            statusCode: 400,
+            reason: 'Bad Request',
+            message: 'Bad Request',
+            errors: {
+              challengeId: 'Required',
+            },
+          });
 
-      return new Promise((_resolve, reject) => {
-        setTimeout(() => reject(apiError), 350);
-      }) as ResponsePromise;
-    });
+          return new Promise((_resolve, reject) => {
+            setTimeout(() => reject(apiError), 350);
+          }) as ResponsePromise;
+        }),
+    };
   },
 });
 
-export const WithExpiredVerificationError = () => {
+export const WithExpiredChallengeError = () => {
   return <VerificationPage />;
 };
-WithExpiredVerificationError.story = configureStory({
+WithExpiredChallengeError.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso, 'tfaComplete').callsFake(() => {
-      const apiError = mockApiError({
-        statusCode: 400,
-        reason: 'Bad Request',
-        message: 'Verification session expired',
-      });
+    return {
+      challengeComplete: sandbox
+        .stub(AuthApi.tfa, 'challengeComplete')
+        .callsFake(() => {
+          const apiError = mockApiError({
+            statusCode: 400,
+            reason: 'Bad Request',
+            message: 'TFA challenge session expired',
+          });
 
-      return new Promise((_resolve, reject) => {
-        setTimeout(() => reject(apiError), 350);
-      }) as ResponsePromise;
-    });
+          return new Promise((_resolve, reject) => {
+            setTimeout(() => reject(apiError), 350);
+          }) as ResponsePromise;
+        }),
+    };
   },
 });
 
@@ -69,19 +81,23 @@ export const WithInvalidCodeError = () => {
 };
 WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso, 'tfaComplete').callsFake(() => {
-      const apiError = mockApiError({
-        statusCode: 400,
-        reason: 'Bad Request',
-        message: 'Bad Request',
-        errors: {
-          code: 'Invalid code',
-        },
-      });
+    return {
+      challengeComplete: sandbox
+        .stub(AuthApi.tfa, 'challengeComplete')
+        .callsFake(() => {
+          const apiError = mockApiError({
+            statusCode: 400,
+            reason: 'Bad Request',
+            message: 'Bad Request',
+            errors: {
+              code: 'Invalid code',
+            },
+          });
 
-      return new Promise((_resolve, reject) => {
-        setTimeout(() => reject(apiError), 350);
-      }) as ResponsePromise;
-    });
+          return new Promise((_resolve, reject) => {
+            setTimeout(() => reject(apiError), 350);
+          }) as ResponsePromise;
+        }),
+    };
   },
 });

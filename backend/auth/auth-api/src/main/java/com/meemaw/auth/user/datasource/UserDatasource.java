@@ -16,6 +16,7 @@ public interface UserDatasource {
       String fullName,
       String organizationId,
       UserRole role,
+      String phoneNumber,
       SqlTransaction transaction);
 
   CompletionStage<Optional<AuthUser>> findUser(UUID userId);

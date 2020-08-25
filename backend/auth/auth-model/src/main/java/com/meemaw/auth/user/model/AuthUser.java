@@ -16,4 +16,6 @@ public interface AuthUser {
   String getFullName();
 
   OffsetDateTime getCreatedAt();
+
+  String getPhoneNumber();
 }

@@ -22,12 +22,8 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   String organizationId;
   String fullName;
   OffsetDateTime createdAt;
+  String phoneNumber;
 
-  /**
-   * Create a SsoUser from an existing AuthUser.
-   *
-   * @param user AuthUser
-   */
   public SsoUser(AuthUser user) {
     this.id = user.getId();
     this.email = user.getEmail();
@@ -35,6 +31,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.organizationId = user.getOrganizationId();
     this.fullName = user.getFullName();
     this.createdAt = user.getCreatedAt();
+    this.phoneNumber = user.getPhoneNumber();
   }
 
   @Override
@@ -55,6 +52,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     out.writeUTF(this.organizationId);
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
+    out.writeUTF(this.phoneNumber);
   }
 
   @Override
@@ -65,10 +63,11 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.organizationId = in.readUTF();
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();
+    this.phoneNumber = in.readUTF();
   }
 
   public AuthUser dto() {
-    return new UserDTO(id, email, fullName, role, organizationId, createdAt);
+    return new UserDTO(id, email, fullName, role, organizationId, createdAt, phoneNumber);
   }
 
   public static SsoUser as(AuthUser user) {

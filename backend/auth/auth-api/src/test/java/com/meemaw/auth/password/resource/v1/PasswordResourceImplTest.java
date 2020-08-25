@@ -10,16 +10,16 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
-import com.meemaw.auth.sso.datasource.SsoVerificationDatasource;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.model.SsoVerification;
-import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
-import com.meemaw.auth.sso.resource.v1.SsoVerificationResourceImpl;
+import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
+import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
+import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
@@ -63,7 +63,7 @@ public class PasswordResourceImplTest {
   @Inject MockMailbox mailbox;
   @Inject ObjectMapper objectMapper;
   @Inject UserDatasource userDatasource;
-  @Inject SsoVerificationDatasource verificationDatasource;
+  @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @BeforeEach
   void init() {
@@ -282,7 +282,7 @@ public class PasswordResourceImplTest {
     String password = "superHardPassword";
     String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret = AuthApiSetupUtils.setupTfa(userId, sessionId, verificationDatasource);
+    String secret = AuthApiSetupUtils.setupTotpTfa(userId, sessionId, tfaTotpSetupDatasource);
 
     // init flow
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
@@ -312,24 +312,23 @@ public class PasswordResourceImplTest {
             .body(resetPasswordPayload)
             .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token));
 
-    response.then().statusCode(200).cookie(SsoVerification.COOKIE_NAME);
-    String verificationId = response.getDetailedCookie(SsoVerification.COOKIE_NAME).getValue();
+    response.then().statusCode(200).cookie(SsoChallenge.COOKIE_NAME);
+    String challengeId = response.getDetailedCookie(SsoChallenge.COOKIE_NAME).getValue();
 
     // Complete tfa flow
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoVerification.COOKIE_NAME, verificationId)
+        .cookie(SsoChallenge.COOKIE_NAME, challengeId)
         .body(
             JacksonMapper.get()
                 .writeValueAsString(
-                    new TfaCompleteDTO(
-                        (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret))))
-        .post(SsoVerificationResourceImpl.PATH + "/complete-tfa")
+                    new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
+        .post(TfaChallengeResourceImpl.PATH + "/totp/complete")
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":true}"))
-        .cookie(SsoVerification.COOKIE_NAME, "")
+        .cookie(SsoChallenge.COOKIE_NAME, "")
         .cookie(SsoSession.COOKIE_NAME);
   }
 

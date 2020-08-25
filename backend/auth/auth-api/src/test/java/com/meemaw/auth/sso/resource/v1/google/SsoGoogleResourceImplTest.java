@@ -7,18 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import com.meemaw.auth.core.config.model.AppConfig;
-import com.meemaw.auth.sso.datasource.SsoVerificationDatasource;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.model.SsoVerification;
-import com.meemaw.auth.sso.model.dto.TfaCompleteDTO;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.service.google.SsoGoogleClient;
 import com.meemaw.auth.sso.service.google.SsoGoogleService;
+import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
+import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.setup.resource.v1.TfaResource;
+import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.auth.user.resource.v1.UserTfaResource;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.setup.SsoTestSetupUtils;
@@ -50,7 +50,7 @@ public class SsoGoogleResourceImplTest {
   @Inject MockMailbox mailbox;
   @Inject ObjectMapper objectMapper;
   @Inject UserDatasource userDatasource;
-  @Inject SsoVerificationDatasource verificationDatasource;
+  @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @TestHTTPResource(SsoGoogleResource.PATH + "/" + SsoGoogleResource.OAUTH2_CALLBACK_PATH)
   URI oauth2CallbackURI;
@@ -256,21 +256,20 @@ public class SsoGoogleResourceImplTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(UserTfaResource.PATH + "/setup")
+        .get(TfaResource.PATH + "/totp/setup")
         .then()
         .statusCode(200);
 
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret =
-        verificationDatasource.getTfaSetupSecret(userId).toCompletableFuture().join().get();
-    int tfaCode = (int) TimeBasedOneTimePasswordUtil.generateCurrentNumber(secret);
+    String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
+    int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaCompleteDTO(tfaCode)))
-        .post(UserTfaResource.PATH + "/setup")
+        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
+        .post(TfaResource.PATH + "/totp/setup")
         .then()
         .statusCode(200);
 
@@ -287,7 +286,7 @@ public class SsoGoogleResourceImplTest {
         .then()
         .statusCode(302)
         .header("Location", "https://www.insight.io/my_path")
-        .cookie(SsoVerification.COOKIE_NAME);
+        .cookie(SsoChallenge.COOKIE_NAME);
   }
 
   private static class MockedSsoGoogleClient extends SsoGoogleClient {

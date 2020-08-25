@@ -20,12 +20,12 @@ export const authenticated = async (
   context: GetServerSidePropsContext,
   requestSpan: Span
 ): Promise<Authenticated | undefined> => {
-  const { SessionId, VerificationId } = nextCookie(context);
+  const { SessionId, ChallengeId } = nextCookie(context);
   const pathname = context.req.url;
 
   const span = getTracer().startSpan('authMiddleware.authenticated', {
     childOf: requestSpan,
-    tags: { SessionId, VerificationId, pathname },
+    tags: { SessionId, ChallengeId, pathname },
   });
 
   const redirect = (location: string, headers?: OutgoingHttpHeaders) => {
@@ -47,13 +47,13 @@ export const authenticated = async (
   };
 
   if (!SessionId) {
-    if (VerificationId) {
+    if (ChallengeId) {
       span.log({ message: 'Missing SessionId: redirect to verification' });
       return redirectToVerification();
     }
 
     span.log({
-      message: 'Missing SessionId and VerificationId: redirect to login',
+      message: 'Missing SessionId and ChallengeId: redirect to login',
     });
     return redirectToLogin();
   }
@@ -69,10 +69,10 @@ export const authenticated = async (
     if (response.status === 204) {
       span.log({ message: 'Session expired' });
       const setCookie = response.headers.get('set-cookie');
-      if (VerificationId) {
+      if (ChallengeId) {
         span.log({
           message:
-            'Expired SessionId but verificationId presend: redirect to verification',
+            'Expired SessionId but ChallengeId present: redirect to verification',
         });
         return redirectToVerification();
       }

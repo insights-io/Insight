@@ -1,7 +1,5 @@
-import { getByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
-import config from '../../config';
 import { getLocation, findLinkFromDockerLog } from '../../utils';
 import {
   Sidebar,
@@ -15,12 +13,8 @@ import {
 
 fixture('/login/verification').page(VerificationPage.path);
 
-const emailSentMessage = getByText(
-  'If your email address is associated with an Insight account, you will be receiving a password reset request shortly.'
-);
-
 test('Should be able to complete full TFA flow after password reset', async (t) => {
-  await t.expect(getLocation()).eql(`${config.appBaseURL}/login?dest=%2F`);
+  await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, {
     fullName: 'Miha Novak',
@@ -62,7 +56,7 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
     .click(LoginPage.forgotPasswordButton)
     .typeText(PasswordForgotPage.emailInput, email)
     .click(PasswordForgotPage.submitButton)
-    .expect(emailSentMessage.visible)
+    .expect(PasswordForgotPage.requestSubmittedMessage.visible)
     .ok('Should display nice message that email has been sent');
 
   const passwordResetLink = findLinkFromDockerLog();
@@ -89,7 +83,7 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
 });
 
 test('Should be able to complete full TFA flow', async (t) => {
-  await t.expect(getLocation()).eql(`${config.appBaseURL}/login?dest=%2F`);
+  await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
   const { email, password } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, {
     fullName: 'Miha Novak',
@@ -133,7 +127,7 @@ test('Should be able to complete full TFA flow', async (t) => {
     .expect(VerificationPage.message.visible)
     .ok('should display help message')
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/login/verification?dest=%2F`);
+    .eql(`${VerificationPage.path}?dest=%2F`);
 
   await VerificationPage.totpLogin(t, tfaSecret);
   await t
