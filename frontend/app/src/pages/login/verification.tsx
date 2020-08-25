@@ -15,7 +15,7 @@ const Verification = () => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const requestSpan = startRequestSpan(context.req);
   try {
-    const { VerificationId } = nextCookie(context);
+    const { ChallengeId } = nextCookie(context);
     const { dest = '/' } = context.query;
 
     const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
@@ -25,13 +25,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       return { props: {} };
     };
 
-    if (!VerificationId) {
-      requestSpan.log({ message: 'Missing VerificationId' });
+    if (!ChallengeId) {
+      requestSpan.log({ message: 'Missing ChallengeId' });
       return redirectToLogin();
     }
 
     try {
-      await AuthApi.sso.verification(VerificationId, {
+      await AuthApi.sso.verification(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });

@@ -4,7 +4,7 @@ import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
 import { TFA_SETUP_QR_IMAGE } from 'test/data';
 
-import TfaSetupModal, { Props } from './TfaSetupModal';
+import TfaSetupModal, { Props } from './index';
 
 export default {
   title: 'settings/components/TfaSetupModal',
@@ -23,12 +23,12 @@ export const Base = (props: Partial<Props>) => {
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.sso, 'tfaSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox
-        .stub(AuthApi.sso, 'tfaSetupComplete')
-        .resolves({ data: { createdAt: new Date().toISOString() } }),
+      setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
+        data: { createdAt: new Date().toISOString(), method: 'totp' },
+      }),
     };
   },
 });
@@ -39,7 +39,7 @@ export const WithSetupStartError = () => {
 WithSetupStartError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.sso, 'tfaSetupStart').rejects(
+      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').rejects(
         mockApiError({
           message: 'Internal Server Error',
           reason: 'Internal Server Error',
@@ -56,10 +56,10 @@ export const WithInvalidCodeError = () => {
 WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.sso, 'tfaSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox.stub(AuthApi.sso, 'tfaSetupComplete').rejects(
+      setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').rejects(
         mockApiError({
           message: 'Bad Request',
           reason: 'Bad Request',
@@ -79,10 +79,10 @@ export const WithQrCodeExpiredError = () => {
 WithQrCodeExpiredError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.sso, 'tfaSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox.stub(AuthApi.sso, 'tfaSetupComplete').rejects(
+      setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').rejects(
         mockApiError({
           message: 'QR code expired',
           reason: 'Bad Request',

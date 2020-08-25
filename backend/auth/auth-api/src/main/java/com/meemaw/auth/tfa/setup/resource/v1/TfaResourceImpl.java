@@ -3,12 +3,14 @@ package com.meemaw.auth.tfa.setup.resource.v1;
 import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.setup.model.TfaSetup;
 import com.meemaw.auth.tfa.setup.service.TfaSetupService;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
@@ -21,7 +23,10 @@ public class TfaResourceImpl implements TfaResource {
   @Override
   public CompletionStage<Response> list() {
     AuthUser user = principal.user();
-    return userTfaDatasource.list(user.getId()).thenApply(DataResponse::ok);
+    return userTfaDatasource
+        .list(user.getId())
+        .thenApply(setups -> setups.stream().map(TfaSetup::dto).collect(Collectors.toList()))
+        .thenApply(DataResponse::ok);
   }
 
   @Override
@@ -34,7 +39,7 @@ public class TfaResourceImpl implements TfaResource {
               if (maybeTfaSetup.isEmpty()) {
                 return Boom.notFound().response();
               }
-              return DataResponse.ok(maybeTfaSetup.get());
+              return DataResponse.ok(maybeTfaSetup.get().dto());
             });
   }
 
