@@ -1,6 +1,6 @@
 import { queryByText } from '@testing-library/testcafe';
 
-import { LoginPage, Sidebar } from '../pages';
+import { LoginPage, SessionsPage, Sidebar } from '../pages';
 import config from '../config';
 import { getLocation } from '../utils';
 
@@ -29,7 +29,7 @@ test('Should be able to navigate', async (t) => {
     .expect(queryByText('Collapse').visible)
     .notOk('Collapse text should not be vissible due to sidebar collapsing')
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/sessions`)
+    .eql(SessionsPage.path)
     .click(Sidebar.homeItem)
     .expect(getLocation())
     .eql(`${config.appBaseURL}/`);

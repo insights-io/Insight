@@ -7,8 +7,7 @@ import {
 } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
-import { LoginPage } from '../pages';
-import SessionsPage from '../pages/SessionsPage';
+import { LoginPage, SessionsPage } from '../pages';
 
 fixture('/sessions').page(SessionsPage.path);
 

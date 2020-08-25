@@ -2,10 +2,10 @@ import { queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { totp as _totp } from 'speakeasy';
 
-import config from '../config';
+import { LoginPage } from '.';
 
 class Verification {
-  public readonly path = `${config.appBaseURL}/login/verification`;
+  public readonly path = `${LoginPage.path}/verification`;
 
   /* Selectors */
   public readonly message = queryByText(

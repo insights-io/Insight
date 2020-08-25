@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     try {
-      await AuthApi.sso.verification(ChallengeId, {
+      await AuthApi.tfa.getChallenge(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });

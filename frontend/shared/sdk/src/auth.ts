@@ -123,7 +123,7 @@ export const createAuthClient = (authApiBaseURL: string) => {
         })
         .json<DataResponse<boolean>>();
     },
-    challenge: (
+    getChallenge: (
       id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
