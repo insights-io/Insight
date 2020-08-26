@@ -36,3 +36,5 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           build-script: 'frontend:browser:boostrap:build'
           pattern: 'frontend/browser/bootstrap/dist/*.js'
+          compression: 'gzip'
+          use-check: true

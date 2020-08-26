@@ -36,3 +36,5 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           build-script: 'frontend:browser:tracking:build'
           pattern: 'frontend/browser/tracking/dist/*.js'
+          compression: 'gzip'
+          use-check: true
