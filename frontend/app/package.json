@@ -61,7 +61,7 @@
     "@insight/types": "0.0.0-development",
     "@next/bundle-analyzer": "9.5.2",
     "@types/jaeger-client": "3.15.4",
-    "@types/react": "16.9.47",
+    "@types/react": "16.9.48",
     "@types/react-dom": "16.9.8",
     "@types/uuid": "8.3.0",
     "@types/styletron-engine-atomic": "1.1.0",
