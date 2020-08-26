@@ -6,10 +6,13 @@ import { findLinkFromDockerLogs } from '../utils';
 
 import Login, { LoginCredentials } from './Login';
 
-export type SignUpDetails = LoginCredentials & {
+export type SignUpProperties = {
   fullName: string;
   company: string;
+  phoneNumber: string;
 };
+
+export type SignUpDetails = LoginCredentials & Partial<SignUpProperties>;
 
 class SignUp {
   /* Selectors */
@@ -18,17 +21,28 @@ class SignUp {
   public readonly fullNameInput = getByPlaceholderText('Full name');
   public readonly companyInput = getByPlaceholderText('Company');
   public readonly getStartedButton = getByText('Get started');
+  public readonly phoneNumberInput = getByText('Phone number');
+
+  public readonly userFullNameDefault = 'Miha Novak';
+  public readonly userCompanyDefault = 'Insight';
 
   /* Utils */
   public signUp = (
     t: TestController,
-    { fullName, company, email, password }: SignUpDetails
+    {
+      email,
+      password,
+      phoneNumber = '',
+      fullName = this.userFullNameDefault,
+      company = this.userCompanyDefault,
+    }: SignUpDetails
   ) => {
     return t
       .typeText(this.fullNameInput, fullName)
       .typeText(this.companyInput, company)
       .typeText(this.emailInput, email)
       .typeText(this.passwordInput, password)
+      .typeText(this.phoneNumberInput, phoneNumber)
       .click(this.getStartedButton);
   };
 

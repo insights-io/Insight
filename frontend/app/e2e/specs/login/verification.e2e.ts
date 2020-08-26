@@ -17,12 +17,7 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
   await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
 
   const { password, email } = SignUpPage.generateRandomCredentials();
-  await SignUpPage.signUpAndLogin(t, {
-    fullName: 'Miha Novak',
-    company: 'Insight',
-    email,
-    password,
-  });
+  await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
     .hover(Sidebar.accountSettings.item)
@@ -74,12 +69,7 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
 test('Should be able to complete full TFA flow', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
   const { email, password } = SignUpPage.generateRandomCredentials();
-  await SignUpPage.signUpAndLogin(t, {
-    fullName: 'Miha Novak',
-    company: 'Insight',
-    email,
-    password,
-  });
+  await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
     .hover(Sidebar.accountSettings.item)
