@@ -36,5 +36,5 @@ jobs:
       - uses: preactjs/compressed-size-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          build-script: 'env && yarn --frozen-lockfile workspace @insight/browser-bootstrap build'
+          build-script: 'env && /usr/bin/yarn --frozen-lockfile workspace @insight/browser-bootstrap build'
           pattern: 'frontend/browser/bootstrap/dist/*.{js}'
