@@ -2,7 +2,7 @@ import { queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
 class Sidebar {
-  private readonly container = Selector('nav', { timeout: 1000 });
+  private readonly container = Selector('nav');
 
   public readonly homeItem = this.container
     .find('a')
