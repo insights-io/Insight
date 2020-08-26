@@ -54,7 +54,11 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
     .typeText(PasswordResetPage.passwordInput, newPassword)
     .click(PasswordResetPage.submitButton)
     .expect(getLocation())
-    .eql(`${VerificationPage.path}?dest=%2F`);
+    .eql(`${VerificationPage.path}?dest=%2F`)
+    .expect(VerificationPage.tabs.totp.visible)
+    .ok('TOTP TFA tab visible')
+    .expect(VerificationPage.tabs.sms.visible)
+    .notOk('SMS TFA tab visible');
 
   await VerificationPage.totpLogin(t, tfaSecret);
   await t
@@ -96,7 +100,11 @@ test('Should be able to complete full TFA flow', async (t) => {
     .expect(VerificationPage.message.visible)
     .ok('should display help message')
     .expect(getLocation())
-    .eql(`${VerificationPage.path}?dest=%2F`);
+    .eql(`${VerificationPage.path}?dest=%2F`)
+    .expect(VerificationPage.tabs.totp.visible)
+    .ok('TOTP TFA tab visible')
+    .expect(VerificationPage.tabs.sms.visible)
+    .notOk('SMS TFA tab visible');
 
   await VerificationPage.totpLogin(t, tfaSecret);
   await t

@@ -16,6 +16,10 @@ class Verification {
   );
   public readonly invalidCodeError = queryByText('Invalid code');
   public readonly submitButton = queryByText('Submit');
+  public readonly tabs = {
+    totp: queryByText('Authy'),
+    sms: queryByText('Text message'),
+  };
 
   /* Utils */
   public totp = (secret: string) => {

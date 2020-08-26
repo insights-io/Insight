@@ -14,7 +14,8 @@
     "test:coverage": "yarn test -- -- --coverage",
     "lint": "lerna run --stream --concurrency 2 lint",
     "frontend:browser:boostrap:build": "yarn workspace @insight/browser-bootstrap build",
-    "frontend:browser:tracking:build": "yarn workspace @insight/browser-tracking build:with-deps"
+    "frontend:browser:tracking:build": "yarn workspace @insight/browser-tracking build:with-deps",
+    "frontend:app:build": "yarn workspace @insight/app build"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "1.0.20",
