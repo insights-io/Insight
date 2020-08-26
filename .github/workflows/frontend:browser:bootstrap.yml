@@ -4,7 +4,6 @@ on:
     paths:
       - '.github/workflows/frontend:browser:bootstrap.yml'
       - 'frontend/browser/bootstrap/**'
-      - 'jest.config.js'
       - 'lerna.json'
       - 'package.json'
       - 'tsconfig.json'
@@ -38,18 +37,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libgbm-dev xvfb
-      - uses: preactjs/compressed-size-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          build-script: 'workspace @insight/browser-bootstrap build'
-          pattern: 'frontend/browser/bootstrap/dist/*.{js}'
-      - name: Run tests
+      - name: Install dependencies and run tests
         run: |
+          yarn install --frozen-lockfile
           xvfb-run --auto-servernum yarn workspace @insight/browser-bootstrap test --coverage
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: frontend
+      - name: build
+        run: |
+          yarn workspace @insight/browser-bootstrap build
       - name: Prepare files for deployment
         run: find ./ -name "*.js.gz" -exec sh -c 'mv $0 `basename "$0" .js.gz`.js' '{}' \;
         working-directory: frontend/browser/bootstrap/dist
