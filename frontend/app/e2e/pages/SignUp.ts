@@ -50,11 +50,10 @@ class SignUp {
     return promise.click(this.getStartedButton);
   };
 
-  public signUpAndLogin = (t: TestController, data: SignUpDetails) => {
-    return t
-      .navigateTo(config.tryBaseURL)
-      .then((_) => this.signUp(t, data))
-      .then((_) => this.verifyEmail(t)) as TestControllerPromise;
+  public signUpAndLogin = async (t: TestController, data: SignUpDetails) => {
+    await t.navigateTo(config.tryBaseURL);
+    await this.signUp(t, data);
+    return this.verifyEmail(t);
   };
 
   public generateRandomCredentials = () => {

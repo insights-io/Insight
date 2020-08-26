@@ -17,7 +17,8 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
   await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
-  await SignUpPage.signUpAndLogin(t, { email, password })
+  await SignUpPage.signUpAndLogin(t, { email, password });
+  await t
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
@@ -72,7 +73,8 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
   const { email, password } = SignUpPage.generateRandomCredentials();
 
-  await SignUpPage.signUpAndLogin(t, { email, password })
+  await SignUpPage.signUpAndLogin(t, { email, password });
+  await t
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
@@ -123,8 +125,10 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
   await SignUpPage.signUpAndLogin(t, {
     email,
     password,
-    phoneNumber: '+38651222333',
-  })
+    phoneNumber: '51222333',
+  });
+
+  await t
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
     .expect(getLocation())

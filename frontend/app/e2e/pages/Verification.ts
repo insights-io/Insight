@@ -23,6 +23,7 @@ class Verification {
     sms: {
       title: queryByText('Text message'),
       sendCode: queryByText('Send Code'),
+      sendCodeSuccessMessage: queryByText('Success'),
     },
   };
 
@@ -51,7 +52,7 @@ class Verification {
   public completeSmsChallenge = async (t: TestController) => {
     await t
       .click(this.tabs.sms.sendCode)
-      .expect(queryByText('Sucess').visible)
+      .expect(this.tabs.sms.sendCodeSuccessMessage.visible)
       .ok('Sucessfuly sent message');
 
     const smsPattern = /.*\[Insight\] Verification code: (.*).*$/;
