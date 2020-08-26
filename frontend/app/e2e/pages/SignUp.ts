@@ -50,10 +50,11 @@ class SignUp {
     return promise.click(this.getStartedButton);
   };
 
-  public signUpAndLogin = async (t: TestController, data: SignUpDetails) => {
-    await t.navigateTo(config.tryBaseURL);
-    await this.signUp(t, data);
-    return this.signUpVerifyEmail(t);
+  public signUpAndLogin = (t: TestController, data: SignUpDetails) => {
+    return t
+      .navigateTo(config.tryBaseURL)
+      .then((_) => this.signUp(t, data))
+      .then((_) => this.verifyEmail(t)) as TestControllerPromise;
   };
 
   public generateRandomCredentials = () => {
@@ -62,7 +63,7 @@ class SignUp {
     return { password, email };
   };
 
-  public signUpVerifyEmail = (t: TestController) => {
+  public verifyEmail = (t: TestController) => {
     const link = findLinkFromDockerLogs();
     if (!link) {
       throw new Error('Sign up link not found');

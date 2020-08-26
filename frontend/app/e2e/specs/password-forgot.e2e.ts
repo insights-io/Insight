@@ -21,9 +21,7 @@ test('User should be able to reset password', async (t) => {
     company: 'Insight',
     email,
     password,
-  });
-
-  await t
+  })
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
