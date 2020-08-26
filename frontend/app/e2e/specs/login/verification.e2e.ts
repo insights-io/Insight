@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { getLocation, findLinkFromDockerLog } from '../../utils';
+import { getLocation, findLinkFromDockerLogs } from '../../utils';
 import {
   Sidebar,
   AccountSettingsPage,
@@ -15,6 +15,7 @@ fixture('/login/verification').page(VerificationPage.path);
 
 test('Should be able to complete full TFA flow after password reset', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
+
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, {
     fullName: 'Miha Novak',
@@ -37,20 +38,10 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
     .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsPage.tfa.totp.extractQrCodeSecret();
+  const tfaSecret = await AccountSettingsPage.tfa.totp.setup(t);
   await t
-    .typeText(
-      AccountSettingsPage.tfa.codeInput,
-      VerificationPage.totp(tfaSecret)
-    )
-    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
-    .notOk('Should invalidate error on typing')
-    .click(AccountSettingsPage.tfa.submitButton)
     .expect(AccountSettingsPage.tfa.totp.enabledToast.visible)
-    .ok('Should display positive message')
-    .hover(Sidebar.accountSettings.item)
-    .expect(Sidebar.accountSettings.accountSettings.visible)
-    .ok('Should display text on hover')
+    .ok('TFA enabled message')
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.signOut)
     .click(LoginPage.forgotPasswordButton)
@@ -59,7 +50,7 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
     .expect(PasswordForgotPage.requestSubmittedMessage.visible)
     .ok('Should display nice message that email has been sent');
 
-  const passwordResetLink = findLinkFromDockerLog();
+  const passwordResetLink = findLinkFromDockerLogs();
   const newPassword = uuid();
   await t
     .navigateTo(passwordResetLink)
@@ -72,9 +63,6 @@ test('Should be able to complete full TFA flow after password reset', async (t) 
 
   await VerificationPage.totpLogin(t, tfaSecret);
   await t
-    .hover(Sidebar.accountSettings.item)
-    .expect(Sidebar.accountSettings.accountSettings.visible)
-    .ok('Should display text on hover')
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
     .click(AccountSettingsPage.tfa.totp.checkbox)
@@ -107,20 +95,10 @@ test('Should be able to complete full TFA flow', async (t) => {
     .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsPage.tfa.totp.extractQrCodeSecret();
+  const tfaSecret = await AccountSettingsPage.tfa.totp.setup(t);
   await t
-    .typeText(
-      AccountSettingsPage.tfa.codeInput,
-      VerificationPage.totp(tfaSecret)
-    )
-    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
-    .notOk('Should invalidate error on typing')
-    .click(AccountSettingsPage.tfa.submitButton)
     .expect(AccountSettingsPage.tfa.totp.enabledToast.visible)
-    .ok('Should display positive message')
-    .hover(Sidebar.accountSettings.item)
-    .expect(Sidebar.accountSettings.accountSettings.visible)
-    .ok('Should display text on hover')
+    .ok('TFA enabled message')
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.signOut);
 
@@ -138,6 +116,7 @@ test('Should be able to complete full TFA flow', async (t) => {
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
     .click(AccountSettingsPage.tfa.totp.checkbox)
+    .click(AccountSettingsPage.tfa.disableSubmitButton)
     .expect(AccountSettingsPage.tfa.totp.disabledToast.visible)
     .ok('Should display message that TFA is disabled');
 });

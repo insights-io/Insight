@@ -2,7 +2,7 @@ import { getByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
 import config from '../config';
-import { findLinkFromDockerLog } from '../utils';
+import { findLinkFromDockerLogs } from '../utils';
 import {
   LoginPage,
   PasswordForgotPage,
@@ -35,7 +35,7 @@ test('User should be able to reset password', async (t) => {
     .expect(PasswordForgotPage.requestSubmittedMessage.visible)
     .ok('Should display nice message that email has been sent');
 
-  const passwordResetLink = findLinkFromDockerLog();
+  const passwordResetLink = findLinkFromDockerLogs();
   const newPassword = uuid();
   await t
     .navigateTo(passwordResetLink)

@@ -2,7 +2,7 @@ import { getByPlaceholderText, getByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
 import config from '../config';
-import { findLinkFromDockerLog } from '../utils';
+import { findLinkFromDockerLogs } from '../utils';
 
 import Login, { LoginCredentials } from './Login';
 
@@ -45,7 +45,7 @@ class SignUp {
   };
 
   public signUpVerifyEmail = (t: TestController) => {
-    const link = findLinkFromDockerLog();
+    const link = findLinkFromDockerLogs();
     if (!link) {
       throw new Error('Sign up link not found');
     }
