@@ -6,6 +6,7 @@ import {
 } from '@insight/storybook';
 import AuthApi from 'api/auth';
 import { ResponsePromise } from 'ky';
+import { TFA_METHODS } from 'test/data';
 
 import VerificationPage from './VerificationPage';
 
@@ -15,7 +16,7 @@ export default {
 };
 
 export const Base = () => {
-  return <VerificationPage methods={['sms', 'totp']} />;
+  return <VerificationPage methods={TFA_METHODS} />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
@@ -38,7 +39,7 @@ export const WithSmsOnly = () => {
 WithSmsOnly.story = Base.story;
 
 export const WithMissingChallengeIdError = () => {
-  return <VerificationPage methods={['sms', 'totp']} />;
+  return <VerificationPage methods={TFA_METHODS} />;
 };
 WithMissingChallengeIdError.story = configureStory({
   setupMocks: (sandbox) => {
@@ -64,7 +65,7 @@ WithMissingChallengeIdError.story = configureStory({
 });
 
 export const WithExpiredChallengeError = () => {
-  return <VerificationPage methods={['sms', 'totp']} />;
+  return <VerificationPage methods={TFA_METHODS} />;
 };
 WithExpiredChallengeError.story = configureStory({
   setupMocks: (sandbox) => {
@@ -87,7 +88,7 @@ WithExpiredChallengeError.story = configureStory({
 });
 
 export const WithInvalidCodeError = () => {
-  return <VerificationPage methods={['sms', 'totp']} />;
+  return <VerificationPage methods={TFA_METHODS} />;
 };
 WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {

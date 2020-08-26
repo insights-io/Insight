@@ -28,6 +28,12 @@ class Sidebar {
     accountSettings: queryByText('Account settings'),
     signOut: queryByText('Sign out'),
   };
+
+  public signOut = (t: TestController) => {
+    return t
+      .click(this.accountSettings.item)
+      .click(this.accountSettings.signOut);
+  };
 }
 
 export default new Sidebar();

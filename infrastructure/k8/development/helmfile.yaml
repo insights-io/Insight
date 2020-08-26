@@ -22,13 +22,13 @@ helmfiles:
 releases:
   - name: postgres
     chart: bitnami/postgresql
-    version: 9.1.1
+    version: 9.3.2
     namespace: {{ .Values.appNamespace }}
     values:
       - postgres.yaml
   - name: metabase
     chart: stable/metabase
-    version: 0.12.0
+    version: 0.12.1
     namespace: {{ .Values.appNamespace }}
     values:
       - metabase.yaml
@@ -45,13 +45,13 @@ releases:
 
   - name: kafka
     chart: bitnami/kafka
-    version: 11.5.1
+    version: 11.8.2
     namespace: {{ .Values.appNamespace }}
     values:
       - kafka.yaml
   - name: es5
     chart: elastic/elasticsearch
-    version: 7.7.1
+    version: 7.9.0
     namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
@@ -62,7 +62,7 @@ releases:
           storageClassName: "{{ .Values.storageClassName }}"
   - name: fluentbit
     chart: stable/fluent-bit
-    version: 0.6.0
+    version: 2.10.0
     namespace: {{ .Values.infraNamespace }}
     values:
       - fluentbit.yaml
@@ -74,7 +74,7 @@ releases:
             parser: {{ .Values.fluentbitParser }}
   - name: kibana
     chart: elastic/kibana
-    version: 7.7.1
+    version: 7.9.0
     namespace: {{ .Values.infraNamespace }}
     values:
       - kibana.yaml
@@ -90,7 +90,7 @@ releases:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
   - name: dashboard
     chart: kubernetes-dashboard/kubernetes-dashboard
-    version: 2.0.3
+    version: 2.3.0
     namespace: {{ .Values.infraNamespace }}
     values:
       - dashboard.yaml
@@ -106,7 +106,7 @@ releases:
 
   - name: prometheus
     chart: stable/prometheus
-    version: 11.10.0
+    version: 11.12.0
     namespace: prometheus
     values:
       - prometheus.yaml
@@ -136,7 +136,7 @@ releases:
 
   - name: grafana
     chart: stable/grafana
-    version: 5.5.0
+    version: 5.5.5
     namespace: {{ .Values.infraNamespace }}
     values:
       - grafana.yaml
@@ -156,7 +156,7 @@ releases:
   - name: jaeger
     chart: jaegertracing/jaeger
     namespace: monitoring
-    version: 0.33.0
+    version: 0.34.1
     values:
       - jaeger.yaml
       - storage:
@@ -177,7 +177,7 @@ releases:
 {{ if eq .Environment.Name "production" }}
   - name: oauth2-proxy
     chart: stable/oauth2-proxy
-    version: 3.2.1
+    version: 3.2.2
     namespace: {{ .Values.infraNamespace }}
     values:
       - oauth-proxy.yaml

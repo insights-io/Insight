@@ -1,14 +1,12 @@
 import { AuthApi } from 'api';
-import { Block } from 'baseui/block';
 import { Button, SHAPE } from 'baseui/button';
 import { Checkbox } from 'baseui/checkbox';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { StatefulTooltip } from 'baseui/tooltip';
-import React, { useState, useRef, MutableRefObject, useEffect } from 'react';
-import Flex from 'shared/components/Flex';
-import CodeInput from 'shared/components/CodeInput';
+import React, { useState } from 'react';
 import useCodeInput from 'shared/hooks/useCodeInput';
 import { toaster } from 'baseui/toast';
+import TfaSmsInputMethod from 'modules/auth/components/TfaSmsInputMethod';
 
 import DisableTwoFactorAuthenticationModal from '../DisableTwoFactorAuthenticationModal';
 
@@ -28,10 +26,6 @@ const SmsTwoFactorAuthentication = ({
   const isEnabled = setupsMaps.sms?.createdAt !== undefined;
   const closeModal = () => setIsModalOpen(false);
   const openModal = () => setIsModalOpen(true);
-  const [validitySeconds, setValiditySeconds] = useState(0);
-  const countdownInterval = useRef(
-    null
-  ) as MutableRefObject<NodeJS.Timeout | null>;
 
   const {
     code,
@@ -52,31 +46,6 @@ const SmsTwoFactorAuthentication = ({
       setError(error.error);
     },
   });
-
-  const sendCode = async (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    event.stopPropagation();
-    event.preventDefault();
-    if (validitySeconds !== 0) {
-      return;
-    }
-
-    const response = await AuthApi.tfa.sms.setupSendCode();
-    toaster.positive('Success', {});
-    setValiditySeconds(response.validitySeconds);
-
-    countdownInterval.current = setInterval(() => {
-      setValiditySeconds((v) => v - 1);
-    }, 1000);
-  };
-
-  useEffect(() => {
-    if (countdownInterval.current !== null && validitySeconds === 0) {
-      clearInterval(countdownInterval.current);
-      countdownInterval.current = null;
-    }
-  }, [validitySeconds, countdownInterval]);
 
   const disableSmsTwoFactorAuthentication = () => {
     AuthApi.tfa.disable('sms').then(() => {
@@ -128,25 +97,12 @@ const SmsTwoFactorAuthentication = ({
             }}
           >
             <ModalBody>
-              <Block display="flex">
-                <Block>
-                  <CodeInput
-                    label="Mobile verification code"
-                    code={code}
-                    handleChange={handleChange}
-                    error={codeError}
-                  />
-                </Block>
-                <Flex
-                  flexDirection="column"
-                  justifyContent={codeError ? 'center' : 'flex-end'}
-                  width="100%"
-                >
-                  <Button onClick={sendCode}>
-                    {validitySeconds ? `${validitySeconds}s` : 'Send Code'}
-                  </Button>
-                </Flex>
-              </Block>
+              <TfaSmsInputMethod
+                code={code}
+                error={codeError}
+                handleChange={handleChange}
+                sendCode={AuthApi.tfa.sms.setupSendCode}
+              />
             </ModalBody>
             <ModalFooter>
               <Button shape={SHAPE.pill} kind="tertiary" onClick={closeModal}>

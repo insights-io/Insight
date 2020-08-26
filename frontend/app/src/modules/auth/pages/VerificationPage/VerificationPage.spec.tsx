@@ -18,26 +18,48 @@ describe('<VerificationPage />', () => {
   ) => {
     const result = render(component);
 
-    const codeInput = result.container.querySelector(
-      'input[aria-label="Please enter your pin code"]'
-    ) as HTMLInputElement;
+    const codeInput = () =>
+      result.container.querySelector(
+        'input[aria-label="Please enter your pin code"]'
+      ) as HTMLInputElement;
 
     const submitButton = result.getByText('Submit');
 
     return { submitButton, codeInput, ...result };
   };
 
-  it('should redirect to dest on success', async () => {
+  it('should redirect to dest on totp challenge complete', async () => {
     const { challengeComplete } = Base.story.setupMocks(sandbox);
     const { codeInput, submitButton, replace } = renderVerificationPage(
       <Base />
     );
 
-    userEvent.type(codeInput, '123456');
+    userEvent.type(codeInput(), '123456');
     userEvent.click(submitButton);
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(challengeComplete, 'totp', 123456);
+      sandbox.assert.calledWithExactly(replace, '/');
+    });
+  });
+
+  it('should redirect to dest on sms challenge complete', async () => {
+    const { challengeComplete } = Base.story.setupMocks(sandbox);
+    const {
+      codeInput,
+      submitButton,
+      replace,
+      getByText,
+      findByText,
+    } = renderVerificationPage(<Base />);
+
+    userEvent.click(getByText('Text message'));
+    await findByText('Mobile verification code');
+    userEvent.type(codeInput(), '123456');
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      sandbox.assert.calledWithExactly(challengeComplete, 'sms', 123456);
       sandbox.assert.calledWithExactly(replace, '/');
     });
   });
@@ -50,7 +72,7 @@ describe('<VerificationPage />', () => {
       <WithInvalidCodeError />
     );
 
-    userEvent.type(codeInput, '123456');
+    userEvent.type(codeInput(), '123456');
     userEvent.click(submitButton);
 
     await findByText('Invalid code');
@@ -65,7 +87,7 @@ describe('<VerificationPage />', () => {
       <WithExpiredChallengeError />
     );
 
-    userEvent.type(codeInput, '123456');
+    userEvent.type(codeInput(), '123456');
     userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -82,7 +104,7 @@ describe('<VerificationPage />', () => {
       <WithMissingChallengeIdError />
     );
 
-    userEvent.type(codeInput, '123456');
+    userEvent.type(codeInput(), '123456');
     userEvent.click(submitButton);
 
     await waitFor(() => {

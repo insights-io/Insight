@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
 import Head from 'next/head';
 import { Block } from 'baseui/block';
@@ -7,16 +7,30 @@ import { Button } from 'baseui/button';
 import AuthApi from 'api/auth';
 import { useRouter } from 'next/router';
 import FormError from 'shared/components/FormError';
-import CodeInput from 'shared/components/CodeInput';
 import useCodeInput from 'shared/hooks/useCodeInput';
 import { TfaMethod } from '@insight/sdk/dist/auth';
+import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
+import TfaTotpInputMethod from 'modules/auth/components/TfaTotpInputMethod';
+import TfaSmsInputMethod from 'modules/auth/components/TfaSmsInputMethod';
 
 type Props = {
   methods: TfaMethod[];
 };
 
-const VerificationPage = ({ methods: _methods }: Props) => {
+const TFA_METHOD_TO_TITLE_MAPPING = {
+  sms: {
+    title: 'Text message',
+    component: TfaSmsInputMethod,
+  },
+  totp: {
+    title: 'Authy',
+    component: TfaTotpInputMethod,
+  },
+} as const;
+
+const VerificationPage = ({ methods }: Props) => {
   const router = useRouter();
+  const [activeMethod, setActiveMethod] = useState(methods[0]);
   const { dest = '/' } = router.query;
 
   const {
@@ -30,7 +44,7 @@ const VerificationPage = ({ methods: _methods }: Props) => {
   } = useCodeInput({
     submitAction: (data) => {
       return AuthApi.tfa
-        .challengeComplete('totp', data)
+        .challengeComplete(activeMethod, data)
         .then((_) => router.replace(dest as string));
     },
     handleError: (errorDTO, setError) => {
@@ -66,12 +80,31 @@ const VerificationPage = ({ methods: _methods }: Props) => {
       >
         <Block display="flex" justifyContent="center">
           <Block width="fit-content">
-            <CodeInput
-              label="Google verification code"
-              code={code}
-              handleChange={handleChange}
-              error={codeError}
-            />
+            <Tabs
+              activeKey={activeMethod}
+              onChange={(params) =>
+                setActiveMethod(params.activeKey as TfaMethod)
+              }
+              activateOnFocus
+              fill={FILL.fixed}
+            >
+              {methods.map((method) => {
+                const {
+                  component: TfaInputMethodComponent,
+                  title: tabTitle,
+                } = TFA_METHOD_TO_TITLE_MAPPING[method];
+                return (
+                  <Tab title={tabTitle} key={method}>
+                    <TfaInputMethodComponent
+                      error={codeError}
+                      handleChange={handleChange}
+                      code={code}
+                      sendCode={AuthApi.tfa.sms.challengeSendCode}
+                    />
+                  </Tab>
+                );
+              })}
+            </Tabs>
 
             <Button
               ref={submitButtonRef}

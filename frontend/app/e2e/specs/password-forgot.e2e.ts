@@ -16,13 +16,7 @@ fixture('/password-forgot').page(config.appBaseURL);
 test('User should be able to reset password', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
 
-  await SignUpPage.signUpAndLogin(t, {
-    fullName: 'Miha Novak',
-    company: 'Insight',
-    email,
-    password,
-  });
-
+  await SignUpPage.signUpAndLogin(t, { email, password });
   await t
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)

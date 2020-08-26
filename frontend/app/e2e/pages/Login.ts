@@ -1,3 +1,4 @@
+import 'testcafe';
 import {
   getByPlaceholderText,
   getByText,
@@ -31,7 +32,11 @@ class Login {
     return t
       .typeText(this.emailInput, email)
       .typeText(this.passwordInput, password)
-      .click(this.signInButton);
+      .click(this.signInButton)
+      .expect(this.signInButton.getAttribute('aria-busy'))
+      .eql('true', 'Should be busy')
+      .expect(this.signInButton.getAttribute('aria-label'))
+      .eql('loading Sign in', 'Should be loading');
   };
 
   public loginWithInsightUser = (t: TestController) => {

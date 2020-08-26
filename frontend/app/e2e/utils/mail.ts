@@ -42,14 +42,18 @@ export const getDockerLogs = (): string[] => {
     : readLinesFromDockerComposeLogs();
 };
 
-export const findLinkFromDockerLogs = () => {
+export const findPatternInDockerLogs = (pattern: RegExp) => {
   const logs = getDockerLogs();
 
   return logs.reduce((maybeLink, line) => {
-    const match = linkPattern.exec(line);
+    const match = pattern.exec(line);
     if (match) {
       return match[1];
     }
     return maybeLink;
   }, undefined as string | undefined);
+};
+
+export const findLinkFromDockerLogs = () => {
+  return findPatternInDockerLogs(linkPattern);
 };

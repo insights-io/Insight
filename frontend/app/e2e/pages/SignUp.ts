@@ -21,7 +21,7 @@ class SignUp {
   public readonly fullNameInput = getByPlaceholderText('Full name');
   public readonly companyInput = getByPlaceholderText('Company');
   public readonly getStartedButton = getByText('Get started');
-  public readonly phoneNumberInput = getByText('Phone number');
+  public readonly phoneNumberInput = getByPlaceholderText('Phone number');
 
   public readonly userFullNameDefault = 'Miha Novak';
   public readonly userCompanyDefault = 'Insight';
@@ -53,7 +53,7 @@ class SignUp {
   public signUpAndLogin = async (t: TestController, data: SignUpDetails) => {
     await t.navigateTo(config.tryBaseURL);
     await this.signUp(t, data);
-    return this.signUpVerifyEmail(t);
+    return this.verifyEmail(t);
   };
 
   public generateRandomCredentials = () => {
@@ -62,7 +62,7 @@ class SignUp {
     return { password, email };
   };
 
-  public signUpVerifyEmail = (t: TestController) => {
+  public verifyEmail = (t: TestController) => {
     const link = findLinkFromDockerLogs();
     if (!link) {
       throw new Error('Sign up link not found');
