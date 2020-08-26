@@ -2,6 +2,7 @@ import { Session, SessionDTO, UserAgentDTO } from '@insight/types';
 import { v4 as uuid } from 'uuid';
 import { subSeconds, subDays } from 'date-fns';
 import { mapSession } from '@insight/sdk';
+import { TfaMethod } from '@insight/sdk/dist/auth';
 
 import { INSIGHT_ADMIN } from './user';
 
@@ -84,3 +85,5 @@ export const INSIGHT_SESSIONS = [
 
 export * from './events';
 export * from './user';
+
+export const TFA_METHODS: TfaMethod[] = ['totp', 'sms'];

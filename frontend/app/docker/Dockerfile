@@ -35,7 +35,7 @@ RUN yarn install --frozen-lockfile
 COPY frontend/app/ /src/frontend/app/
 COPY frontend/shared/ /src/frontend/shared/
 
-RUN yarn workspace @insight/app build
+RUN yarn frontend:app:build
 RUN yarn install --frozen-lockfile --production --ignore-scripts --prefer-offline
 
 FROM node:14-alpine
