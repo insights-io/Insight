@@ -21,7 +21,7 @@ class SignUp {
   public readonly fullNameInput = getByPlaceholderText('Full name');
   public readonly companyInput = getByPlaceholderText('Company');
   public readonly getStartedButton = getByText('Get started');
-  public readonly phoneNumberInput = getByText('Phone number');
+  public readonly phoneNumberInput = getByPlaceholderText('Phone number');
 
   public readonly userFullNameDefault = 'Miha Novak';
   public readonly userCompanyDefault = 'Insight';
