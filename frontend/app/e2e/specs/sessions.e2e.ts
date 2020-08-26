@@ -1,28 +1,23 @@
 /* eslint-disable no-console */
 import {
   queryByText,
-  queryByPlaceholderText,
   getByText,
   queryAllByText,
 } from '@testing-library/testcafe';
-import { Selector } from 'testcafe';
 
-import { LoginPage, SessionsPage } from '../pages';
+import { LoginPage, SessionPage, SessionsPage } from '../pages';
 
 fixture('/sessions').page(SessionsPage.path);
 
 test('Should be able to see sessions for Insight logged in user', async (t) => {
   await LoginPage.loginWithInsightUser(t);
 
-  const lastSession = queryAllByText(/^.*less than 5 seconds ago$/);
-  const showDevToolsIcon = Selector('svg[id="devtools"]');
-
   await t
-    .expect(lastSession.visible)
+    .expect(SessionsPage.getLastSession().visible)
     .ok('Newly created session is dispalyed')
-    .click(lastSession)
-    .click(showDevToolsIcon)
-    .expect(queryByPlaceholderText('Filter').visible)
+    .click(SessionsPage.getLastSession())
+    .click(SessionPage.devtools.button)
+    .expect(SessionPage.devtools.filterInput.visible)
     .ok('Navigates to session details page');
 
   await t.eval(() => {
@@ -37,9 +32,9 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
   });
 
   await t
-    .click(showDevToolsIcon)
+    .click(SessionPage.devtools.button)
     .expect(queryByText('console.log').visible)
-    .ok('console.log should be visible in the console')
+    .ok('console.log should be visible in the console', { timeout: 10000 }) // this might take some time -- refresh interval is 5s
     .expect(queryByText('console.info').visible)
     .ok('console.info should be visible in the console')
     .expect(queryByText('console.debug').visible)
