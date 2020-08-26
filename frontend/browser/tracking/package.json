@@ -16,8 +16,9 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.js",
+    "build:with-deps": "yarn lerna run build --scope=@insight/browser-tracking --include-filtered-dependencies --concurrency 2",
     "test": "jest",
-    "pretest": "yarn lerna run build --scope=@insight/browser-tracking --include-filtered-dependencies --concurrency 2",
+    "pretest": "yarn build:with-deps",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
