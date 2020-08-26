@@ -37,13 +37,17 @@ class SignUp {
       company = this.userCompanyDefault,
     }: SignUpDetails
   ) => {
-    return t
+    let promise = t
       .typeText(this.fullNameInput, fullName)
       .typeText(this.companyInput, company)
       .typeText(this.emailInput, email)
-      .typeText(this.passwordInput, password)
-      .typeText(this.phoneNumberInput, phoneNumber)
-      .click(this.getStartedButton);
+      .typeText(this.passwordInput, password);
+
+    if (phoneNumber.length > 0) {
+      promise = promise.typeText(this.phoneNumberInput, phoneNumber);
+    }
+
+    return promise.click(this.getStartedButton);
   };
 
   public signUpAndLogin = async (t: TestController, data: SignUpDetails) => {
