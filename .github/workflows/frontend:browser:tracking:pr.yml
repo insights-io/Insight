@@ -3,8 +3,8 @@ on:
   pull_request:
     branches: [master]
     paths:
-      - '.github/workflows/frontend:browser:bootstrap:pr.yml'
-      - 'frontend/browser/bootstrap/**'
+      - '.github/workflows/frontend:browser:tracking:pr.yml'
+      - 'frontend/browser/tracking/**'
       - 'lerna.json'
       - 'package.json'
       - 'tsconfig.json'
@@ -34,5 +34,5 @@ jobs:
       - uses: preactjs/compressed-size-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          build-script: 'frontend:browser:boostrap:build'
-          pattern: 'frontend/browser/bootstrap/dist/*.{js}'
+          build-script: 'frontend:browser:tracking:build'
+          pattern: 'frontend/browser/tracking/dist/*.{js}'
