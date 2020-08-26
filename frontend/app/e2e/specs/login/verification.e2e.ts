@@ -175,3 +175,43 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
     .expect(AccountSettingsPage.tfa.sms.disabledToast.visible)
     .ok('Should display message that SMS TFA is disabled');
 });
+
+test('[SMS + TOTP]: Should be able to complete full TFA flow', async (t) => {
+  await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
+  const { password, email } = SignUpPage.generateRandomCredentials();
+
+  await SignUpPage.signUpAndLogin(t, {
+    email,
+    password,
+    phoneNumber: '51222444',
+  });
+
+  await t
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings);
+
+  await t.click(AccountSettingsPage.tfa.sms.checkbox);
+  await AccountSettingsPage.tfa.sms.setup(t);
+
+  await t.click(AccountSettingsPage.tfa.totp.checkbox);
+  const tfaSecret = await AccountSettingsPage.tfa.totp.setup(t);
+  await Sidebar.signOut(t);
+
+  await LoginPage.login(t, { email, password })
+    .expect(VerificationPage.tabs.totp.title.visible)
+    .ok('TOTP tab visible')
+    .expect(VerificationPage.tabs.sms.title.visible)
+    .ok('SMS tab visible');
+
+  // SMS verification
+  await t.click(VerificationPage.tabs.sms.title);
+  await VerificationPage.completeSmsChallenge(t);
+
+  // Clean up
+  await Sidebar.signOut(t);
+  await LoginPage.login(t, { email, password });
+
+  // TOTP verification
+  await t.click(VerificationPage.tabs.totp.title);
+  await VerificationPage.completeTotpChallenge(t, tfaSecret);
+});
