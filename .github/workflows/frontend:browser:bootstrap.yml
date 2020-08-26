@@ -45,9 +45,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: frontend
-      - name: build
-        run: |
-          yarn workspace @insight/browser-bootstrap build
+      - run: yarn frontend:browser:boostrap:build
       - name: Prepare files for deployment
         run: find ./ -name "*.js.gz" -exec sh -c 'mv $0 `basename "$0" .js.gz`.js' '{}' \;
         working-directory: frontend/browser/bootstrap/dist
