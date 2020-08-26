@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.js",
+    "build:with-deps": "yarn pretest",
     "test": "jest",
     "pretest": "yarn lerna run build --scope=@insight/browser-tracking --include-filtered-dependencies --concurrency 2",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
