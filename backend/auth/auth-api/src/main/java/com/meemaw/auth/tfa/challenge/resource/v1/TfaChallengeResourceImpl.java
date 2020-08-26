@@ -9,6 +9,7 @@ import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -27,8 +28,9 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
   @Inject TfaChallengeService tfaChallengeService;
   @Inject TfaChallengeDatasource tfaChallengeDatasource;
   @Inject UserDatasource userDatasource;
-  @Context HttpServerRequest request;
   @Inject TfaSmsProvider tfaSmsProvider;
+  @Inject UserTfaDatasource userTfaDatasource;
+  @Context HttpServerRequest request;
 
   @Override
   public CompletionStage<Response> complete(
@@ -59,12 +61,12 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return tfaChallengeDatasource
         .retrieveUser(challengeId)
-        .thenApply(
+        .thenCompose(
             maybeUserId -> {
               if (maybeUserId.isEmpty()) {
-                return challengeNotFoundResponse(cookieDomain);
+                return CompletableFuture.completedStage(challengeNotFoundResponse(cookieDomain));
               }
-              return DataResponse.ok(true);
+              return userTfaDatasource.listMethods(maybeUserId.get()).thenApply(DataResponse::ok);
             });
   }
 

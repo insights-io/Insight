@@ -1,14 +1,14 @@
+import { User } from '@insight/types';
 import React from 'react';
-import { Card } from 'baseui/card';
 
-import TfaSetup from './TfaSetup';
+import TwoFactorAuthentication from './TwoFactorAuthentication';
 
-const Security = () => {
-  return (
-    <Card title="Security">
-      <TfaSetup />
-    </Card>
-  );
+type Props = {
+  user: User;
+};
+
+const Security = ({ user }: Props) => {
+  return <TwoFactorAuthentication user={user} />;
 };
 
 export default Security;

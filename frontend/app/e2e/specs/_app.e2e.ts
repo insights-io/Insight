@@ -7,9 +7,7 @@ import { getLocation } from '../utils';
 fixture('_app').page(config.appBaseURL);
 
 test('Should be able to navigate', async (t) => {
-  await LoginPage.loginWithInsightUser(t);
-
-  await t
+  await LoginPage.loginWithInsightUser(t)
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')

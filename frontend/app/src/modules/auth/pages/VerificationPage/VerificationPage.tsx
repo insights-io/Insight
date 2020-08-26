@@ -7,10 +7,15 @@ import { Button } from 'baseui/button';
 import AuthApi from 'api/auth';
 import { useRouter } from 'next/router';
 import FormError from 'shared/components/FormError';
-import FormTfaInput from 'shared/components/FormTfaInput';
-import useTfaInput from 'shared/hooks/useTfaInput';
+import CodeInput from 'shared/components/CodeInput';
+import useCodeInput from 'shared/hooks/useCodeInput';
+import { TfaMethod } from '@insight/sdk/dist/auth';
 
-const VerificationPage = () => {
+type Props = {
+  methods: TfaMethod[];
+};
+
+const VerificationPage = ({ methods: _methods }: Props) => {
   const router = useRouter();
   const { dest = '/' } = router.query;
 
@@ -22,7 +27,7 @@ const VerificationPage = () => {
     submitButtonRef,
     isSubmitting,
     apiError,
-  } = useTfaInput({
+  } = useCodeInput({
     submitAction: (data) => {
       return AuthApi.tfa
         .challengeComplete('totp', data)
@@ -61,7 +66,8 @@ const VerificationPage = () => {
       >
         <Block display="flex" justifyContent="center">
           <Block width="fit-content">
-            <FormTfaInput
+            <CodeInput
+              label="Google verification code"
               code={code}
               handleChange={handleChange}
               error={codeError}
@@ -70,7 +76,7 @@ const VerificationPage = () => {
             <Button
               ref={submitButtonRef}
               type="submit"
-              $style={{ width: '100%' }}
+              $style={{ width: '100%', marginTop: '16px' }}
               isLoading={isSubmitting}
             >
               Submit

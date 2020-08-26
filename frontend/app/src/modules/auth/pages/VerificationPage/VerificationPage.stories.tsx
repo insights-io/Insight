@@ -15,7 +15,7 @@ export default {
 };
 
 export const Base = () => {
-  return <VerificationPage />;
+  return <VerificationPage methods={['sms', 'totp']} />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
@@ -27,8 +27,18 @@ Base.story = configureStory({
   },
 });
 
+export const WithTotpOnly = () => {
+  return <VerificationPage methods={['totp']} />;
+};
+WithTotpOnly.story = Base.story;
+
+export const WithSmsOnly = () => {
+  return <VerificationPage methods={['sms']} />;
+};
+WithSmsOnly.story = Base.story;
+
 export const WithMissingChallengeIdError = () => {
-  return <VerificationPage />;
+  return <VerificationPage methods={['sms', 'totp']} />;
 };
 WithMissingChallengeIdError.story = configureStory({
   setupMocks: (sandbox) => {
@@ -54,7 +64,7 @@ WithMissingChallengeIdError.story = configureStory({
 });
 
 export const WithExpiredChallengeError = () => {
-  return <VerificationPage />;
+  return <VerificationPage methods={['sms', 'totp']} />;
 };
 WithExpiredChallengeError.story = configureStory({
   setupMocks: (sandbox) => {
@@ -77,7 +87,7 @@ WithExpiredChallengeError.story = configureStory({
 });
 
 export const WithInvalidCodeError = () => {
-  return <VerificationPage />;
+  return <VerificationPage methods={['sms', 'totp']} />;
 };
 WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {

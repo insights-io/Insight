@@ -1,8 +1,4 @@
-import {
-  getByText,
-  queryByText,
-  getAllByText,
-} from '@testing-library/testcafe';
+import { getAllByText } from '@testing-library/testcafe';
 
 import { getLocation } from '../../utils';
 import config from '../../config';
@@ -11,10 +7,6 @@ import { LoginPage, PasswordForgotPage } from '../../pages';
 fixture('/login').page(config.appBaseURL);
 
 test('Login form should be validated both client & server side', async (t) => {
-  const invalidEmailErrorMessage = 'Please enter a valid email address';
-  const passwordTooShortErrorMessage =
-    'Password must be at least 8 characters long';
-
   await t
     .expect(getLocation())
     .eql(`${LoginPage.path}?dest=%2F`)
@@ -24,24 +16,24 @@ test('Login form should be validated both client & server side', async (t) => {
     .typeText(LoginPage.emailInput, 'random')
     .typeText(LoginPage.passwordInput, 'short')
     .click(LoginPage.signInButton)
-    .expect(getByText(invalidEmailErrorMessage).visible)
+    .expect(LoginPage.errorMessages.invalidEmail.visible)
     .ok('Should display email validation error message')
-    .expect(getByText(passwordTooShortErrorMessage).visible)
+    .expect(LoginPage.errorMessages.passwordTooShort.visible)
     .ok('Should display password validation error message');
 
   await t
     .selectText(LoginPage.emailInput)
     .pressKey('delete')
     .typeText(LoginPage.emailInput, 'random@gmail.com')
-    .expect(queryByText(invalidEmailErrorMessage).exists)
+    .expect(LoginPage.errorMessages.invalidEmail.exists)
     .notOk('Email validation error message should dissapear')
     .selectText(LoginPage.passwordInput)
     .pressKey('delete')
     .typeText(LoginPage.passwordInput, 'not_so_short')
-    .expect(queryByText(passwordTooShortErrorMessage).exists)
+    .expect(LoginPage.errorMessages.passwordTooShort.exists)
     .notOk('Password validation error message should dissapear')
     .click(LoginPage.signInButton)
-    .expect(getByText('Invalid email or password').visible)
+    .expect(LoginPage.errorMessages.invalidCredentials.visible)
     .ok('Should display email/password miss-match message');
 });
 

@@ -492,10 +492,10 @@ public class TfaChallengeResourceTest {
         .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(123)))
         .post(TfaChallengeResource.PATH + "/sms/complete")
         .then()
-        .statusCode(404)
+        .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Code expired\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
 
     given()
         .when()
@@ -571,6 +571,14 @@ public class TfaChallengeResourceTest {
                     "{\"data\": {\"methods\": [\"sms\", \"totp\"], \"challengeId\": \"%s\"}}",
                     challengeId)))
         .cookie(SsoChallenge.COOKIE_NAME, challengeId);
+
+    given()
+        .when()
+        .queryParam("id", challengeId)
+        .get(TfaChallengeResource.PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"sms\",\"totp\"]}"));
 
     given()
         .when()

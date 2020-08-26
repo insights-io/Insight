@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
-import { TFA_SETUP_QR_IMAGE } from 'test/data';
+import { INSIGHT_ADMIN, TFA_SETUP_QR_IMAGE } from 'test/data';
 import { SWRConfig } from 'swr';
 
 import Security from './Security';
@@ -13,7 +13,7 @@ export default {
 export const TfaEnabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <Security />
+      <Security user={INSIGHT_ADMIN} />
     </SWRConfig>
   );
 };
@@ -23,11 +23,12 @@ TfaEnabled.story = configureStory({
       listSetups: sandbox
         .stub(AuthApi.tfa, 'listSetups')
         .resolves([{ createdAt: new Date().toUTCString(), method: 'totp' }]),
-      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
       setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
-        data: { createdAt: new Date().toISOString(), method: 'totp' },
+        createdAt: new Date().toISOString(),
+        method: 'totp',
       }),
     };
   },
@@ -36,7 +37,7 @@ TfaEnabled.story = configureStory({
 export const TfaDisabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <Security />
+      <Security user={INSIGHT_ADMIN} />
     </SWRConfig>
   );
 };
@@ -44,11 +45,12 @@ TfaDisabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       listSetups: sandbox.stub(AuthApi.tfa, 'listSetups').resolves([]),
-      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
       setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
-        data: { createdAt: new Date().toISOString(), method: 'totp' },
+        createdAt: new Date().toISOString(),
+        method: 'totp',
       }),
     };
   },
@@ -57,7 +59,7 @@ TfaDisabled.story = configureStory({
 export const WithError = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <Security />
+      <Security user={INSIGHT_ADMIN} />
     </SWRConfig>
   );
 };

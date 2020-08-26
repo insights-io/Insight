@@ -3,15 +3,19 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'baseui/modal';
 import AuthApi from 'api/auth';
 import { Block } from 'baseui/block';
 import { Button } from 'baseui/button';
-import FormTfaInput from 'shared/components/FormTfaInput';
-import useTfaInput from 'shared/hooks/useTfaInput';
+import CodeInput from 'shared/components/CodeInput';
+import useCodeInput from 'shared/hooks/useCodeInput';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import FormError from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 
 import { Props } from './types';
 
-const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
+const TimeBasedTwoFactorAuthenticationSetupModal = ({
+  isOpen,
+  onClose,
+  onTfaConfigured,
+}: Props) => {
   const [setupStartError, setSetupStartError] = useState<APIError>();
   const [qrImage, setQrImage] = useState<string>();
   const {
@@ -22,11 +26,9 @@ const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
     submitButtonRef,
     isSubmitting,
     apiError,
-  } = useTfaInput({
+  } = useCodeInput({
     submitAction: (data) => {
-      return AuthApi.tfa
-        .setupComplete('totp', data)
-        .then((dataResponse) => onTfaConfigured(dataResponse.data));
+      return AuthApi.tfa.setupComplete('totp', data).then(onTfaConfigured);
     },
     handleError: (error, setError) => {
       setError(error.error);
@@ -35,8 +37,8 @@ const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
 
   useEffect(() => {
     if (!qrImage && isOpen) {
-      AuthApi.tfa
-        .totpSetupStart()
+      AuthApi.tfa.totp
+        .setupStart()
         .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
         .catch(async (error) => {
           const errorDTO: APIErrorDataResponse = await error.response.json();
@@ -70,7 +72,8 @@ const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
           </Block>
           <Block display="flex" justifyContent="center">
             <Block>
-              <FormTfaInput
+              <CodeInput
+                label="Google verification code"
                 disabled={setupStartError !== undefined}
                 code={code}
                 handleChange={handleChange}
@@ -97,4 +100,4 @@ const TfaSetupModal = ({ isOpen, onClose, onTfaConfigured }: Props) => {
   );
 };
 
-export default TfaSetupModal;
+export default React.memo(TimeBasedTwoFactorAuthenticationSetupModal);

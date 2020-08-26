@@ -9,7 +9,7 @@ import ChangePassword from '../ChangePassword';
 import Security from '../Security';
 
 type Props = {
-  user: User | undefined;
+  user: User;
   loading: boolean;
 };
 
@@ -34,7 +34,7 @@ const UserSettings = ({ user, loading }: Props) => {
           </Block>
         </Block>
         <Block>
-          <Security />
+          <Security user={user} />
         </Block>
       </FlexColumn>
 

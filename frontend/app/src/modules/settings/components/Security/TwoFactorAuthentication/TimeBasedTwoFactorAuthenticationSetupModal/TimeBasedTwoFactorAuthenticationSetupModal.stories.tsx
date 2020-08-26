@@ -23,11 +23,12 @@ export const Base = (props: Partial<Props>) => {
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
       setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
-        data: { createdAt: new Date().toISOString(), method: 'totp' },
+        createdAt: new Date().toISOString(),
+        method: 'totp',
       }),
     };
   },
@@ -39,7 +40,7 @@ export const WithSetupStartError = () => {
 WithSetupStartError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').rejects(
+      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').rejects(
         mockApiError({
           message: 'Internal Server Error',
           reason: 'Internal Server Error',
@@ -56,7 +57,7 @@ export const WithInvalidCodeError = () => {
 WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
       setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').rejects(
@@ -79,7 +80,7 @@ export const WithQrCodeExpiredError = () => {
 WithQrCodeExpiredError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.tfa, 'totpSetupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
       setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').rejects(

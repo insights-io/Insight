@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public interface UserTfaDatasource {
 
@@ -29,5 +30,10 @@ public interface UserTfaDatasource {
 
   default CompletionStage<TfaSetup> storeSmsTfa(UUID userId, SqlTransaction transaction) {
     return store(userId, TfaMethod.SMS, new JsonObject(), transaction);
+  }
+
+  default CompletionStage<List<TfaMethod>> listMethods(UUID userId) {
+    return list(userId)
+        .thenApply(setups -> setups.stream().map(TfaSetup::getMethod).collect(Collectors.toList()));
   }
 }

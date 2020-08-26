@@ -7,10 +7,15 @@ type Props<T> = {
     error: APIErrorDataResponse,
     setError: React.Dispatch<React.SetStateAction<APIError | undefined>>
   ) => void;
+  length?: number;
 };
 
-const useTfaInput = <T>({ submitAction, handleError }: Props<T>) => {
-  const [code, setCode] = useState(() => Array(6).fill(''));
+const useCodeInput = <T>({
+  submitAction,
+  handleError,
+  length = 6,
+}: Props<T>) => {
+  const [code, setCode] = useState(() => Array(length).fill(''));
   const [apiError, setApiError] = useState<APIError | undefined>();
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,9 +30,7 @@ const useTfaInput = <T>({ submitAction, handleError }: Props<T>) => {
         message: 'Bad Request',
         reason: 'Bad Request',
         statusCode: 400,
-        errors: {
-          code: 'Required',
-        },
+        errors: { code: 'Required' },
       });
       return;
     }
@@ -65,4 +68,4 @@ const useTfaInput = <T>({ submitAction, handleError }: Props<T>) => {
   };
 };
 
-export default useTfaInput;
+export default useCodeInput;

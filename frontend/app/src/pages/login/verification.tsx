@@ -7,12 +7,19 @@ import VerificationPage from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import AuthApi from 'api/auth';
 import { APIErrorDataResponse } from '@insight/types';
+import { TfaMethod } from '@insight/sdk/dist/auth';
 
-const Verification = () => {
-  return <VerificationPage />;
+type Props = {
+  methods: TfaMethod[];
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+const Verification = ({ methods }: Props) => {
+  return <VerificationPage methods={methods} />;
+};
+
+export const getServerSideProps: GetServerSideProps<Props> = async (
+  context
+) => {
   const requestSpan = startRequestSpan(context.req);
   try {
     const { ChallengeId } = nextCookie(context);
@@ -22,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       const Location = `/login?dest=${encodeURIComponent(dest as string)}`;
       context.res.writeHead(302, { Location, ...headers });
       context.res.end();
-      return { props: {} };
+      return { props: {} as Props };
     };
 
     if (!ChallengeId) {
@@ -31,10 +38,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     try {
-      await AuthApi.tfa.getChallenge(ChallengeId, {
+      const methods = await AuthApi.tfa.getChallenge(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });
+
+      return { props: { methods } };
     } catch (error) {
       const errorDTO: APIErrorDataResponse = await error.response.json();
       if (errorDTO.error.statusCode === 404) {
@@ -43,8 +52,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
       throw error;
     }
-
-    return { props: {} };
   } finally {
     requestSpan.finish();
   }

@@ -2,14 +2,17 @@ import { getByPlaceholderText, getByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
 import config from '../config';
-import { findLinkFromDockerLog } from '../utils';
+import { findLinkFromDockerLogs } from '../utils';
 
 import Login, { LoginCredentials } from './Login';
 
-export type SignUpDetails = LoginCredentials & {
+export type SignUpProperties = {
   fullName: string;
   company: string;
+  phoneNumber: string;
 };
+
+export type SignUpDetails = LoginCredentials & Partial<SignUpProperties>;
 
 class SignUp {
   /* Selectors */
@@ -18,18 +21,33 @@ class SignUp {
   public readonly fullNameInput = getByPlaceholderText('Full name');
   public readonly companyInput = getByPlaceholderText('Company');
   public readonly getStartedButton = getByText('Get started');
+  public readonly phoneNumberInput = getByText('Phone number');
+
+  public readonly userFullNameDefault = 'Miha Novak';
+  public readonly userCompanyDefault = 'Insight';
 
   /* Utils */
   public signUp = (
     t: TestController,
-    { fullName, company, email, password }: SignUpDetails
+    {
+      email,
+      password,
+      phoneNumber = '',
+      fullName = this.userFullNameDefault,
+      company = this.userCompanyDefault,
+    }: SignUpDetails
   ) => {
-    return t
+    let promise = t
       .typeText(this.fullNameInput, fullName)
       .typeText(this.companyInput, company)
       .typeText(this.emailInput, email)
-      .typeText(this.passwordInput, password)
-      .click(this.getStartedButton);
+      .typeText(this.passwordInput, password);
+
+    if (phoneNumber.length > 0) {
+      promise = promise.typeText(this.phoneNumberInput, phoneNumber);
+    }
+
+    return promise.click(this.getStartedButton);
   };
 
   public signUpAndLogin = async (t: TestController, data: SignUpDetails) => {
@@ -45,7 +63,7 @@ class SignUp {
   };
 
   public signUpVerifyEmail = (t: TestController) => {
-    const link = findLinkFromDockerLog();
+    const link = findLinkFromDockerLogs();
     if (!link) {
       throw new Error('Sign up link not found');
     }
