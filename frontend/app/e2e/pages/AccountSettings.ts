@@ -28,6 +28,9 @@ class AccountSettings {
       enabledToast: queryByText(
         'Text message two factor authentication enabled'
       ),
+      setup: (t: TestController) => {
+        return VerificationPage.completeSmsChallenge(t);
+      },
     },
     totp: {
       checkbox: this.container.queryByText('Authy / Google Authenticator'),
@@ -51,7 +54,7 @@ class AccountSettings {
         return this.tfa.totp
           .extractQrCodeSecret(t)
           .then((secret) =>
-            VerificationPage.totpLogin(t, secret).then(() => secret)
+            VerificationPage.completeTotpChallenge(t, secret).then(() => secret)
           );
       },
     },
