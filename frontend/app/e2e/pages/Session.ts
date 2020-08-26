@@ -1,4 +1,4 @@
-import { queryByPlaceholderText } from '@testing-library/testcafe';
+import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
 import config from '../config';
@@ -10,6 +10,11 @@ class SessionPage {
   public readonly devtools = {
     button: Selector('svg[id="devtools"]'),
     filterInput: queryByPlaceholderText('Filter'),
+
+    tabs: {
+      console: queryByText('Console'),
+      network: queryByText('Network'),
+    },
   };
 
   /* Utils */

@@ -1,20 +1,12 @@
 /* eslint-disable no-console */
-import {
-  queryByText,
-  getByText,
-  queryAllByText,
-} from '@testing-library/testcafe';
+import { queryByText, queryAllByText } from '@testing-library/testcafe';
 
 import { LoginPage, SessionPage, SessionsPage } from '../pages';
 
 fixture('/sessions').page(SessionsPage.path);
 
 test('Should be able to see sessions for Insight logged in user', async (t) => {
-  await LoginPage.loginWithInsightUser(t);
-
-  await t
-    .expect(SessionsPage.getLastSession().visible)
-    .ok('Newly created session is dispalyed')
+  await LoginPage.loginWithInsightUser(t)
     .click(SessionsPage.getLastSession())
     .click(SessionPage.devtools.button)
     .expect(SessionPage.devtools.filterInput.visible)
@@ -33,6 +25,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
 
   await t
     .click(SessionPage.devtools.button)
+    .typeText(SessionPage.devtools.filterInput, 'console')
     .expect(queryByText('console.log').visible)
     .ok('console.log should be visible in the console', { timeout: 10000 }) // this might take some time -- refresh interval is 5s
     .expect(queryByText('console.info').visible)
@@ -45,8 +38,7 @@ test('Should be able to see sessions for Insight logged in user', async (t) => {
     .ok('console.error should be visible in the console');
 
   await t
-
-    .click(getByText('Network'))
+    .click(SessionPage.devtools.tabs.network)
     .expect(queryAllByText('POST').visible)
     .ok('Multiple POST requests')
     .expect(queryAllByText('GET').visible)
