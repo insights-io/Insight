@@ -18,7 +18,6 @@ repositories:
 helmfiles:
  {{ if eq .Environment.Name "production" }}- path: "./releases/cert-manager.yaml"{{ end }}
 
-
 releases:
   - name: postgres
     chart: bitnami/postgresql
