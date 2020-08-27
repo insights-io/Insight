@@ -27,7 +27,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   public static final String NETWORK_ALIAS = "db";
 
-  private static final String DOCKER_TAG = "postgres:12.3";
+  private static final String DOCKER_TAG = "postgres:12.4";
   private static final String DATABASE_NAME = "postgres";
   private static final String USERNAME = "postgres";
   private static final String PASSWORD = "postgres";
@@ -37,7 +37,6 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     super(DOCKER_TAG);
   }
 
-  /** @return postgres test container */
   public static PostgresTestContainer newInstance() {
     return new PostgresTestContainer()
         .withNetwork(Network.SHARED)
@@ -48,21 +47,10 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
         .withExposedPorts(PORT);
   }
 
-  /**
-   * Create a new client connected to the test container.
-   *
-   * @return pg pool connected to the test container
-   */
   public PgPool client() {
     return PostgresTestContainer.client(this);
   }
 
-  /**
-   * Create a new client connected to the test container.
-   *
-   * @param container postgres test container
-   * @return pg pool connected to the test container
-   */
   public static PgPool client(PostgresTestContainer container) {
     PgConnectOptions connectOptions =
         new PgConnectOptions()
@@ -103,11 +91,13 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   public void applyFlywayMigrations(Path moduleSqlMigrationsPath) {
     if (!Files.exists(moduleSqlMigrationsPath)) {
-      log.info("Skipping applyMigrations from {}", moduleSqlMigrationsPath.toAbsolutePath());
+      log.info(
+          "[TEST-SETUP]: Skipping applyMigrations from {}",
+          moduleSqlMigrationsPath.toAbsolutePath());
       return;
     }
 
-    log.info("Applying migrations from {}", moduleSqlMigrationsPath.toAbsolutePath());
+    log.info("[TEST-SETUP]: Applying migrations from {}", moduleSqlMigrationsPath.toAbsolutePath());
     new PostgresFlywayTestContainer<>(moduleSqlMigrationsPath).start();
     if (moduleSqlMigrationsPath.toAbsolutePath().toString().contains(Api.AUTH.fullName())) {
       createTestUserPassword();
@@ -117,30 +107,31 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   public void applyMigrationsManually(Path moduleSqlMigrationsPath) {
     Path migrationsSqlPath = Paths.get(moduleSqlMigrationsPath.toString(), "sql");
     if (!Files.exists(migrationsSqlPath)) {
-      log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
+      log.info(
+          "[TEST-SETUP]: Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
       return;
     }
 
-    log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
+    log.info("[TEST-SETUP]: Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
     try {
       Files.walk(migrationsSqlPath)
           .filter(path -> !Files.isDirectory(path))
           .forEach(
               path -> {
-                log.info("Applying migration {}", path);
+                log.info("[TEST-SETUP]: Applying migration {}", path);
                 try {
                   client().query(Files.readString(path)).executeAndAwait();
                   if ("V1__auth_api_initial.sql".equals(path.getFileName().toString())) {
                     createTestUserPassword();
                   }
                 } catch (IOException ex) {
-                  log.error("Failed to apply migration {}", migrationsSqlPath, ex);
+                  log.error("[TEST-SETUP] Failed to apply migration {}", migrationsSqlPath, ex);
                   throw new RuntimeException(ex);
                 }
               });
     } catch (IOException ex) {
       log.error(
-          "Something went wrong while applying migrations from {}",
+          "[TEST-SETUP]: Something went wrong while applying migrations from {}",
           migrationsSqlPath.toAbsolutePath(),
           ex);
       throw new RuntimeException(ex);
@@ -153,7 +144,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
    * only be executed after V1__auth_api_initial.sql is applied and auth.user table exists.
    */
   private void createTestUserPassword() {
-    log.info("Creating test password for \"admin@insight.io\"");
+    log.info("[TEST-SETUP]: Creating test password for \"admin@insight.io\"");
 
     Query query =
         SQLContext.POSTGRES

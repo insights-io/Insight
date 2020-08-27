@@ -2,6 +2,7 @@ package com.meemaw.test.matchers;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -18,7 +19,7 @@ public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
   public SameJSON(String expected, JSONCompareMode compareMode) {
     super();
     this.expected = expected;
-    this.compareMode = compareMode;
+    this.compareMode = Objects.requireNonNull(compareMode);
   }
 
   @Override
