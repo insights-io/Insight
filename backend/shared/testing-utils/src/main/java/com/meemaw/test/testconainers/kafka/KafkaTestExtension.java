@@ -24,16 +24,13 @@ public class KafkaTestExtension implements BeforeAllCallback {
     return start(KAFKA);
   }
 
-  /**
-   * @param kafka
-   * @return
-   */
   public static Map<String, String> start(KafkaTestContainer kafka) {
     if (!KAFKA.isRunning()) {
-      log.info("Starting kafka container ...");
+      log.info("[TEST-SETUP]: Starting kafka container ...");
       kafka.start();
+      kafka.createTopics();
     }
-    log.info("Connecting to kafka bootstrap.servers={}", kafka.getBootstrapServers());
+    log.info("[TEST-SETUP]: Connecting to kafka bootstrap.servers={}", kafka.getBootstrapServers());
     return Collections.singletonMap("kafka.bootstrap.servers", kafka.getBootstrapServers());
   }
 

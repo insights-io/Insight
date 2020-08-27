@@ -1,13 +1,16 @@
 import { queryByText } from '@testing-library/testcafe';
 
-import { LoginPage, SessionsPage, Sidebar } from '../pages';
+import { LoginPage, SessionsPage, Sidebar, SignUpPage } from '../pages';
 import config from '../config';
 import { getLocation } from '../utils';
 
 fixture('_app').page(config.appBaseURL);
 
 test('Should be able to navigate', async (t) => {
-  await LoginPage.loginWithInsightUser(t)
+  const { email, password } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password });
+
+  await t
     .hover(Sidebar.accountSettings.item)
     .expect(Sidebar.accountSettings.accountSettings.visible)
     .ok('Should display text on hover')
@@ -16,7 +19,7 @@ test('Should be able to navigate', async (t) => {
     .expect(LoginPage.createFreeAccount.visible)
     .ok('Should be on the login page');
 
-  await LoginPage.loginWithInsightUser(t)
+  await LoginPage.login(t, { email, password })
     .hover(Sidebar.toggleItem)
     .expect(queryByText('Expand').visible)
     .ok('Expand sidebar text should exist')
