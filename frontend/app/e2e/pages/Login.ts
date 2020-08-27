@@ -32,7 +32,9 @@ class Login {
     return t
       .typeText(this.emailInput, email)
       .typeText(this.passwordInput, password)
-      .click(this.signInButton);
+      .click(this.signInButton)
+      .expect(this.signInButton.exists)
+      .notOk('Sign in button is not visible anymore');
   };
 
   public loginWithInsightUser = (t: TestController) => {
