@@ -59,6 +59,10 @@ export const prepareChartData = (data: CountByLocation) => {
     const typedContinentName = continentName as ContinentName;
     const continentMapping = CONTINENT_MAPPINGS[typedContinentName];
 
+    if (!continentMapping) {
+      return acc;
+    }
+
     return [
       ...acc,
       {

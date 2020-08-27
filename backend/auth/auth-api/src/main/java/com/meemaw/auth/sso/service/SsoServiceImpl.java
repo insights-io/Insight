@@ -3,11 +3,18 @@ package com.meemaw.auth.sso.service;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
 import com.meemaw.auth.sso.datasource.SsoDatasource;
+import com.meemaw.auth.sso.model.DirectLoginResult;
+import com.meemaw.auth.sso.model.LoginResult;
 import com.meemaw.auth.sso.model.SsoUser;
+import com.meemaw.auth.tfa.TfaMethod;
+import com.meemaw.auth.tfa.challenge.model.ChallengeLoginResult;
+import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -28,10 +35,13 @@ public class SsoServiceImpl implements SsoService {
   @Inject PasswordService passwordService;
   @Inject UserDatasource userDatasource;
   @Inject SignUpService signUpService;
+  @Inject TfaChallengeService tfaChallengeService;
 
   @Override
   @Traced
-  @Timed(name = "createSession", description = "A measure of how long it takes to create session")
+  @Timed(
+      name = "createSessionForUser",
+      description = "A measure of how long it takes to create session for user")
   public CompletionStage<String> createSession(AuthUser user) {
     MDC.put(LoggingConstants.USER_ID, user.getId().toString());
     MDC.put(LoggingConstants.USER_EMAIL, user.getEmail());
@@ -44,6 +54,21 @@ public class SsoServiceImpl implements SsoService {
               MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
               return sessionId;
             });
+  }
+
+  @Override
+  @Traced
+  @Timed(
+      name = "createSessionForUserId",
+      description = "A measure of how long it takes to create session for user id")
+  public CompletionStage<String> createSession(UUID userId) {
+    return userDatasource
+        .findUser(userId)
+        .thenCompose(
+            maybeUser ->
+                createSession(
+                    maybeUser.orElseThrow(
+                        () -> Boom.notFound().message("User not found").exception())));
   }
 
   @Override
@@ -105,47 +130,78 @@ public class SsoServiceImpl implements SsoService {
   @Override
   @Traced
   @Timed(name = "login", description = "A measure of how long it takes to do a login")
-  public CompletionStage<String> login(String email, String password, String ipAddress) {
+  public CompletionStage<LoginResult<?>> login(String email, String password, String ipAddress) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
-    log.info("[AUTH]: Login attempt for user: {}", email);
+    log.info("[AUTH]: Login attempt for user: {} ip={}", email, ipAddress);
     return passwordService
         .verifyPassword(email, password)
         .thenCompose(
-            authUser ->
-                this.createSession(authUser)
-                    .thenApply(
-                        sessionId -> {
-                          log.info("[AUTH]: Successful login for user: {}", email);
-                          return sessionId;
-                        }));
+            userWithLoginInformation ->
+                authenticate(
+                    userWithLoginInformation.user(), userWithLoginInformation.getTfaMethods()));
+  }
+
+  private CompletionStage<LoginResult<?>> authenticate(AuthUser user, List<TfaMethod> tfaMethods) {
+    UUID userId = user.getId();
+    String organizationId = user.getOrganizationId();
+    MDC.put(LoggingConstants.USER_ID, userId.toString());
+    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+
+    if (tfaMethods.isEmpty()) {
+      return this.createSession(user)
+          .thenApply(
+              sessionId -> {
+                log.info("[AUTH]: Successful login for user={}", userId);
+                return new DirectLoginResult(sessionId);
+              });
+    }
+
+    return tfaChallengeService
+        .start(userId)
+        .thenApply(
+            challengeId -> {
+              log.info("[AUTH]: TFA challenge={} for user={}", challengeId, userId);
+              return new ChallengeLoginResult(challengeId, tfaMethods);
+            });
   }
 
   @Override
   @Traced
   @Timed(name = "socialLogin", description = "A measure of how long it takes to do social login")
-  public CompletionStage<String> socialLogin(String email, String fullName) {
+  public CompletionStage<LoginResult<?>> socialLogin(String email, String fullName) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     log.info("[AUTH]: Social login attempt for user: {}", email);
     return socialFindOrSignUpUser(email, fullName)
-        .thenCompose(this::createSession)
+        .thenCompose(
+            userWithLoginInformation ->
+                authenticate(
+                    userWithLoginInformation.user(), userWithLoginInformation.getTfaMethods()))
         .thenApply(
-            sessionId -> {
+            loginResult -> {
               log.info("[AUTH]: Successful social login for user: {}", email);
-              return sessionId;
+              return loginResult;
             });
   }
 
-  private CompletionStage<AuthUser> socialFindOrSignUpUser(String email, String fullName) {
+  private CompletionStage<UserWithLoginInformation> socialFindOrSignUpUser(
+      String email, String fullName) {
     return userDatasource
-        .findUser(email)
+        .findUserWithLoginInformation(email)
         .thenCompose(
-            maybeUser -> {
-              if (maybeUser.isPresent()) {
-                AuthUser user = maybeUser.get();
+            maybeUserWithLoginInformation -> {
+              if (maybeUserWithLoginInformation.isPresent()) {
+                UserWithLoginInformation user = maybeUserWithLoginInformation.get();
                 log.info("[AUTH]: Social login linked with an existing user: {}", user.getId());
                 return CompletableFuture.completedFuture(user);
               }
-              return signUpService.socialSignUp(email, fullName);
+
+              return signUpService
+                  .socialSignUp(email, fullName)
+                  .thenApply(
+                      authUser -> {
+                        log.info("[AUTH]: User email={} signed up through social sign in", email);
+                        return UserWithLoginInformation.fresh(authUser);
+                      });
             });
   }
 }

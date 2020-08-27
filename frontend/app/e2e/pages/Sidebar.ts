@@ -1,3 +1,4 @@
+import { queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
 class Sidebar {
@@ -18,10 +19,21 @@ class Sidebar {
     .withAttribute('id', 'sidebar--togle')
     .parent();
 
-  public readonly accountSettingsItem = this.container
-    .find('svg')
-    .withAttribute('id', 'account-settings')
-    .parent();
+  public readonly accountSettings = {
+    item: this.container
+      .find('svg')
+      .withAttribute('id', 'account-settings')
+      .parent(),
+
+    accountSettings: queryByText('Account settings'),
+    signOut: queryByText('Sign out'),
+  };
+
+  public signOut = (t: TestController) => {
+    return t
+      .click(this.accountSettings.item)
+      .click(this.accountSettings.signOut);
+  };
 }
 
 export default new Sidebar();

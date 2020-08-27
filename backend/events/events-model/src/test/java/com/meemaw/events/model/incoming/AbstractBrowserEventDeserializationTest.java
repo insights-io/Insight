@@ -19,7 +19,6 @@ public class AbstractBrowserEventDeserializationTest {
   @Test
   public void __0__navigateBeaconEventDeserializationTest() throws IOException, URISyntaxException {
     String payload = EventTestData.readIncomingEvent("0__navigate.json");
-    System.out.println(payload);
     AbstractBrowserEvent<?> deserialized =
         JacksonMapper.get().readValue(payload, AbstractBrowserEvent.class);
     assertEquals(BrowserNavigateEvent.class, deserialized.getClass());

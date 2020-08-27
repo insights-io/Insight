@@ -11,4 +11,4 @@ jobs:
       - uses: reviewdog/action-misspell@v1
         with:
           locale: 'US'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -15,6 +15,7 @@ import io.quarkus.mailer.MockMailbox;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
@@ -27,45 +28,37 @@ public final class SsoTestSetupUtils {
   public static final String INSIGHT_ORGANIZATION_ID = "000000";
   public static final String INSIGHT_ADMIN_EMAIL = "admin@insight.io";
   public static final String INSIGHT_ADMIN_PASSWORD = "superDuperPassword123";
+  public static final UUID INSIGHT_ADMIN_ID =
+      UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b");
 
   private SsoTestSetupUtils() {}
 
-  /**
-   * Create a sign up request mock with pre-filled values.
-   *
-   * @param email String email address
-   * @param password String password
-   * @return SignUpRequestDTO sign up request
-   */
   public static SignUpRequestDTO signUpRequestMock(String email, String password) {
-    return new SignUpRequestDTO(email, password, "Marko Novak", "Insight", null);
+    return signUpRequestMock(email, password, null);
   }
 
-  /**
-   * Sign up as a new user and complete the flow.
-   *
-   * @param mockMailbox mailbox mock
-   * @param objectMapper object mapper
-   * @param email String email address
-   * @param password String password
-   * @return String session id
-   * @throws JsonProcessingException if problems serializing
-   */
+  public static SignUpRequestDTO signUpRequestMock(
+      String email, String password, String phoneNumber) {
+    return new SignUpRequestDTO(email, password, "Marko Novak", "Insight", phoneNumber);
+  }
+
   public static String signUpAndLogin(
       MockMailbox mockMailbox, ObjectMapper objectMapper, String email, String password)
       throws JsonProcessingException {
     return signUpAndLogin(mockMailbox, objectMapper, signUpRequestMock(email, password));
   }
 
-  /**
-   * Sign up user and return newly created SessionId.
-   *
-   * @param mailbox mock mailbox
-   * @param objectMapper jackson object mapper
-   * @param signUpRequestDTO sign up request data
-   * @return String SessionId
-   * @throws JsonProcessingException if problems serializing
-   */
+  public static String signUpAndLogin(
+      MockMailbox mockMailbox,
+      ObjectMapper objectMapper,
+      String email,
+      String password,
+      String phoneNumber)
+      throws JsonProcessingException {
+    return signUpAndLogin(
+        mockMailbox, objectMapper, signUpRequestMock(email, password, phoneNumber));
+  }
+
   public static String signUpAndLogin(
       MockMailbox mailbox, ObjectMapper objectMapper, SignUpRequestDTO signUpRequestDTO)
       throws JsonProcessingException {
@@ -83,28 +76,20 @@ public final class SsoTestSetupUtils {
             .when()
             .get(parseLink(mailbox.getMessagesSentTo(signUpRequestDTO.getEmail()).get(0)));
 
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
+    response
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
+        .cookie(SsoSession.COOKIE_NAME);
     return extractSessionCookie(response).getValue();
   }
 
-  /**
-   * Parse an anchor element link from mail.
-   *
-   * @param mail that was sent to the user
-   * @return String
-   */
   public static String parseLink(Mail mail) {
     Document htmlDocument = Jsoup.parse(mail.getHtml());
     Elements link = htmlDocument.select("a");
     return link.attr("href");
   }
 
-  /**
-   * Parse token from confirmation link.
-   *
-   * @param mail that was sent to the user
-   * @return String token
-   */
   public static String parseConfirmationToken(Mail mail) {
     Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(parseLink(mail));
     tokenMatcher.matches();
@@ -144,45 +129,27 @@ public final class SsoTestSetupUtils {
             .param("password", password)
             .post(uri);
 
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
+    response
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
+        .cookie(SsoSession.COOKIE_NAME);
     return extractSessionCookie(response).getValue();
   }
 
-  /**
-   * Log in with pre-created Insight admin user.
-   *
-   * @return session id
-   */
   public static String loginWithInsightAdmin() {
     String authApiBaseURI = AuthApiTestExtension.getInstance().getBaseURI();
     return loginWithInsightAdmin(authApiBaseURI);
   }
 
-  /**
-   * Log in with pre-created Insight admin user.
-   *
-   * @param baseURI auth-api base URI
-   * @return session id
-   */
   public static String loginWithInsightAdmin(String baseURI) {
     return login(INSIGHT_ADMIN_EMAIL, INSIGHT_ADMIN_PASSWORD, baseURI);
   }
 
-  /**
-   * Log in with pre-created Insight admin user from auth-api module.
-   *
-   * @return session id
-   */
   public static String loginWithInsightAdminFromAuthApi() {
     return loginWithInsightAdmin(null);
   }
 
-  /**
-   * Extract session cookie from rest assured response.
-   *
-   * @param response rest assured response
-   * @return Cookie
-   */
   public static Cookie extractSessionCookie(Response response) {
     return response.getDetailedCookie(SsoSession.COOKIE_NAME);
   }

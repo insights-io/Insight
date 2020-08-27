@@ -12,7 +12,8 @@ const ConsoleContainer = ({ sessionId }: Props) => {
     `ConsoleContainer.sessions/${sessionId}/events/search`,
     () =>
       SessionApi.events.search(sessionId, {
-        searchParams: { 'event.e': ['gte:9', 'lte:10'], limit: 1000 },
+        // TODO: pagination
+        search: { 'event.e': ['gte:9', 'lte:10'], limit: 1000 },
       }),
     { refreshWhenHidden: true, refreshInterval: 5000 }
   );

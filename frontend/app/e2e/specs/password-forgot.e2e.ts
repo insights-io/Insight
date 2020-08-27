@@ -1,69 +1,57 @@
 import { getByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
-import { Selector } from 'testcafe';
 
 import config from '../config';
+import { findLinkFromDockerLogs } from '../utils';
 import {
-  emailInput,
-  signUpAndLogin,
-  findLinkFromDockerLog,
-  passwordInput,
-  finishPasswordResetButton,
-  startPasswordResetButton,
-  forgotPasswordButton,
-} from '../utils';
+  LoginPage,
+  PasswordForgotPage,
+  PasswordResetPage,
+  Sidebar,
+  SignUpPage,
+} from '../pages';
 
-const page = '/password-forgot';
-const emailSentMessage = getByText(
-  'If your email address is associated with an Insight account, you will be receiving a password reset request shortly.'
-);
-
-fixture(page).page(`${config.appBaseURL}`);
+fixture('/password-forgot').page(config.appBaseURL);
 
 test('User should be able to reset password', async (t) => {
-  const settingsMenu = Selector('svg[id="account-settings"]');
-  const password = uuid();
-  const email = `miha.novak+${uuid()}@gmail.com`;
+  const { email, password } = SignUpPage.generateRandomCredentials();
 
-  await signUpAndLogin(t, {
-    fullName: 'Miha Novak',
-    company: 'Insight',
-    email,
-    password,
-  });
-
+  await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .hover(settingsMenu)
-    .click(getByText('Sign out'))
-    .click(forgotPasswordButton)
-    .typeText(emailInput, email)
-    .click(startPasswordResetButton)
-    .expect(emailSentMessage.visible)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.signOut)
+    .click(LoginPage.forgotPasswordButton)
+    .typeText(PasswordForgotPage.emailInput, email)
+    .click(PasswordForgotPage.submitButton)
+    .expect(PasswordForgotPage.requestSubmittedMessage.visible)
     .ok('Should display nice message that email has been sent');
 
-  const passwordResetLink = findLinkFromDockerLog();
+  const passwordResetLink = findLinkFromDockerLogs();
   const newPassword = uuid();
   await t
     .navigateTo(passwordResetLink)
-    .expect(passwordInput.visible)
+    .expect(PasswordResetPage.passwordInput.visible)
     .ok('Password input is visible')
-    .typeText(passwordInput, newPassword)
-    .click(finishPasswordResetButton)
-    .expect(settingsMenu.visible)
+    .typeText(PasswordResetPage.passwordInput, newPassword)
+    .click(PasswordResetPage.submitButton)
+    .expect(Sidebar.accountSettings.item.visible)
     .ok('Should be signed in to app');
 });
 
 test('User should be able to enter any email into apssword reset form and see message aboyut email being sent', async (t) => {
   await t
-    .navigateTo(page)
-    .typeText(emailInput, 'short')
-    .click(startPasswordResetButton)
+    .navigateTo('/password-forgot')
+    .typeText(PasswordForgotPage.emailInput, 'short')
+    .click(PasswordForgotPage.submitButton)
     .expect(getByText('Please enter a valid email address').visible)
     .ok('Should validate email input')
-    .selectText(emailInput)
+    .selectText(PasswordForgotPage.emailInput)
     .pressKey('delete')
-    .typeText(emailInput, `not-so-short+${uuid()}@gmail.com`)
-    .click(startPasswordResetButton)
-    .expect(emailSentMessage.visible)
+    .typeText(PasswordForgotPage.emailInput, `not-so-short+${uuid()}@gmail.com`)
+    .click(PasswordForgotPage.submitButton)
+    .expect(PasswordForgotPage.requestSubmittedMessage.visible)
     .ok('Should display nice message that email has been sent');
 });

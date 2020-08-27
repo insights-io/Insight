@@ -15,21 +15,21 @@ public interface SQLFilterExpression extends FilterExpression {
    * Update query with filter expression.
    *
    * @param query existing select condition query
-   * @param fields map of field mappings
+   * @param mappings field mappings
    * @return query with applied filter conditions
    */
-  SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> fields);
+  SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> mappings);
 
   /**
    * Update query with filter expression.
    *
    * @param query existing select join query
-   * @param fields map of field mappings
+   * @param mappings fields mappings
    * @return query with applied filter conditions
    */
   @SuppressWarnings({"rawtypes"})
-  default SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> fields) {
-    return sql((SelectConditionStep) query, fields);
+  default SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> mappings) {
+    return sql((SelectConditionStep) query, mappings);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -41,13 +41,25 @@ public interface SQLFilterExpression extends FilterExpression {
     }
   }
 
-  static Field<?> field(String field) {
+  static <T> Field<T> sqlField(String field, Class<T> dataType, String separator) {
     String[] split = field.split("\\.");
     String result = split[0];
 
     for (int i = 1; i < split.length; i++) {
-      result = String.format("%s ->> '%s'", result, split[i]);
+      result = String.format("%s %s '%s'", result, separator, split[i]);
     }
-    return DSL.field(result);
+    return DSL.field(result, dataType);
+  }
+
+  static <T> Field<T> sqlSelectField(String field, Class<T> dataType) {
+    return sqlField(field, dataType, "->");
+  }
+
+  static <T> Field<T> sqlFilterField(String field, Class<T> dataType) {
+    return sqlField(field, dataType, "->>");
+  }
+
+  static <T> Field<T> sqlFilterField(Field<T> field) {
+    return sqlFilterField(field.getName(), field.getType());
   }
 }

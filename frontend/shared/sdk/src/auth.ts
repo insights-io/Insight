@@ -14,6 +14,8 @@ import {
 
 import { RequestOptions } from './types';
 
+type LoginResponseDTO = boolean | { challengeId: string };
+
 export const mapUser = (user: User | UserDTO): User => {
   return { ...user, createdAt: new Date(user.createdAt) };
 };
@@ -30,7 +32,142 @@ export const mapTeamInvite = (
   return { ...teamInvite, createdAt: new Date(teamInvite.createdAt) };
 };
 
+export type TfaMethod = 'totp' | 'sms';
+export type TfaSetupDTO = {
+  method: TfaMethod;
+  createdAt: string;
+};
+
+export type TfaTotpSetupStartDTO = {
+  qrImage: string;
+};
+
+export type TfaSmsSetupStartDTO = {
+  validitySeconds: number;
+};
+
 export const createAuthClient = (authApiBaseURL: string) => {
+  const tfaSetupStart = <T>(
+    method: TfaMethod,
+    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+  ) => {
+    return ky
+      .get(`${baseURL}/v1/tfa/${method}/setup`, {
+        credentials: 'include',
+        ...rest,
+      })
+      .json<DataResponse<T>>();
+  };
+
+  const TfaApi = {
+    getSetup: (
+      method: TfaMethod,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .get(`${baseURL}/v1/tfa/${method}`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<TfaSetupDTO>>()
+        .then((response) => response.data);
+    },
+    listSetups: ({
+      baseURL = authApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .get(`${baseURL}/v1/tfa`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<TfaSetupDTO[]>>()
+        .then((response) => response.data);
+    },
+    challengeComplete: (
+      method: TfaMethod,
+      code: number,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky.post(`${baseURL}/v1/tfa/challenge/${method}/complete`, {
+        json: { code },
+        credentials: 'include',
+        ...rest,
+      });
+    },
+    sms: {
+      setupStart: (options?: RequestOptions) =>
+        tfaSetupStart<TfaSmsSetupStartDTO>('sms', options),
+      setupSendCode: ({
+        baseURL = authApiBaseURL,
+        ...rest
+      }: RequestOptions = {}) => {
+        return ky
+          .post(`${baseURL}/v1/tfa/sms/send_code`, {
+            credentials: 'include',
+            ...rest,
+          })
+          .json<DataResponse<TfaSmsSetupStartDTO>>()
+          .then((dataResponse) => dataResponse.data);
+      },
+      challengeSendCode: ({
+        baseURL = authApiBaseURL,
+        ...rest
+      }: RequestOptions = {}) => {
+        return ky
+          .post(`${baseURL}/v1/tfa/challenge/sms/send_code`, {
+            credentials: 'include',
+            ...rest,
+          })
+          .json<DataResponse<TfaSmsSetupStartDTO>>()
+          .then((dataResponse) => dataResponse.data);
+      },
+    },
+
+    totp: {
+      setupStart: (options?: RequestOptions) =>
+        tfaSetupStart<TfaTotpSetupStartDTO>('totp', options),
+    },
+
+    setupComplete: (
+      method: TfaMethod,
+      code: number,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .post(`${baseURL}/v1/tfa/${method}/setup`, {
+          json: { code },
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<TfaSetupDTO>>()
+        .then((dataResponse) => dataResponse.data);
+    },
+    disable: (
+      method: TfaMethod,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .delete(`${baseURL}/v1/tfa/${method}`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<boolean>>();
+    },
+    getChallenge: (
+      id: string,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .get(`${baseURL}/v1/tfa/challenge`, {
+          searchParams: { id },
+          ...rest,
+        })
+        .json<DataResponse<TfaMethod[]>>()
+        .then((dataResponse) => dataResponse.data);
+    },
+  };
+
   const SsoApi = {
     login: (
       email: string,
@@ -40,11 +177,13 @@ export const createAuthClient = (authApiBaseURL: string) => {
       const body = new URLSearchParams();
       body.set('email', email);
       body.set('password', password);
-      return ky.post(`${baseURL}/v1/sso/login`, {
-        body,
-        credentials: 'include',
-        ...rest,
-      });
+      return ky
+        .post(`${baseURL}/v1/sso/login`, {
+          body,
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<LoginResponseDTO>>();
     },
     session: (
       sessionId: string,
@@ -222,5 +361,6 @@ export const createAuthClient = (authApiBaseURL: string) => {
     organizations: OrganizationsApi,
     teamInvite: TeamInviteApi,
     password: PasswordApi,
+    tfa: TfaApi,
   };
 };

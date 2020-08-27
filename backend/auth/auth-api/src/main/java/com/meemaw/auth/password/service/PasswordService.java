@@ -2,6 +2,7 @@ package com.meemaw.auth.password.service;
 
 import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,7 +11,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public interface PasswordService {
 
-  CompletionStage<AuthUser> verifyPassword(String email, String password);
+  CompletionStage<UserWithLoginInformation> verifyPassword(String email, String password);
 
   CompletionStage<Optional<AuthUser>> forgotPassword(String email, String passwordResetBaseURL);
 

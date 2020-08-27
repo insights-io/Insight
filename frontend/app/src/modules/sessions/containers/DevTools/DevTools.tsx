@@ -12,8 +12,8 @@ type Props = {
 };
 
 const ConsoleTab = dynamic(() => import('modules/sessions/containers/Console'));
-const NetworkTab = dynamic(() =>
-  import('modules/sessions/containers/NetworkTab')
+const NetworkTab = dynamic(
+  () => import('modules/sessions/containers/NetworkTab')
 );
 
 const DevTools = ({ sessionId }: Props) => {

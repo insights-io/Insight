@@ -9,8 +9,10 @@ import { formatDistanceToNow } from 'date-fns';
 import { readableLocation } from 'shared/utils/location';
 import { ChevronRight } from 'baseui/icon';
 import { IconType } from 'react-icons/lib';
+import { ListChildComponentProps } from 'react-window';
+import Link from 'next/link';
 
-type Props = {
+type Props = Pick<ListChildComponentProps, 'style'> & {
   session: Session;
 };
 
@@ -22,10 +24,9 @@ const USER_AGENT_DEVICE_ICON_LOOKUP: Record<
   Phone: FaMobileAlt,
 };
 
-const SessionListItem = ({
-  session: { createdAt, location, userAgent },
-}: Props) => {
-  const [_css, theme] = useStyletron();
+const SessionListItem = ({ session, style }: Props) => {
+  const { id, createdAt, location, userAgent } = session;
+  const [css, theme] = useStyletron();
 
   const createdAtText = formatDistanceToNow(createdAt, {
     includeSeconds: true,
@@ -42,37 +43,41 @@ const SessionListItem = ({
     USER_AGENT_DEVICE_ICON_LOOKUP[userAgent.deviceClass] || FaDesktop;
 
   return (
-    <ListItem
-      overrides={{
-        Root: {
-          style: {
-            ':hover': { background: theme.colors.primary200 },
-            borderRadius: theme.sizing.scale100,
-          },
-        },
-      }}
-      artwork={artwork}
-      artworkSize={ARTWORK_SIZES.SMALL}
-      endEnhancer={() => (
-        <>
-          <Tag
-            closeable={false}
-            overrides={{
-              Root: {
-                style: { ':hover': { cursor: 'pointer' } },
+    <Link href="/sessions/[id]" as={`sessions/${id}`} key={id}>
+      <a className={css({ color: 'inherit' })}>
+        <ListItem
+          artwork={artwork}
+          artworkSize={ARTWORK_SIZES.SMALL}
+          overrides={{
+            Root: {
+              style: {
+                ':hover': { background: theme.colors.primary200 },
+                borderRadius: theme.sizing.scale100,
+                ...style,
+                top: `${style.top}px`,
               },
-            }}
-          >
-            Details
-          </Tag>
-          <ChevronRight />
-        </>
-      )}
-    >
-      <ListItemLabel description={description}>
-        <UserAgent value={userAgent} />
-      </ListItemLabel>
-    </ListItem>
+            },
+          }}
+          endEnhancer={() => (
+            <>
+              <Tag
+                closeable={false}
+                overrides={{
+                  Root: { style: { ':hover': { cursor: 'pointer' } } },
+                }}
+              >
+                Details
+              </Tag>
+              <ChevronRight />
+            </>
+          )}
+        >
+          <ListItemLabel description={description}>
+            <UserAgent value={userAgent} />
+          </ListItemLabel>
+        </ListItem>
+      </a>
+    </Link>
   );
 };
 

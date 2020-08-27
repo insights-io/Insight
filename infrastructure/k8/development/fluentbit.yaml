@@ -4,10 +4,6 @@ backend:
   es:
     time_key: '@ts'
 
-image:
-  fluent_bit:
-    tag: 1.4.6
-
 input:
   tail:
     memBufLimit: 200MB

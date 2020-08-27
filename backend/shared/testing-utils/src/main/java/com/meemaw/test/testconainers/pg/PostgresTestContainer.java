@@ -1,5 +1,6 @@
 package com.meemaw.test.testconainers.pg;
 
+import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ADMIN_ID;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -13,6 +14,7 @@ import io.vertx.sqlclient.PoolOptions;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
@@ -86,49 +88,34 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     return getMappedHost(getContainerIpAddress());
   }
 
-  /** @return */
   public String getDatasourceURL() {
     return getDatasourceURL(getMappedHost());
   }
 
-  /**
-   * @param host datasource host
-   * @return datasource URL
-   */
   public String getDatasourceURL(String host) {
     return String.format("vertx-reactive:postgresql://%s/%s", host, DATABASE_NAME);
   }
 
-  /** Apply module migrations using Flyway. */
   public void applyMigrations() {
     Path moduleSqlMigrationsPath = ProjectUtils.getFromModule("migrations", "postgres");
     applyFlywayMigrations(moduleSqlMigrationsPath);
   }
 
-  /**
-   * Apply module migrations via Flyway using Dockerfile.
-   *
-   * @param migrationsSqlPath path to the folder containing the Dockerfile
-   */
-  public void applyFlywayMigrations(Path migrationsSqlPath) {
-    if (!Files.exists(migrationsSqlPath)) {
-      log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
+  public void applyFlywayMigrations(Path moduleSqlMigrationsPath) {
+    if (!Files.exists(moduleSqlMigrationsPath)) {
+      log.info("Skipping applyMigrations from {}", moduleSqlMigrationsPath.toAbsolutePath());
       return;
     }
 
-    log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
-    new PostgresFlywayTestContainer<>(migrationsSqlPath).start();
-    if (migrationsSqlPath.toAbsolutePath().toString().contains(Api.AUTH.fullName())) {
+    log.info("Applying migrations from {}", moduleSqlMigrationsPath.toAbsolutePath());
+    new PostgresFlywayTestContainer<>(moduleSqlMigrationsPath).start();
+    if (moduleSqlMigrationsPath.toAbsolutePath().toString().contains(Api.AUTH.fullName())) {
       createTestUserPassword();
     }
   }
 
-  /**
-   * Apply module migrations manually by traversing files in the directory.
-   *
-   * @param migrationsSqlPath path to the folder containing migrations
-   */
-  public void applyMigrationsManually(Path migrationsSqlPath) {
+  public void applyMigrationsManually(Path moduleSqlMigrationsPath) {
+    Path migrationsSqlPath = Paths.get(moduleSqlMigrationsPath.toString(), "sql");
     if (!Files.exists(migrationsSqlPath)) {
       log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
       return;
@@ -173,8 +160,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
             .insertInto(table("auth.password"))
             .columns(field("user_id", UUID.class), field("hash", String.class))
             .values(
-                UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b"),
-                "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
+                INSIGHT_ADMIN_ID, "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
 
     client()
         .preparedQuery(query.getSQL(ParamType.NAMED))

@@ -112,7 +112,7 @@ services:
 
   # Postgres
   db:
-    image: postgres:12.3
+    image: postgres:12.4
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     environment:
@@ -157,7 +157,7 @@ services:
       ES_JAVA_OPTS: '-Xms512m -Xmx512m'
       discovery.type: single-node
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.8.0
+    image: docker.elastic.co/kibana/kibana:7.9.0
     ports:
       - '5601:5601'
     depends_on:

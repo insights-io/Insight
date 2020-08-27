@@ -3,10 +3,30 @@ import { render } from 'test/utils';
 import userEvent from '@testing-library/user-event';
 import { sandbox } from '@insight/testing';
 import { INSIGHT_SESSION } from 'test/data';
+import { AutoSizerProps } from 'react-virtualized-auto-sizer';
+import { waitFor } from '@testing-library/react';
 
 import { NoSessions, WithSessions } from './SessionsPage.stories';
 
-describe('<HomePage />', () => {
+jest.mock('react-virtualized-auto-sizer', () => {
+  return {
+    __esModule: true,
+    default: ({ children }: AutoSizerProps) => {
+      return children({ width: 1000, height: 1000 });
+    },
+  };
+});
+
+const MAC_CHROME = 'Mac OS X • Chrome';
+const ANDROID_CHROME = 'Android • Chrome';
+
+const LJUBLJANA_LOCATION = /^Ljubljana, Slovenia - 82.192.62.51 - less than [1-9][0-9]* seconds ago$/;
+const BOYDTON_LOCATION =
+  'Boydton, Virginia, United States - 13.77.88.76 - about 1 hour ago';
+
+const UNKNOWN_LOCATION = 'Unknown location - 13.77.88.76 - 1 day ago';
+
+describe('<SessionsPage />', () => {
   it('Should render recording snippet on no sessions', async () => {
     const { findByText } = render(<NoSessions />);
 
@@ -16,31 +36,99 @@ describe('<HomePage />', () => {
     });
   });
 
-  it('Should render session list when sessions', () => {
-    const { getByText, queryByText, getAllByText, push } = render(
+  it('Should be able to filter sessions', async () => {
+    const {
+      getDistinctStub,
+      getSessionCountStub,
+      getSessionsStub,
+    } = WithSessions.story.setupMocks(sandbox);
+    const { queryByText, getByText, queryAllByText, container } = render(
       <WithSessions />
     );
 
-    expect(getAllByText('Mac OS X • Chrome').length).toEqual(2);
-    expect(getAllByText('Android • Chrome').length).toEqual(1);
+    expect(queryAllByText(MAC_CHROME).length).toEqual(2);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
 
-    expect(
-      queryByText(
-        'Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago'
-      )
-    ).toBeInTheDocument();
-    expect(
-      queryByText(
-        'Boydton, Virginia, United States - 13.77.88.76 - about 1 hour ago'
-      )
-    ).toBeInTheDocument();
-    expect(
-      queryByText('Unknown location - 13.77.88.76 - 1 day ago')
-    ).toBeInTheDocument();
+    expect(queryByText(LJUBLJANA_LOCATION)).toBeInTheDocument();
+    expect(queryByText(BOYDTON_LOCATION)).toBeInTheDocument();
+    expect(queryByText(UNKNOWN_LOCATION)).toBeInTheDocument();
 
-    userEvent.click(
-      getByText('Ljubljana, Slovenia - 82.192.62.51 - less than 5 seconds ago')
-    );
+    userEvent.click(getByText('0 Filters'));
+    userEvent.click(getByText('Filter event by...'));
+    userEvent.click(getByText('City'));
+    sandbox.assert.calledWithExactly(getDistinctStub, 'location.city');
+
+    const autocompleteInput = getByText('Type something').parentElement
+      ?.firstChild?.firstChild as HTMLInputElement;
+
+    await userEvent.type(autocompleteInput, 'Maribor');
+
+    await waitFor(() => {
+      sandbox.assert.calledWithExactly(getSessionsStub, {
+        search: {
+          limit: 20,
+          'location.city': 'eq:Maribor',
+          sort_by: ['-created_at'],
+        },
+      });
+      sandbox.assert.calledWithExactly(getSessionCountStub, {
+        search: { 'location.city': 'eq:Maribor' },
+      });
+    });
+
+    expect(queryAllByText(MAC_CHROME).length).toEqual(0);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(0);
+
+    const clearTextIcon = container.querySelector(
+      'svg[aria-label="Clear value"]'
+    ) as SVGElement;
+
+    userEvent.click(clearTextIcon);
+    await userEvent.type(autocompleteInput, 'Ljubljana');
+
+    await waitFor(() => {
+      sandbox.assert.calledWithExactly(getSessionsStub, {
+        search: {
+          limit: 20,
+          'location.city': 'eq:Ljubljana',
+          sort_by: ['-created_at'],
+        },
+      });
+      sandbox.assert.calledWithExactly(getSessionCountStub, {
+        search: { 'location.city': 'eq:Ljubljana' },
+      });
+    });
+
+    expect(queryAllByText(MAC_CHROME).length).toEqual(1);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(0);
+
+    const removeFilterIcon = container.querySelector(
+      'svg[title="Delete"]'
+    ) as SVGElement;
+
+    userEvent.click(removeFilterIcon);
+
+    await waitFor(() => {
+      sandbox.assert.calledWithExactly(getSessionsStub, {
+        search: {
+          limit: 20,
+          sort_by: ['-created_at'],
+        },
+      });
+      sandbox.assert.calledWithExactly(getSessionCountStub, {
+        search: {},
+      });
+    });
+
+    expect(queryAllByText(MAC_CHROME).length).toEqual(2);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
+  });
+
+  it('Should be able to navigate to a session details page', async () => {
+    WithSessions.story.setupMocks(sandbox);
+    const { findByText, push } = render(<WithSessions />);
+
+    userEvent.click(await findByText(LJUBLJANA_LOCATION));
 
     sandbox.assert.calledWithExactly(
       push,

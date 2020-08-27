@@ -8,6 +8,8 @@ import NavbarItem from 'modules/app/components/Navbar/Item';
 import { FaUser, FaListUl, FaInfo } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
+import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
+import FlexColumn from 'shared/components/FlexColumn';
 
 type Props = {
   width: BlockProps['width'];
@@ -49,13 +51,11 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
     };
 
     return (
-      <Block
+      <FlexColumn
         ref={ref}
         as="nav"
-        display="flex"
         overflow="hidden"
         position="fixed"
-        flexDirection="column"
         height="100%"
         width={width}
         color={theme.colors.white}
@@ -94,32 +94,35 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
           marginBottom={theme.sizing.scale500}
           padding={0}
         >
-          <NavbarItem
-            artwork={<FaUser id="account-settings" />}
-            text="Account settings"
-            showText={expanded}
+          <StatefulTooltip
+            triggerType="click"
+            placement={PLACEMENT.right}
+            showArrow={false}
             overrides={{
-              Tooltip: {
-                overrides: {
-                  Inner: {
-                    style: {
-                      paddingLeft: 0,
-                      paddingRight: 0,
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                    },
-                  },
+              Inner: {
+                style: {
+                  paddingLeft: 0,
+                  paddingRight: 0,
+                  paddingBottom: 0,
+                  paddingTop: 0,
                 },
-                showArrow: false,
-                content: ({ close }) => (
-                  <StatefulMenu
-                    items={menuItems}
-                    onItemSelect={onItemSelect(close)}
-                  />
-                ),
               },
             }}
-          />
+            content={({ close }) => (
+              <StatefulMenu
+                items={menuItems}
+                onItemSelect={onItemSelect(close)}
+              />
+            )}
+          >
+            <Block>
+              <NavbarItem
+                artwork={<FaUser id="account-settings" />}
+                text="Account settings"
+                showText={expanded}
+              />
+            </Block>
+          </StatefulTooltip>
 
           {onCollapseItemClick && (
             <NavbarItem
@@ -140,7 +143,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
             />
           )}
         </Block>
-      </Block>
+      </FlexColumn>
     );
   }
 );

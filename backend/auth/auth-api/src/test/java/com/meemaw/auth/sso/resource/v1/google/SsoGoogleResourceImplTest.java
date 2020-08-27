@@ -5,13 +5,24 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
 import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.service.google.SsoGoogleClient;
 import com.meemaw.auth.sso.service.google.SsoGoogleService;
+import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
+import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.setup.resource.v1.TfaResource;
+import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
+import com.meemaw.test.setup.SsoTestSetupUtils;
+import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -19,9 +30,13 @@ import io.restassured.response.Response;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +47,10 @@ public class SsoGoogleResourceImplTest {
   @Inject SsoGoogleClient ssoGoogleClient;
   @Inject SsoGoogleService ssoGoogleService;
   @Inject AppConfig appConfig;
+  @Inject MockMailbox mailbox;
+  @Inject ObjectMapper objectMapper;
+  @Inject UserDatasource userDatasource;
+  @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @TestHTTPResource(SsoGoogleResource.PATH + "/" + SsoGoogleResource.OAUTH2_CALLBACK_PATH)
   URI oauth2CallbackURI;
@@ -172,7 +191,7 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_oauth2callback_should_fail_on_expired_code() {
+  public void google_oauth2callback__should_fail__on_expired_code() {
     String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
 
     given()
@@ -191,7 +210,7 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_oauth2callback_should_fail_on_state_cookie() {
+  public void google_oauth2callback__should_fail__on_invalid_state_cookie() {
     String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
 
     given()
@@ -209,8 +228,9 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_oauth2callback_should_succeed_and_login() {
-    QuarkusMock.installMockForInstance(new MockedSsoGoogleClient(), ssoGoogleClient);
+  public void google_oauth2callback__should_set_session_id___when_succeed_with_fresh_sign_up() {
+    QuarkusMock.installMockForInstance(
+        new MockedSsoGoogleClient("marko.novak+social@gmail.com"), ssoGoogleClient);
     String state = ssoGoogleService.secureState("https://www.insight.io/my_path");
 
     given()
@@ -226,7 +246,56 @@ public class SsoGoogleResourceImplTest {
         .cookie(SsoSession.COOKIE_NAME);
   }
 
+  @Test
+  public void google_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
+      throws JsonProcessingException, GeneralSecurityException {
+    String email = "sso-login-tfa-full-flow@gmail.com";
+    String password = "sso-login-tfa-full-flow";
+    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .get(TfaResource.PATH + "/totp/setup")
+        .then()
+        .statusCode(200);
+
+    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
+    String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
+    int tfaCode = TotpUtils.generateCurrentNumber(secret);
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
+        .post(TfaResource.PATH + "/totp/setup")
+        .then()
+        .statusCode(200);
+
+    QuarkusMock.installMockForInstance(new MockedSsoGoogleClient(email), ssoGoogleClient);
+    String state = ssoGoogleService.secureState("https://www.insight.io/my_path");
+
+    given()
+        .when()
+        .config(RestAssuredUtils.dontFollowRedirects())
+        .queryParam("code", "any")
+        .queryParam("state", state)
+        .cookie("state", state)
+        .get(oauth2CallbackURI)
+        .then()
+        .statusCode(302)
+        .header("Location", "https://www.insight.io/my_path")
+        .cookie(SsoChallenge.COOKIE_NAME);
+  }
+
   private static class MockedSsoGoogleClient extends SsoGoogleClient {
+
+    private final String email;
+
+    public MockedSsoGoogleClient(String email) {
+      this.email = Objects.requireNonNull(email);
+    }
 
     @Override
     public CompletionStage<GoogleTokenResponse> codeExchange(String code, String redirectURI) {
@@ -236,8 +305,7 @@ public class SsoGoogleResourceImplTest {
     @Override
     public CompletionStage<GoogleUserInfoResponse> userInfo(GoogleTokenResponse token) {
       return CompletableFuture.completedStage(
-          new GoogleUserInfoResponse(
-              "marko.novak+social@gmail.com", "", "", "Matej Šnuderl", "", true, "", ""));
+          new GoogleUserInfoResponse(email, "", "", "Matej Šnuderl", "", true, "", ""));
     }
   }
 }

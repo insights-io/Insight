@@ -35,18 +35,18 @@
   "dependencies": {
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
-    "baseui": "9.94.0",
+    "baseui": "9.97.0",
     "next": "9.5.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-hook-form": "6.3.3",
+    "react-hook-form": "6.5.3",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7"
   },
   "devDependencies": {
     "@insight/types": "0.0.0-development",
     "@next/bundle-analyzer": "9.5.2",
-    "@types/react": "16.9.46",
+    "@types/react": "16.9.48",
     "@types/react-dom": "16.9.8",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2"

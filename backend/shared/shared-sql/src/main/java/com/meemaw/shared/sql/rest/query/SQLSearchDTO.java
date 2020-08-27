@@ -1,7 +1,6 @@
 package com.meemaw.shared.sql.rest.query;
 
 import com.meemaw.shared.rest.query.SearchDTO;
-import java.util.Collections;
 import java.util.Map;
 import lombok.Value;
 import org.jooq.Field;
@@ -15,17 +14,14 @@ public class SQLSearchDTO {
   SearchDTO searchDTO;
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public SelectForUpdateStep<?> apply(SelectJoinStep<?> query, Map<String, Field<?>> filters) {
-    return apply((SelectConditionStep) query, filters);
+  public SelectForUpdateStep<?> apply(SelectJoinStep<?> query, Map<String, Field<?>> mappings) {
+    return apply((SelectConditionStep) query, mappings);
   }
 
-  public SelectForUpdateStep<?> apply(SelectConditionStep<?> query) {
-    return apply(query, Collections.emptyMap());
-  }
-
-  public SelectForUpdateStep<?> apply(SelectConditionStep<?> query, Map<String, Field<?>> filters) {
+  public SelectForUpdateStep<?> apply(
+      SelectConditionStep<?> query, Map<String, Field<?>> mappings) {
     SelectForUpdateStep<?> select =
-        SQLFilterExpression.of(searchDTO.getFilter()).sql(query, filters);
+        SQLFilterExpression.of(searchDTO.getFilter()).sql(query, mappings);
 
     if (!searchDTO.getGroupBy().getFields().isEmpty()) {
       select =

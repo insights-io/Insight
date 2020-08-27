@@ -15,6 +15,13 @@ import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
+import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
+import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
@@ -22,6 +29,7 @@ import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -53,8 +61,9 @@ public class PasswordResourceImplTest {
       String.join("/", PasswordResource.PATH, "password_reset", "%s", "exists");
 
   @Inject MockMailbox mailbox;
-
   @Inject ObjectMapper objectMapper;
+  @Inject UserDatasource userDatasource;
+  @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @BeforeEach
   void init() {
@@ -267,6 +276,63 @@ public class PasswordResourceImplTest {
   }
 
   @Test
+  public void password_reset_flow__should_require_verification__if_tfa_setup()
+      throws JsonProcessingException, GeneralSecurityException {
+    String email = "reset-password-flow-tfa@gmail.com";
+    String password = "superHardPassword";
+    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
+    String secret = AuthApiSetupUtils.setupTotpTfa(userId, sessionId, tfaTotpSetupDatasource);
+
+    // init flow
+    PasswordResourceImplTest.passwordForgot(email, objectMapper);
+
+    String newPassword = "superDuperNewFancyPassword";
+    String resetPasswordPayload =
+        objectMapper.writeValueAsString(new PasswordResetRequestDTO(newPassword));
+
+    List<Mail> sent = mailbox.getMessagesSentTo(email);
+    assertEquals(2, sent.size());
+    Mail actual = sent.get(1);
+    assertEquals("Insight Support <support@insight.com>", actual.getFrom());
+
+    Document doc = Jsoup.parse(actual.getHtml());
+    Elements link = doc.select("a");
+    String passwordForgotLink = link.attr("href");
+
+    Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(passwordForgotLink);
+    tokenMatcher.matches();
+    String token = tokenMatcher.group(1);
+
+    // password reset should go into authentication flow
+    Response response =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(resetPasswordPayload)
+            .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token));
+
+    response.then().statusCode(200).cookie(SsoChallenge.COOKIE_NAME);
+    String challengeId = response.getDetailedCookie(SsoChallenge.COOKIE_NAME).getValue();
+
+    // Complete tfa flow
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoChallenge.COOKIE_NAME, challengeId)
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(
+                    new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
+        .post(TfaChallengeResourceImpl.PATH + "/totp/complete")
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":true}"))
+        .cookie(SsoChallenge.COOKIE_NAME, "")
+        .cookie(SsoSession.COOKIE_NAME);
+  }
+
+  @Test
   public void password_reset_flow_should_succeed_after_sign_up() throws JsonProcessingException {
     String signUpEmail = "reset-password-flow@gmail.com";
     String oldPassword = "superHardPassword";
@@ -281,7 +347,8 @@ public class PasswordResourceImplTest {
         .param("password", oldPassword)
         .post(SsoResource.PATH + "/login")
         .then()
-        .statusCode(204);
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"));
 
     List<Mail> sent = mailbox.getMessagesSentTo(signUpEmail);
     assertEquals(2, sent.size());
@@ -317,8 +384,9 @@ public class PasswordResourceImplTest {
         .body(resetPasswordPayload)
         .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token))
         .then()
-        .statusCode(204)
-        .cookie(SsoSession.COOKIE_NAME);
+        .statusCode(200)
+        .cookie(SsoSession.COOKIE_NAME)
+        .body(sameJson("{\"data\": true}"));
 
     // login with "oldPassword" should fail
     given()
@@ -341,7 +409,8 @@ public class PasswordResourceImplTest {
         .param("password", newPassword)
         .post(SsoResource.PATH + "/login")
         .then()
-        .statusCode(204)
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
         .cookie(SsoSession.COOKIE_NAME);
 
     // trying to do reset with same token again should fail

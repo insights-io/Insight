@@ -88,7 +88,7 @@ jobs:
           yarn concurrently "yarn workspace @insight/browser-bootstrap build" "yarn workspace @insight/browser-tracking build"
           yarn workspace @insight/browser-bootstrap serve 2>&1 | tee $ARTIFACTS_PATH/browser-bootstrap-serve.log &
           node_modules/wait-on/bin/wait-on http-get://localhost:5001 --timeout 600000
-          yarn workspace @insight/app build
+          yarn frontend:app:build
           yarn workspace @insight/try next build
       - name: frontend/app | start
         run: |

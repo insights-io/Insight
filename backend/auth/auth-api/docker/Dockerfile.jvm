@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM gradle:6.5.1-jdk14 as build
+FROM --platform=$BUILDPLATFORM gradle:6.6.0-jdk14 as build
 
 WORKDIR /backend
 
@@ -10,7 +10,7 @@ COPY auth/auth-cookie/ /backend/auth/auth-cookie/
 COPY shared/rest-api/ /backend/shared/rest-api/
 COPY shared/rest/ /backend/shared/rest/
 COPY shared/shared-sql/ /backend/shared/shared-sql/
-
+COPY shared/shared-sms/ /backend/shared/shared-sms/
 
 RUN gradle auth:auth-api:quarkusBuild --uber-jar
 

@@ -2,6 +2,7 @@ package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
 import static io.restassured.RestAssured.given;
 
@@ -34,22 +35,30 @@ public class InsightResourceImplTest {
 
   private static OffsetDateTime createdAt;
   private static final AtomicBoolean hasBeenSetup = new AtomicBoolean(false);
+  private static final String DISTINCT_PATH = String.join("/", InsightsResource.PATH, "distinct");
+  private static final String COUNT_PATH = String.join("/", InsightsResource.PATH, "count");
 
   @Inject SessionDatasource sessionDatasource;
   @Inject SqlPool sqlPool;
 
   @Test
-  public void get_session_insights__should_throw__on_unsupported_fields() {
-    String path =
-        String.join(
-            "/",
-            InsightsResource.PATH,
-            "count?random=gte:aba&aba=gtecaba&group_by=another&sort_by=hehe&limit=not_string");
+  public void get_session_insights_count__should_throw__on_unauthenticated() {
+    cookieExpect401(COUNT_PATH, null);
+    cookieExpect401(COUNT_PATH, "random");
+    cookieExpect401(COUNT_PATH, SsoSession.newIdentifier());
+  }
 
+  @Test
+  public void get_session_insights_count__should_throw__on_unsupported_fields() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(path)
+        .queryParam("random", "gte:aba")
+        .queryParam("aba", "gtecaba")
+        .queryParam("group_by", "another")
+        .queryParam("sort_by", "hehe")
+        .queryParam("limit", "not_string")
+        .get(COUNT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -58,34 +67,38 @@ public class InsightResourceImplTest {
   }
 
   @Test
-  public void get_session_insights__should_return_count__on_empty_request() {
-    String path =
-        String.format(
-            String.join("/", InsightsResource.PATH, "count?created_at=gte:%s"), createdAt);
-
+  public void get_session_insights_count__should_return_count__on_empty_request() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(path)
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(COUNT_PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":{\"count\":5}}"));
   }
 
   @Test
-  public void get_session_insights__should_return_counts__on_group_by_country() {
-    String path =
-        String.format(
-            String.join(
-                "/",
-                InsightsResource.PATH,
-                "count?group_by=location.countryName&created_at=gte:%s"),
-            createdAt);
-
+  public void get_session_insights_count__should_return_count__on_request_with_filters() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(path)
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .queryParam("location.city", "eq:Maribor")
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":{\"count\":1}}"));
+  }
+
+  @Test
+  public void get_session_insights_count__should_return_counts__on_group_by_country() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("group_by", "location.countryName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(COUNT_PATH)
         .then()
         .statusCode(200)
         .body(
@@ -94,19 +107,14 @@ public class InsightResourceImplTest {
   }
 
   @Test
-  public void get_session_insights__should_return_counts__on_group_by_country_and_continent() {
-    String path =
-        String.format(
-            String.join(
-                "/",
-                InsightsResource.PATH,
-                "count?group_by=location.countryName,location.continentName&created_at=gte:%s"),
-            createdAt);
-
+  public void
+      get_session_insights_count__should_return_counts__on_group_by_country_and_continent() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(path)
+        .queryParam("group_by", "location.countryName,location.continentName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(COUNT_PATH)
         .then()
         .statusCode(200)
         .body(
@@ -115,24 +123,144 @@ public class InsightResourceImplTest {
   }
 
   @Test
-  public void get_session_insights__should_return_counts__on_group_by_device() {
-    String path =
-        String.format(
-            String.join(
-                "/",
-                InsightsResource.PATH,
-                "count?group_by=user_agent.deviceClass&created_at=gte:%s"),
-            createdAt);
-
+  public void get_session_insights_count__should_return_counts__on_group_by_device() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
-        .get(path)
+        .queryParam("group_by", "user_agent.deviceClass")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(COUNT_PATH)
         .then()
         .statusCode(200)
         .body(
             sameJson(
                 "{\"data\":[{\"count\":1,\"user_agent.deviceClass\":\"Desktop\"},{\"count\":4,\"user_agent.deviceClass\":\"Phone\"}]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_throw__on_unauthenticated() {
+    cookieExpect401(DISTINCT_PATH, null);
+    cookieExpect401(DISTINCT_PATH, "random");
+    cookieExpect401(DISTINCT_PATH, SsoSession.newIdentifier());
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_throw__when_no_columns() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"on\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_cities() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "location.city")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[null,\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_continents() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "location.continentName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Europe\",\"North America\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_countries() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "location.countryName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Canada\",\"Croatia\",\"Slovenia\",\"United States\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_regions() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "location.regionName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[null,\"Podravska\",\"Washington\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_browser_name() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "user_agent.browserName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Chrome\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_operating_system_name() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "user_agent.operatingSystemName")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Mac OS X\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_return_device_class() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "user_agent.deviceClass")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[\"Desktop\",\"Phone\"]}"));
+  }
+
+  @Test
+  public void get_session_insights_distinct__should_throw__when_unexpected_fields() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .queryParam("on", "random")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"random\":\"Unexpected field\"}}}"));
   }
 
   @BeforeEach
@@ -154,8 +282,10 @@ public class InsightResourceImplTest {
                                 UUID.randomUUID(),
                                 INSIGHT_ORGANIZATION_ID,
                                 LocationDTO.builder()
+                                    .city("New York")
                                     .countryName("United States")
                                     .continentName("North America")
+                                    .regionName("Washington")
                                     .build(),
                                 new UserAgentDTO("Desktop", "Mac OS X", "Chrome"),
                                 transaction)
@@ -166,6 +296,7 @@ public class InsightResourceImplTest {
                                 UUID.randomUUID(),
                                 INSIGHT_ORGANIZATION_ID,
                                 LocationDTO.builder()
+                                    .city("Otawa")
                                     .countryName("Canada")
                                     .continentName("North America")
                                     .build(),
@@ -178,8 +309,10 @@ public class InsightResourceImplTest {
                                 UUID.randomUUID(),
                                 INSIGHT_ORGANIZATION_ID,
                                 LocationDTO.builder()
+                                    .city("Maribor")
                                     .countryName("Slovenia")
                                     .continentName("Europe")
+                                    .regionName("Podravska")
                                     .build(),
                                 new UserAgentDTO("Phone", "Mac OS X", "Chrome"),
                                 transaction)
@@ -202,6 +335,7 @@ public class InsightResourceImplTest {
                                 UUID.randomUUID(),
                                 INSIGHT_ORGANIZATION_ID,
                                 LocationDTO.builder()
+                                    .city("Zagreb")
                                     .countryName("Croatia")
                                     .continentName("Europe")
                                     .build(),

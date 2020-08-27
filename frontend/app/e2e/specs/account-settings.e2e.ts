@@ -5,13 +5,13 @@ import {
 } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
-import { loginWithInsightUser } from '../utils';
 import config from '../config';
+import { AccountSettingsPage, LoginPage } from '../pages';
 
-fixture('/account-settings').page(`${config.appBaseURL}/account/settings`);
+fixture('/account-settings').page(AccountSettingsPage.path);
 
 test('Should be able to change password', async (t) => {
-  await loginWithInsightUser(t);
+  await LoginPage.loginWithInsightUser(t);
 
   await t
     .expect(queryByText(config.insightUserEmail).visible)

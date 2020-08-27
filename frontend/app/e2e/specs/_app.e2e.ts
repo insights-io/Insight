@@ -1,23 +1,22 @@
 import { queryByText } from '@testing-library/testcafe';
 
-import { Sidebar } from '../pages';
+import { LoginPage, SessionsPage, Sidebar } from '../pages';
 import config from '../config';
-import { loginWithInsightUser, getLocation } from '../utils';
+import { getLocation } from '../utils';
 
 fixture('_app').page(config.appBaseURL);
 
 test('Should be able to navigate', async (t) => {
-  await loginWithInsightUser(t);
-
-  await t
-    .hover(Sidebar.accountSettingsItem)
-    .click(queryByText('Sign out'))
-    .expect(queryByText('Create a free account').visible)
+  await LoginPage.loginWithInsightUser(t)
+    .hover(Sidebar.accountSettings.item)
+    .expect(Sidebar.accountSettings.accountSettings.visible)
+    .ok('Should display text on hover')
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.signOut)
+    .expect(LoginPage.createFreeAccount.visible)
     .ok('Should be on the login page');
 
-  await loginWithInsightUser(t);
-
-  await t
+  await LoginPage.loginWithInsightUser(t)
     .hover(Sidebar.toggleItem)
     .expect(queryByText('Expand').visible)
     .ok('Expand sidebar text should exist')
@@ -28,7 +27,7 @@ test('Should be able to navigate', async (t) => {
     .expect(queryByText('Collapse').visible)
     .notOk('Collapse text should not be vissible due to sidebar collapsing')
     .expect(getLocation())
-    .eql(`${config.appBaseURL}/sessions`)
+    .eql(SessionsPage.path)
     .click(Sidebar.homeItem)
     .expect(getLocation())
     .eql(`${config.appBaseURL}/`);

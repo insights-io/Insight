@@ -25,7 +25,12 @@ const AccountSettings = ({
 
   return (
     <AppLayout
-      overrides={{ MainContent: { style: { padding: theme.sizing.scale400 } } }}
+      overrides={{
+        MainContent: {
+          className: 'account-settings',
+          style: { padding: theme.sizing.scale400 },
+        },
+      }}
     >
       <H1
         margin={0}

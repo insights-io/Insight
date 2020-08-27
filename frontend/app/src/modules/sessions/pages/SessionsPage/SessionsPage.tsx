@@ -1,57 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
-import useSessions from 'modules/sessions/hooks/useSessions';
 import { useStyletron } from 'baseui';
-import Link from 'next/link';
 import useAuth from 'modules/auth/hooks/useAuth';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
 import { Session, User } from '@insight/types';
-import SessionListItem from 'modules/sessions/components/SessionListItem';
+import SessionList from 'modules/sessions/containers/SessionList';
+import SessionSearch from 'modules/sessions/components/SessionSearch';
+import { Block } from 'baseui/block';
+import {
+  DateRange,
+  createDateRange,
+} from 'modules/sessions/components/SessionSearch/utils';
+import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 
 type Props = {
   user: User;
   sessions: Session[];
+  sessionCount: number;
 };
 
-const HomePage = ({ user: initialUser, sessions: initialSessions }: Props) => {
-  const [css, theme] = useStyletron();
+const HomePage = ({
+  user: initialUser,
+  sessions: initialSessions,
+  sessionCount: initialSessionCount,
+}: Props) => {
+  const [_css, theme] = useStyletron();
   const { user } = useAuth(initialUser);
-  const { data: sessions, loading: loadingSessions } = useSessions(
-    initialSessions
+  const hasSessions = initialSessions.length > 0;
+  const [dateRange, setDataRange] = useState<DateRange>(() =>
+    createDateRange('all-time')
   );
-  const hasSessions = loadingSessions || sessions.length > 0;
+  const [filters, setFilters] = useState<SessionFilter[]>([]);
 
   return (
     <AppLayout
       overrides={{
-        MainContent: { style: { background: theme.colors.mono300 } },
+        MainContent: {
+          style: {
+            background: theme.colors.mono300,
+            padding: theme.sizing.scale400,
+          },
+        },
       }}
     >
       {hasSessions ? (
         <>
-          <ul
-            className={css({
-              paddingLeft: 0,
-              marginBottom: 0,
-              marginTop: 0,
-              overflow: 'auto',
-            })}
-          >
-            {sessions.map((session) => {
-              return (
-                <Link
-                  href="/sessions/[id]"
-                  as={`sessions/${session.id}`}
-                  key={session.id}
-                >
-                  <a className={css({ color: 'inherit' })}>
-                    <SessionListItem session={session} />
-                  </a>
-                </Link>
-              );
-            })}
-          </ul>
+          <SessionSearch
+            onDateRangeChange={setDataRange}
+            setFilters={setFilters}
+            filters={filters}
+          />
+          <Block marginTop={theme.sizing.scale400} height="100%">
+            <SessionList
+              initialSessions={initialSessions}
+              initialSessionCount={initialSessionCount}
+              dateRange={dateRange}
+              filters={filters}
+            />
+          </Block>
         </>
       ) : (
         user && (

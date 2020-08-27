@@ -20,14 +20,16 @@ export const authenticated = async (
   context: GetServerSidePropsContext,
   requestSpan: Span
 ): Promise<Authenticated | undefined> => {
-  const { SessionId } = nextCookie(context);
+  const { SessionId, ChallengeId } = nextCookie(context);
   const pathname = context.req.url;
+
   const span = getTracer().startSpan('authMiddleware.authenticated', {
     childOf: requestSpan,
+    tags: { SessionId, ChallengeId, pathname },
   });
 
-  const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
-    let Location = '/login';
+  const redirect = (location: string, headers?: OutgoingHttpHeaders) => {
+    let Location = location;
     if (pathname) {
       Location += `?dest=${encodeURIComponent(pathname)}`;
     }
@@ -36,11 +38,26 @@ export const authenticated = async (
     return undefined;
   };
 
+  const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
+    return redirect('/login', headers);
+  };
+
+  const redirectToVerification = (headers?: OutgoingHttpHeaders) => {
+    return redirect('/login/verification', headers);
+  };
+
   if (!SessionId) {
-    span.log({ message: 'Missing session id' });
-    span.finish();
+    if (ChallengeId) {
+      span.log({ message: 'Missing SessionId: redirect to verification' });
+      return redirectToVerification();
+    }
+
+    span.log({
+      message: 'Missing SessionId and ChallengeId: redirect to login',
+    });
     return redirectToLogin();
   }
+
   span.setTag('SessionId', SessionId);
 
   try {
@@ -52,6 +69,13 @@ export const authenticated = async (
     if (response.status === 204) {
       span.log({ message: 'Session expired' });
       const setCookie = response.headers.get('set-cookie');
+      if (ChallengeId) {
+        span.log({
+          message:
+            'Expired SessionId but ChallengeId present: redirect to verification',
+        });
+        return redirectToVerification();
+      }
       return redirectToLogin({ 'set-cookie': setCookie || undefined });
     }
     const dataResponse = (await response.json()) as DataResponse<UserDTO>;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Block } from 'baseui/block';
 import { H1, Paragraph3 } from 'baseui/typography';
 import { DeleteAlt } from 'baseui/icon';
+import VerticalAligned from 'shared/components/VerticalAligned';
 
 type Props = {
   statusCode: number;
@@ -9,10 +10,7 @@ type Props = {
 
 const ErrorPage = (_props: Props) => {
   return (
-    <Block
-      display="flex"
-      justifyContent="center"
-      flexDirection="column"
+    <VerticalAligned
       width="100%"
       height="100%"
       $style={{ textAlign: 'center' }}
@@ -31,7 +29,7 @@ const ErrorPage = (_props: Props) => {
           </Paragraph3>
         </Block>
       </Block>
-    </Block>
+    </VerticalAligned>
   );
 };
 

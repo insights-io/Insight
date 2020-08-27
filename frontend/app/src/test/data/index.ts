@@ -2,6 +2,7 @@ import { Session, SessionDTO, UserAgentDTO } from '@insight/types';
 import { v4 as uuid } from 'uuid';
 import { subSeconds, subDays } from 'date-fns';
 import { mapSession } from '@insight/sdk';
+import { TfaMethod } from '@insight/sdk/dist/auth';
 
 import { INSIGHT_ADMIN } from './user';
 
@@ -70,6 +71,12 @@ export const INSIGHT_SESSION_DAY_AGO_NO_LOCATION: Session = mapSession(
   INSIGHT_SESSION_DAY_AGO_NO_LOCATION_DTO
 );
 
+export const INSIGHT_SESSIONS_DTOS = [
+  INSIGHT_SESSION_DTO,
+  INSIGHT_SESSION_HOUR_AGO_DTO,
+  INSIGHT_SESSION_DAY_AGO_NO_LOCATION_DTO,
+];
+
 export const INSIGHT_SESSIONS = [
   INSIGHT_SESSION,
   INSIGHT_SESSION_HOUR_AGO,
@@ -78,3 +85,5 @@ export const INSIGHT_SESSIONS = [
 
 export * from './events';
 export * from './user';
+
+export const TFA_METHODS: TfaMethod[] = ['totp', 'sms'];

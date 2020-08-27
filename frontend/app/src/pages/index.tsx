@@ -45,6 +45,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         ...prepareCrossServiceHeaders(requestSpan),
         cookie: `SessionId=${authResponse.SessionId}`,
       },
+    }).then((data) => {
+      return data.map((value) => ({
+        ...value,
+        'location.continentName': value['location.continentName'] || 'Unknown',
+        'location.countryName': value['location.countryName'] || 'Unknown',
+      }));
     });
 
     const countByDeviceClassPromise = SessionApi.countByDeviceClass({
@@ -61,11 +67,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ]);
 
     return {
-      props: {
-        user: authResponse.user,
-        countByLocation,
-        countByDeviceClass,
-      },
+      props: { user: authResponse.user, countByLocation, countByDeviceClass },
     };
   } finally {
     requestSpan.finish();

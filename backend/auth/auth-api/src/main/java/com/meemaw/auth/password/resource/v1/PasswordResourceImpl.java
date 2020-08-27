@@ -5,7 +5,6 @@ import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.sso.model.InsightPrincipal;
-import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -51,7 +50,7 @@ public class PasswordResourceImpl implements PasswordResource {
             passwordResetRequest ->
                 ssoService
                     .login(passwordResetRequest.getEmail(), password, ipAddress)
-                    .thenApply(sessionId -> SsoSession.cookieResponse(sessionId, cookieDomain)));
+                    .thenApply(loginResult -> loginResult.loginResponse(cookieDomain)));
   }
 
   @Override

@@ -1,0 +1,9 @@
+plugins {
+    id 'java-library'
+    id 'io.quarkus'
+}
+
+dependencies {
+    implementation "com.twilio.sdk:twilio:${twilioVersion}"
+    implementation 'io.quarkus:quarkus-smallrye-opentracing'
+}
