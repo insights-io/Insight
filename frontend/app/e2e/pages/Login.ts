@@ -1,9 +1,5 @@
 import 'testcafe';
-import {
-  getByPlaceholderText,
-  getByText,
-  queryByText,
-} from '@testing-library/testcafe';
+import { getByPlaceholderText, queryByText } from '@testing-library/testcafe';
 
 import config from '../config';
 
@@ -15,9 +11,9 @@ class Login {
   /* Selectors */
   public readonly emailInput = getByPlaceholderText('Email');
   public readonly passwordInput = getByPlaceholderText('Password');
-  public readonly signInButton = getByText('Sign in');
-  public readonly forgotPasswordButton = getByText('Forgot?');
-  public readonly createFreeAccount = getByText('Create a free account');
+  public readonly signInButton = queryByText('Sign in');
+  public readonly forgotPasswordButton = queryByText('Forgot?');
+  public readonly createFreeAccount = queryByText('Create a free account');
 
   public readonly errorMessages = {
     invalidEmail: queryByText('Please enter a valid email address'),
