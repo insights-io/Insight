@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
     implementation 'io.quarkus:quarkus-undertow-websockets'
     implementation 'io.quarkus:quarkus-reactive-pg-client'
     implementation 'io.quarkus:quarkus-rest-client'

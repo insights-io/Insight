@@ -42,11 +42,11 @@ public class PostgresTestExtension implements BeforeAllCallback {
    */
   public static Map<String, String> start(PostgresTestContainer postgres) {
     if (!POSTGRES.isRunning()) {
-      log.info("Starting postgres container ...");
+      log.info("[TEST-SETUP]: Starting postgres container ...");
       postgres.start();
-      postgres.applyMigrations();
     }
-    log.info("Connecting to postgres datasource.url={}", postgres.getDatasourceURL());
+    log.info("[TEST-SETUP]: Connecting to postgres datasource.url={}", postgres.getDatasourceURL());
+    postgres.applyMigrations();
     return Collections.singletonMap("quarkus.datasource.url", postgres.getDatasourceURL());
   }
 }

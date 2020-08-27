@@ -21,7 +21,6 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
 
   protected static final int PORT = 8080;
 
-  /** @param api */
   public AbstractApiTestContainer(Api api) {
     super(imageFromDockerfile(Objects.requireNonNull(api)));
     withExposedPorts(PORT)
@@ -60,7 +59,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     String imageName = api.imageName();
     Path context = ProjectUtils.backendPath();
     log.info(
-        "Building {} api dockerfile={} context={} imageName={}",
+        "[TEST-SETUP]: Building {} api dockerfile={} context={} imageName={}",
         api.name().toLowerCase(),
         dockerfile.toString(),
         context.toAbsolutePath(),

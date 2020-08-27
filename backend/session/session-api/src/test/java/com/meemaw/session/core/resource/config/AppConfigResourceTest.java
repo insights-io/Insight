@@ -1,8 +1,9 @@
-package com.meemaw.session.core.config.resource;
+package com.meemaw.session.core.resource.config;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
+import com.meemaw.session.core.config.resource.AppConfigResource;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;

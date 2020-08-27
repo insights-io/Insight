@@ -32,10 +32,6 @@ public class SessionApiTestExtension implements BeforeAllCallback {
     return start(SESSION_API);
   }
 
-  /**
-   * @param sessionApi test container
-   * @return map of system properties
-   */
   public static Map<String, String> start(SessionApiTestContainer sessionApi) {
     if (!sessionApi.isRunning()) {
       log.info("Starting session api container ...");

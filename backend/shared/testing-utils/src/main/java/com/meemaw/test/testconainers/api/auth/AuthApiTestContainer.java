@@ -11,7 +11,6 @@ public class AuthApiTestContainer extends AbstractApiTestContainer<AuthApiTestCo
     super(Api.AUTH);
   }
 
-  /** @return auth api test container */
   public static AuthApiTestContainer newInstance() {
     return new AuthApiTestContainer().withEnv("MAILER_MOCK", "true");
   }

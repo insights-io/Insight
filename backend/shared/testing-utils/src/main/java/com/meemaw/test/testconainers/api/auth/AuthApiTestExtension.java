@@ -32,16 +32,12 @@ public class AuthApiTestExtension implements BeforeAllCallback {
     return start(AUTH_API);
   }
 
-  /**
-   * @param authApi auth api
-   * @return map of system properties to be applied
-   */
   public static Map<String, String> start(AuthApiTestContainer authApi) {
     if (!authApi.isRunning()) {
-      log.info("Starting auth api container ...");
+      log.info("[TEST-SETUP]: Starting auth api container ...");
       authApi.start();
     }
-    log.info("Connecting to auth api on port {}", authApi.getBaseURI());
+    log.info("[TEST-SETUP]: Connecting to auth api on port {}", authApi.getBaseURI());
     return Map.of("sso-resource/mp-rest/url", authApi.getBaseURI());
   }
 }

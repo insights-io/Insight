@@ -11,7 +11,6 @@ public class SessionApiTestContainer extends AbstractApiTestContainer<SessionApi
     super(Api.SESSION);
   }
 
-  /** @return */
   public static SessionApiTestContainer newInstance() {
     return new SessionApiTestContainer();
   }

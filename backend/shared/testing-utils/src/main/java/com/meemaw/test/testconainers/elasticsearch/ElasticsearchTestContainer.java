@@ -24,7 +24,7 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
   public static final String NETWORK_ALIAS = "elasticsearch";
 
-  private static final String DOCKER_TAG = "docker.elastic.co/elasticsearch/elasticsearch:7.8.0";
+  private static final String DOCKER_TAG = "docker.elastic.co/elasticsearch/elasticsearch:7.9.0";
 
   private ElasticsearchTestContainer() {
     super(DOCKER_TAG);
@@ -82,11 +82,12 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
   public void applyMigrations(Path migrationsSqlPath) {
     if (!Files.exists(migrationsSqlPath)) {
-      log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
+      log.info(
+          "[TEST-SETUP]: Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
       return;
     }
 
-    log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
+    log.info("[TEST-SETUP]: Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
     new ElasticsearchMigrationsTestContainer<>(migrationsSqlPath).start();
   }
 }

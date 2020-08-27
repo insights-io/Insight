@@ -24,17 +24,13 @@ public class ElasticsearchTestExtension implements BeforeAllCallback {
     return start(ELASTICSEARCH);
   }
 
-  /**
-   * @param elasticsearch test container
-   * @return elasticsearch configuration properties
-   */
   public static Map<String, String> start(ElasticsearchTestContainer elasticsearch) {
     if (!ELASTICSEARCH.isRunning()) {
-      log.info("Starting elasticsearch container ...");
+      log.info("[TEST-SETUP]: Starting elasticsearch container ...");
       elasticsearch.start();
       elasticsearch.applyMigrations();
     }
-    log.info("Connecting to elasticsearch http.host={}", elasticsearch.getHttpHost());
+    log.info("[TEST-SETUP]: Connecting to elasticsearch http.host={}", elasticsearch.getHttpHost());
     return Map.of("elasticsearch.http.host", elasticsearch.getHttpHost().toHostString());
   }
 

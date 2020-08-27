@@ -3,10 +3,10 @@ package com.meemaw.test.project;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
-public class ProjectUtils {
+public final class ProjectUtils {
+
+  private ProjectUtils() {}
 
   private static final String BACKEND = "backend";
 
@@ -29,5 +29,4 @@ public class ProjectUtils {
   public static Path getFromModule(String... args) {
     return Paths.get(getUserDirectory(), args);
   }
-
 }
