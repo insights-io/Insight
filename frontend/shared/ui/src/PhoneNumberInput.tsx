@@ -9,19 +9,19 @@ import {
   Country,
 } from 'baseui/phone-input';
 
-type Props<T extends FieldValues> = {
+type Props<T> = {
   country: Country;
   setCountry: (country: Country) => void;
   error: FieldError | undefined;
   control: Control<T>;
 };
 
-const PhoneNumberInput = <T extends FieldValues>({
+function PhoneNumberInput<T extends FieldValues>({
   country,
   setCountry,
   error,
   control,
-}: Props<T>) => {
+}: Props<T>) {
   const [css, theme] = useStyletron();
   return (
     <Block>
@@ -68,6 +68,6 @@ const PhoneNumberInput = <T extends FieldValues>({
       </FormControl>
     </Block>
   );
-};
+}
 
-export default React.memo(PhoneNumberInput);
+export default PhoneNumberInput;

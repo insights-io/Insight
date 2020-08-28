@@ -60,7 +60,7 @@ const ConfigurePhoneNumberModal = ({
       <ModalHeader>Configure phone number</ModalHeader>
       <form noValidate onSubmit={onSubmit}>
         <ModalBody>
-          <PhoneNumberInput
+          <PhoneNumberInput<ConfigurePhoneNumberDTO>
             country={country}
             setCountry={setCountry}
             error={errors?.phoneNumber}
