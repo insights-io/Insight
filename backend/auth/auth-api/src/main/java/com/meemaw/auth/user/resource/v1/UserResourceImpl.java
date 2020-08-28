@@ -44,7 +44,7 @@ public class UserResourceImpl implements UserResource {
       }
     }
 
-    if (errors.size() > 0) {
+    if (!errors.isEmpty()) {
       return CompletableFuture.completedStage(Boom.badRequest().errors(errors).response());
     }
 

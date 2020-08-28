@@ -41,6 +41,14 @@ public class UserService {
     return updateUser(userId, body);
   }
 
+  private CompletionStage<AuthUser> updateUser(UUID userId, Map<String, Object> body) {
+    return userDatasource
+        .updateUser(userId, body)
+        .thenCompose(
+            updatedUser ->
+                ssoDatasource.updateUserSessions(userId, updatedUser).thenApply(i1 -> updatedUser));
+  }
+
   @Traced
   public CompletionStage<AuthUser> verifyPhoneNumber(AuthUser user, int code) {
     UUID userId = user.getId();
@@ -69,13 +77,5 @@ public class UserService {
 
               return updateUser(userId, Map.of(UserTable.PHONE_NUMBER_VERIFIED, true));
             });
-  }
-
-  private CompletionStage<AuthUser> updateUser(UUID userId, Map<String, Object> body) {
-    return userDatasource
-        .updateUser(userId, body)
-        .thenCompose(
-            updatedUser ->
-                ssoDatasource.updateUserSessions(userId, updatedUser).thenApply(i1 -> updatedUser));
   }
 }

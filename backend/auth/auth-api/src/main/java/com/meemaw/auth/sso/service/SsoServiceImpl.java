@@ -121,7 +121,7 @@ public class SsoServiceImpl implements SsoService {
         .deleteAllSessionsForUser(userId)
         .thenApply(
             deletedSessions -> {
-              if (deletedSessions.size() > 0) {
+              if (!deletedSessions.isEmpty()) {
                 log.info(
                     "[AUTH]: Successfully logged out of {} devices  userId: {}",
                     deletedSessions.size(),
