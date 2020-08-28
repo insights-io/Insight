@@ -13,7 +13,20 @@ class AccountSettings {
 
   /* Selectors */
   private readonly container = within('div.account-settings');
+
   public readonly title = this.container.queryByText('Account settings');
+  public readonly configurePhoneNumberButton = this.container
+    .queryByText('Phone number')
+    .parent()
+    .find('button');
+
+  public verifyCurrentPhoneNumber = async (t: TestController) => {
+    await t.click(this.configurePhoneNumberButton).click(queryByText('Next'));
+    await VerificationPage.completeSmsChallenge(t);
+    return t
+      .expect(queryByText('Phone number verified').visible)
+      .ok('Success message');
+  };
 
   public readonly tfa = {
     codeInput: Verification.codeInput,
@@ -21,6 +34,9 @@ class AccountSettings {
     invalidCodeError: Verification.invalidCodeError,
     disableSubmitButton: queryByText('Yes'),
     sms: {
+      disabledText: queryByText(
+        'Verify your phone number to enable text message two factor authentication'
+      ),
       checkbox: this.container.queryByText('Text message'),
       disabledToast: queryByText(
         'Text message two factor authentication disabled'
@@ -28,9 +44,7 @@ class AccountSettings {
       enabledToast: queryByText(
         'Text message two factor authentication enabled'
       ),
-      setup: (t: TestController) => {
-        return VerificationPage.completeSmsChallenge(t);
-      },
+      setup: (t: TestController) => VerificationPage.completeSmsChallenge(t),
     },
     totp: {
       checkbox: this.container.queryByText('Authy / Google Authenticator'),

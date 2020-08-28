@@ -32,6 +32,14 @@ const ConfigurePhoneNumberModal = ({
     setCurrentStep((s) => s - 1);
   }, []);
 
+  const onPhoneNumberVerified = useCallback(
+    (user: User) => {
+      updateUserCache(user);
+      setIsModalOpen(false);
+    },
+    [setIsModalOpen, updateUserCache]
+  );
+
   return (
     <Modal
       isOpen={isOpen}
@@ -50,7 +58,7 @@ const ConfigurePhoneNumberModal = ({
         <Step title="Verify phone number">
           <VerifyPhoneNumberForm
             onBack={onBack}
-            onPhoneNumberVerified={updateUserCache}
+            onPhoneNumberVerified={onPhoneNumberVerified}
           />
         </Step>
       </ProgressSteps>

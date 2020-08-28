@@ -22,12 +22,12 @@ const SmsTwoFactorAuthentication = ({
   phoneNumber,
   phoneNumberVerified,
 }: Props) => {
-  const hasPhoneNumber = Boolean(phoneNumber);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isEnabled =
-    setupsMaps.sms?.createdAt !== undefined && phoneNumberVerified;
+  const isEnabled = setupsMaps.sms?.createdAt !== undefined;
   const closeModal = () => setIsModalOpen(false);
   const openModal = () => setIsModalOpen(true);
+
+  const isSetupForSmsTfa = Boolean(phoneNumber) && phoneNumberVerified;
 
   const {
     code,
@@ -62,7 +62,7 @@ const SmsTwoFactorAuthentication = ({
       <StatefulTooltip
         showArrow
         content={
-          hasPhoneNumber
+          isSetupForSmsTfa
             ? undefined
             : 'Verify your phone number to enable text message two factor authentication'
         }
@@ -71,7 +71,7 @@ const SmsTwoFactorAuthentication = ({
           <Checkbox
             onChange={openModal}
             checked={isEnabled}
-            disabled={setupDisabled || !hasPhoneNumber}
+            disabled={setupDisabled || !isSetupForSmsTfa}
             overrides={{ Label: { style: { fontSize: '0.8rem' } } }}
           >
             {LABEL}

@@ -8,12 +8,15 @@ export const INSIGHT_ADMIN_DTO: UserDTO = {
   organizationId: '000000',
   role: 'ADMIN',
   createdAt: new Date().toUTCString(),
+  updatedAt: new Date().toUTCString(),
   phoneNumber: '+38651111222',
+  phoneNumberVerified: true,
 };
 
 export const INSIGHT_ADMIN_NO_PHONE_NUMBER: User = mapUser({
   ...INSIGHT_ADMIN_DTO,
   phoneNumber: null,
+  phoneNumberVerified: false,
 });
 
 export const INSIGHT_ADMIN: User = mapUser(INSIGHT_ADMIN_DTO);
