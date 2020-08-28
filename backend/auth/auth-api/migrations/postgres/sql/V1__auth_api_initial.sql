@@ -2,7 +2,7 @@ CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE OR REPLACE FUNCTION update_updated_at_column()
+CREATE OR REPLACE FUNCTION updated_at_now()
     RETURNS TRIGGER AS
 $$
 BEGIN
@@ -16,10 +16,17 @@ CREATE TABLE IF NOT EXISTS auth.organization
     id         TEXT        NOT NULL UNIQUE,
     name       TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     PRIMARY KEY (id),
     CONSTRAINT id_length CHECK (length(auth.organization.id) = 6)
 );
+
+CREATE TRIGGER organization_updated_at_now
+    BEFORE UPDATE
+    ON auth.organization
+    FOR EACH ROW
+EXECUTE PROCEDURE updated_at_now();
 
 CREATE TABLE IF NOT EXISTS auth.user
 (
@@ -38,11 +45,11 @@ CREATE TABLE IF NOT EXISTS auth.user
     CONSTRAINT email_length CHECK (length(auth.user.email) < 255)
 );
 
-CREATE TRIGGER auth_user_updated_at
+CREATE TRIGGER user_updated_at_now
     BEFORE UPDATE
     ON auth.user
     FOR EACH ROW
-EXECUTE PROCEDURE update_updated_at_column();
+EXECUTE PROCEDURE updated_at_now();
 
 CREATE TABLE IF NOT EXISTS auth.password
 (
