@@ -137,7 +137,11 @@ public class UserResourceImplTest {
       throws JsonProcessingException {
     String sessionId =
         SsoTestSetupUtils.signUpAndLogin(
-            mockMailbox, objectMapper, "user-123@gmail.com", "user-12345");
+            mockMailbox,
+            objectMapper,
+            "phone-number-verify-invalid-code@gmail.com",
+            "phone-number-verify-invalid-code",
+            "+386512121");
 
     given()
         .when()
@@ -150,6 +154,29 @@ public class UserResourceImplTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
+  }
+
+  @Test
+  public void phone_number_verify__should_throw__when_no_phone_number()
+      throws JsonProcessingException {
+    String sessionId =
+        SsoTestSetupUtils.signUpAndLogin(
+            mockMailbox,
+            objectMapper,
+            "phone-number-verify-no-phone-number@gmail.com",
+            "phone-number-verify-no-phone-number");
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(10)))
+        .patch(PHONE_NUMBER_VERIFY_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"phone_number\":\"Required\"}}}"));
   }
 
   @Test
