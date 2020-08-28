@@ -4,10 +4,12 @@ export type OrganizationDTO = {
   id: string;
   name: string;
   createdAt: string;
+  updatedAt: string;
 };
 
-export type Organization = Omit<OrganizationDTO, 'createdAt'> & {
+export type Organization = Omit<OrganizationDTO, 'createdAt' | 'updatedAt'> & {
   createdAt: Date;
+  updatedAt: Date;
 };
 
 export type TeamInviteCreateDTO = {

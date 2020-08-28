@@ -20,10 +20,12 @@ const SmsTwoFactorAuthentication = ({
   onMethodEnabled,
   onMethodDisabled,
   phoneNumber,
+  phoneNumberVerified,
 }: Props) => {
   const hasPhoneNumber = Boolean(phoneNumber);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isEnabled = setupsMaps.sms?.createdAt !== undefined;
+  const isEnabled =
+    setupsMaps.sms?.createdAt !== undefined && phoneNumberVerified;
   const closeModal = () => setIsModalOpen(false);
   const openModal = () => setIsModalOpen(true);
 

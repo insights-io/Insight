@@ -17,13 +17,21 @@ import { RequestOptions } from './types';
 type LoginResponseDTO = boolean | { challengeId: string };
 
 export const mapUser = (user: User | UserDTO): User => {
-  return { ...user, createdAt: new Date(user.createdAt) };
+  return {
+    ...user,
+    createdAt: new Date(user.createdAt),
+    updatedAt: new Date(user.updatedAt),
+  };
 };
 
 export const mapOrganization = (
   organization: Organization | OrganizationDTO
 ): Organization => {
-  return { ...organization, createdAt: new Date(organization.createdAt) };
+  return {
+    ...organization,
+    createdAt: new Date(organization.createdAt),
+    updatedAt: new Date(organization.updatedAt),
+  };
 };
 
 export const mapTeamInvite = (
@@ -46,6 +54,11 @@ export type TfaSmsSetupStartDTO = {
   validitySeconds: number;
 };
 
+export type UpdateUserPayload = {
+  phoneNumber?: string | null;
+  fullName?: string | null;
+};
+
 export const createAuthClient = (authApiBaseURL: string) => {
   const tfaSetupStart = <T>(
     method: TfaMethod,
@@ -57,6 +70,43 @@ export const createAuthClient = (authApiBaseURL: string) => {
         ...rest,
       })
       .json<DataResponse<T>>();
+  };
+
+  const UserApi = {
+    update: (
+      json: UpdateUserPayload,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .patch(`${baseURL}/v1/user`, { json, credentials: 'include', ...rest })
+        .json<DataResponse<UserDTO>>()
+        .then((dataResponse) => dataResponse.data);
+    },
+    phoneNumberVerifySendCode: ({
+      baseURL = authApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .post(`${baseURL}/v1/user/phone_number/verify/send_code`, {
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<TfaSmsSetupStartDTO>>()
+        .then((dataResponse) => dataResponse.data);
+    },
+    phoneNumberVerify: (
+      code: number,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .patch(`${baseURL}/v1/user/phone_number/verify`, {
+          json: { code },
+          credentials: 'include',
+          ...rest,
+        })
+        .json<DataResponse<UserDTO>>()
+        .then((dataResponse) => dataResponse.data);
+    },
   };
 
   const TfaApi = {
@@ -362,5 +412,6 @@ export const createAuthClient = (authApiBaseURL: string) => {
     teamInvite: TeamInviteApi,
     password: PasswordApi,
     tfa: TfaApi,
+    user: UserApi,
   };
 };

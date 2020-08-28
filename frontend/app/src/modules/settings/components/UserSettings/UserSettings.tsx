@@ -8,6 +8,7 @@ import { Button, SHAPE, SIZE } from 'baseui/button';
 import { FaCogs } from 'react-icons/fa';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
 import VerticalAligned from 'shared/components/VerticalAligned';
+import { UpdateUserPayload } from '@insight/sdk/dist/auth';
 
 import ChangePassword from '../ChangePassword';
 import Security from '../Security';
@@ -15,9 +16,11 @@ import ConfigurePhoneNumberModal from '../ConfigurePhoneNumberModal';
 
 type Props = {
   user: User;
+  updateUser: (updateUserPayload: UpdateUserPayload) => Promise<User>;
+  updateUserCache: (user: User) => void;
 };
 
-const UserSettings = ({ user }: Props) => {
+const UserSettings = ({ user, updateUser, updateUserCache }: Props) => {
   const [_css, theme] = useStyletron();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -50,6 +53,8 @@ const UserSettings = ({ user }: Props) => {
           isOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           phoneNumber={user.phoneNumber}
+          updateUser={updateUser}
+          updateUserCache={updateUserCache}
         />
       </>,
     ],

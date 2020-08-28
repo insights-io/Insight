@@ -108,6 +108,7 @@ const TwoFactorAuthentication = ({ user }: Props) => {
           />
           <SmsTwoFactorAuthentication
             phoneNumber={user.phoneNumber}
+            phoneNumberVerified={user.phoneNumberVerified}
             setupDisabled={loading || error !== undefined}
             setupsMaps={setupsMap}
             onMethodDisabled={onSmsMethodDisabled}

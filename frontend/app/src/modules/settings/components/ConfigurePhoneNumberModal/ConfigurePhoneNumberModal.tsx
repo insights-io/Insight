@@ -1,78 +1,59 @@
-import { Button } from 'baseui/button';
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
-import { COUNTRIES, Country } from 'baseui/phone-input';
-import React, { useState } from 'react';
-import { PhoneNumberInput } from '@insight/ui';
-import { useForm } from 'react-hook-form';
+import { Modal, SIZE } from 'baseui/modal';
+import React, { useCallback, useState } from 'react';
+import { ProgressSteps, Step } from 'baseui/progress-steps';
+import { User } from '@insight/types';
+import { UpdateUserPayload } from '@insight/sdk/dist/auth';
+
+import SetPhoneNumberForm from './SetPhoneNumberForm';
+import VerifyPhoneNumberForm from './VerifyPhoneNumberForm';
 
 type Props = {
   isOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
   phoneNumber: string | null;
-};
-
-type ConfigurePhoneNumberDTO = {
-  phoneNumber: string;
-};
-
-const getCountryFromPhoneNumber = (
-  phoneNumber: string | null,
-  defaultCountry: Country = COUNTRIES.US
-) => {
-  if (!phoneNumber) {
-    return defaultCountry;
-  }
-
-  const maybeCountry: Country | undefined = Object.values(COUNTRIES).find(
-    (c) => {
-      return phoneNumber.startsWith((c as Country).dialCode);
-    }
-  );
-
-  return maybeCountry || defaultCountry;
+  updateUser: (userUpdatePayload: UpdateUserPayload) => Promise<User>;
+  updateUserCache: (user: User) => void;
 };
 
 const ConfigurePhoneNumberModal = ({
   isOpen,
   setIsModalOpen,
   phoneNumber,
+  updateUser,
+  updateUserCache,
 }: Props) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [country, setCountry] = useState(() =>
-    getCountryFromPhoneNumber(phoneNumber)
-  );
+  const [currentStep, setCurrentStep] = useState(0);
 
-  const { handleSubmit, errors, control } = useForm<ConfigurePhoneNumberDTO>({
-    defaultValues: {
-      phoneNumber: phoneNumber?.split(country.dialCode)[1] || undefined,
-    },
-  });
+  const onPhoneNumberSet = useCallback(() => {
+    setCurrentStep((s) => s + 1);
+  }, []);
 
-  const onSubmit = handleSubmit((_data) => {
-    if (isSubmitting) {
-      return;
-    }
-    setIsSubmitting(true);
-  });
+  const onBack = useCallback(() => {
+    setCurrentStep((s) => s - 1);
+  }, []);
 
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsModalOpen(false)}>
-      <ModalHeader>Configure phone number</ModalHeader>
-      <form noValidate onSubmit={onSubmit}>
-        <ModalBody>
-          <PhoneNumberInput<ConfigurePhoneNumberDTO>
-            country={country}
-            setCountry={setCountry}
-            error={errors?.phoneNumber}
-            control={control}
+    <Modal
+      isOpen={isOpen}
+      onClose={() => setIsModalOpen(false)}
+      size={SIZE.auto}
+    >
+      <ProgressSteps current={currentStep}>
+        <Step title="Set phone number">
+          <SetPhoneNumberForm
+            phoneNumber={phoneNumber}
+            onPhoneNumberSet={onPhoneNumberSet}
+            updateUser={updateUser}
           />
-        </ModalBody>
-        <ModalFooter>
-          <Button isLoading={isSubmitting} type="submit">
-            Submit
-          </Button>
-        </ModalFooter>
-      </form>
+        </Step>
+
+        <Step title="Verify phone number">
+          <VerifyPhoneNumberForm
+            onBack={onBack}
+            onPhoneNumberVerified={updateUserCache}
+          />
+        </Step>
+      </ProgressSteps>
     </Modal>
   );
 };
