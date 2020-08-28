@@ -27,10 +27,10 @@
     "@insight/types": "0.0.0-development"
   },
   "dependencies": {
-    "@storybook/addon-actions": "6.0.19",
-    "@storybook/addon-essentials": "6.0.19",
-    "@storybook/addon-links": "6.0.19",
-    "@storybook/react": "6.0.19",
-    "@storybook/addon-controls": "6.0.19"
+    "@storybook/addon-actions": "6.0.20",
+    "@storybook/addon-essentials": "6.0.20",
+    "@storybook/addon-links": "6.0.20",
+    "@storybook/react": "6.0.20",
+    "@storybook/addon-controls": "6.0.20"
   }
 }
