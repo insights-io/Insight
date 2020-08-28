@@ -11,7 +11,7 @@ export const INSIGHT_ADMIN_DTO: UserDTO = {
   phoneNumber: '+38651111222',
 };
 
-export const INSIGHT_ADMIN_NO_HONE_NUMBER: User = mapUser({
+export const INSIGHT_ADMIN_NO_PHONE_NUMBER: User = mapUser({
   ...INSIGHT_ADMIN_DTO,
   phoneNumber: null,
 });

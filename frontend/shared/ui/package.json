@@ -1,0 +1,38 @@
+{
+  "name": "@insight/ui",
+  "version": "0.0.0-development",
+  "private": true,
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "umd:main": "dist/ui.umd.production.js",
+  "module": "dist/ui.esm.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "author": "Insight Engineering",
+  "license": "MIT",
+  "homepage": "https://github.com/insights-io/insight#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insights-io/insight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/insights-io/insight/issues"
+  },
+  "scripts": {
+    "build": "tsdx build --tsconfig tsconfig.build.json --format cjs,esm,umd,es",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'",
+    "storybook:build": "build-storybook"
+  },
+  "devDependencies": {
+    "@types/react": "16.9.48",
+    "@types/react-dom": "16.9.8"
+  },
+  "dependencies": {
+    "baseui": "9.97.0",
+    "react-hook-form": "6.5.3",
+    "@types/styletron-engine-atomic": "1.1.0",
+    "@types/styletron-react": "5.0.2"
+  }
+}

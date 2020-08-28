@@ -3,14 +3,12 @@ package com.meemaw.test.testconainers.kafka;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 
-@Slf4j
 public class KafkaTestContainer extends KafkaContainer {
 
   public static final String NETWORK_ALIAS = "kafka";
@@ -30,13 +28,18 @@ public class KafkaTestContainer extends KafkaContainer {
   }
 
   public void createTopics() {
-    log.info("[TEST-SETUP]: Creating kafka topics bootstrap.servers={}", getBootstrapServers());
     List<NewTopic> topics = List.of(new NewTopic("events", 1, (short) 1));
+
+    System.out.println(
+        String.format(
+            "[TEST-SETUP]: Creating kafka topics bootstrap.servers=%s topics=%s",
+            getBootstrapServers(), topics));
 
     try {
       adminClient().createTopics(topics).all().get();
     } catch (InterruptedException | ExecutionException ex) {
-      log.error("[TEST-SETUP]: Failed to create kafka topics={}", topics, ex);
+      System.out.println(String.format("[TEST-SETUP]: Failed to create kafka topics=%s", topics));
+      throw new RuntimeException(ex);
     }
   }
 

@@ -12,8 +12,8 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 public class PostgresFlywayTestContainer<SELF extends PostgresFlywayTestContainer<SELF>>
     extends GenericContainer<SELF> {
 
-  public PostgresFlywayTestContainer(Path migrationsFolderPath) {
-    super(new ImageFromDockerfile().withFileFromPath(".", migrationsFolderPath));
+  public PostgresFlywayTestContainer(Path path) {
+    super(new ImageFromDockerfile().withFileFromPath(".", path));
     withNetwork(Network.SHARED)
         .withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS)
         .withLogConsumer(new Slf4jLogConsumer(log))

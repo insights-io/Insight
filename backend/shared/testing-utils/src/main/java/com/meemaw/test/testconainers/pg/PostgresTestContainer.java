@@ -1,5 +1,6 @@
 package com.meemaw.test.testconainers.pg;
 
+import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ADMIN_EMAIL;
 import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ADMIN_ID;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -16,13 +17,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-@Slf4j
 public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestContainer> {
 
   public static final String NETWORK_ALIAS = "db";
@@ -90,14 +89,14 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   }
 
   public void applyFlywayMigrations(Path moduleSqlMigrationsPath) {
+    Path absolutePath = moduleSqlMigrationsPath.toAbsolutePath();
     if (!Files.exists(moduleSqlMigrationsPath)) {
-      log.info(
-          "[TEST-SETUP]: Skipping applyMigrations from {}",
-          moduleSqlMigrationsPath.toAbsolutePath());
+      System.out.println(
+          String.format("[TEST-SETUP]: Skipping applyMigrations from=%s", absolutePath));
       return;
     }
 
-    log.info("[TEST-SETUP]: Applying migrations from {}", moduleSqlMigrationsPath.toAbsolutePath());
+    System.out.println(String.format("[TEST-SETUP]: Applying migrations from=%s", absolutePath));
     new PostgresFlywayTestContainer<>(moduleSqlMigrationsPath).start();
     if (moduleSqlMigrationsPath.toAbsolutePath().toString().contains(Api.AUTH.fullName())) {
       createTestUserPassword();
@@ -106,34 +105,37 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   public void applyMigrationsManually(Path moduleSqlMigrationsPath) {
     Path migrationsSqlPath = Paths.get(moduleSqlMigrationsPath.toString(), "sql");
+    Path absolutePath = migrationsSqlPath.toAbsolutePath();
+
     if (!Files.exists(migrationsSqlPath)) {
-      log.info(
-          "[TEST-SETUP]: Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
+      System.out.println(
+          String.format("[TEST-SETUP]: Skipping applyMigrations from=%s", absolutePath));
       return;
     }
 
-    log.info("[TEST-SETUP]: Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
+    System.out.println(String.format("[TEST-SETUP]: Applying migrations from=%s", absolutePath));
     try {
       Files.walk(migrationsSqlPath)
           .filter(path -> !Files.isDirectory(path))
           .forEach(
               path -> {
-                log.info("[TEST-SETUP]: Applying migration {}", path);
+                System.out.println(String.format("[TEST-SETUP]: Applying migration %s", path));
                 try {
                   client().query(Files.readString(path)).executeAndAwait();
                   if ("V1__auth_api_initial.sql".equals(path.getFileName().toString())) {
                     createTestUserPassword();
                   }
                 } catch (IOException ex) {
-                  log.error("[TEST-SETUP] Failed to apply migration {}", migrationsSqlPath, ex);
+                  System.out.println(
+                      String.format("[TEST-SETUP] Failed to apply migration %s", path));
                   throw new RuntimeException(ex);
                 }
               });
     } catch (IOException ex) {
-      log.error(
-          "[TEST-SETUP]: Something went wrong while applying migrations from {}",
-          migrationsSqlPath.toAbsolutePath(),
-          ex);
+      System.out.println(
+          String.format(
+              "[TEST-SETUP]: Something went wrong while applying migrations from %s",
+              absolutePath));
       throw new RuntimeException(ex);
     }
   }
@@ -144,7 +146,8 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
    * only be executed after V1__auth_api_initial.sql is applied and auth.user table exists.
    */
   private void createTestUserPassword() {
-    log.info("[TEST-SETUP]: Creating test password for \"admin@insight.io\"");
+    System.out.println(
+        String.format("[TEST-SETUP]: Creating test password for \"%s\"", INSIGHT_ADMIN_EMAIL));
 
     Query query =
         SQLContext.POSTGRES

@@ -11,7 +11,7 @@ const useAuth = (initialData: User) => {
     { initialData, refreshInterval: 30000 }
   );
 
-  return { user, loading: user === undefined };
+  return { user };
 };
 
 export default useAuth;

@@ -109,14 +109,6 @@ public final class SsoTestSetupUtils {
     return login(email, password, null);
   }
 
-  /**
-   * Log in with provided credentials.
-   *
-   * @param email address
-   * @param password from the user
-   * @param baseURI auth api base uri
-   * @return session id
-   */
   public static String login(String email, String password, String baseURI) {
     String uri =
         String.join("/", Optional.ofNullable(baseURI).orElse("") + SsoResource.PATH, "login");

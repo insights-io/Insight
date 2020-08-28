@@ -1,0 +1,18 @@
+package com.meemaw.auth.user.datasource;
+
+import java.util.Set;
+
+public final class UserTable {
+
+  public static final String ID = "id";
+  public static final String ORGANIZATION_ID = "organization_id";
+  public static final String EMAIL = "email";
+  public static final String FULL_NAME = "full_name";
+  public static final String PHONE_NUMBER = "phone_number";
+  public static final String ROLE = "role";
+  public static final String CREATED_AT = "created_at";
+
+  public static final Set<String> UPDATABLE_FIELDS = Set.of(FULL_NAME, PHONE_NUMBER);
+
+  private UserTable() {}
+}

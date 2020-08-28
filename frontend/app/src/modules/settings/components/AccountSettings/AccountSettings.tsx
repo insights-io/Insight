@@ -20,7 +20,7 @@ const AccountSettings = ({
   onTabChange,
   user: initialUser,
 }: Props) => {
-  const { user, loading: loadingUser } = useAuth(initialUser);
+  const { user } = useAuth(initialUser);
   const [_css, theme] = useStyletron();
 
   return (
@@ -62,7 +62,7 @@ const AccountSettings = ({
         }}
       >
         <Tab key="/account/settings" title="User settings">
-          <UserSettings user={user} loading={loadingUser} />
+          <UserSettings user={user} />
         </Tab>
         <Tab key="/account/organization-settings" title="Organization settings">
           <OrganizationSettings />

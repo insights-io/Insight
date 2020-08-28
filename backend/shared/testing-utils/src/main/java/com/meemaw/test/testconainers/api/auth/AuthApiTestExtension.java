@@ -1,7 +1,6 @@
 package com.meemaw.test.testconainers.api.auth;
 
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * <p>USAGE: {@link AuthApi}
  */
-@Slf4j
 public class AuthApiTestExtension implements BeforeAllCallback {
 
   private static final AuthApiTestContainer AUTH_API = AuthApiTestContainer.newInstance();
@@ -32,16 +30,13 @@ public class AuthApiTestExtension implements BeforeAllCallback {
     return start(AUTH_API);
   }
 
-  /**
-   * @param authApi auth api
-   * @return map of system properties to be applied
-   */
   public static Map<String, String> start(AuthApiTestContainer authApi) {
     if (!authApi.isRunning()) {
-      log.info("Starting auth api container ...");
+      System.out.println("[TEST-SETUP]: Starting auth-api container ...");
       authApi.start();
     }
-    log.info("Connecting to auth api on port {}", authApi.getBaseURI());
+    System.out.println(
+        String.format("[TEST-SETUP]: Connecting to auth-api on=%s", authApi.getBaseURI()));
     return Map.of("sso-resource/mp-rest/url", authApi.getBaseURI());
   }
 }

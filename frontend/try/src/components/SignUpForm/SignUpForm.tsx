@@ -4,16 +4,12 @@ import { Block } from 'baseui/block';
 import { Input, InputOverrides } from 'baseui/input';
 import { FormControl } from 'baseui/form-control';
 import { Button } from 'baseui/button';
-import {
-  PhoneInputNext,
-  CountrySelectDropdown,
-  Country,
-  COUNTRIES,
-} from 'baseui/phone-input';
-import { useForm, Controller } from 'react-hook-form';
+import { Country, COUNTRIES } from 'baseui/phone-input';
+import { useForm } from 'react-hook-form';
 import { APIErrorDataResponse, APIError, SignUpFormDTO } from '@insight/types';
 import FormError from 'shared/components/FormError';
 import Router from 'next/router';
+import { PhoneNumberInput } from '@insight/ui';
 
 export type Props = {
   onSubmit: (data: SignUpFormDTO) => Promise<unknown>;
@@ -27,7 +23,7 @@ const SignUpForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
   const [country, setCountry] = useState<Country>(COUNTRIES.US);
-  const [css, theme] = useStyletron();
+  const [_css, theme] = useStyletron();
   const { register, handleSubmit, errors, control } = useForm<SignUpFormDTO>();
 
   const onSubmit = handleSubmit(({ phoneNumber, ...rest }) => {
@@ -89,49 +85,12 @@ const SignUpForm = ({
         </FormControl>
       </Block>
 
-      <Block>
-        <FormControl
-          error={errors.phoneNumber?.message}
-          label={() => (
-            <div>
-              Phone{' '}
-              <span className={css({ color: theme.colors.primary400 })}>
-                (optional)
-              </span>
-            </div>
-          )}
-        >
-          <Controller
-            control={control}
-            name="phoneNumber"
-            defaultValue=""
-            rules={{
-              pattern: {
-                value: /^(?![+]).*$/,
-                message:
-                  'Please enter a phone number without the country dial code.',
-              },
-            }}
-            as={
-              <PhoneInputNext
-                placeholder="Phone number"
-                country={country}
-                onCountryChange={({ option }) => setCountry(option as Country)}
-                error={Boolean(errors.phoneNumber)}
-                overrides={{
-                  CountrySelect: {
-                    props: {
-                      overrides: {
-                        Dropdown: { component: CountrySelectDropdown },
-                      },
-                    },
-                  },
-                }}
-              />
-            }
-          />
-        </FormControl>
-      </Block>
+      <PhoneNumberInput
+        control={control}
+        error={errors.phoneNumber}
+        country={country}
+        setCountry={setCountry}
+      />
 
       <Block>
         <FormControl label="Email" error={errors.email?.message}>

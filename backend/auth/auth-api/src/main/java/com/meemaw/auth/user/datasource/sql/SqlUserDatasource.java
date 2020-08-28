@@ -27,6 +27,8 @@ import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -38,6 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Field;
 import org.jooq.Query;
+import org.jooq.UpdateFromStep;
+import org.jooq.UpdateSetFirstStep;
 
 @ApplicationScoped
 @Slf4j
@@ -73,6 +77,18 @@ public class SqlUserDatasource implements UserDatasource {
             .returning(FIELDS);
 
     return transaction.query(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Override
+  public CompletionStage<AuthUser> updateUser(UUID userId, Map<String, ?> update) {
+    UpdateSetFirstStep<?> updateStep = sqlPool.getContext().update(TABLE);
+    for (Entry<String, ?> entry : update.entrySet()) {
+      Field field = SqlUserTable.FIELD_MAPPINGS.get(entry.getKey());
+      updateStep.set(field, entry.getValue());
+    }
+    Query query = ((UpdateFromStep<?>) updateStep).returning(FIELDS);
+    return sqlPool.execute(query).thenApply(rows -> mapUser(rows.iterator().next()));
   }
 
   @Override

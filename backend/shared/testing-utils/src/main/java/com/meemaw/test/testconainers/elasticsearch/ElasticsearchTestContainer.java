@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -19,7 +18,6 @@ import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.testcontainers.containers.Network;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-@Slf4j
 public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
   public static final String NETWORK_ALIAS = "elasticsearch";
@@ -81,12 +79,14 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
   }
 
   public void applyMigrations(Path migrationsSqlPath) {
+    Path absolutePath = migrationsSqlPath.toAbsolutePath();
     if (!Files.exists(migrationsSqlPath)) {
-      log.info("Skipping applyMigrations from {}", migrationsSqlPath.toAbsolutePath());
+      System.out.println(
+          String.format("[TEST-SETUP]: Skipping applyMigrations from=%s", absolutePath));
       return;
     }
 
-    log.info("Applying migrations from {}", migrationsSqlPath.toAbsolutePath());
+    System.out.println(String.format("[TEST-SETUP]: Applying migrations from=%s", absolutePath));
     new ElasticsearchMigrationsTestContainer<>(migrationsSqlPath).start();
   }
 }

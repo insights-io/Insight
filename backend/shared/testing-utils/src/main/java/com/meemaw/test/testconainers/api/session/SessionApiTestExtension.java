@@ -1,7 +1,6 @@
 package com.meemaw.test.testconainers.api.session;
 
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * <p>USAGE: {@link SessionApi}
  */
-@Slf4j
 public class SessionApiTestExtension implements BeforeAllCallback {
 
   private static final SessionApiTestContainer SESSION_API = SessionApiTestContainer.newInstance();
@@ -32,16 +30,13 @@ public class SessionApiTestExtension implements BeforeAllCallback {
     return start(SESSION_API);
   }
 
-  /**
-   * @param sessionApi test container
-   * @return map of system properties
-   */
   public static Map<String, String> start(SessionApiTestContainer sessionApi) {
     if (!sessionApi.isRunning()) {
-      log.info("Starting session api container ...");
+      System.out.println("[TEST-SETUP]: Starting session api container ...");
       sessionApi.start();
     }
-    log.info("Connecting to session api on {}", sessionApi.getBaseURI());
+    System.out.println(
+        String.format("[TEST-SETUP]: Connecting to session-api on=%s", sessionApi.getBaseURI()));
     return Map.of("session-resource/mp-rest/url", sessionApi.getBaseURI());
   }
 }

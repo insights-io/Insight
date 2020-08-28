@@ -3,8 +3,10 @@ package com.meemaw.auth.user.datasource.sql;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
+import com.meemaw.auth.user.datasource.UserTable;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,14 +18,16 @@ public final class SqlUserTable {
   public static final Table<?> TABLE = table("auth.user");
   public static final Table<?> TABLE_ALIAS = TABLE.as("user");
 
-  public static final Field<UUID> ID = field("id", UUID.class);
+  public static final Field<UUID> ID = field(UserTable.ID, UUID.class);
   public static final Field<UUID> USER_TABLE_ID = tableField(ID);
-  public static final Field<String> EMAIL = field("email", String.class);
-  public static final Field<String> FULL_NAME = field("full_name", String.class);
-  public static final Field<String> PHONE_NUMBER = field("phone_number", String.class);
-  public static final Field<String> ORGANIZATION_ID = field("organization_id", String.class);
-  public static final Field<String> ROLE = field("role", String.class);
-  public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
+  public static final Field<String> EMAIL = field(UserTable.EMAIL, String.class);
+  public static final Field<String> FULL_NAME = field(UserTable.FULL_NAME, String.class);
+  public static final Field<String> PHONE_NUMBER = field(UserTable.PHONE_NUMBER, String.class);
+  public static final Field<String> ORGANIZATION_ID =
+      field(UserTable.ORGANIZATION_ID, String.class);
+  public static final Field<String> ROLE = field(UserTable.ROLE, String.class);
+  public static final Field<OffsetDateTime> CREATED_AT =
+      field(UserTable.CREATED_AT, OffsetDateTime.class);
 
   public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(ID, CREATED_AT);
   public static final List<Field<?>> INSERT_FIELDS =
@@ -32,6 +36,9 @@ public final class SqlUserTable {
   public static final List<Field<?>> FIELDS =
       Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream())
           .collect(Collectors.toList());
+
+  public static final Map<String, Field<?>> FIELD_MAPPINGS =
+      FIELDS.stream().collect(Collectors.toMap(Field::getName, f -> f));
 
   public static final List<Field<?>> TABLE_FIELDS =
       FIELDS.stream().map(SqlUserTable::tableField).collect(Collectors.toList());
