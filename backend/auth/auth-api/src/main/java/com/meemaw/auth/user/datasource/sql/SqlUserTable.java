@@ -23,13 +23,19 @@ public final class SqlUserTable {
   public static final Field<String> EMAIL = field(UserTable.EMAIL, String.class);
   public static final Field<String> FULL_NAME = field(UserTable.FULL_NAME, String.class);
   public static final Field<String> PHONE_NUMBER = field(UserTable.PHONE_NUMBER, String.class);
+  public static final Field<Boolean> PHONE_NUMBER_VERIFIED =
+      field(UserTable.PHONE_NUMBER_VERIFIED, Boolean.class);
   public static final Field<String> ORGANIZATION_ID =
       field(UserTable.ORGANIZATION_ID, String.class);
   public static final Field<String> ROLE = field(UserTable.ROLE, String.class);
   public static final Field<OffsetDateTime> CREATED_AT =
       field(UserTable.CREATED_AT, OffsetDateTime.class);
+  public static final Field<OffsetDateTime> UPDATED_AT =
+      field(UserTable.UPDATED_AT, OffsetDateTime.class);
 
-  public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(ID, CREATED_AT);
+  public static final List<Field<?>> AUTO_GENERATED_FIELDS =
+      List.of(ID, CREATED_AT, UPDATED_AT, PHONE_NUMBER_VERIFIED);
+
   public static final List<Field<?>> INSERT_FIELDS =
       List.of(EMAIL, FULL_NAME, ORGANIZATION_ID, ROLE, PHONE_NUMBER);
 

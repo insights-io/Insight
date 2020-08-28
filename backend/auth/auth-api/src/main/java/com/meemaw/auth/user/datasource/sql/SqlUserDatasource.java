@@ -10,6 +10,7 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ID;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.INSERT_FIELDS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ORGANIZATION_ID;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.PHONE_NUMBER;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.PHONE_NUMBER_VERIFIED;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ROLE;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE;
 
@@ -134,7 +135,8 @@ public class SqlUserDatasource implements UserDatasource {
         UserRole.valueOf(row.getString(ROLE.getName())),
         row.getString(ORGANIZATION_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()),
-        row.getString(PHONE_NUMBER.getName()));
+        row.getString(PHONE_NUMBER.getName()),
+        row.getBoolean(PHONE_NUMBER_VERIFIED.getName()));
   }
 
   @Override
@@ -182,6 +184,7 @@ public class SqlUserDatasource implements UserDatasource {
             user.getOrganizationId(),
             user.getCreatedAt(),
             user.getPhoneNumber(),
+            user.isPhoneNumberVerified(),
             password,
             tfaMethods));
   }

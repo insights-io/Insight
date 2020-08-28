@@ -18,4 +18,6 @@ public interface AuthUser {
   OffsetDateTime getCreatedAt();
 
   String getPhoneNumber();
+
+  boolean isPhoneNumberVerified();
 }

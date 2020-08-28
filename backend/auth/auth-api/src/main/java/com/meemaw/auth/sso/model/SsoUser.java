@@ -23,6 +23,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   String fullName;
   OffsetDateTime createdAt;
   String phoneNumber;
+  boolean phoneNumberVerified;
 
   public SsoUser(AuthUser user) {
     this.id = user.getId();
@@ -32,6 +33,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.fullName = user.getFullName();
     this.createdAt = user.getCreatedAt();
     this.phoneNumber = user.getPhoneNumber();
+    this.phoneNumberVerified = user.isPhoneNumberVerified();
   }
 
   @Override
@@ -53,6 +55,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
     out.writeUTF(this.phoneNumber);
+    out.writeBoolean(this.phoneNumberVerified);
   }
 
   @Override
@@ -64,10 +67,12 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();
     this.phoneNumber = in.readUTF();
+    this.phoneNumberVerified = in.readBoolean();
   }
 
   public AuthUser dto() {
-    return new UserDTO(id, email, fullName, role, organizationId, createdAt, phoneNumber);
+    return new UserDTO(
+        id, email, fullName, role, organizationId, createdAt, phoneNumber, phoneNumberVerified);
   }
 
   public static SsoUser as(AuthUser user) {

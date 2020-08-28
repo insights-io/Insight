@@ -2,6 +2,15 @@ CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE TABLE IF NOT EXISTS auth.organization
 (
     id         TEXT        NOT NULL UNIQUE,
@@ -14,18 +23,26 @@ CREATE TABLE IF NOT EXISTS auth.organization
 
 CREATE TABLE IF NOT EXISTS auth.user
 (
-    id              UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
-    email           TEXT        NOT NULL UNIQUE,
-    organization_id TEXT        NOT NULL,
-    role            TEXT        NOT NULL,
-    full_name       TEXT        NOT NULL,
-    phone_number    TEXT,
-    created_at      TIMESTAMPTZ NOT NULL        DEFAULT now(),
+    id                    UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+    email                 TEXT        NOT NULL UNIQUE,
+    organization_id       TEXT        NOT NULL,
+    role                  TEXT        NOT NULL,
+    full_name             TEXT        NOT NULL,
+    phone_number          TEXT,
+    phone_number_verified BOOL        NOT NULL        default false,
+    created_at            TIMESTAMPTZ NOT NULL        DEFAULT now(),
+    updated_at            TIMESTAMPTZ NOT NULL        DEFAULT now(),
 
     PRIMARY KEY (id, email, organization_id),
     FOREIGN KEY (organization_id) REFERENCES auth.organization (id),
     CONSTRAINT email_length CHECK (length(auth.user.email) < 255)
 );
+
+CREATE TRIGGER auth_user_updated_at
+    BEFORE UPDATE
+    ON auth.user
+    FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS auth.password
 (

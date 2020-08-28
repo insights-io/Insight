@@ -17,11 +17,13 @@ public class UserWithLoginInformation {
   String organizationId;
   OffsetDateTime createdAt;
   String phoneNumber;
+  boolean phoneNumberVerified;
   String password;
   List<TfaMethod> tfaMethods;
 
   public AuthUser user() {
-    return new UserDTO(id, email, fullName, role, organizationId, createdAt, phoneNumber);
+    return new UserDTO(
+        id, email, fullName, role, organizationId, createdAt, phoneNumber, phoneNumberVerified);
   }
 
   public static UserWithLoginInformation fresh(AuthUser user) {
@@ -33,6 +35,7 @@ public class UserWithLoginInformation {
         user.getOrganizationId(),
         user.getCreatedAt(),
         user.getPhoneNumber(),
+        user.isPhoneNumberVerified(),
         null,
         Collections.emptyList());
   }
