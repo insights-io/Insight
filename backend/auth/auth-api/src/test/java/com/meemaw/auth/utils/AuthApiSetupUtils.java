@@ -1,6 +1,7 @@
 package com.meemaw.auth.utils;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.model.SsoSession;
@@ -8,6 +9,7 @@ import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.shared.sms.SmsMessage;
 import com.meemaw.test.rest.mappers.JacksonMapper;
@@ -36,19 +38,40 @@ public final class AuthApiSetupUtils {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(UserResource.PATH + "/phone_number/verify/send_code")
+        .then()
+        .statusCode(200);
+
+    int phoneNumberVerificationCode = getLastSmsMessageVerificationCode(mockSmsbox, sentTo);
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(new TfaChallengeCompleteDTO(phoneNumberVerificationCode)))
+        .patch(UserResource.PATH + "/phone_number/verify")
+        .then()
+        .statusCode(200);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .get(TfaResource.PATH + "/sms/setup")
         .then()
         .statusCode(200);
 
-    int code = getLastSmsMessageVerificationCode(mockSmsbox, sentTo);
+    int tfaSetupCode = getLastSmsMessageVerificationCode(mockSmsbox, sentTo);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(code)))
+        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaSetupCode)))
         .post(TfaResource.PATH + "/sms/setup")
         .then()
         .statusCode(200);
+
+    assertNotEquals(phoneNumberVerificationCode, tfaSetupCode);
   }
 
   public static String setupTotpTfa(

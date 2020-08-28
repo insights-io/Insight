@@ -1,5 +1,6 @@
 package com.meemaw.auth.user.datasource;
 
+import java.util.Map;
 import java.util.Set;
 
 public final class UserTable {
@@ -17,4 +18,12 @@ public final class UserTable {
   public static final Set<String> UPDATABLE_FIELDS = Set.of(FULL_NAME, PHONE_NUMBER);
 
   private UserTable() {}
+
+  public static final class Errors {
+
+    public static final Map<String, String> PHONE_NUMBER_REQUIRED =
+        Map.of(PHONE_NUMBER, "Required");
+    public static final Map<String, String> PHONE_NUMBER_VERIFICATION_REQUIRED =
+        Map.of(UserTable.PHONE_NUMBER, "Please verify phone number");
+  }
 }

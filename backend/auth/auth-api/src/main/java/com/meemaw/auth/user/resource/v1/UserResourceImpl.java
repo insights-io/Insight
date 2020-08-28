@@ -4,6 +4,7 @@ import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.sms.model.dto.TfaSmsSetupStartDTO;
 import com.meemaw.auth.user.datasource.UserTable;
+import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.auth.user.service.UserService;
@@ -68,16 +69,22 @@ public class UserResourceImpl implements UserResource {
       return CompletableFuture.completedStage(Boom.badRequest().response());
     }
 
-    if (user.getPhoneNumber() == null) {
+    String phoneNumber = user.getPhoneNumber();
+    if (phoneNumber == null) {
       log.info(
           "[AUTH]: Tried to send phone number verify code to user={} with no phone number configured",
           userId);
       return CompletableFuture.completedStage(
-          Boom.badRequest().errors(Map.of(UserTable.PHONE_NUMBER, "Required")).response());
+          Boom.badRequest().errors(Errors.PHONE_NUMBER_REQUIRED).response());
     }
 
+    log.info(
+        "[AUTH]: Sending phone number verification code user={} phoneNumber={}",
+        userId,
+        phoneNumber);
+
     return userPhoneCodeService
-        .sendVerificationCode(userId, user.getPhoneNumber())
+        .sendVerificationCode(userId, phoneNumber)
         .thenApply(TfaSmsSetupStartDTO::new)
         .thenApply(DataResponse::ok);
   }

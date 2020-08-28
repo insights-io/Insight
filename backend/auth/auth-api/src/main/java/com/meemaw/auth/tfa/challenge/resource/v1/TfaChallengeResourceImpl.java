@@ -9,14 +9,13 @@ import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.auth.user.datasource.UserTable;
+import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -104,7 +103,7 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
                         AuthUser user = maybeUser.get();
                         if (!user.isPhoneNumberVerified()) {
                           throw Boom.badRequest()
-                              .errors(Map.of(UserTable.PHONE_NUMBER, "Please verify phone number"))
+                              .errors(Errors.PHONE_NUMBER_VERIFICATION_REQUIRED)
                               .exception();
                         }
 

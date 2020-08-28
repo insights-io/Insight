@@ -4,6 +4,7 @@ import com.meemaw.auth.sso.datasource.SsoDatasource;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTable;
+import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.shared.rest.response.Boom;
@@ -43,11 +44,18 @@ public class UserService {
   @Traced
   public CompletionStage<AuthUser> verifyPhoneNumber(AuthUser user, int code) {
     UUID userId = user.getId();
+    if (user.getPhoneNumber() == null) {
+      log.info(
+          "[AUTH]: Tried to verify phone number for user={} that has not phone number", userId);
+      throw Boom.badRequest().errors(Errors.PHONE_NUMBER_REQUIRED).exception();
+    }
+
     if (user.isPhoneNumberVerified()) {
       log.info("[AUTH]: Tried to verify phone number for user={} that is already verified", userId);
       return CompletableFuture.completedStage(user);
     }
 
+    log.info("[AUTH]: Trying to verify phone number user={} code={}", userId, code);
     return userPhoneCodeService
         .validate(code, userId)
         .thenCompose(

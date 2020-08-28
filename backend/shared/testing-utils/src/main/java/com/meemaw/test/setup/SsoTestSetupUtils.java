@@ -14,6 +14,7 @@ import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -71,10 +72,9 @@ public final class SsoTestSetupUtils {
         .then()
         .statusCode(204);
 
-    Response response =
-        given()
-            .when()
-            .get(parseLink(mailbox.getMessagesSentTo(signUpRequestDTO.getEmail()).get(0)));
+    List<Mail> messages = mailbox.getMessagesSentTo(signUpRequestDTO.getEmail());
+    Mail lastMessage = messages.get(messages.size() - 1);
+    Response response = given().when().get(parseLink(lastMessage));
 
     response
         .then()

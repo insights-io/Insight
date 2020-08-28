@@ -13,6 +13,7 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.PHONE_NUMBER;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.PHONE_NUMBER_VERIFIED;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ROLE;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.UPDATED_AT;
 
 import com.meemaw.auth.password.datasource.sql.PasswordTable;
 import com.meemaw.auth.tfa.TfaMethod;
@@ -88,7 +89,7 @@ public class SqlUserDatasource implements UserDatasource {
       Field field = SqlUserTable.FIELD_MAPPINGS.get(entry.getKey());
       updateStep.set(field, entry.getValue());
     }
-    Query query = ((UpdateFromStep<?>) updateStep).returning(FIELDS);
+    Query query = ((UpdateFromStep<?>) updateStep).where(ID.eq(userId)).returning(FIELDS);
     return sqlPool.execute(query).thenApply(rows -> mapUser(rows.iterator().next()));
   }
 
@@ -135,6 +136,7 @@ public class SqlUserDatasource implements UserDatasource {
         UserRole.valueOf(row.getString(ROLE.getName())),
         row.getString(ORGANIZATION_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()),
+        row.getOffsetDateTime(UPDATED_AT.getName()),
         row.getString(PHONE_NUMBER.getName()),
         row.getBoolean(PHONE_NUMBER_VERIFIED.getName()));
   }
@@ -183,6 +185,7 @@ public class SqlUserDatasource implements UserDatasource {
             user.getRole(),
             user.getOrganizationId(),
             user.getCreatedAt(),
+            user.getUpdatedAt(),
             user.getPhoneNumber(),
             user.isPhoneNumberVerified(),
             password,
