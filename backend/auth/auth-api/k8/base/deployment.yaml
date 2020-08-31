@@ -42,6 +42,16 @@ spec:
                 secretKeyRef:
                   name: mailer-configuration
                   key: password
+            - name: SMS_CLIENT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: sms-client-credentials
+                  key: username
+            - name: SMS_CLIENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sms-client-credentials
+                  key: password
             - name: JAEGER_AGENT_HOST
               value: jaeger-agent.monitoring:6831
             - name: GOOGLE_OAUTH_CLIENT_ID
@@ -90,7 +100,7 @@ spec:
             successThreshold: 1
             failureThreshold: 10
       tolerations:
-        - key: "arm"
-          operator: "Equal"
-          value: "true"
-          effect: "NoExecute"
+        - key: 'arm'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoExecute'
