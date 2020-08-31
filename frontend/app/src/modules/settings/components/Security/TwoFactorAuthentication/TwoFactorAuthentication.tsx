@@ -2,9 +2,8 @@ import React, { useMemo, useCallback } from 'react';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
-import { APIErrorDataResponse } from '@insight/types';
+import { APIErrorDataResponse, TfaMethod, TfaSetupDTO } from '@insight/types';
 import useSWR from 'swr';
-import { TfaMethod, TfaSetupDTO } from '@insight/sdk/dist/auth';
 import { AuthApi } from 'api';
 import { isBefore } from 'date-fns';
 import { Check } from 'baseui/icon';
@@ -108,6 +107,7 @@ const TwoFactorAuthentication = ({ user }: Props) => {
           />
           <SmsTwoFactorAuthentication
             phoneNumber={user.phoneNumber}
+            phoneNumberVerified={user.phoneNumberVerified}
             setupDisabled={loading || error !== undefined}
             setupsMaps={setupsMap}
             onMethodDisabled={onSmsMethodDisabled}

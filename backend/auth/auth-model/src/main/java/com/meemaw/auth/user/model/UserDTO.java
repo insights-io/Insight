@@ -18,5 +18,7 @@ public class UserDTO implements AuthUser {
   UserRole role;
   String organizationId;
   OffsetDateTime createdAt;
+  OffsetDateTime updatedAt;
   String phoneNumber;
+  boolean phoneNumberVerified;
 }

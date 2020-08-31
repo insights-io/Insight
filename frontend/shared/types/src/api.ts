@@ -12,3 +12,20 @@ export type APIError = {
   message: string;
   errors?: Record<string, string>;
 };
+
+export type SearchBean = {
+  limit?: number;
+  // eslint-disable-next-line camelcase
+  sort_by?: string[];
+  // eslint-disable-next-line camelcase
+  group_by?: string[];
+};
+
+export type QueryParam =
+  | string
+  | number
+  | boolean
+  | string[]
+  | number[]
+  | boolean[]
+  | null;

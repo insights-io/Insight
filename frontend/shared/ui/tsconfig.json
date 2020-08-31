@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "outDir": "./dist"
+  }
+}

@@ -18,11 +18,11 @@ const OrganizationSettings = () => {
   const [_css, theme] = useStyletron();
   const { data: organizationMembers } = useSWR(
     'AuthApi.organizations.members',
-    () => AuthApi.organizations.members()
+    () => AuthApi.organization.members()
   );
 
   const { data: organization } = useSWR('AuthApi.organizations.get', () =>
-    AuthApi.organizations.get()
+    AuthApi.organization.get()
   );
 
   const { invites, loading: loadingInvites, createInvite } = useTeamInvites();

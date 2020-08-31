@@ -18,4 +18,6 @@ public interface SsoDatasource {
   CompletionStage<Set<String>> deleteAllSessionsForUser(UUID userId);
 
   CompletionStage<Set<String>> getAllSessionsForUser(UUID userId);
+
+  CompletionStage<Set<String>> updateUserSessions(UUID userId, AuthUser user);
 }

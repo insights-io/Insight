@@ -16,12 +16,23 @@ public class UserWithLoginInformation {
   UserRole role;
   String organizationId;
   OffsetDateTime createdAt;
+  OffsetDateTime updatedAt;
   String phoneNumber;
+  boolean phoneNumberVerified;
   String password;
   List<TfaMethod> tfaMethods;
 
   public AuthUser user() {
-    return new UserDTO(id, email, fullName, role, organizationId, createdAt, phoneNumber);
+    return new UserDTO(
+        id,
+        email,
+        fullName,
+        role,
+        organizationId,
+        createdAt,
+        updatedAt,
+        phoneNumber,
+        phoneNumberVerified);
   }
 
   public static UserWithLoginInformation fresh(AuthUser user) {
@@ -32,7 +43,9 @@ public class UserWithLoginInformation {
         user.getRole(),
         user.getOrganizationId(),
         user.getCreatedAt(),
+        user.getUpdatedAt(),
         user.getPhoneNumber(),
+        user.isPhoneNumberVerified(),
         null,
         Collections.emptyList());
   }

@@ -22,7 +22,9 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   String organizationId;
   String fullName;
   OffsetDateTime createdAt;
+  OffsetDateTime updatedAt;
   String phoneNumber;
+  boolean phoneNumberVerified;
 
   public SsoUser(AuthUser user) {
     this.id = user.getId();
@@ -31,7 +33,9 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.organizationId = user.getOrganizationId();
     this.fullName = user.getFullName();
     this.createdAt = user.getCreatedAt();
+    this.updatedAt = user.getUpdatedAt();
     this.phoneNumber = user.getPhoneNumber();
+    this.phoneNumberVerified = user.isPhoneNumberVerified();
   }
 
   @Override
@@ -52,7 +56,9 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     out.writeUTF(this.organizationId);
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
+    out.writeObject(this.updatedAt);
     out.writeUTF(this.phoneNumber);
+    out.writeBoolean(this.phoneNumberVerified);
   }
 
   @Override
@@ -63,19 +69,25 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.organizationId = in.readUTF();
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();
+    this.updatedAt = in.readObject();
     this.phoneNumber = in.readUTF();
+    this.phoneNumberVerified = in.readBoolean();
   }
 
   public AuthUser dto() {
-    return new UserDTO(id, email, fullName, role, organizationId, createdAt, phoneNumber);
+    return new UserDTO(
+        id,
+        email,
+        fullName,
+        role,
+        organizationId,
+        createdAt,
+        updatedAt,
+        phoneNumber,
+        phoneNumberVerified);
   }
 
   public static SsoUser as(AuthUser user) {
     return new SsoUser(user);
-  }
-
-  @Override
-  public String getOrganizationId() {
-    return organizationId;
   }
 }

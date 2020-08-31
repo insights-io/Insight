@@ -21,7 +21,6 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
 
   protected static final int PORT = 8080;
 
-  /** @param api */
   public AbstractApiTestContainer(Api api) {
     super(imageFromDockerfile(Objects.requireNonNull(api)));
     withExposedPorts(PORT)
@@ -59,12 +58,10 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     Path dockerfile = api.dockerfile();
     String imageName = api.imageName();
     Path context = ProjectUtils.backendPath();
-    log.info(
-        "Building {} api dockerfile={} context={} imageName={}",
-        api.name().toLowerCase(),
-        dockerfile.toString(),
-        context.toAbsolutePath(),
-        imageName);
+    System.out.println(
+        String.format(
+            "[TEST-SETUP]: Building %s api dockerfile=%s context=%s imageName=%s",
+            api.name().toLowerCase(), dockerfile.toString(), context.toAbsolutePath(), imageName));
 
     ProcessBuilder builder =
         new ProcessBuilder(
@@ -87,7 +84,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
         if (line == null) {
           break;
         }
-        log.info(line);
+        System.out.println(line);
       }
 
       if (process.waitFor() > 0) {

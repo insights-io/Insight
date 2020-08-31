@@ -1,11 +1,9 @@
 package com.meemaw.test.testconainers.elasticsearch;
 
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-@Slf4j
 public class ElasticsearchTestExtension implements BeforeAllCallback {
 
   private static final ElasticsearchTestContainer ELASTICSEARCH =
@@ -24,17 +22,17 @@ public class ElasticsearchTestExtension implements BeforeAllCallback {
     return start(ELASTICSEARCH);
   }
 
-  /**
-   * @param elasticsearch test container
-   * @return elasticsearch configuration properties
-   */
   public static Map<String, String> start(ElasticsearchTestContainer elasticsearch) {
     if (!ELASTICSEARCH.isRunning()) {
-      log.info("Starting elasticsearch container ...");
+      System.out.println("[TEST-SETUP]: Starting elasticsearch container ...");
       elasticsearch.start();
       elasticsearch.applyMigrations();
     }
-    log.info("Connecting to elasticsearch http.host={}", elasticsearch.getHttpHost());
+
+    System.out.println(
+        String.format(
+            "[TEST-SETUP]: Connecting to elasticsearch http.host=%s", elasticsearch.getHttpHost()));
+
     return Map.of("elasticsearch.http.host", elasticsearch.getHttpHost().toHostString());
   }
 

@@ -112,7 +112,26 @@ public class HazelcastSsoDatasource implements SsoDatasource {
 
   @Override
   @Traced
+  public CompletionStage<Set<String>> getAllSessionsForUser(UUID userId) {
+    return userToSessionsMap
+        .getAsync(userId)
+        .thenApply(
+            maybeSessions -> Optional.ofNullable(maybeSessions).orElseGet(Collections::emptySet));
+  }
+
+  @Override
+  @Traced
   public CompletionStage<Set<String>> deleteAllSessionsForUser(UUID userId) {
+    return setValueOnAllSessionsForUser(userId, null);
+  }
+
+  @Override
+  @Traced
+  public CompletionStage<Set<String>> updateUserSessions(UUID userId, AuthUser user) {
+    return setValueOnAllSessionsForUser(userId, SsoUser.as(user));
+  }
+
+  private CompletionStage<Set<String>> setValueOnAllSessionsForUser(UUID userId, SsoUser value) {
     return getAllSessionsForUser(userId)
         .thenCompose(
             sessions ->
@@ -120,18 +139,9 @@ public class HazelcastSsoDatasource implements SsoDatasource {
                     .submitToKeys(
                         sessions,
                         entry -> {
-                          entry.setValue(null);
+                          entry.setValue(value);
                           return null;
                         })
                     .thenApply(ignored -> sessions));
-  }
-
-  @Override
-  @Traced
-  public CompletionStage<Set<String>> getAllSessionsForUser(UUID userId) {
-    return userToSessionsMap
-        .getAsync(userId)
-        .thenApply(
-            maybeSessions -> Optional.ofNullable(maybeSessions).orElseGet(Collections::emptySet));
   }
 }

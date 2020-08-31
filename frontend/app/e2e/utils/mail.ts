@@ -32,7 +32,9 @@ const readLinesFromDockerComposeLogs = (): string[] => {
   );
 
   return String(
-    execSync(`cd ${localTestServicesPath} && docker-compose logs`)
+    execSync(`cd ${localTestServicesPath} && docker-compose logs`, {
+      maxBuffer: 500 * 1024 * 1024,
+    })
   ).split('\n');
 };
 

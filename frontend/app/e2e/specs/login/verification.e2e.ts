@@ -133,6 +133,12 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
     .click(Sidebar.accountSettings.accountSettings)
     .expect(getLocation())
     .eql(AccountSettingsPage.path)
+    .hover(AccountSettingsPage.tfa.sms.checkbox)
+    .expect(AccountSettingsPage.tfa.sms.disabledText.visible)
+    .ok('Should be disabled');
+
+  await AccountSettingsPage.verifyCurrentPhoneNumber(t);
+  await t
     .click(AccountSettingsPage.tfa.sms.checkbox)
     .typeText(AccountSettingsPage.tfa.codeInput, '111111')
     .click(AccountSettingsPage.tfa.submitButton)
@@ -190,6 +196,7 @@ test('[SMS + TOTP]: Should be able to complete full TFA flow', async (t) => {
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings);
 
+  await AccountSettingsPage.verifyCurrentPhoneNumber(t);
   await t.click(AccountSettingsPage.tfa.sms.checkbox);
   await AccountSettingsPage.tfa.sms.setup(t);
 

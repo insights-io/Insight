@@ -1,4 +1,4 @@
-import { TfaSetupDTO } from '@insight/sdk/dist/auth';
+import { TfaSetupDTO } from '@insight/types';
 
 export type Props = {
   isOpen: boolean;

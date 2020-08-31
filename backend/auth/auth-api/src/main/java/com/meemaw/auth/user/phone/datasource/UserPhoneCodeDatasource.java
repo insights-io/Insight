@@ -1,10 +1,10 @@
-package com.meemaw.auth.tfa.sms.datasource;
+package com.meemaw.auth.user.phone.datasource;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
-public interface TfaSmsDatasource {
+public interface UserPhoneCodeDatasource {
 
   CompletionStage<Integer> setCode(UUID userId, int code);
 

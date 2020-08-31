@@ -5,6 +5,7 @@ import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -18,6 +19,8 @@ public interface UserDatasource {
       UserRole role,
       String phoneNumber,
       SqlTransaction transaction);
+
+  CompletionStage<AuthUser> updateUser(UUID userId, Map<String, ?> update);
 
   CompletionStage<Optional<AuthUser>> findUser(UUID userId);
 

@@ -1,4 +1,8 @@
-import { queryByText, within } from '@testing-library/testcafe';
+import {
+  queryByPlaceholderText,
+  queryByText,
+  within,
+} from '@testing-library/testcafe';
 import jsQR from 'jsqr';
 import { Selector } from 'testcafe';
 
@@ -13,7 +17,29 @@ class AccountSettings {
 
   /* Selectors */
   private readonly container = within('div.account-settings');
+
   public readonly title = this.container.queryByText('Account settings');
+
+  public readonly phoneNumber = {
+    configureButton: this.container
+      .queryByText('Phone number')
+      .parent()
+      .find('button'),
+    input: queryByPlaceholderText('Phone number'),
+    nextStep: queryByText('Next'),
+    verifiedMessage: queryByText('Phone number verified'),
+  };
+
+  public verifyCurrentPhoneNumber = async (t: TestController) => {
+    await t
+      .click(this.phoneNumber.configureButton)
+      .click(this.phoneNumber.nextStep);
+
+    await VerificationPage.completeSmsChallenge(t);
+    return t
+      .expect(queryByText('Phone number verified').visible)
+      .ok('Success message');
+  };
 
   public readonly tfa = {
     codeInput: Verification.codeInput,
@@ -21,6 +47,9 @@ class AccountSettings {
     invalidCodeError: Verification.invalidCodeError,
     disableSubmitButton: queryByText('Yes'),
     sms: {
+      disabledText: queryByText(
+        'Verify your phone number to enable text message two factor authentication'
+      ),
       checkbox: this.container.queryByText('Text message'),
       disabledToast: queryByText(
         'Text message two factor authentication disabled'
@@ -28,9 +57,7 @@ class AccountSettings {
       enabledToast: queryByText(
         'Text message two factor authentication enabled'
       ),
-      setup: (t: TestController) => {
-        return VerificationPage.completeSmsChallenge(t);
-      },
+      setup: (t: TestController) => VerificationPage.completeSmsChallenge(t),
     },
     totp: {
       checkbox: this.container.queryByText('Authy / Google Authenticator'),

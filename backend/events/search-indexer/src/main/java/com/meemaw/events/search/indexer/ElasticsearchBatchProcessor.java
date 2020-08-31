@@ -85,7 +85,7 @@ public abstract class ElasticsearchBatchProcessor<V> implements BatchProcessor<V
                   values.remove(id);
                 }
 
-                if (failures.size() > 0) {
+                if (!failures.isEmpty()) {
                   log.info("onFailure.execute count: {}", failures.size(), cause);
                   onFailure.execute(failures, cause);
                 }

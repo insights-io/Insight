@@ -10,4 +10,5 @@ public class OrganizationDTO implements Organization {
   String id;
   String name;
   OffsetDateTime createdAt;
+  OffsetDateTime updatedAt;
 }

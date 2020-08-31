@@ -17,9 +17,10 @@ public final class OrganizationTable {
   public static final Field<String> ID = field("id", String.class);
   public static final Field<String> NAME = field("name", String.class);
   public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
+  public static final Field<OffsetDateTime> UPDATED_AT = field("updated_at", OffsetDateTime.class);
 
   public static final List<Field<?>> INSERT_FIELDS = List.of(ID, NAME);
-  public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT);
+  public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT, UPDATED_AT);
   public static final List<Field<?>> FIELDS =
       Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream())
           .collect(Collectors.toList());

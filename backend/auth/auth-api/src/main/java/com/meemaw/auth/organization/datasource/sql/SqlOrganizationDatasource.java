@@ -6,6 +6,7 @@ import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.ID;
 import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.INSERT_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.NAME;
 import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.UPDATED_AT;
 
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
@@ -71,6 +72,7 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
     return new OrganizationDTO(
         row.getString(ID.getName()),
         row.getString(NAME.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()));
+        row.getOffsetDateTime(CREATED_AT.getName()),
+        row.getOffsetDateTime(UPDATED_AT.getName()));
   }
 }

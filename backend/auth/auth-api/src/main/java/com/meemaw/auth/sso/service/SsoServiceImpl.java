@@ -46,11 +46,15 @@ public class SsoServiceImpl implements SsoService {
     MDC.put(LoggingConstants.USER_ID, user.getId().toString());
     MDC.put(LoggingConstants.USER_EMAIL, user.getEmail());
     MDC.put(LoggingConstants.ORGANIZATION_ID, user.getOrganizationId());
-    log.info("[AUTH]: Creating session for user id: {} email: {}", user.getId(), user.getEmail());
     return ssoDatasource
         .createSession(user)
         .thenApply(
             sessionId -> {
+              log.info(
+                  "[AUTH]: Created session for user={} email={} SessionId={}",
+                  user.getId(),
+                  user.getEmail(),
+                  sessionId);
               MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
               return sessionId;
             });
@@ -117,7 +121,7 @@ public class SsoServiceImpl implements SsoService {
         .deleteAllSessionsForUser(userId)
         .thenApply(
             deletedSessions -> {
-              if (deletedSessions.size() > 0) {
+              if (!deletedSessions.isEmpty()) {
                 log.info(
                     "[AUTH]: Successfully logged out of {} devices  userId: {}",
                     deletedSessions.size(),

@@ -6,7 +6,13 @@ import {
 import { v4 as uuid } from 'uuid';
 
 import config from '../config';
-import { AccountSettingsPage, LoginPage } from '../pages';
+import {
+  AccountSettingsPage,
+  LoginPage,
+  Sidebar,
+  SignUpPage,
+  VerificationPage,
+} from '../pages';
 
 fixture('/account-settings').page(AccountSettingsPage.path);
 
@@ -105,4 +111,23 @@ test('Should be able to change password', async (t) => {
     .ok('Should display notification')
     .expect(queryByText(newMemberEmail).visible)
     .ok('Should display new member email in the team invites list');
+});
+
+test('Should be able to verify new phone number', async (t) => {
+  const { email, password } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password });
+
+  await t
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
+    .click(AccountSettingsPage.phoneNumber.configureButton)
+    .typeText(AccountSettingsPage.phoneNumber.input, '51222333')
+    .click(AccountSettingsPage.phoneNumber.nextStep);
+
+  await VerificationPage.completeSmsChallenge(t);
+  await t
+    .expect(AccountSettingsPage.phoneNumber.verifiedMessage.visible)
+    .ok('Success message is visible')
+    .expect(queryByText('+151222333').visible)
+    .ok('American phone number visible in the data table');
 });

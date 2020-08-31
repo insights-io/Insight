@@ -464,6 +464,7 @@ public class TfaChallengeResourceTest {
     String phoneNumber = "+38651222333";
     String sessionId =
         SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password, phoneNumber);
+
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);
 
     Response response =
@@ -540,8 +541,8 @@ public class TfaChallengeResourceTest {
     String phoneNumber = "+38651222334";
     String sessionId =
         SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password, phoneNumber);
-    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
 
+    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);
     String tfaSecret = AuthApiSetupUtils.setupTotpTfa(userId, sessionId, tfaTotpSetupDatasource);
 

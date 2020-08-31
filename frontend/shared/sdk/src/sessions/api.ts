@@ -1,37 +1,13 @@
 import ky from 'ky-universal';
-import {
-  DataResponse,
-  SessionDTO,
-  Session,
-  BrowserEventDTO,
-} from '@insight/types';
+import type { DataResponse, SessionDTO, BrowserEventDTO } from '@insight/types';
 
-import { querystring, QueryParam } from './util';
-import { RequestOptions, SearchBean } from './types';
+import { querystring, withCredentials } from '../core/utils';
+import type { RequestOptions } from '../core/types';
 
-export const mapSession = (sessionDTO: SessionDTO | Session): Session => {
-  return { ...sessionDTO, createdAt: new Date(sessionDTO.createdAt) };
-};
-
-export type SessionSearchBean = SearchBean & {
-  // eslint-disable-next-line camelcase
-  created_at?: QueryParam;
-  'location.countryName'?: QueryParam;
-  'location.continentName'?: QueryParam;
-  'location.city'?: QueryParam;
-  'location.regionName'?: QueryParam;
-  'location.ip'?: QueryParam;
-  'user_agent.browserName'?: QueryParam;
-  'user_agent.operatingSystemName'?: QueryParam;
-  'user_agent.deviceClass'?: QueryParam;
-};
-
-export type SessionsSearchRequestOptions = Omit<
-  RequestOptions,
-  'searchParams'
-> & {
-  search?: SessionSearchBean;
-};
+import type {
+  SearchEventsRequestOptions,
+  SessionsSearchRequestOptions,
+} from './types';
 
 export const createSessionsClient = (sessionApiBaseURL: string) => {
   function count<T = { count: number }>({
@@ -41,10 +17,10 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
   }: SessionsSearchRequestOptions = {}) {
     const searchQuery = querystring(search);
     return ky
-      .get(`${baseURL}/v1/sessions/insights/count${searchQuery}`, {
-        credentials: 'include',
-        ...rest,
-      })
+      .get(
+        `${baseURL}/v1/sessions/insights/count${searchQuery}`,
+        withCredentials(rest)
+      )
       .json<DataResponse<T>>()
       .then((dataResponse) => dataResponse.data);
   }
@@ -55,10 +31,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
       { baseURL = sessionApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(`${baseURL}/v1/sessions/${sessionId}`, {
-          credentials: 'include',
-          ...rest,
-        })
+        .get(`${baseURL}/v1/sessions/${sessionId}`, withCredentials(rest))
         .json<DataResponse<SessionDTO>>()
         .then((dataResponse) => dataResponse.data);
     },
@@ -69,10 +42,10 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
     ) => {
       const searchQuery = querystring({ on });
       return ky
-        .get(`${baseURL}/v1/sessions/insights/distinct${searchQuery}`, {
-          credentials: 'include',
-          ...rest,
-        })
+        .get(
+          `${baseURL}/v1/sessions/insights/distinct${searchQuery}`,
+          withCredentials(rest)
+        )
         .json<DataResponse<(string | null)[]>>()
         .then(
           (dataResponse) =>
@@ -95,9 +68,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
     countByDeviceClass: (options: RequestOptions = {}) => {
       return count<{ count: number; 'user_agent.deviceClass': string }[]>({
         ...options,
-        search: {
-          group_by: ['user_agent.deviceClass'],
-        },
+        search: { group_by: ['user_agent.deviceClass'] },
       }).then((dataResponse) => {
         return dataResponse.reduce((acc, entry) => {
           return { ...acc, [entry['user_agent.deviceClass']]: entry.count };
@@ -112,19 +83,10 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
       const searchQuery = querystring(search);
 
       return ky
-        .get(`${baseURL}/v1/sessions${searchQuery}`, {
-          credentials: 'include',
-          ...rest,
-        })
+        .get(`${baseURL}/v1/sessions${searchQuery}`, withCredentials(rest))
         .json<DataResponse<SessionDTO[]>>()
         .then((dataResponse) => dataResponse.data);
     },
-  };
-
-  type SearchEventsRequestOptions = Omit<RequestOptions, 'searchParams'> & {
-    search?: SearchBean & {
-      'event.e'?: QueryParam;
-    };
   };
 
   const events = {
@@ -138,10 +100,10 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
     ) => {
       const query = decodeURIComponent(querystring(search));
       return ky
-        .get(`${baseURL}/v1/sessions/${sessionId}/events/search${query}`, {
-          credentials: 'include',
-          ...rest,
-        })
+        .get(
+          `${baseURL}/v1/sessions/${sessionId}/events/search${query}`,
+          withCredentials(rest)
+        )
         .json<DataResponse<BrowserEventDTO[]>>()
         .then((dataResponse) => dataResponse.data);
     },

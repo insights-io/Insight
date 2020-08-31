@@ -1,5 +1,4 @@
-import { TfaMethod, TfaSetupDTO } from '@insight/sdk/dist/auth';
-import { User } from '@insight/types';
+import { User, TfaMethod, TfaSetupDTO } from '@insight/types';
 
 export type Props = {
   user: User;
