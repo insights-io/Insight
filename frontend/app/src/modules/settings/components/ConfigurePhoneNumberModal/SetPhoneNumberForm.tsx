@@ -2,9 +2,10 @@ import { UpdateUserPayload } from '@insight/sdk/dist/auth';
 import { User } from '@insight/types';
 import { PhoneNumberInput } from '@insight/ui';
 import { Button, SHAPE, SIZE } from 'baseui/button';
-import { COUNTRIES, Country } from 'baseui/phone-input';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+
+import { getCountryFromPhoneNumber } from './utils';
 
 type Data = {
   phoneNumber: string | null;
@@ -14,23 +15,6 @@ type Props = {
   phoneNumber: string | null;
   onPhoneNumberSet: () => void;
   updateUser: (user: UpdateUserPayload) => Promise<User>;
-};
-
-const getCountryFromPhoneNumber = (
-  phoneNumber: string | null,
-  defaultCountry: Country = COUNTRIES.US
-) => {
-  if (!phoneNumber) {
-    return defaultCountry;
-  }
-
-  const maybeCountry: Country | undefined = Object.values(COUNTRIES).find(
-    (c) => {
-      return phoneNumber.startsWith((c as Country).dialCode);
-    }
-  );
-
-  return maybeCountry || defaultCountry;
 };
 
 const SetPhoneNumberForm = ({
@@ -71,7 +55,7 @@ const SetPhoneNumberForm = ({
 
   return (
     <form noValidate onSubmit={onSubmit}>
-      <PhoneNumberInput<Data>
+      <PhoneNumberInput
         country={country}
         setCountry={setCountry}
         error={errors?.phoneNumber}
