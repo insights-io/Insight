@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation 'io.quarkus:quarkus-hibernate-validator'
     implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'io.quarkus:quarkus-resteasy-jackson'
     implementation 'org.apache.commons:commons-text:1.9'
     api project(":shared:rest")
 

@@ -1,5 +1,5 @@
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';
-import { User } from '@insight/types';
+import { PhoneNumber, User } from '@insight/types';
 import { PhoneNumberInput } from '@insight/ui';
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import React, { useState } from 'react';
@@ -12,7 +12,7 @@ type Data = {
 };
 
 type Props = {
-  phoneNumber: string | null;
+  phoneNumber: PhoneNumber | null;
   onPhoneNumberSet: () => void;
   updateUser: (user: UpdateUserPayload) => Promise<User>;
 };
@@ -29,7 +29,7 @@ const SetPhoneNumberForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { handleSubmit, errors, control } = useForm<Data>({
     defaultValues: {
-      phoneNumber: phoneNumber?.split(country.dialCode)[1] || undefined,
+      phoneNumber: phoneNumber?.digits || undefined,
     },
   });
 
@@ -39,14 +39,24 @@ const SetPhoneNumberForm = ({
     }
 
     const nextPhoneNumber = `${country.dialCode}${data.phoneNumber}`;
-    if (nextPhoneNumber === phoneNumber) {
+
+    if (
+      nextPhoneNumber === `${phoneNumber?.countryCode}${phoneNumber?.digits}`
+    ) {
       onPhoneNumberSet();
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await updateUser({ phone_number: nextPhoneNumber });
+      await updateUser({
+        phone_number: data.phoneNumber
+          ? {
+              countryCode: country.dialCode,
+              digits: data.phoneNumber,
+            }
+          : null,
+      });
       onPhoneNumberSet();
     } finally {
       setIsSubmitting(false);

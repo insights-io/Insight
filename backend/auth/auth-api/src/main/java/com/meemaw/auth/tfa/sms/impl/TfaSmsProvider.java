@@ -9,6 +9,7 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.shared.rest.response.Boom;
@@ -91,7 +92,8 @@ public class TfaSmsProvider extends AbstractTfaProvider<TfaSmsSetupStartDTO> {
   }
 
   @Traced
-  public CompletionStage<TfaSmsSetupStartDTO> prepareChallenge(UUID userId, String phoneNumber) {
+  public CompletionStage<TfaSmsSetupStartDTO> prepareChallenge(
+      UUID userId, PhoneNumber phoneNumber) {
     log.info("[AUTH]: Preparing TFA SMS challenge for user={} phoneNumber={}", userId, phoneNumber);
     return userPhoneCodeService
         .sendVerificationCode(userId, phoneNumber)

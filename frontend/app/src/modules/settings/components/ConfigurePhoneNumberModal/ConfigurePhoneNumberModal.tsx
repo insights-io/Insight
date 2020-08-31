@@ -1,7 +1,7 @@
 import { Modal, SIZE } from 'baseui/modal';
 import React, { useCallback, useState } from 'react';
 import { ProgressSteps, Step } from 'baseui/progress-steps';
-import { User } from '@insight/types';
+import { PhoneNumber, User } from '@insight/types';
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';
 
 import SetPhoneNumberForm from './SetPhoneNumberForm';
@@ -10,7 +10,7 @@ import VerifyPhoneNumberForm from './VerifyPhoneNumberForm';
 type Props = {
   isOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
-  phoneNumber: string | null;
+  phoneNumber: PhoneNumber | null;
   updateUser: (userUpdatePayload: UpdateUserPayload) => Promise<User>;
   updateUserCache: (user: User) => void;
 };

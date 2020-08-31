@@ -7,7 +7,6 @@ import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.EMAIL;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.FULL_NAME;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.HASHED_PASSWORD;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.PHONE_NUMBER;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERER;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
@@ -15,8 +14,10 @@ import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.user.datasource.sql.SqlUserTable;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
@@ -49,7 +50,7 @@ public class SqlSignUpDatasource implements SignUpDatasource {
                 signUpRequest.getHashedPassword(),
                 signUpRequest.getFullName(),
                 signUpRequest.getCompany(),
-                signUpRequest.getPhoneNumber(),
+                JsonObject.mapFrom(signUpRequest.getPhoneNumber()),
                 signUpRequest.getReferer())
             .returning(AUTO_GENERATED_FIELDS);
 
@@ -107,13 +108,15 @@ public class SqlSignUpDatasource implements SignUpDatasource {
   }
 
   public static SignUpRequest mapSignUpRequest(Row row) {
+    JsonObject phoneNumber = (JsonObject) row.getValue(SqlUserTable.PHONE_NUMBER.getName());
+
     return new SignUpRequest(
         row.getUUID(TOKEN.getName()),
         row.getString(EMAIL.getName()),
         row.getString(HASHED_PASSWORD.getName()),
         row.getString(FULL_NAME.getName()),
         row.getString(COMPANY.getName()),
-        row.getString(PHONE_NUMBER.getName()),
+        phoneNumber != null ? phoneNumber.mapTo(PhoneNumberDTO.class) : null,
         row.getString(REFERER.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
