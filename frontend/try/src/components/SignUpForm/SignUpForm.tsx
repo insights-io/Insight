@@ -6,13 +6,21 @@ import { FormControl } from 'baseui/form-control';
 import { Button } from 'baseui/button';
 import { Country, COUNTRIES } from 'baseui/phone-input';
 import { useForm } from 'react-hook-form';
-import { APIErrorDataResponse, APIError, SignUpFormDTO } from '@insight/types';
+import {
+  APIErrorDataResponse,
+  APIError,
+  SignUpRequestDTO,
+} from '@insight/types';
 import FormError from 'shared/components/FormError';
 import Router from 'next/router';
 import { PhoneNumberInput } from '@insight/ui';
 
+type SignUpFormData = Omit<SignUpRequestDTO, 'phoneNumber'> & {
+  phoneNumber: string | undefined;
+};
+
 export type Props = {
-  onSubmit: (data: SignUpFormDTO) => Promise<unknown>;
+  onSubmit: (data: SignUpRequestDTO) => Promise<unknown>;
   minPasswordLength?: number;
 };
 
@@ -24,7 +32,7 @@ const SignUpForm = ({
   const [formError, setFormError] = useState<APIError | undefined>();
   const [country, setCountry] = useState<Country>(COUNTRIES.US);
   const [_css, theme] = useStyletron();
-  const { register, handleSubmit, errors, control } = useForm<SignUpFormDTO>();
+  const { register, handleSubmit, errors, control } = useForm<SignUpFormData>();
 
   const onSubmit = handleSubmit(({ phoneNumber, ...rest }) => {
     if (isSubmitting) {
@@ -34,7 +42,10 @@ const SignUpForm = ({
     setFormError(undefined);
 
     const signUpFormData = phoneNumber
-      ? { ...rest, phoneNumber: `${country.dialCode}${phoneNumber}` }
+      ? {
+          ...rest,
+          phoneNumber: { countryCode: country.dialCode, digits: phoneNumber },
+        }
       : rest;
 
     onSubmitProp(signUpFormData)

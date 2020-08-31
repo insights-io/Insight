@@ -23,6 +23,7 @@ import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.tfa.totp.model.dto.TfaTotpSetupStartDTO;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.io.IoUtils;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -461,12 +462,11 @@ public class TfaChallengeResourceTest {
   public void setup_tfa__should_work__on_full_sms_flow() throws JsonProcessingException {
     String email = "tfa-sms-full-flow@gmail.com";
     String password = "tfa-sms-full-flow";
-    String phoneNumber = "+38651222333";
+    PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222333");
     String sessionId =
         SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password, phoneNumber);
 
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);
-
     Response response =
         given()
             .when()
@@ -538,7 +538,7 @@ public class TfaChallengeResourceTest {
       throws JsonProcessingException, GeneralSecurityException {
     String email = "tfa-sms-and-totp-full-flow@gmail.com";
     String password = "tfa-sms-and-top-full-flow";
-    String phoneNumber = "+38651222334";
+    PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222334");
     String sessionId =
         SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password, phoneNumber);
 

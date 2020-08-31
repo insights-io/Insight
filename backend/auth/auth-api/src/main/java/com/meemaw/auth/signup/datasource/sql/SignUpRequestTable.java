@@ -1,8 +1,10 @@
 package com.meemaw.auth.signup.datasource.sql;
 
+import static com.meemaw.shared.sql.SQLContext.JSON_OBJECT_DATA_TYPE;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
+import io.vertx.core.json.JsonObject;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +20,7 @@ public final class SignUpRequestTable {
   public static final Field<String> HASHED_PASSWORD = field("hashed_password", String.class);
   public static final Field<String> FULL_NAME = field("full_name", String.class);
   public static final Field<String> COMPANY = field("company", String.class);
-  public static final Field<String> PHONE_NUMBER = field("phone_number", String.class);
+  public static final Field<JsonObject> PHONE_NUMBER = field("phone_number", JSON_OBJECT_DATA_TYPE);
   public static final Field<String> REFERER = field("referer", String.class);
   public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 

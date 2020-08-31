@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS auth.user
     organization_id       TEXT        NOT NULL,
     role                  TEXT        NOT NULL,
     full_name             TEXT        NOT NULL,
-    phone_number          TEXT,
+    phone_number          JSONB,
     phone_number_verified BOOL        NOT NULL        default false,
     created_at            TIMESTAMPTZ NOT NULL        DEFAULT now(),
     updated_at            TIMESTAMPTZ NOT NULL        DEFAULT now(),
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS auth.sign_up_request
     hashed_password TEXT        NOT NULL,
     full_name       TEXT        NOT NULL,
     company         TEXT        NOT NULL,
-    phone_number    TEXT,
+    phone_number    JSONB,
     referer         TEXT,
     created_at      TIMESTAMPTZ NOT NULL        DEFAULT now(),
 

@@ -1,6 +1,8 @@
 package com.meemaw.auth.signup.model.dto;
 
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.shared.validation.Password;
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -25,5 +27,5 @@ public class SignUpRequestDTO {
   @NotBlank(message = "Required")
   String company;
 
-  String phoneNumber;
+  @Valid PhoneNumberDTO phoneNumber;
 }

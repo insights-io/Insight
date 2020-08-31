@@ -6,6 +6,7 @@ import com.meemaw.auth.tfa.sms.model.dto.TfaSmsSetupStartDTO;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.auth.user.service.UserService;
 import com.meemaw.shared.rest.response.Boom;
@@ -69,7 +70,7 @@ public class UserResourceImpl implements UserResource {
       return CompletableFuture.completedStage(Boom.badRequest().response());
     }
 
-    String phoneNumber = user.getPhoneNumber();
+    PhoneNumber phoneNumber = user.getPhoneNumber();
     if (phoneNumber == null) {
       log.info(
           "[AUTH]: Tried to send phone number verify code to user={} with no phone number configured",

@@ -17,7 +17,7 @@ public class UserWithLoginInformation {
   String organizationId;
   OffsetDateTime createdAt;
   OffsetDateTime updatedAt;
-  String phoneNumber;
+  PhoneNumber phoneNumber;
   boolean phoneNumberVerified;
   String password;
   List<TfaMethod> tfaMethods;
@@ -31,7 +31,7 @@ public class UserWithLoginInformation {
         organizationId,
         createdAt,
         updatedAt,
-        phoneNumber,
+        (PhoneNumberDTO) phoneNumber,
         phoneNumberVerified);
   }
 

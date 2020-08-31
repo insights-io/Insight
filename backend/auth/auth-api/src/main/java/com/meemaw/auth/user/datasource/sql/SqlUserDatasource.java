@@ -19,11 +19,14 @@ import com.meemaw.auth.password.datasource.sql.PasswordTable;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.PhoneNumber;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
@@ -68,14 +71,15 @@ public class SqlUserDatasource implements UserDatasource {
       String fullName,
       String organizationId,
       UserRole role,
-      String phoneNumber,
+      PhoneNumber phoneNumber,
       SqlTransaction transaction) {
     Query query =
         sqlPool
             .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(email, fullName, organizationId, role.toString(), phoneNumber)
+            .values(
+                email, fullName, organizationId, role.toString(), JsonObject.mapFrom(phoneNumber))
             .returning(FIELDS);
 
     return transaction.query(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
@@ -129,6 +133,7 @@ public class SqlUserDatasource implements UserDatasource {
   }
 
   public static AuthUser mapUser(Row row) {
+    JsonObject phoneNumber = (JsonObject) row.getValue(PHONE_NUMBER.getName());
     return new UserDTO(
         row.getUUID(ID.getName()),
         row.getString(EMAIL.getName()),
@@ -137,7 +142,7 @@ public class SqlUserDatasource implements UserDatasource {
         row.getString(ORGANIZATION_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()),
         row.getOffsetDateTime(UPDATED_AT.getName()),
-        row.getString(PHONE_NUMBER.getName()),
+        phoneNumber != null ? phoneNumber.mapTo(PhoneNumberDTO.class) : null,
         row.getBoolean(PHONE_NUMBER_VERIFIED.getName()));
   }
 

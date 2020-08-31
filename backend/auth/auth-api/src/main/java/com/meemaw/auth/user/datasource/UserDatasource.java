@@ -1,6 +1,7 @@
 package com.meemaw.auth.user.datasource;
 
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -17,7 +18,7 @@ public interface UserDatasource {
       String fullName,
       String organizationId,
       UserRole role,
-      String phoneNumber,
+      PhoneNumber phoneNumber,
       SqlTransaction transaction);
 
   CompletionStage<AuthUser> updateUser(UUID userId, Map<String, ?> update);

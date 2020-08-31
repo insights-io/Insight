@@ -50,7 +50,7 @@ describe('<SignUpForm />', () => {
       });
     });
 
-    // can also include phone nume
+    // can also include phone number
     const phoneNumberInput = getByPlaceholderText('Phone number');
     await userEvent.type(phoneNumberInput, '51222333');
 
@@ -61,7 +61,7 @@ describe('<SignUpForm />', () => {
         company: 'Insight',
         email: 'user@example.com',
         password: 'veryHardPassword',
-        phoneNumber: '+151222333',
+        phoneNumber: { countryCode: '+1', digits: '51222333' },
       });
     });
   });
