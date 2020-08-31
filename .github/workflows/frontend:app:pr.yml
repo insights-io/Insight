@@ -40,7 +40,7 @@ jobs:
           compression: 'gzip'
           pattern: 'frontend/app/.next/static/**/*.js'
           strip-hash: "(?:runtime/\\w+-(\\w{20}).js$|chunks/\\w{40}\\.(\\w{20})\\.js$|static/(\\w{20,21})/)"
-          title: 'App'
+          title: 'frontend/app bundle size'
 
   pr-deploy-storybook:
     runs-on: ubuntu-latest

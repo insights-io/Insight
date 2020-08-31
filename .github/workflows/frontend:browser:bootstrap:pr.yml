@@ -37,4 +37,4 @@ jobs:
           build-script: 'frontend:browser:boostrap:build'
           pattern: 'frontend/browser/bootstrap/dist/*.js'
           compression: 'gzip'
-          title: 'Boostrap script'
+          title: 'frontend/boostrap bundle size'
