@@ -1,7 +1,8 @@
+import { PhoneNumber } from '@insight/types';
 import { COUNTRIES, Country } from 'baseui/phone-input';
 
 export const getCountryFromPhoneNumber = (
-  phoneNumber: string | null,
+  phoneNumber: PhoneNumber | null,
   defaultCountry: Country = COUNTRIES.US
 ) => {
   if (!phoneNumber) {
@@ -10,7 +11,7 @@ export const getCountryFromPhoneNumber = (
 
   const maybeCountry: Country | undefined = Object.values(COUNTRIES).find(
     (c) => {
-      return phoneNumber.startsWith((c as Country).dialCode);
+      return phoneNumber.countryCode === (c as Country).dialCode;
     }
   );
 

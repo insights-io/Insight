@@ -1,3 +1,8 @@
+export type PhoneNumber = {
+  countryCode: string;
+  digits: string;
+};
+
 export type UserRole = 'ADMIN' | 'STANDARD';
 
 export type UserDTO = {
@@ -8,7 +13,7 @@ export type UserDTO = {
   createdAt: string;
   updatedAt: string;
   organizationId: string;
-  phoneNumber: string | null;
+  phoneNumber: PhoneNumber | null;
   phoneNumberVerified: boolean;
 };
 

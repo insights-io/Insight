@@ -1,9 +1,11 @@
 package com.meemaw.auth.user.datasource.sql;
 
+import static com.meemaw.shared.sql.SQLContext.JSON_OBJECT_DATA_TYPE;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import com.meemaw.auth.user.datasource.UserTable;
+import io.vertx.core.json.JsonObject;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +24,8 @@ public final class SqlUserTable {
   public static final Field<UUID> USER_TABLE_ID = tableField(ID);
   public static final Field<String> EMAIL = field(UserTable.EMAIL, String.class);
   public static final Field<String> FULL_NAME = field(UserTable.FULL_NAME, String.class);
-  public static final Field<String> PHONE_NUMBER = field(UserTable.PHONE_NUMBER, String.class);
+  public static final Field<JsonObject> PHONE_NUMBER =
+      field(UserTable.PHONE_NUMBER, JSON_OBJECT_DATA_TYPE);
   public static final Field<Boolean> PHONE_NUMBER_VERIFIED =
       field(UserTable.PHONE_NUMBER_VERIFIED, Boolean.class);
   public static final Field<String> ORGANIZATION_ID =

@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.user.model.PhoneNumber;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -135,13 +137,14 @@ public class UserResourceImplTest {
   @Test
   public void phone_number_verify__should_throw__when_invalid_code()
       throws JsonProcessingException {
+    PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "512121");
     String sessionId =
         SsoTestSetupUtils.signUpAndLogin(
             mockMailbox,
             objectMapper,
             "phone-number-verify-invalid-code@gmail.com",
             "phone-number-verify-invalid-code",
-            "+386512121");
+            phoneNumber);
 
     given()
         .when()
@@ -253,16 +256,19 @@ public class UserResourceImplTest {
   @Test
   public void update_user__should_work__when_valid_body() throws JsonProcessingException {
     String sessionId = loginWithInsightAdminFromAuthApi();
+
+    PhoneNumber updatedPhoneNumber = new PhoneNumberDTO("+386", "51222333");
     DataResponse<UserDTO> updateUserDataResponse =
         given()
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .body(JacksonMapper.get().writeValueAsString(Map.of("phone_number", "+38651222333")))
+            .body(
+                JacksonMapper.get().writeValueAsString(Map.of("phone_number", updatedPhoneNumber)))
             .patch(UserResource.PATH)
             .as(new TypeRef<>() {});
 
-    assertEquals("+38651222333", updateUserDataResponse.getData().getPhoneNumber());
+    assertEquals(updatedPhoneNumber, updateUserDataResponse.getData().getPhoneNumber());
     assertFalse(updateUserDataResponse.getData().isPhoneNumberVerified());
 
     // Should also update the sessions

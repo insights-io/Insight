@@ -8,6 +8,7 @@ import com.meemaw.auth.tfa.setup.service.TfaSetupService;
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.concurrent.CompletionStage;
@@ -71,7 +72,7 @@ public class TfaResourceImpl implements TfaResource {
   @Override
   public CompletionStage<Response> sendCode() {
     AuthUser user = principal.user();
-    String phoneNumber = user.getPhoneNumber();
+    PhoneNumber phoneNumber = user.getPhoneNumber();
     return tfaSmsProvider.prepareChallenge(user.getId(), phoneNumber).thenApply(DataResponse::ok);
   }
 }

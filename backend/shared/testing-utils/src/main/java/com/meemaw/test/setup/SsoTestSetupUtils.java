@@ -9,6 +9,7 @@ import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
@@ -39,7 +40,7 @@ public final class SsoTestSetupUtils {
   }
 
   public static SignUpRequestDTO signUpRequestMock(
-      String email, String password, String phoneNumber) {
+      String email, String password, PhoneNumberDTO phoneNumber) {
     return new SignUpRequestDTO(email, password, "Marko Novak", "Insight", phoneNumber);
   }
 
@@ -54,7 +55,7 @@ public final class SsoTestSetupUtils {
       ObjectMapper objectMapper,
       String email,
       String password,
-      String phoneNumber)
+      PhoneNumberDTO phoneNumber)
       throws JsonProcessingException {
     return signUpAndLogin(
         mockMailbox, objectMapper, signUpRequestMock(email, password, phoneNumber));

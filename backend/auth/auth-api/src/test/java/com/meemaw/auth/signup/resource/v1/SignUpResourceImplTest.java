@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -109,7 +110,8 @@ public class SignUpResourceImplTest {
   @Test
   public void signUp_should_fail_when_empty_invalid_payload() throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
-        new SignUpRequestDTO("email", "short", "Marko Novak", "Insight", null);
+        new SignUpRequestDTO(
+            "email", "short", "Marko Novak", "Insight", new PhoneNumberDTO(null, null));
 
     given()
         .when()
@@ -120,7 +122,7 @@ public class SignUpResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Password must be at least 8 characters long\",\"email\":\"must be a well-formed email address\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Password must be at least 8 characters long\",\"phoneNumber.countryCode\":\"Required\",\"phoneNumber.digits\":\"Required\",\"email\":\"must be a well-formed email address\"}}}"));
   }
 
   @Test

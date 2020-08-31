@@ -1,5 +1,6 @@
 package com.meemaw.auth.signup.model;
 
+import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.shared.model.CanExpire;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class SignUpRequest implements CanExpire {
   String hashedPassword;
   String fullName;
   String company;
-  String phoneNumber;
+  PhoneNumber phoneNumber;
   String referer;
   OffsetDateTime createdAt;
 

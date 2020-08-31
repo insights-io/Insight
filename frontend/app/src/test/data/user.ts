@@ -9,7 +9,7 @@ export const INSIGHT_ADMIN_DTO: UserDTO = {
   role: 'ADMIN',
   createdAt: new Date().toUTCString(),
   updatedAt: new Date().toUTCString(),
-  phoneNumber: '+38651111222',
+  phoneNumber: { countryCode: '+386', digits: '51111222' },
   phoneNumberVerified: true,
 };
 

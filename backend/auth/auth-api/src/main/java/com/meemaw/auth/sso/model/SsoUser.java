@@ -4,6 +4,8 @@ import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.PhoneNumber;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
   String fullName;
   OffsetDateTime createdAt;
   OffsetDateTime updatedAt;
-  String phoneNumber;
+  PhoneNumber phoneNumber;
   boolean phoneNumberVerified;
 
   public SsoUser(AuthUser user) {
@@ -57,7 +59,11 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
     out.writeObject(this.updatedAt);
-    out.writeUTF(this.phoneNumber);
+    out.writeBoolean(this.phoneNumber != null);
+    if (this.phoneNumber != null) {
+      out.writeUTF(this.phoneNumber.getCountryCode());
+      out.writeUTF(this.phoneNumber.getDigits());
+    }
     out.writeBoolean(this.phoneNumberVerified);
   }
 
@@ -70,7 +76,9 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();
     this.updatedAt = in.readObject();
-    this.phoneNumber = in.readUTF();
+    if (in.readBoolean()) {
+      this.phoneNumber = new PhoneNumberDTO(in.readUTF(), in.readUTF());
+    }
     this.phoneNumberVerified = in.readBoolean();
   }
 
@@ -83,7 +91,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable {
         organizationId,
         createdAt,
         updatedAt,
-        phoneNumber,
+        (PhoneNumberDTO) phoneNumber,
         phoneNumberVerified);
   }
 

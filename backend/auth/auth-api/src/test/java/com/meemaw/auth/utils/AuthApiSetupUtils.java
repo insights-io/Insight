@@ -9,6 +9,7 @@ import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.shared.sms.SmsMessage;
@@ -24,8 +25,9 @@ public final class AuthApiSetupUtils {
 
   private AuthApiSetupUtils() {}
 
-  public static int getLastSmsMessageVerificationCode(MockSmsbox mockSmsbox, String sentTo) {
-    List<SmsMessage> messages = mockSmsbox.getMessagesSentTo(sentTo);
+  public static int getLastSmsMessageVerificationCode(
+      MockSmsbox mockSmsbox, PhoneNumberDTO sentTo) {
+    List<SmsMessage> messages = mockSmsbox.getMessagesSentTo(sentTo.getNumber());
     SmsMessage message = messages.get(messages.size() - 1);
     Pattern pattern = Pattern.compile("^.*\\[Insight\\] Verification code: (.*).*$");
     Matcher matcher = pattern.matcher(message.getBody());
@@ -33,7 +35,7 @@ public final class AuthApiSetupUtils {
     return Integer.parseInt(matcher.group(1));
   }
 
-  public static void setupSmsTfa(String sentTo, String sessionId, MockSmsbox mockSmsbox)
+  public static void setupSmsTfa(PhoneNumberDTO sentTo, String sessionId, MockSmsbox mockSmsbox)
       throws JsonProcessingException {
     given()
         .when()

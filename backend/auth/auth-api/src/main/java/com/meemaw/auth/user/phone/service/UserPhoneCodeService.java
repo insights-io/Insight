@@ -1,5 +1,6 @@
 package com.meemaw.auth.user.phone.service;
 
+import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.shared.sms.SmsMessage;
 import com.meemaw.shared.sms.SmsService;
@@ -31,7 +32,7 @@ public class UserPhoneCodeService {
   }
 
   @Traced
-  public CompletionStage<Integer> sendVerificationCode(UUID userId, String phoneNumber) {
+  public CompletionStage<Integer> sendVerificationCode(UUID userId, PhoneNumber phoneNumber) {
     int code = newCode();
     return userPhoneCodeDatasource
         .setCode(userId, code)
@@ -41,9 +42,11 @@ public class UserPhoneCodeService {
   }
 
   @Traced
-  private CompletionStage<SmsMessage> sendVerificationCode(int code, String to) {
+  private CompletionStage<SmsMessage> sendVerificationCode(int code, PhoneNumber phoneNumber) {
     return smsService.sendMessage(
-        "+19704594909", to, String.format("[Insight] Verification code: %d", code));
+        "+19704594909",
+        phoneNumber.getNumber(),
+        String.format("[Insight] Verification code: %d", code));
   }
 
   private int newCode() {

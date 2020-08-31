@@ -1,6 +1,8 @@
-import { TwoFactorAuthenticationProps } from '../types';
+import type { PhoneNumber } from '@insight/types';
+
+import type { TwoFactorAuthenticationProps } from '../types';
 
 export type Props = TwoFactorAuthenticationProps & {
-  phoneNumber: string | null;
+  phoneNumber: PhoneNumber | null;
   phoneNumberVerified: boolean;
 };
