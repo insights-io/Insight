@@ -9,19 +9,19 @@ import {
   Country,
 } from 'baseui/phone-input';
 
-type Props<T> = {
+type Props<TFieldValues> = {
   country: Country;
   setCountry: (country: Country) => void;
   error: FieldError | undefined;
-  control: Control<T>;
+  control: Control<TFieldValues>;
 };
 
-function PhoneNumberInput<T extends FieldValues>({
+function PhoneNumberInput<TFieldValues extends FieldValues = FieldValues>({
   country,
   setCountry,
   error,
   control,
-}: Props<T>) {
+}: Props<TFieldValues>) {
   const [css, theme] = useStyletron();
   return (
     <Block>
