@@ -34,7 +34,9 @@ const UserSettings = ({ user, updateUser, updateUserCache }: Props) => {
 
       <>
         <VerticalAligned marginRight={theme.sizing.scale400}>
-          {user.phoneNumber}
+          {user.phoneNumber
+            ? `${user.phoneNumber.countryCode}${user.phoneNumber.digits}`
+            : ''}
         </VerticalAligned>
         <StatefulTooltip
           content="Configure"
