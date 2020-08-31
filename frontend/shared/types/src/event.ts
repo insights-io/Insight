@@ -1,7 +1,9 @@
 type SequenceID = number;
 type Timestamp = number;
+
 export type XhrInitiatorType = 'fetch' | 'xmlhttprequest';
 
+// eslint-disable-next-line no-shadow
 export const enum EventType {
   NAVIGATE = 0,
   UNLOAD = 1,

@@ -27,9 +27,9 @@ const LEVEL_ICON_MAPPINGS: Record<LogLevel, React.FC<IconProps> | null> = {
 };
 
 export const isErrorEvent = (
-  event: ConsoleEventDTO
-): event is BrowserErrorEventDTO => {
-  return (event as BrowserErrorEventDTO).stack !== undefined;
+  eventDTO: ConsoleEventDTO
+): eventDTO is BrowserErrorEventDTO => {
+  return (eventDTO as BrowserErrorEventDTO).stack !== undefined;
 };
 
 export const getEventStyling = (

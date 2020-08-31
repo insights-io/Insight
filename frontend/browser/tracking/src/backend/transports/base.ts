@@ -2,6 +2,7 @@
 /* eslint-disable no-nested-ternary */
 import { EventData } from 'event';
 
+// eslint-disable-next-line no-shadow
 export const enum ContentType {
   JSON = 'application/json',
 }

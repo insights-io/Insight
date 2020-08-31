@@ -16,13 +16,13 @@ import { SessionSearchBean } from '@insight/sdk/dist/sessions';
 import { DateRange } from '../components/SessionSearch/utils';
 import { SessionFilter } from '../components/SessionSearch/SessionFilters/utils';
 
-const EMPTY_LIST: Session[] = [];
-const EMPTY_FILTER: Filter = { filters: [] };
-
 type Filter = {
   dateRange?: DateRange;
   filters: SessionFilter[];
 };
+
+const EMPTY_LIST: Session[] = [];
+const EMPTY_FILTER: Filter = { filters: [] };
 
 type State = {
   data: Session[];

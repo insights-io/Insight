@@ -2,15 +2,15 @@ export type DataResponse<T> = {
   data: T;
 };
 
-export type APIErrorDataResponse = {
-  error: APIError;
-};
-
 export type APIError = {
   statusCode: number;
   reason: string;
   message: string;
   errors?: Record<string, string>;
+};
+
+export type APIErrorDataResponse = {
+  error: APIError;
 };
 
 export type SearchBean = {

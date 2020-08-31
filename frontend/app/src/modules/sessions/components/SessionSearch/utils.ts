@@ -20,6 +20,8 @@ export const OPTIONS = [
 
 export type DateRange = { from: Date | undefined; to: Date | undefined };
 
+export type OptionItem = typeof OPTIONS[number];
+
 export const createDateRange = (
   id: OptionItem['id'],
   from?: Date,
@@ -48,5 +50,3 @@ export const createDateRange = (
       throw new UnreachableCaseError(id);
   }
 };
-
-export type OptionItem = typeof OPTIONS[number];

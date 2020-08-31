@@ -5,9 +5,13 @@ import { Button, SHAPE } from 'baseui/button';
 import { H6 } from 'baseui/typography';
 import { GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
-import SsoApi from 'api/sso';
+import { createAuthClient } from '@insight/sdk';
 import SpacedBetween from 'shared/components/flex/SpacedBetween';
 import UnstyledA from 'shared/components/UnstyledA';
+
+const AuthApi = createAuthClient(
+  process.env.AUTH_API_BASE_URL || 'http://localhost:8080'
+);
 
 type Props = {
   loggedIn: boolean;
@@ -39,7 +43,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     return { props: { loggedIn: false } };
   }
 
-  const response = await SsoApi.session(SessionId);
+  const response = await AuthApi.sso.session(SessionId);
   return { props: { loggedIn: response.status === 200 } };
 };
 

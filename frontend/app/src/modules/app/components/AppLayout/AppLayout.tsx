@@ -75,13 +75,15 @@ const AppLayout = ({ children, overrides }: Props) => {
     sidebar = null;
   }
 
+  const rootStyle = overrides?.Root?.style;
   const rootStyles = useMemo(() => {
     return {
       flexDirection: renderTopbar ? 'column' : undefined,
-      ...overrides?.Root?.style,
+      ...rootStyle,
     } as const;
-  }, [renderTopbar, overrides?.Root?.style]);
+  }, [renderTopbar, rootStyle]);
 
+  const mainContentStyle = overrides?.MainContent?.style;
   const contentContainerStyle = useMemo(() => {
     return {
       boxSizing: 'border-box',
@@ -89,9 +91,9 @@ const AppLayout = ({ children, overrides }: Props) => {
       top: renderTopbar ? TOPBAR_HEIGHT : 0,
       width: renderTopbar ? '100%' : `calc(100% - ${SIDEBAR_WIDTH})`,
       height: renderTopbar ? `calc(100% - ${TOPBAR_HEIGHT})` : '100%',
-      ...overrides?.MainContent?.style,
+      ...mainContentStyle,
     } as const;
-  }, [renderTopbar, overrides?.MainContent?.style]);
+  }, [renderTopbar, mainContentStyle]);
 
   return (
     <Block height="100%" display="flex" $style={rootStyles}>
