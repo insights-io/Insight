@@ -31,7 +31,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - uses: insights-io/compressed-size-action@v0.0.4
+      - uses: insights-io/compressed-size-action@v0.0.5
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           build-script: 'frontend:browser:tracking:build'
