@@ -1,4 +1,8 @@
-import { queryByText, within } from '@testing-library/testcafe';
+import {
+  queryByPlaceholderText,
+  queryByText,
+  within,
+} from '@testing-library/testcafe';
 import jsQR from 'jsqr';
 import { Selector } from 'testcafe';
 
@@ -15,13 +19,22 @@ class AccountSettings {
   private readonly container = within('div.account-settings');
 
   public readonly title = this.container.queryByText('Account settings');
-  public readonly configurePhoneNumberButton = this.container
-    .queryByText('Phone number')
-    .parent()
-    .find('button');
+
+  public readonly phoneNumber = {
+    configureButton: this.container
+      .queryByText('Phone number')
+      .parent()
+      .find('button'),
+    input: queryByPlaceholderText('Phone number'),
+    nextStep: queryByText('Next'),
+    verifiedMessage: queryByText('Phone number verified'),
+  };
 
   public verifyCurrentPhoneNumber = async (t: TestController) => {
-    await t.click(this.configurePhoneNumberButton).click(queryByText('Next'));
+    await t
+      .click(this.phoneNumber.configureButton)
+      .click(this.phoneNumber.nextStep);
+
     await VerificationPage.completeSmsChallenge(t);
     return t
       .expect(queryByText('Phone number verified').visible)
