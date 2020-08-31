@@ -1,4 +1,4 @@
-import { TfaSmsSetupStartDTO } from '@insight/sdk/dist/auth';
+import { CodeValidityDTO } from '@insight/types';
 import { Block } from 'baseui/block';
 import { Button } from 'baseui/button';
 import { toaster } from 'baseui/toast';
@@ -9,7 +9,7 @@ import Flex from 'shared/components/Flex';
 import { TfaInputMethodProps } from '../types';
 
 type Props = TfaInputMethodProps & {
-  sendCode: () => Promise<TfaSmsSetupStartDTO>;
+  sendCode: () => Promise<CodeValidityDTO>;
 };
 
 const TfaSmsInputMethod = ({ code, handleChange, error, sendCode }: Props) => {

@@ -6,8 +6,7 @@ import nextCookie from 'next-cookies';
 import VerificationPage from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import AuthApi from 'api/auth';
-import { APIErrorDataResponse } from '@insight/types';
-import { TfaMethod } from '@insight/sdk/dist/auth';
+import { APIErrorDataResponse, TfaMethod } from '@insight/types';
 
 type Props = {
   methods: TfaMethod[];

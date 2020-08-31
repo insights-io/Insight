@@ -62,7 +62,7 @@ const SetPhoneNumberForm = ({
 
     setIsSubmitting(true);
     try {
-      await updateUser({ phoneNumber: nextPhoneNumber });
+      await updateUser({ phone_number: nextPhoneNumber });
       onPhoneNumberSet();
     } finally {
       setIsSubmitting(false);
@@ -90,4 +90,4 @@ const SetPhoneNumberForm = ({
   );
 };
 
-export default React.memo(SetPhoneNumberForm)
+export default React.memo(SetPhoneNumberForm);

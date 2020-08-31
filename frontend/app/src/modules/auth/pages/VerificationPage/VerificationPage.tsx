@@ -8,10 +8,10 @@ import AuthApi from 'api/auth';
 import { useRouter } from 'next/router';
 import FormError from 'shared/components/FormError';
 import useCodeInput from 'shared/hooks/useCodeInput';
-import { TfaMethod } from '@insight/sdk/dist/auth';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import TfaTotpInputMethod from 'modules/auth/components/TfaTotpInputMethod';
 import TfaSmsInputMethod from 'modules/auth/components/TfaSmsInputMethod';
+import { TfaMethod } from '@insight/types';
 
 type Props = {
   methods: TfaMethod[];

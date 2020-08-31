@@ -1,14 +1,10 @@
-/* eslint-disable lodash/prefer-lodash-typecheck */
 import { stringify, ParsedUrlQueryInput } from 'querystring';
 
-export type QueryParam =
-  | string
-  | number
-  | boolean
-  | string[]
-  | number[]
-  | boolean[]
-  | null;
+import type { Options } from 'ky';
+
+export function withCredentials<T extends Options>(options: T): Options {
+  return { ...options, credentials: 'include' };
+}
 
 export const querystring = (searchParams?: ParsedUrlQueryInput): string => {
   if (!searchParams) {

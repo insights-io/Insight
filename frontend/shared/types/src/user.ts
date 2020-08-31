@@ -16,3 +16,7 @@ export type User = Omit<UserDTO, 'createdAt' | 'updatedAt'> & {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type CodeValidityDTO = {
+  validitySeconds: number;
+};
