@@ -33,14 +33,14 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - uses: preactjs/compressed-size-action@v2
+      - uses: insights-io/compressed-size-action@v0.0.1
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           build-script: 'frontend:app:build'
           compression: 'gzip'
           pattern: 'frontend/app/.next/static/**/*.js'
           strip-hash: "(?:runtime/\\w+-(\\w{20}).js$|chunks/\\w{40}\\.(\\w{20})\\.js$|static/(\\w{20,21})/)"
-          use-check: true
+          title: 'App'
 
   pr-deploy-storybook:
     runs-on: ubuntu-latest
