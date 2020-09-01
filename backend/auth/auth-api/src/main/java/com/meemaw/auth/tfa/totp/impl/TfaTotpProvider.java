@@ -12,7 +12,7 @@ import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.io.IoUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.security.GeneralSecurityException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -55,14 +55,9 @@ public class TfaTotpProvider extends AbstractTfaProvider<TfaTotpSetupStartDTO> {
                   .thenApply(
                       i2 -> {
                         String keyId = String.format("%s:%s", issuer, email);
-                        String imageURL = TotpUtils.generateQrImageURL(keyId, secret, issuer);
-                        try {
-                          return new TfaTotpSetupStartDTO(IoUtils.base64encodeImage(imageURL));
-                        } catch (IOException ex) {
-                          log.error(
-                              "[AUTH]: Failed to Base64 encode TOTP TFA QR image={}", imageURL, ex);
-                          throw Boom.serverError().exception(ex);
-                        }
+                        ByteArrayOutputStream qrImage =
+                            TotpUtils.generateQrImage(keyId, secret, issuer);
+                        return new TfaTotpSetupStartDTO(IoUtils.base64encodeImage(qrImage));
                       });
             });
   }
