@@ -40,7 +40,7 @@
     "@insight/sdk": "0.0.0-development",
     "@insight/ui": "0.0.0-development",
     "baseui": "9.98.0",
-    "date-fns": "2.16.0",
+    "date-fns": "2.16.1",
     "jaeger-client": "3.18.1",
     "next": "9.5.2",
     "next-cookies": "2.0.3",
