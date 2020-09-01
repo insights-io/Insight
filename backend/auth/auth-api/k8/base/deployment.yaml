@@ -42,15 +42,20 @@ spec:
                 secretKeyRef:
                   name: mailer-configuration
                   key: password
+            - name: SMS_CLIENT_MOCK
+              valueFrom:
+                secretKeyRef:
+                  name: sms-client-configuration
+                  key: mock
             - name: SMS_CLIENT_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: sms-client-credentials
+                  name: sms-client-configuration
                   key: username
             - name: SMS_CLIENT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: sms-client-credentials
+                  name: sms-client-configuration
                   key: password
             - name: JAEGER_AGENT_HOST
               value: jaeger-agent.monitoring:6831
