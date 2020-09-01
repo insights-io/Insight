@@ -45,16 +45,16 @@ public final class TotpUtils {
     return QRCode.from(text).withSize(200, 200).stream();
   }
 
-  public static Result readQrImage(String base64) throws IOException, NotFoundException {
-    return readQrImage(Base64.getDecoder().decode(base64));
+  public static Result readBarcode(String base64) throws IOException, NotFoundException {
+    return readBarcode(Base64.getDecoder().decode(base64));
   }
 
-  public static Result readQrImage(byte[] buffer) throws IOException, NotFoundException {
-    BinaryBitmap binaryBitmap =
-        new BinaryBitmap(
-            new HybridBinarizer(
-                new BufferedImageLuminanceSource(ImageIO.read(new ByteArrayInputStream(buffer)))));
-
-    return new MultiFormatReader().decode(binaryBitmap);
+  public static Result readBarcode(byte[] buffer) throws IOException, NotFoundException {
+    return new MultiFormatReader()
+        .decode(
+            new BinaryBitmap(
+                new HybridBinarizer(
+                    new BufferedImageLuminanceSource(
+                        ImageIO.read(new ByteArrayInputStream(buffer))))));
   }
 }

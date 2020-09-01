@@ -307,7 +307,7 @@ public class TfaChallengeResourceTest {
         String.format(
             "otpauth://totp/Insight:setup-tfa-full-flow@gmail.com?secret=%s&issuer=Insight",
             secret),
-        TotpUtils.readQrImage(dataResponse.getData().getQrImage()).getText());
+        TotpUtils.readBarcode(dataResponse.getData().getQrImage()).getText());
 
     // Complete tfa setup fails on invalid code
     given()
