@@ -34,11 +34,16 @@ class Verification {
 
   private tfaLogin = async (t: TestController, codeProvider: () => string) => {
     let isValid = false;
+    let tryCount = 0;
     while (!isValid) {
       // eslint-disable-next-line no-await-in-loop
       await t.typeText(this.codeInput, codeProvider()).click(this.submitButton);
       // eslint-disable-next-line no-await-in-loop
       isValid = !(await this.invalidCodeError.visible);
+      tryCount++;
+      if (tryCount > 10) {
+        throw new Error('TFA Login failed after 10 attempts');
+      }
     }
     return t
       .expect(this.codeInput.visible)
