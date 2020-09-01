@@ -38,8 +38,6 @@ public final class TotpUtils {
             .append(keyId)
             .append("?secret=")
             .append(secret)
-            .append("&issuer=")
-            .append(issuer)
             .toString();
 
     return QRCode.from(text).withSize(200, 200).stream();

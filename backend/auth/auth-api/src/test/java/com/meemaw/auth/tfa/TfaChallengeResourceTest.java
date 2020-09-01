@@ -304,9 +304,7 @@ public class TfaChallengeResourceTest {
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
     assertEquals(
-        String.format(
-            "otpauth://totp/Insight:setup-tfa-full-flow@gmail.com?secret=%s&issuer=Insight",
-            secret),
+        String.format("otpauth://totp/Insight:setup-tfa-full-flow@gmail.com?secret=%s", secret),
         TotpUtils.readBarcode(dataResponse.getData().getQrImage()).getText());
 
     // Complete tfa setup fails on invalid code
