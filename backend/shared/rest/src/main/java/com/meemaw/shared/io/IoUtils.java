@@ -1,5 +1,6 @@
 package com.meemaw.shared.io;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -14,5 +15,10 @@ public final class IoUtils {
       byte[] buffer = is.readAllBytes();
       return Base64.getEncoder().encodeToString(buffer);
     }
+  }
+
+  public static String base64encodeImage(ByteArrayOutputStream image) {
+    byte[] buffer = image.toByteArray();
+    return Base64.getEncoder().encodeToString(buffer);
   }
 }

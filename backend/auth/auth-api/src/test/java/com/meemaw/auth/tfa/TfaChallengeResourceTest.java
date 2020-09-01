@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.zxing.NotFoundException;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
@@ -25,7 +26,6 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
-import com.meemaw.shared.io.IoUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.test.rest.mappers.JacksonMapper;
@@ -286,7 +286,7 @@ public class TfaChallengeResourceTest {
 
   @Test
   public void setup_tfa__should_work__on_full_totp_flow()
-      throws IOException, GeneralSecurityException {
+      throws IOException, GeneralSecurityException, NotFoundException {
     String email = "setup-tfa-full-flow@gmail.com";
     String password = "setup-tfa-full-flow";
     String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
@@ -303,16 +303,11 @@ public class TfaChallengeResourceTest {
 
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
-    String qrImage = dataResponse.getData().getQrImage();
-
-    String expectedQrImageUrl =
-        "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=200x200&chld=M|0&cht=qr&chl=otpauth://totp/Insight:"
-            + email
-            + "?secret="
-            + secret
-            + "&issuer=Insight";
-
-    assertEquals(IoUtils.base64encodeImage(expectedQrImageUrl), qrImage);
+    assertEquals(
+        String.format(
+            "otpauth://totp/Insight:setup-tfa-full-flow@gmail.com?secret=%s&issuer=Insight",
+            secret),
+        TotpUtils.readQrImage(dataResponse.getData().getQrImage()).getText());
 
     // Complete tfa setup fails on invalid code
     given()
