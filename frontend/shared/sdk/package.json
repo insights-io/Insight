@@ -3,11 +3,11 @@
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
-  "main": "./dist/index.js",
-  "umd:main": "./dist/sdk.umd.production.js",
-  "module": "./dist/sdk.esm.js",
-  "types": "./dist/index.d.ts",
-  "typings": "./dist/index.d.ts",
+  "main": "dist/index.js",
+  "umd:main": "dist/sdk.umd.production.min.js",
+  "module": "dist/sdk.esm.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "author": "Insight Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",
@@ -19,7 +19,7 @@
     "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
-    "build": "tsdx build --tsconfig tsconfig.build.json --format=cjs,esm,umd",
+    "build": "tsdx build --tsconfig tsconfig.build.json --format cjs,esm,umd,es",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"
