@@ -3,12 +3,13 @@ import { render as renderImpl } from '@testing-library/react';
 import { StoryConfiguration } from '@insight/storybook';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
 import { NextRouter } from 'next/router';
-import { BaseRouter } from 'next/dist/next-server/lib/router/router';
+import { AppProps, BaseRouter } from 'next/dist/next-server/lib/router/router';
 import { createRouter } from 'next/dist/client/router';
 import AppProviders from 'shared/containers/AppProviders';
 import { sandbox } from '@insight/testing';
 
 type RenderOptions = Partial<BaseRouter>;
+type App = ComponentType<AppProps>;
 
 export type RenderableComponent<
   Props,
@@ -16,6 +17,7 @@ export type RenderableComponent<
   S extends StoryConfiguration<T>
 > = React.ReactElement<Props, JSXElementConstructor<Props> & { story?: S }>;
 
+// TODO: extract to a separete package
 const render = <Props, T, S extends StoryConfiguration<T>>(
   component: RenderableComponent<Props, T, S>,
   options: RenderOptions = {}
@@ -47,11 +49,10 @@ const render = <Props, T, S extends StoryConfiguration<T>>(
     pageLoader: null,
     subscription: sandbox.stub(),
     initialProps: {},
-    App: (null as unknown) as ComponentType,
+    App: (null as unknown) as App,
     Component: (null as unknown) as ComponentType,
-    wrapApp: (null as unknown) as (
-      App: ComponentType<Record<string, unknown>>
-    ) => unknown,
+    wrapApp: (null as unknown) as (App: App) => unknown,
+    initialStyleSheets: [],
   });
 
   clientRouter.push = push;
