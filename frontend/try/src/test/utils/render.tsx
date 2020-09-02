@@ -1,16 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { JSXElementConstructor } from 'react';
+import React, { JSXElementConstructor, ComponentType } from 'react';
 import { render as renderImpl } from '@testing-library/react';
 import { StoryConfiguration } from '@insight/storybook';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
-import { createRouter } from 'next/router';
-import { BaseRouter } from 'next/dist/next-server/lib/router/router';
+import { NextRouter } from 'next/router';
+import { AppProps, BaseRouter } from 'next/dist/next-server/lib/router/router';
+import { createRouter } from 'next/dist/client/router';
 import AppProviders from 'shared/containers/AppProviders';
 import { sandbox } from '@insight/testing';
 
 type RenderOptions = Partial<BaseRouter>;
+type App = ComponentType<AppProps>;
 
-type RenderableComponent<
+export type RenderableComponent<
   Props,
   T,
   S extends StoryConfiguration<T>
@@ -20,22 +21,42 @@ const render = <Props, T, S extends StoryConfiguration<T>>(
   component: RenderableComponent<Props, T, S>,
   options: RenderOptions = {}
 ) => {
-  const { pathname = '/', query = {}, asPath = '/' } = options;
-  const replace = sandbox.stub();
-  const push = sandbox.stub();
+  const { route = '/', pathname = '/', query = {}, asPath = '/' } = options;
+  const replace = sandbox.stub().resolves(false);
+  const push = sandbox.stub().resolves(false);
   const back = sandbox.stub();
   const reload = sandbox.stub();
 
-  // TODO: what should be the props here?
-  const router = createRouter(pathname, query, asPath, {
+  const router: NextRouter = {
+    basePath: pathname,
+    route,
+    pathname,
+    query,
+    asPath,
+    push,
+    back,
+    replace,
+    reload,
+    beforePopState: sandbox.stub(),
+    prefetch: () => Promise.resolve(),
+    events: { on: sandbox.stub(), off: sandbox.stub(), emit: sandbox.stub() },
+    isFallback: false,
+  };
+
+  const clientRouter = createRouter(pathname, query, asPath, {
     isFallback: false,
     pageLoader: null,
-    subscription: null as any,
+    subscription: sandbox.stub(),
     initialProps: {},
-    App: null as any,
-    wrapApp: null as any,
-    Component: null as any,
+    App: (null as unknown) as App,
+    Component: (null as unknown) as ComponentType,
+    wrapApp: (null as unknown) as (App: App) => unknown,
+    initialStyleSheets: [],
   });
+
+  clientRouter.push = push;
+  clientRouter.replace = replace;
+  clientRouter.back = back;
 
   const renderResult = renderImpl(
     <AppProviders>
