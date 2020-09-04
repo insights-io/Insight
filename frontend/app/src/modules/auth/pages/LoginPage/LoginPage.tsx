@@ -11,13 +11,15 @@ import AuthApi from 'api/auth';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import Divider from 'shared/components/Divider';
-import { authApiBaseURL } from 'api/base';
 import Link from 'next/link';
 import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { TRY_BASE_URL } from 'shared/config';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
+import { FaGithub } from 'react-icons/fa';
+
+import { createOAuthIntegrationHrefBuilder } from './utils';
 
 type FormData = {
   email: string;
@@ -34,6 +36,9 @@ const LoginPage = () => {
   const { dest = '/' } = router.query;
   const [formError, setFormError] = useState<APIError | undefined>();
   const encodedDestination = encodeURIComponent(dest as string);
+  const oauthIntegrationHrefBuilder = createOAuthIntegrationHrefBuilder(
+    encodedDestination
+  );
 
   const onSubmit = handleSubmit((formData) => {
     if (isSubmitting) {
@@ -64,7 +69,7 @@ const LoginPage = () => {
       </Head>
 
       <a
-        href={`${authApiBaseURL}/v1/sso/google/signin?dest=${encodedDestination}`}
+        href={oauthIntegrationHrefBuilder('google')}
         style={{ textDecoration: 'none' }}
       >
         <Button
@@ -78,6 +83,19 @@ const LoginPage = () => {
           kind="secondary"
         >
           Sign in with Google
+        </Button>
+      </a>
+
+      <a
+        href={oauthIntegrationHrefBuilder('github')}
+        style={{ textDecoration: 'none' }}
+      >
+        <Button
+          $style={{ width: '100%', marginTop: theme.sizing.scale200 }}
+          startEnhancer={<FaGithub />}
+          kind="secondary"
+        >
+          Sign in with Github
         </Button>
       </a>
 

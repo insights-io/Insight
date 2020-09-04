@@ -21,4 +21,10 @@ public class AppConfig extends AppConfigBase {
   @JsonIgnore
   @ConfigProperty(name = "google.oauth.client.secret")
   String googleOAuthClientSecret;
+
+  @ConfigProperty(name = "github.oauth.client.id")
+  String githubOAuthClientId;
+
+  @ConfigProperty(name = "github.oauth.client.secret")
+  String githubOAuthClientSecret;
 }

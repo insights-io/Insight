@@ -1,8 +1,8 @@
-package com.meemaw.auth.sso.model.google;
+package com.meemaw.auth.sso.model.github;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meemaw.auth.sso.model.OAuthError;
+import com.meemaw.auth.sso.model.OAuthUserInfo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -12,16 +12,16 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GoogleErrorResponse implements OAuthError {
+public class GithubUserInfoResponse implements OAuthUserInfo {
 
-  @JsonProperty("error")
-  String error;
+  @JsonProperty("login")
+  String username;
 
-  @JsonProperty("error_description")
-  String description;
+  @JsonProperty("name")
+  String fullName;
 
-  @Override
-  public String getMessage() {
-    return String.format("%s. %s", error, description);
-  }
+  String email;
+
+  @JsonProperty("avatar_url")
+  String picture;
 }

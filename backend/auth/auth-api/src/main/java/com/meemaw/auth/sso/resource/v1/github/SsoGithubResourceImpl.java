@@ -1,18 +1,18 @@
-package com.meemaw.auth.sso.resource.v1.google;
+package com.meemaw.auth.sso.resource.v1.github;
 
 import com.meemaw.auth.sso.resource.v1.AbstractSsoOAuthResource;
-import com.meemaw.auth.sso.service.google.SsoGoogleService;
+import com.meemaw.auth.sso.service.github.SsoGithubService;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-public class SsoGoogleResourceImpl extends AbstractSsoOAuthResource implements SsoGoogleResource {
+public class SsoGithubResourceImpl extends AbstractSsoOAuthResource implements SsoGithubResource {
 
-  @Inject SsoGoogleService oauthService;
+  @Inject SsoGithubService oauthService;
 
   @Override
-  public Response signIn(String destinationPath) {
-    return signIn(oauthService, destinationPath);
+  public Response signIn(String destination) {
+    return signIn(oauthService, destination);
   }
 
   @Override

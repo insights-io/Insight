@@ -2,6 +2,7 @@ package com.meemaw.auth.sso.model.google;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meemaw.auth.sso.model.OAuthUserInfo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GoogleUserInfoResponse {
+public class GoogleUserInfoResponse implements OAuthUserInfo {
 
   String email;
   String locale;
@@ -28,5 +29,8 @@ public class GoogleUserInfoResponse {
   @JsonProperty("family_name")
   String familyName;
 
-
+  @Override
+  public String getFullName() {
+    return String.join(" ", getGivenName(), getFamilyName());
+  }
 }

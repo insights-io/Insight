@@ -1,13 +1,13 @@
-package com.meemaw.auth.sso.resource.v1.google;
+package com.meemaw.auth.sso.resource.v1.github;
 
 import com.meemaw.auth.sso.resource.v1.SsoOAuthResource;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import javax.ws.rs.Path;
 
-@Path(SsoGoogleResource.PATH)
-public interface SsoGoogleResource extends SsoOAuthResource {
+@Path(SsoGithubResource.PATH)
+public interface SsoGithubResource extends SsoOAuthResource {
 
-  String PATH = SsoResource.PATH + "/google";
+  String PATH = SsoResource.PATH + "/github";
 
   @Override
   default String getBasePath() {

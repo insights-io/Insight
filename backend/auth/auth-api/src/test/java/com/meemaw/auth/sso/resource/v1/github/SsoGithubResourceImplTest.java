@@ -1,4 +1,4 @@
-package com.meemaw.auth.sso.resource.v1.google;
+package com.meemaw.auth.sso.resource.v1.github;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
@@ -9,11 +9,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.model.google.GoogleTokenResponse;
-import com.meemaw.auth.sso.model.google.GoogleUserInfoResponse;
+import com.meemaw.auth.sso.model.github.GithubTokenResponse;
+import com.meemaw.auth.sso.model.github.GithubUserInfoResponse;
 import com.meemaw.auth.sso.resource.v1.SsoOAuthResource;
-import com.meemaw.auth.sso.service.google.SsoGoogleClient;
-import com.meemaw.auth.sso.service.google.SsoGoogleService;
+import com.meemaw.auth.sso.service.AbstractSsoOAuthService;
+import com.meemaw.auth.sso.service.github.SsoGithubClient;
+import com.meemaw.auth.sso.service.github.SsoGithubService;
 import com.meemaw.auth.tfa.challenge.model.SsoChallenge;
 import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaResource;
@@ -43,24 +44,27 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @Tag("integration")
-public class SsoGoogleResourceImplTest {
+public class SsoGithubResourceImplTest {
 
-  @Inject SsoGoogleClient ssoGoogleClient;
-  @Inject SsoGoogleService ssoGoogleService;
   @Inject AppConfig appConfig;
   @Inject MockMailbox mailbox;
   @Inject ObjectMapper objectMapper;
+  @Inject SsoGithubClient oauthClient;
+  @Inject SsoGithubService oauthService;
   @Inject UserDatasource userDatasource;
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
-  @TestHTTPResource(SsoGoogleResource.PATH + "/" + SsoOAuthResource.CALLBACK_PATH)
-  URI oauth2CallbackURI;
+  @TestHTTPResource(SsoGithubResource.PATH + "/" + SsoOAuthResource.CALLBACK_PATH)
+  URI oauth2CallbackUri;
+
+  @TestHTTPResource(SsoGithubResource.PATH + "/signin")
+  URI signInUri;
 
   @Test
-  public void google_sign_in_should_fail_when_no_dest() {
+  public void sign_in__should_fail__when_no_dest() {
     given()
         .when()
-        .get(SsoGoogleResource.PATH + "/signin")
+        .get(signInUri)
         .then()
         .statusCode(400)
         .body(
@@ -69,11 +73,11 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_sign_in_should_fail_when_no_referer() {
+  public void sign_in__should_fail__when_no_referer() {
     given()
         .when()
         .queryParam("dest", "/test")
-        .get(SsoGoogleResource.PATH + "/signin")
+        .get(signInUri)
         .then()
         .statusCode(400)
         .body(
@@ -82,12 +86,12 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_sign_in_should_fail_when_malformed_referer() {
+  public void sign_in__should_fail__when_malformed_referer() {
     given()
         .header("referer", "malformed")
         .when()
         .queryParam("dest", "/test")
-        .get(SsoGoogleResource.PATH + "/signin")
+        .get(signInUri)
         .then()
         .statusCode(400)
         .body(
@@ -96,24 +100,23 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_sign_in_should_use_x_forwarded_headers_when_present() {
+  public void sign_in__should_use_x_forwarded_headers__when_present() {
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
-    String oAuth2CallbackURL =
+    String oAuth2CallbackUri =
         forwardedProto
             + "://"
             + forwardedHost
-            + SsoGoogleResource.PATH
+            + SsoGithubResource.PATH
             + "/"
             + SsoOAuthResource.CALLBACK_PATH;
 
-    String encodedOAuth2CallbackURL = URLEncoder.encode(oAuth2CallbackURL, StandardCharsets.UTF_8);
     String expectedLocationBase =
-        "https://accounts.google.com/o/oauth2/auth?client_id="
-            + appConfig.getGoogleOAuthClientId()
+        "https://github.com/login/oauth/authorize?client_id="
+            + appConfig.getGithubOAuthClientId()
             + "&redirect_uri="
-            + encodedOAuth2CallbackURL
-            + "&response_type=code&scope=openid+email+profile&state=";
+            + URLEncoder.encode(oAuth2CallbackUri, StandardCharsets.UTF_8)
+            + "&response_type=code&scope=read%3Auser+user%3Aemail&state=";
 
     String referer = "http://localhost:3000";
     String dest = "/test";
@@ -125,26 +128,26 @@ public class SsoGoogleResourceImplTest {
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .queryParam("dest", dest)
-            .get(SsoGoogleResource.PATH + "/signin");
+            .get(signInUri);
 
     response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination = state.substring(26);
+    String destination = state.substring(AbstractSsoOAuthService.SECURE_STATE_PREFIX_LENGTH);
+
+    System.out.println(response.header("Location"));
+
     assertEquals(URLEncoder.encode(referer + dest, StandardCharsets.UTF_8), destination);
   }
 
   @Test
-  public void google_sign_in_should_start_flow_by_redirecting_to_google() {
-    String oauth2CallbackURL =
-        URLEncoder.encode(oauth2CallbackURI.toString(), StandardCharsets.UTF_8);
-
+  public void sign_in__should_start_flow__by_redirecting_to_provider() {
     String expectedLocationBase =
-        "https://accounts.google.com/o/oauth2/auth?client_id="
-            + appConfig.getGoogleOAuthClientId()
+        "https://github.com/login/oauth/authorize?client_id="
+            + appConfig.getGithubOAuthClientId()
             + "&redirect_uri="
-            + oauth2CallbackURL
-            + "&response_type=code&scope=openid+email+profile&state=";
+            + URLEncoder.encode(oauth2CallbackUri.toString(), StandardCharsets.UTF_8)
+            + "&response_type=code&scope=read%3Auser+user%3Aemail&state=";
 
     String referer = "http://localhost:3000";
     String dest = "/test";
@@ -154,20 +157,20 @@ public class SsoGoogleResourceImplTest {
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .queryParam("dest", dest)
-            .get(SsoGoogleResource.PATH + "/signin");
+            .get(signInUri);
 
     response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination = state.substring(26);
+    String destination = state.substring(AbstractSsoOAuthService.SECURE_STATE_PREFIX_LENGTH);
     assertEquals(URLEncoder.encode(referer + dest, StandardCharsets.UTF_8), destination);
   }
 
   @Test
-  public void google_oauth2callback_should_fail_when_no_params() {
+  public void oauth2callback__should_fail__when_no_params() {
     given()
         .when()
-        .get(oauth2CallbackURI)
+        .get(oauth2CallbackUri)
         .then()
         .statusCode(400)
         .body(
@@ -176,51 +179,47 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_oauth2callback_should_fail_on_random_code() {
+  public void oauth2callback__should_fail__on_random_code() {
     String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
     given()
         .when()
         .queryParam("code", "random")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackURI)
+        .get(oauth2CallbackUri)
         .then()
-        .statusCode(400)
+        .statusCode(401)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"invalid_grant. Malformed auth code.\"}}"));
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Bad credentials\"}}"));
   }
 
   @Test
-  public void google_oauth2callback__should_fail__on_expired_code() {
+  public void oauth2callback__should_fail__on_expired_code() {
     String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
 
     given()
         .when()
-        .queryParam(
-            "code",
-            "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
+        .queryParam("code", "04fc2d3f11120e6ca0e2")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackURI)
+        .get(oauth2CallbackUri)
         .then()
-        .statusCode(400)
+        .statusCode(401)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"invalid_grant. Bad Request\"}}"));
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Bad credentials\"}}"));
   }
 
   @Test
-  public void google_oauth2callback__should_fail__on_invalid_state_cookie() {
+  public void oauth2callback__should_fail__on_invalid_state_cookie() {
     String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
 
     given()
         .when()
-        .queryParam(
-            "code",
-            "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
+        .queryParam("code", "04fc2d3f11120e6ca0e2")
         .queryParam("state", state)
-        .get(oauth2CallbackURI)
+        .get(oauth2CallbackUri)
         .then()
         .statusCode(401)
         .body(
@@ -229,29 +228,10 @@ public class SsoGoogleResourceImplTest {
   }
 
   @Test
-  public void google_oauth2callback__should_set_session_id___when_succeed_with_fresh_sign_up() {
-    QuarkusMock.installMockForInstance(
-        new MockedSsoGoogleClient("marko.novak+social@gmail.com"), ssoGoogleClient);
-    String state = ssoGoogleService.secureState("https://www.insight.io/my_path");
-
-    given()
-        .when()
-        .config(RestAssuredUtils.dontFollowRedirects())
-        .queryParam("code", "any")
-        .queryParam("state", state)
-        .cookie("state", state)
-        .get(oauth2CallbackURI)
-        .then()
-        .statusCode(302)
-        .header("Location", "https://www.insight.io/my_path")
-        .cookie(SsoSession.COOKIE_NAME);
-  }
-
-  @Test
-  public void google_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
+  public void oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
-    String email = "sso-login-tfa-full-flow@gmail.com";
-    String password = "sso-login-tfa-full-flow";
+    String email = "sso-github-login-tfa-full-flow@gmail.com";
+    String password = "sso-github-login-tfa-full-flow";
     String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
 
     given()
@@ -274,8 +254,9 @@ public class SsoGoogleResourceImplTest {
         .then()
         .statusCode(200);
 
-    QuarkusMock.installMockForInstance(new MockedSsoGoogleClient(email), ssoGoogleClient);
-    String state = ssoGoogleService.secureState("https://www.insight.io/my_path");
+    String Location = "https://www.insight.io/my_path";
+    QuarkusMock.installMockForInstance(new MockedSsoGithubClient(email), oauthClient);
+    String state = oauthService.secureState(Location);
 
     given()
         .when()
@@ -283,30 +264,30 @@ public class SsoGoogleResourceImplTest {
         .queryParam("code", "any")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackURI)
+        .get(oauth2CallbackUri)
         .then()
         .statusCode(302)
-        .header("Location", "https://www.insight.io/my_path")
+        .header("Location", Location)
         .cookie(SsoChallenge.COOKIE_NAME);
   }
 
-  private static class MockedSsoGoogleClient extends SsoGoogleClient {
+  private static class MockedSsoGithubClient extends SsoGithubClient {
 
     private final String email;
 
-    public MockedSsoGoogleClient(String email) {
+    public MockedSsoGithubClient(String email) {
       this.email = Objects.requireNonNull(email);
     }
 
     @Override
-    public CompletionStage<GoogleTokenResponse> codeExchange(String code, String redirectURI) {
-      return CompletableFuture.completedStage(new GoogleTokenResponse("", "", "", "", ""));
+    public CompletionStage<GithubTokenResponse> codeExchange(String code, String redirectURI) {
+      return CompletableFuture.completedStage(new GithubTokenResponse("", "", ""));
     }
 
     @Override
-    public CompletionStage<GoogleUserInfoResponse> userInfo(GoogleTokenResponse token) {
+    public CompletionStage<GithubUserInfoResponse> userInfo(GithubTokenResponse token) {
       return CompletableFuture.completedStage(
-          new GoogleUserInfoResponse(email, "", "", "Matej Šnuderl", "", true, "", ""));
+          new GithubUserInfoResponse("", "Matej Šnuderl", email, ""));
     }
   }
 }
