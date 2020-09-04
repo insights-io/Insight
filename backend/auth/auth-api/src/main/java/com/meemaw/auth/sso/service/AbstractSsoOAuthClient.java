@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 
 @Slf4j
-public abstract class AbstractSsoOAuthClient<T, UI extends OAuthUserInfo, E extends OAuthError> {
+public abstract class AbstractSsoOAuthClient<T, U extends OAuthUserInfo, E extends OAuthError> {
 
   @Inject Vertx vertx;
 
@@ -32,7 +32,7 @@ public abstract class AbstractSsoOAuthClient<T, UI extends OAuthUserInfo, E exte
 
   public abstract Class<T> getTokenClazz();
 
-  public abstract Class<UI> getUserInfoClazz();
+  public abstract Class<U> getUserInfoClazz();
 
   public abstract Class<E> getErrorClazz();
 
@@ -42,7 +42,7 @@ public abstract class AbstractSsoOAuthClient<T, UI extends OAuthUserInfo, E exte
       String code, String redirectUri);
 
   @Traced
-  public CompletionStage<UI> userInfo(T token) {
+  public CompletionStage<U> userInfo(T token) {
     return requestUserInfo(token)
         .thenApply(response -> parseResponse(response, getUserInfoClazz(), getErrorClazz()));
   }
@@ -62,8 +62,6 @@ public abstract class AbstractSsoOAuthClient<T, UI extends OAuthUserInfo, E exte
       if (statusCode == Status.OK.getStatusCode()) {
         return objectMapper.readValue(jsonPayload, clazz);
       }
-
-      System.out.println("ERROR: " + jsonPayload);
 
       E errorResponse = objectMapper.readValue(jsonPayload, errorClazz);
       throw Boom.status(statusCode).message(errorResponse.getMessage()).exception();

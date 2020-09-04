@@ -17,13 +17,13 @@ import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractSsoOAuthResource<T, UI extends OAuthUserInfo, E extends OAuthError>
+public abstract class AbstractSsoOAuthResource<T, U extends OAuthUserInfo, E extends OAuthError>
     implements SsoOAuthResource {
 
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
-  public Response signIn(AbstractSsoOAuthService<T, UI, E> oauthService, String destinationPath) {
+  public Response signIn(AbstractSsoOAuthService<T, U, E> oauthService, String destinationPath) {
     String serverRedirectUri = getRedirectUri(info, request);
     String refererBaseURL =
         RequestUtils.parseRefererBaseURL(request)
@@ -42,7 +42,7 @@ public abstract class AbstractSsoOAuthResource<T, UI extends OAuthUserInfo, E ex
   }
 
   public CompletionStage<Response> oauth2callback(
-      AbstractSsoOAuthService<T, UI, E> oauthService,
+      AbstractSsoOAuthService<T, U, E> oauthService,
       String state,
       String sessionState,
       String code) {

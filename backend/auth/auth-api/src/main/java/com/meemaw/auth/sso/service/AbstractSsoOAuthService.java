@@ -26,12 +26,6 @@ public abstract class AbstractSsoOAuthService<T, UI extends OAuthUserInfo, E ext
 
   @Inject SsoService ssoService;
 
-  /**
-   * Generates a secure state with a secure random string of length 26 as a prefix.
-   *
-   * @param data to be encoded
-   * @return String secure state
-   */
   public String secureState(String data) {
     String secureString =
         RandomStringUtils.random(SECURE_STATE_PREFIX_LENGTH, 0, 0, true, true, null, random);
@@ -42,6 +36,11 @@ public abstract class AbstractSsoOAuthService<T, UI extends OAuthUserInfo, E ext
     return URLDecoder.decode(
         secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
   }
+
+  public abstract URI buildAuthorizationUri(String state, String redirectUri);
+
+  public abstract CompletionStage<SsoSocialLogin> oauth2callback(
+      String state, String sessionState, String code, String redirectUri);
 
   public CompletionStage<SsoSocialLogin> oauth2callback(
       AbstractSsoOAuthClient<T, UI, E> oauthClient,
@@ -77,25 +76,4 @@ public abstract class AbstractSsoOAuthService<T, UI extends OAuthUserInfo, E ext
                       });
             });
   }
-
-  /**
-   * Build a authorization request URI.
-   *
-   * @param state of the request
-   * @param redirectUri server oauth2callback redirect URI
-   * @return URI
-   */
-  public abstract URI buildAuthorizationUri(String state, String redirectUri);
-
-  /**
-   * OAuth2 callback request handler.
-   *
-   * @param state of the request
-   * @param sessionState state associated with the session (cookie)
-   * @param code authorization code
-   * @param redirectUri server oauth2callback redirect URI
-   * @return SsoSocialLogin
-   */
-  public abstract CompletionStage<SsoSocialLogin> oauth2callback(
-      String state, String sessionState, String code, String redirectUri);
 }
