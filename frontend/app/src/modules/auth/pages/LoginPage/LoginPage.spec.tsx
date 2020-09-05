@@ -86,6 +86,15 @@ describe('<LoginPage />', () => {
     );
   });
 
+  it('Should render Microsoft sign on button with correct link', () => {
+    const { getByText } = render(<Base />);
+    const signInWithGoogle = getByText('Sign in with Microsoft');
+    const googleAnchorElement = signInWithGoogle.parentElement as HTMLAnchorElement;
+    expect(googleAnchorElement.href).toEqual(
+      'http://localhost:8080/v1/sso/microsoft/signin?dest=%2F'
+    );
+  });
+
   it('Should render Create a new account button with correct link', () => {
     const { getByText } = render(<Base />);
     const createFreeAccountButton = getByText('Create a free account');
