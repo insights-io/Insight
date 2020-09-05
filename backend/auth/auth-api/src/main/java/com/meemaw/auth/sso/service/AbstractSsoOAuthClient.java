@@ -20,6 +20,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 public abstract class AbstractSsoOAuthClient<T, U extends OAuthUserInfo, E extends OAuthError> {
 
   @Inject Vertx vertx;
+  @Inject ObjectMapper objectMapper;
 
   protected WebClient webClient;
 
@@ -27,8 +28,6 @@ public abstract class AbstractSsoOAuthClient<T, U extends OAuthUserInfo, E exten
   void initialize() {
     webClient = WebClient.create(vertx);
   }
-
-  @Inject ObjectMapper objectMapper;
 
   public abstract Class<T> getTokenClazz();
 

@@ -19,7 +19,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.MDC;
 
 @Slf4j
-public abstract class AbstractSsoOAuthService<T, UI extends OAuthUserInfo, E extends OAuthError> {
+public abstract class AbstractSsoOAuthService<T, U extends OAuthUserInfo, E extends OAuthError> {
 
   public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final SecureRandom random = new SecureRandom();
@@ -43,7 +43,7 @@ public abstract class AbstractSsoOAuthService<T, UI extends OAuthUserInfo, E ext
       String state, String sessionState, String code, String redirectUri);
 
   public CompletionStage<SsoSocialLogin> oauth2callback(
-      AbstractSsoOAuthClient<T, UI, E> oauthClient,
+      AbstractSsoOAuthClient<T, U, E> oauthClient,
       String state,
       String sessionState,
       String code,
@@ -63,13 +63,14 @@ public abstract class AbstractSsoOAuthService<T, UI extends OAuthUserInfo, E ext
               String location = secureStateData(sessionState);
               String cookieDomain = RequestUtils.parseCookieDomain(location);
               MDC.put(LoggingConstants.USER_EMAIL, email);
+              log.info("[AUTH]: OAuth successfully retrieved user info email={}", email);
 
               return ssoService
                   .socialLogin(email, fullName)
                   .thenApply(
                       loginResult -> {
                         log.info(
-                            "[AUTH]: User authenticated via OAuth email={} location={}",
+                            "[AUTH]: OAuth successfully authenticated user email={} location={}",
                             email,
                             location);
                         return new SsoSocialLogin(loginResult, location, cookieDomain);
