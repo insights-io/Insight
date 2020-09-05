@@ -1,6 +1,6 @@
 import { authApiBaseURL } from 'api';
 
-type OAuthIntegration = 'google' | 'github';
+type OAuthIntegration = 'google' | 'github' | 'microsoft';
 
 export const createOAuthIntegrationHrefBuilder = (
   encodedDestination: string

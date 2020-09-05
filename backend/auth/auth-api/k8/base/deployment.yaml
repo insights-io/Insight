@@ -79,6 +79,16 @@ spec:
                 secretKeyRef:
                   name: github-oauth
                   key: client_secret
+            - name: MICROSOFT_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: microsoft-oauth
+                  key: client_id
+            - name: MICROSOFT_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: microsoft-oauth
+                  key: client_secret
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
