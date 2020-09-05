@@ -7,7 +7,7 @@ import lombok.Value;
 @AllArgsConstructor
 public class SsoSocialLogin {
 
-  LoginResult loginResult;
+  LoginResult<?> loginResult;
   String Location;
   String cookieDomain;
 }

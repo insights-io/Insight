@@ -26,5 +26,4 @@ public class GoogleTokenResponse {
 
   @JsonProperty("id_token")
   String idToken;
-
 }

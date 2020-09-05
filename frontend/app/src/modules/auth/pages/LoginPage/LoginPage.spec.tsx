@@ -77,6 +77,15 @@ describe('<LoginPage />', () => {
     );
   });
 
+  it('Should render Github sign on button with correct link', () => {
+    const { getByText } = render(<Base />);
+    const signInWithGoogle = getByText('Sign in with Github');
+    const googleAnchorElement = signInWithGoogle.parentElement as HTMLAnchorElement;
+    expect(googleAnchorElement.href).toEqual(
+      'http://localhost:8080/v1/sso/github/signin?dest=%2F'
+    );
+  });
+
   it('Should render Create a new account button with correct link', () => {
     const { getByText } = render(<Base />);
     const createFreeAccountButton = getByText('Create a free account');
