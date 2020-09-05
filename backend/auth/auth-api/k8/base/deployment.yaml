@@ -69,6 +69,16 @@ spec:
                 secretKeyRef:
                   name: google-oauth
                   key: client_secret
+            - name: GITHUB_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: github-oauth
+                  key: client_id
+            - name: GITHUB_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: github-oauth
+                  key: client_secret
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
