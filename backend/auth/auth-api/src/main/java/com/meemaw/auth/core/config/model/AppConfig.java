@@ -16,15 +16,23 @@ public class AppConfig extends AppConfigBase {
   String datasourceURL;
 
   @ConfigProperty(name = "google.oauth.client.id")
-  String googleOAuthClientId;
+  String googleOpenIdClientId;
 
   @JsonIgnore
   @ConfigProperty(name = "google.oauth.client.secret")
-  String googleOAuthClientSecret;
+  String googleOpenIdClientSecret;
 
   @ConfigProperty(name = "github.oauth.client.id")
-  String githubOAuthClientId;
+  String githubOpenIdClientId;
 
+  @JsonIgnore
   @ConfigProperty(name = "github.oauth.client.secret")
-  String githubOAuthClientSecret;
+  String githubOpenIdClientSecret;
+
+  @ConfigProperty(name = "microsoft.oauth.client.id")
+  String microsoftOpenIdClientId;
+
+  @JsonIgnore
+  @ConfigProperty(name = "microsoft.oauth.client.secret")
+  String microsoftOpenIdClientSecret;
 }
