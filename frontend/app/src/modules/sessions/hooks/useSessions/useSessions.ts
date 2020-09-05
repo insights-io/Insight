@@ -12,9 +12,8 @@ import { mapSession } from '@insight/sdk';
 import debounce from 'lodash/debounce';
 import { UnreachableCaseError } from 'shared/utils/error';
 import { SessionSearchBean } from '@insight/sdk/dist/sessions';
-
-import { DateRange } from '../components/SessionSearch/utils';
-import { SessionFilter } from '../components/SessionSearch/SessionFilters/utils';
+import { DateRange } from 'modules/sessions/components/SessionSearch/utils';
+import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 
 const EMPTY_LIST: Session[] = [];
 const EMPTY_FILTER: Filter = { filters: [] };
@@ -135,11 +134,7 @@ const useSessions = (
           search: getSearchQuery(paramFilter),
         }).then((resp) => resp.count);
         const sessionsPromise = SessionApi.getSessions({
-          search: {
-            ...search,
-            sort_by: ['-created_at'],
-            limit: 20,
-          },
+          search: { ...search, sort_by: ['-created_at'], limit: 20 },
         }).then((s) => s.map(mapSession));
 
         Promise.all([countPromise, sessionsPromise]).then(
@@ -175,15 +170,30 @@ const useSessions = (
         index: startIndex,
       });
 
-      const search: SessionSearchBean = {
+      const search = {
+        ...getSearchQuery(filter),
         sort_by: ['-created_at'],
         limit: endIndex - startIndex + 1,
       };
 
       if (sessions.length > 0) {
-        search.created_at = [
-          `lte:${sessions[sessions.length - 1].createdAt.toISOString()}`,
-        ];
+        const lastSessionCreatedAt = `lte:${sessions[
+          sessions.length - 1
+        ].createdAt.toISOString()}`;
+
+        if (!search.created_at) {
+          search.created_at = [lastSessionCreatedAt];
+        } else {
+          const createdAtFilter = search.created_at as string[];
+          const createdAtLteIndex = createdAtFilter.findIndex((v) =>
+            v.startsWith('lte:')
+          );
+          if (createdAtLteIndex === -1) {
+            createdAtFilter.push(lastSessionCreatedAt);
+          } else {
+            createdAtFilter[createdAtLteIndex] = lastSessionCreatedAt;
+          }
+        }
       }
 
       SessionApi.getSessions({ search })
@@ -195,7 +205,7 @@ const useSessions = (
           })
         );
     },
-    [sessions, fetchingStartIndex]
+    [sessions, fetchingStartIndex, filter]
   );
 
   const isItemLoaded = useCallback(
