@@ -5,20 +5,14 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.sso.AbstractIdentityProviderService;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
-import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
-import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.test.setup.RestAssuredUtils;
-import com.meemaw.test.setup.SsoTestSetupUtils;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -26,10 +20,7 @@ import io.restassured.response.Response;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.util.UUID;
 import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -155,32 +146,8 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_set_verification_cookie__when_user_with_tfa_succeed()
-      throws JsonProcessingException, GeneralSecurityException {
+  public void callback__should_sign_up_user__when_valid_saml_response() {
     String email = "matej.snuderl@snuderls.eu";
-    String password = "sso-saml-login-tfa-full-flow";
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
-
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TfaResource.PATH + "/totp/setup")
-        .then()
-        .statusCode(200);
-
-    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
-    int tfaCode = TotpUtils.generateCurrentNumber(secret);
-
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-        .post(TfaResource.PATH + "/totp/setup")
-        .then()
-        .statusCode(200);
-
     String Location = "https://www.insight.io/my_path";
     String state = samlService.secureState(Location);
     String SAMLResponse =
@@ -196,6 +163,9 @@ public class SamlResourceImplTest {
         .then()
         .statusCode(302)
         .header("Location", Location)
-        .cookie(SsoChallenge.COOKIE_NAME);
+        .cookie(SsoSession.COOKIE_NAME);
+
+    AuthUser user = userDatasource.findUser(email).toCompletableFuture().join().get();
+    assertEquals(user.getFullName(), "Matej Snuderl");
   }
 }

@@ -1,6 +1,7 @@
 package com.meemaw.auth.sso.saml.service;
 
 import com.meemaw.auth.sso.AbstractIdentityProviderService;
+import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
 import com.meemaw.shared.rest.response.Boom;
 import io.quarkus.runtime.StartupEvent;
@@ -12,8 +13,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,11 +28,16 @@ import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Unmarshaller;
 import org.opensaml.core.xml.io.UnmarshallerFactory;
 import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.x509.BasicX509Credential;
+import org.opensaml.xmlsec.signature.Signature;
+import org.opensaml.xmlsec.signature.support.SignatureException;
+import org.opensaml.xmlsec.signature.support.SignatureValidator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -54,6 +62,22 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
             certificateFactory.generateCertificate(
                 new ByteArrayInputStream(metadata.getCertificate().getBytes()));
     return new BasicX509Credential(certificate);
+  }
+
+  public String buildAuthorizationUri(SamlMetadataResponse metadata, String state) {
+    return UriBuilder.fromUri(metadata.getSsoHttpPostBinding())
+        .queryParam("RelayState", state)
+        .build()
+        .toString();
+  }
+
+  public void validateSignature(Signature signature, SamlMetadataResponse metadata) {
+    try {
+      SignatureValidator.validate(signature, credentials(metadata));
+    } catch (SignatureException | CertificateException ex) {
+      log.error("[AUTH]: SAML callback failed to validate signature metadata={}", metadata, ex);
+      throw Boom.serverError().exception(ex);
+    }
   }
 
   public SamlMetadataResponse fetchMetadata(URL metadataURL)
@@ -86,7 +110,7 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
         certificate, ssoHttpPostBinding, ssoHttpRedirectBinding, entityId);
   }
 
-  public Response decodeSamlResponse(String samlResponse)
+  private Response decodeOpenSamlResponse(String samlResponse)
       throws ParserConfigurationException, IOException, SAXException, UnmarshallingException {
     byte[] base64DecodedResponse = Base64.getDecoder().decode(samlResponse);
     ByteArrayInputStream is = new ByteArrayInputStream(base64DecodedResponse);
@@ -104,5 +128,40 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     }
     XMLObject responseXmlObj = unmarshaller.unmarshall(element);
     return (Response) responseXmlObj;
+  }
+
+  public SamlDataResponse decodeSamlResponse(String samlResponse)
+      throws ParserConfigurationException, UnmarshallingException, SAXException, IOException {
+    Response openSamlResponse = decodeOpenSamlResponse(samlResponse);
+    if (openSamlResponse.getAssertions().isEmpty()) {
+      throw Boom.badRequest().message("Missing assertions").exception();
+    }
+
+    Assertion assertion = openSamlResponse.getAssertions().get(0);
+    String subject = assertion.getSubject().getNameID().getValue();
+    Optional<String> givenName =
+        assertion.getAttributeStatements().stream()
+            .flatMap(as -> as.getAttributes().stream())
+            .filter(attribute -> attribute.getName().equals("givenName"))
+            .findFirst()
+            .flatMap(
+                attr ->
+                    Optional.ofNullable(attr.getAttributeValues().get(0).getDOM())
+                        .map(Node::getTextContent));
+
+    Optional<String> familyName =
+        assertion.getAttributeStatements().stream()
+            .flatMap(as -> as.getAttributes().stream())
+            .filter(attribute -> attribute.getName().equals("familyName"))
+            .findFirst()
+            .flatMap(
+                attr ->
+                    Optional.ofNullable(attr.getAttributeValues().get(0).getDOM())
+                        .map(Node::getTextContent));
+
+    Optional<String> fullName = givenName.flatMap(s -> familyName.map(s1 -> s + " " + s1));
+    String issuer = assertion.getIssuer().getValue();
+    Signature signature = openSamlResponse.getSignature();
+    return new SamlDataResponse(subject, fullName.orElse(null), issuer, signature);
   }
 }
