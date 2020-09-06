@@ -4,17 +4,20 @@ import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.shared.sms.SmsMessage;
 import com.meemaw.shared.sms.SmsService;
+import java.security.SecureRandom;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
 public class UserPhoneCodeService {
+
+  public static final int CODE_LENGTH = 6;
+  private static final SecureRandom random = new SecureRandom();
 
   @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
   @Inject SmsService smsService;
@@ -49,7 +52,12 @@ public class UserPhoneCodeService {
         String.format("[Insight] Verification code: %d", code));
   }
 
-  private int newCode() {
-    return Integer.parseInt(RandomStringUtils.randomNumeric(6));
+  public int newCode() {
+    return generateRandomDigits(CODE_LENGTH);
+  }
+
+  public static int generateRandomDigits(int n) {
+    int m = (int) Math.pow(10, n - 1);
+    return m + random.nextInt(9 * m);
   }
 }

@@ -69,7 +69,7 @@ public class SamlResourceImpl implements SamlResource {
 
   @Override
   public CompletionStage<Response> callback(
-      String SAMLResponse, String relayState, String sessionState) {
+      String samlResponse, String relayState, String sessionState) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(relayState)) {
       log.warn("[AUTH]: SAML state miss-match, expected={}, actual={}", relayState, sessionState);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
@@ -77,18 +77,18 @@ public class SamlResourceImpl implements SamlResource {
 
     SamlDataResponse samlDataResponse;
     try {
-      samlDataResponse = samlService.decodeSamlResponse(SAMLResponse);
+      samlDataResponse = samlService.decodeSamlResponse(samlResponse);
     } catch (ParserConfigurationException
         | IOException
         | SAXException
         | UnmarshallingException ex) {
-      log.error("[AUTH]: Failed to decode SAMLResponse={}", SAMLResponse, ex);
+      log.error("[AUTH]: Failed to decode SAMLResponse={}", samlResponse, ex);
       return CompletableFuture.completedStage(
           Boom.badRequest().message("Invalid SAMLResponse").response());
     }
 
     if (samlDataResponse.getSignature() == null) {
-      log.error("[AUTH]: SAML callback missing signature SAMLResponse={}", SAMLResponse);
+      log.error("[AUTH]: SAML callback missing signature SAMLResponse={}", samlResponse);
       return CompletableFuture.completedStage(
           Boom.badRequest().message("Missing signature").response());
     }

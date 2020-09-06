@@ -23,7 +23,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
-import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Unmarshaller;
 import org.opensaml.core.xml.io.UnmarshallerFactory;
@@ -126,8 +125,7 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
       log.error("[AUTH]: Failed to get unmarshaller to decode SAMLResponse={}", samlResponse);
       throw Boom.serverError().exception();
     }
-    XMLObject responseXmlObj = unmarshaller.unmarshall(element);
-    return (Response) responseXmlObj;
+    return (Response) unmarshaller.unmarshall(element);
   }
 
   public SamlDataResponse decodeSamlResponse(String samlResponse)
