@@ -1,6 +1,6 @@
 package com.meemaw.auth.user.model;
 
-import com.meemaw.auth.tfa.TfaMethod;
+import com.meemaw.auth.sso.tfa.TfaMethod;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;

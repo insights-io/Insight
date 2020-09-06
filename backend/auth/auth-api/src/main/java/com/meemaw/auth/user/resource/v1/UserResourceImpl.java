@@ -1,8 +1,8 @@
 package com.meemaw.auth.user.resource.v1;
 
 import com.meemaw.auth.sso.model.InsightPrincipal;
-import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.sms.model.dto.TfaSmsSetupStartDTO;
+import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.sso.tfa.sms.model.dto.TfaSmsSetupStartDTO;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;

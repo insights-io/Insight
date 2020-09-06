@@ -1,7 +1,7 @@
 package com.meemaw.auth.user.datasource;
 
-import com.meemaw.auth.tfa.TfaMethod;
-import com.meemaw.auth.tfa.setup.model.TfaSetup;
+import com.meemaw.auth.sso.tfa.TfaMethod;
+import com.meemaw.auth.sso.tfa.setup.model.TfaSetup;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.core.json.JsonObject;
 import java.util.List;

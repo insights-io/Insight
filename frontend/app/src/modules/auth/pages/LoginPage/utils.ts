@@ -1,9 +1,9 @@
 import { authApiBaseURL } from 'api';
 
-type OAuthIntegration = 'google' | 'github' | 'microsoft';
+type OAuth2Integration = 'google' | 'github' | 'microsoft';
 
-export const createOAuthIntegrationHrefBuilder = (
+export const createOAuth2IntegrationHrefBuilder = (
   encodedDestination: string
-) => (integration: OAuthIntegration) => {
-  return `${authApiBaseURL}/v1/sso/${integration}/signin?dest=${encodedDestination}`;
+) => (integration: OAuth2Integration) => {
+  return `${authApiBaseURL}/v1/sso/oauth2/${integration}/signin?dest=${encodedDestination}`;
 };
