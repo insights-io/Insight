@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.oauth.google;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.AbstractIdentityProviderService;
 import io.quarkus.test.junit.QuarkusTest;
 import javax.inject.Inject;
 import org.junit.jupiter.api.Tag;
@@ -20,7 +20,8 @@ public class OAuth2GoogleServiceTest {
     for (int i = 0; i < 100; i++) {
       String secureData = googleService.secureState(data);
       assertEquals(
-          AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH + data.length(), secureData.length());
+          AbstractIdentityProviderService.SECURE_STATE_PREFIX_LENGTH + data.length(),
+          secureData.length());
     }
   }
 }

@@ -25,7 +25,7 @@ public interface SamlResource {
   @POST
   @Path(CALLBACK_PATH)
   CompletionStage<Response> callback(
-      @NotBlank(message = "Required") @FormParam("SAMLResponse") String samlResponse,
-      @NotBlank(message = "Required") @FormParam("RelayState") String relayState,
-      @CookieParam("RelayState") String sessionRelayState);
+      @NotBlank(message = "Required") @FormParam("SAMLResponse") String SAMLResponse,
+      @NotBlank(message = "Required") @FormParam("RelayState") String RelayState,
+      @CookieParam("state") String sessionState);
 }

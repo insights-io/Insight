@@ -21,8 +21,8 @@ public class OAuth2GithubResourceImpl
   }
 
   @Override
-  public CompletionStage<Response> oauth2callback(String state, String code, String sessionState) {
-    return oauth2callback(oauthService, state, sessionState, code);
+  public CompletionStage<Response> oauth2callback(String code, String state, String sessionState) {
+    return oauth2callback(oauthService, code, state, sessionState);
   }
 
   @Override

@@ -20,7 +20,10 @@ import AuthPageLayout from 'modules/auth/components/PageLayout';
 import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import SsoButton from 'modules/auth/components/SsoButton';
 
-import { createOAuth2IntegrationHrefBuilder } from './utils';
+import {
+  createOAuth2IntegrationHrefBuilder,
+  samlIntegrationHrefBuilder,
+} from './utils';
 
 type FormData = {
   email: string;
@@ -96,6 +99,14 @@ const LoginPage = () => {
         theme={theme}
       >
         Sign in with Microsoft
+      </SsoButton>
+
+      <SsoButton
+        href={samlIntegrationHrefBuilder(encodedDestination)}
+        icon={<FaMicrosoft />}
+        theme={theme}
+      >
+        Sign in with SAML
       </SsoButton>
 
       <Divider />

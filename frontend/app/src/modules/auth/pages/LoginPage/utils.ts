@@ -7,3 +7,7 @@ export const createOAuth2IntegrationHrefBuilder = (
 ) => (integration: OAuth2Integration) => {
   return `${authApiBaseURL}/v1/sso/oauth2/${integration}/signin?dest=${encodedDestination}`;
 };
+
+export const samlIntegrationHrefBuilder = (encodedDestination: string) => {
+  return `${authApiBaseURL}/v1/sso/saml/signin?dest=${encodedDestination}`;
+};

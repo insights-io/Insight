@@ -1,4 +1,4 @@
-package com.meemaw.auth.sso.resource.v1;
+package com.meemaw.auth.sso.session.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.login;
@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;

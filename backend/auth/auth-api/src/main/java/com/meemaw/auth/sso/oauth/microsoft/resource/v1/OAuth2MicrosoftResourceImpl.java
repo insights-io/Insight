@@ -22,8 +22,8 @@ public class OAuth2MicrosoftResourceImpl
   }
 
   @Override
-  public CompletionStage<Response> oauth2callback(String state, String code, String sessionState) {
-    return oauth2callback(OAuth2MicrosoftService, state, sessionState, code);
+  public CompletionStage<Response> oauth2callback(String code, String state, String sessionState) {
+    return oauth2callback(OAuth2MicrosoftService, code, state, sessionState);
   }
 
   @Override

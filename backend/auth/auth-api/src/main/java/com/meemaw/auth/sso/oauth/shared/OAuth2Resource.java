@@ -22,7 +22,7 @@ public interface OAuth2Resource {
   @GET
   @Path(CALLBACK_PATH)
   CompletionStage<Response> oauth2callback(
-      @NotBlank(message = "Required") @QueryParam("state") String state,
       @NotBlank(message = "Required") @QueryParam("code") String code,
+      @NotBlank(message = "Required") @QueryParam("state") String state,
       @CookieParam("state") String sessionState);
 }

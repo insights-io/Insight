@@ -38,7 +38,7 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
     NewCookie sessionCookie = new NewCookie("state", state);
 
     log.info(
-        "[AUTH]: OpenID sign in request redirect={} referer={} location={}",
+        "[AUTH]: OAuth2 sign in request redirect={} referer={} location={}",
         serverRedirectUri,
         refererBaseURL,
         location);
@@ -47,7 +47,7 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
   }
 
   public CompletionStage<Response> oauth2callback(
-      AbstractOAuth2Service<T, U, E> oauthService, String state, String sessionState, String code) {
+      AbstractOAuth2Service<T, U, E> oauthService, String code, String state, String sessionState) {
     String redirectUri = getRedirectUri(info, request);
     return oauthService
         .oauth2callback(state, sessionState, code, redirectUri)
