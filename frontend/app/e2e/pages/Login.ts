@@ -10,7 +10,7 @@ class Login {
 
   /* Selectors */
   public readonly emailInput = getByPlaceholderText('Email');
-  public readonly workEmailInput = getByPlaceholderText('Work Email');
+  public readonly workEmailInput = getByPlaceholderText('user@company.com');
   public readonly samlSsoDisabledErrorMessage = queryByText(
     'That email or domain isn’t registered for SSO.'
   );
