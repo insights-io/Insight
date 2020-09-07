@@ -17,7 +17,7 @@ public interface OAuth2Resource {
 
   @GET
   @Path(SIGNIN_PATH)
-  Response signIn(@NotBlank(message = "Required") @QueryParam("dest") String destination);
+  Response signIn(@NotBlank(message = "Required") @QueryParam("redirect") String redirect);
 
   @GET
   @Path(CALLBACK_PATH)

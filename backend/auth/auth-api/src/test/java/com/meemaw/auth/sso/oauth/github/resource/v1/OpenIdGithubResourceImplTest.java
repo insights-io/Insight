@@ -61,7 +61,7 @@ public class OpenIdGithubResourceImplTest {
   URI signInUri;
 
   @Test
-  public void sign_in__should_fail__when_no_dest() {
+  public void sign_in__should_fail__when_missing_redirect() {
     given()
         .when()
         .get(signInUri)
@@ -69,14 +69,14 @@ public class OpenIdGithubResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"destination\":\"Required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"redirect\":\"Required\"}}}"));
   }
 
   @Test
   public void sign_in__should_fail__when_no_referer() {
     given()
         .when()
-        .queryParam("dest", "/test")
+        .queryParam("redirect", "/test")
         .get(signInUri)
         .then()
         .statusCode(400)
@@ -90,7 +90,7 @@ public class OpenIdGithubResourceImplTest {
     given()
         .header("referer", "malformed")
         .when()
-        .queryParam("dest", "/test")
+        .queryParam("redirect", "/test")
         .get(signInUri)
         .then()
         .statusCode(400)
@@ -127,7 +127,7 @@ public class OpenIdGithubResourceImplTest {
             .header("X-Forwarded-Host", forwardedHost)
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .queryParam("dest", dest)
+            .queryParam("redirect", dest)
             .get(signInUri);
 
     response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
@@ -149,13 +149,13 @@ public class OpenIdGithubResourceImplTest {
             + "&response_type=code&scope=read%3Auser+user%3Aemail&state=";
 
     String referer = "http://localhost:3000";
-    String dest = "/test";
+    String redirect = "/test";
     Response response =
         given()
             .header("referer", referer)
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .queryParam("dest", dest)
+            .queryParam("redirect", redirect)
             .get(signInUri);
 
     response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
@@ -163,7 +163,7 @@ public class OpenIdGithubResourceImplTest {
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination =
         state.substring(AbstractIdentityProviderService.SECURE_STATE_PREFIX_LENGTH);
-    assertEquals(URLEncoder.encode(referer + dest, StandardCharsets.UTF_8), destination);
+    assertEquals(URLEncoder.encode(referer + redirect, StandardCharsets.UTF_8), destination);
   }
 
   @Test

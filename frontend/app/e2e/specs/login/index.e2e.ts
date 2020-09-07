@@ -9,7 +9,7 @@ fixture('/login').page(config.appBaseURL);
 test('Login form should be validated both client & server side', async (t) => {
   await t
     .expect(getLocation())
-    .eql(`${LoginPage.path}?dest=%2F`)
+    .eql(`${LoginPage.path}?redirect=%2F`)
     .click(LoginPage.signInButton)
     .expect(getAllByText('Required').count)
     .eql(2, 'Both fields should be required')

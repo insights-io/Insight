@@ -11,6 +11,7 @@ import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.http.HttpServerRequest;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -113,9 +114,13 @@ public class SamlResourceImpl implements SamlResource {
                 samlMetadata = samlService.fetchMetadata(new URL(configurationEndpoint));
               } catch (IOException | XMLParserException ex) {
                 log.error(
-                    "[AUTH]: SAML callback failed to fetch metadata configurationEndpoint={}",
+                    "[AUTH]: SAML callback failed to fetch SSO configuration endpoint={}",
                     configurationEndpoint);
-                return CompletableFuture.completedStage(Boom.serverError().response());
+                return CompletableFuture.completedStage(
+                    Boom.badRequest()
+                        .message("Failed to fetch SSO configuration")
+                        .errors(Map.of("configurationEndpoint", ex.getMessage()))
+                        .response());
               }
 
               if (!samlMetadata.getEntityId().equals(samlDataResponse.getIssuer())) {
@@ -128,7 +133,6 @@ public class SamlResourceImpl implements SamlResource {
               }
 
               samlService.validateSignature(samlDataResponse.getSignature(), samlMetadata);
-
               String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
               String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
               String location = samlService.secureStateData(relayState);

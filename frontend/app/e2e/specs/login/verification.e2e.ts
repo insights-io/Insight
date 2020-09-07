@@ -14,7 +14,7 @@ import {
 fixture('/login/verification').page(VerificationPage.path);
 
 test('[TOTP]: Should be able to complete full TFA flow after password reset', async (t) => {
-  await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
+  await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
   await SignUpPage.signUpAndLogin(t, { email, password });
@@ -53,7 +53,7 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
     .typeText(PasswordResetPage.passwordInput, newPassword)
     .click(PasswordResetPage.submitButton)
     .expect(getLocation())
-    .eql(`${VerificationPage.path}?dest=%2F`)
+    .eql(`${VerificationPage.path}?redirect=%2F`)
     .expect(VerificationPage.tabs.totp.title.visible)
     .ok('TOTP TFA tab visible')
     .expect(VerificationPage.tabs.sms.title.visible)
@@ -70,7 +70,7 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
 });
 
 test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
-  await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
+  await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { email, password } = SignUpPage.generateRandomCredentials();
 
   await SignUpPage.signUpAndLogin(t, { email, password });
@@ -99,7 +99,7 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
     .expect(VerificationPage.message.visible)
     .ok('should display help message')
     .expect(getLocation())
-    .eql(`${VerificationPage.path}?dest=%2F`)
+    .eql(`${VerificationPage.path}?redirect=%2F`)
     .expect(VerificationPage.tabs.totp.title.visible)
     .ok('TOTP TFA tab visible')
     .expect(VerificationPage.tabs.sms.title.visible)
@@ -119,7 +119,7 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
 });
 
 test('[SMS]: Should be able to complete full TFA flow after password reset', async (t) => {
-  await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
+  await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
   await SignUpPage.signUpAndLogin(t, {
@@ -166,7 +166,7 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
     .typeText(PasswordResetPage.passwordInput, newPassword)
     .click(PasswordResetPage.submitButton)
     .expect(getLocation())
-    .eql(`${VerificationPage.path}?dest=%2F`)
+    .eql(`${VerificationPage.path}?redirect=%2F`)
     .expect(VerificationPage.tabs.sms.title.visible)
     .ok('SMS TFA tab visible')
     .expect(VerificationPage.tabs.totp.title.visible)
@@ -183,7 +183,7 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
 });
 
 test('[SMS + TOTP]: Should be able to complete full TFA flow', async (t) => {
-  await t.expect(getLocation()).eql(`${LoginPage.path}?dest=%2F`);
+  await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
   await SignUpPage.signUpAndLogin(t, {

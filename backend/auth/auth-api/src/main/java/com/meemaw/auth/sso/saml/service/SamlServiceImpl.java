@@ -74,10 +74,14 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
 
   public void validateSignature(Signature signature, SamlMetadataResponse metadata) {
     try {
-      SignatureValidator.validate(signature, credentials(metadata));
-    } catch (SignatureException | CertificateException ex) {
-      log.error("[AUTH]: SAML callback failed to validate signature metadata={}", metadata, ex);
-      throw Boom.serverError().exception(ex);
+      Credential credential = credentials(metadata);
+      SignatureValidator.validate(signature, credential);
+    } catch (SignatureException ex) {
+      log.error("[AUTH]: SAML callback signature exception metadata={}", metadata, ex);
+      throw Boom.badRequest().message(ex.getMessage()).exception(ex);
+    } catch (CertificateException ex) {
+      log.error("[AUTH]: SAML callback certificate exception metadata={}", metadata, ex);
+      throw Boom.serverError().message(ex.getMessage()).exception(ex);
     }
   }
 

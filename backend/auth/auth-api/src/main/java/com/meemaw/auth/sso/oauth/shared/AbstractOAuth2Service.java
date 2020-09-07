@@ -24,10 +24,10 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
 
   @Inject SsoService ssoService;
 
-  public abstract URI buildAuthorizationUri(String state, String redirectUri);
+  public abstract URI buildAuthorizationUri(String state, String serverRedirectUri);
 
   public abstract CompletionStage<SsoSocialLogin> oauth2callback(
-      String state, String sessionState, String code, String redirectUri);
+      String state, String sessionState, String code, String serverRedirectUri);
 
   /**
    * Extract data encoded in a secure state by stripping the prefix of fixed length.
@@ -45,14 +45,14 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
       String state,
       String sessionState,
       String code,
-      String redirectUri) {
+      String serverRedirectUri) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {
       log.warn("[AUTH]: OAuth2 state miss-match, session: {}, query: {}", sessionState, state);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 
     return oauthClient
-        .codeExchange(code, redirectUri)
+        .codeExchange(code, serverRedirectUri)
         .thenCompose(oauthClient::userInfo)
         .thenCompose(
             userInfo -> {

@@ -38,7 +38,7 @@ public abstract class AbstractOAuth2Client<T, U extends OAuthUserInfo, E extends
   protected abstract CompletionStage<HttpResponse<Buffer>> requestUserInfo(T token);
 
   protected abstract CompletionStage<HttpResponse<Buffer>> requestCodeExchange(
-      String code, String redirectUri);
+      String code, String serverRedirectUri);
 
   @Traced
   public CompletionStage<U> userInfo(T token) {
@@ -48,9 +48,12 @@ public abstract class AbstractOAuth2Client<T, U extends OAuthUserInfo, E extends
   }
 
   @Traced
-  public CompletionStage<T> codeExchange(String code, String redirectUri) {
-    log.info("[AUTH]: OAuth2 code exchange request code={} redirectUri={}", code, redirectUri);
-    return requestCodeExchange(code, redirectUri)
+  public CompletionStage<T> codeExchange(String code, String serverRedirectUri) {
+    log.info(
+        "[AUTH]: OAuth2 code exchange request code={} serverRedirectUri={}",
+        code,
+        serverRedirectUri);
+    return requestCodeExchange(code, serverRedirectUri)
         .thenApply(response -> parseResponse(response, getTokenClazz(), getErrorClazz()));
   }
 

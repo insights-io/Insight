@@ -28,12 +28,12 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
     return RequestUtils.getServerBaseURL(info, request) + getBasePath() + "/" + CALLBACK_PATH;
   }
 
-  public Response signIn(AbstractOAuth2Service<T, U, E> oauthService, String destination) {
+  public Response signIn(AbstractOAuth2Service<T, U, E> oauthService, String refererRedirect) {
     String serverRedirectUri = getRedirectUri(info, request);
     String refererBaseURL =
         RequestUtils.parseRefererBaseURL(request)
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
-    String state = oauthService.secureState(refererBaseURL + destination);
+    String state = oauthService.secureState(refererBaseURL + refererRedirect);
     URI location = oauthService.buildAuthorizationUri(state, serverRedirectUri);
     NewCookie sessionCookie = new NewCookie("state", state);
 

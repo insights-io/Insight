@@ -1,70 +1,30 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
-import { useForm } from 'react-hook-form';
 import { Button } from 'baseui/button';
-import { createInputOverrides } from 'shared/styles/input';
-import AuthApi from 'api/auth';
 import { useRouter } from 'next/router';
-import { APIError, APIErrorDataResponse } from '@insight/types';
 import Divider from 'shared/components/Divider';
-import Link from 'next/link';
-import FormError from 'shared/components/FormError';
-import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
-import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { TRY_BASE_URL } from 'shared/config';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
 import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import SsoButton from 'modules/auth/components/SsoButton';
+import { Tab, Tabs } from 'baseui/tabs-motion';
 
-import {
-  createOAuth2IntegrationHrefBuilder,
-  samlIntegrationHrefBuilder,
-} from './utils';
-
-type FormData = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
+import { createOAuth2IntegrationHrefBuilder } from './utils';
+import LoginEmailForm from './EmailForm';
+import { LoginMethod } from './types';
+import LoginSamlSsoForm from './SamlSsoForm';
 
 const LoginPage = () => {
+  const [activeMethod, setActiveMethod] = useState<LoginMethod>('email');
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
-  const { register, handleSubmit, errors } = useForm<FormData>();
-  const inputOverrides = createInputOverrides(theme);
-  const { dest = '/' } = router.query;
-  const [formError, setFormError] = useState<APIError | undefined>();
-  const encodedDestination = encodeURIComponent(dest as string);
+  const redirect = (router.query.redirect || '/') as string;
+  const encodedRedirect = encodeURIComponent(redirect as string);
   const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder(
-    encodedDestination
+    encodedRedirect
   );
-
-  const onSubmit = handleSubmit((formData) => {
-    if (isSubmitting) {
-      return;
-    }
-    setIsSubmitting(true);
-
-    AuthApi.sso
-      .login(formData.email, formData.password)
-      .then((response) => {
-        if (response.data === true) {
-          router.replace(dest as string);
-        } else {
-          router.replace(`/login/verification?dest=${encodedDestination}`);
-        }
-      })
-      .catch(async (error) => {
-        const errorDTO: APIErrorDataResponse = await error.response.json();
-        setFormError(errorDTO.error);
-      })
-      .finally(() => setIsSubmitting(false));
-  });
 
   return (
     <AuthPageLayout>
@@ -101,67 +61,23 @@ const LoginPage = () => {
         Sign in with Microsoft
       </SsoButton>
 
-      <SsoButton
-        href={samlIntegrationHrefBuilder(encodedDestination)}
-        icon={<FaMicrosoft />}
-        theme={theme}
+      <Tabs
+        overrides={{ Root: { style: { marginTop: theme.sizing.scale600 } } }}
+        activeKey={activeMethod}
+        onChange={(params) => setActiveMethod(params.activeKey as LoginMethod)}
+        activateOnFocus
       >
-        Sign in with SAML
-      </SsoButton>
-
-      <Divider />
-
-      <form onSubmit={onSubmit} noValidate>
-        <Block>
-          <FormControl label="Email" error={errors.email?.message}>
-            <Input
-              overrides={inputOverrides}
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Email"
-              required
-              inputRef={register(EMAIL_VALIDATION)}
-              error={Boolean(errors.email)}
-            />
-          </FormControl>
-        </Block>
-
-        <Block marginBottom={theme.sizing.scale1200}>
-          <FormControl
-            label={
-              <Block display="flex" justifyContent="space-between">
-                <span>Password</span>
-                <Link href="/password-forgot">
-                  <a>Forgot?</a>
-                </Link>
-              </Block>
-            }
-            error={errors.password?.message}
-          >
-            <Input
-              overrides={inputOverrides}
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Password"
-              ref={register}
-              inputRef={register(PASSWORD_VALIDATION)}
-              error={Boolean(errors.password)}
-            />
-          </FormControl>
-        </Block>
-
-        <Button
-          type="submit"
-          $style={{ width: '100%' }}
-          isLoading={isSubmitting}
-        >
-          Sign in
-        </Button>
-
-        {formError && <FormError error={formError} />}
-      </form>
+        <Tab title="Email" key="email">
+          <LoginEmailForm
+            redirect={redirect}
+            encodedRedirect={encodedRedirect}
+            replace={router.replace}
+          />
+        </Tab>
+        <Tab title="SAML SSO" key="saml-sso">
+          <LoginSamlSsoForm encodedRedirect={encodedRedirect} />
+        </Tab>
+      </Tabs>
 
       <Divider />
 

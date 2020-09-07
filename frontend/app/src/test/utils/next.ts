@@ -25,7 +25,7 @@ export function authenticatedTestCases<T>(
       const { req, res, writeHead, end } = mockServerSideRequest();
       const serverSideProps = await getServerSideProps({ query: {}, req, res });
       sandbox.assert.calledWithExactly(writeHead, 302, {
-        Location: '/login?dest=%2F',
+        Location: '/login?redirect=%2F',
       });
       sandbox.assert.calledWithExactly(end);
       expect(serverSideProps).toEqual({ props: {} });
@@ -37,7 +37,7 @@ export function authenticatedTestCases<T>(
       const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
-        Location: '/login/verification?dest=%2F',
+        Location: '/login/verification?redirect=%2F',
       });
       sandbox.assert.calledWithExactly(end);
       expect(serverSideProps).toEqual({ props: {} });
@@ -54,7 +54,7 @@ export function authenticatedTestCases<T>(
       const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
-        Location: '/login?dest=%2F',
+        Location: '/login?redirect=%2F',
         'set-cookie': undefined,
       });
       sandbox.assert.calledWithExactly(end);
@@ -75,7 +75,7 @@ export function authenticatedTestCases<T>(
       const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
-        Location: '/login/verification?dest=%2F',
+        Location: '/login/verification?redirect=%2F',
       });
       sandbox.assert.calledWithExactly(end);
       sandbox.assert.calledWithMatch(getSessionStub, '123', {
