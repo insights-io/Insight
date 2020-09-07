@@ -2,6 +2,7 @@ package com.meemaw.auth.sso.saml.resource.v1;
 
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import java.util.concurrent.CompletionStage;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -20,7 +21,9 @@ public interface SamlResource {
 
   @GET
   @Path(SIGNIN_PATH)
-  Response signIn(@NotBlank(message = "Required") @QueryParam("dest") String destination);
+  CompletionStage<Response> signIn(
+      @NotBlank(message = "Required") @QueryParam("redirect") String redirect,
+      @NotBlank(message = "Required") @Email @QueryParam("email") String email);
 
   @POST
   @Path(CALLBACK_PATH)

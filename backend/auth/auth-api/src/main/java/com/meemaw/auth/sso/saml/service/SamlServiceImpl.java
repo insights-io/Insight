@@ -17,10 +17,10 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.ws.rs.core.UriBuilder;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import net.shibboleth.utilities.java.support.xml.XMLParserException;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -38,19 +38,21 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 @ApplicationScoped
 @Slf4j
 public class SamlServiceImpl extends AbstractIdentityProviderService {
 
   private CertificateFactory certificateFactory;
+  private BasicParserPool parsePool;
 
   public void init(@Observes StartupEvent event) {
     try {
       InitializationService.initialize();
       certificateFactory = CertificateFactory.getInstance("X.509");
-    } catch (InitializationException | CertificateException ex) {
+      parsePool = new BasicParserPool();
+      parsePool.initialize();
+    } catch (InitializationException | CertificateException | ComponentInitializationException ex) {
       log.error("Failed to initialize", ex);
     }
   }
@@ -80,12 +82,9 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
   }
 
   public SamlMetadataResponse fetchMetadata(URL metadataURL)
-      throws IOException, ParserConfigurationException, SAXException {
+      throws IOException, XMLParserException {
     InputStream is = metadataURL.openConnection().getInputStream();
-
-    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-    Document document = documentBuilder.parse(is);
+    Document document = parsePool.parse(is);
     String certificate =
         "-----BEGIN CERTIFICATE-----\n"
             + document.getElementsByTagName("ds:X509Certificate").item(0).getTextContent()
@@ -110,15 +109,11 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
   }
 
   private Response decodeOpenSamlResponse(String samlResponse)
-      throws ParserConfigurationException, IOException, SAXException, UnmarshallingException {
+      throws UnmarshallingException, XMLParserException {
     byte[] base64DecodedResponse = Base64.getDecoder().decode(samlResponse);
     ByteArrayInputStream is = new ByteArrayInputStream(base64DecodedResponse);
-    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-    documentBuilderFactory.setNamespaceAware(true);
-    DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();
-    Document document = docBuilder.parse(is);
+    Document document = parsePool.parse(is);
     Element element = document.getDocumentElement();
-
     UnmarshallerFactory umFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();
     Unmarshaller unmarshaller = umFactory.getUnmarshaller(element);
     if (unmarshaller == null) {
@@ -129,7 +124,7 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
   }
 
   public SamlDataResponse decodeSamlResponse(String samlResponse)
-      throws ParserConfigurationException, UnmarshallingException, SAXException, IOException {
+      throws UnmarshallingException, XMLParserException {
     Response openSamlResponse = decodeOpenSamlResponse(samlResponse);
     if (openSamlResponse.getAssertions().isEmpty()) {
       throw Boom.badRequest().message("Missing assertions").exception();

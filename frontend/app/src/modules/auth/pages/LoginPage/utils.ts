@@ -9,5 +9,5 @@ export const createOAuth2IntegrationHrefBuilder = (
 };
 
 export const samlIntegrationHrefBuilder = (encodedDestination: string) => {
-  return `${authApiBaseURL}/v1/sso/saml/signin?dest=${encodedDestination}`;
+  return `${authApiBaseURL}/v1/sso/saml/signin?redirect=${encodedDestination}`;
 };

@@ -116,6 +116,18 @@ CREATE TABLE auth.user_tfa_setup
     FOREIGN KEY (user_id) REFERENCES auth.user (id)
 );
 
+CREATE TABLE auth.sso_setup
+(
+    organization_id        TEXT        NOT NULL UNIQUE,
+    domain                 TEXT        NOT NULL UNIQUE,
+    type                   TEXT        NOT NULL,
+    configuration_endpoint TEXT        NOT NULL,
+    created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    PRIMARY KEY (organization_id, domain),
+    FOREIGN KEY (organization_id) REFERENCES auth.organization (id)
+);
+
 /* Bootstrap Insight organization */
 INSERT INTO auth.organization(id, name)
 VALUES ('000000', 'Insight');

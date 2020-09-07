@@ -2,13 +2,16 @@ package com.meemaw.auth.sso.saml.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.sso.AbstractIdentityProviderService;
+import com.meemaw.auth.core.EmailUtils;
+import com.meemaw.auth.organization.datasource.OrganizationDatasource;
+import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
+import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
+import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
@@ -16,7 +19,6 @@ import com.meemaw.test.setup.RestAssuredUtils;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.response.Response;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +34,9 @@ public class SamlResourceImplTest {
   @Inject ObjectMapper objectMapper;
   @Inject SamlServiceImpl samlService;
   @Inject UserDatasource userDatasource;
+  @Inject OrganizationDatasource organizationDatasource;
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
+  @Inject SsoSetupDatasource ssoSetupDatasource;
 
   @TestHTTPResource(SamlResource.PATH + "/" + SamlResource.CALLBACK_PATH)
   URI callbackUri;
@@ -41,7 +45,7 @@ public class SamlResourceImplTest {
   URI signInUri;
 
   @Test
-  public void sign_in__should_fail__when_no_dest() {
+  public void sign_in__should_fail__when_no_params() {
     given()
         .when()
         .get(signInUri)
@@ -49,14 +53,30 @@ public class SamlResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"destination\":\"Required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"redirect\":\"Required\",\"email\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void sign_in__should_fail__when_malformed_email() {
+    given()
+        .header("referer", "malformed")
+        .when()
+        .queryParam("redirect", "/test")
+        .queryParam("email", "matej.snuderl")
+        .get(signInUri)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"email\":\"must be a well-formed email address\"}}}"));
   }
 
   @Test
   public void sign_in__should_fail__when_no_referer() {
     given()
         .when()
-        .queryParam("dest", "/test")
+        .queryParam("redirect", "/test")
+        .queryParam("email", "matej.snuderl@snuderls.eu")
         .get(signInUri)
         .then()
         .statusCode(400)
@@ -70,7 +90,8 @@ public class SamlResourceImplTest {
     given()
         .header("referer", "malformed")
         .when()
-        .queryParam("dest", "/test")
+        .queryParam("redirect", "/test")
+        .queryParam("email", "matej.snuderl@snuderls.eu")
         .get(signInUri)
         .then()
         .statusCode(400)
@@ -80,25 +101,21 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void sign_in__should_start_flow__by_redirecting_to_provider() {
+  public void sign_in__should_fail__when_domain_with_no_sso_setup() {
     String referer = "http://localhost:3000";
-    String dest = "/test";
-    String expectedLocationBase =
-        "https://snuderls.okta.com/app/snuderlsorg446661_insightdev_1/exkw843tlucjMJ0kL4x6/sso/saml?RelayState=";
+    String redirect = "/test";
 
-    Response response =
-        given()
-            .header("referer", referer)
-            .config(RestAssuredUtils.dontFollowRedirects())
-            .when()
-            .queryParam("dest", dest)
-            .get(signInUri);
-
-    response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
-    String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination =
-        state.substring(AbstractIdentityProviderService.SECURE_STATE_PREFIX_LENGTH);
-    assertEquals(URLEncoder.encode(referer + dest, StandardCharsets.UTF_8), destination);
+    given()
+        .when()
+        .header("referer", referer)
+        .queryParam("redirect", redirect)
+        .queryParam("email", "matej.snuderl@snuderls.io")
+        .get(signInUri)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"SSO not configured. Please contact your administrator.\"}}"));
   }
 
   @Test
@@ -147,7 +164,26 @@ public class SamlResourceImplTest {
 
   @Test
   public void callback__should_sign_up_user__when_valid_saml_response() {
+    String organizationId = Organization.identifier();
+    Organization organization =
+        organizationDatasource
+            .createOrganization(organizationId, "Test")
+            .toCompletableFuture()
+            .join();
+
     String email = "matej.snuderl@snuderls.eu";
+    String configurationEndpoint =
+        "https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata";
+    ssoSetupDatasource
+        .create(
+            new CreateSsoSetupDTO(
+                organization.getId(),
+                EmailUtils.domainFromEmail(email),
+                "OKTA",
+                configurationEndpoint))
+        .toCompletableFuture()
+        .join();
+
     String Location = "https://www.insight.io/my_path";
     String state = samlService.secureState(Location);
     String samlResponse =

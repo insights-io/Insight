@@ -14,7 +14,7 @@ public class UserPhoneCodeServiceTest {
   @Inject UserPhoneCodeService userPhoneCodeService;
 
   @Test
-  public void user_phone_code_service__should_allways_generate_code_of_same_length() {
+  public void user_phone_code_service__should_always_generate_code_of_same_length() {
     for (int i = 0; i < 100; i++) {
       int code = userPhoneCodeService.newCode();
       assertEquals(UserPhoneCodeService.CODE_LENGTH, String.valueOf(code).length());
