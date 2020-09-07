@@ -10,5 +10,5 @@ public class SsoSetupDTO {
   String domain;
   String type;
   String configurationEndpoint;
-  OffsetDateTime offsetDateTime;
+  OffsetDateTime createdAt;
 }

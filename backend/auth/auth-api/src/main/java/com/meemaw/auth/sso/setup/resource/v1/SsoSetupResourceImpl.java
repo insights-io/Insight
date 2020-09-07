@@ -6,6 +6,7 @@ import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.shared.rest.response.Boom;
+import com.meemaw.shared.rest.response.DataResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -74,6 +75,22 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
                 return CompletableFuture.completedStage(
                     Boom.badRequest().message("Failed to fetch SSO configuration").response());
               }
+            });
+  }
+
+  @Override
+  public CompletionStage<Response> get(String domain) {
+    log.info("[AUTH] SSO setup get request domain={}", domain);
+    return ssoSetupDatasource
+        .getByDomain(domain)
+        .thenApply(
+            maybeSsoSetup -> {
+              if (maybeSsoSetup.isEmpty()) {
+                return Boom.notFound()
+                    .message("That email or domain isn’t registered for SSO.")
+                    .response();
+              }
+              return DataResponse.ok(maybeSsoSetup.get());
             });
   }
 }

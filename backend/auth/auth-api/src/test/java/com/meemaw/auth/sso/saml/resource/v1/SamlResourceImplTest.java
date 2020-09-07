@@ -15,6 +15,7 @@ import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.test.setup.RestAssuredUtils;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.http.TestHTTPResource;
@@ -115,7 +116,7 @@ public class SamlResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"SSO not configured. Please contact your administrator.\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"That email or domain isn’t registered for SSO.\"}}"));
   }
 
   @Test
@@ -282,5 +283,7 @@ public class SamlResourceImplTest {
 
     AuthUser user = userDatasource.findUser(email).toCompletableFuture().join().get();
     assertEquals(user.getFullName(), "Matej Snuderl");
+    assertEquals(user.getOrganizationId(), organizationId);
+    assertEquals(user.getRole(), UserRole.STANDARD);
   }
 }

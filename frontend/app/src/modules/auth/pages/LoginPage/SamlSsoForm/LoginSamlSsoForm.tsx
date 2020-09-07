@@ -1,3 +1,5 @@
+import { APIError, APIErrorDataResponse } from '@insight/types';
+import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { Button } from 'baseui/button';
@@ -5,6 +7,7 @@ import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import React, { useState, useMemo } from 'react';
+import FormError from 'shared/components/FormError';
 import { createInputOverrides } from 'shared/styles/input';
 import { locationAssign } from 'shared/utils/window';
 
@@ -14,12 +17,12 @@ type Props = { encodedRedirect: string };
 
 const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
   const [_css, theme] = useStyletron();
-  const [isSubmitting] = useState(false);
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputOverrides = createInputOverrides(theme);
-  const encodedEmail = encodeURIComponent(email);
+  const [formError, setFormError] = useState<APIError | undefined>();
 
-  const error = useMemo(() => {
+  const validationError = useMemo(() => {
     if (!email) {
       return undefined;
     }
@@ -30,19 +33,38 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
     return undefined;
   }, [email]);
 
-  return (
-    <form
-      onSubmit={(event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        locationAssign(
-          samlIntegrationHrefBuilder(encodedRedirect, encodedEmail)
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    const domain = email.split('@')[1];
+    setIsSubmitting(true);
+
+    AuthApi.ssoSetup
+      .get(domain)
+      .then(() => {
+        const encodedEmail = encodeURIComponent(email);
+        const location = samlIntegrationHrefBuilder(
+          encodedRedirect,
+          encodedEmail
         );
-      }}
-      noValidate
-    >
+        locationAssign(location);
+      })
+      .catch(async (error) => {
+        const errorDTO: APIErrorDataResponse = await error.response.json();
+        setFormError(errorDTO.error);
+      })
+      .finally(() => setIsSubmitting(false));
+  };
+
+  return (
+    <form onSubmit={onSubmit} noValidate>
       <Block>
-        <FormControl label="Work Email" error={error}>
+        <FormControl label="Work Email" error={validationError}>
           <Input
             overrides={inputOverrides}
             id="email"
@@ -52,7 +74,7 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
             required
             value={email}
             onChange={(event) => setEmail(event.currentTarget.value)}
-            error={Boolean(error)}
+            error={Boolean(validationError)}
           />
         </FormControl>
       </Block>
@@ -61,10 +83,11 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
         type="submit"
         $style={{ width: '100%' }}
         isLoading={isSubmitting}
-        disabled={Boolean(error) || !email}
+        disabled={Boolean(validationError) || !email}
       >
         Sign in
       </Button>
+      {formError && <FormError error={formError} />}
     </form>
   );
 };

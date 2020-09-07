@@ -36,4 +36,6 @@ public interface SsoService {
   CompletionStage<LoginResult<?>> login(String email, String password, String ipAddress);
 
   CompletionStage<LoginResult<?>> socialLogin(String email, String fullName);
+
+  CompletionStage<LoginResult<?>> ssoLogin(String email, String fullName, String organizationId);
 }

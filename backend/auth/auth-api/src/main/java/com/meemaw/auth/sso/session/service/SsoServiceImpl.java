@@ -187,6 +187,48 @@ public class SsoServiceImpl implements SsoService {
             });
   }
 
+  @Override
+  public CompletionStage<LoginResult<?>> ssoLogin(
+      String email, String fullName, String organizationId) {
+    MDC.put(LoggingConstants.USER_EMAIL, email);
+    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+    log.info("[AUTH]: SSO login attempt email={} organizationId={}", email, organizationId);
+    return ssoFindOrSignUpUser(email, fullName, organizationId)
+        .thenCompose(
+            userWithLoginInformation -> {
+              AuthUser user = userWithLoginInformation.user();
+              List<TfaMethod> tfaMethods = userWithLoginInformation.getTfaMethods();
+              return authenticate(user, tfaMethods);
+            })
+        .thenApply(
+            loginResult -> {
+              log.info("[AUTH]: Successful SSO login for user: {}", email);
+              return loginResult;
+            });
+  }
+
+  private CompletionStage<UserWithLoginInformation> ssoFindOrSignUpUser(
+      String email, String fullName, String organizationId) {
+    return userDatasource
+        .findUserWithLoginInformation(email)
+        .thenCompose(
+            maybeUserWithLoginInformation -> {
+              if (maybeUserWithLoginInformation.isPresent()) {
+                UserWithLoginInformation user = maybeUserWithLoginInformation.get();
+                log.info("[AUTH]: SSO linked with an existing user: {}", user.getId());
+                return CompletableFuture.completedFuture(user);
+              }
+
+              return signUpService
+                  .ssoSignUp(email, fullName, organizationId)
+                  .thenApply(
+                      authUser -> {
+                        log.info("[AUTH]: User email={} signed up through SSO", email);
+                        return UserWithLoginInformation.fresh(authUser);
+                      });
+            });
+  }
+
   private CompletionStage<UserWithLoginInformation> socialFindOrSignUpUser(
       String email, String fullName) {
     return userDatasource

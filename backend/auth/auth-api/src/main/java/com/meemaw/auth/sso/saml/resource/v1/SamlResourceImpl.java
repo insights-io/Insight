@@ -50,7 +50,7 @@ public class SamlResourceImpl implements SamlResource {
               if (maybeSsoSetup.isEmpty()) {
                 log.info("[AUTH]: SSO not configured for email={}", email);
                 return Boom.badRequest()
-                    .message("SSO not configured. Please contact your administrator.")
+                    .message("That email or domain isn’t registered for SSO.")
                     .response();
               }
 
@@ -105,17 +105,19 @@ public class SamlResourceImpl implements SamlResource {
                 log.info("[AUTH]: SSO not configured for email={}", email);
                 return CompletableFuture.completedStage(
                     Boom.badRequest()
-                        .message("SSO not configured. Please contact your administrator.")
+                        .message("That email or domain isn’t registered for SSO.")
                         .response());
               }
+              String organizationId = maybeSsoSetup.get().getOrganizationId();
               String configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
               SamlMetadataResponse samlMetadata;
               try {
                 samlMetadata = samlService.fetchMetadata(new URL(configurationEndpoint));
               } catch (IOException | XMLParserException ex) {
                 log.error(
-                    "[AUTH]: SAML callback failed to fetch SSO configuration endpoint={}",
-                    configurationEndpoint);
+                    "[AUTH]: SAML callback failed to fetch SSO configuration endpoint={} organization={}",
+                    configurationEndpoint,
+                    organizationId);
                 return CompletableFuture.completedStage(
                     Boom.badRequest()
                         .message("Failed to fetch SSO configuration")
@@ -125,9 +127,10 @@ public class SamlResourceImpl implements SamlResource {
 
               if (!samlMetadata.getEntityId().equals(samlDataResponse.getIssuer())) {
                 log.error(
-                    "[AUTH]: SAML callback entity miss-match expected={} actual={}",
+                    "[AUTH]: SAML callback entity miss-match expected={} actual={} organization={}",
                     samlMetadata.getEntityId(),
-                    samlDataResponse.getIssuer());
+                    samlDataResponse.getIssuer(),
+                    organizationId);
                 return CompletableFuture.completedStage(
                     Boom.badRequest().message("Invalid entityId").response());
               }
@@ -137,7 +140,7 @@ public class SamlResourceImpl implements SamlResource {
               String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
               String location = samlService.secureStateData(relayState);
               return ssoService
-                  .socialLogin(email, samlDataResponse.getFullName())
+                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId)
                   .thenApply(
                       loginResult -> {
                         log.info(

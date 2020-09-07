@@ -27,3 +27,15 @@ export type SessionDTO = {
 export type Session = Omit<SessionDTO, 'createdAt'> & {
   createdAt: Date;
 };
+
+export type SsoSetupDTO = {
+  organizationId: string;
+  domain: string;
+  type: string;
+  configurationEndpoint: string;
+  createdAt: string;
+};
+
+export type SsoSetup = Omit<SsoSetupDTO, 'createdAt'> & {
+  createdAt: Date;
+};
