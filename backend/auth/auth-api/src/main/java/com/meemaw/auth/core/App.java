@@ -7,18 +7,7 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.servers.Server;
 
 @OpenAPIDefinition(
-    info = @Info(
-        title = "Auth API",
-        version = "1.0.0"
-    ),
-    servers = @Server(
-        url = "http://localhost:8080"
-    ),
-    security = @SecurityRequirement(
-        name = "Cookie Auth",
-        scopes = "cookie"
-    )
-)
-public class App extends Application {
-
-}
+    info = @Info(title = "Auth API", version = "1.0.0"),
+    servers = @Server(url = "http://localhost:8080"),
+    security = @SecurityRequirement(name = "Cookie Auth", scopes = "cookie"))
+public class App extends Application {}

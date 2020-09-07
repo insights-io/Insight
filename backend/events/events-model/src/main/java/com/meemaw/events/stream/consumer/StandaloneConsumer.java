@@ -19,5 +19,4 @@ public interface StandaloneConsumer<R, P, O> {
   void shutdown();
 
   void close();
-
 }

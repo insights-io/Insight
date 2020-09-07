@@ -15,5 +15,4 @@ public class PasswordForgotRequestDTO {
   @NotBlank(message = "Required")
   @Email
   String email;
-
 }

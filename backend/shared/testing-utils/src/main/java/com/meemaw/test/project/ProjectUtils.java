@@ -3,7 +3,6 @@ package com.meemaw.test.project;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import lombok.experimental.UtilityClass;
 
 public final class ProjectUtils {
 
