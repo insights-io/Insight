@@ -99,27 +99,31 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
       throws IOException, XMLParserException {
     InputStream is = metadataURL.openConnection().getInputStream();
     Document document = parsePool.parse(is);
-    String certificate =
-        "-----BEGIN CERTIFICATE-----\n"
-            + document.getElementsByTagName("ds:X509Certificate").item(0).getTextContent()
-            + "-----END CERTIFICATE-----";
+    try {
+      String certificate =
+          "-----BEGIN CERTIFICATE-----\n"
+              + document.getElementsByTagName("ds:X509Certificate").item(0).getTextContent()
+              + "-----END CERTIFICATE-----";
 
-    String entityId =
-        document
-            .getElementsByTagName("md:EntityDescriptor")
-            .item(0)
-            .getAttributes()
-            .getNamedItem("entityID")
-            .getNodeValue();
+      String entityId =
+          document
+              .getElementsByTagName("md:EntityDescriptor")
+              .item(0)
+              .getAttributes()
+              .getNamedItem("entityID")
+              .getNodeValue();
 
-    NodeList singleSignOnServices = document.getElementsByTagName("md:SingleSignOnService");
-    String ssoHttpPostBinding =
-        singleSignOnServices.item(0).getAttributes().getNamedItem("Location").getNodeValue();
-    String ssoHttpRedirectBinding =
-        singleSignOnServices.item(1).getAttributes().getNamedItem("Location").getNodeValue();
+      NodeList singleSignOnServices = document.getElementsByTagName("md:SingleSignOnService");
+      String ssoHttpPostBinding =
+          singleSignOnServices.item(0).getAttributes().getNamedItem("Location").getNodeValue();
+      String ssoHttpRedirectBinding =
+          singleSignOnServices.item(1).getAttributes().getNamedItem("Location").getNodeValue();
 
-    return new SamlMetadataResponse(
-        certificate, ssoHttpPostBinding, ssoHttpRedirectBinding, entityId);
+      return new SamlMetadataResponse(
+          certificate, ssoHttpPostBinding, ssoHttpRedirectBinding, entityId);
+    } catch (NullPointerException ex) {
+      throw new XMLParserException("Invalid XML");
+    }
   }
 
   private Response decodeOpenSamlResponse(String samlResponse)
