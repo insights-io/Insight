@@ -56,8 +56,8 @@ public class UserPhoneCodeService {
     return generateRandomDigits(CODE_LENGTH);
   }
 
-  public static int generateRandomDigits(int n) {
-    int m = (int) Math.pow(10, n - 1);
-    return m + random.nextInt(9 * m);
+  public static int generateRandomDigits(int length) {
+    int min = (int) Math.pow(10, length - 1);
+    return min + random.nextInt(9 * min);
   }
 }

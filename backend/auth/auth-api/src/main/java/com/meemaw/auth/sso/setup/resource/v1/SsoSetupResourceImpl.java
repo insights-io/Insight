@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.setup.resource.v1;
 
+import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.model.InsightPrincipal;
-import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
@@ -28,6 +28,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
   @Override
   public CompletionStage<Response> setup(String configurationEndpoint) {
     String organizationId = insightPrincipal.user().getOrganizationId();
+    String domain = EmailUtils.domainFromEmail(insightPrincipal.user().getEmail());
     log.info(
         "[AUTH]: SSO setup request for organization={} configurationEndpoint={}",
         organizationId,
@@ -57,11 +58,10 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
               }
 
               try {
-                SamlMetadataResponse samlMetadataResponse = samlService.fetchMetadata(url);
-                // TODO: validate
+                // TODO: validate response
+                samlService.fetchMetadata(url);
                 CreateSsoSetupDTO createSsoSetup =
-                    new CreateSsoSetupDTO(
-                        organizationId, "snuderls.eu", "saml", configurationEndpoint);
+                    new CreateSsoSetupDTO(organizationId, domain, "saml", configurationEndpoint);
 
                 return ssoSetupDatasource
                     .create(createSsoSetup)
