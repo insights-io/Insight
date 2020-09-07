@@ -1,8 +1,12 @@
 package com.meemaw.auth.sso.saml.service;
 
+import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.AbstractIdentityProviderService;
 import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
+import com.meemaw.auth.sso.session.model.LoginResult;
+import com.meemaw.auth.sso.session.service.SsoService;
+import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.shared.rest.response.Boom;
 import io.quarkus.runtime.StartupEvent;
 import java.io.ByteArrayInputStream;
@@ -13,9 +17,12 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -45,6 +52,9 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
 
   private CertificateFactory certificateFactory;
   private BasicParserPool parsePool;
+
+  @Inject SsoSetupDatasource ssoSetupDatasource;
+  @Inject SsoService ssoService;
 
   public void init(@Observes StartupEvent event) {
     try {
@@ -160,5 +170,62 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     String issuer = assertion.getIssuer().getValue();
     Signature signature = openSamlResponse.getSignature();
     return new SamlDataResponse(subject, fullName.orElse(null), issuer, signature);
+  }
+
+  public CompletionStage<LoginResult<?>> handleCallback(String samlResponse) {
+    SamlDataResponse samlDataResponse;
+    try {
+      samlDataResponse = decodeSamlResponse(samlResponse);
+    } catch (UnmarshallingException | XMLParserException ex) {
+      log.error("[AUTH]: Failed to decode SAMLResponse={}", samlResponse, ex);
+      throw Boom.badRequest().message("Invalid SAMLResponse").exception(ex);
+    }
+
+    if (samlDataResponse.getSignature() == null) {
+      log.error("[AUTH]: SAML callback missing signature SAMLResponse={}", samlResponse);
+      throw Boom.badRequest().message("Missing signature").exception();
+    }
+
+    String email = samlDataResponse.getEmail();
+    String domain = EmailUtils.domainFromEmail(email);
+
+    return ssoSetupDatasource
+        .getByDomain(domain)
+        .thenCompose(
+            maybeSsoSetup -> {
+              if (maybeSsoSetup.isEmpty()) {
+                log.info("[AUTH]: SSO not configured for email={}", email);
+                throw Boom.badRequest()
+                    .message("That email or domain isn’t registered for SSO.")
+                    .exception();
+              }
+
+              String organizationId = maybeSsoSetup.get().getOrganizationId();
+              String configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
+              SamlMetadataResponse samlMetadata;
+              try {
+                samlMetadata = fetchMetadata(new URL(configurationEndpoint));
+              } catch (IOException | XMLParserException ex) {
+                log.error(
+                    "[AUTH]: SAML callback failed to fetch SSO configuration endpoint={} organization={}",
+                    configurationEndpoint,
+                    organizationId);
+                throw Boom.badRequest()
+                    .message("Failed to fetch SSO configuration")
+                    .errors(Map.of("configurationEndpoint", ex.getMessage()))
+                    .exception(ex);
+              }
+
+              if (!samlMetadata.getEntityId().equals(samlDataResponse.getIssuer())) {
+                log.error(
+                    "[AUTH]: SAML callback entity miss-match expected={} actual={} organization={}",
+                    samlMetadata.getEntityId(),
+                    samlDataResponse.getIssuer(),
+                    organizationId);
+                throw Boom.badRequest().message("Invalid entityId").exception();
+              }
+              validateSignature(samlDataResponse.getSignature(), samlMetadata);
+              return ssoService.ssoLogin(email, samlDataResponse.getFullName(), organizationId);
+            });
   }
 }

@@ -1,7 +1,6 @@
 package com.meemaw.auth.sso.saml.resource.v1;
 
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
 import com.meemaw.auth.sso.session.service.SsoService;
@@ -23,7 +22,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
-import org.opensaml.core.xml.io.UnmarshallingException;
 
 @Slf4j
 public class SamlResourceImpl implements SamlResource {
@@ -60,13 +58,16 @@ public class SamlResourceImpl implements SamlResource {
                     samlService.fetchMetadata(new URL(configurationEndpoint));
                 String relayState = samlService.secureState(refererCallback);
                 String location = samlService.buildAuthorizationUri(metadata, relayState);
+                NewCookie cookie = new NewCookie("state", relayState);
                 return Response.status(Status.FOUND)
-                    .cookie(new NewCookie("state", relayState))
+                    .cookie(cookie)
                     .header("Location", location)
                     .build();
               } catch (IOException | XMLParserException ex) {
-                log.error("[AUTH]: SAML signIn failed to start flow", ex);
-                return Boom.serverError().response();
+                log.error("[AUTH]: SAML signIn failed to start flow email={}", email, ex);
+                return Boom.badRequest()
+                    .errors(Map.of("configurationEndpoint", ex.getMessage()))
+                    .response();
               }
             });
   }
@@ -76,80 +77,19 @@ public class SamlResourceImpl implements SamlResource {
       String samlResponse, String relayState, String sessionState) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(relayState)) {
       log.warn("[AUTH]: SAML state miss-match, expected={}, actual={}", relayState, sessionState);
-      throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
-    }
-
-    SamlDataResponse samlDataResponse;
-    try {
-      samlDataResponse = samlService.decodeSamlResponse(samlResponse);
-    } catch (UnmarshallingException | XMLParserException ex) {
-      log.error("[AUTH]: Failed to decode SAMLResponse={}", samlResponse, ex);
       return CompletableFuture.completedStage(
-          Boom.badRequest().message("Invalid SAMLResponse").response());
+          Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").response());
     }
 
-    if (samlDataResponse.getSignature() == null) {
-      log.error("[AUTH]: SAML callback missing signature SAMLResponse={}", samlResponse);
-      return CompletableFuture.completedStage(
-          Boom.badRequest().message("Missing signature").response());
-    }
+    String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
+    String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
 
-    String email = samlDataResponse.getEmail();
-    String domain = EmailUtils.domainFromEmail(email);
-
-    return ssoSetupDatasource
-        .getByDomain(domain)
-        .thenCompose(
-            maybeSsoSetup -> {
-              if (maybeSsoSetup.isEmpty()) {
-                log.info("[AUTH]: SSO not configured for email={}", email);
-                return CompletableFuture.completedStage(
-                    Boom.badRequest()
-                        .message("That email or domain isn’t registered for SSO.")
-                        .response());
-              }
-              String organizationId = maybeSsoSetup.get().getOrganizationId();
-              String configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
-              SamlMetadataResponse samlMetadata;
-              try {
-                samlMetadata = samlService.fetchMetadata(new URL(configurationEndpoint));
-              } catch (IOException | XMLParserException ex) {
-                log.error(
-                    "[AUTH]: SAML callback failed to fetch SSO configuration endpoint={} organization={}",
-                    configurationEndpoint,
-                    organizationId);
-                return CompletableFuture.completedStage(
-                    Boom.badRequest()
-                        .message("Failed to fetch SSO configuration")
-                        .errors(Map.of("configurationEndpoint", ex.getMessage()))
-                        .response());
-              }
-
-              if (!samlMetadata.getEntityId().equals(samlDataResponse.getIssuer())) {
-                log.error(
-                    "[AUTH]: SAML callback entity miss-match expected={} actual={} organization={}",
-                    samlMetadata.getEntityId(),
-                    samlDataResponse.getIssuer(),
-                    organizationId);
-                return CompletableFuture.completedStage(
-                    Boom.badRequest().message("Invalid entityId").response());
-              }
-
-              samlService.validateSignature(samlDataResponse.getSignature(), samlMetadata);
-              String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
-              String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
-              String location = samlService.secureStateData(relayState);
-              return ssoService
-                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId)
-                  .thenApply(
-                      loginResult -> {
-                        log.info(
-                            "[AUTH]: SAML callback successfully authenticated user email={} location={}",
-                            email,
-                            location);
-
-                        return loginResult.socialLoginResponse(location, cookieDomain);
-                      });
+    return samlService
+        .handleCallback(samlResponse)
+        .thenApply(
+            loginResult -> {
+              String refererCallback = samlService.secureStateData(relayState);
+              return loginResult.socialLoginResponse(refererCallback, cookieDomain);
             });
   }
 }

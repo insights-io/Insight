@@ -248,7 +248,7 @@ public class SignUpServiceImpl implements SignUpService {
                                   email,
                                   fullName,
                                   organizationId,
-                                  UserRole.ADMIN,
+                                  UserRole.STANDARD,
                                   null,
                                   transaction)
                               .thenCompose(user -> transaction.commit().thenApply(i -> user));
