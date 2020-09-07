@@ -26,5 +26,4 @@ public class SessionSocketConnectionTest extends AbstractSessionSocketTest {
       assertEquals(String.format("CLOSE %s", session.getId()), MESSAGES.poll(10, TimeUnit.SECONDS));
     }
   }
-
 }

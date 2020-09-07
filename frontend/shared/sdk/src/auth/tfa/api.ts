@@ -17,7 +17,7 @@ export const tfaApi = (authApiBaseURL: string) => {
     { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
   ) => {
     return ky
-      .get(`${baseURL}/v1/tfa/${method}/setup`, withCredentials(rest))
+      .get(`${baseURL}/v1/sso/tfa/${method}/setup`, withCredentials(rest))
       .json<DataResponse<T>>();
   };
 
@@ -27,7 +27,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(`${baseURL}/v1/tfa/${method}`, withCredentials(rest))
+        .get(`${baseURL}/v1/sso/tfa/${method}`, withCredentials(rest))
         .json<DataResponse<TfaSetupDTO>>()
         .then((response) => response.data);
     },
@@ -36,7 +36,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       ...rest
     }: RequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/tfa`, withCredentials(rest))
+        .get(`${baseURL}/v1/sso/tfa`, withCredentials(rest))
         .json<DataResponse<TfaSetupDTO[]>>()
         .then((response) => response.data);
     },
@@ -46,7 +46,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky.post(
-        `${baseURL}/v1/tfa/challenge/${method}/complete`,
+        `${baseURL}/v1/sso/tfa/challenge/${method}/complete`,
         withCredentials({ json: { code }, ...rest })
       );
     },
@@ -58,7 +58,7 @@ export const tfaApi = (authApiBaseURL: string) => {
         ...rest
       }: RequestOptions = {}) => {
         return ky
-          .post(`${baseURL}/v1/tfa/sms/send_code`, withCredentials(rest))
+          .post(`${baseURL}/v1/sso/tfa/sms/send_code`, withCredentials(rest))
           .json<DataResponse<CodeValidityDTO>>()
           .then((dataResponse) => dataResponse.data);
       },
@@ -68,7 +68,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       }: RequestOptions = {}) => {
         return ky
           .post(
-            `${baseURL}/v1/tfa/challenge/sms/send_code`,
+            `${baseURL}/v1/sso/tfa/challenge/sms/send_code`,
             withCredentials(rest)
           )
           .json<DataResponse<CodeValidityDTO>>()
@@ -88,7 +88,7 @@ export const tfaApi = (authApiBaseURL: string) => {
     ) => {
       return ky
         .post(
-          `${baseURL}/v1/tfa/${method}/setup`,
+          `${baseURL}/v1/sso/tfa/${method}/setup`,
           withCredentials({ json: { code }, ...rest })
         )
         .json<DataResponse<TfaSetupDTO>>()
@@ -99,7 +99,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .delete(`${baseURL}/v1/tfa/${method}`, withCredentials(rest))
+        .delete(`${baseURL}/v1/sso/tfa/${method}`, withCredentials(rest))
         .json<DataResponse<boolean>>();
     },
     getChallenge: (
@@ -107,7 +107,10 @@ export const tfaApi = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(`${baseURL}/v1/tfa/challenge`, { searchParams: { id }, ...rest })
+        .get(`${baseURL}/v1/sso/tfa/challenge`, {
+          searchParams: { id },
+          ...rest,
+        })
         .json<DataResponse<TfaMethod[]>>()
         .then((dataResponse) => dataResponse.data);
     },

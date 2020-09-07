@@ -31,7 +31,7 @@ export const authenticated = async (
   const redirect = (location: string, headers?: OutgoingHttpHeaders) => {
     let Location = location;
     if (pathname) {
-      Location += `?dest=${encodeURIComponent(pathname)}`;
+      Location += `?redirect=${encodeURIComponent(pathname)}`;
     }
     context.res.writeHead(302, { Location, ...headers });
     context.res.end();

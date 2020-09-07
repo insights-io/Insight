@@ -1,4 +1,4 @@
-import { getAllByText } from '@testing-library/testcafe';
+import { getAllByText, queryByText } from '@testing-library/testcafe';
 
 import { getLocation } from '../../utils';
 import config from '../../config';
@@ -6,10 +6,10 @@ import { LoginPage, PasswordForgotPage } from '../../pages';
 
 fixture('/login').page(config.appBaseURL);
 
-test('Login form should be validated both client & server side', async (t) => {
+test('Login email form should be validated both client & server side', async (t) => {
   await t
     .expect(getLocation())
-    .eql(`${LoginPage.path}?dest=%2F`)
+    .eql(`${LoginPage.path}?redirect=%2F`)
     .click(LoginPage.signInButton)
     .expect(getAllByText('Required').count)
     .eql(2, 'Both fields should be required')
@@ -35,6 +35,17 @@ test('Login form should be validated both client & server side', async (t) => {
     .click(LoginPage.signInButton)
     .expect(LoginPage.errorMessages.invalidCredentials.visible)
     .ok('Should display email/password miss-match message');
+});
+
+test('Login SAML SSO form should be validated', async (t) => {
+  await t
+    .expect(getLocation())
+    .eql(`${LoginPage.path}?redirect=%2F`)
+    .click(LoginPage.tabs.samlSso)
+    .typeText(LoginPage.workEmailInput, 'matej.snuderl@insight.io')
+    .click(LoginPage.signInButton)
+    .expect(LoginPage.samlSsoDisabledErrorMessage.visible)
+    .ok('Should display nice error message');
 });
 
 test('Can navigate forth and back to /password/forgot', async (t) => {

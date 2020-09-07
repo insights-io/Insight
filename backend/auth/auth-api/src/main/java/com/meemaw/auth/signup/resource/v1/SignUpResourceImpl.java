@@ -4,7 +4,7 @@ import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.service.SignUpServiceImpl;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.service.SsoService;
+import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;

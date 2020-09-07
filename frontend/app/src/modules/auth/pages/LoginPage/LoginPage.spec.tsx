@@ -73,7 +73,7 @@ describe('<LoginPage />', () => {
     const signInWithGoogle = getByText('Sign in with Google');
     const googleAnchorElement = signInWithGoogle.parentElement as HTMLAnchorElement;
     expect(googleAnchorElement.href).toEqual(
-      'http://localhost:8080/v1/sso/google/signin?dest=%2F'
+      'http://localhost:8080/v1/sso/oauth2/google/signin?redirect=%2F'
     );
   });
 
@@ -82,7 +82,7 @@ describe('<LoginPage />', () => {
     const signInWithGoogle = getByText('Sign in with Github');
     const googleAnchorElement = signInWithGoogle.parentElement as HTMLAnchorElement;
     expect(googleAnchorElement.href).toEqual(
-      'http://localhost:8080/v1/sso/github/signin?dest=%2F'
+      'http://localhost:8080/v1/sso/oauth2/github/signin?redirect=%2F'
     );
   });
 
@@ -91,7 +91,7 @@ describe('<LoginPage />', () => {
     const signInWithGoogle = getByText('Sign in with Microsoft');
     const googleAnchorElement = signInWithGoogle.parentElement as HTMLAnchorElement;
     expect(googleAnchorElement.href).toEqual(
-      'http://localhost:8080/v1/sso/microsoft/signin?dest=%2F'
+      'http://localhost:8080/v1/sso/oauth2/microsoft/signin?redirect=%2F'
     );
   });
 

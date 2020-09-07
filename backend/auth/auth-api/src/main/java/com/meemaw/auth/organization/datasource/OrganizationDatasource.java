@@ -10,6 +10,8 @@ public interface OrganizationDatasource {
   CompletionStage<Organization> createOrganization(
       String organizationId, String company, SqlTransaction transaction);
 
+  CompletionStage<Organization> createOrganization(String organizationId, String company);
+
   CompletionStage<Optional<Organization>> findOrganization(String organizationId);
 
   CompletionStage<Optional<Organization>> findOrganization(

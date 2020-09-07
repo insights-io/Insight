@@ -1,7 +1,7 @@
 package com.meemaw.auth.user.resource.v1;
 
 import com.meemaw.auth.sso.cookie.CookieAuth;
-import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

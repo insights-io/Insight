@@ -27,7 +27,7 @@ describe('pages/login/verification', () => {
     const serverSideProps = await getServerSideProps({ query: {}, req, res });
 
     sandbox.assert.calledWithExactly(writeHead, 302, {
-      Location: '/login?dest=%2F',
+      Location: '/login?redirect=%2F',
     });
 
     expect(serverSideProps).toEqual({ props: {} });
@@ -50,7 +50,7 @@ describe('pages/login/verification', () => {
       baseURL: undefined,
     });
     sandbox.assert.calledWithExactly(writeHead, 302, {
-      Location: '/login?dest=%2F',
+      Location: '/login?redirect=%2F',
     });
 
     expect(serverSideProps).toEqual({ props: {} });

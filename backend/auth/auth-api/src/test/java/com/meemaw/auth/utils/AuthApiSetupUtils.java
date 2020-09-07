@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.setup.resource.v1.TfaResource;
-import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
-import com.meemaw.auth.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
+import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.sms.MockSmsbox;

@@ -24,11 +24,7 @@ public class MetricsTest {
 
   @Test
   public void applicationMetrics() {
-    given()
-        .when()
-        .get("/" + UUID.randomUUID())
-        .then()
-        .statusCode(404);
+    given().when().get("/" + UUID.randomUUID()).then().statusCode(404);
 
     given()
         .when()
@@ -39,5 +35,4 @@ public class MetricsTest {
         .body(containsString("application_request_errors_total{status=\"404\"}"))
         .body(containsString("application_request_client_errors_total{status=\"404\"}"));
   }
-
 }

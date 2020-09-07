@@ -92,7 +92,7 @@ describe('<VerificationPage />', () => {
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(challengeComplete, 'totp', 123456);
-      sandbox.assert.calledWithExactly(replace, '/login?dest=%2F');
+      sandbox.assert.calledWithExactly(replace, '/login?redirect=%2F');
     });
   });
 
@@ -109,7 +109,7 @@ describe('<VerificationPage />', () => {
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(challengeComplete, 'totp', 123456);
-      sandbox.assert.calledWithExactly(replace, '/login?dest=%2F');
+      sandbox.assert.calledWithExactly(replace, '/login?redirect=%2F');
     });
   });
 });

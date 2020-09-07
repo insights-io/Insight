@@ -18,4 +18,6 @@ public interface SignUpService {
   CompletionStage<Boolean> signUpRequestValid(UUID token);
 
   CompletionStage<AuthUser> socialSignUp(String email, String fullName);
+
+  CompletionStage<AuthUser> ssoSignUp(String email, String fullName, String organizationId);
 }

@@ -50,5 +50,4 @@ public class MetricsService {
   private Tag method(String method) {
     return new Tag("method", method);
   }
-
 }

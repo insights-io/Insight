@@ -12,10 +12,10 @@ public class RequestUtilsTest {
 
   @Test
   public void should_handle_different_urls() throws MalformedURLException {
-    URL withPort = new URL("http://localhost:3000/login?dest=%2F");
+    URL withPort = new URL("http://localhost:3000/login?redirect=%2F");
     assertEquals("http://localhost:3000", RequestUtils.parseBaseURL(withPort));
 
-    URL withNoPort = new URL("https://google.com/login?dest=%2F");
+    URL withNoPort = new URL("https://google.com/login?redirect=%2F");
     assertEquals("https://google.com", RequestUtils.parseBaseURL(withNoPort));
   }
 

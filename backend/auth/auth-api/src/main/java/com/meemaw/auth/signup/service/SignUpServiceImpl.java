@@ -228,4 +228,30 @@ public class SignUpServiceImpl implements SignUpService {
                                 .thenCompose(
                                     user -> transaction.commit().thenApply(ignored -> user))));
   }
+
+  @Override
+  public CompletionStage<AuthUser> ssoSignUp(String email, String fullName, String organizationId) {
+    log.info("[AUTH]: SSO up attempt");
+    return sqlPool
+        .beginTransaction()
+        .thenCompose(
+            transaction ->
+                organizationDatasource
+                    .findOrganization(organizationId, transaction)
+                    .thenCompose(
+                        maybeOrganization -> {
+                          if (maybeOrganization.isEmpty()) {
+                            throw Boom.badRequest().exception();
+                          }
+                          return userDatasource
+                              .createUser(
+                                  email,
+                                  fullName,
+                                  organizationId,
+                                  UserRole.STANDARD,
+                                  null,
+                                  transaction)
+                              .thenCompose(user -> transaction.commit().thenApply(i -> user));
+                        }));
+  }
 }

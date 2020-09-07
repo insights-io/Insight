@@ -47,6 +47,21 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
   }
 
   @Override
+  public CompletionStage<Organization> createOrganization(String organizationId, String company) {
+    Query query =
+        sqlPool
+            .getContext()
+            .insertInto(TABLE)
+            .columns(INSERT_FIELDS)
+            .values(organizationId, company)
+            .returning(FIELDS);
+
+    return sqlPool
+        .execute(query)
+        .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
+  }
+
+  @Override
   @Traced
   public CompletionStage<Optional<Organization>> findOrganization(String id) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));

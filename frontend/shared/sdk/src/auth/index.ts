@@ -1,9 +1,9 @@
 import { organizationsApi } from './organization/api';
 import { passwordApi } from './password/api';
-import { ssoApi } from './sso/api';
 import { signupApi } from './signup/api';
 import { tfaApi } from './tfa/api';
 import { userApi } from './user/api';
+import { ssoSetupApi, ssoApi } from './sso';
 
 export * from './organization';
 export * from './password';
@@ -18,6 +18,7 @@ export const createAuthClient = (authApiBaseURL: string) => {
     password: passwordApi(authApiBaseURL),
     signup: signupApi(authApiBaseURL),
     sso: ssoApi(authApiBaseURL),
+    ssoSetup: ssoSetupApi(authApiBaseURL),
     tfa: tfaApi(authApiBaseURL),
     user: userApi(authApiBaseURL),
   };
