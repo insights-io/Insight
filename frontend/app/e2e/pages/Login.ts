@@ -10,10 +10,19 @@ class Login {
 
   /* Selectors */
   public readonly emailInput = getByPlaceholderText('Email');
+  public readonly workEmailInput = getByPlaceholderText('Work Email');
+  public readonly samlSsoDisabledErrorMessage = queryByText(
+    'That email or domain isn’t registered for SSO.'
+  );
   public readonly passwordInput = getByPlaceholderText('Password');
   public readonly signInButton = queryByText('Sign in');
   public readonly forgotPasswordButton = queryByText('Forgot?');
   public readonly createFreeAccount = queryByText('Create a free account');
+
+  public readonly tabs = {
+    email: queryByText('Email'),
+    samlSso: queryByText('SAML SSO'),
+  };
 
   public readonly errorMessages = {
     invalidEmail: queryByText('Please enter a valid email address'),
