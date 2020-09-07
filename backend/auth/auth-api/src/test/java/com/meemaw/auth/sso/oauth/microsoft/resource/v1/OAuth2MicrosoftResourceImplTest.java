@@ -210,6 +210,27 @@ public class OAuth2MicrosoftResourceImplTest {
   }
 
   @Test
+  public void oauth2callback__should_fail__on_invalid_redirect() {
+    String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
+    String forwardedProto = "https";
+    String forwardedHost = "auth-api.minikube.snuderls.eu";
+
+    given()
+        .when()
+        .queryParam("code", "M.R3_BAY.aff053f8-9755-f5ea-c1b5-a3bb3e4f7b01")
+        .queryParam("state", state)
+        .cookie("state", state)
+        .header("X-Forwarded-Proto", forwardedProto)
+        .header("X-Forwarded-Host", forwardedHost)
+        .get(oauth2CallbackUri)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"AADSTS50011: The reply URL specified in the request does not match the reply URLs configured for the application: '783370b6-ee5d-47b5-bc12-2b9ebe4a4f1b'.\"}}"));
+  }
+
+  @Test
   public void oauth2callback__should_fail__on_invalid_state_cookie() {
     String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
 
