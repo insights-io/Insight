@@ -10,6 +10,8 @@ import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.shared.logging.LoggingConstants;
+import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
 import io.quarkus.runtime.StartupEvent;
 import java.io.ByteArrayInputStream;
@@ -45,6 +47,7 @@ import org.opensaml.security.x509.BasicX509Credential;
 import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.opensaml.xmlsec.signature.support.SignatureValidator;
+import org.slf4j.MDC;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -103,6 +106,18 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     } catch (CertificateException ex) {
       log.error("[AUTH]: SAML callback certificate exception metadata={}", metadata, ex);
       throw Boom.serverError().message(ex.getMessage()).exception(ex);
+    }
+  }
+
+  private SamlMetadataResponse fetchMetadataSneaky(URL metadataURL) {
+    try {
+      return fetchMetadata(metadataURL);
+    } catch (FileNotFoundException ex) {
+      log.error("[AUTH]: Failed to fetch SSO configuration", ex);
+      throw failedToFetchSsoConfiguration(ex, "Not Found");
+    } catch (IOException | XMLParserException ex) {
+      log.error("[AUTH]: Failed to fetch SSO configuration", ex);
+      throw failedToFetchSsoConfiguration(ex, ex.getMessage());
     }
   }
 
@@ -216,21 +231,9 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
               }
 
               String organizationId = maybeSsoSetup.get().getOrganizationId();
+              MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
               URL configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
-              SamlMetadataResponse samlMetadata;
-              try {
-                samlMetadata = fetchMetadata(configurationEndpoint);
-              } catch (IOException | XMLParserException ex) {
-                log.error(
-                    "[AUTH]: SAML callback failed to fetch SSO configuration endpoint={} organization={}",
-                    configurationEndpoint,
-                    organizationId);
-                throw Boom.badRequest()
-                    .message("Failed to fetch SSO configuration")
-                    .errors(Map.of("configurationEndpoint", ex.getMessage()))
-                    .exception(ex);
-              }
-
+              SamlMetadataResponse samlMetadata = fetchMetadataSneaky(configurationEndpoint);
               if (!samlMetadata.getEntityId().equals(samlDataResponse.getIssuer())) {
                 log.error(
                     "[AUTH]: SAML callback entity miss-match expected={} actual={} organization={}",
@@ -259,28 +262,17 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
                 throw Boom.badRequest().message("SSO setup already configured").exception();
               }
 
-              try {
-                fetchMetadata(configurationEndpoint);
-                CreateSsoSetup createSsoSetup =
-                    new CreateSsoSetup(
-                        organizationId, domain, SsoMethod.SAML, configurationEndpoint);
-                return ssoSetupDatasource.create(createSsoSetup);
-              } catch (IOException | XMLParserException ex) {
-                log.error(
-                    "[AUTH]: Failed to fetch SSO configuration organizationId={} domain={} configurationEndpoint={}",
-                    organizationId,
-                    domain,
-                    configurationEndpoint,
-                    ex);
-
-                String message =
-                    ex instanceof FileNotFoundException ? "Not Found" : ex.getMessage();
-
-                throw Boom.badRequest()
-                    .message("Failed to fetch SSO configuration")
-                    .errors(Map.of("configurationEndpoint", message))
-                    .exception(ex);
-              }
+              fetchMetadataSneaky(configurationEndpoint);
+              CreateSsoSetup createSsoSetup =
+                  new CreateSsoSetup(organizationId, domain, SsoMethod.SAML, configurationEndpoint);
+              return ssoSetupDatasource.create(createSsoSetup);
             });
+  }
+
+  private BoomException failedToFetchSsoConfiguration(Exception ex, String message) {
+    return Boom.badRequest()
+        .message("Failed to fetch SSO configuration")
+        .errors(Map.of("configurationEndpoint", message))
+        .exception(ex);
   }
 }
