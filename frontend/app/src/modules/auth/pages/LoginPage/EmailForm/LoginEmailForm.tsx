@@ -38,7 +38,7 @@ const LoginEmailForm = ({ replace, redirect, encodedRedirect }: Props) => {
     }
     setIsSubmitting(true);
 
-    AuthApi.sso
+    AuthApi.sso.session
       .login(formData.email, formData.password)
       .then((response) => {
         if (response.data === true) {

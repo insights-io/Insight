@@ -14,9 +14,10 @@ import { Input } from 'baseui/input';
 import { Select } from 'baseui/select';
 import { toaster } from 'baseui/toast';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import FormError from 'shared/components/FormError';
+import useSWRQuery from 'shared/hooks/useSWRQuery';
 import { createInputOverrides } from 'shared/styles/input';
 
 type Props = {
@@ -31,7 +32,9 @@ type SsoSetupFormData = {
   method: SsoMethodValue;
 };
 
-const options: SsoMethodValue[] = [{ label: 'SAML', id: 'saml' }];
+const SAML_METHOD = { label: 'SAML', id: 'saml' } as const;
+
+const options: SsoMethodValue[] = [SAML_METHOD];
 
 const SecurityOrganizationSettings = ({
   organization: _organization,
@@ -41,10 +44,28 @@ const SecurityOrganizationSettings = ({
   const inputOverrides = createInputOverrides(theme);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
+  const {
+    isLoading,
+    mutate,
+    data: maybeSsoSetup,
+  } = useSWRQuery('AuthApi.sso.setup.get', () => AuthApi.sso.setup.get());
 
-  const { register, handleSubmit, errors, control } = useForm<SsoSetupFormData>(
-    { defaultValues: { method: options[0] } }
-  );
+  const { register, handleSubmit, errors, control, setValue } = useForm<
+    SsoSetupFormData
+  >({ defaultValues: { method: options[0] } });
+
+  useEffect(() => {
+    if (maybeSsoSetup) {
+      setValue(
+        'method',
+        options.find((o) => o.id === maybeSsoSetup.data.method)
+      );
+      setValue(
+        'configurationEndpoint',
+        maybeSsoSetup.data.configurationEndpoint
+      );
+    }
+  }, [maybeSsoSetup, setValue]);
 
   const onSubmit = handleSubmit((data) => {
     if (isSubmitting) {
@@ -52,13 +73,14 @@ const SecurityOrganizationSettings = ({
     }
 
     setIsSubmitting(true);
-    AuthApi.ssoSetup
+    AuthApi.sso.setup
       .create(data.method.id, data.configurationEndpoint)
-      .then((_) => {
+      .then((dataResponse) => {
         toaster.positive('SSO setup complete', {});
+        mutate(dataResponse);
       })
-      .catch(async (error) => {
-        const errorDTO: APIErrorDataResponse = await error.response.json();
+      .catch(async (setupError) => {
+        const errorDTO: APIErrorDataResponse = await setupError.response.json();
         setFormError(errorDTO.error);
       })
       .finally(() => setIsSubmitting(false));
@@ -113,6 +135,7 @@ const SecurityOrganizationSettings = ({
             isLoading={isSubmitting}
             shape={SHAPE.pill}
             $style={{ width: '100%' }}
+            disabled={isLoading}
           >
             Setup
           </Button>

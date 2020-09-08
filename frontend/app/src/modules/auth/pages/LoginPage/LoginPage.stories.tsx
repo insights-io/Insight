@@ -14,7 +14,7 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso, 'login').callsFake(() => {
+    return sandbox.stub(AuthApi.sso.session, 'login').callsFake(() => {
       return new Promise((resolve) =>
         setTimeout(() => resolve({ data: true }), 10)
       );
@@ -27,7 +27,7 @@ export const InvalidPassword = () => {
 };
 InvalidPassword.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso, 'login').callsFake(() => {
+    return sandbox.stub(AuthApi.sso.session, 'login').callsFake(() => {
       const error = mockApiError({
         statusCode: 400,
         reason: 'Bad Request',

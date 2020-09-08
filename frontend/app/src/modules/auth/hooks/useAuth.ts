@@ -11,7 +11,7 @@ const CACHE_KEY = 'useAuth';
 const useAuth = (initialData: User) => {
   const { data: user = initialData, mutate } = useSWR(
     CACHE_KEY,
-    () => AuthApi.sso.me().then(mapUser),
+    () => AuthApi.sso.session.me().then(mapUser),
     { initialData, refreshInterval: 30000 }
   );
 

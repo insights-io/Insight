@@ -45,6 +45,6 @@ describe('<LoginSamlSsoForm />', () => {
     await userEvent.type(input, 'matej.snuderl@snuderls.eu');
     userEvent.click(submitButton);
 
-    await findByText('That email or domain isn’t registered for SSO');
+    await findByText('That email or domain isn’t registered for SSO.');
   });
 });

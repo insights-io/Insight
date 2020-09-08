@@ -6,15 +6,12 @@ import type { RequestOptions } from '../../../core/types';
 
 export const ssoSetupApi = (authApiBaseURL: string) => {
   return {
-    get: (
-      domain: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
-    ) => {
+    get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/sso/setup/${domain}`, rest)
-        .json<DataResponse<SsoSetupDTO>>();
+        .get(`${baseURL}/v1/sso/setup`, withCredentials(rest))
+        .json<DataResponse<SsoSetupDTO>>()
+        .then((dataResponse) => dataResponse);
     },
-
     create: (
       method: SsoMethod,
       configurationEndpoint: string,
@@ -26,6 +23,14 @@ export const ssoSetupApi = (authApiBaseURL: string) => {
           withCredentials({ json: { method, configurationEndpoint }, ...rest })
         )
         .json<DataResponse<SsoSetupDTO>>();
+    },
+    getByDomain: (
+      domain: string,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .get(`${baseURL}/v1/sso/setup/${domain}`, rest)
+        .json<DataResponse<boolean>>();
     },
   };
 };
