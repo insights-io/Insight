@@ -116,11 +116,11 @@ CREATE TABLE auth.user_tfa_setup
     FOREIGN KEY (user_id) REFERENCES auth.user (id)
 );
 
-CREATE TABLE auth.sso_setup
+CREATE TABLE auth.organization_sso_setup
 (
     organization_id        TEXT        NOT NULL UNIQUE,
     domain                 TEXT        NOT NULL UNIQUE,
-    type                   TEXT        NOT NULL,
+    method                 TEXT        NOT NULL,
     configuration_endpoint TEXT        NOT NULL,
     created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
 

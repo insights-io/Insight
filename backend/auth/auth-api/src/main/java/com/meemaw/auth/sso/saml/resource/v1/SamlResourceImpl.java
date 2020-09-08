@@ -52,10 +52,9 @@ public class SamlResourceImpl implements SamlResource {
                     .response();
               }
 
-              String configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
+              URL configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
               try {
-                SamlMetadataResponse metadata =
-                    samlService.fetchMetadata(new URL(configurationEndpoint));
+                SamlMetadataResponse metadata = samlService.fetchMetadata(configurationEndpoint);
                 String relayState = samlService.secureState(refererCallback);
                 String location = samlService.buildAuthorizationUri(metadata, relayState);
                 NewCookie cookie = new NewCookie("state", relayState);

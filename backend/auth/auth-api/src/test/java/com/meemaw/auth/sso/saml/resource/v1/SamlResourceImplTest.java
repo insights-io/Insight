@@ -4,39 +4,39 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
-import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
+import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.test.setup.RestAssuredUtils;
-import io.quarkus.mailer.MockMailbox;
+import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+@QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
 public class SamlResourceImplTest {
 
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
   @Inject SamlServiceImpl samlService;
   @Inject UserDatasource userDatasource;
   @Inject OrganizationDatasource organizationDatasource;
-  @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
   @Inject SsoSetupDatasource ssoSetupDatasource;
 
   @TestHTTPResource(SamlResource.PATH + "/" + SamlResource.CALLBACK_PATH)
@@ -163,7 +163,8 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_fail__when_configuration_endpoint_is_down() {
+  public void callback__should_fail__when_configuration_endpoint_is_down()
+      throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
@@ -172,13 +173,13 @@ public class SamlResourceImplTest {
             .join();
 
     String email = "matej.snuderl@snuderls.test";
-    String configurationEndpoint = "http://localhost:1000";
+    URL configurationEndpoint = new URL("http://localhost:1000");
     ssoSetupDatasource
         .create(
-            new CreateSsoSetupDTO(
+            new CreateSsoSetup(
                 organization.getId(),
                 EmailUtils.domainFromEmail(email),
-                "OKTA",
+                SsoMethod.SAML,
                 configurationEndpoint))
         .toCompletableFuture()
         .join();
@@ -203,7 +204,8 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_fail__when_configuration_endpoint_serves_broken_xml() {
+  public void callback__should_fail__when_configuration_endpoint_serves_broken_xml()
+      throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
@@ -212,13 +214,13 @@ public class SamlResourceImplTest {
             .join();
 
     String email = "matej.snuderl@snuderls.test2";
-    String configurationEndpoint = "https://google.com";
+    URL configurationEndpoint = new URL("https://google.com");
     ssoSetupDatasource
         .create(
-            new CreateSsoSetupDTO(
+            new CreateSsoSetup(
                 organization.getId(),
                 EmailUtils.domainFromEmail(email),
-                "OKTA",
+                SsoMethod.SAML,
                 configurationEndpoint))
         .toCompletableFuture()
         .join();
@@ -243,7 +245,8 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_fail__when_configuration_endpoint_serves_invalid_xml() {
+  public void callback__should_fail__when_configuration_endpoint_serves_invalid_xml()
+      throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
@@ -252,13 +255,13 @@ public class SamlResourceImplTest {
             .join();
 
     String email = "matej.snuderl@snuderls.test3";
-    String configurationEndpoint = "https://www.w3schools.com/xml/note.xml";
+    URL configurationEndpoint = new URL("https://www.w3schools.com/xml/note.xml");
     ssoSetupDatasource
         .create(
-            new CreateSsoSetupDTO(
+            new CreateSsoSetup(
                 organization.getId(),
                 EmailUtils.domainFromEmail(email),
-                "OKTA",
+                SsoMethod.SAML,
                 configurationEndpoint))
         .toCompletableFuture()
         .join();
@@ -283,7 +286,8 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_sign_up_user__when_valid_saml_response() {
+  public void callback__should_sign_up_user__when_valid_saml_response()
+      throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
@@ -292,14 +296,14 @@ public class SamlResourceImplTest {
             .join();
 
     String email = "matej.snuderl@snuderls.eu";
-    String configurationEndpoint =
-        "https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata";
+    URL configurationEndpoint =
+        new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
     ssoSetupDatasource
         .create(
-            new CreateSsoSetupDTO(
+            new CreateSsoSetup(
                 organization.getId(),
                 EmailUtils.domainFromEmail(email),
-                "OKTA",
+                SsoMethod.SAML,
                 configurationEndpoint))
         .toCompletableFuture()
         .join();
