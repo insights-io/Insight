@@ -45,10 +45,12 @@ export function authenticatedTestCases<T>(
 
     it('Should redirect to login on expired session', async () => {
       sandbox.stub(document, 'cookie').value('SessionId=123');
-      const getSessionStub = sandbox.stub(AuthApi.sso, 'session').resolves(({
-        status: 204,
-        headers: { get: sandbox.stub() },
-      } as unknown) as Response);
+      const getSessionStub = sandbox
+        .stub(AuthApi.sso.session, 'get')
+        .resolves(({
+          status: 204,
+          headers: { get: sandbox.stub() },
+        } as unknown) as Response);
 
       const { req, res, writeHead, end } = mockServerSideRequest();
       const serverSideProps = await getServerSideProps({ query: {}, req, res });
@@ -66,10 +68,12 @@ export function authenticatedTestCases<T>(
 
     it('Should redirect to verification on expired session and ChallengeId', async () => {
       sandbox.stub(document, 'cookie').value('SessionId=123;ChallengeId=1234');
-      const getSessionStub = sandbox.stub(AuthApi.sso, 'session').resolves(({
-        status: 204,
-        headers: { get: sandbox.stub() },
-      } as unknown) as Response);
+      const getSessionStub = sandbox
+        .stub(AuthApi.sso.session, 'get')
+        .resolves(({
+          status: 204,
+          headers: { get: sandbox.stub() },
+        } as unknown) as Response);
 
       const { req, res, writeHead, end } = mockServerSideRequest();
       const serverSideProps = await getServerSideProps({ query: {}, req, res });
