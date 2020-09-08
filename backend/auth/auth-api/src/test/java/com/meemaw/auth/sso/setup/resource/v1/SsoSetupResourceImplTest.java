@@ -153,6 +153,27 @@ public class SsoSetupResourceImplTest {
   }
 
   @Test
+  public void setup__should_fail__when_endpoint_404()
+      throws MalformedURLException, JsonProcessingException {
+    CreateSsoSetupDTO body =
+        new CreateSsoSetupDTO(
+            SsoMethod.SAML,
+            new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metada"));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(JacksonMapper.get().writeValueAsString(body))
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .post(SsoSetupResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Failed to fetch SSO configuration\",\"errors\":{\"configurationEndpoint\":\"Not Found\"}}}"));
+  }
+
+  @Test
   public void setup__should_fail__when_non_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
     String sessionId =

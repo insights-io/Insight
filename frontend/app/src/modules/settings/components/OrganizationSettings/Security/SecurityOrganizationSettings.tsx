@@ -78,6 +78,7 @@ const SecurityOrganizationSettings = ({
       .then((dataResponse) => {
         toaster.positive('SSO setup complete', {});
         mutate(dataResponse);
+        setFormError(undefined);
       })
       .catch(async (setupError) => {
         const errorDTO: APIErrorDataResponse = await setupError.response.json();

@@ -21,7 +21,9 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputOverrides = createInputOverrides(theme);
   const [formError, setFormError] = useState<APIError | undefined>();
-  const [setupExists, setSetupExists] = useState(true);
+  const [setupExists, setSetupExists] = useState<boolean | undefined>(
+    undefined
+  );
 
   const validationError = useMemo(() => {
     if (!email) {
@@ -48,6 +50,7 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
     AuthApi.sso.setup
       .getByDomain(domain)
       .then((dataRepsonse) => {
+        setFormError(undefined);
         if (dataRepsonse.data) {
           const encodedEmail = encodeURIComponent(email);
           const location = samlIntegrationHrefBuilder(
@@ -63,10 +66,7 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
       })
-      .finally(() => {
-        setIsSubmitting(false);
-        setFormError(undefined);
-      });
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -96,7 +96,7 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
         Sign in
       </Button>
       {formError && <FormError error={formError} />}
-      {!setupExists && (
+      {setupExists === false && (
         <FormError
           error={
             {

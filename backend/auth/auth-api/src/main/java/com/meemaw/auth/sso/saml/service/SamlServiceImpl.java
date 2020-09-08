@@ -13,6 +13,7 @@ import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.rest.response.Boom;
 import io.quarkus.runtime.StartupEvent;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -272,9 +273,12 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
                     configurationEndpoint,
                     ex);
 
+                String message =
+                    ex instanceof FileNotFoundException ? "Not Found" : ex.getMessage();
+
                 throw Boom.badRequest()
                     .message("Failed to fetch SSO configuration")
-                    .errors(Map.of("configurationEndpoint", ex.getMessage()))
+                    .errors(Map.of("configurationEndpoint", message))
                     .exception(ex);
               }
             });

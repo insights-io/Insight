@@ -33,6 +33,7 @@ class AccountSettings {
       security: {
         button: this.container.queryByText('Security'),
         ssoSetup: {
+          setupCompleteMessage: queryByText('SSO setup complete'),
           nonBusinessEmailErrorMessage: this.container.queryByText(
             'SSO setup is only possible for work domain.'
           ),
