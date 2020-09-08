@@ -48,13 +48,16 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
     AuthApi.sso.setup
       .getByDomain(domain)
       .then((dataRepsonse) => {
-        setSetupExists(dataRepsonse.data);
-        const encodedEmail = encodeURIComponent(email);
-        const location = samlIntegrationHrefBuilder(
-          encodedRedirect,
-          encodedEmail
-        );
-        locationAssign(location);
+        if (dataRepsonse.data) {
+          const encodedEmail = encodeURIComponent(email);
+          const location = samlIntegrationHrefBuilder(
+            encodedRedirect,
+            encodedEmail
+          );
+          locationAssign(location);
+        } else {
+          setSetupExists(dataRepsonse.data);
+        }
       })
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
