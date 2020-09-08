@@ -25,6 +25,10 @@ public interface SsoSetupResource {
   CompletionStage<Response> setup(@NotNull(message = "Required") @Valid CreateSsoSetupDTO body);
 
   @GET
+  @CookieAuth
+  CompletionStage<Response> get();
+
+  @GET
   @Path("{domain}")
   CompletionStage<Response> get(@PathParam("domain") String domain);
 }

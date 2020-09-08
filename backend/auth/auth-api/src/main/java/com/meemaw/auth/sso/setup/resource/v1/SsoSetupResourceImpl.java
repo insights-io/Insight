@@ -40,10 +40,11 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
   }
 
   @Override
-  public CompletionStage<Response> get(String domain) {
-    log.info("[AUTH] SSO setup get request domain={}", domain);
+  public CompletionStage<Response> get() {
+    String organizationId = insightPrincipal.user().getOrganizationId();
+    log.info("[AUTH] SSO setup get request organization={}", organizationId);
     return ssoSetupDatasource
-        .getByDomain(domain)
+        .get(organizationId)
         .thenApply(
             maybeSsoSetup -> {
               if (maybeSsoSetup.isEmpty()) {
@@ -53,5 +54,13 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
               }
               return DataResponse.ok(maybeSsoSetup.get());
             });
+  }
+
+  @Override
+  public CompletionStage<Response> get(String domain) {
+    log.info("[AUTH] SSO setup get request domain={}", domain);
+    return ssoSetupDatasource
+        .getByDomain(domain)
+        .thenApply(maybeSsoSetup -> DataResponse.ok(maybeSsoSetup.isPresent()));
   }
 }
