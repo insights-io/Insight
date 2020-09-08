@@ -5,16 +5,16 @@ import {
 } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
-import config from '../config';
+import config from '../../config';
 import {
   AccountSettingsPage,
   LoginPage,
   Sidebar,
   SignUpPage,
   VerificationPage,
-} from '../pages';
+} from '../../pages';
 
-fixture('/account-settings').page(AccountSettingsPage.path);
+fixture('/account-settings/user-settings').page(AccountSettingsPage.path);
 
 test('Should be able to change password', async (t) => {
   await LoginPage.loginWithInsightUser(t);
@@ -89,7 +89,7 @@ test('Should be able to change password', async (t) => {
     .ok('Should display notification that password was changed');
 
   await t
-    .click(getByText('Organization settings'))
+    .click(AccountSettingsPage.tabs.organizationSettings)
     .expect(queryByText('000000').visible)
     .ok('Should display Insight organization id')
     .expect(queryByText('Insight').visible)

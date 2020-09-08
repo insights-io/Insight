@@ -19,7 +19,7 @@ Base.story = configureStory({
         createdAt: new Date().toISOString(),
         domain: 'snuderls.eu',
         organizationId: '000001',
-        type: 'OKTA',
+        method: 'saml',
       },
     });
   },
