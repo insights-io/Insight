@@ -10,7 +10,7 @@ describe('pages/index', () => {
 
   it('Injects correct server side data', async () => {
     sandbox.stub(document, 'cookie').value('SessionId=123');
-    const getSessionStub = sandbox.stub(AuthApi.sso, 'session').resolves(({
+    const getSessionStub = sandbox.stub(AuthApi.sso.session, 'get').resolves(({
       status: 200,
       json: () => ({ data: INSIGHT_ADMIN }),
     } as unknown) as Response);

@@ -1,15 +1,22 @@
 package com.meemaw.auth.sso.saml.service;
 
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.AbstractIdentityProviderService;
+import com.meemaw.auth.sso.AbstractIdpService;
 import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
-import com.meemaw.auth.sso.session.model.LoginResult;
+import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
+import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
+import com.meemaw.auth.sso.setup.model.SsoMethod;
+import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.shared.context.RequestUtils;
+import com.meemaw.shared.logging.LoggingConstants;
+import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
 import io.quarkus.runtime.StartupEvent;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,6 +30,8 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -41,6 +50,7 @@ import org.opensaml.security.x509.BasicX509Credential;
 import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.opensaml.xmlsec.signature.support.SignatureValidator;
+import org.slf4j.MDC;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -48,7 +58,7 @@ import org.w3c.dom.NodeList;
 
 @ApplicationScoped
 @Slf4j
-public class SamlServiceImpl extends AbstractIdentityProviderService {
+public class SamlServiceImpl extends AbstractIdpService {
 
   private CertificateFactory certificateFactory;
   private BasicParserPool parsePool;
@@ -67,6 +77,13 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     }
   }
 
+  /**
+   * Extract Credential (BasicX509Credential) from SAML metadata response.
+   *
+   * @param metadata saml metadata response
+   * @return Credential
+   * @throws CertificateException if failed to generate certificate
+   */
   public Credential credentials(SamlMetadataResponse metadata) throws CertificateException {
     X509Certificate certificate =
         (X509Certificate)
@@ -92,6 +109,18 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     } catch (CertificateException ex) {
       log.error("[AUTH]: SAML callback certificate exception metadata={}", metadata, ex);
       throw Boom.serverError().message(ex.getMessage()).exception(ex);
+    }
+  }
+
+  private SamlMetadataResponse fetchMetadataSneaky(URL metadataURL) {
+    try {
+      return fetchMetadata(metadataURL);
+    } catch (FileNotFoundException ex) {
+      log.error("[AUTH]: Failed to fetch SSO configuration", ex);
+      throw failedToFetchSsoConfiguration(ex, "Not Found");
+    } catch (IOException | XMLParserException ex) {
+      log.error("[AUTH]: Failed to fetch SSO configuration", ex);
+      throw failedToFetchSsoConfiguration(ex, ex.getMessage());
     }
   }
 
@@ -124,21 +153,6 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     } catch (NullPointerException ex) {
       throw new XMLParserException("Invalid XML");
     }
-  }
-
-  private Response decodeOpenSamlResponse(String samlResponse)
-      throws UnmarshallingException, XMLParserException {
-    byte[] base64DecodedResponse = Base64.getDecoder().decode(samlResponse);
-    ByteArrayInputStream is = new ByteArrayInputStream(base64DecodedResponse);
-    Document document = parsePool.parse(is);
-    Element element = document.getDocumentElement();
-    UnmarshallerFactory umFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();
-    Unmarshaller unmarshaller = umFactory.getUnmarshaller(element);
-    if (unmarshaller == null) {
-      log.error("[AUTH]: Failed to get unmarshaller to decode SAMLResponse={}", samlResponse);
-      throw Boom.serverError().exception();
-    }
-    return (Response) unmarshaller.unmarshall(element);
   }
 
   public SamlDataResponse decodeSamlResponse(String samlResponse)
@@ -176,7 +190,22 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     return new SamlDataResponse(subject, fullName.orElse(null), issuer, signature);
   }
 
-  public CompletionStage<LoginResult<?>> handleCallback(String samlResponse) {
+  private Response decodeOpenSamlResponse(String samlResponse)
+      throws UnmarshallingException, XMLParserException {
+    byte[] base64DecodedResponse = Base64.getDecoder().decode(samlResponse);
+    ByteArrayInputStream is = new ByteArrayInputStream(base64DecodedResponse);
+    Document document = parsePool.parse(is);
+    Element element = document.getDocumentElement();
+    UnmarshallerFactory umFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();
+    Unmarshaller unmarshaller = umFactory.getUnmarshaller(element);
+    if (unmarshaller == null) {
+      log.error("[AUTH]: Failed to get unmarshaller to decode SAMLResponse={}", samlResponse);
+      throw Boom.serverError().exception();
+    }
+    return (Response) unmarshaller.unmarshall(element);
+  }
+
+  public CompletionStage<SsoLoginResult<?>> handleCallback(String samlResponse, String relayState) {
     SamlDataResponse samlDataResponse;
     try {
       samlDataResponse = decodeSamlResponse(samlResponse);
@@ -205,21 +234,9 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
               }
 
               String organizationId = maybeSsoSetup.get().getOrganizationId();
-              String configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
-              SamlMetadataResponse samlMetadata;
-              try {
-                samlMetadata = fetchMetadata(new URL(configurationEndpoint));
-              } catch (IOException | XMLParserException ex) {
-                log.error(
-                    "[AUTH]: SAML callback failed to fetch SSO configuration endpoint={} organization={}",
-                    configurationEndpoint,
-                    organizationId);
-                throw Boom.badRequest()
-                    .message("Failed to fetch SSO configuration")
-                    .errors(Map.of("configurationEndpoint", ex.getMessage()))
-                    .exception(ex);
-              }
-
+              MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+              URL configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
+              SamlMetadataResponse samlMetadata = fetchMetadataSneaky(configurationEndpoint);
               if (!samlMetadata.getEntityId().equals(samlDataResponse.getIssuer())) {
                 log.error(
                     "[AUTH]: SAML callback entity miss-match expected={} actual={} organization={}",
@@ -229,7 +246,59 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
                 throw Boom.badRequest().message("Invalid entityId").exception();
               }
               validateSignature(samlDataResponse.getSignature(), samlMetadata);
-              return ssoService.ssoLogin(email, samlDataResponse.getFullName(), organizationId);
+              String location = secureStateData(relayState);
+              String cookieDomain = RequestUtils.parseCookieDomain(location);
+              return ssoService
+                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId, location)
+                  .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
+  }
+
+  public CompletionStage<SsoSetupDTO> setupSamlSso(
+      String organizationId, String domain, URL configurationEndpoint) {
+    if (!EmailUtils.isBusinessDomain(domain)) {
+      throw Boom.badRequest().message("SSO setup is only possible for work domain.").exception();
+    }
+
+    return ssoSetupDatasource
+        .get(organizationId)
+        .thenCompose(
+            maybeSsoSetup -> {
+              if (maybeSsoSetup.isPresent()) {
+                log.info("[AUTH]: SSO setup already configured organization={}", organizationId);
+                throw Boom.badRequest().message("SSO setup already configured").exception();
+              }
+
+              fetchMetadataSneaky(configurationEndpoint);
+              CreateSsoSetup createSsoSetup =
+                  new CreateSsoSetup(organizationId, domain, SsoMethod.SAML, configurationEndpoint);
+              return ssoSetupDatasource.create(createSsoSetup);
+            });
+  }
+
+  private BoomException failedToFetchSsoConfiguration(Exception ex, String message) {
+    return Boom.badRequest()
+        .message("Failed to fetch SSO configuration")
+        .errors(Map.of("configurationEndpoint", message))
+        .exception(ex);
+  }
+
+  public javax.ws.rs.core.Response signInRedirectResponse(
+      String clientCallbackRedirect, URL configurationEndpoint) {
+    try {
+      SamlMetadataResponse metadata = fetchMetadata(configurationEndpoint);
+      String relayState = secureState(clientCallbackRedirect);
+      String location = buildAuthorizationUri(metadata, relayState);
+      NewCookie cookie = new NewCookie("state", relayState);
+      return javax.ws.rs.core.Response.status(Status.FOUND)
+          .cookie(cookie)
+          .header("Location", location)
+          .build();
+    } catch (IOException | XMLParserException ex) {
+      log.error("[AUTH]: SAML signIn failed to start flow", ex);
+      throw Boom.badRequest()
+          .errors(Map.of("configurationEndpoint", ex.getMessage()))
+          .exception(ex);
+    }
   }
 }

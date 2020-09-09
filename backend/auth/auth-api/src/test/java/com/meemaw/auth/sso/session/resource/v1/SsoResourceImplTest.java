@@ -5,26 +5,38 @@ import static com.meemaw.test.setup.SsoTestSetupUtils.login;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpRequestMock;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
+import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
+import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
+import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +51,10 @@ public class SsoResourceImplTest {
   @Inject MockMailbox mailbox;
   @Inject UserDatasource userDatasource;
   @Inject ObjectMapper objectMapper;
+  @Inject SsoSetupDatasource ssoSetupDatasource;
+
+  @TestHTTPResource(SamlResource.PATH + "/" + SamlResource.SIGNIN_PATH)
+  URI samlSignInUri;
 
   @BeforeEach
   void init() {
@@ -93,12 +109,78 @@ public class SsoResourceImplTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", "test@gmail.com")
         .param("password", "superFancyPassword")
+        .header("referer", "http://localhost:3000")
         .post(SsoResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Invalid email or password\"}}"));
+  }
+
+  @Test
+  public void login__should_fail__when_no_referer() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("email", "test@gmail.com")
+        .param("password", "superFancyPassword")
+        .post(SsoResource.PATH + "/login")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"referer required\"}}"));
+  }
+
+  @Test
+  public void login__should_fail__when_malformed_referer() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("email", "test@gmail.com")
+        .param("password", "superFancyPassword")
+        .header("referer", "random")
+        .post(SsoResource.PATH + "/login")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"no protocol: random\"}}"));
+  }
+
+  @Test
+  public void login__should_redirect_to_sso_provider_with_correct_redirect__when_sso_setup()
+      throws JsonProcessingException, MalformedURLException {
+    String password = UUID.randomUUID().toString();
+    String email = password + "@insight-io.com";
+    signUpAndLogin(mailbox, objectMapper, email, password);
+    AuthUser user = userDatasource.findUser(email).toCompletableFuture().join().get();
+
+    ssoSetupDatasource
+        .create(
+            new CreateSsoSetup(
+                user.getOrganizationId(),
+                EmailUtils.domainFromEmail(email),
+                SsoMethod.SAML,
+                new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata")))
+        .toCompletableFuture()
+        .join();
+
+    given()
+        .config(RestAssuredUtils.dontFollowRedirects())
+        .when()
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("email", email)
+        .param("password", password)
+        .header("referer", "http://localhost:3000/login?redirect=%2Faccount%2Fsettings")
+        .post(SsoResource.PATH + "/login")
+        .then()
+        .statusCode(302)
+        .header(
+            "Location",
+            matchesPattern(
+                "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"));
   }
 
   @Test
@@ -119,6 +201,7 @@ public class SsoResourceImplTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", signUpRequestDTO.getEmail())
         .param("password", "superFancyPassword")
+        .header("referer", "http://localhost:3000")
         .post(SsoResource.PATH + "/login")
         .then()
         .statusCode(400)

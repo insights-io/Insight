@@ -3,7 +3,6 @@ package com.meemaw.auth.sso.session.model;
 import com.meemaw.shared.rest.response.DataResponse;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 public interface LoginResult<T> {
 
@@ -11,14 +10,11 @@ public interface LoginResult<T> {
     return DataResponse.okBuilder(getData()).cookie(cookie(cookieDomain)).build();
   }
 
-  default Response socialLoginResponse(String location, String cookieDomain) {
-    return Response.status(Status.FOUND)
-        .header("Location", location)
-        .cookie(cookie(cookieDomain))
-        .build();
+  default T getData() {
+    return null;
   }
 
-  T getData();
-
-  NewCookie cookie(String cookieDomain);
+  default NewCookie cookie(String cookieDomain) {
+    return null;
+  }
 }

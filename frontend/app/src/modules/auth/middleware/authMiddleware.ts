@@ -61,7 +61,7 @@ export const authenticated = async (
   span.setTag('SessionId', SessionId);
 
   try {
-    const response = await AuthApi.sso.session(SessionId, {
+    const response = await AuthApi.sso.session.get(SessionId, {
       baseURL: process.env.AUTH_API_BASE_URL,
       headers: prepareCrossServiceHeaders(span),
     });

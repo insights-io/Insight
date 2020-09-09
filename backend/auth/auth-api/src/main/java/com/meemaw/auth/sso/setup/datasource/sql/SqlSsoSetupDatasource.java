@@ -5,20 +5,23 @@ import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.CREATED_
 import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.DOMAIN;
 import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.FIELDS;
 import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.INSERT_FIELDS;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.METHOD;
 import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.ORGANIZATION_ID;
 import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.TABLE;
-import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.TYPE;
 
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
+import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -27,7 +30,7 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
   @Inject SqlPool sqlPool;
 
   @Override
-  public CompletionStage<SsoSetupDTO> create(CreateSsoSetupDTO payload) {
+  public CompletionStage<SsoSetupDTO> create(CreateSsoSetup payload) {
     Query query =
         sqlPool
             .getContext()
@@ -36,11 +39,23 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
             .values(
                 payload.getOrganizationId(),
                 payload.getDomain(),
-                payload.getType(),
-                payload.getConfigurationEndpoint())
+                payload.getMethod().getKey(),
+                payload.getConfigurationEndpoint().toString())
             .returning(FIELDS);
 
     return sqlPool.execute(query).thenApply(pgRowSet -> mapSsoSetup(pgRowSet.iterator().next()));
+  }
+
+  @Override
+  public CompletionStage<Boolean> delete(String organizationId) {
+    Query query =
+        sqlPool
+            .getContext()
+            .deleteFrom(TABLE)
+            .where(ORGANIZATION_ID.eq(organizationId))
+            .returning(ORGANIZATION_ID);
+
+    return sqlPool.execute(query).thenApply(pgRowSet -> pgRowSet.iterator().hasNext());
   }
 
   @Override
@@ -62,12 +77,13 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
     return Optional.of(mapSsoSetup(rows.iterator().next()));
   }
 
+  @SneakyThrows
   public static SsoSetupDTO mapSsoSetup(Row row) {
     return new SsoSetupDTO(
         row.getString(ORGANIZATION_ID.getName()),
         row.getString(DOMAIN.getName()),
-        row.getString(TYPE.getName()),
-        row.getString(CONFIGURATION_ENDPOINT.getName()),
+        SsoMethod.fromString(row.getString(METHOD.getName())),
+        new URL(row.getString(CONFIGURATION_ENDPOINT.getName())),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

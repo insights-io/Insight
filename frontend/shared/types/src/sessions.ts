@@ -28,10 +28,12 @@ export type Session = Omit<SessionDTO, 'createdAt'> & {
   createdAt: Date;
 };
 
+export type SsoMethod = 'saml';
+
 export type SsoSetupDTO = {
   organizationId: string;
   domain: string;
-  type: string;
+  method: SsoMethod;
   configurationEndpoint: string;
   createdAt: string;
 };

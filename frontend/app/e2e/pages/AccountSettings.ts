@@ -20,6 +20,32 @@ class AccountSettings {
 
   public readonly title = this.container.queryByText('Account settings');
 
+  public readonly tabs = {
+    userSettings: this.container.queryByText('User settings'),
+    organizationSettings: this.container.queryByText('Organization settings'),
+  };
+
+  public readonly organizationSettings = {
+    tabs: {
+      general: {
+        button: this.container.queryByText('General'),
+      },
+      security: {
+        button: this.container.queryByText('Security'),
+        ssoSetup: {
+          setupCompleteMessage: queryByText('SSO setup complete'),
+          nonBusinessEmailErrorMessage: this.container.queryByText(
+            'SSO setup is only possible for work domain.'
+          ),
+          configurationEndpointInput: this.container.queryByPlaceholderText(
+            'https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
+          ),
+          submitButton: this.container.queryByText('Setup'),
+        },
+      },
+    },
+  };
+
   public readonly phoneNumber = {
     configureButton: this.container
       .queryByText('Phone number')

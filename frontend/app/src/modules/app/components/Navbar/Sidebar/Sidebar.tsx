@@ -34,7 +34,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
           {
             label: 'Sign out',
             handler: () =>
-              AuthApi.sso.logout().then((_) => Router.push('/login')),
+              AuthApi.sso.session.logout().then((_) => Router.push('/login')),
           },
         ],
       };

@@ -2,7 +2,7 @@ import React from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import { H1 } from 'baseui/typography';
 import { useStyletron } from 'baseui';
-import { Tabs, Tab } from 'baseui/tabs';
+import { Tabs, Tab } from 'baseui/tabs-motion';
 import { User } from '@insight/types';
 import useAuth from 'modules/auth/hooks/useAuth';
 
@@ -47,19 +47,7 @@ const AccountSettings = ({
         renderAll={false}
         activeKey={activeKey}
         onChange={(args) => onTabChange(String(args.activeKey))}
-        overrides={{
-          Root: { style: { marginTop: theme.sizing.scale500 } },
-          TabBar: {
-            style: {
-              backgroundColor: 'inherit',
-              paddingLeft: 0,
-              paddingRight: 0,
-            },
-          },
-          TabContent: {
-            style: { paddingLeft: 0, paddingRight: 0 },
-          },
-        }}
+        overrides={{ Root: { style: { marginTop: theme.sizing.scale600 } } }}
       >
         <Tab key="/account/settings" title="User settings">
           <UserSettings

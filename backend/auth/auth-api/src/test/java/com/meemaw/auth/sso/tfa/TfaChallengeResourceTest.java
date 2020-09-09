@@ -261,6 +261,7 @@ public class TfaChallengeResourceTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
+            .header("referer", "http://localhost:3000")
             .post(SsoResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -287,8 +288,8 @@ public class TfaChallengeResourceTest {
   @Test
   public void setup_tfa__should_work__on_full_totp_flow()
       throws IOException, GeneralSecurityException, NotFoundException {
-    String email = "setup-tfa-full-flow@gmail.com";
-    String password = "setup-tfa-full-flow";
+    String password = UUID.randomUUID().toString();
+    String email = password + "@gmail.com";
     String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
 
     DataResponse<TfaTotpSetupStartDTO> dataResponse =
@@ -304,7 +305,7 @@ public class TfaChallengeResourceTest {
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
     assertEquals(
-        String.format("otpauth://totp/Insight:setup-tfa-full-flow@gmail.com?secret=%s", secret),
+        String.format("otpauth://totp/Insight:%s?secret=%s", email, secret),
         TotpUtils.readBarcode(dataResponse.getData().getQrImage()).getText());
 
     // Complete tfa setup fails on invalid code
@@ -373,6 +374,7 @@ public class TfaChallengeResourceTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
+            .header("referer", "http://localhost:3000")
             .post(SsoResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -466,6 +468,7 @@ public class TfaChallengeResourceTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
+            .header("referer", "http://localhost:3000")
             .post(SsoResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -553,6 +556,7 @@ public class TfaChallengeResourceTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
+            .header("referer", "http://localhost:3000")
             .post(SsoResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -603,6 +607,7 @@ public class TfaChallengeResourceTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
+            .header("referer", "http://localhost:3000")
             .post(SsoResource.PATH + "/login");
 
     challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();

@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import org.apache.commons.lang3.RandomStringUtils;
 
-public abstract class AbstractIdentityProviderService {
+public abstract class AbstractIdpService {
 
   public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final SecureRandom random = new SecureRandom();

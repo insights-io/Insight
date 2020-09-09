@@ -1,12 +1,12 @@
 import ky from 'ky-universal';
 import type { DataResponse, UserDTO } from '@insight/types';
 
-import { withCredentials } from '../../core/utils';
-import type { RequestOptions } from '../../core/types';
+import { withCredentials } from '../../../core/utils';
+import type { RequestOptions } from '../../../core/types';
 
 import type { LoginResponseDTO } from './types';
 
-export const ssoApi = (authApiBaseURL: string) => {
+export const ssoSessionApi = (authApiBaseURL: string) => {
   return {
     login: (
       email: string,
@@ -20,7 +20,7 @@ export const ssoApi = (authApiBaseURL: string) => {
         .post(`${baseURL}/v1/sso/login`, withCredentials({ body, ...rest }))
         .json<DataResponse<LoginResponseDTO>>();
     },
-    session: (
+    get: (
       sessionId: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {

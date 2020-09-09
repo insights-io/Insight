@@ -1,4 +1,4 @@
-import { getAllByText, queryByText } from '@testing-library/testcafe';
+import { getAllByText } from '@testing-library/testcafe';
 
 import { getLocation } from '../../utils';
 import config from '../../config';
