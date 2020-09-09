@@ -5,7 +5,7 @@ import static com.meemaw.test.setup.SsoTestSetupUtils.login;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpRequestMock;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -23,6 +23,7 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserDTO;
+import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
@@ -36,9 +37,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -167,20 +170,25 @@ public class SsoResourceImplTest {
         .toCompletableFuture()
         .join();
 
-    given()
-        .config(RestAssuredUtils.dontFollowRedirects())
-        .when()
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .param("email", email)
-        .param("password", password)
-        .header("referer", "http://localhost:3000/login?redirect=%2Faccount%2Fsettings")
-        .post(SsoResource.PATH + "/login")
-        .then()
-        .statusCode(302)
-        .header(
-            "Location",
-            matchesPattern(
-                "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"));
+    DataResponse<Void> dataResponse =
+        given()
+            .config(RestAssuredUtils.dontFollowRedirects())
+            .when()
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("email", email)
+            .param("password", password)
+            .header("referer", "http://localhost:3000/login?redirect=%2Faccount%2Fsettings")
+            .post(SsoResource.PATH + "/login")
+            .as(new TypeRef<>() {});
+
+    Boom<?> error = dataResponse.getError();
+    Map<String, String> errors = (Map<String, String>) error.getErrors();
+    assertEquals(400, error.getStatusCode());
+    assertEquals("SSO login required", error.getMessage());
+    assertThat(
+        errors.get("goto"),
+        Matchers.matchesPattern(
+            "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"));
   }
 
   @Test

@@ -40,3 +40,22 @@ InvalidPassword.story = configureStory({
     });
   },
 });
+
+export const WithSsoRedirect = () => {
+  return <Login />;
+};
+WithSsoRedirect.story = configureStory({
+  setupMocks: (sandbox) => {
+    return sandbox.stub(AuthApi.sso.session, 'login').rejects(
+      mockApiError({
+        statusCode: 400,
+        reason: 'Bad Request',
+        message: 'SSO login required',
+        errors: {
+          goto:
+            'https://snuderls.okta.com/app/snuderlsorg446661_insightdev_1/exkw843tlucjMJ0kL4x6/sso/saml?RelayState=0TA5X6mX7YjV5Uxszm8q3p2RVfhttp%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings',
+        },
+      })
+    );
+  },
+});
