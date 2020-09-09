@@ -8,7 +8,6 @@ import com.meemaw.auth.sso.session.datasource.SsoDatasource;
 import com.meemaw.auth.sso.session.model.DirectLoginResult;
 import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.RedirectSessionLoginResult;
-import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.tfa.TfaMethod;
@@ -20,6 +19,7 @@ import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -169,11 +169,18 @@ public class SsoServiceImpl implements SsoService {
                   return passwordLoginSupplier.get();
                 }
 
-                return CompletableFuture.completedStage(
-                    new ResponseLoginResult(
-                        () ->
-                            idpServiceRegistry.signInRedirectResponse(
-                                clientCallbackRedirect, maybeSsoSetup.get())));
+                String ssoSignInLocation =
+                    idpServiceRegistry.signInLocation(clientCallbackRedirect, maybeSsoSetup.get());
+
+                log.info(
+                    "[AUTH]: SSO login required email={} ssoSignInLocation={}",
+                    email,
+                    ssoSignInLocation);
+
+                throw Boom.badRequest()
+                    .message("SSO login required")
+                    .errors(Map.of("goto", ssoSignInLocation))
+                    .exception();
               });
     }
 

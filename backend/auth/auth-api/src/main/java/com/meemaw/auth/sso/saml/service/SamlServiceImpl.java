@@ -283,22 +283,31 @@ public class SamlServiceImpl extends AbstractIdpService {
         .exception(ex);
   }
 
-  public javax.ws.rs.core.Response signInRedirectResponse(
-      String clientCallbackRedirect, URL configurationEndpoint) {
+  public String signInLocation(String clientCallbackRedirect, URL configurationEndpoint) {
+    String relayState = secureState(clientCallbackRedirect);
+    return buildAuthorizationUri(relayState, configurationEndpoint);
+  }
+
+  private String buildAuthorizationUri(String relayState, URL configurationEndpoint) {
     try {
       SamlMetadataResponse metadata = fetchMetadata(configurationEndpoint);
-      String relayState = secureState(clientCallbackRedirect);
-      String location = buildAuthorizationUri(metadata, relayState);
-      NewCookie cookie = new NewCookie("state", relayState);
-      return javax.ws.rs.core.Response.status(Status.FOUND)
-          .cookie(cookie)
-          .header("Location", location)
-          .build();
+      return buildAuthorizationUri(metadata, relayState);
     } catch (IOException | XMLParserException ex) {
-      log.error("[AUTH]: SAML signIn failed to start flow", ex);
+      log.error("[AUTH]: SAML failed to build authorizationUri", ex);
       throw Boom.badRequest()
           .errors(Map.of("configurationEndpoint", ex.getMessage()))
           .exception(ex);
     }
+  }
+
+  public javax.ws.rs.core.Response signInRedirectResponse(
+      String clientCallbackRedirect, URL configurationEndpoint) {
+    String relayState = secureState(clientCallbackRedirect);
+    String location = buildAuthorizationUri(relayState, configurationEndpoint);
+    NewCookie cookie = new NewCookie("state", relayState);
+    return javax.ws.rs.core.Response.status(Status.FOUND)
+        .cookie(cookie)
+        .header("Location", location)
+        .build();
   }
 }

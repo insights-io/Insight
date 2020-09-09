@@ -3,8 +3,9 @@ import { render } from 'test/utils';
 import { waitFor } from '@testing-library/react';
 import { sandbox } from '@insight/testing';
 import userEvent from '@testing-library/user-event';
+import * as windowUtils from 'shared/utils/window';
 
-import { Base, InvalidPassword } from './LoginPage.stories';
+import { Base, InvalidPassword, WithSsoRedirect } from './LoginPage.stories';
 
 describe('<LoginPage />', () => {
   it('Should validate input fields client side', async () => {
@@ -66,6 +67,27 @@ describe('<LoginPage />', () => {
       'user@example.com',
       'veryHardPassword'
     );
+  });
+
+  it('Should redirect to SSO provider when setup', async () => {
+    const locationAsignStub = sandbox.stub(windowUtils, 'locationAssign');
+    WithSsoRedirect.story.setupMocks(sandbox);
+    const { getByText, getByPlaceholderText } = render(<WithSsoRedirect />);
+    const emailInput = getByPlaceholderText('Email');
+    const passwordInput = getByPlaceholderText('Password');
+    const submitButton = getByText('Sign in');
+
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'veryHardPassword');
+
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      sandbox.assert.calledWithExactly(
+        locationAsignStub,
+        'https://snuderls.okta.com/app/snuderlsorg446661_insightdev_1/exkw843tlucjMJ0kL4x6/sso/saml?RelayState=0TA5X6mX7YjV5Uxszm8q3p2RVfhttp%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings'
+      );
+    });
   });
 
   it('Should render Google sign on button with correct link', () => {

@@ -12,6 +12,7 @@ import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { Button } from 'baseui/button';
 import FormError from 'shared/components/FormError';
 import { useStyletron } from 'baseui';
+import { locationAssign } from 'shared/utils/window';
 
 type LoginEmailFormData = {
   email: string;
@@ -49,7 +50,14 @@ const LoginEmailForm = ({ replace, redirect, encodedRedirect }: Props) => {
       })
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
-        setFormError(errorDTO.error);
+        if (
+          errorDTO.error.message === 'SSO login required' &&
+          errorDTO.error.errors?.goto
+        ) {
+          locationAssign(errorDTO.error.errors.goto);
+        } else {
+          setFormError(errorDTO.error);
+        }
       })
       .finally(() => setIsSubmitting(false));
   });

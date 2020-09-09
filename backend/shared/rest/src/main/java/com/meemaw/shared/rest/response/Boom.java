@@ -4,7 +4,10 @@ import com.meemaw.shared.rest.exception.BoomException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Boom<T> {
 
   private final int statusCode;
