@@ -9,6 +9,8 @@ public interface SsoSetupDatasource {
 
   CompletionStage<SsoSetupDTO> create(CreateSsoSetup payload);
 
+  CompletionStage<Boolean> delete(String organizationId);
+
   CompletionStage<Optional<SsoSetupDTO>> get(String organizationId);
 
   CompletionStage<Optional<SsoSetupDTO>> getByDomain(String domain);

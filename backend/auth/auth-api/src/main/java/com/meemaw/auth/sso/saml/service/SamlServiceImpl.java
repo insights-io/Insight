@@ -4,12 +4,13 @@ import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.AbstractIdentityProviderService;
 import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
-import com.meemaw.auth.sso.session.model.LoginResult;
+import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
@@ -29,6 +30,8 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -202,7 +205,7 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
     return (Response) unmarshaller.unmarshall(element);
   }
 
-  public CompletionStage<LoginResult<?>> handleCallback(String samlResponse) {
+  public CompletionStage<SsoLoginResult<?>> handleCallback(String samlResponse, String relayState) {
     SamlDataResponse samlDataResponse;
     try {
       samlDataResponse = decodeSamlResponse(samlResponse);
@@ -243,7 +246,11 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
                 throw Boom.badRequest().message("Invalid entityId").exception();
               }
               validateSignature(samlDataResponse.getSignature(), samlMetadata);
-              return ssoService.ssoLogin(email, samlDataResponse.getFullName(), organizationId);
+              String location = secureStateData(relayState);
+              String cookieDomain = RequestUtils.parseCookieDomain(location);
+              return ssoService
+                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId, location)
+                  .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
   }
 
@@ -274,5 +281,24 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
         .message("Failed to fetch SSO configuration")
         .errors(Map.of("configurationEndpoint", message))
         .exception(ex);
+  }
+
+  public javax.ws.rs.core.Response signInRedirectResponse(
+      String callbackRedirect, URL configurationEndpoint) {
+    try {
+      SamlMetadataResponse metadata = fetchMetadata(configurationEndpoint);
+      String relayState = secureState(callbackRedirect);
+      String location = buildAuthorizationUri(metadata, relayState);
+      NewCookie cookie = new NewCookie("state", relayState);
+      return javax.ws.rs.core.Response.status(Status.FOUND)
+          .cookie(cookie)
+          .header("Location", location)
+          .build();
+    } catch (IOException | XMLParserException ex) {
+      log.error("[AUTH]: SAML signIn failed to start flow", ex);
+      throw Boom.badRequest()
+          .errors(Map.of("configurationEndpoint", ex.getMessage()))
+          .exception(ex);
+    }
   }
 }

@@ -6,6 +6,8 @@ import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +43,10 @@ public final class RequestUtils {
    */
   public static Optional<String> parseRefererBaseURL(HttpServerRequest request) {
     return sneakyParseRefererURL(request).map(RequestUtils::parseBaseURL);
+  }
+
+  public static Optional<URL> parseRefererURL(HttpServerRequest request) {
+    return sneakyParseRefererURL(request);
   }
 
   /**
@@ -162,5 +168,20 @@ public final class RequestUtils {
   public static String getRemoteAddress(HttpServletRequest request) {
     return Optional.ofNullable(request.getHeader(MissingHttpHeaders.X_FORWARDED_FOR))
         .orElseGet(request::getRemoteAddr);
+  }
+
+  public static Map<String, String> getQueryMap(String query) {
+    if (query == null) {
+      return Collections.emptyMap();
+    }
+    String[] params = query.split("&");
+    Map<String, String> map = new HashMap<>(params.length);
+
+    for (String param : params) {
+      String name = param.split("=")[0];
+      String value = param.split("=")[1];
+      map.put(name, value);
+    }
+    return map;
   }
 }

@@ -231,7 +231,7 @@ public class SignUpServiceImpl implements SignUpService {
 
   @Override
   public CompletionStage<AuthUser> ssoSignUp(String email, String fullName, String organizationId) {
-    log.info("[AUTH]: SSO up attempt");
+    log.info("[AUTH]: SSO sign up attempt");
     return sqlPool
         .beginTransaction()
         .thenCompose(

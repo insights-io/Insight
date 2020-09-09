@@ -287,8 +287,8 @@ public class TfaChallengeResourceTest {
   @Test
   public void setup_tfa__should_work__on_full_totp_flow()
       throws IOException, GeneralSecurityException, NotFoundException {
-    String email = "setup-tfa-full-flow@gmail.com";
-    String password = "setup-tfa-full-flow";
+    String password = UUID.randomUUID().toString();
+    String email = password + "@gmail.com";
     String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
 
     DataResponse<TfaTotpSetupStartDTO> dataResponse =

@@ -7,11 +7,14 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
+import java.net.URL;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,14 +22,23 @@ public class SsoResourceImpl implements SsoResource {
 
   @Inject SsoService ssoService;
   @Context HttpServerRequest request;
+  @Context UriInfo info;
 
   @Override
   public CompletionStage<Response> login(String email, String password) {
-    String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
+    String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
+    String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
     String ipAddress = RequestUtils.getRemoteAddress(request);
+    URL refererURL =
+        RequestUtils.parseRefererURL(request)
+            .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
 
+    String refererBaseURL = RequestUtils.parseBaseURL(refererURL);
+    String redirect = RequestUtils.getQueryMap(refererURL.getQuery()).get("redirect");
+
+    String callbackRedirect = refererBaseURL + Optional.ofNullable(redirect).orElse("/");
     return ssoService
-        .login(email, password, ipAddress)
+        .passwordLogin(email, password, ipAddress, callbackRedirect)
         .thenApply(loginResult -> loginResult.loginResponse(cookieDomain));
   }
 

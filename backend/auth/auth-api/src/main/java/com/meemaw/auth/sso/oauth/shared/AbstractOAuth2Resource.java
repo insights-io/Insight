@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.oauth.shared;
 
 import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
-import com.meemaw.auth.sso.session.model.LoginResult;
+import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.http.HttpServerRequest;
@@ -51,12 +51,6 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
     String redirectUri = getRedirectUri(info, request);
     return oauthService
         .oauth2callback(state, sessionState, code, redirectUri)
-        .thenApply(
-            ssoSocialLogin -> {
-              LoginResult<?> loginResult = ssoSocialLogin.getLoginResult();
-              String location = ssoSocialLogin.getLocation();
-              String cookieDomain = ssoSocialLogin.getCookieDomain();
-              return loginResult.socialLoginResponse(location, cookieDomain);
-            });
+        .thenApply(SsoLoginResult::response);
   }
 }

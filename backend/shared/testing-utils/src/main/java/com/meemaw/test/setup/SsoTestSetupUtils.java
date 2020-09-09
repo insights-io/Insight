@@ -120,6 +120,7 @@ public final class SsoTestSetupUtils {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
+            .header("referer", "http://localhost:3000")
             .post(uri);
 
     response

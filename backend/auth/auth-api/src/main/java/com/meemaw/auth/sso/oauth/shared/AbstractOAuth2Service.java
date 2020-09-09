@@ -3,7 +3,7 @@ package com.meemaw.auth.sso.oauth.shared;
 import com.meemaw.auth.sso.AbstractIdentityProviderService;
 import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
-import com.meemaw.auth.sso.session.model.SsoSocialLogin;
+import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
@@ -26,7 +26,7 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
 
   public abstract URI buildAuthorizationUri(String state, String serverRedirectUri);
 
-  public abstract CompletionStage<SsoSocialLogin> oauth2callback(
+  public abstract CompletionStage<SsoLoginResult<?>> oauth2callback(
       String state, String sessionState, String code, String serverRedirectUri);
 
   /**
@@ -40,7 +40,7 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
         secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
   }
 
-  public CompletionStage<SsoSocialLogin> oauth2callback(
+  public CompletionStage<SsoLoginResult<?>> oauth2callback(
       AbstractOAuth2Client<T, U, E> oauthClient,
       String state,
       String sessionState,
@@ -64,14 +64,14 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
               log.info("[AUTH]: OAuth2 successfully retrieved user info email={}", email);
 
               return ssoService
-                  .socialLogin(email, fullName)
+                  .socialLogin(email, fullName, location)
                   .thenApply(
                       loginResult -> {
                         log.info(
                             "[AUTH]: OAuth2 successfully authenticated user email={} location={}",
                             email,
                             location);
-                        return new SsoSocialLogin(loginResult, location, cookieDomain);
+                        return new SsoLoginResult<>(loginResult, cookieDomain);
                       });
             });
   }

@@ -47,6 +47,18 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
   }
 
   @Override
+  public CompletionStage<Boolean> delete(String organizationId) {
+    Query query =
+        sqlPool
+            .getContext()
+            .deleteFrom(TABLE)
+            .where(ORGANIZATION_ID.eq(organizationId))
+            .returning(ORGANIZATION_ID);
+
+    return sqlPool.execute(query).thenApply(pgRowSet -> pgRowSet.iterator().hasNext());
+  }
+
+  @Override
   public CompletionStage<Optional<SsoSetupDTO>> get(String organizationId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
     return sqlPool.execute(query).thenApply(SqlSsoSetupDatasource::onGetSsoSetup);

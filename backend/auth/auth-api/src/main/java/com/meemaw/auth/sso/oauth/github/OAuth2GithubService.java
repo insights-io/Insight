@@ -5,7 +5,7 @@ import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
-import com.meemaw.auth.sso.session.model.SsoSocialLogin;
+import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +46,7 @@ public class OAuth2GithubService
   @Timed(
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Github oauth2callback")
-  public CompletionStage<SsoSocialLogin> oauth2callback(
+  public CompletionStage<SsoLoginResult<?>> oauth2callback(
       String state, String sessionState, String code, String redirectUri) {
     return oauth2callback(OAuth2GithubClient, state, sessionState, code, redirectUri);
   }
