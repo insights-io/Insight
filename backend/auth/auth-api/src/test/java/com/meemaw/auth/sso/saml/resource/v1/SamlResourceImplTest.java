@@ -111,7 +111,7 @@ public class SamlResourceImplTest {
         .when()
         .header("referer", referer)
         .queryParam("redirect", redirect)
-        .queryParam("email", "matej.snuderl@snuderls.io")
+        .queryParam("email", "matej.snuderl@snuderls.iooooo")
         .get(signInUri)
         .then()
         .statusCode(400)

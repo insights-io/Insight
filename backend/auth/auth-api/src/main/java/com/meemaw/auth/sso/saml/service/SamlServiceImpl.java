@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.saml.service;
 
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.AbstractIdentityProviderService;
+import com.meemaw.auth.sso.AbstractIdpService;
 import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
@@ -58,7 +58,7 @@ import org.w3c.dom.NodeList;
 
 @ApplicationScoped
 @Slf4j
-public class SamlServiceImpl extends AbstractIdentityProviderService {
+public class SamlServiceImpl extends AbstractIdpService {
 
   private CertificateFactory certificateFactory;
   private BasicParserPool parsePool;
@@ -284,10 +284,10 @@ public class SamlServiceImpl extends AbstractIdentityProviderService {
   }
 
   public javax.ws.rs.core.Response signInRedirectResponse(
-      String callbackRedirect, URL configurationEndpoint) {
+      String clientCallbackRedirect, URL configurationEndpoint) {
     try {
       SamlMetadataResponse metadata = fetchMetadata(configurationEndpoint);
-      String relayState = secureState(callbackRedirect);
+      String relayState = secureState(clientCallbackRedirect);
       String location = buildAuthorizationUri(metadata, relayState);
       NewCookie cookie = new NewCookie("state", relayState);
       return javax.ws.rs.core.Response.status(Status.FOUND)

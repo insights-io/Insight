@@ -14,7 +14,7 @@ public class ChallengeLoginResult implements LoginResult<ChallengeResponseDTO> {
 
   String challengeId;
   List<TfaMethod> methods;
-  String loginRedirectLocation;
+  String clientCallbackRedirect;
 
   @Override
   public ChallengeResponseDTO getData() {
@@ -28,12 +28,12 @@ public class ChallengeLoginResult implements LoginResult<ChallengeResponseDTO> {
 
   @Override
   public Response loginResponse(String cookieDomain) {
-    if (loginRedirectLocation == null) {
+    if (clientCallbackRedirect == null) {
       return LoginResult.super.loginResponse(cookieDomain);
     }
 
     return Response.status(Status.FOUND)
-        .header("Location", loginRedirectLocation)
+        .header("Location", clientCallbackRedirect)
         .cookie(cookie(cookieDomain))
         .build();
   }

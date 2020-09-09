@@ -3,7 +3,7 @@ package com.meemaw.auth.sso.session.service;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
-import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
+import com.meemaw.auth.sso.IdpServiceRegistry;
 import com.meemaw.auth.sso.session.datasource.SsoDatasource;
 import com.meemaw.auth.sso.session.model.DirectLoginResult;
 import com.meemaw.auth.sso.session.model.LoginResult;
@@ -44,7 +44,7 @@ public class SsoServiceImpl implements SsoService {
   @Inject SignUpService signUpService;
   @Inject TfaChallengeService tfaChallengeService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
-  @Inject SamlServiceImpl samlService;
+  @Inject IdpServiceRegistry idpServiceRegistry;
 
   @Override
   @Traced
@@ -144,7 +144,7 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "login", description = "A measure of how long it takes to do a password login")
   public CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, String callbackRedirect) {
+      String email, String password, String ipAddress, String clientCallbackRedirect) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
 
     Supplier<CompletionStage<LoginResult<?>>> passwordLoginSupplier =
@@ -172,8 +172,8 @@ public class SsoServiceImpl implements SsoService {
                 return CompletableFuture.completedStage(
                     new ResponseLoginResult(
                         () ->
-                            samlService.signInRedirectResponse(
-                                callbackRedirect, maybeSsoSetup.get().getConfigurationEndpoint())));
+                            idpServiceRegistry.signInRedirectResponse(
+                                clientCallbackRedirect, maybeSsoSetup.get())));
               });
     }
 
@@ -185,7 +185,7 @@ public class SsoServiceImpl implements SsoService {
   }
 
   private CompletionStage<LoginResult<?>> authenticate(
-      AuthUser user, List<TfaMethod> tfaMethods, @Nullable String loginRedirectLocation) {
+      AuthUser user, List<TfaMethod> tfaMethods, @Nullable String clientCallbackRedirect) {
     UUID userId = user.getId();
     String organizationId = user.getOrganizationId();
     MDC.put(LoggingConstants.USER_ID, userId.toString());
@@ -195,12 +195,12 @@ public class SsoServiceImpl implements SsoService {
       return this.createSession(user)
           .thenApply(
               sessionId -> {
-                if (loginRedirectLocation != null) {
+                if (clientCallbackRedirect != null) {
                   log.info(
-                      "[AUTH]: Successful login for user={} loginRedirectLocation={}",
+                      "[AUTH]: Successful login for user={} clientCallbackRedirect={}",
                       userId,
-                      loginRedirectLocation);
-                  return new RedirectSessionLoginResult(sessionId, loginRedirectLocation);
+                      clientCallbackRedirect);
+                  return new RedirectSessionLoginResult(sessionId, clientCallbackRedirect);
                 }
                 log.info("[AUTH]: Successful login for user={}", userId);
                 return new DirectLoginResult(sessionId);
@@ -212,7 +212,7 @@ public class SsoServiceImpl implements SsoService {
         .thenApply(
             challengeId -> {
               log.info("[AUTH]: TFA challenge={} for user={}", challengeId, userId);
-              return new ChallengeLoginResult(challengeId, tfaMethods, loginRedirectLocation);
+              return new ChallengeLoginResult(challengeId, tfaMethods, clientCallbackRedirect);
             });
   }
 
@@ -220,16 +220,20 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "socialLogin", description = "A measure of how long it takes to do social login")
   public CompletionStage<LoginResult<?>> socialLogin(
-      String email, String fullName, String loginRedirectLocation) {
+      String email, String fullName, String clientCallbackRedirect) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
-    log.info("[AUTH]: Social login attempt for user: {}", email);
+    log.info(
+        "[AUTH]: Social login attempt email={} clientCallbackRedirect={}",
+        email,
+        clientCallbackRedirect);
+
     return socialFindOrSignUpUser(email, fullName)
         .thenCompose(
             userWithLoginInformation ->
                 authenticate(
                     userWithLoginInformation.user(),
                     userWithLoginInformation.getTfaMethods(),
-                    loginRedirectLocation))
+                    clientCallbackRedirect))
         .thenApply(
             loginResult -> {
               log.info("[AUTH]: Successful social login for user: {}", email);
@@ -239,21 +243,21 @@ public class SsoServiceImpl implements SsoService {
 
   @Override
   public CompletionStage<LoginResult<?>> ssoLogin(
-      String email, String fullName, String organizationId, String loginRedirectLocation) {
+      String email, String fullName, String organizationId, String clientCallbackRedirect) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
     log.info(
-        "[AUTH]: SSO login attempt email={} organizationId={} loginRedirectLocation={}",
+        "[AUTH]: SSO login attempt email={} organizationId={} clientCallbackRedirect={}",
         email,
         organizationId,
-        loginRedirectLocation);
+        clientCallbackRedirect);
 
     return ssoFindOrSignUpUser(email, fullName, organizationId)
         .thenCompose(
             userWithLoginInformation -> {
               AuthUser user = userWithLoginInformation.user();
               List<TfaMethod> tfaMethods = userWithLoginInformation.getTfaMethods();
-              return authenticate(user, tfaMethods, loginRedirectLocation);
+              return authenticate(user, tfaMethods, clientCallbackRedirect);
             })
         .thenApply(
             loginResult -> {

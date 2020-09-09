@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.oauth.shared;
 
-import com.meemaw.auth.sso.AbstractIdentityProviderService;
+import com.meemaw.auth.sso.AbstractIdpService;
 import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
@@ -20,7 +20,7 @@ import org.slf4j.MDC;
 
 @Slf4j
 public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extends OAuthError>
-    extends AbstractIdentityProviderService {
+    extends AbstractIdpService {
 
   @Inject SsoService ssoService;
 
@@ -28,17 +28,6 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
 
   public abstract CompletionStage<SsoLoginResult<?>> oauth2callback(
       String state, String sessionState, String code, String serverRedirectUri);
-
-  /**
-   * Extract data encoded in a secure state by stripping the prefix of fixed length.
-   *
-   * @param secureState from authorization flow
-   * @return data that was encoded in the state
-   */
-  public String secureStateData(String secureState) {
-    return URLDecoder.decode(
-        secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
-  }
 
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
       AbstractOAuth2Client<T, U, E> oauthClient,
@@ -74,5 +63,16 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
                         return new SsoLoginResult<>(loginResult, cookieDomain);
                       });
             });
+  }
+
+  /**
+   * Extract data encoded in a secure state by stripping the prefix of fixed length.
+   *
+   * @param secureState from authorization flow
+   * @return data that was encoded in the state
+   */
+  public String secureStateData(String secureState) {
+    return URLDecoder.decode(
+        secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
   }
 }

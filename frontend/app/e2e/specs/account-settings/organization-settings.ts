@@ -68,9 +68,21 @@ test('User with business email should be able to setup SAML SSO', async (t) => {
     .expect(setupCompleteMessage.visible)
     .ok('SSO setup complete');
 
+  // Is on okta page on SSO saml flow
   await Sidebar.signOut(t)
     .click(LoginPage.tabs.samlSso)
     .typeText(LoginPage.workEmailInput, 'matej.snuderl@snuderls.eu')
+    .click(LoginPage.signInButton)
+    .expect(getLocation())
+    .match(
+      /^https:\/\/snuderls\.okta\.com\/login\/login\.htm\?fromURI=%2Fapp%2Fsnuderlsorg446661_insightdev_1%2Fexkw843tlucjMJ0kL4x6%2Fsso%2Fsaml%3FRelayState%3D(.*)http%253A%252F%252Flocalhost%253A3000%252F$/,
+      'Is on okta page'
+    );
+
+  // Is on okta page even after normal login flow
+  await Sidebar.signOut(t)
+    .typeText(LoginPage.emailInput, 'matej.snuderl@snuderls.eu')
+    .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
     .expect(getLocation())
     .match(

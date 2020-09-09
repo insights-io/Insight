@@ -134,6 +134,22 @@ public class SsoResourceImplTest {
   }
 
   @Test
+  public void login__should_fail__when_malformed_referer() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("email", "test@gmail.com")
+        .param("password", "superFancyPassword")
+        .header("referer", "random")
+        .post(SsoResource.PATH + "/login")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"no protocol: random\"}}"));
+  }
+
+  @Test
   public void login__should_redirect_to_sso_provider_with_correct_redirect__when_sso_setup()
       throws JsonProcessingException, MalformedURLException {
     String password = UUID.randomUUID().toString();

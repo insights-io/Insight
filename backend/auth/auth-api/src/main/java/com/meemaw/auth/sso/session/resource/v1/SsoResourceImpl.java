@@ -35,10 +35,10 @@ public class SsoResourceImpl implements SsoResource {
 
     String refererBaseURL = RequestUtils.parseBaseURL(refererURL);
     String redirect = RequestUtils.getQueryMap(refererURL.getQuery()).get("redirect");
+    String clientCallbackRedirect = refererBaseURL + Optional.ofNullable(redirect).orElse("/");
 
-    String callbackRedirect = refererBaseURL + Optional.ofNullable(redirect).orElse("/");
     return ssoService
-        .passwordLogin(email, password, ipAddress, callbackRedirect)
+        .passwordLogin(email, password, ipAddress, clientCallbackRedirect)
         .thenApply(loginResult -> loginResult.loginResponse(cookieDomain));
   }
 

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.config.model.AppConfig;
-import com.meemaw.auth.sso.AbstractIdentityProviderService;
+import com.meemaw.auth.sso.AbstractIdpService;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.oauth.github.OAuth2GithubClient;
 import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
@@ -136,8 +136,7 @@ public class OpenIdGithubResourceImplTest {
     response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination =
-        state.substring(AbstractIdentityProviderService.SECURE_STATE_PREFIX_LENGTH);
+    String destination = state.substring(AbstractIdpService.SECURE_STATE_PREFIX_LENGTH);
 
     assertEquals(URLEncoder.encode(referer + dest, StandardCharsets.UTF_8), destination);
   }
@@ -164,8 +163,7 @@ public class OpenIdGithubResourceImplTest {
     response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination =
-        state.substring(AbstractIdentityProviderService.SECURE_STATE_PREFIX_LENGTH);
+    String destination = state.substring(AbstractIdpService.SECURE_STATE_PREFIX_LENGTH);
     assertEquals(URLEncoder.encode(referer + redirect, StandardCharsets.UTF_8), destination);
   }
 

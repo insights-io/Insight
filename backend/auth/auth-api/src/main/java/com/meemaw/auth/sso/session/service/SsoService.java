@@ -34,7 +34,7 @@ public interface SsoService {
   }
 
   CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, String callbackRedirect);
+      String email, String password, String ipAddress, String clientCallbackRedirect);
 
   CompletionStage<LoginResult<?>> socialLogin(String email, String fullName, String location);
 
