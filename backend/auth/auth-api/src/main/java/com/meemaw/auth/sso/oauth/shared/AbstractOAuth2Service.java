@@ -9,8 +9,6 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -63,16 +61,5 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
                         return new SsoLoginResult<>(loginResult, cookieDomain);
                       });
             });
-  }
-
-  /**
-   * Extract data encoded in a secure state by stripping the prefix of fixed length.
-   *
-   * @param secureState from authorization flow
-   * @return data that was encoded in the state
-   */
-  public String secureStateData(String secureState) {
-    return URLDecoder.decode(
-        secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
   }
 }

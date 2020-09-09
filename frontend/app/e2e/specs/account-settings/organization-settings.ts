@@ -80,7 +80,8 @@ test('User with business email should be able to setup SAML SSO', async (t) => {
     );
 
   // Is on okta page even after normal login flow
-  await Sidebar.signOut(t)
+  await t
+    .navigateTo(AccountSettingsPage.path)
     .typeText(LoginPage.emailInput, 'matej.snuderl@snuderls.eu')
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
