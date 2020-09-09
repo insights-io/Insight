@@ -33,6 +33,6 @@
   },
   "peerDependencies": {
     "baseui": "9.98.0",
-    "react-hook-form": "6.7.2"
+    "react-hook-form": "6.8.0"
   }
 }
