@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, RenderableComponent } from 'test/utils';
+import { render } from 'test/utils';
 import { StoryConfiguration } from '@insight/storybook';
 import { sandbox } from '@insight/testing';
 import userEvent from '@testing-library/user-event';
+import { RenderableComponent } from '@insight/next-testing';
 
 import {
   Base,

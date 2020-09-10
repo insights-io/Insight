@@ -1,30 +1,22 @@
-import React, { JSXElementConstructor, ComponentType } from 'react';
+import React, { ComponentType } from 'react';
 import { render as renderImpl } from '@testing-library/react';
 import { NextRouter } from 'next/router';
 import { createRouter } from 'next/dist/client/router';
 import { sandbox } from '@insight/testing';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
-import type {
-  AppProps,
-  BaseRouter,
-} from 'next/dist/next-server/lib/router/router';
 import type { StoryConfiguration } from '@insight/storybook';
 
-type RenderOptions = Partial<BaseRouter>;
-type App = ComponentType<AppProps>;
+import type {
+  AppProviders,
+  NextApp,
+  RenderableComponent,
+  RenderOptions,
+} from './types';
 
-export type RenderableComponent<
-  Props,
-  T,
-  S extends StoryConfiguration<T>
-> = React.ReactElement<Props, JSXElementConstructor<Props> & { story?: S }>;
-
-type AppProviders = React.ComponentType<{ children: JSX.Element }>;
-
-const render = <Props, T, S extends StoryConfiguration<T>>(
+export const render = <Props, T, S extends StoryConfiguration<T>>(
   component: RenderableComponent<Props, T, S>,
   options: RenderOptions = {},
-  AppProviders: AppProviders
+  Providers: AppProviders
 ) => {
   const { route = '/', pathname = '/', query = {}, asPath = '/' } = options;
   const replace = sandbox.stub().resolves(false);
@@ -53,9 +45,9 @@ const render = <Props, T, S extends StoryConfiguration<T>>(
     pageLoader: null,
     subscription: sandbox.stub(),
     initialProps: {},
-    App: (null as unknown) as App,
+    App: (null as unknown) as NextApp,
     Component: (null as unknown) as ComponentType,
-    wrapApp: (null as unknown) as (App: App) => unknown,
+    wrapApp: (null as unknown) as (App: NextApp) => unknown,
     initialStyleSheets: [],
   });
 
@@ -64,23 +56,19 @@ const render = <Props, T, S extends StoryConfiguration<T>>(
   clientRouter.back = back;
 
   const renderResult = renderImpl(
-    <AppProviders>
+    <Providers>
       <RouterContext.Provider value={router}>
         {component}
       </RouterContext.Provider>
-    </AppProviders>
+    </Providers>
   );
 
   return { ...renderResult, replace, push, back, reload };
 };
 
-const createRenderer = <Props, T, S extends StoryConfiguration<T>>(
-  AppProviders: AppProviders
-) => {
-  return (
+export const createRenderer = (Providers: AppProviders) => {
+  return <Props, T, S extends StoryConfiguration<T>>(
     component: RenderableComponent<Props, T, S>,
     options: RenderOptions = {}
-  ) => render(component, options, AppProviders);
+  ) => render<Props, T, S>(component, options, Providers);
 };
-
-export default createRenderer;
