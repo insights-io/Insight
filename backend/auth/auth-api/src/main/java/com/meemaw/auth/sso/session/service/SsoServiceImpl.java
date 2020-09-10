@@ -144,7 +144,7 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "login", description = "A measure of how long it takes to do a password login")
   public CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, String clientCallbackRedirect) {
+      String email, String password, String ipAddress, String serverBaseURL, String redirect) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
 
     Supplier<CompletionStage<LoginResult<?>>> passwordLoginSupplier =
@@ -170,7 +170,8 @@ public class SsoServiceImpl implements SsoService {
                 }
 
                 String ssoSignInLocation =
-                    idpServiceRegistry.signInLocation(clientCallbackRedirect, maybeSsoSetup.get());
+                    idpServiceRegistry.signInLocation(
+                        serverBaseURL, maybeSsoSetup.get().getMethod(), redirect);
 
                 log.info(
                     "[AUTH]: SSO login required email={} ssoSignInLocation={}",

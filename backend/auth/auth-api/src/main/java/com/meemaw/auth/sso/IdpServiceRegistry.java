@@ -1,18 +1,21 @@
 package com.meemaw.auth.sso;
 
-import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
-import java.net.URL;
+import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
+import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.setup.model.SsoMethod;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 
 @ApplicationScoped
 public class IdpServiceRegistry {
 
-  @Inject SamlServiceImpl samlService;
-
-  public String signInLocation(String clientCallbackRedirect, SsoSetupDTO ssoSetup) {
-    URL configurationEndpoint = ssoSetup.getConfigurationEndpoint();
-    return samlService.signInLocation(clientCallbackRedirect, configurationEndpoint);
+  public String signInLocation(String serverBaseURL, SsoMethod ssoMethod, String redirect) {
+    return UriBuilder.fromUri(serverBaseURL)
+        .path(SsoResource.PATH)
+        .path(ssoMethod.getKey())
+        .path(OAuth2Resource.SIGNIN_PATH)
+        .queryParam("redirect", redirect)
+        .build()
+        .toString();
   }
 }

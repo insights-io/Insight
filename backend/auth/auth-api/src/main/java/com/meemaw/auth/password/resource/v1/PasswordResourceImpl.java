@@ -50,7 +50,7 @@ public class PasswordResourceImpl implements PasswordResource {
         .thenCompose(
             passwordResetRequest ->
                 ssoService
-                    .passwordLogin(passwordResetRequest.getEmail(), password, ipAddress, null)
+                    .passwordLogin(passwordResetRequest.getEmail(), password, ipAddress, null, null)
                     .thenApply(loginResult -> loginResult.loginResponse(cookieDomain)));
   }
 
