@@ -66,11 +66,9 @@ export const render = <Props, T, S extends StoryConfiguration<T>>(
   return { ...renderResult, replace, push, back, reload };
 };
 
-export const createRenderer = <Props, T, S extends StoryConfiguration<T>>(
-  Providers: AppProviders
-) => {
-  return (
+export const createRenderer = (Providers: AppProviders) => {
+  return <Props, T, S extends StoryConfiguration<T>>(
     component: RenderableComponent<Props, T, S>,
     options: RenderOptions = {}
-  ) => render(component, options, Providers);
+  ) => render<Props, T, S>(component, options, Providers);
 };

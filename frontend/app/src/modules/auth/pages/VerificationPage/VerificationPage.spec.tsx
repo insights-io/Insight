@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, RenderableComponent } from 'test/utils';
+import { render } from 'test/utils';
 import { sandbox } from '@insight/testing';
 import userEvent from '@testing-library/user-event';
 import { StoryConfiguration } from '@insight/storybook';
 import { waitFor } from '@testing-library/react';
+import { RenderableComponent } from '@insight/next-testing';
 
 import {
   Base,

@@ -17,6 +17,7 @@ COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json
 COPY frontend/shared/sdk/package.json /src/frontend/shared/sdk/package.json
 COPY frontend/shared/service-proxy/package.json /src/frontend/shared/service-proxy/package.json
 COPY frontend/shared/testing/package.json /src/frontend/shared/testing/package.json
+COPY frontend/shared/next-testing/package.json /src/frontend/shared/next-testing/package.json
 COPY frontend/shared/storybook/package.json /src/frontend/shared/storybook/package.json
 COPY frontend/shared/ui/package.json /src/frontend/shared/ui/package.json
 RUN yarn install --frozen-lockfile
