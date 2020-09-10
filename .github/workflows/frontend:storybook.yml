@@ -33,7 +33,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn workspace @insight/types build
           yarn concurrently "yarn workspace @insight/storybook build" "yarn workspace @insight/sdk build" "yarn workspace @insight/ui build"
-          yarn concurrently "yarn workspace @insight/app storybook:build" "yarn workspace @insight/try storybook:build" "yarn workspace @insight/homepage storybook:build"
+          yarn concurrently "yarn workspace @insight/app storybook:build" "yarn workspace @insight/try storybook:build" "yarn workspace @insight/storybook storybook:build" "yarn workspace @insight/homepage storybook:build"
       - uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -46,6 +46,12 @@ jobs:
           BRANCH: gh-pages
           FOLDER: frontend/try/storybook-static
           TARGET_FOLDER: try/storybook/master
+      - uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: frontend/homepage/storybook-static
+          TARGET_FOLDER: homepage/storybook/master
       - uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
