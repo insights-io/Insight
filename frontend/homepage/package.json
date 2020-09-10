@@ -17,17 +17,21 @@
     "dev": "next -p 3001",
     "build": "next build",
     "start": "next start",
-    "test": "jest --passWithNoTests",
+    "test": "jest --env=jest-environment-jsdom-sixteen",
     "test:e2e": "testcafe chrome e2e/specs",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
     "storybook": "start-storybook",
+    "storybook:build": "build-storybook",
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
-    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
+    "pretest": "yarn prebuild",
+    "prebuild": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/storybook build\" \"yarn workspace @insight/testing build\" \"yarn workspace @insight/sdk build\" && yarn workspace @insight/next-testing build"
   },
   "dependencies": {
+    "@insight/sdk": "0.0.0-development",
     "baseui": "9.98.0",
     "next": "9.5.3",
     "react": "16.13.1",
@@ -36,6 +40,7 @@
     "styletron-react": "5.2.7"
   },
   "devDependencies": {
+    "@insight/next-testing": "0.0.0-development",
     "@next/bundle-analyzer": "9.5.3",
     "@types/react": "16.9.49",
     "@types/react-dom": "16.9.8",

@@ -3,6 +3,11 @@ import { makeDecorator, WrapperSettings } from '@storybook/addons';
 import { action } from '@storybook/addon-actions';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
 import { NextRouter, createRouter } from 'next/router';
+import { Client as Styletron } from 'styletron-engine-atomic';
+import AppProviders from '../src/shared/containers/AppProviders';
+
+/* Share Styletron instance across stories to keep css in sync */
+const engine = new Styletron();
 
 const NEXT_DECORATOR_PARAMETER_NAME = 'next__decorator';
 
@@ -18,6 +23,7 @@ export default makeDecorator({
       pathname: '/',
       query: {},
       asPath: '/',
+      basePath: '/',
       push: (...args: unknown[]) => {
         action('push')(args);
         return Promise.resolve(true);
@@ -51,9 +57,11 @@ export default makeDecorator({
     } as any);
 
     return (
-      <RouterContext.Provider value={router}>
-        {story(context)}
-      </RouterContext.Provider>
+      <AppProviders engine={engine}>
+        <RouterContext.Provider value={router}>
+          {story(context)}
+        </RouterContext.Provider>
+      </AppProviders>
     );
   },
 });

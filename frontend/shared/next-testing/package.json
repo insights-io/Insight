@@ -1,0 +1,36 @@
+{
+  "name": "@insight/next-testing",
+  "version": "0.0.0-development",
+  "private": true,
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "umd:main": "dist/next-testing.umd.production.min.js",
+  "module": "dist/next-testing.esm.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "author": "Insight Engineering",
+  "license": "MIT",
+  "homepage": "https://github.com/insights-io/insight#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insights-io/insight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/insights-io/insight/issues"
+  },
+  "scripts": {
+    "build": "tsdx build --tsconfig tsconfig.build.json --format cjs,esm,umd,es",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'",
+    "storybook:build": "build-storybook"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {
+    "@insight/testing": "0.0.0-development",
+    "@insight/storybook": "0.0.0-development",
+    "@testing-library/react": "11.0.2",
+    "next": "9.5.3"
+  }
+}
