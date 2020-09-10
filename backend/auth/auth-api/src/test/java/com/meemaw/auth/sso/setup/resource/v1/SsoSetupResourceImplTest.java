@@ -10,15 +10,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
+import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +33,41 @@ public class SsoSetupResourceImplTest {
 
   @Inject MockMailbox mailbox;
   @Inject ObjectMapper objectMapper;
+
+  @Test
+  public void get_setup_by_domain__should_return_false__when_no_sso_setup() {
+    given()
+        .when()
+        .get(SsoSetupResource.PATH + "/gmail.com")
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":false}"));
+  }
+
+  @Test
+  public void get_setup__should_fail__when_not_authenticated() {
+    given()
+        .when()
+        .get(SsoSetupResource.PATH)
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void get_setup__should_throw_404__when_no_setup() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .get(SsoSetupResource.PATH)
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"That email or domain isn’t registered for SSO.\"}}"));
+  }
 
   @Test
   public void setup__should_fail__when_not_authenticated() {
@@ -208,10 +247,9 @@ public class SsoSetupResourceImplTest {
             "sso-setup-business-email@snuderls.io",
             "sso-setup-business-emai");
 
-    CreateSsoSetupDTO body =
-        new CreateSsoSetupDTO(
-            SsoMethod.SAML,
-            new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"));
+    URL configurationEndpoint =
+        new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
+    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.SAML, configurationEndpoint);
 
     given()
         .when()
@@ -221,6 +259,25 @@ public class SsoSetupResourceImplTest {
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(201);
+
+    DataResponse<SsoSetupDTO> dataResponse =
+        given()
+            .when()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .get(SsoSetupResource.PATH)
+            .as(new TypeRef<>() {});
+
+    Assertions.assertEquals(
+        configurationEndpoint, dataResponse.getData().getConfigurationEndpoint());
+    Assertions.assertEquals(SsoMethod.SAML, dataResponse.getData().getMethod());
+    Assertions.assertEquals("snuderls.io", dataResponse.getData().getDomain());
+
+    given()
+        .when()
+        .get(SsoSetupResource.PATH + "/snuderls.io")
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":true}"));
 
     // Should fail if already configured
     given()

@@ -8,7 +8,6 @@ import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.URL;
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -32,13 +31,10 @@ public class SsoResourceImpl implements SsoResource {
     URL refererURL =
         RequestUtils.parseRefererURL(request)
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
-
-    String refererBaseURL = RequestUtils.parseBaseURL(refererURL);
     String redirect = RequestUtils.getQueryMap(refererURL.getQuery()).get("redirect");
-    String clientCallbackRedirect = refererBaseURL + Optional.ofNullable(redirect).orElse("/");
 
     return ssoService
-        .passwordLogin(email, password, ipAddress, clientCallbackRedirect)
+        .passwordLogin(email, password, ipAddress, serverBaseURL, redirect)
         .thenApply(loginResult -> loginResult.loginResponse(cookieDomain));
   }
 

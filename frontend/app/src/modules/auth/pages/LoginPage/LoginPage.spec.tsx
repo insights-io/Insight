@@ -85,7 +85,7 @@ describe('<LoginPage />', () => {
     await waitFor(() => {
       sandbox.assert.calledWithExactly(
         locationAsignStub,
-        'https://snuderls.okta.com/app/snuderlsorg446661_insightdev_1/exkw843tlucjMJ0kL4x6/sso/saml?RelayState=0TA5X6mX7YjV5Uxszm8q3p2RVfhttp%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings'
+        'http://localhost:8080/v1/sso/saml/signin?redirect=%2Faccount%2Fsettings&email=7bd08ee1-baa8-421e-86d3-861508e28c31%40insight-io.com'
       );
     });
   });
