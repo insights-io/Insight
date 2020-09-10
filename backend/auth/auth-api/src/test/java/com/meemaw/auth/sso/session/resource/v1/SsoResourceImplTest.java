@@ -5,7 +5,6 @@ import static com.meemaw.test.setup.SsoTestSetupUtils.login;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpRequestMock;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -14,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
@@ -33,7 +33,6 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.response.Response;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -198,18 +197,18 @@ public class SsoResourceImplTest {
             .build()
             .toString());
 
-    Response redirectResponse =
-        given()
-            .config(RestAssuredUtils.dontFollowRedirects())
-            .when()
-            .header("referer", "http://localhost:3000")
-            .get(URLDecoder.decode(signInRedirect, StandardCharsets.UTF_8));
-
-    redirectResponse.then().statusCode(302);
-    assertThat(
-        redirectResponse.header("Location"),
-        Matchers.matchesPattern(
-            "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"));
+    given()
+        .config(RestAssuredUtils.dontFollowRedirects())
+        .when()
+        .header("referer", "http://localhost:3000")
+        .get(URLDecoder.decode(signInRedirect, StandardCharsets.UTF_8))
+        .then()
+        .statusCode(302)
+        .header(
+            "Location",
+            Matchers.matchesPattern(
+                "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"))
+        .cookie(SsoSignInSession.COOKIE_NAME);
   }
 
   @Test

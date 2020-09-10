@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftClient;
 import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftService;
@@ -133,7 +134,11 @@ public class OAuth2MicrosoftResourceImplTest {
             .queryParam("redirect", dest)
             .get(signInUri);
 
-    response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
+    response
+        .then()
+        .statusCode(302)
+        .header("Location", startsWith(expectedLocationBase))
+        .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);
@@ -160,7 +165,11 @@ public class OAuth2MicrosoftResourceImplTest {
             .queryParam("redirect", redirect)
             .get(signInUri);
 
-    response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
+    response
+        .then()
+        .statusCode(302)
+        .header("Location", startsWith(expectedLocationBase))
+        .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);

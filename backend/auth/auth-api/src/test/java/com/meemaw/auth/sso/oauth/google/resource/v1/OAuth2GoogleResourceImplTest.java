@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.oauth.google.OAuth2GoogleClient;
 import com.meemaw.auth.sso.oauth.google.OAuth2GoogleService;
@@ -130,7 +131,11 @@ public class OAuth2GoogleResourceImplTest {
             .queryParam("redirect", redirect)
             .get(OAuth2GoogleResource.PATH + "/signin");
 
-    response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
+    response
+        .then()
+        .statusCode(302)
+        .header("Location", startsWith(expectedLocationBase))
+        .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = state.substring(26);
@@ -159,7 +164,11 @@ public class OAuth2GoogleResourceImplTest {
             .queryParam("redirect", redirect)
             .get(OAuth2GoogleResource.PATH + "/signin");
 
-    response.then().statusCode(302).header("Location", startsWith(expectedLocationBase));
+    response
+        .then()
+        .statusCode(302)
+        .header("Location", startsWith(expectedLocationBase))
+        .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = state.substring(26);
