@@ -9,12 +9,14 @@ import javax.ws.rs.core.UriBuilder;
 @ApplicationScoped
 public class IdpServiceRegistry {
 
-  public String signInLocation(String serverBaseURL, SsoMethod ssoMethod, String redirect) {
+  public String signInLocation(
+      String serverBaseURL, SsoMethod ssoMethod, String email, String redirect) {
     return UriBuilder.fromUri(serverBaseURL)
         .path(SsoResource.PATH)
         .path(ssoMethod.getKey())
         .path(OAuth2Resource.SIGNIN_PATH)
         .queryParam("redirect", redirect)
+        .queryParam("email", email)
         .build()
         .toString();
   }

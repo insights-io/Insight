@@ -171,7 +171,7 @@ public class SsoServiceImpl implements SsoService {
 
                 String ssoSignInLocation =
                     idpServiceRegistry.signInLocation(
-                        serverBaseURL, maybeSsoSetup.get().getMethod(), redirect);
+                        serverBaseURL, maybeSsoSetup.get().getMethod(), email, redirect);
 
                 log.info(
                     "[AUTH]: SSO login required email={} ssoSignInLocation={}",
