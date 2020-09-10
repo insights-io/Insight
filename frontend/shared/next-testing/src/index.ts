@@ -1,1 +1,2 @@
-export { default as createRenderer } from './render';
+export * from './render';
+export * from './types';
