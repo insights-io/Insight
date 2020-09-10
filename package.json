@@ -15,6 +15,7 @@
     "lint": "lerna run --stream --concurrency 2 lint",
     "frontend:browser:boostrap:build": "yarn workspace @insight/browser-bootstrap build",
     "frontend:browser:tracking:build": "yarn workspace @insight/browser-tracking build:with-deps",
+    "frontend:homepage:build": "yarn workspace @insight/homepage build",
     "frontend:app:build": "yarn workspace @insight/app build"
   },
   "devDependencies": {
