@@ -1,36 +1,15 @@
 import React from 'react';
-import { useStyletron } from 'baseui';
-import { Block } from 'baseui/block';
-import { Button, SHAPE } from 'baseui/button';
-import { H6 } from 'baseui/typography';
 import { GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
-import SsoApi from 'api/sso';
-import SpacedBetween from 'shared/components/flex/SpacedBetween';
-import UnstyledA from 'shared/components/UnstyledA';
+import SsoSessionApi from 'api';
+import HomePage from 'modules/home/pages/HomePage';
 
 type Props = {
   loggedIn: boolean;
 };
 
 const Home = ({ loggedIn }: Props) => {
-  const [_css, theme] = useStyletron();
-  const href = loggedIn ? process.env.TRY_BASE_URL : process.env.APP_BASE_URL;
-
-  return (
-    <>
-      <Block padding={theme.sizing.scale300}>
-        <SpacedBetween>
-          <H6 margin={0}>Insight</H6>
-          <UnstyledA href={href}>
-            <Button shape={SHAPE.pill} size="compact">
-              {loggedIn ? 'Go to app' : 'Sign up'}
-            </Button>
-          </UnstyledA>
-        </SpacedBetween>
-      </Block>
-    </>
-  );
+  return <HomePage loggedIn={loggedIn} />;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -39,7 +18,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     return { props: { loggedIn: false } };
   }
 
-  const response = await SsoApi.session(SessionId);
+  const response = await SsoSessionApi.get(SessionId, {
+    baseURL: process.env.AUTH_API_BASE_URL,
+  });
   return { props: { loggedIn: response.status === 200 } };
 };
 

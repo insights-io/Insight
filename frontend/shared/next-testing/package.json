@@ -1,11 +1,11 @@
 {
-  "name": "@insight/storybook",
+  "name": "@insight/next-testing",
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "umd:main": "dist/storybook.umd.production.min.js",
-  "module": "dist/storybook.esm.js",
+  "umd:main": "dist/next-testing.umd.production.min.js",
+  "module": "dist/next-testing.esm.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
   "author": "Insight Engineering",
@@ -22,16 +22,15 @@
     "build": "tsdx build --tsconfig tsconfig.build.json --format cjs,esm,umd,es",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
-    "prettier": "prettier -l 'src/**/*'"
+    "prettier": "prettier -l 'src/**/*'",
+    "storybook:build": "build-storybook"
   },
-  "devDependencies": {
-    "@insight/types": "0.0.0-development"
-  },
-  "dependencies": {
-    "@storybook/addon-actions": "6.0.21",
-    "@storybook/addon-essentials": "6.0.21",
-    "@storybook/addon-links": "6.0.21",
-    "@storybook/react": "6.0.21",
-    "@storybook/addon-controls": "6.0.21"
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {
+    "@insight/testing": "0.0.0-development",
+    "@insight/storybook": "0.0.0-development",
+    "@testing-library/react": "11.0.2",
+    "next": "9.5.3"
   }
 }
