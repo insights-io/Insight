@@ -21,7 +21,7 @@ const {
   setupCompleteMessage,
 } = AccountSettingsPage.organizationSettings.tabs.security.ssoSetup;
 
-test('User with non business email should not be able to setup SSO', async (t) => {
+test('User with non-business email address should not be able to setup SAML SSO', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, {
     email,
@@ -49,7 +49,7 @@ test('User with non business email should not be able to setup SSO', async (t) =
     .ok('Checks if work domain');
 });
 
-test('Should be able to invite new members to organization', async (t) => {
+test('User should be able to invite new members to an organization', async (t) => {
   await LoginPage.loginWithInsightUser(t);
   await t
     .click(AccountSettingsPage.tabs.organizationSettings)

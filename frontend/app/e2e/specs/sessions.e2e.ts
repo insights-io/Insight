@@ -5,7 +5,7 @@ import { LoginPage, SessionPage, SessionsPage } from '../pages';
 
 fixture('/sessions').page(SessionsPage.path);
 
-test('Should be able to see sessions for Insight logged in user', async (t) => {
+test('User should be able to see page sessions', async (t) => {
   await LoginPage.loginWithInsightUser(t)
     .click(SessionsPage.getLastSession())
     .click(SessionPage.devtools.button)

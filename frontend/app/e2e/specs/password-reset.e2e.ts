@@ -5,7 +5,7 @@ import { getLocation } from '../utils';
 
 fixture('/password-reset').page(`${PasswordResetPage.path}?token=${uuid()}`);
 
-test('Should display nice message on password-reset with invalid token', async (t) => {
+test('User should see a nice error message on password reset with invalid token', async (t) => {
   await t
     .expect(PasswordResetPage.passwordResetRequestNotFoundMessage.visible)
     .ok('Should display nice message on password-reset with invalid token')

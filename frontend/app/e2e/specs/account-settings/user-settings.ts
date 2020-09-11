@@ -11,7 +11,7 @@ import {
 
 fixture('/account-settings/user-settings').page(AccountSettingsPage.path);
 
-test('Should be able to change password', async (t) => {
+test('User should be able to change its password', async (t) => {
   const {
     password: currentPassword,
     email,
@@ -73,7 +73,7 @@ test('Should be able to change password', async (t) => {
     .ok('Should display notification that password was changed');
 });
 
-test('Should be able to verify new phone number', async (t) => {
+test('User should be able to set and verify a phone number', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 

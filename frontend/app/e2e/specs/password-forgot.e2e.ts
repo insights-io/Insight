@@ -13,7 +13,7 @@ import {
 
 fixture('/password-forgot').page(config.appBaseURL);
 
-test('User should be able to reset password', async (t) => {
+test('User should be able to reset its password', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
 
   await SignUpPage.signUpAndLogin(t, { email, password });
@@ -41,7 +41,7 @@ test('User should be able to reset password', async (t) => {
     .ok('Should be signed in to app');
 });
 
-test('User should be able to enter any email into apssword reset form and see message aboyut email being sent', async (t) => {
+test('User should be able to enter any email into password reset form and see message about email being sent', async (t) => {
   await t
     .navigateTo('/password-forgot')
     .typeText(PasswordForgotPage.emailInput, 'short')

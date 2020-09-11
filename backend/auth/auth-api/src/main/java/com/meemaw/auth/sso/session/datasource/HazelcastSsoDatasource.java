@@ -136,12 +136,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
         .thenCompose(
             sessions ->
                 sessionToUserMap
-                    .submitToKeys(
-                        sessions,
-                        entry -> {
-                          entry.setValue(value);
-                          return null;
-                        })
+                    .submitToKeys(sessions, new SetUserEntryProcessor(value))
                     .thenApply(ignored -> sessions));
   }
 }
