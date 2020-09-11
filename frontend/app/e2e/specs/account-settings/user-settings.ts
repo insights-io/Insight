@@ -17,52 +17,39 @@ import {
 fixture('/account-settings/user-settings').page(AccountSettingsPage.path);
 
 test('Should be able to change password', async (t) => {
-  await LoginPage.loginWithInsightUser(t);
+  const {
+    password: initialPassword,
+    email,
+  } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password: initialPassword });
 
-  await t
-    .expect(queryByText(config.insightUserEmail).visible)
-    .ok('Should display email address')
-    .expect(queryByText('000000').visible)
-    .ok('Should display Insight organization id');
-
-  const newPassword = 'testPassword123456';
-  const currentPasswordInput = getByPlaceholderText('Current password');
-  const newPasswordInput = getByPlaceholderText('New password');
-  const confirmNewPasswordInput = getByPlaceholderText('Confirm new password');
-  const saveNewPasswordButton = getByText('Save new password');
+  const newPassword = uuid();
+  const {
+    currentPasswordInput,
+    newPasswordInput,
+    confirmNewPasswordInput,
+    saveNewPasswordButton,
+    newPasswordSameAsOldErrorMessage,
+    passwordMissmatchErrorMessage,
+    passwordChangedMessage,
+  } = AccountSettingsPage.changePassword;
 
   // Try changing password to the same as current one
   await t
-    .typeText(currentPasswordInput, config.insightUserPassword)
-    .typeText(newPasswordInput, config.insightUserPassword)
-    .typeText(confirmNewPasswordInput, config.insightUserPassword)
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
+    .typeText(currentPasswordInput, initialPassword)
+    .typeText(newPasswordInput, initialPassword)
+    .typeText(confirmNewPasswordInput, initialPassword)
     .click(saveNewPasswordButton)
-    .expect(
-      queryByText('New password cannot be the same as the previous one!')
-        .visible
-    )
+    .expect(newPasswordSameAsOldErrorMessage.visible)
     .ok('Should not allow to change password to the same as previous one');
 
   // Try changing password with a wrong current one
   await t
     .selectText(currentPasswordInput)
     .pressKey('delete')
-    .typeText(currentPasswordInput, 'password 12345')
-    .selectText(newPasswordInput)
-    .pressKey('delete')
-    .typeText(newPasswordInput, config.insightUserPassword)
-    .selectText(confirmNewPasswordInput)
-    .pressKey('delete')
-    .typeText(confirmNewPasswordInput, config.insightUserPassword)
-    .click(saveNewPasswordButton)
-    .expect(queryByText('Current password miss match').visible)
-    .ok('Should not allow to change password if current one is wrong');
-
-  // Change password to a new one
-  await t
-    .selectText(currentPasswordInput)
-    .pressKey('delete')
-    .typeText(currentPasswordInput, config.insightUserPassword)
+    .typeText(currentPasswordInput, uuid())
     .selectText(newPasswordInput)
     .pressKey('delete')
     .typeText(newPasswordInput, newPassword)
@@ -70,8 +57,22 @@ test('Should be able to change password', async (t) => {
     .pressKey('delete')
     .typeText(confirmNewPasswordInput, newPassword)
     .click(saveNewPasswordButton)
-    .expect(queryByText('Password changed').visible)
+    .expect(passwordMissmatchErrorMessage.visible)
+    .ok('Should not allow to change password if current one is wrong');
+
+  // Change password to a new one
+  await t
+    .selectText(currentPasswordInput)
+    .pressKey('delete')
+    .typeText(currentPasswordInput, initialPassword)
+    .click(saveNewPasswordButton)
+    .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
+
+  await Sidebar.signOut(t);
+  await LoginPage.login(t, { email, password: newPassword })
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings);
 
   // Change password back to initial one
   await t
@@ -80,14 +81,17 @@ test('Should be able to change password', async (t) => {
     .typeText(currentPasswordInput, newPassword)
     .selectText(newPasswordInput)
     .pressKey('delete')
-    .typeText(newPasswordInput, config.insightUserPassword)
+    .typeText(newPasswordInput, initialPassword)
     .selectText(confirmNewPasswordInput)
     .pressKey('delete')
-    .typeText(confirmNewPasswordInput, config.insightUserPassword)
+    .typeText(confirmNewPasswordInput, initialPassword)
     .click(saveNewPasswordButton)
-    .expect(queryByText('Password changed').visible)
+    .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
+});
 
+test('Should be able to invite new members to organization', async (t) => {
+  await LoginPage.loginWithInsightUser(t);
   await t
     .click(AccountSettingsPage.tabs.organizationSettings)
     .expect(queryByText('000000').visible)

@@ -46,6 +46,18 @@ class AccountSettings {
     },
   };
 
+  public readonly changePassword = {
+    currentPasswordInput: queryByPlaceholderText('Current password'),
+    newPasswordInput: queryByPlaceholderText('New password'),
+    confirmNewPasswordInput: queryByPlaceholderText('Confirm new password'),
+    saveNewPasswordButton: queryByText('Save new password'),
+    passwordMissmatchErrorMessage: queryByText('Current password miss match'),
+    passwordChangedMessage: queryByText('Password changed'),
+    newPasswordSameAsOldErrorMessage: queryByText(
+      'New password cannot be the same as the previous one!'
+    ),
+  };
+
   public readonly phoneNumber = {
     configureButton: this.container
       .queryByText('Phone number')
