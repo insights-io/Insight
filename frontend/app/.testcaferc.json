@@ -2,7 +2,7 @@
   "selectorTimeout": 500,
   "quarantineMode": true,
   "skipJsErrors": true,
-  "concurrency": 1,
+  "concurrency": 2,
   "screenshots": {
     "takeOnFails": true,
     "pathPattern": "${USERAGENT}/${FIXTURE}/${TEST}-${QUARANTINE_ATTEMPT}.png",
