@@ -18,53 +18,47 @@ fixture('/account-settings/user-settings').page(AccountSettingsPage.path);
 
 test('Should be able to change password', async (t) => {
   const {
-    password: initialPassword,
+    password: currentPassword,
     email,
   } = SignUpPage.generateRandomCredentials();
-  await SignUpPage.signUpAndLogin(t, { email, password: initialPassword });
+  await SignUpPage.signUpAndLogin(t, { email, password: currentPassword });
+  await t
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings);
 
   const newPassword = uuid();
   const {
     currentPasswordInput,
-    newPasswordInput,
-    confirmNewPasswordInput,
     saveNewPasswordButton,
     newPasswordSameAsOldErrorMessage,
     passwordMissmatchErrorMessage,
     passwordChangedMessage,
-  } = AccountSettingsPage.changePassword;
+  } = AccountSettingsPage.ChangePassword;
 
-  // Try changing password to the same as current one
-  await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
-    .typeText(currentPasswordInput, initialPassword)
-    .typeText(newPasswordInput, initialPassword)
-    .typeText(confirmNewPasswordInput, initialPassword)
-    .click(saveNewPasswordButton)
+  // ERROR: Try changing password to the same as current one
+  await AccountSettingsPage.ChangePassword.changePassword(t, {
+    currentPassword,
+    newPassword: currentPassword,
+    newPasswordConfirm: currentPassword,
+  })
     .expect(newPasswordSameAsOldErrorMessage.visible)
     .ok('Should not allow to change password to the same as previous one');
 
-  // Try changing password with a wrong current one
-  await t
-    .selectText(currentPasswordInput)
-    .pressKey('delete')
-    .typeText(currentPasswordInput, uuid())
-    .selectText(newPasswordInput)
-    .pressKey('delete')
-    .typeText(newPasswordInput, newPassword)
-    .selectText(confirmNewPasswordInput)
-    .pressKey('delete')
-    .typeText(confirmNewPasswordInput, newPassword)
-    .click(saveNewPasswordButton)
+  // ERROR: Try changing password with a wrong current one
+  await AccountSettingsPage.ChangePassword.clearInputs(t);
+  await AccountSettingsPage.ChangePassword.changePassword(t, {
+    currentPassword: uuid(),
+    newPassword,
+    newPasswordConfirm: newPassword,
+  })
     .expect(passwordMissmatchErrorMessage.visible)
     .ok('Should not allow to change password if current one is wrong');
 
-  // Change password to a new one
+  // SUCCESS: Change password to a new one
   await t
     .selectText(currentPasswordInput)
     .pressKey('delete')
-    .typeText(currentPasswordInput, initialPassword)
+    .typeText(currentPasswordInput, currentPassword)
     .click(saveNewPasswordButton)
     .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
@@ -74,18 +68,12 @@ test('Should be able to change password', async (t) => {
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings);
 
-  // Change password back to initial one
-  await t
-    .selectText(currentPasswordInput)
-    .pressKey('delete')
-    .typeText(currentPasswordInput, newPassword)
-    .selectText(newPasswordInput)
-    .pressKey('delete')
-    .typeText(newPasswordInput, initialPassword)
-    .selectText(confirmNewPasswordInput)
-    .pressKey('delete')
-    .typeText(confirmNewPasswordInput, initialPassword)
-    .click(saveNewPasswordButton)
+  // SUCCESS: Change password back to initial one
+  await AccountSettingsPage.ChangePassword.changePassword(t, {
+    currentPassword: newPassword,
+    newPassword: currentPassword,
+    newPasswordConfirm: currentPassword,
+  })
     .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
 });
@@ -117,7 +105,7 @@ test('Should be able to invite new members to organization', async (t) => {
     .ok('Should display new member email in the team invites list');
 });
 
-test('Should be able to verify new phone number', async (t) => {
+test.only('Should be able to verify new phone number', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 

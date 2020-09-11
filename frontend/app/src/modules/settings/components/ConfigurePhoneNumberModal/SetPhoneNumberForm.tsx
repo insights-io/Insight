@@ -1,9 +1,15 @@
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';
-import { PhoneNumber, User } from '@insight/types';
+import {
+  APIError,
+  APIErrorDataResponse,
+  PhoneNumber,
+  User,
+} from '@insight/types';
 import { PhoneNumberInput } from '@insight/ui';
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import FormError from 'shared/components/FormError';
 
 import { getCountryFromPhoneNumber } from './utils';
 
@@ -22,6 +28,7 @@ const SetPhoneNumberForm = ({
   updateUser,
   onPhoneNumberSet,
 }: Props) => {
+  const [formError, setFormError] = useState<APIError | undefined>();
   const [country, setCountry] = useState(() =>
     getCountryFromPhoneNumber(phoneNumber)
   );
@@ -39,7 +46,6 @@ const SetPhoneNumberForm = ({
     }
 
     const nextPhoneNumber = `${country.dialCode}${data.phoneNumber}`;
-
     if (
       nextPhoneNumber === `${phoneNumber?.countryCode}${phoneNumber?.digits}`
     ) {
@@ -48,19 +54,20 @@ const SetPhoneNumberForm = ({
     }
 
     setIsSubmitting(true);
-    try {
-      await updateUser({
-        phone_number: data.phoneNumber
-          ? {
-              countryCode: country.dialCode,
-              digits: data.phoneNumber,
-            }
-          : null,
-      });
-      onPhoneNumberSet();
-    } finally {
-      setIsSubmitting(false);
-    }
+    updateUser({
+      phone_number: data.phoneNumber
+        ? {
+            countryCode: country.dialCode,
+            digits: data.phoneNumber,
+          }
+        : null,
+    })
+      .then(() => onPhoneNumberSet())
+      .catch(async (error) => {
+        const errorDTO: APIErrorDataResponse = await error.response.json();
+        setFormError(errorDTO.error);
+      })
+      .finally(() => setIsSubmitting(false));
   });
 
   return (
@@ -80,6 +87,7 @@ const SetPhoneNumberForm = ({
       >
         Next
       </Button>
+      {formError && <FormError error={formError} />}
     </form>
   );
 };
