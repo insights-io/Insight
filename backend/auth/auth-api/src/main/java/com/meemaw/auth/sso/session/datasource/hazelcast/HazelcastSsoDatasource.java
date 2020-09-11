@@ -7,7 +7,6 @@ import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import io.smallrye.mutiny.Uni;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -62,15 +61,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
             TimeUnit.SECONDS);
 
     CompletionStage<Void> userToSessionsLookup =
-        userToSessionsMap.submitToKey(
-            user.getId(),
-            entry -> {
-              Set<String> sessionIds =
-                  Optional.ofNullable(entry.getValue()).orElseGet(HashSet::new);
-              sessionIds.add(sessionId);
-              entry.setValue(sessionIds);
-              return null;
-            });
+        userToSessionsMap.submitToKey(user.getId(), new CreateSessionEntryProcessor(sessionId));
 
     return Uni.combine()
         .all()
