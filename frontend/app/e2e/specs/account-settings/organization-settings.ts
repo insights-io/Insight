@@ -1,6 +1,7 @@
-import { queryByText } from '@testing-library/testcafe';
+import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
+import config from '../../config';
 import {
   AccountSettingsPage,
   LoginPage,
@@ -46,6 +47,33 @@ test('User with non business email should not be able to setup SSO', async (t) =
     .click(submitButton)
     .expect(nonBusinessEmailErrorMessage.visible)
     .ok('Checks if work domain');
+});
+
+test('Should be able to invite new members to organization', async (t) => {
+  await LoginPage.loginWithInsightUser(t);
+  await t
+    .click(AccountSettingsPage.tabs.organizationSettings)
+    .expect(queryByText('000000').visible)
+    .ok('Should display Insight organization id')
+    .expect(queryByText('Insight').visible)
+    .ok('Should display Insight organization name')
+    .expect(queryByText(config.insightUserEmail).visible)
+    .ok('Should display user email in the members table');
+
+  const insightUserEmailSplit = config.insightUserEmail.split('@');
+  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid()}@${
+    insightUserEmailSplit[1]
+  }`;
+
+  await t
+    .click(AccountSettingsPage.TeamInvite.inviteNewMember)
+    .typeText(AccountSettingsPage.TeamInvite.emailInput, newMemberEmail)
+    .click(AccountSettingsPage.TeamInvite.role.admin)
+    .click(AccountSettingsPage.TeamInvite.invite)
+    .expect(AccountSettingsPage.TeamInvite.invitedMessage.visible)
+    .ok('Should display notification')
+    .expect(queryByText(newMemberEmail).visible)
+    .ok('Should display new member email in the team invites list');
 });
 
 test('User with business email should be able to setup SAML SSO', async (t) => {

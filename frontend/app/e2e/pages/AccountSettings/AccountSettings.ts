@@ -11,6 +11,7 @@ import { getImageData } from '../../utils';
 import VerificationPage from '../Verification';
 
 import ChangePassword from './ChangePassword';
+import TeamInvite from './TeamInvite';
 
 class AccountSettings {
   public readonly path = `${config.appBaseURL}/account/settings`;
@@ -47,6 +48,7 @@ class AccountSettings {
   };
 
   public readonly ChangePassword = ChangePassword;
+  public readonly TeamInvite = TeamInvite;
 
   public readonly phoneNumber = {
     configureButton: this.container

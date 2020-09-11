@@ -1,11 +1,6 @@
-import {
-  queryByText,
-  getByPlaceholderText,
-  getByText,
-} from '@testing-library/testcafe';
+import { queryByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
-import config from '../../config';
 import {
   AccountSettingsPage,
   LoginPage,
@@ -78,34 +73,7 @@ test('Should be able to change password', async (t) => {
     .ok('Should display notification that password was changed');
 });
 
-test('Should be able to invite new members to organization', async (t) => {
-  await LoginPage.loginWithInsightUser(t);
-  await t
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .expect(queryByText('000000').visible)
-    .ok('Should display Insight organization id')
-    .expect(queryByText('Insight').visible)
-    .ok('Should display Insight organization name')
-    .expect(queryByText(config.insightUserEmail).visible)
-    .ok('Should display user email in the members table');
-
-  const insightUserEmailSplit = config.insightUserEmail.split('@');
-  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid()}@${
-    insightUserEmailSplit[1]
-  }`;
-
-  await t
-    .click(getByText('Invite new member'))
-    .typeText(getByPlaceholderText('Email'), newMemberEmail)
-    .click(getByText('Admin'))
-    .click(getByText('Invite'))
-    .expect(queryByText('Member invited').visible)
-    .ok('Should display notification')
-    .expect(queryByText(newMemberEmail).visible)
-    .ok('Should display new member email in the team invites list');
-});
-
-test.only('Should be able to verify new phone number', async (t) => {
+test('Should be able to verify new phone number', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
