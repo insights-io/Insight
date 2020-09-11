@@ -9,6 +9,7 @@ import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Data;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SsoUser implements AuthUser, IdentifiedDataSerializable {
+public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializable {
 
   UUID id;
   String email;
