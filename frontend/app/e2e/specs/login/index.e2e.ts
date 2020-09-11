@@ -37,7 +37,7 @@ test('Login email form should be validated both client & server side', async (t)
     .ok('Should display email/password miss-match message');
 });
 
-test('Login SAML SSO form should be validated', async (t) => {
+test('User should see a nice error message when trying to login using SAML SSO which is not enabled', async (t) => {
   await t
     .expect(getLocation())
     .eql(`${LoginPage.path}?redirect=%2F`)
@@ -48,7 +48,7 @@ test('Login SAML SSO form should be validated', async (t) => {
     .ok('Should display nice error message');
 });
 
-test('Can navigate forth and back to /password/forgot', async (t) => {
+test('User can navigate forth and back to /password/forgot', async (t) => {
   await t
     .click(LoginPage.forgotPasswordButton)
     .expect(getLocation())

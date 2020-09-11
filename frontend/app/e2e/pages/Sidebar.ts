@@ -19,6 +19,9 @@ class Sidebar {
     .withAttribute('id', 'sidebar--togle')
     .parent();
 
+  public readonly toggleExpandTooltip = queryByText('Expand');
+  public readonly toggleCollapseTooltip = queryByText('Collapse');
+
   public readonly accountSettings = {
     item: this.container
       .find('svg')

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
@@ -27,6 +28,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -118,6 +120,49 @@ public class SamlResourceImplTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"That email or domain isn’t registered for SSO.\"}}"));
+  }
+
+  @Test
+  public void sign_in__should_redirect_to_sso_provider__when_sso_setup()
+      throws MalformedURLException {
+    String referer = "http://localhost:3000";
+    String redirect = "/test";
+    String email = "matej.snuderl@snuderls.mo";
+
+    String organizationId = Organization.identifier();
+    Organization organization =
+        organizationDatasource
+            .createOrganization(organizationId, "Test")
+            .toCompletableFuture()
+            .join();
+
+    URL configurationEndpoint =
+        new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
+
+    ssoSetupDatasource
+        .create(
+            new CreateSsoSetup(
+                organization.getId(),
+                EmailUtils.domainFromEmail(email),
+                SsoMethod.SAML,
+                configurationEndpoint))
+        .toCompletableFuture()
+        .join();
+
+    given()
+        .config(RestAssuredUtils.dontFollowRedirects())
+        .when()
+        .header("referer", referer)
+        .queryParam("redirect", redirect)
+        .queryParam("email", email)
+        .get(signInUri)
+        .then()
+        .statusCode(302)
+        .header(
+            "Location",
+            Matchers.matchesPattern(
+                "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Ftest$"))
+        .cookie(SsoSignInSession.COOKIE_NAME);
   }
 
   @Test

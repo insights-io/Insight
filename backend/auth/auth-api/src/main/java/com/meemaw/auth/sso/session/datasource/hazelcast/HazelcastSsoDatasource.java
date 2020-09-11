@@ -1,12 +1,12 @@
-package com.meemaw.auth.sso.session.datasource;
+package com.meemaw.auth.sso.session.datasource.hazelcast;
 
 import com.hazelcast.map.IMap;
 import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.datasource.SsoDatasource;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import io.smallrye.mutiny.Uni;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -61,15 +61,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
             TimeUnit.SECONDS);
 
     CompletionStage<Void> userToSessionsLookup =
-        userToSessionsMap.submitToKey(
-            user.getId(),
-            entry -> {
-              Set<String> sessionIds =
-                  Optional.ofNullable(entry.getValue()).orElseGet(HashSet::new);
-              sessionIds.add(sessionId);
-              entry.setValue(sessionIds);
-              return null;
-            });
+        userToSessionsMap.submitToKey(user.getId(), new CreateSessionEntryProcessor(sessionId));
 
     return Uni.combine()
         .all()
@@ -95,18 +87,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
     }
 
     return userToSessionsMap
-        .submitToKey(
-            maybeSsoUser.getId(),
-            entry -> {
-              Set<String> sessions = entry.getValue();
-              sessions.remove(sessionId);
-              if (sessions.isEmpty()) {
-                entry.setValue(null);
-              } else {
-                entry.setValue(sessions);
-              }
-              return null;
-            })
+        .submitToKey(maybeSsoUser.getId(), new DeleteSessionEntryProcessor(sessionId))
         .thenApply(ignored -> Optional.of(maybeSsoUser));
   }
 
@@ -136,12 +117,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
         .thenCompose(
             sessions ->
                 sessionToUserMap
-                    .submitToKeys(
-                        sessions,
-                        entry -> {
-                          entry.setValue(value);
-                          return null;
-                        })
+                    .submitToKeys(sessions, new SetUserEntryProcessor(value))
                     .thenApply(ignored -> sessions));
   }
 }

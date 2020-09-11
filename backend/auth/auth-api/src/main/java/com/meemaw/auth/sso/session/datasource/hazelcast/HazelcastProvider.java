@@ -1,4 +1,4 @@
-package com.meemaw.auth.sso.session.datasource;
+package com.meemaw.auth.sso.session.datasource.hazelcast;
 
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;

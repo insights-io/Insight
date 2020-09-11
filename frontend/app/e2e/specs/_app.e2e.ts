@@ -1,12 +1,10 @@
-import { queryByText } from '@testing-library/testcafe';
-
 import { LoginPage, SessionsPage, Sidebar, SignUpPage } from '../pages';
 import config from '../config';
 import { getLocation } from '../utils';
 
 fixture('_app').page(config.appBaseURL);
 
-test('Should be able to navigate', async (t) => {
+test('User should be able to navigate around the app', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
@@ -21,13 +19,13 @@ test('Should be able to navigate', async (t) => {
 
   await LoginPage.login(t, { email, password })
     .hover(Sidebar.toggleItem)
-    .expect(queryByText('Expand').visible)
+    .expect(Sidebar.toggleExpandTooltip.visible)
     .ok('Expand sidebar text should exist')
     .click(Sidebar.toggleItem)
-    .expect(queryByText('Collapse').visible)
+    .expect(Sidebar.toggleCollapseTooltip.visible)
     .ok('Should display text of the toggle sidebar item')
     .click(Sidebar.sessionsItem)
-    .expect(queryByText('Collapse').visible)
+    .expect(Sidebar.toggleCollapseTooltip.visible)
     .notOk('Collapse text should not be vissible due to sidebar collapsing')
     .expect(getLocation())
     .eql(SessionsPage.path)

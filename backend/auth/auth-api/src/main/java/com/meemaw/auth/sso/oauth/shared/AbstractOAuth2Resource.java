@@ -1,5 +1,6 @@
 package com.meemaw.auth.sso.oauth.shared;
 
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
@@ -9,7 +10,6 @@ import io.vertx.core.http.HttpServerRequest;
 import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -35,7 +35,6 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
     String state = oauthService.secureState(refererBaseURL + refererRedirect);
     URI location = oauthService.buildAuthorizationUri(state, serverRedirectUri);
-    NewCookie sessionCookie = new NewCookie("state", state);
 
     log.info(
         "[AUTH]: OAuth2 sign in request redirect={} referer={} location={}",
@@ -43,7 +42,10 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
         refererBaseURL,
         location);
 
-    return Response.status(Status.FOUND).cookie(sessionCookie).header("Location", location).build();
+    return Response.status(Status.FOUND)
+        .cookie(SsoSignInSession.cookie(state))
+        .header("Location", location)
+        .build();
   }
 
   public CompletionStage<Response> oauth2callback(

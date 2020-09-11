@@ -6,11 +6,12 @@ import {
 import jsQR from 'jsqr';
 import { Selector } from 'testcafe';
 
-import config from '../config';
-import { getImageData } from '../utils';
+import config from '../../config';
+import { getImageData } from '../../utils';
+import VerificationPage from '../Verification';
 
-import { VerificationPage } from '.';
-import Verification from './Verification';
+import ChangePassword from './ChangePassword';
+import TeamInvite from './TeamInvite';
 
 class AccountSettings {
   public readonly path = `${config.appBaseURL}/account/settings`;
@@ -46,6 +47,9 @@ class AccountSettings {
     },
   };
 
+  public readonly ChangePassword = ChangePassword;
+  public readonly TeamInvite = TeamInvite;
+
   public readonly phoneNumber = {
     configureButton: this.container
       .queryByText('Phone number')
@@ -68,9 +72,9 @@ class AccountSettings {
   };
 
   public readonly tfa = {
-    codeInput: Verification.codeInput,
-    submitButton: Verification.submitButton,
-    invalidCodeError: Verification.invalidCodeError,
+    codeInput: VerificationPage.codeInput,
+    submitButton: VerificationPage.submitButton,
+    invalidCodeError: VerificationPage.invalidCodeError,
     disableSubmitButton: queryByText('Yes'),
     sms: {
       disabledText: queryByText(

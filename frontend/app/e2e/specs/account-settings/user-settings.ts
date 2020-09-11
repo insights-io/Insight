@@ -1,11 +1,6 @@
-import {
-  queryByText,
-  getByPlaceholderText,
-  getByText,
-} from '@testing-library/testcafe';
+import { queryByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
-import config from '../../config';
 import {
   AccountSettingsPage,
   LoginPage,
@@ -16,104 +11,69 @@ import {
 
 fixture('/account-settings/user-settings').page(AccountSettingsPage.path);
 
-test('Should be able to change password', async (t) => {
-  await LoginPage.loginWithInsightUser(t);
-
+test('User should be able to change its password', async (t) => {
+  const {
+    password: currentPassword,
+    email,
+  } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password: currentPassword });
   await t
-    .expect(queryByText(config.insightUserEmail).visible)
-    .ok('Should display email address')
-    .expect(queryByText('000000').visible)
-    .ok('Should display Insight organization id');
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings);
 
-  const newPassword = 'testPassword123456';
-  const currentPasswordInput = getByPlaceholderText('Current password');
-  const newPasswordInput = getByPlaceholderText('New password');
-  const confirmNewPasswordInput = getByPlaceholderText('Confirm new password');
-  const saveNewPasswordButton = getByText('Save new password');
+  const newPassword = uuid();
+  const {
+    currentPasswordInput,
+    saveNewPasswordButton,
+    newPasswordSameAsOldErrorMessage,
+    passwordMissmatchErrorMessage,
+    passwordChangedMessage,
+  } = AccountSettingsPage.ChangePassword;
 
-  // Try changing password to the same as current one
-  await t
-    .typeText(currentPasswordInput, config.insightUserPassword)
-    .typeText(newPasswordInput, config.insightUserPassword)
-    .typeText(confirmNewPasswordInput, config.insightUserPassword)
-    .click(saveNewPasswordButton)
-    .expect(
-      queryByText('New password cannot be the same as the previous one!')
-        .visible
-    )
+  // ERROR: Try changing password to the same as current one
+  await AccountSettingsPage.ChangePassword.changePassword(t, {
+    currentPassword,
+    newPassword: currentPassword,
+    newPasswordConfirm: currentPassword,
+  })
+    .expect(newPasswordSameAsOldErrorMessage.visible)
     .ok('Should not allow to change password to the same as previous one');
 
-  // Try changing password with a wrong current one
-  await t
-    .selectText(currentPasswordInput)
-    .pressKey('delete')
-    .typeText(currentPasswordInput, 'password 12345')
-    .selectText(newPasswordInput)
-    .pressKey('delete')
-    .typeText(newPasswordInput, config.insightUserPassword)
-    .selectText(confirmNewPasswordInput)
-    .pressKey('delete')
-    .typeText(confirmNewPasswordInput, config.insightUserPassword)
-    .click(saveNewPasswordButton)
-    .expect(queryByText('Current password miss match').visible)
+  // ERROR: Try changing password with a wrong current one
+  await AccountSettingsPage.ChangePassword.clearInputs(t);
+  await AccountSettingsPage.ChangePassword.changePassword(t, {
+    currentPassword: uuid(),
+    newPassword,
+    newPasswordConfirm: newPassword,
+  })
+    .expect(passwordMissmatchErrorMessage.visible)
     .ok('Should not allow to change password if current one is wrong');
 
-  // Change password to a new one
+  // SUCCESS: Change password to a new one
   await t
     .selectText(currentPasswordInput)
     .pressKey('delete')
-    .typeText(currentPasswordInput, config.insightUserPassword)
-    .selectText(newPasswordInput)
-    .pressKey('delete')
-    .typeText(newPasswordInput, newPassword)
-    .selectText(confirmNewPasswordInput)
-    .pressKey('delete')
-    .typeText(confirmNewPasswordInput, newPassword)
+    .typeText(currentPasswordInput, currentPassword)
     .click(saveNewPasswordButton)
-    .expect(queryByText('Password changed').visible)
+    .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
 
-  // Change password back to initial one
-  await t
-    .selectText(currentPasswordInput)
-    .pressKey('delete')
-    .typeText(currentPasswordInput, newPassword)
-    .selectText(newPasswordInput)
-    .pressKey('delete')
-    .typeText(newPasswordInput, config.insightUserPassword)
-    .selectText(confirmNewPasswordInput)
-    .pressKey('delete')
-    .typeText(confirmNewPasswordInput, config.insightUserPassword)
-    .click(saveNewPasswordButton)
-    .expect(queryByText('Password changed').visible)
+  await Sidebar.signOut(t);
+  await LoginPage.login(t, { email, password: newPassword })
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings);
+
+  // SUCCESS: Change password back to initial one
+  await AccountSettingsPage.ChangePassword.changePassword(t, {
+    currentPassword: newPassword,
+    newPassword: currentPassword,
+    newPasswordConfirm: currentPassword,
+  })
+    .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
-
-  await t
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .expect(queryByText('000000').visible)
-    .ok('Should display Insight organization id')
-    .expect(queryByText('Insight').visible)
-    .ok('Should display Insight organization name')
-    .expect(queryByText(config.insightUserEmail).visible)
-    .ok('Should display user email in the members table');
-
-  const insightUserEmailSplit = config.insightUserEmail.split('@');
-  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid()}@${
-    insightUserEmailSplit[1]
-  }`;
-
-  await t
-    .click(getByText('Invite new member'))
-    .typeText(getByPlaceholderText('Email'), newMemberEmail)
-    .click(getByText('Admin'))
-    .click(getByText('Invite'))
-    .expect(queryByText('Member invited').visible)
-    .ok('Should display notification')
-    .expect(queryByText(newMemberEmail).visible)
-    .ok('Should display new member email in the team invites list');
 });
 
-test('Should be able to verify new phone number', async (t) => {
+test('User should be able to set and verify a phone number', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 

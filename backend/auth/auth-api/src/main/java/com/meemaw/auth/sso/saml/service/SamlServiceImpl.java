@@ -2,6 +2,7 @@ package com.meemaw.auth.sso.saml.service;
 
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.AbstractIdpService;
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
@@ -30,7 +31,6 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -283,11 +283,6 @@ public class SamlServiceImpl extends AbstractIdpService {
         .exception(ex);
   }
 
-  public String signInLocation(String clientCallbackRedirect, URL configurationEndpoint) {
-    String relayState = secureState(clientCallbackRedirect);
-    return buildAuthorizationUri(relayState, configurationEndpoint);
-  }
-
   private String buildAuthorizationUri(String relayState, URL configurationEndpoint) {
     try {
       SamlMetadataResponse metadata = fetchMetadata(configurationEndpoint);
@@ -304,9 +299,8 @@ public class SamlServiceImpl extends AbstractIdpService {
       String clientCallbackRedirect, URL configurationEndpoint) {
     String relayState = secureState(clientCallbackRedirect);
     String location = buildAuthorizationUri(relayState, configurationEndpoint);
-    NewCookie cookie = new NewCookie("state", relayState);
     return javax.ws.rs.core.Response.status(Status.FOUND)
-        .cookie(cookie)
+        .cookie(SsoSignInSession.cookie(relayState))
         .header("Location", location)
         .build();
   }
