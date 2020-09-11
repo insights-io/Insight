@@ -36,7 +36,7 @@ jobs:
       - name: Install required packages
         run: |
           sudo apt-get update
-          sudo apt-get install libgbm-dev xvfb
+          sudo apt-get install libgbm-dev xvfb ffmpeg
       - name: Install dependencies and run tests
         run: |
           yarn install --frozen-lockfile
