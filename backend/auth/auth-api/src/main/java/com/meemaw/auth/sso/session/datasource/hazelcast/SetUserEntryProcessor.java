@@ -1,4 +1,4 @@
-package com.meemaw.auth.sso.session.datasource;
+package com.meemaw.auth.sso.session.datasource.hazelcast;
 
 import com.hazelcast.map.EntryProcessor;
 import com.meemaw.auth.sso.session.model.SsoUser;

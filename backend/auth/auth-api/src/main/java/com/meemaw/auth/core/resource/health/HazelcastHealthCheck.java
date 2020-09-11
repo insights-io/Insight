@@ -1,7 +1,7 @@
 package com.meemaw.auth.core.resource.health;
 
 import com.hazelcast.cluster.ClusterState;
-import com.meemaw.auth.sso.session.datasource.HazelcastProvider;
+import com.meemaw.auth.sso.session.datasource.hazelcast.HazelcastProvider;
 import javax.inject.Inject;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
