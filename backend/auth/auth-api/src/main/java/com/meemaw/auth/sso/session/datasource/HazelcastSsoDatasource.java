@@ -95,18 +95,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
     }
 
     return userToSessionsMap
-        .submitToKey(
-            maybeSsoUser.getId(),
-            entry -> {
-              Set<String> sessions = entry.getValue();
-              sessions.remove(sessionId);
-              if (sessions.isEmpty()) {
-                entry.setValue(null);
-              } else {
-                entry.setValue(sessions);
-              }
-              return null;
-            })
+        .submitToKey(maybeSsoUser.getId(), new DeleteSessionEntryProcessor(sessionId))
         .thenApply(ignored -> Optional.of(maybeSsoUser));
   }
 
