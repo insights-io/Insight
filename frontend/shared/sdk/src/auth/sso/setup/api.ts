@@ -14,7 +14,7 @@ export const ssoSetupApi = (authApiBaseURL: string) => {
     },
     create: (
       method: SsoMethod,
-      configurationEndpoint: string,
+      configurationEndpoint: string | undefined,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky

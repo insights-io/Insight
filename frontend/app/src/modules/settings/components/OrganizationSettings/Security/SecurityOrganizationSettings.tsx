@@ -77,8 +77,6 @@ const SecurityOrganizationSettings = ({
       return;
     }
 
-    console.log(data);
-
     setIsSubmitting(true);
     AuthApi.sso.setup
       .create(data.method.id, data.configurationEndpoint)
