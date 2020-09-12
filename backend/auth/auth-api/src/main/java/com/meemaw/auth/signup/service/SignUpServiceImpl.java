@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -204,17 +205,18 @@ public class SignUpServiceImpl implements SignUpService {
                 maybeSignUpRequest.map(signUpRequest -> !signUpRequest.hasExpired()).orElse(false));
   }
 
-  @Override
   @Traced
-  @Timed(name = "socialSignUp", description = "A measure of how long it takes to do social sign up")
-  public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
-    log.info("[AUTH]: Social sign up attempt");
+  private CompletionStage<AuthUser> ssoSignUp(
+      String email,
+      String fullName,
+      UserRole userRole,
+      Function<SqlTransaction, CompletionStage<Organization>> organizationProvider) {
     return sqlPool
         .beginTransaction()
         .thenCompose(
             transaction ->
-                organizationDatasource
-                    .createOrganization(Organization.identifier(), null, transaction)
+                organizationProvider
+                    .apply(transaction)
                     .thenCompose(
                         organization ->
                             userDatasource
@@ -222,36 +224,54 @@ public class SignUpServiceImpl implements SignUpService {
                                     email,
                                     fullName,
                                     organization.getId(),
-                                    UserRole.ADMIN,
+                                    userRole,
                                     null,
                                     transaction)
                                 .thenCompose(
                                     user -> transaction.commit().thenApply(ignored -> user))));
   }
 
+  /**
+   * Handle cases where user signed up with social SSO button, but the email was not associated with
+   * any organization SSO setup. In that case, new organization is created and user is assigned an
+   * ADMIN role.
+   */
   @Override
+  @Traced
+  @Timed(name = "socialSignUp", description = "A measure of how long it takes to do social sign up")
+  public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
+    log.info("[AUTH]: Social sign up attempt email={}", email);
+    return ssoSignUp(
+        email,
+        fullName,
+        UserRole.ADMIN,
+        (transaction) ->
+            organizationDatasource.createOrganization(
+                Organization.identifier(), null, transaction));
+  }
+
+  /**
+   * Handle case where user signed up through the SSO flow, joining an existing organization with
+   * SSO setup. In that case user is assigned STANDARD role.
+   */
+  @Override
+  @Traced
+  @Timed(name = "ssoSignUp", description = "A measure of how long it takes to do SSO sign up")
   public CompletionStage<AuthUser> ssoSignUp(String email, String fullName, String organizationId) {
-    log.info("[AUTH]: SSO sign up attempt");
-    return sqlPool
-        .beginTransaction()
-        .thenCompose(
-            transaction ->
-                organizationDatasource
-                    .findOrganization(organizationId, transaction)
-                    .thenCompose(
-                        maybeOrganization -> {
-                          if (maybeOrganization.isEmpty()) {
-                            throw Boom.badRequest().exception();
-                          }
-                          return userDatasource
-                              .createUser(
-                                  email,
-                                  fullName,
-                                  organizationId,
-                                  UserRole.STANDARD,
-                                  null,
-                                  transaction)
-                              .thenCompose(user -> transaction.commit().thenApply(i -> user));
-                        }));
+    log.info("[AUTH]: SSO sign up attempt email={} organizationId={}", email, organizationId);
+    return ssoSignUp(
+        email,
+        fullName,
+        UserRole.STANDARD,
+        transaction ->
+            organizationDatasource
+                .findOrganization(organizationId, transaction)
+                .thenApply(
+                    maybeOrganization -> {
+                      if (maybeOrganization.isEmpty()) {
+                        throw Boom.badRequest().exception();
+                      }
+                      return maybeOrganization.get();
+                    }));
   }
 }

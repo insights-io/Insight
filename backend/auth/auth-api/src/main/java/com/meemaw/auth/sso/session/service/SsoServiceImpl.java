@@ -30,7 +30,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -152,8 +151,8 @@ public class SsoServiceImpl implements SsoService {
       String email, String password, String ipAddress, String serverBaseURL, String redirect) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
 
-    Supplier<CompletionStage<LoginResult<?>>> passwordLoginSupplier =
-        () -> {
+    Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> passwordLoginSupplier =
+        (maybeSsoSetup) -> {
           log.info("[AUTH]: Email login attempt with password email={} ip={}", email, ipAddress);
           return passwordService
               .verifyPassword(email, password)
@@ -192,39 +191,42 @@ public class SsoServiceImpl implements SsoService {
       String email,
       LoginMethod loginMethod,
       Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider,
-      Supplier<CompletionStage<LoginResult<?>>> defaultLoginProvider) {
-    if (EmailUtils.isBusinessDomain(email)) {
-      log.info("[AUTH]: Login attempt with business email={}", email);
-      return ssoSetupDatasource
-          .getByDomain(EmailUtils.domainFromEmail(email))
-          .thenCompose(
-              maybeSsoSetup -> {
-                if (maybeSsoSetup.isEmpty()) {
-                  log.info(
-                      "[AUTH]: SSO setup not configured using default login provider email={}",
-                      email);
-                  return defaultLoginProvider.get();
-                }
-
-                SsoSetupDTO ssoSetup = maybeSsoSetup.get();
-                SsoMethod method = ssoSetup.getMethod();
-                if (method.getKey().equals(loginMethod.getKey())) {
-                  log.info(
-                      "[AUTH]: SSO default login method matches using default login provider email={}",
-                      email);
-                  return defaultLoginProvider.get();
-                }
-
-                log.info(
-                    "[AUTH] Enforcing alternative SSO login provider email={} method={}",
-                    email,
-                    method);
-
-                return alternativeLoginProvider.apply(ssoSetup);
-              });
+      Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> defaultLoginProvider) {
+    if (!EmailUtils.isBusinessDomain(email)) {
+      return defaultLoginProvider.apply(Optional.empty());
     }
 
-    return defaultLoginProvider.get();
+    log.info("[AUTH]: Login attempt with business email={}", email);
+    return ssoSetupDatasource
+        .getByDomain(EmailUtils.domainFromEmail(email))
+        .thenCompose(
+            maybeSsoSetup -> {
+              if (maybeSsoSetup.isEmpty()) {
+                log.info(
+                    "[AUTH]: SSO setup not configured using default login provider email={} loginMethod={} ",
+                    email,
+                    loginMethod);
+                return defaultLoginProvider.apply(Optional.empty());
+              }
+
+              SsoSetupDTO ssoSetup = maybeSsoSetup.get();
+              SsoMethod method = ssoSetup.getMethod();
+              if (method.getKey().equals(loginMethod.getKey())) {
+                log.info(
+                    "[AUTH]: SSO default login method matches using default login provider method={} email={}",
+                    method,
+                    email);
+                return defaultLoginProvider.apply(Optional.of(ssoSetup));
+              }
+
+              log.info(
+                  "[AUTH] Enforcing alternative SSO login provider email={} loginMethod={} method={}",
+                  email,
+                  loginMethod,
+                  method);
+
+              return alternativeLoginProvider.apply(ssoSetup);
+            });
   }
 
   private CompletionStage<LoginResult<?>> authenticate(AuthUser user, List<TfaMethod> tfaMethods) {
@@ -273,23 +275,29 @@ public class SsoServiceImpl implements SsoService {
         email,
         destination);
 
-    Supplier<CompletionStage<LoginResult<?>>> socialLoginProvider =
-        () ->
-            socialFindOrSignUpUser(email, fullName)
-                .thenCompose(
-                    userWithLoginInformation ->
-                        authenticate(
-                            userWithLoginInformation.user(),
-                            userWithLoginInformation.getTfaMethods(),
-                            destination))
-                .thenApply(
-                    loginResult -> {
-                      log.info(
-                          "[AUTH]: Successful social login for user email={} method={}",
-                          email,
-                          method);
-                      return loginResult;
-                    });
+    Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> socialLoginProvider =
+        (maybeSsoSetup) -> {
+          CompletionStage<UserWithLoginInformation> signUpFuture =
+              maybeSsoSetup.isEmpty()
+                  ? socialFindOrSignUpUser(email, fullName)
+                  : ssoFindOrSignUpUser(email, fullName, maybeSsoSetup.get().getOrganizationId());
+
+          return signUpFuture
+              .thenCompose(
+                  userWithLoginInformation ->
+                      authenticate(
+                          userWithLoginInformation.user(),
+                          userWithLoginInformation.getTfaMethods(),
+                          destination))
+              .thenApply(
+                  loginResult -> {
+                    log.info(
+                        "[AUTH]: Successful social login for user email={} method={}",
+                        email,
+                        method);
+                    return loginResult;
+                  });
+        };
 
     Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetupDTO -> {

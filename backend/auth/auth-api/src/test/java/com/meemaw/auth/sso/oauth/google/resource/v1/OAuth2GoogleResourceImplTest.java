@@ -26,6 +26,7 @@ import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.setup.SsoTestSetupUtils;
@@ -366,6 +367,50 @@ public class OAuth2GoogleResourceImplTest {
     assertEquals(
         expectedClientDestination,
         URLDecoder.decode(actualClientDestination, StandardCharsets.UTF_8));
+  }
+
+  @Test
+  public void
+      google_oauth2callback__should_add_user_to_organization__when_organization_google_sso_setup()
+          throws JsonProcessingException {
+    String password = UUID.randomUUID().toString();
+    String domain = "company.io100";
+    String email = String.join("@", password, domain);
+    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(JacksonMapper.get().writeValueAsString(body))
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(SsoSetupResource.PATH)
+        .then()
+        .statusCode(201);
+
+    String otherUserEmail = String.join("@", UUID.randomUUID().toString(), domain);
+    QuarkusMock.installMockForInstance(
+        new MockedOAuth2GoogleClient(otherUserEmail), OAuth2GoogleClient);
+
+    String expectedClientDestination = "https://www.insight.io/my_path";
+    String paramState = OAuth2GoogleService.secureState(expectedClientDestination);
+
+    given()
+        .when()
+        .config(RestAssuredUtils.dontFollowRedirects())
+        .queryParam("code", "any")
+        .queryParam("state", paramState)
+        .cookie("state", paramState)
+        .get(googleOauth2CallbackURI)
+        .then()
+        .statusCode(302)
+        .cookie(SsoSession.COOKIE_NAME);
+
+    AuthUser firstUser = userDatasource.findUser(email).toCompletableFuture().join().get();
+    AuthUser secondUser =
+        userDatasource.findUser(otherUserEmail).toCompletableFuture().join().get();
+
+    assertEquals(firstUser.getOrganizationId(), secondUser.getOrganizationId());
   }
 
   @Test
