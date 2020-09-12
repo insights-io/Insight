@@ -40,7 +40,7 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
                 payload.getOrganizationId(),
                 payload.getDomain(),
                 payload.getMethod().getKey(),
-                payload.getConfigurationEndpoint().toString())
+                payload.getConfigurationEndpoint())
             .returning(FIELDS);
 
     return sqlPool.execute(query).thenApply(pgRowSet -> mapSsoSetup(pgRowSet.iterator().next()));
@@ -79,11 +79,15 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
 
   @SneakyThrows
   public static SsoSetupDTO mapSsoSetup(Row row) {
+    String maybeConfigurationEndpoint = row.getString(CONFIGURATION_ENDPOINT.getName());
+    URL configurationEndpoint =
+        maybeConfigurationEndpoint == null ? null : new URL(maybeConfigurationEndpoint);
+
     return new SsoSetupDTO(
         row.getString(ORGANIZATION_ID.getName()),
         row.getString(DOMAIN.getName()),
         SsoMethod.fromString(row.getString(METHOD.getName())),
-        new URL(row.getString(CONFIGURATION_ENDPOINT.getName())),
+        configurationEndpoint,
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

@@ -9,7 +9,6 @@ import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import java.io.IOException;
-import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.Data;
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializable {
+public class SsoUser implements AuthUser, IdentifiedDataSerializable {
 
   UUID id;
   String email;
@@ -26,7 +25,8 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
   String fullName;
   OffsetDateTime createdAt;
   OffsetDateTime updatedAt;
-  PhoneNumber phoneNumber;
+  String phoneNumberCountryCode;
+  String phoneNumberDigits;
   boolean phoneNumberVerified;
 
   public SsoUser(AuthUser user) {
@@ -37,8 +37,35 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
     this.fullName = user.getFullName();
     this.createdAt = user.getCreatedAt();
     this.updatedAt = user.getUpdatedAt();
-    this.phoneNumber = user.getPhoneNumber();
+    if (user.getPhoneNumber() != null) {
+      this.phoneNumberCountryCode = user.getPhoneNumber().getCountryCode();
+      this.phoneNumberDigits = user.getPhoneNumber().getDigits();
+    }
     this.phoneNumberVerified = user.isPhoneNumberVerified();
+  }
+
+  @Override
+  public PhoneNumber getPhoneNumber() {
+    return phoneNumberCountryCode != null && phoneNumberDigits != null
+        ? new PhoneNumberDTO(phoneNumberCountryCode, phoneNumberDigits)
+        : null;
+  }
+
+  public AuthUser dto() {
+    return new UserDTO(
+        id,
+        email,
+        fullName,
+        role,
+        organizationId,
+        createdAt,
+        updatedAt,
+        (PhoneNumberDTO) getPhoneNumber(),
+        phoneNumberVerified);
+  }
+
+  public static SsoUser as(AuthUser user) {
+    return new SsoUser(user);
   }
 
   @Override
@@ -60,11 +87,8 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
     out.writeObject(this.updatedAt);
-    out.writeBoolean(this.phoneNumber != null);
-    if (this.phoneNumber != null) {
-      out.writeUTF(this.phoneNumber.getCountryCode());
-      out.writeUTF(this.phoneNumber.getDigits());
-    }
+    out.writeUTF(this.phoneNumberCountryCode);
+    out.writeUTF(this.phoneNumberDigits);
     out.writeBoolean(this.phoneNumberVerified);
   }
 
@@ -77,26 +101,8 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();
     this.updatedAt = in.readObject();
-    if (in.readBoolean()) {
-      this.phoneNumber = new PhoneNumberDTO(in.readUTF(), in.readUTF());
-    }
+    this.phoneNumberCountryCode = in.readUTF();
+    this.phoneNumberDigits = in.readUTF();
     this.phoneNumberVerified = in.readBoolean();
-  }
-
-  public AuthUser dto() {
-    return new UserDTO(
-        id,
-        email,
-        fullName,
-        role,
-        organizationId,
-        createdAt,
-        updatedAt,
-        (PhoneNumberDTO) phoneNumber,
-        phoneNumberVerified);
-  }
-
-  public static SsoUser as(AuthUser user) {
-    return new SsoUser(user);
   }
 }

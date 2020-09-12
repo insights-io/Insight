@@ -21,7 +21,34 @@ const {
   setupCompleteMessage,
 } = AccountSettingsPage.organizationSettings.tabs.security.ssoSetup;
 
-test('User with non-business email address should not be able to setup SAML SSO', async (t) => {
+test('[TEAM INVITE]: User should be able to invite new members to an organization', async (t) => {
+  await LoginPage.loginWithInsightUser(t);
+  await t
+    .click(AccountSettingsPage.tabs.organizationSettings)
+    .expect(queryByText('000000').visible)
+    .ok('Should display Insight organization id')
+    .expect(queryByText('Insight').visible)
+    .ok('Should display Insight organization name')
+    .expect(queryByText(config.insightUserEmail).visible)
+    .ok('Should display user email in the members table');
+
+  const insightUserEmailSplit = config.insightUserEmail.split('@');
+  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid()}@${
+    insightUserEmailSplit[1]
+  }`;
+
+  await t
+    .click(AccountSettingsPage.TeamInvite.inviteNewMember)
+    .typeText(AccountSettingsPage.TeamInvite.emailInput, newMemberEmail)
+    .click(AccountSettingsPage.TeamInvite.role.admin)
+    .click(AccountSettingsPage.TeamInvite.invite)
+    .expect(AccountSettingsPage.TeamInvite.invitedMessage.visible)
+    .ok('Should display notification')
+    .expect(queryByText(newMemberEmail).visible)
+    .ok('Should display new member email in the team invites list');
+});
+
+test('[SSO  SAML]: User with non-business email address should not be able to setup SAML SSO', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, {
     email,
@@ -49,34 +76,7 @@ test('User with non-business email address should not be able to setup SAML SSO'
     .ok('Checks if work domain');
 });
 
-test('User should be able to invite new members to an organization', async (t) => {
-  await LoginPage.loginWithInsightUser(t);
-  await t
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .expect(queryByText('000000').visible)
-    .ok('Should display Insight organization id')
-    .expect(queryByText('Insight').visible)
-    .ok('Should display Insight organization name')
-    .expect(queryByText(config.insightUserEmail).visible)
-    .ok('Should display user email in the members table');
-
-  const insightUserEmailSplit = config.insightUserEmail.split('@');
-  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid()}@${
-    insightUserEmailSplit[1]
-  }`;
-
-  await t
-    .click(AccountSettingsPage.TeamInvite.inviteNewMember)
-    .typeText(AccountSettingsPage.TeamInvite.emailInput, newMemberEmail)
-    .click(AccountSettingsPage.TeamInvite.role.admin)
-    .click(AccountSettingsPage.TeamInvite.invite)
-    .expect(AccountSettingsPage.TeamInvite.invitedMessage.visible)
-    .ok('Should display notification')
-    .expect(queryByText(newMemberEmail).visible)
-    .ok('Should display new member email in the team invites list');
-});
-
-test('User with business email should be able to setup SAML SSO', async (t) => {
+test('[SSO SAML]: User with business email should be able to setup SAML SSO', async (t) => {
   const { password } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, {
     email: `${uuid()}@snuderls.eu`,

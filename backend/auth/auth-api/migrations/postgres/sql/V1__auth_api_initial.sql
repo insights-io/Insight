@@ -121,7 +121,7 @@ CREATE TABLE auth.organization_sso_setup
     organization_id        TEXT        NOT NULL UNIQUE,
     domain                 TEXT        NOT NULL UNIQUE,
     method                 TEXT        NOT NULL,
-    configuration_endpoint TEXT        NOT NULL,
+    configuration_endpoint TEXT,
     created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     PRIMARY KEY (organization_id, domain),

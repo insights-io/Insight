@@ -11,7 +11,7 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class PhoneNumberDTO implements PhoneNumber, Serializable {
+public class PhoneNumberDTO implements PhoneNumber {
 
   @NotBlank(message = "Required")
   String countryCode;

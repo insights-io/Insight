@@ -1,6 +1,7 @@
 package com.meemaw.shared.rest.response;
 
 import com.meemaw.shared.rest.exception.BoomException;
+import java.util.Map;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
@@ -72,6 +73,10 @@ public class Boom<T> {
 
   public static <T> Boom<T> badRequest() {
     return Boom.status(Status.BAD_REQUEST);
+  }
+
+  public static <T> Boom<T> validationErrors(Map<String, ?> errors) {
+    return (Boom<T>) badRequest().message("Validation Error").errors(errors);
   }
 
   public static <T> Boom<T> notFound() {

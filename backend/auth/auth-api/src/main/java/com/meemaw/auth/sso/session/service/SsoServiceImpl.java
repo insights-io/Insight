@@ -3,7 +3,6 @@ package com.meemaw.auth.sso.session.service;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
-import com.meemaw.auth.sso.IdpServiceRegistry;
 import com.meemaw.auth.sso.session.datasource.SsoDatasource;
 import com.meemaw.auth.sso.session.model.DirectLoginResult;
 import com.meemaw.auth.sso.session.model.LoginResult;
@@ -44,7 +43,6 @@ public class SsoServiceImpl implements SsoService {
   @Inject SignUpService signUpService;
   @Inject TfaChallengeService tfaChallengeService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
-  @Inject IdpServiceRegistry idpServiceRegistry;
 
   @Override
   @Traced
@@ -159,19 +157,26 @@ public class SsoServiceImpl implements SsoService {
                           userWithLoginInformation.getTfaMethods()));
         };
 
+    return login(email, serverBaseURL, redirect, passwordLoginSupplier);
+  }
+
+  private CompletionStage<LoginResult<?>> login(
+      String email,
+      String serverBaseURL,
+      String redirect,
+      Supplier<CompletionStage<LoginResult<?>>> defaultLoginProvider) {
     if (EmailUtils.isBusinessDomain(email)) {
-      log.info("[AUTH]: Login attempt with business email={} ip={}", email, ipAddress);
+      log.info("[AUTH]: Login attempt with business email={}", email);
       return ssoSetupDatasource
           .getByDomain(EmailUtils.domainFromEmail(email))
           .thenCompose(
               maybeSsoSetup -> {
                 if (maybeSsoSetup.isEmpty()) {
-                  return passwordLoginSupplier.get();
+                  return defaultLoginProvider.get();
                 }
 
                 String ssoSignInLocation =
-                    idpServiceRegistry.signInLocation(
-                        serverBaseURL, maybeSsoSetup.get().getMethod(), email, redirect);
+                    maybeSsoSetup.get().getMethod().signInLocation(serverBaseURL, email, redirect);
 
                 log.info(
                     "[AUTH]: SSO login required email={} ssoSignInLocation={}",
@@ -185,7 +190,7 @@ public class SsoServiceImpl implements SsoService {
               });
     }
 
-    return passwordLoginSupplier.get();
+    return defaultLoginProvider.get();
   }
 
   private CompletionStage<LoginResult<?>> authenticate(AuthUser user, List<TfaMethod> tfaMethods) {
@@ -235,18 +240,22 @@ public class SsoServiceImpl implements SsoService {
         email,
         clientCallbackRedirect);
 
-    return socialFindOrSignUpUser(email, fullName)
-        .thenCompose(
-            userWithLoginInformation ->
-                authenticate(
-                    userWithLoginInformation.user(),
-                    userWithLoginInformation.getTfaMethods(),
-                    clientCallbackRedirect))
-        .thenApply(
-            loginResult -> {
-              log.info("[AUTH]: Successful social login for user: {}", email);
-              return loginResult;
-            });
+    Supplier<CompletionStage<LoginResult<?>>> socialLoginProvider =
+        () ->
+            socialFindOrSignUpUser(email, fullName)
+                .thenCompose(
+                    userWithLoginInformation ->
+                        authenticate(
+                            userWithLoginInformation.user(),
+                            userWithLoginInformation.getTfaMethods(),
+                            clientCallbackRedirect))
+                .thenApply(
+                    loginResult -> {
+                      log.info("[AUTH]: Successful social login for user: {}", email);
+                      return loginResult;
+                    });
+
+    return socialLoginProvider.get();
   }
 
   @Override

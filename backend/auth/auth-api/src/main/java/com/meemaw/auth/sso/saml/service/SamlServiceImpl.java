@@ -8,9 +8,6 @@ import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
-import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
@@ -254,26 +251,8 @@ public class SamlServiceImpl extends AbstractIdpService {
             });
   }
 
-  public CompletionStage<SsoSetupDTO> setupSamlSso(
-      String organizationId, String domain, URL configurationEndpoint) {
-    if (!EmailUtils.isBusinessDomain(domain)) {
-      throw Boom.badRequest().message("SSO setup is only possible for work domain.").exception();
-    }
-
-    return ssoSetupDatasource
-        .get(organizationId)
-        .thenCompose(
-            maybeSsoSetup -> {
-              if (maybeSsoSetup.isPresent()) {
-                log.info("[AUTH]: SSO setup already configured organization={}", organizationId);
-                throw Boom.badRequest().message("SSO setup already configured").exception();
-              }
-
-              fetchMetadataSneaky(configurationEndpoint);
-              CreateSsoSetup createSsoSetup =
-                  new CreateSsoSetup(organizationId, domain, SsoMethod.SAML, configurationEndpoint);
-              return ssoSetupDatasource.create(createSsoSetup);
-            });
+  public void validateConfigurationEndpoint(URL configurationEndpoint) {
+    fetchMetadataSneaky(configurationEndpoint);
   }
 
   private BoomException failedToFetchSsoConfiguration(Exception ex, String message) {
