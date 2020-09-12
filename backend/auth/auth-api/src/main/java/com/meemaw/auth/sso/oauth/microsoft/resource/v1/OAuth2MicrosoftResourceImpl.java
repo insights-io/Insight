@@ -25,9 +25,4 @@ public class OAuth2MicrosoftResourceImpl
   public CompletionStage<Response> oauth2callback(String code, String state, String sessionState) {
     return oauth2callback(OAuth2MicrosoftService, code, state, sessionState);
   }
-
-  @Override
-  public String getBasePath() {
-    return OAuth2MicrosoftResource.PATH;
-  }
 }

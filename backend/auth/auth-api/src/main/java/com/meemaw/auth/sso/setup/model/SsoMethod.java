@@ -5,15 +5,16 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
 
 public enum SsoMethod {
-  SAML("saml"),
-  GOOGLE("google"),
-  MICROSOFT("microsoft"),
-  GITHUB("github");
+  SAML(LoginMethod.SAML.getKey()),
+  GOOGLE(LoginMethod.GOOGLE.getKey()),
+  MICROSOFT(LoginMethod.MICROSOFT.getKey()),
+  GITHUB(LoginMethod.GITHUB.getKey());
 
   private final String key;
 

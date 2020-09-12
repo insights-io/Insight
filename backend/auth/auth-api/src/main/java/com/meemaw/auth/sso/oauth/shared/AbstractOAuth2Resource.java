@@ -22,19 +22,18 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
-  public abstract String getBasePath();
-
-  public String getRedirectUri(UriInfo info, HttpServerRequest request) {
-    return RequestUtils.getServerBaseURL(info, request) + getBasePath() + "/" + CALLBACK_PATH;
+  public String getRedirectUri(
+      AbstractOAuth2Service<T, U, E> oauthService, UriInfo info, HttpServerRequest request) {
+    return RequestUtils.getServerBaseURL(info, request) + oauthService.callbackPath();
   }
 
   public Response signIn(AbstractOAuth2Service<T, U, E> oauthService, String refererRedirect) {
-    String serverRedirectUri = getRedirectUri(info, request);
+    String serverRedirectUri = getRedirectUri(oauthService, info, request);
     String refererBaseURL =
         RequestUtils.parseRefererBaseURL(request)
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
     String state = oauthService.secureState(refererBaseURL + refererRedirect);
-    URI location = oauthService.buildAuthorizationUri(state, serverRedirectUri);
+    URI location = oauthService.buildAuthorizationURI(state, serverRedirectUri);
 
     log.info(
         "[AUTH]: OAuth2 sign in request redirect={} referer={} location={}",
@@ -50,9 +49,9 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
 
   public CompletionStage<Response> oauth2callback(
       AbstractOAuth2Service<T, U, E> oauthService, String code, String state, String sessionState) {
-    String redirectUri = getRedirectUri(info, request);
+    String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
     return oauthService
-        .oauth2callback(state, sessionState, code, redirectUri)
+        .oauth2callback(state, sessionState, code, serverBaseURL)
         .thenApply(SsoLoginResult::response);
   }
 }

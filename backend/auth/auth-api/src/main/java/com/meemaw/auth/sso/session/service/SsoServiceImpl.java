@@ -3,13 +3,17 @@ package com.meemaw.auth.sso.session.service;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
+import com.meemaw.auth.sso.IdpServiceRegistry;
 import com.meemaw.auth.sso.session.datasource.SsoDatasource;
 import com.meemaw.auth.sso.session.model.DirectLoginResult;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.RedirectSessionLoginResult;
+import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
+import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.auth.sso.tfa.TfaMethod;
 import com.meemaw.auth.sso.tfa.challenge.model.ChallengeLoginResult;
 import com.meemaw.auth.sso.tfa.challenge.service.TfaChallengeService;
@@ -25,6 +29,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
@@ -44,6 +49,7 @@ public class SsoServiceImpl implements SsoService {
   @Inject SignUpService signUpService;
   @Inject TfaChallengeService tfaChallengeService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
+  @Inject IdpServiceRegistry idpServiceRegistry;
 
   @Override
   @Traced
@@ -158,13 +164,34 @@ public class SsoServiceImpl implements SsoService {
                           userWithLoginInformation.getTfaMethods()));
         };
 
-    return login(email, serverBaseURL, redirect, passwordLoginSupplier);
+    Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
+        ssoSetup ->
+            passwordLoginSsoAlternative(
+                ssoSetup.getMethod().signInLocation(serverBaseURL, email, redirect));
+
+    return login(email, LoginMethod.PASSWORD, alternativeLoginProvider, passwordLoginSupplier);
+  }
+
+  /**
+   * Handle case when user tries to login with email + password, but his domain has SSO setup
+   * configured. Because password login is initiated with client POST request, we cannot redirect
+   * directly to SSO provider because of CORS. However, we can throw a 400 request and include a
+   * location which client should follow to complete flow using the configured SSO provider.
+   *
+   * @param ssoSignInLocation location client should go to in order to continue SSO flow
+   * @return will always throw
+   */
+  private CompletionStage<LoginResult<?>> passwordLoginSsoAlternative(String ssoSignInLocation) {
+    throw Boom.badRequest()
+        .message("SSO login required")
+        .errors(Map.of("goto", ssoSignInLocation))
+        .exception();
   }
 
   private CompletionStage<LoginResult<?>> login(
       String email,
-      String serverBaseURL,
-      String redirect,
+      LoginMethod loginMethod,
+      Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider,
       Supplier<CompletionStage<LoginResult<?>>> defaultLoginProvider) {
     if (EmailUtils.isBusinessDomain(email)) {
       log.info("[AUTH]: Login attempt with business email={}", email);
@@ -173,22 +200,27 @@ public class SsoServiceImpl implements SsoService {
           .thenCompose(
               maybeSsoSetup -> {
                 if (maybeSsoSetup.isEmpty()) {
+                  log.info(
+                      "[AUTH]: SSO setup not configured using default login provider email={}",
+                      email);
                   return defaultLoginProvider.get();
                 }
 
-                SsoMethod method = maybeSsoSetup.get().getMethod();
-                String ssoSignInLocation = method.signInLocation(serverBaseURL, email, redirect);
+                SsoSetupDTO ssoSetup = maybeSsoSetup.get();
+                SsoMethod method = ssoSetup.getMethod();
+                if (method.getKey().equals(loginMethod.getKey())) {
+                  log.info(
+                      "[AUTH]: SSO default login method matches using default login provider email={}",
+                      email);
+                  return defaultLoginProvider.get();
+                }
 
                 log.info(
-                    "[AUTH]: SSO login required email={} method={} ssoSignInLocation={}",
+                    "[AUTH] Enforcing alternative SSO login provider email={} method={}",
                     email,
-                    method,
-                    ssoSignInLocation);
+                    method);
 
-                throw Boom.badRequest()
-                    .message("SSO login required")
-                    .errors(Map.of("goto", ssoSignInLocation))
-                    .exception();
+                return alternativeLoginProvider.apply(ssoSetup);
               });
     }
 
@@ -235,12 +267,17 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "socialLogin", description = "A measure of how long it takes to do social login")
   public CompletionStage<LoginResult<?>> socialLogin(
-      String email, String fullName, String clientCallbackRedirect) {
+      String email,
+      String fullName,
+      String clientCallback,
+      LoginMethod method,
+      String serverBaseURL) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     log.info(
-        "[AUTH]: Social login attempt email={} clientCallbackRedirect={}",
+        "[AUTH]: Social login attempt method={} email={} clientCallback={}",
+        method,
         email,
-        clientCallbackRedirect);
+        clientCallback);
 
     Supplier<CompletionStage<LoginResult<?>>> socialLoginProvider =
         () ->
@@ -250,14 +287,27 @@ public class SsoServiceImpl implements SsoService {
                         authenticate(
                             userWithLoginInformation.user(),
                             userWithLoginInformation.getTfaMethods(),
-                            clientCallbackRedirect))
+                            clientCallback))
                 .thenApply(
                     loginResult -> {
                       log.info("[AUTH]: Successful social login for user: {}", email);
                       return loginResult;
                     });
 
-    return socialLoginProvider.get();
+    Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
+        ssoSetupDTO -> {
+          log.info(
+              "[AUTH]: Social login enforcing alternative login provider loginMethod={} ssoMethod={}",
+              method,
+              ssoSetupDTO.getMethod());
+
+          return CompletableFuture.completedStage(
+              new ResponseLoginResult(
+                  idpServiceRegistry.ssoSignInRedirect(
+                      ssoSetupDTO, clientCallback, serverBaseURL)));
+        };
+
+    return login(email, method, alternativeLoginProvider, socialLoginProvider);
   }
 
   @Override

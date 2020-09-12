@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftErrorResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
 import java.util.Collection;
@@ -32,7 +33,12 @@ public class OAuth2MicrosoftService
   @Inject OAuth2MicrosoftClient OAuth2MicrosoftClient;
 
   @Override
-  public URI buildAuthorizationUri(String state, String redirectUri) {
+  public LoginMethod getLoginMethod() {
+    return LoginMethod.MICROSOFT;
+  }
+
+  @Override
+  public URI buildAuthorizationURI(String state, String redirectUri) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getMicrosoftOpenIdClientId())
         .queryParam("redirect_uri", redirectUri)

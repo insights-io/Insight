@@ -1,5 +1,6 @@
 package com.meemaw.auth.sso.session.service;
 
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
@@ -36,7 +37,12 @@ public interface SsoService {
   CompletionStage<LoginResult<?>> passwordLogin(
       String email, String password, String ipAddress, String serverBaseURL, String redirect);
 
-  CompletionStage<LoginResult<?>> socialLogin(String email, String fullName, String location);
+  CompletionStage<LoginResult<?>> socialLogin(
+      String email,
+      String fullName,
+      String location,
+      LoginMethod loginMethod,
+      String serverBaseURL);
 
   CompletionStage<LoginResult<?>> ssoLogin(
       String email, String fullName, String organizationId, String location);

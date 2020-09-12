@@ -24,9 +24,4 @@ public class OAuth2GoogleResourceImpl
   public CompletionStage<Response> oauth2callback(String code, String state, String sessionState) {
     return oauth2callback(oauthService, code, state, sessionState);
   }
-
-  @Override
-  public String getBasePath() {
-    return OAuth2GoogleResource.PATH;
-  }
 }

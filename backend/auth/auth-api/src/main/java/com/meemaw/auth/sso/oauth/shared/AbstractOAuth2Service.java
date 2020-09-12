@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
+import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
@@ -22,22 +23,34 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
 
   @Inject SsoService ssoService;
 
-  public abstract URI buildAuthorizationUri(String state, String serverRedirectUri);
+  public abstract URI buildAuthorizationURI(String state, String serverRedirect);
 
   public abstract CompletionStage<SsoLoginResult<?>> oauth2callback(
-      String state, String sessionState, String code, String serverRedirectUri);
+      String state, String sessionState, String code, String serverBaseURL);
+
+  @Override
+  public String callbackPath() {
+    return String.join(
+        "/", OAuth2Resource.PATH, getLoginMethod().getKey(), OAuth2Resource.CALLBACK_PATH);
+  }
+
+  @Override
+  public URI buildAuthorizationURI(String state, String serverRedirect, SsoSetupDTO ssoSetupDTO) {
+    return buildAuthorizationURI(state, serverRedirect);
+  }
 
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
       AbstractOAuth2Client<T, U, E> oauthClient,
       String state,
       String sessionState,
       String code,
-      String serverRedirectUri) {
+      String serverBaseURL) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {
       log.warn("[AUTH]: OAuth2 state miss-match, session: {}, query: {}", sessionState, state);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 
+    String serverRedirectUri = serverBaseURL + callbackPath();
     return oauthClient
         .codeExchange(code, serverRedirectUri)
         .thenCompose(oauthClient::userInfo)
@@ -51,7 +64,7 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
               log.info("[AUTH]: OAuth2 successfully retrieved user info email={}", email);
 
               return ssoService
-                  .socialLogin(email, fullName, location)
+                  .socialLogin(email, fullName, location, getLoginMethod(), serverBaseURL)
                   .thenApply(
                       loginResult -> {
                         log.info(

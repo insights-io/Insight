@@ -1,5 +1,8 @@
 package com.meemaw.auth.sso;
 
+import com.meemaw.auth.sso.session.model.LoginMethod;
+import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -9,6 +12,13 @@ public abstract class AbstractIdpService {
 
   public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final SecureRandom random = new SecureRandom();
+
+  public abstract LoginMethod getLoginMethod();
+
+  public abstract String callbackPath();
+
+  public abstract URI buildAuthorizationURI(
+      String state, String serverRedirect, SsoSetupDTO ssoSetupDTO);
 
   public String secureState(String data) {
     return secureState() + data;

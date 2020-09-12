@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
 import java.util.Collection;
@@ -31,7 +32,12 @@ public class OAuth2GithubService
   private static final String SCOPES = String.join(" ", SCOPE_LIST);
 
   @Override
-  public URI buildAuthorizationUri(String state, String redirectUri) {
+  public LoginMethod getLoginMethod() {
+    return LoginMethod.GITHUB;
+  }
+
+  @Override
+  public URI buildAuthorizationURI(String state, String redirectUri) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getGithubOpenIdClientId())
         .queryParam("redirect_uri", redirectUri)

@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.oauth.google.model.GoogleErrorResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
 import java.util.Collection;
@@ -32,7 +33,12 @@ public class OAuth2GoogleService
   @Inject OAuth2GoogleClient OAuth2GoogleClient;
 
   @Override
-  public URI buildAuthorizationUri(String state, String redirectUri) {
+  public LoginMethod getLoginMethod() {
+    return LoginMethod.GOOGLE;
+  }
+
+  @Override
+  public URI buildAuthorizationURI(String state, String redirectUri) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getGoogleOpenIdClientId())
         .queryParam("redirect_uri", redirectUri)
