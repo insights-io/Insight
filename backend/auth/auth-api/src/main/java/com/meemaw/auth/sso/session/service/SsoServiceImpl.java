@@ -232,7 +232,7 @@ public class SsoServiceImpl implements SsoService {
   }
 
   private CompletionStage<LoginResult<?>> authenticate(
-      AuthUser user, List<TfaMethod> tfaMethods, @Nullable String clientCallbackRedirect) {
+      AuthUser user, List<TfaMethod> tfaMethods, @Nullable String destination) {
     UUID userId = user.getId();
     String organizationId = user.getOrganizationId();
     MDC.put(LoggingConstants.USER_ID, userId.toString());
@@ -242,12 +242,10 @@ public class SsoServiceImpl implements SsoService {
       return this.createSession(user)
           .thenApply(
               sessionId -> {
-                if (clientCallbackRedirect != null) {
+                if (destination != null) {
                   log.info(
-                      "[AUTH]: Successful login for user={} clientCallbackRedirect={}",
-                      userId,
-                      clientCallbackRedirect);
-                  return new RedirectSessionLoginResult(sessionId, clientCallbackRedirect);
+                      "[AUTH]: Successful login for user={} destination={}", userId, destination);
+                  return new RedirectSessionLoginResult(sessionId, destination);
                 }
                 log.info("[AUTH]: Successful login for user={}", userId);
                 return new DirectLoginResult(sessionId);
@@ -259,7 +257,7 @@ public class SsoServiceImpl implements SsoService {
         .thenApply(
             challengeId -> {
               log.info("[AUTH]: TFA challenge={} for user={}", challengeId, userId);
-              return new ChallengeLoginResult(challengeId, tfaMethods, clientCallbackRedirect);
+              return new ChallengeLoginResult(challengeId, tfaMethods, destination);
             });
   }
 
@@ -267,17 +265,13 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "socialLogin", description = "A measure of how long it takes to do social login")
   public CompletionStage<LoginResult<?>> socialLogin(
-      String email,
-      String fullName,
-      String clientCallback,
-      LoginMethod method,
-      String serverBaseURL) {
+      String email, String fullName, String destination, LoginMethod method, String serverBaseURL) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     log.info(
-        "[AUTH]: Social login attempt method={} email={} clientCallback={}",
+        "[AUTH]: Social login attempt method={} email={} destination={}",
         method,
         email,
-        clientCallback);
+        destination);
 
     Supplier<CompletionStage<LoginResult<?>>> socialLoginProvider =
         () ->
@@ -287,24 +281,27 @@ public class SsoServiceImpl implements SsoService {
                         authenticate(
                             userWithLoginInformation.user(),
                             userWithLoginInformation.getTfaMethods(),
-                            clientCallback))
+                            destination))
                 .thenApply(
                     loginResult -> {
-                      log.info("[AUTH]: Successful social login for user: {}", email);
+                      log.info(
+                          "[AUTH]: Successful social login for user email={} method={}",
+                          email,
+                          method);
                       return loginResult;
                     });
 
     Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetupDTO -> {
           log.info(
-              "[AUTH]: Social login enforcing alternative login provider loginMethod={} ssoMethod={}",
+              "[AUTH]: Social login enforcing alternative login provider loginMethod={} ssoMethod={} destination={}",
               method,
-              ssoSetupDTO.getMethod());
+              ssoSetupDTO.getMethod(),
+              destination);
 
           return CompletableFuture.completedStage(
               new ResponseLoginResult(
-                  idpServiceRegistry.ssoSignInRedirect(
-                      ssoSetupDTO, clientCallback, serverBaseURL)));
+                  idpServiceRegistry.ssoSignInRedirect(ssoSetupDTO, destination, serverBaseURL)));
         };
 
     return login(email, method, alternativeLoginProvider, socialLoginProvider);

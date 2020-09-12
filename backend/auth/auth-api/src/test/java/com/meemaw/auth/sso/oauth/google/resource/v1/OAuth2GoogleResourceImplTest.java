@@ -36,7 +36,9 @@ import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +49,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -64,10 +68,10 @@ public class OAuth2GoogleResourceImplTest {
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @TestHTTPResource(OAuth2GoogleResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
-  URI oauth2CallbackURI;
+  URI googleOauth2CallbackURI;
 
   @TestHTTPResource(OAuth2MicrosoftResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
-  URI microsoftOauth2CallbackUri;
+  URI microsoftOauth2CallbackURI;
 
   @Test
   public void google_sign_in__should_fail__when_missing_redirect() {
@@ -154,7 +158,7 @@ public class OAuth2GoogleResourceImplTest {
   @Test
   public void google_sign_in_should_start_flow_by_redirecting_to_google() {
     String oauth2CallbackURL =
-        URLEncoder.encode(oauth2CallbackURI.toString(), StandardCharsets.UTF_8);
+        URLEncoder.encode(googleOauth2CallbackURI.toString(), StandardCharsets.UTF_8);
 
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="
@@ -188,7 +192,7 @@ public class OAuth2GoogleResourceImplTest {
   public void google_oauth2callback_should_fail_when_no_params() {
     given()
         .when()
-        .get(oauth2CallbackURI)
+        .get(googleOauth2CallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -204,7 +208,7 @@ public class OAuth2GoogleResourceImplTest {
         .queryParam("code", "random")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackURI)
+        .get(googleOauth2CallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -223,7 +227,7 @@ public class OAuth2GoogleResourceImplTest {
             "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackURI)
+        .get(googleOauth2CallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -241,7 +245,7 @@ public class OAuth2GoogleResourceImplTest {
             "code",
             "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
         .queryParam("state", state)
-        .get(oauth2CallbackURI)
+        .get(googleOauth2CallbackURI)
         .then()
         .statusCode(401)
         .body(
@@ -261,7 +265,7 @@ public class OAuth2GoogleResourceImplTest {
         .queryParam("code", "any")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackURI)
+        .get(googleOauth2CallbackURI)
         .then()
         .statusCode(302)
         .header("Location", "https://www.insight.io/my_path")
@@ -304,7 +308,7 @@ public class OAuth2GoogleResourceImplTest {
         .queryParam("code", "any")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackURI)
+        .get(googleOauth2CallbackURI)
         .then()
         .statusCode(302)
         .header("Location", "https://www.insight.io/my_path")
@@ -312,7 +316,7 @@ public class OAuth2GoogleResourceImplTest {
   }
 
   @Test
-  public void google_oauth2callback__should_redirect_to_okta__when_sso_saml_setup()
+  public void google_oauth2callback__should_redirect_to_microsoft__when_microsoft_sso_setup()
       throws JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = password + "@company.io";
@@ -336,7 +340,7 @@ public class OAuth2GoogleResourceImplTest {
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="
             + appConfig.getMicrosoftOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(microsoftOauth2CallbackUri.toString(), StandardCharsets.UTF_8)
+            + URLEncoder.encode(microsoftOauth2CallbackURI.toString(), StandardCharsets.UTF_8)
             + "&response_type=code&scope=openid+email+profile&response_mode=query&state=";
 
     String expectedClientDestination = "https://www.insight.io/my_path";
@@ -348,7 +352,7 @@ public class OAuth2GoogleResourceImplTest {
             .queryParam("code", "any")
             .queryParam("state", paramState)
             .cookie("state", paramState)
-            .get(oauth2CallbackURI);
+            .get(googleOauth2CallbackURI);
 
     response
         .then()
@@ -362,6 +366,51 @@ public class OAuth2GoogleResourceImplTest {
     assertEquals(
         expectedClientDestination,
         URLDecoder.decode(actualClientDestination, StandardCharsets.UTF_8));
+  }
+
+  @Test
+  public void google_oauth2callback__should_redirect_to_okta__when_saml_sso_setup()
+      throws JsonProcessingException, MalformedURLException {
+    String password = UUID.randomUUID().toString();
+    String domain = "company.io10";
+    String email = password + "@" + domain;
+    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+
+    CreateSsoSetupDTO body =
+        new CreateSsoSetupDTO(
+            SsoMethod.SAML,
+            new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(JacksonMapper.get().writeValueAsString(body))
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(SsoSetupResource.PATH)
+        .then()
+        .statusCode(201);
+
+    String otherUserEmail = UUID.randomUUID() + "@" + domain;
+    QuarkusMock.installMockForInstance(
+        new MockedOAuth2GoogleClient(otherUserEmail), OAuth2GoogleClient);
+
+    String expectedClientDestination = "https://www.insight.io/my_path";
+    String paramState = OAuth2GoogleService.secureState(expectedClientDestination);
+    Response response =
+        given()
+            .config(RestAssuredUtils.dontFollowRedirects())
+            .when()
+            .queryParam("code", "any")
+            .queryParam("state", paramState)
+            .cookie("state", paramState)
+            .get(googleOauth2CallbackURI);
+
+    response.then().statusCode(302).cookie(SsoSignInSession.COOKIE_NAME);
+
+    MatcherAssert.assertThat(
+        response.header("Location"),
+        Matchers.matchesRegex(
+            "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)https%3A%2F%2Fwww\\.insight\\.io%2Fmy_path$"));
   }
 
   private static class MockedOAuth2GoogleClient extends OAuth2GoogleClient {

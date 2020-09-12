@@ -58,19 +58,19 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
             userInfo -> {
               String fullName = userInfo.getFullName();
               String email = userInfo.getEmail();
-              String location = secureStateData(sessionState);
-              String cookieDomain = RequestUtils.parseCookieDomain(location);
+              String destination = secureStateData(sessionState);
+              String cookieDomain = RequestUtils.parseCookieDomain(destination);
               MDC.put(LoggingConstants.USER_EMAIL, email);
               log.info("[AUTH]: OAuth2 successfully retrieved user info email={}", email);
 
               return ssoService
-                  .socialLogin(email, fullName, location, getLoginMethod(), serverBaseURL)
+                  .socialLogin(email, fullName, destination, getLoginMethod(), serverBaseURL)
                   .thenApply(
                       loginResult -> {
                         log.info(
-                            "[AUTH]: OAuth2 successfully authenticated user email={} location={}",
+                            "[AUTH]: OAuth2 flow successful email={} destination={}",
                             email,
-                            location);
+                            destination);
                         return new SsoLoginResult<>(loginResult, cookieDomain);
                       });
             });
