@@ -9,6 +9,7 @@ import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.RedirectSessionLoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
+import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.tfa.TfaMethod;
 import com.meemaw.auth.sso.tfa.challenge.model.ChallengeLoginResult;
 import com.meemaw.auth.sso.tfa.challenge.service.TfaChallengeService;
@@ -175,12 +176,13 @@ public class SsoServiceImpl implements SsoService {
                   return defaultLoginProvider.get();
                 }
 
-                String ssoSignInLocation =
-                    maybeSsoSetup.get().getMethod().signInLocation(serverBaseURL, email, redirect);
+                SsoMethod method = maybeSsoSetup.get().getMethod();
+                String ssoSignInLocation = method.signInLocation(serverBaseURL, email, redirect);
 
                 log.info(
-                    "[AUTH]: SSO login required email={} ssoSignInLocation={}",
+                    "[AUTH]: SSO login required email={} method={} ssoSignInLocation={}",
                     email,
+                    method,
                     ssoSignInLocation);
 
                 throw Boom.badRequest()

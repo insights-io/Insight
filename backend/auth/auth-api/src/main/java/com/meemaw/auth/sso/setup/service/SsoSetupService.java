@@ -13,6 +13,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
@@ -21,6 +22,7 @@ public class SsoSetupService {
   @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject SamlServiceImpl samlService;
 
+  @Traced
   public CompletionStage<SsoSetupDTO> setup(
       String organizationId, String domain, CreateSsoSetupDTO createSsoSetupDTO) {
     if (!EmailUtils.isBusinessDomain(domain)) {
@@ -45,9 +47,17 @@ public class SsoSetupService {
               if (SsoMethod.SAML.equals(method)) {
                 samlService.validateConfigurationEndpoint(configurationEndpoint);
               }
-              CreateSsoSetup createSsoSetup =
-                  new CreateSsoSetup(organizationId, domain, SsoMethod.SAML, configurationEndpoint);
-              return ssoSetupDatasource.create(createSsoSetup);
+
+              return ssoSetupDatasource
+                  .create(new CreateSsoSetup(organizationId, domain, method, configurationEndpoint))
+                  .thenApply(
+                      ssoSetup -> {
+                        log.info(
+                            "[AUTH]: SSO setup successful method={} organization={}",
+                            method,
+                            organizationId);
+                        return ssoSetup;
+                      });
             });
   }
 }
