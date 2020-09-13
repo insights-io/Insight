@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
+import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
@@ -19,11 +20,9 @@ import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -35,24 +34,18 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SamlResourceImplTest {
+public class SamlResourceImplTest extends AbstractSsoResourceTest {
 
   @Inject SamlServiceImpl samlService;
   @Inject UserDatasource userDatasource;
   @Inject OrganizationDatasource organizationDatasource;
   @Inject SsoSetupDatasource ssoSetupDatasource;
 
-  @TestHTTPResource(SamlResource.PATH + "/" + SamlResource.CALLBACK_PATH)
-  URI callbackUri;
-
-  @TestHTTPResource(SamlResource.PATH + "/" + SamlResource.SIGNIN_PATH)
-  URI signInUri;
-
   @Test
-  public void sign_in__should_fail__when_no_params() {
+  public void saml_sign_in__should_fail__when_no_params() {
     given()
         .when()
-        .get(signInUri)
+        .get(samlSignInURI)
         .then()
         .statusCode(400)
         .body(
@@ -61,13 +54,12 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void sign_in__should_fail__when_malformed_email() {
+  public void saml_sign_in__should_fail__when_malformed_email() {
     given()
-        .header("referer", "malformed")
         .when()
-        .queryParam("redirect", "/test")
+        .queryParam("redirect", "http://localhost:3000/test")
         .queryParam("email", "matej.snuderl")
-        .get(signInUri)
+        .get(samlSignInURI)
         .then()
         .statusCode(400)
         .body(
@@ -76,45 +68,26 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void sign_in__should_fail__when_no_referer() {
+  public void saml_sign_in__should_fail__when_malformed_redirect() {
     given()
         .when()
         .queryParam("redirect", "/test")
         .queryParam("email", "matej.snuderl@snuderls.eu")
-        .get(signInUri)
+        .get(samlSignInURI)
         .then()
-        .statusCode(400)
+        .statusCode(404)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"referer required\"}}"));
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Resource Not Found\"}}"));
   }
 
   @Test
-  public void sign_in__should_fail__when_malformed_referer() {
-    given()
-        .header("referer", "malformed")
-        .when()
-        .queryParam("redirect", "/test")
-        .queryParam("email", "matej.snuderl@snuderls.eu")
-        .get(signInUri)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"no protocol: malformed\"}}"));
-  }
-
-  @Test
-  public void sign_in__should_fail__when_domain_with_no_sso_setup() {
-    String referer = "http://localhost:3000";
-    String redirect = "/test";
-
+  public void saml_sign_in__should_fail__when_domain_with_no_sso_setup() {
     given()
         .when()
-        .header("referer", referer)
-        .queryParam("redirect", redirect)
+        .queryParam("redirect", SIMPLE_REDIRECT)
         .queryParam("email", "matej.snuderl@snuderls.iooooo")
-        .get(signInUri)
+        .get(samlSignInURI)
         .then()
         .statusCode(400)
         .body(
@@ -123,10 +96,8 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void sign_in__should_redirect_to_sso_provider__when_sso_setup()
+  public void saml_sign_in__should_redirect_to_sso_provider__when_sso_setup()
       throws MalformedURLException {
-    String referer = "http://localhost:3000";
-    String redirect = "/test";
     String email = "matej.snuderl@snuderls.mo";
 
     String organizationId = Organization.identifier();
@@ -152,10 +123,9 @@ public class SamlResourceImplTest {
     given()
         .config(RestAssuredUtils.dontFollowRedirects())
         .when()
-        .header("referer", referer)
-        .queryParam("redirect", redirect)
+        .queryParam("redirect", SIMPLE_REDIRECT)
         .queryParam("email", email)
-        .get(signInUri)
+        .get(samlSignInURI)
         .then()
         .statusCode(302)
         .header(
@@ -166,10 +136,10 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void oauth2callback__should_fail__when_no_params() {
+  public void saml_callback__should_fail__when_no_params() {
     given()
         .when()
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -178,14 +148,15 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void oauth2callback__should_fail__on_random_saml_response() {
-    String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
+  public void saml_callback__should_fail__on_random_saml_response() {
+    String state =
+        samlService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
     given()
         .when()
         .formParam("SAMLResponse", "random")
         .formParam("RelayState", state)
         .cookie("state", state)
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -194,13 +165,15 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void oauth2callback__should_fail__on_invalid_state_cookie() {
-    String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
+  public void saml_callback__should_fail__on_invalid_state_cookie() {
+    String state =
+        samlService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+
     given()
         .when()
         .formParam("SAMLResponse", "random")
         .formParam("RelayState", state)
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(401)
         .body(
@@ -209,7 +182,7 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_fail__when_configuration_endpoint_is_down()
+  public void saml_callback__should_fail__when_configuration_endpoint_is_down()
       throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
@@ -241,7 +214,7 @@ public class SamlResourceImplTest {
         .formParam("SAMLResponse", samlResponse)
         .formParam("RelayState", state)
         .cookie("state", state)
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -250,7 +223,7 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_fail__when_configuration_endpoint_serves_broken_xml()
+  public void saml_callback__should_fail__when_configuration_endpoint_serves_broken_xml()
       throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
@@ -282,7 +255,7 @@ public class SamlResourceImplTest {
         .formParam("SAMLResponse", samlResponse)
         .formParam("RelayState", state)
         .cookie("state", state)
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -291,7 +264,7 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_fail__when_configuration_endpoint_serves_invalid_xml()
+  public void saml_callback__should_fail__when_configuration_endpoint_serves_invalid_xml()
       throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
@@ -323,7 +296,7 @@ public class SamlResourceImplTest {
         .formParam("SAMLResponse", samlResponse)
         .formParam("RelayState", state)
         .cookie("state", state)
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -332,7 +305,7 @@ public class SamlResourceImplTest {
   }
 
   @Test
-  public void callback__should_sign_up_users__when_valid_saml_response()
+  public void saml_callback__should_sign_up_users__when_valid_saml_response()
       throws MalformedURLException {
     String organizationId = Organization.identifier();
     Organization organization =
@@ -366,7 +339,7 @@ public class SamlResourceImplTest {
             .formParam("SAMLResponse", samlResponse)
             .formParam("RelayState", state)
             .cookie("state", state)
-            .post(callbackUri);
+            .post(samlCallbackURI);
     response.then().statusCode(302).header("Location", Location).cookie(SsoSession.COOKIE_NAME);
 
     AuthUser user = userDatasource.findUser(email).toCompletableFuture().join().get();
@@ -383,7 +356,7 @@ public class SamlResourceImplTest {
         .formParam("SAMLResponse", blazSnuderlSamlResponse)
         .formParam("RelayState", state)
         .cookie("state", state)
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(302)
         .header("Location", Location)
@@ -431,7 +404,7 @@ public class SamlResourceImplTest {
         .formParam("SAMLResponse", samlResponse)
         .formParam("RelayState", state)
         .cookie("state", state)
-        .post(callbackUri)
+        .post(samlCallbackURI)
         .then()
         .statusCode(400)
         .body(

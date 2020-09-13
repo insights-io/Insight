@@ -7,11 +7,13 @@ import com.meemaw.auth.sso.model.InsightPrincipal;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
+import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,11 +26,11 @@ public class OrganizationInviteResourceImpl implements OrganizationInviteResourc
   @Context HttpServerRequest request;
 
   private String getAcceptInviteURL() {
-    String clientBaseURL =
+    URL clientBaseURL =
         RequestUtils.parseRefererBaseURL(request)
             .orElseGet(() -> RequestUtils.getServerBaseURL(info, request));
 
-    return String.join("/", clientBaseURL, "accept-invite");
+    return UriBuilder.fromUri(clientBaseURL.toString()).path("accept-invite").build().toString();
   }
 
   @Override

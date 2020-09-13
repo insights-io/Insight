@@ -20,10 +20,10 @@ const LoginPage = () => {
   const [activeMethod, setActiveMethod] = useState<LoginMethod>('email');
   const router = useRouter();
   const [_css, theme] = useStyletron();
-  const redirect = (router.query.redirect || '/') as string;
-  const encodedRedirect = encodeURIComponent(redirect as string);
+  const relativeRedirect = (router.query.redirect || '/') as string;
+  const absoluteRedirect = `${window.location.origin}${relativeRedirect}`;
   const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder(
-    encodedRedirect
+    absoluteRedirect
   );
 
   return (
@@ -69,13 +69,13 @@ const LoginPage = () => {
       >
         <Tab title="Email" key="email">
           <LoginEmailForm
-            redirect={redirect}
-            encodedRedirect={encodedRedirect}
+            relativeRedirect={relativeRedirect}
+            absoluteRedirect={absoluteRedirect}
             replace={router.replace}
           />
         </Tab>
         <Tab title="SAML SSO" key="saml-sso">
-          <LoginSamlSsoForm encodedRedirect={encodedRedirect} />
+          <LoginSamlSsoForm absoluteRedirect={absoluteRedirect} />
         </Tab>
       </Tabs>
 

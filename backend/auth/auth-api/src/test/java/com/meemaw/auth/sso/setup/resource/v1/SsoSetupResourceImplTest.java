@@ -6,8 +6,8 @@ import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.EmailUtils;
+import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
@@ -15,13 +15,11 @@ import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -30,10 +28,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SsoSetupResourceImplTest {
-
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
+public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
 
   @Test
   public void get_setup_by_domain__should_return_false__when_no_sso_setup() {
@@ -293,7 +288,7 @@ public class SsoSetupResourceImplTest {
         .get(SsoSetupResource.PATH + "/snuderls.io")
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+        .body(sameJson(String.format("{\"data\":\"%s\"}", samlSignInURI)));
 
     // Should fail if already configured
     given()
@@ -314,7 +309,6 @@ public class SsoSetupResourceImplTest {
     String email = "sso-google-setup-business-email@snuderls.io2";
     String sessionId =
         signUpAndLogin(mailbox, objectMapper, email, "sso-google-setup-business-email");
-
     CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
 
     given()
@@ -331,7 +325,7 @@ public class SsoSetupResourceImplTest {
         .get(SsoSetupResource.PATH + "/" + EmailUtils.domainFromEmail(email))
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+        .body(sameJson(String.format("{\"data\":\"%s\"}", googleSignInURI)));
 
     // Should fail if already configured
     given()

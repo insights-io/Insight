@@ -21,12 +21,16 @@ type LoginEmailFormData = {
 };
 
 type Props = {
-  redirect: string;
-  encodedRedirect: string;
+  relativeRedirect: string;
+  absoluteRedirect: string;
   replace: (location: string) => void;
 };
 
-const LoginEmailForm = ({ replace, redirect, encodedRedirect }: Props) => {
+const LoginEmailForm = ({
+  replace,
+  relativeRedirect,
+  absoluteRedirect,
+}: Props) => {
   const [_css, theme] = useStyletron();
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,9 +47,13 @@ const LoginEmailForm = ({ replace, redirect, encodedRedirect }: Props) => {
       .login(formData.email, formData.password)
       .then((response) => {
         if (response.data === true) {
-          replace(redirect);
+          replace(relativeRedirect);
         } else {
-          replace(`/login/verification?redirect=${encodedRedirect}`);
+          replace(
+            `/login/verification?redirect=${encodeURIComponent(
+              absoluteRedirect
+            )}`
+          );
         }
       })
       .catch(async (error) => {

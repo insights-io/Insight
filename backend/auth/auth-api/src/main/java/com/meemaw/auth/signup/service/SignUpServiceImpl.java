@@ -20,6 +20,7 @@ import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
+import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -27,6 +28,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -52,7 +54,7 @@ public class SignUpServiceImpl implements SignUpService {
   @Traced
   @Timed(name = "signUp", description = "A measure of how long it takes to do a sign up")
   public CompletionStage<Optional<UUID>> signUp(
-      String referer, String serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
+      URL referer, URL serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
     MDC.put(LoggingConstants.USER_EMAIL, signUpRequestDTO.getEmail());
     log.info("[AUTH]: Sign up request for user: {}", signUpRequestDTO.getEmail());
 
@@ -73,7 +75,7 @@ public class SignUpServiceImpl implements SignUpService {
   }
 
   private CompletionStage<Optional<UUID>> signUp(
-      String serverBaseURL, SignUpRequest signUpRequest, SqlTransaction transaction) {
+      URL serverBaseURL, SignUpRequest signUpRequest, SqlTransaction transaction) {
     String email = signUpRequest.getEmail();
     return signUpDatasource
         .selectIsEmailTaken(email, transaction)
@@ -108,16 +110,26 @@ public class SignUpServiceImpl implements SignUpService {
 
   @Traced
   private CompletionStage<Void> sendSignUpCompleteEmail(
-      String email, String serverBaseURL, UUID token) {
-    log.info("[AUTH]: Sending sign up complete email to user: {} token: {}", email, token);
+      String email, URL serverBaseURL, UUID token) {
     String subject = "Finish your registration";
-    String completeSignUpURL =
-        String.join("/", serverBaseURL + SignUpResource.PATH, token.toString(), "complete");
+    String completeSignUpLocation =
+        UriBuilder.fromUri(serverBaseURL.toString())
+            .path(SignUpResource.PATH)
+            .path(token.toString())
+            .path("complete")
+            .build()
+            .toString();
+
+    log.info(
+        "[AUTH]: Sending sign up complete email={} token={} completeSignUpLocation={}",
+        email,
+        token,
+        completeSignUpLocation);
 
     return completeSignUpTemplate
         .data("email", email)
         .data("token", token)
-        .data("completeSignUpURL", completeSignUpURL)
+        .data("completeSignUpURL", completeSignUpLocation)
         .renderAsync()
         .thenCompose(
             html ->

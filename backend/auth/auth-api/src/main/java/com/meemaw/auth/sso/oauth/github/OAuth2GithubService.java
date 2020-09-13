@@ -37,10 +37,10 @@ public class OAuth2GithubService
   }
 
   @Override
-  public URI buildAuthorizationURI(String state, String redirectUri) {
+  public URI buildAuthorizationURL(String state, URI serverRedirectURI) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getGithubOpenIdClientId())
-        .queryParam("redirect_uri", redirectUri)
+        .queryParam("redirect_uri", serverRedirectURI)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)
         .queryParam("state", state)
@@ -53,7 +53,7 @@ public class OAuth2GithubService
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Github oauth2callback")
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
-      String state, String sessionState, String code, String redirectUri) {
-    return oauth2callback(OAuth2GithubClient, state, sessionState, code, redirectUri);
+      String state, String sessionState, String code, URI serverBaseURI) {
+    return oauth2callback(OAuth2GithubClient, state, sessionState, code, serverBaseURI);
   }
 }

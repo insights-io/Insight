@@ -65,7 +65,7 @@ public class SsoResourceImplTest {
   @Inject ObjectMapper objectMapper;
   @Inject AppConfig appConfig;
 
-  @TestHTTPResource(SamlResource.PATH + "/" + SamlResource.SIGNIN_PATH)
+  @TestHTTPResource(SamlResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
   URI samlSignInUri;
 
   @TestHTTPResource(OAuth2GoogleResource.PATH + "/" + OAuth2GoogleResource.SIGNIN_PATH)
@@ -189,7 +189,7 @@ public class SsoResourceImplTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000/login?redirect=/account/settings")
+            .header("referer", "http://localhost:3000/login?redirect=%2Faccount%2Fsettings")
             .post(SsoResource.PATH + "/login")
             .as(new TypeRef<>() {});
 
@@ -201,7 +201,7 @@ public class SsoResourceImplTest {
     assertEquals(
         signInRedirect,
         UriBuilder.fromUri(googleSignInUri)
-            .queryParam("redirect", "/account/settings")
+            .queryParam("redirect", "http://localhost:3000/account/settings")
             .queryParam("email", email)
             .build()
             .toString());
@@ -270,7 +270,7 @@ public class SsoResourceImplTest {
     assertEquals(
         signInRedirect,
         UriBuilder.fromUri(samlSignInUri)
-            .queryParam("redirect", "/account/settings")
+            .queryParam("redirect", "http://localhost:3000/account/settings")
             .queryParam("email", email)
             .build()
             .toString());

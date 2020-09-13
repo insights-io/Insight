@@ -8,6 +8,7 @@ import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
+import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -28,8 +29,8 @@ public class SignUpResourceImpl implements SignUpResource {
 
   @Override
   public CompletionStage<Response> signUp(SignUpRequestDTO payload) {
-    String referer = RequestUtils.parseRefererBaseURL(request).orElse(null);
-    String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
+    URL referer = RequestUtils.parseRefererBaseURL(request).orElse(null);
+    URL serverBaseURL = RequestUtils.getServerBaseURL(info, request);
 
     return signUpService
         .signUp(referer, serverBaseURL, payload)

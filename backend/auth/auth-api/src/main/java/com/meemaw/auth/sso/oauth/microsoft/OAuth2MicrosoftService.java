@@ -38,10 +38,10 @@ public class OAuth2MicrosoftService
   }
 
   @Override
-  public URI buildAuthorizationURI(String state, String redirectUri) {
+  public URI buildAuthorizationURL(String state, URI serverRedirect) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getMicrosoftOpenIdClientId())
-        .queryParam("redirect_uri", redirectUri)
+        .queryParam("redirect_uri", serverRedirect)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)
         .queryParam("response_mode", "query")
@@ -55,8 +55,8 @@ public class OAuth2MicrosoftService
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Microsoft oauth2callback")
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
-      String state, String sessionState, String code, String redirectUri) {
-    log.info("[AUTH]: OAuth2 callback request code={} redirectUri={}", code, redirectUri);
-    return oauth2callback(OAuth2MicrosoftClient, state, sessionState, code, redirectUri);
+      String state, String sessionState, String code, URI serverBaseURI) {
+    log.info("[AUTH]: OAuth2 callback request code={} serverBaseURI={}", code, serverBaseURI);
+    return oauth2callback(OAuth2MicrosoftClient, state, sessionState, code, serverBaseURI);
   }
 }

@@ -10,7 +10,6 @@ import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
@@ -246,10 +245,10 @@ public class SamlServiceImpl extends AbstractIdpService {
                 throw Boom.badRequest().message("Invalid entityId").exception();
               }
               validateSignature(samlDataResponse.getSignature(), samlMetadata);
-              String location = secureStateData(relayState);
-              String cookieDomain = RequestUtils.parseCookieDomain(location);
+              URL redirect = RequestUtils.sneakyURL(secureStateData(relayState));
+              String cookieDomain = RequestUtils.parseCookieDomain(redirect);
               return ssoService
-                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId, location)
+                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId, redirect)
                   .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
   }
@@ -278,11 +277,11 @@ public class SamlServiceImpl extends AbstractIdpService {
   }
 
   public javax.ws.rs.core.Response signInRedirectResponse(
-      String clientCallbackRedirect, URL configurationEndpoint) {
-    String relayState = secureState(clientCallbackRedirect);
+      URL configurationEndpoint, String cookieDomain, URL redirect) {
+    String relayState = secureState(redirect.toString());
     URI location = buildAuthorizationURI(relayState, configurationEndpoint);
     return javax.ws.rs.core.Response.status(Status.FOUND)
-        .cookie(SsoSignInSession.cookie(relayState))
+        .cookie(SsoSignInSession.cookie(relayState, cookieDomain))
         .header("Location", location)
         .build();
   }
@@ -293,13 +292,7 @@ public class SamlServiceImpl extends AbstractIdpService {
   }
 
   @Override
-  public String callbackPath() {
-    return String.join("/", SamlResource.PATH, SamlResource.CALLBACK_PATH);
-  }
-
-  @Override
-  public URI buildAuthorizationURI(String state, String serverRedirect, SsoSetupDTO ssoSetupDTO) {
-    URL configurationEndpoint = ssoSetupDTO.getConfigurationEndpoint();
-    return buildAuthorizationURI(state, configurationEndpoint);
+  public String basePath() {
+    return SamlResource.PATH;
   }
 }

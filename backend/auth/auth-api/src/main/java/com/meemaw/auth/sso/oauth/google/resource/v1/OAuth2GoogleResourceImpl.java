@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.oauth.google.model.GoogleErrorResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Resource;
+import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -16,8 +17,8 @@ public class OAuth2GoogleResourceImpl
   @Inject OAuth2GoogleService oauthService;
 
   @Override
-  public Response signIn(String destinationPath) {
-    return signIn(oauthService, destinationPath);
+  public Response signIn(URL redirect) {
+    return signIn(oauthService, redirect);
   }
 
   @Override

@@ -11,11 +11,13 @@ import FormError from 'shared/components/FormError';
 import { createInputOverrides } from 'shared/styles/input';
 import { locationAssign } from 'shared/utils/window';
 
-import { samlIntegrationHrefBuilder } from '../utils';
+import { ssoIntegrationHrefBuilder } from '../utils';
 
-type Props = { encodedRedirect: string };
+type Props = {
+  absoluteRedirect: string;
+};
 
-const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
+const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
   const [_css, theme] = useStyletron();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,15 +53,15 @@ const LoginSamlSsoForm = ({ encodedRedirect }: Props) => {
       .getByDomain(domain)
       .then((dataRepsonse) => {
         setFormError(undefined);
-        if (dataRepsonse.data) {
-          const encodedEmail = encodeURIComponent(email);
-          const location = samlIntegrationHrefBuilder(
-            encodedRedirect,
-            encodedEmail
-          );
-          locationAssign(location);
+        if (dataRepsonse.data === false) {
+          setSetupExists(false);
         } else {
-          setSetupExists(dataRepsonse.data);
+          const location = ssoIntegrationHrefBuilder({
+            ssoSignInURI: dataRepsonse.data,
+            email,
+            absoluteRedirect,
+          });
+          locationAssign(location);
         }
       })
       .catch(async (error) => {

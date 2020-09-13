@@ -7,6 +7,7 @@ import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
+import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,13 +26,13 @@ public class OAuth2GithubClient
 
   @Override
   protected CompletionStage<HttpResponse<Buffer>> requestCodeExchange(
-      String code, String redirectUri) {
+      String code, URI serverRedirectURI) {
     return webClient
         .postAbs(TOKEN_SERVER_URL)
         .addQueryParam("code", code)
         .addQueryParam("client_id", appConfig.getGithubOpenIdClientId())
         .addQueryParam("client_secret", appConfig.getGithubOpenIdClientSecret())
-        .addQueryParam("redirect_uri", redirectUri)
+        .addQueryParam("redirect_uri", serverRedirectURI.toString())
         .putHeader("Content-Length", "0")
         .putHeader("Accept", MediaType.APPLICATION_JSON)
         .send()

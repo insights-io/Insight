@@ -38,10 +38,10 @@ public class OAuth2GoogleService
   }
 
   @Override
-  public URI buildAuthorizationURI(String state, String redirectUri) {
+  public URI buildAuthorizationURL(String state, URI redirect) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getGoogleOpenIdClientId())
-        .queryParam("redirect_uri", redirectUri)
+        .queryParam("redirect_uri", redirect)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)
         .queryParam("state", state)
@@ -54,7 +54,7 @@ public class OAuth2GoogleService
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Google oauth2callback")
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
-      String state, String sessionState, String code, String redirectUri) {
-    return oauth2callback(OAuth2GoogleClient, state, sessionState, code, redirectUri);
+      String state, String sessionState, String code, URI serverBase) {
+    return oauth2callback(OAuth2GoogleClient, state, sessionState, code, serverBase);
   }
 }

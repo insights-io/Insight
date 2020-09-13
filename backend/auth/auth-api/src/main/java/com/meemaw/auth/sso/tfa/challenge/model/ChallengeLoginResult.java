@@ -3,6 +3,7 @@ package com.meemaw.auth.sso.tfa.challenge.model;
 import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.tfa.TfaMethod;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.ChallengeResponseDTO;
+import java.net.URL;
 import java.util.List;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -14,7 +15,7 @@ public class ChallengeLoginResult implements LoginResult<ChallengeResponseDTO> {
 
   String challengeId;
   List<TfaMethod> methods;
-  String destination;
+  URL redirect;
 
   @Override
   public ChallengeResponseDTO getData() {
@@ -28,12 +29,12 @@ public class ChallengeLoginResult implements LoginResult<ChallengeResponseDTO> {
 
   @Override
   public Response loginResponse(String cookieDomain) {
-    if (destination == null) {
+    if (redirect == null) {
       return LoginResult.super.loginResponse(cookieDomain);
     }
 
     return Response.status(Status.FOUND)
-        .header("Location", destination)
+        .header("Location", redirect)
         .cookie(cookie(cookieDomain))
         .build();
   }

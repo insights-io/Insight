@@ -6,8 +6,7 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftClient;
@@ -19,20 +18,17 @@ import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
 import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
-import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -48,27 +44,16 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OAuth2MicrosoftResourceImplTest {
+public class OAuth2MicrosoftResourceImplTest extends AbstractSsoResourceTest {
 
-  @Inject AppConfig appConfig;
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
-  @Inject OAuth2MicrosoftClient openIdClient;
-  @Inject OAuth2MicrosoftService openIdService;
-  @Inject UserDatasource userDatasource;
-  @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
-
-  @TestHTTPResource(OAuth2MicrosoftResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
-  URI oauth2CallbackUri;
-
-  @TestHTTPResource(OAuth2MicrosoftResource.PATH + "/signin")
-  URI signInUri;
+  @Inject OAuth2MicrosoftClient microsoftClient;
+  @Inject OAuth2MicrosoftService microsoftService;
 
   @Test
-  public void sign_in__should_fail__when_missing_redirect() {
+  public void microsoft_sign_in__should_fail__when_missing_redirect() {
     given()
         .when()
-        .get(signInUri)
+        .get(microsoftSignInURI)
         .then()
         .statusCode(400)
         .body(
@@ -77,34 +62,20 @@ public class OAuth2MicrosoftResourceImplTest {
   }
 
   @Test
-  public void sign_in__should_fail__when_no_referer() {
+  public void microsoft_sign_in__should_fail__when_malformed_redirect() {
     given()
         .when()
-        .queryParam("redirect", "/test")
-        .get(signInUri)
+        .queryParam("redirect", "random")
+        .get(microsoftSignInURI)
         .then()
-        .statusCode(400)
+        .statusCode(404)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"referer required\"}}"));
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Resource Not Found\"}}"));
   }
 
   @Test
-  public void sign_in__should_fail__when_malformed_referer() {
-    given()
-        .header("referer", "malformed")
-        .when()
-        .queryParam("redirect", "/test")
-        .get(signInUri)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"no protocol: malformed\"}}"));
-  }
-
-  @Test
-  public void sign_in__should_use_x_forwarded_headers__when_present() {
+  public void microsoft_sign_in__should_use_x_forwarded_headers__when_present() {
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
     String oAuth2CallbackUri =
@@ -122,17 +93,14 @@ public class OAuth2MicrosoftResourceImplTest {
             + URLEncoder.encode(oAuth2CallbackUri, StandardCharsets.UTF_8)
             + "&response_type=code&scope=openid+email+profile&response_mode=query&state=";
 
-    String referer = "http://localhost:3000";
-    String dest = "/test";
     Response response =
         given()
-            .header("referer", referer)
             .header("X-Forwarded-Proto", forwardedProto)
             .header("X-Forwarded-Host", forwardedHost)
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .queryParam("redirect", dest)
-            .get(signInUri);
+            .queryParam("redirect", SIMPLE_REDIRECT)
+            .get(microsoftSignInURI);
 
     response
         .then()
@@ -141,29 +109,25 @@ public class OAuth2MicrosoftResourceImplTest {
         .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);
-
-    assertEquals(URLEncoder.encode(referer + dest, StandardCharsets.UTF_8), destination);
+    String actualRedirect = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, StandardCharsets.UTF_8));
   }
 
   @Test
-  public void sign_in__should_start_flow__by_redirecting_to_provider() {
+  public void microsoft_sign_in__should_start_flow__by_redirecting_to_provider() {
     String expectedLocationBase =
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="
             + appConfig.getMicrosoftOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(oauth2CallbackUri.toString(), StandardCharsets.UTF_8)
+            + URLEncoder.encode(microsoftCallbackURI.toString(), StandardCharsets.UTF_8)
             + "&response_type=code&scope=openid+email+profile&response_mode=query&state=";
 
-    String referer = "http://localhost:3000";
-    String redirect = "/test";
     Response response =
         given()
-            .header("referer", referer)
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .queryParam("redirect", redirect)
-            .get(signInUri);
+            .queryParam("redirect", SIMPLE_REDIRECT)
+            .get(microsoftSignInURI);
 
     response
         .then()
@@ -172,15 +136,15 @@ public class OAuth2MicrosoftResourceImplTest {
         .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);
-    assertEquals(URLEncoder.encode(referer + redirect, StandardCharsets.UTF_8), destination);
+    String actualRedirect = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, StandardCharsets.UTF_8));
   }
 
   @Test
-  public void oauth2callback__should_fail__when_no_params() {
+  public void microsoft_oauth2callback__should_fail__when_no_params() {
     given()
         .when()
-        .get(oauth2CallbackUri)
+        .get(microsoftCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -189,14 +153,32 @@ public class OAuth2MicrosoftResourceImplTest {
   }
 
   @Test
-  public void oauth2callback__should_fail__on_random_code() {
-    String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
+  public void microsoft_oauth2callback__should_fail__on_too_short_state_parameter() {
+    String state = URLEncoder.encode("test", StandardCharsets.UTF_8);
     given()
         .when()
         .queryParam("code", "random")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackUri)
+        .get(microsoftCallbackURI)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Invalid state parameter\"}}"));
+  }
+
+  @Test
+  public void microsoft_oauth2callback__should_fail__on_random_code() {
+    String state =
+        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+
+    given()
+        .when()
+        .queryParam("code", "random")
+        .queryParam("state", state)
+        .cookie("state", state)
+        .get(microsoftCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -205,15 +187,16 @@ public class OAuth2MicrosoftResourceImplTest {
   }
 
   @Test
-  public void oauth2callback__should_fail__on_expired_code() {
-    String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
+  public void microsoft_oauth2callback__should_fail__on_expired_code() {
+    String state =
+        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
         .queryParam("code", "M.R3_BAY.aff053f8-9755-f5ea-c1b5-a3bb3e4f7b01")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackUri)
+        .get(microsoftCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -222,8 +205,9 @@ public class OAuth2MicrosoftResourceImplTest {
   }
 
   @Test
-  public void oauth2callback__should_fail__on_invalid_redirect() {
-    String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
+  public void microsoft_oauth2callback__should_fail__on_invalid_redirect() {
+    String state =
+        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
 
@@ -234,7 +218,7 @@ public class OAuth2MicrosoftResourceImplTest {
         .cookie("state", state)
         .header("X-Forwarded-Proto", forwardedProto)
         .header("X-Forwarded-Host", forwardedHost)
-        .get(oauth2CallbackUri)
+        .get(microsoftCallbackURI)
         .then()
         .statusCode(400)
         .body(
@@ -243,14 +227,15 @@ public class OAuth2MicrosoftResourceImplTest {
   }
 
   @Test
-  public void oauth2callback__should_fail__on_invalid_state_cookie() {
-    String state = URLEncoder.encode("/test", StandardCharsets.UTF_8);
+  public void microsoft_oauth2callback__should_fail__on_invalid_state_cookie() {
+    String state =
+        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
         .queryParam("code", "04fc2d3f11120e6ca0e2")
         .queryParam("state", state)
-        .get(oauth2CallbackUri)
+        .get(microsoftCallbackURI)
         .then()
         .statusCode(401)
         .body(
@@ -286,8 +271,8 @@ public class OAuth2MicrosoftResourceImplTest {
         .statusCode(200);
 
     String Location = "https://www.insight.io/my_path";
-    QuarkusMock.installMockForInstance(new MockedOAuth2MicrosoftClient(email), openIdClient);
-    String state = openIdService.secureState(Location);
+    QuarkusMock.installMockForInstance(new MockedOAuth2MicrosoftClient(email), microsoftClient);
+    String state = microsoftService.secureState(Location);
 
     given()
         .when()
@@ -295,7 +280,7 @@ public class OAuth2MicrosoftResourceImplTest {
         .queryParam("code", "any")
         .queryParam("state", state)
         .cookie("state", state)
-        .get(oauth2CallbackUri)
+        .get(microsoftCallbackURI)
         .then()
         .statusCode(302)
         .header("Location", Location)
@@ -311,7 +296,7 @@ public class OAuth2MicrosoftResourceImplTest {
     }
 
     @Override
-    public CompletionStage<MicrosoftTokenResponse> codeExchange(String code, String redirectURI) {
+    public CompletionStage<MicrosoftTokenResponse> codeExchange(String code, URI redirect) {
       return CompletableFuture.completedStage(new MicrosoftTokenResponse("", "", 1, "", "", ""));
     }
 

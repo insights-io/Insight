@@ -57,8 +57,12 @@ class SignUp {
   };
 
   public generateRandomCredentials = () => {
+    return this.generateRandomCredentialsForDomain('gmail.com');
+  };
+
+  public generateRandomCredentialsForDomain = (domain: string) => {
     const password = uuid();
-    const email = `${uuid()}@gmail.com`;
+    const email = `${uuid()}@${domain}`;
     return { password, email };
   };
 

@@ -1,9 +1,12 @@
 package com.meemaw.auth.sso.saml.resource.v1;
 
+import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -16,17 +19,15 @@ import javax.ws.rs.core.Response;
 public interface SamlResource {
 
   String PATH = SsoResource.PATH + "/saml";
-  String CALLBACK_PATH = "callback";
-  String SIGNIN_PATH = "signin";
 
   @GET
-  @Path(SIGNIN_PATH)
+  @Path(OAuth2Resource.SIGNIN_PATH)
   CompletionStage<Response> signIn(
-      @NotBlank(message = "Required") @QueryParam("redirect") String redirect,
-      @NotBlank(message = "Required") @Email @QueryParam("email") String email);
+      @NotBlank(message = "Required") @Email @QueryParam("email") String email,
+      @NotNull(message = "Required") @QueryParam("redirect") URL redirect);
 
   @POST
-  @Path(CALLBACK_PATH)
+  @Path(OAuth2Resource.CALLBACK_PATH)
   CompletionStage<Response> callback(
       @NotBlank(message = "Required") @FormParam("SAMLResponse") String SAMLResponse,
       @NotBlank(message = "Required") @FormParam("RelayState") String RelayState,

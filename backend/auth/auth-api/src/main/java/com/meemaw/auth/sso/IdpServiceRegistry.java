@@ -8,6 +8,7 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import io.quarkus.runtime.StartupEvent;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -16,6 +17,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 
 @ApplicationScoped
 public class IdpServiceRegistry {
@@ -39,17 +41,20 @@ public class IdpServiceRegistry {
     return services.get(ssoMethod);
   }
 
-  public Function<String, Response> ssoSignInRedirect(
-      SsoSetupDTO setup, String clientCallback, String serverBaseURL) {
-    AbstractIdpService idpService = getService(setup.getMethod());
-    String serverRedirect = serverBaseURL + idpService.callbackPath();
-    String state = idpService.secureState(clientCallback);
-    URI location = idpService.buildAuthorizationURI(state, serverRedirect, setup);
+  public URI ssoSignInLocation(SsoMethod method, URI serverBaseURI) {
+    AbstractIdpService idpService = getService(method);
+    return UriBuilder.fromUri(serverBaseURI).path(idpService.signInPath()).build();
+  }
 
-    return (cookieDomain) ->
-        Response.status(Status.FOUND)
-            .cookie(SsoSignInSession.cookie(state))
-            .header("Location", location)
+  public Function<String, Response> ssoSignInRedirect(
+      String email, SsoSetupDTO setup, URL redirect, URI serverBaseURI) {
+    URI ssoSignInLocation = ssoSignInLocation(setup.getMethod(), serverBaseURI);
+    URI location =
+        UriBuilder.fromUri(ssoSignInLocation)
+            .queryParam("redirect", redirect)
+            .queryParam("email", email)
             .build();
+
+    return (cookieDomain) -> Response.status(Status.FOUND).header("Location", location).build();
   }
 }
