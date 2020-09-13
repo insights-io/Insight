@@ -12,6 +12,7 @@ import VerificationPage from '../Verification';
 
 import ChangePassword from './ChangePassword';
 import TeamInvite from './TeamInvite';
+import { OrganizationSettings } from './OrganizationSettings';
 
 class AccountSettings {
   public readonly path = `${config.appBaseURL}/account/settings`;
@@ -26,27 +27,7 @@ class AccountSettings {
     organizationSettings: this.container.queryByText('Organization settings'),
   };
 
-  public readonly organizationSettings = {
-    tabs: {
-      general: {
-        button: this.container.queryByText('General'),
-      },
-      security: {
-        button: this.container.queryByText('Security'),
-        ssoSetup: {
-          setupCompleteMessage: queryByText('SSO setup complete'),
-          nonBusinessEmailErrorMessage: this.container.queryByText(
-            'SSO setup is only possible for work domain.'
-          ),
-          configurationEndpointInput: this.container.queryByPlaceholderText(
-            'https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
-          ),
-          submitButton: this.container.queryByText('Setup'),
-        },
-      },
-    },
-  };
-
+  public readonly OrganizationSettings = OrganizationSettings(this.container);
   public readonly ChangePassword = ChangePassword;
   public readonly TeamInvite = TeamInvite;
 

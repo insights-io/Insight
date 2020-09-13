@@ -1,8 +1,9 @@
-import { authenticatedTestCases, mockServerSideRequest } from 'test/utils/next';
+import { authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/sessions';
 import { AuthApi, SessionApi } from 'api';
 import { INSIGHT_ADMIN, INSIGHT_SESSIONS_DTOS } from 'test/data';
 import { sandbox } from '@insight/testing';
+import { mockServerSideRequest } from '@insight/next-testing';
 
 describe('pages/sessions', () => {
   authenticatedTestCases(getServerSideProps);

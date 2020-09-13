@@ -21,7 +21,7 @@ class Login {
 
   public readonly tabs = {
     email: queryByText('Email'),
-    samlSso: queryByText('SAML SSO'),
+    sso: queryByText('SSO'),
   };
 
   public readonly errorMessages = {

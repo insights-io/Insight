@@ -4,6 +4,8 @@ export * from './mail';
 
 export const getLocation = ClientFunction(() => document.location.href);
 
+export const getTitle = ClientFunction(() => document.title);
+
 export const getImageData = ClientFunction((img: string) => {
   const image = document.querySelector(img) as HTMLImageElement;
 

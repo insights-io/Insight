@@ -2,18 +2,21 @@ import { authApiBaseURL } from 'api';
 
 type OAuth2Integration = 'google' | 'github' | 'microsoft';
 
-export const createOAuth2IntegrationHrefBuilder = (
-  absoluteRedirect: string
-) => (integration: OAuth2Integration) => {
+type OAuth2HrefBuilderParams = {
+  absoluteRedirect: string;
+};
+
+export const createOAuth2IntegrationHrefBuilder = ({
+  absoluteRedirect,
+}: OAuth2HrefBuilderParams) => (integration: OAuth2Integration) => {
   return `${authApiBaseURL}/v1/sso/oauth2/${integration}/signin?redirect=${encodeURIComponent(
     absoluteRedirect
   )}`;
 };
 
-type SsoIntegrationHrefBuilderParams = {
+type SsoIntegrationHrefBuilderParams = OAuth2HrefBuilderParams & {
   ssoSignInURI: string;
   email: string;
-  absoluteRedirect: string;
 };
 
 export const ssoIntegrationHrefBuilder = ({
