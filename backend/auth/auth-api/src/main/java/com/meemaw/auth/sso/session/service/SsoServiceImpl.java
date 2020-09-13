@@ -167,7 +167,9 @@ public class SsoServiceImpl implements SsoService {
     Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetup ->
             passwordLoginSsoAlternative(
-                ssoSetup.getMethod().signInLocation(email, redirect, serverBaseURI));
+                idpServiceRegistry
+                    .ssoSignInLocationBuilder(ssoSetup.getMethod(), serverBaseURI, redirect)
+                    .build());
 
     return login(email, LoginMethod.PASSWORD, alternativeLoginProvider, passwordLoginSupplier);
   }
@@ -181,7 +183,7 @@ public class SsoServiceImpl implements SsoService {
    * @param ssoSignInLocation location client should go to in order to continue SSO flow
    * @return will always throw
    */
-  private CompletionStage<LoginResult<?>> passwordLoginSsoAlternative(String ssoSignInLocation) {
+  private CompletionStage<LoginResult<?>> passwordLoginSsoAlternative(URI ssoSignInLocation) {
     throw Boom.badRequest()
         .message("SSO login required")
         .errors(Map.of("goto", ssoSignInLocation))
@@ -307,7 +309,7 @@ public class SsoServiceImpl implements SsoService {
           return CompletableFuture.completedStage(
               new ResponseLoginResult(
                   idpServiceRegistry.ssoSignInRedirect(
-                      email, ssoSetupDTO, redirect, serverBaseURI)));
+                      email, ssoSetupDTO, serverBaseURI, redirect)));
         };
 
     return login(email, method, alternativeLoginProvider, socialLoginProvider);

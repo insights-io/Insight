@@ -41,17 +41,23 @@ public class IdpServiceRegistry {
     return services.get(ssoMethod);
   }
 
-  public URI ssoSignInLocation(SsoMethod method, URI serverBaseURI) {
+  private UriBuilder ssoSignInLocationBaseBuilder(SsoMethod method, URI serverBaseURI) {
     AbstractIdpService idpService = getService(method);
-    return UriBuilder.fromUri(serverBaseURI).path(idpService.signInPath()).build();
+    return UriBuilder.fromUri(serverBaseURI).path(idpService.signInPath());
+  }
+
+  public URI ssoSignInLocationBase(SsoMethod method, URI serverBaseURI) {
+    return ssoSignInLocationBaseBuilder(method, serverBaseURI).build();
+  }
+
+  public UriBuilder ssoSignInLocationBuilder(SsoMethod method, URI serverBaseURI, URL redirect) {
+    return ssoSignInLocationBaseBuilder(method, serverBaseURI).queryParam("redirect", redirect);
   }
 
   public Function<String, Response> ssoSignInRedirect(
-      String email, SsoSetupDTO setup, URL redirect, URI serverBaseURI) {
-    URI ssoSignInLocation = ssoSignInLocation(setup.getMethod(), serverBaseURI);
+      String email, SsoSetupDTO setup, URI serverBaseURI, URL redirect) {
     URI location =
-        UriBuilder.fromUri(ssoSignInLocation)
-            .queryParam("redirect", redirect)
+        ssoSignInLocationBuilder(setup.getMethod(), serverBaseURI, redirect)
             .queryParam("email", email)
             .build();
 

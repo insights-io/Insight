@@ -88,7 +88,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
               }
 
               return DataResponse.ok(
-                  idpServiceRegistry.ssoSignInLocation(
+                  idpServiceRegistry.ssoSignInLocationBase(
                       maybeSsoSetup.get().getMethod(), serverBaseURI));
             });
   }

@@ -2,12 +2,7 @@ package com.meemaw.auth.sso.setup.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
-import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.sso.session.model.LoginMethod;
-import java.net.URI;
-import java.net.URL;
-import javax.ws.rs.core.UriBuilder;
 
 public enum SsoMethod {
   SAML(LoginMethod.SAML.getKey()),
@@ -29,22 +24,5 @@ public enum SsoMethod {
   @JsonValue
   public String getKey() {
     return key;
-  }
-
-  public String signInLocation(String email, URL redirect, URI serverBaseURI) {
-    UriBuilder builder = UriBuilder.fromUri(serverBaseURI);
-    if (SsoMethod.SAML.equals(this)) {
-      builder = builder.path(SsoResource.PATH);
-    } else {
-      builder = builder.path(OAuth2Resource.PATH);
-    }
-
-    builder
-        .path(key)
-        .path(OAuth2Resource.SIGNIN_PATH)
-        .queryParam("redirect", redirect)
-        .queryParam("email", email);
-
-    return builder.build().toString();
   }
 }
