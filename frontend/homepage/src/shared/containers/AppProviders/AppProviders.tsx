@@ -5,7 +5,7 @@ import { styletron, debug } from 'shared/styles/styletron';
 
 import ThemeProvider from '../ThemeProvider';
 
-type Props = {
+export type Props = {
   children: JSX.Element;
   engine?: Client | Server;
 };
