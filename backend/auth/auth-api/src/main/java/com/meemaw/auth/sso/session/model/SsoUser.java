@@ -47,9 +47,10 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
 
   @Override
   public PhoneNumber getPhoneNumber() {
-    return phoneNumberCountryCode != null && phoneNumberDigits != null
-        ? new PhoneNumberDTO(phoneNumberCountryCode, phoneNumberDigits)
-        : null;
+    if (phoneNumberCountryCode == null || phoneNumberDigits == null) {
+      return null;
+    }
+    return new PhoneNumberDTO(phoneNumberCountryCode, phoneNumberDigits);
   }
 
   public AuthUser dto() {

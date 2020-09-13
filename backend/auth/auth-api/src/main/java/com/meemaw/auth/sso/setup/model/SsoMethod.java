@@ -33,10 +33,10 @@ public enum SsoMethod {
 
   public String signInLocation(String email, URL redirect, URI serverBaseURI) {
     UriBuilder builder = UriBuilder.fromUri(serverBaseURI);
-    if (!SsoMethod.SAML.equals(this)) {
-      builder = builder.path(OAuth2Resource.PATH);
-    } else {
+    if (SsoMethod.SAML.equals(this)) {
       builder = builder.path(SsoResource.PATH);
+    } else {
+      builder = builder.path(OAuth2Resource.PATH);
     }
 
     builder
