@@ -5,7 +5,6 @@ import com.meemaw.auth.sso.oauth.google.OAuth2GoogleService;
 import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftService;
 import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import io.quarkus.runtime.StartupEvent;
 import java.net.URI;
 import java.net.URL;
@@ -50,17 +49,16 @@ public class IdpServiceRegistry {
     return ssoSignInLocationBaseBuilder(method, serverBaseURI).build();
   }
 
-  public UriBuilder ssoSignInLocationBuilder(SsoMethod method, URI serverBaseURI, URL redirect) {
-    return ssoSignInLocationBaseBuilder(method, serverBaseURI).queryParam("redirect", redirect);
+  public URI ssoSignInLocation(SsoMethod method, String email, URI serverBaseURI, URL redirect) {
+    return ssoSignInLocationBaseBuilder(method, serverBaseURI)
+        .queryParam("redirect", redirect)
+        .queryParam("email", email)
+        .build();
   }
 
   public Function<String, Response> ssoSignInRedirect(
-      String email, SsoSetupDTO setup, URI serverBaseURI, URL redirect) {
-    URI location =
-        ssoSignInLocationBuilder(setup.getMethod(), serverBaseURI, redirect)
-            .queryParam("email", email)
-            .build();
-
+      SsoMethod method, String email, URI serverBaseURI, URL redirect) {
+    URI location = ssoSignInLocation(method, email, serverBaseURI, redirect);
     return (cookieDomain) -> Response.status(Status.FOUND).header("Location", location).build();
   }
 }

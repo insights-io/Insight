@@ -167,9 +167,8 @@ public class SsoServiceImpl implements SsoService {
     Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetup ->
             passwordLoginSsoAlternative(
-                idpServiceRegistry
-                    .ssoSignInLocationBuilder(ssoSetup.getMethod(), serverBaseURI, redirect)
-                    .build());
+                idpServiceRegistry.ssoSignInLocation(
+                    ssoSetup.getMethod(), email, serverBaseURI, redirect));
 
     return login(email, LoginMethod.PASSWORD, alternativeLoginProvider, passwordLoginSupplier);
   }
@@ -300,16 +299,15 @@ public class SsoServiceImpl implements SsoService {
 
     Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetupDTO -> {
+          SsoMethod ssoMethod = ssoSetupDTO.getMethod();
           log.info(
               "[AUTH]: Social login enforcing alternative login provider loginMethod={} ssoMethod={} redirect={}",
               method,
-              ssoSetupDTO.getMethod(),
+              ssoMethod,
               redirect);
-
           return CompletableFuture.completedStage(
               new ResponseLoginResult(
-                  idpServiceRegistry.ssoSignInRedirect(
-                      email, ssoSetupDTO, serverBaseURI, redirect)));
+                  idpServiceRegistry.ssoSignInRedirect(ssoMethod, email, serverBaseURI, redirect)));
         };
 
     return login(email, method, alternativeLoginProvider, socialLoginProvider);
