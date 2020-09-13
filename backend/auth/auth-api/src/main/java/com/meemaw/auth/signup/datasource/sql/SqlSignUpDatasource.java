@@ -118,8 +118,8 @@ public class SqlSignUpDatasource implements SignUpDatasource {
         row.getString(HASHED_PASSWORD.getName()),
         row.getString(FULL_NAME.getName()),
         row.getString(COMPANY.getName()),
-        phoneNumber != null ? phoneNumber.mapTo(PhoneNumberDTO.class) : null,
-        referer != null ? RequestUtils.sneakyURL(referer) : null,
+        Optional.ofNullable(phoneNumber).map(p -> p.mapTo(PhoneNumberDTO.class)).orElse(null),
+        Optional.ofNullable(referer).map(RequestUtils::sneakyURL).orElse(null),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

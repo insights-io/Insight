@@ -13,6 +13,7 @@ import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.sql.client.SqlPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
@@ -21,7 +22,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.SneakyThrows;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -77,11 +77,10 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
     return Optional.of(mapSsoSetup(rows.iterator().next()));
   }
 
-  @SneakyThrows
   public static SsoSetupDTO mapSsoSetup(Row row) {
     String maybeConfigurationEndpoint = row.getString(CONFIGURATION_ENDPOINT.getName());
     URL configurationEndpoint =
-        maybeConfigurationEndpoint == null ? null : new URL(maybeConfigurationEndpoint);
+        Optional.ofNullable(maybeConfigurationEndpoint).map(RequestUtils::sneakyURL).orElse(null);
 
     return new SsoSetupDTO(
         row.getString(ORGANIZATION_ID.getName()),
