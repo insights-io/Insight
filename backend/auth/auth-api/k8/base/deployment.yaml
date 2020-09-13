@@ -107,7 +107,7 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 100m
+              cpu: 200m
               memory: 400Mi
           livenessProbe:
             httpGet:
