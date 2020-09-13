@@ -99,6 +99,11 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
             placement={PLACEMENT.right}
             showArrow={false}
             overrides={{
+              Body: {
+                style: {
+                  zIndex: 1,
+                },
+              },
               Inner: {
                 style: {
                   paddingLeft: 0,
