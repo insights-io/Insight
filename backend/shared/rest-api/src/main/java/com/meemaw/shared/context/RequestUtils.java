@@ -5,6 +5,7 @@ import com.meemaw.shared.rest.headers.MissingHttpHeaders;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,8 +42,10 @@ public final class RequestUtils {
    * @return Optional String base URL as string
    * @throws BoomException if malformed URL
    */
-  public static Optional<String> parseRefererBaseURL(HttpServerRequest request) {
-    return sneakyParseRefererURL(request).map(RequestUtils::parseBaseURL);
+  public static Optional<URL> parseRefererBaseURL(HttpServerRequest request) {
+    return sneakyParseRefererURL(request)
+        .map(RequestUtils::parseBaseURL)
+        .map(RequestUtils::sneakyURL);
   }
 
   public static Optional<URL> parseRefererURL(HttpServerRequest request) {
@@ -56,12 +59,16 @@ public final class RequestUtils {
    * @return URL
    * @throws BoomException if malformed URL
    */
-  private static URL sneakyURL(String url) {
+  public static URL sneakyURL(String url) {
     try {
       return new URL(url);
     } catch (MalformedURLException e) {
       throw Boom.badRequest().message(e.getMessage()).exception(e);
     }
+  }
+
+  public static URL sneakyURL(URI uri) {
+    return sneakyURL(uri.toString());
   }
 
   /**
@@ -86,10 +93,14 @@ public final class RequestUtils {
    * @param request http server request
    * @return server base URL
    */
-  public static String getServerBaseURL(UriInfo info, HttpServerRequest request) {
+  public static URL getServerBaseURL(UriInfo info, HttpServerRequest request) {
+    return sneakyURL(getServerBaseURI(info, request));
+  }
+
+  public static URI getServerBaseURI(UriInfo info, HttpServerRequest request) {
     String proto = request.getHeader(MissingHttpHeaders.X_FORWARDED_PROTO);
     String host = request.getHeader(MissingHttpHeaders.X_FORWARDED_HOST);
-    return getServerBaseURL(info, proto, host);
+    return URI.create(getServerBaseURL(info, proto, host));
   }
 
   /**
@@ -134,6 +145,14 @@ public final class RequestUtils {
    */
   public static String parseCookieDomain(String url) {
     return parseTLD(url).orElse(null);
+  }
+
+  public static String parseCookieDomain(URI uri) {
+    return parseCookieDomain(uri.toString());
+  }
+
+  public static String parseCookieDomain(URL url) {
+    return parseCookieDomain(url.toString());
   }
 
   /**

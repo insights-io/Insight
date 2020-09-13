@@ -2,6 +2,7 @@ package com.meemaw.auth.signup.model;
 
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.shared.model.CanExpire;
+import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,10 +21,11 @@ public class SignUpRequest implements CanExpire {
   String fullName;
   String company;
   PhoneNumber phoneNumber;
-  String referer;
+  URL referer;
   OffsetDateTime createdAt;
 
   public Optional<String> getRefererCallbackURL() {
-    return Optional.ofNullable(referer).map(r -> String.join("/", r, "signup-completed-callback"));
+    return Optional.ofNullable(referer)
+        .map(r -> String.join("/", r.toString(), "signup-completed-callback"));
   }
 }

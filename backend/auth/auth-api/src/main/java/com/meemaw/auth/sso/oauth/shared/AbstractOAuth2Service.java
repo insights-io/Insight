@@ -9,10 +9,12 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
@@ -22,42 +24,47 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
 
   @Inject SsoService ssoService;
 
-  public abstract URI buildAuthorizationUri(String state, String serverRedirectUri);
+  public abstract URI buildAuthorizationURL(String state, URI serverRedirect);
 
   public abstract CompletionStage<SsoLoginResult<?>> oauth2callback(
-      String state, String sessionState, String code, String serverRedirectUri);
+      String state, String sessionState, String code, URI serverBase);
+
+  @Override
+  public String basePath() {
+    return String.join("/", OAuth2Resource.PATH, getLoginMethod().getKey());
+  }
 
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
       AbstractOAuth2Client<T, U, E> oauthClient,
       String state,
       String sessionState,
       String code,
-      String serverRedirectUri) {
+      URI serverBase) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {
       log.warn("[AUTH]: OAuth2 state miss-match, session: {}, query: {}", sessionState, state);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 
+    URL redirect = RequestUtils.sneakyURL(secureStateData(sessionState));
+    URI serverRedirect = UriBuilder.fromUri(serverBase).path(callbackPath()).build();
+
     return oauthClient
-        .codeExchange(code, serverRedirectUri)
+        .codeExchange(code, serverRedirect)
         .thenCompose(oauthClient::userInfo)
         .thenCompose(
             userInfo -> {
               String fullName = userInfo.getFullName();
               String email = userInfo.getEmail();
-              String location = secureStateData(sessionState);
-              String cookieDomain = RequestUtils.parseCookieDomain(location);
+              String cookieDomain = RequestUtils.parseCookieDomain(redirect);
               MDC.put(LoggingConstants.USER_EMAIL, email);
               log.info("[AUTH]: OAuth2 successfully retrieved user info email={}", email);
 
               return ssoService
-                  .socialLogin(email, fullName, location)
+                  .socialLogin(email, fullName, getLoginMethod(), redirect, serverBase)
                   .thenApply(
                       loginResult -> {
                         log.info(
-                            "[AUTH]: OAuth2 successfully authenticated user email={} location={}",
-                            email,
-                            location);
+                            "[AUTH]: OAuth2 flow successful email={} redirect={}", email, redirect);
                         return new SsoLoginResult<>(loginResult, cookieDomain);
                       });
             });

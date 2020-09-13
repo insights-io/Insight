@@ -1,8 +1,11 @@
 package com.meemaw.auth.sso.session.service;
 
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
+import java.net.URI;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -34,10 +37,11 @@ public interface SsoService {
   }
 
   CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, String serverBaseURL, String redirect);
+      String email, String password, String ipAddress, URL redirect, URI serverBase);
 
-  CompletionStage<LoginResult<?>> socialLogin(String email, String fullName, String location);
+  CompletionStage<LoginResult<?>> socialLogin(
+      String email, String fullName, LoginMethod loginMethod, URL redirect, URI serverBase);
 
   CompletionStage<LoginResult<?>> ssoLogin(
-      String email, String fullName, String organizationId, String location);
+      String email, String fullName, String organizationId, URL redirect);
 }

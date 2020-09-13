@@ -14,12 +14,14 @@ import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
+import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -74,9 +76,13 @@ public class PasswordServiceImpl implements PasswordService {
       name = "forgotPassword",
       description = "A measure of how long it takes to forgot a password")
   public CompletionStage<Optional<AuthUser>> forgotPassword(
-      String email, String passwordResetBaseURL) {
+      String email, URL passwordResetBaseURL) {
     log.info("[AUTH]: Forgot password request for user: {}", email);
-    String passwordResetURL = String.join("/", passwordResetBaseURL, "password-reset");
+    String passwordResetLocation =
+        UriBuilder.fromUri(passwordResetBaseURL.toString())
+            .path("password-reset")
+            .build()
+            .toString();
 
     return userDatasource
         .findUser(email)
@@ -88,7 +94,7 @@ public class PasswordServiceImpl implements PasswordService {
                 return CompletableFuture.completedStage(maybeUser);
               }
 
-              return this.forgotPassword(maybeUser.get(), passwordResetURL)
+              return this.forgotPassword(maybeUser.get(), passwordResetLocation)
                   .thenApply(ignores -> maybeUser);
             });
   }

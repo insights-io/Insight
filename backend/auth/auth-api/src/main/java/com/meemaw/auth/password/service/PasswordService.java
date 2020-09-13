@@ -4,6 +4,7 @@ import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -13,7 +14,7 @@ public interface PasswordService {
 
   CompletionStage<UserWithLoginInformation> verifyPassword(String email, String password);
 
-  CompletionStage<Optional<AuthUser>> forgotPassword(String email, String passwordResetBaseURL);
+  CompletionStage<Optional<AuthUser>> forgotPassword(String email, URL passwordResetBaseURL);
 
   CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password);
 

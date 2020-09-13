@@ -31,8 +31,7 @@ const TFA_METHOD_TO_TITLE_MAPPING = {
 const VerificationPage = ({ methods }: Props) => {
   const router = useRouter();
   const [activeMethod, setActiveMethod] = useState(methods[0]);
-  const redirect = (router.query.redirect || '/') as string;
-  const encodedRedirect = encodeURIComponent(redirect);
+  const relativeRedirect = (router.query.redirect || '/') as string;
 
   const {
     code,
@@ -46,14 +45,16 @@ const VerificationPage = ({ methods }: Props) => {
     submitAction: (data) => {
       return AuthApi.tfa
         .challengeComplete(activeMethod, data)
-        .then((_) => router.replace(redirect));
+        .then((_) => router.replace(relativeRedirect));
     },
     handleError: (errorDTO, setError) => {
       if (
         errorDTO.error.message === 'TFA challenge session expired' ||
         errorDTO.error?.errors?.challengeId === 'Required'
       ) {
-        router.replace(`/login?redirect=${encodedRedirect}`);
+        router.replace(
+          `/login?redirect=${encodeURIComponent(relativeRedirect)}`
+        );
       } else {
         setError(errorDTO.error);
       }

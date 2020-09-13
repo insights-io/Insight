@@ -28,13 +28,18 @@ type Props = {
 type SsoMethodValue = { label: string; id: SsoMethod };
 
 type SsoSetupFormData = {
-  configurationEndpoint: string;
   method: SsoMethodValue;
+  configurationEndpoint?: string;
 };
 
 const SAML_METHOD = { label: 'SAML', id: 'saml' } as const;
 
-const options: SsoMethodValue[] = [SAML_METHOD];
+const options: SsoMethodValue[] = [
+  SAML_METHOD,
+  { label: 'Google', id: 'google' },
+  { label: 'Microsoft', id: 'microsoft' },
+  { label: 'Github', id: 'github' },
+];
 
 const SecurityOrganizationSettings = ({
   organization: _organization,
@@ -50,7 +55,7 @@ const SecurityOrganizationSettings = ({
     data: maybeSsoSetup,
   } = useSWRQuery('AuthApi.sso.setup.get', () => AuthApi.sso.setup.get());
 
-  const { register, handleSubmit, errors, control, setValue } = useForm<
+  const { register, handleSubmit, errors, control, setValue, watch } = useForm<
     SsoSetupFormData
   >({ defaultValues: { method: options[0] } });
 
@@ -116,21 +121,23 @@ const SecurityOrganizationSettings = ({
             />
           </FormControl>
 
-          <FormControl
-            label="Configuration endpoint"
-            caption="We will fetch required metadata from this URL to setup the SSO integration"
-            error={configurationEndpointError}
-          >
-            <Input
-              overrides={inputOverrides}
-              id="configurationEndpoint"
-              name="configurationEndpoint"
-              placeholder="https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"
-              required
-              inputRef={register(REQUIRED_VALIDATION)}
-              error={Boolean(configurationEndpointError)}
-            />
-          </FormControl>
+          {watch('method').id === 'saml' && (
+            <FormControl
+              label="Configuration endpoint"
+              caption="We will fetch required metadata from this URL to setup the SSO integration"
+              error={configurationEndpointError}
+            >
+              <Input
+                overrides={inputOverrides}
+                id="configurationEndpoint"
+                name="configurationEndpoint"
+                placeholder="https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"
+                required
+                inputRef={register(REQUIRED_VALIDATION)}
+                error={Boolean(configurationEndpointError)}
+              />
+            </FormControl>
+          )}
           <Button
             type="submit"
             isLoading={isSubmitting}

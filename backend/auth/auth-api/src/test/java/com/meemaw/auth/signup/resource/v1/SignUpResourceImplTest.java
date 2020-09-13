@@ -94,7 +94,7 @@ public class SignUpResourceImplTest {
   }
 
   @Test
-  public void signUp_should_fail_when_empty_payload() {
+  public void signUp__should_fail__when_empty_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -108,7 +108,7 @@ public class SignUpResourceImplTest {
   }
 
   @Test
-  public void signUp_should_fail_when_empty_invalid_payload() throws JsonProcessingException {
+  public void signUp__should_fail__when_empty_invalid_payload() throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
         new SignUpRequestDTO(
             "email", "short", "Marko Novak", "Insight", new PhoneNumberDTO(null, null));

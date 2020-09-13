@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
 import java.util.Collection;
@@ -31,10 +32,15 @@ public class OAuth2GithubService
   private static final String SCOPES = String.join(" ", SCOPE_LIST);
 
   @Override
-  public URI buildAuthorizationUri(String state, String redirectUri) {
+  public LoginMethod getLoginMethod() {
+    return LoginMethod.GITHUB;
+  }
+
+  @Override
+  public URI buildAuthorizationURL(String state, URI serverRedirectURI) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getGithubOpenIdClientId())
-        .queryParam("redirect_uri", redirectUri)
+        .queryParam("redirect_uri", serverRedirectURI)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)
         .queryParam("state", state)
@@ -47,7 +53,7 @@ public class OAuth2GithubService
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Github oauth2callback")
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
-      String state, String sessionState, String code, String redirectUri) {
-    return oauth2callback(OAuth2GithubClient, state, sessionState, code, redirectUri);
+      String state, String sessionState, String code, URI serverBaseURI) {
+    return oauth2callback(OAuth2GithubClient, state, sessionState, code, serverBaseURI);
   }
 }

@@ -15,6 +15,5 @@ public class CreateSsoSetupDTO {
   @NotNull(message = "Required")
   SsoMethod method;
 
-  @NotNull(message = "Required")
   URL configurationEndpoint;
 }

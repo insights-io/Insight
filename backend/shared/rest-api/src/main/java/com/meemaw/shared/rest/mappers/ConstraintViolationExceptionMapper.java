@@ -41,9 +41,6 @@ public class ConstraintViolationExceptionMapper
                     },
                     ConstraintViolation::getMessage));
 
-    return Boom.status(Response.Status.BAD_REQUEST)
-        .message("Validation Error")
-        .errors(errors)
-        .response();
+    return Boom.validationErrors(errors).response();
   }
 }

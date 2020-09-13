@@ -5,12 +5,11 @@ import com.meemaw.auth.sso.AbstractIdpService;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
+import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
-import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
@@ -20,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -92,11 +92,10 @@ public class SamlServiceImpl extends AbstractIdpService {
     return new BasicX509Credential(certificate);
   }
 
-  public String buildAuthorizationUri(SamlMetadataResponse metadata, String state) {
+  public URI buildAuthorizationUri(String state, SamlMetadataResponse metadata) {
     return UriBuilder.fromUri(metadata.getSsoHttpPostBinding())
         .queryParam("RelayState", state)
-        .build()
-        .toString();
+        .build();
   }
 
   public void validateSignature(Signature signature, SamlMetadataResponse metadata) {
@@ -246,34 +245,16 @@ public class SamlServiceImpl extends AbstractIdpService {
                 throw Boom.badRequest().message("Invalid entityId").exception();
               }
               validateSignature(samlDataResponse.getSignature(), samlMetadata);
-              String location = secureStateData(relayState);
-              String cookieDomain = RequestUtils.parseCookieDomain(location);
+              URL redirect = RequestUtils.sneakyURL(secureStateData(relayState));
+              String cookieDomain = RequestUtils.parseCookieDomain(redirect);
               return ssoService
-                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId, location)
+                  .ssoLogin(email, samlDataResponse.getFullName(), organizationId, redirect)
                   .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
   }
 
-  public CompletionStage<SsoSetupDTO> setupSamlSso(
-      String organizationId, String domain, URL configurationEndpoint) {
-    if (!EmailUtils.isBusinessDomain(domain)) {
-      throw Boom.badRequest().message("SSO setup is only possible for work domain.").exception();
-    }
-
-    return ssoSetupDatasource
-        .get(organizationId)
-        .thenCompose(
-            maybeSsoSetup -> {
-              if (maybeSsoSetup.isPresent()) {
-                log.info("[AUTH]: SSO setup already configured organization={}", organizationId);
-                throw Boom.badRequest().message("SSO setup already configured").exception();
-              }
-
-              fetchMetadataSneaky(configurationEndpoint);
-              CreateSsoSetup createSsoSetup =
-                  new CreateSsoSetup(organizationId, domain, SsoMethod.SAML, configurationEndpoint);
-              return ssoSetupDatasource.create(createSsoSetup);
-            });
+  public void validateConfigurationEndpoint(URL configurationEndpoint) {
+    fetchMetadataSneaky(configurationEndpoint);
   }
 
   private BoomException failedToFetchSsoConfiguration(Exception ex, String message) {
@@ -283,10 +264,10 @@ public class SamlServiceImpl extends AbstractIdpService {
         .exception(ex);
   }
 
-  private String buildAuthorizationUri(String relayState, URL configurationEndpoint) {
+  private URI buildAuthorizationURI(String state, URL configurationEndpoint) {
     try {
       SamlMetadataResponse metadata = fetchMetadata(configurationEndpoint);
-      return buildAuthorizationUri(metadata, relayState);
+      return buildAuthorizationUri(state, metadata);
     } catch (IOException | XMLParserException ex) {
       log.error("[AUTH]: SAML failed to build authorizationUri", ex);
       throw Boom.badRequest()
@@ -296,12 +277,22 @@ public class SamlServiceImpl extends AbstractIdpService {
   }
 
   public javax.ws.rs.core.Response signInRedirectResponse(
-      String clientCallbackRedirect, URL configurationEndpoint) {
-    String relayState = secureState(clientCallbackRedirect);
-    String location = buildAuthorizationUri(relayState, configurationEndpoint);
+      URL configurationEndpoint, String cookieDomain, URL redirect) {
+    String relayState = secureState(redirect.toString());
+    URI location = buildAuthorizationURI(relayState, configurationEndpoint);
     return javax.ws.rs.core.Response.status(Status.FOUND)
-        .cookie(SsoSignInSession.cookie(relayState))
+        .cookie(SsoSignInSession.cookie(relayState, cookieDomain))
         .header("Location", location)
         .build();
+  }
+
+  @Override
+  public LoginMethod getLoginMethod() {
+    return LoginMethod.SAML;
+  }
+
+  @Override
+  public String basePath() {
+    return SamlResource.PATH;
   }
 }

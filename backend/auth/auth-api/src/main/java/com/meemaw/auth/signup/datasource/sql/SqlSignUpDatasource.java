@@ -15,6 +15,7 @@ import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.user.datasource.sql.SqlUserTable;
 import com.meemaw.auth.user.model.PhoneNumberDTO;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.core.json.JsonObject;
@@ -109,6 +110,7 @@ public class SqlSignUpDatasource implements SignUpDatasource {
 
   public static SignUpRequest mapSignUpRequest(Row row) {
     JsonObject phoneNumber = (JsonObject) row.getValue(SqlUserTable.PHONE_NUMBER.getName());
+    String referer = row.getString(REFERER.getName());
 
     return new SignUpRequest(
         row.getUUID(TOKEN.getName()),
@@ -116,8 +118,8 @@ public class SqlSignUpDatasource implements SignUpDatasource {
         row.getString(HASHED_PASSWORD.getName()),
         row.getString(FULL_NAME.getName()),
         row.getString(COMPANY.getName()),
-        phoneNumber != null ? phoneNumber.mapTo(PhoneNumberDTO.class) : null,
-        row.getString(REFERER.getName()),
+        Optional.ofNullable(phoneNumber).map(p -> p.mapTo(PhoneNumberDTO.class)).orElse(null),
+        Optional.ofNullable(referer).map(RequestUtils::sneakyURL).orElse(null),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

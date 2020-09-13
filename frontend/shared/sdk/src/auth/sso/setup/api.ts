@@ -14,7 +14,7 @@ export const ssoSetupApi = (authApiBaseURL: string) => {
     },
     create: (
       method: SsoMethod,
-      configurationEndpoint: string,
+      configurationEndpoint: string | undefined,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
@@ -30,7 +30,7 @@ export const ssoSetupApi = (authApiBaseURL: string) => {
     ) => {
       return ky
         .get(`${baseURL}/v1/sso/setup/${domain}`, rest)
-        .json<DataResponse<boolean>>();
+        .json<DataResponse<false | string>>();
     },
   };
 };

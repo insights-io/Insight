@@ -27,13 +27,11 @@ public class SamlResourceImpl implements SamlResource {
   @Inject SsoSetupDatasource ssoSetupDatasource;
 
   @Override
-  public CompletionStage<Response> signIn(String redirect, String email) {
-    String refererBaseURL =
-        RequestUtils.parseRefererBaseURL(request)
-            .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
-    String refererCallback = refererBaseURL + redirect;
-    log.info("[AUTH]: SAML signIn request email={} refererCallback={}", email, refererCallback);
+  public CompletionStage<Response> signIn(String email, URL redirect) {
+    log.info("[AUTH]: SAML signIn request email={} redirect={}", email, redirect);
     String domain = EmailUtils.domainFromEmail(email);
+    String cookieDomain =
+        RequestUtils.parseCookieDomain(RequestUtils.getServerBaseURI(info, request));
 
     return ssoSetupDatasource
         .getByDomain(domain)
@@ -47,7 +45,8 @@ public class SamlResourceImpl implements SamlResource {
               }
 
               URL configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
-              return samlService.signInRedirectResponse(refererCallback, configurationEndpoint);
+              return samlService.signInRedirectResponse(
+                  configurationEndpoint, cookieDomain, redirect);
             });
   }
 

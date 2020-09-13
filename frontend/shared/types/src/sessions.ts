@@ -28,14 +28,14 @@ export type Session = Omit<SessionDTO, 'createdAt'> & {
   createdAt: Date;
 };
 
-export type SsoMethod = 'saml';
+export type SsoMethod = 'saml' | 'google' | 'microsoft' | 'github';
 
 export type SsoSetupDTO = {
   organizationId: string;
   domain: string;
-  method: SsoMethod;
-  configurationEndpoint: string;
   createdAt: string;
+  method: SsoMethod;
+  configurationEndpoint?: string;
 };
 
 export type SsoSetup = Omit<SsoSetupDTO, 'createdAt'> & {

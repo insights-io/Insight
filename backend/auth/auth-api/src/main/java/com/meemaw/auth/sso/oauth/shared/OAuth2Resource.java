@@ -1,8 +1,10 @@
 package com.meemaw.auth.sso.oauth.shared;
 
 import com.meemaw.auth.sso.resource.v1.SsoResource;
+import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,7 +19,7 @@ public interface OAuth2Resource {
 
   @GET
   @Path(SIGNIN_PATH)
-  Response signIn(@NotBlank(message = "Required") @QueryParam("redirect") String redirect);
+  Response signIn(@NotNull(message = "Required") @QueryParam("redirect") URL redirect);
 
   @GET
   @Path(CALLBACK_PATH)

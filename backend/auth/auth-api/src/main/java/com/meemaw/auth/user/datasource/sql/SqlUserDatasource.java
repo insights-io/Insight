@@ -142,7 +142,7 @@ public class SqlUserDatasource implements UserDatasource {
         row.getString(ORGANIZATION_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()),
         row.getOffsetDateTime(UPDATED_AT.getName()),
-        phoneNumber != null ? phoneNumber.mapTo(PhoneNumberDTO.class) : null,
+        Optional.ofNullable(phoneNumber).map(p -> p.mapTo(PhoneNumberDTO.class)).orElse(null),
         row.getBoolean(PHONE_NUMBER_VERIFIED.getName()));
   }
 

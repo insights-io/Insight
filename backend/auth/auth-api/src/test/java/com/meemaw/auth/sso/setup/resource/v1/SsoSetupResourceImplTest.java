@@ -6,7 +6,8 @@ import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.auth.core.EmailUtils;
+import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
@@ -14,13 +15,11 @@ import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -29,10 +28,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SsoSetupResourceImplTest {
-
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
+public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
 
   @Test
   public void get_setup_by_domain__should_return_false__when_no_sso_setup() {
@@ -120,22 +116,7 @@ public class SsoSetupResourceImplTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"method\":\"Required\",\"configurationEndpoint\":\"Required\"}}}"));
-  }
-
-  @Test
-  public void setup__should_fail__when_broken_configuration_endpoint() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body("{\"method\": \"saml\", \"configurationEndpoint\": \"random\"}")
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
-        .post(SsoSetupResource.PATH)
-        .then()
-        .statusCode(422)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"configurationEndpoint\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"method\":\"Required\"}}}"));
   }
 
   @Test
@@ -154,7 +135,37 @@ public class SsoSetupResourceImplTest {
   }
 
   @Test
-  public void setup__should_fail__when_endpoint_is_down()
+  public void sso_saml_setup__should_fail__when_saml_without_configuration_endpoint() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body("{\"method\": \"saml\"}")
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .post(SsoSetupResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"configurationEndpoint\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void sso_saml_setup__should_fail__when_broken_configuration_endpoint() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body("{\"method\": \"saml\", \"configurationEndpoint\": \"random\"}")
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .post(SsoSetupResource.PATH)
+        .then()
+        .statusCode(422)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"configurationEndpoint\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\"}}}"));
+  }
+
+  @Test
+  public void sso_saml_setup__should_fail__when_endpoint_is_down()
       throws MalformedURLException, JsonProcessingException {
     CreateSsoSetupDTO body =
         new CreateSsoSetupDTO(SsoMethod.SAML, new URL("http://localhost:1000"));
@@ -173,7 +184,7 @@ public class SsoSetupResourceImplTest {
   }
 
   @Test
-  public void setup__should_fail__when_endpoint_does_not_serve_xml()
+  public void sso_saml_setup__should_fail__when_endpoint_does_not_serve_xml()
       throws MalformedURLException, JsonProcessingException {
     CreateSsoSetupDTO body =
         new CreateSsoSetupDTO(SsoMethod.SAML, new URL("https://www.google.com"));
@@ -192,7 +203,7 @@ public class SsoSetupResourceImplTest {
   }
 
   @Test
-  public void setup__should_fail__when_endpoint_404()
+  public void sso_saml_setup__should_fail__when_endpoint_404()
       throws MalformedURLException, JsonProcessingException {
     CreateSsoSetupDTO body =
         new CreateSsoSetupDTO(
@@ -213,7 +224,7 @@ public class SsoSetupResourceImplTest {
   }
 
   @Test
-  public void setup__should_fail__when_non_business_email_is_used()
+  public void sso_saml_setup__should_fail__when_non_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
     String sessionId =
         signUpAndLogin(
@@ -238,14 +249,14 @@ public class SsoSetupResourceImplTest {
   }
 
   @Test
-  public void setup__should_work__when_business_email_is_used()
+  public void sso_saml_setup__should_work__when_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
     String sessionId =
         signUpAndLogin(
             mailbox,
             objectMapper,
-            "sso-setup-business-email@snuderls.io",
-            "sso-setup-business-emai");
+            "sso-saml-setup-business-email@snuderls.io",
+            "sso-saml-setup-business-emai");
 
     URL configurationEndpoint =
         new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
@@ -277,7 +288,44 @@ public class SsoSetupResourceImplTest {
         .get(SsoSetupResource.PATH + "/snuderls.io")
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+        .body(sameJson(String.format("{\"data\":\"%s\"}", samlSignInURI)));
+
+    // Should fail if already configured
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(JacksonMapper.get().writeValueAsString(body))
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(SsoSetupResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"SSO setup already configured\"}}"));
+  }
+
+  @Test
+  public void sso_google_setup__should_work__when_business_email() throws JsonProcessingException {
+    String email = "sso-google-setup-business-email@snuderls.io2";
+    String sessionId =
+        signUpAndLogin(mailbox, objectMapper, email, "sso-google-setup-business-email");
+    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(JacksonMapper.get().writeValueAsString(body))
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(SsoSetupResource.PATH)
+        .then()
+        .statusCode(201);
+
+    given()
+        .when()
+        .get(SsoSetupResource.PATH + "/" + EmailUtils.domainFromEmail(email))
+        .then()
+        .statusCode(200)
+        .body(sameJson(String.format("{\"data\":\"%s\"}", googleSignInURI)));
 
     // Should fail if already configured
     given()

@@ -7,6 +7,7 @@ import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
+import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -30,15 +31,14 @@ public class OAuth2GoogleClient
   }
 
   @Override
-  protected CompletionStage<HttpResponse<Buffer>> requestCodeExchange(
-      String code, String redirectUri) {
+  protected CompletionStage<HttpResponse<Buffer>> requestCodeExchange(String code, URI redirect) {
     return webClient
         .postAbs(TOKEN_SERVER_URL)
         .addQueryParam("grant_type", "authorization_code")
         .addQueryParam("code", code)
         .addQueryParam("client_id", appConfig.getGoogleOpenIdClientId())
         .addQueryParam("client_secret", appConfig.getGoogleOpenIdClientSecret())
-        .addQueryParam("redirect_uri", redirectUri)
+        .addQueryParam("redirect_uri", redirect.toString())
         .putHeader("Content-Length", "0")
         .send()
         .subscribeAsCompletionStage();

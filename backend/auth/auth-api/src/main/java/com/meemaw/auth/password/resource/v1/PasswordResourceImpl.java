@@ -9,6 +9,7 @@ import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
+import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -29,7 +30,7 @@ public class PasswordResourceImpl implements PasswordResource {
   @Override
   public CompletionStage<Response> forgotPassword(
       PasswordForgotRequestDTO passwordForgotRequestDTO) {
-    String clientBaseURL =
+    URL clientBaseURL =
         RequestUtils.parseRefererBaseURL(request)
             .orElseGet(() -> RequestUtils.getServerBaseURL(info, request));
 
@@ -41,8 +42,8 @@ public class PasswordResourceImpl implements PasswordResource {
   @Override
   public CompletionStage<Response> resetPassword(UUID token, PasswordResetRequestDTO payload) {
     String password = payload.getPassword();
-    String serverBaseUrl = RequestUtils.getServerBaseURL(info, request);
-    String cookieDomain = RequestUtils.parseCookieDomain(serverBaseUrl);
+    URL serverBaseURL = RequestUtils.getServerBaseURL(info, request);
+    String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
     String ipAddress = RequestUtils.getRemoteAddress(request);
 
     return passwordService

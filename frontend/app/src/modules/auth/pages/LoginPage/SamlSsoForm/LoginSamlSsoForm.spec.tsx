@@ -29,7 +29,7 @@ describe('<LoginSamlSsoForm />', () => {
     await waitFor(() => {
       sandbox.assert.calledWithExactly(
         locationAssignStub,
-        'http://localhost:8080/v1/sso/saml/signin?redirect=%2F&email=matejmatej.snuderl%40snuderls.eu'
+        'http://localhost:8080/v1/sso/saml/signin?redirect=http%3A%2F%2Flocalhost%3A3000&email=matejmatej.snuderl%40snuderls.eu'
       );
     });
   });

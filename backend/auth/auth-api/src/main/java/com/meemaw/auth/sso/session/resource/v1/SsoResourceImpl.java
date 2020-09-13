@@ -7,13 +7,17 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,18 +30,26 @@ public class SsoResourceImpl implements SsoResource {
 
   @Override
   public CompletionStage<Response> login(String email, String password) {
-    String serverBaseURL = RequestUtils.getServerBaseURL(info, request);
-    String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
+    URI serverBaseURI = RequestUtils.getServerBaseURI(info, request);
+    String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURI);
     String ipAddress = RequestUtils.getRemoteAddress(request);
     URL refererURL =
         RequestUtils.parseRefererURL(request)
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
-    String redirect =
+
+    String relativeRedirect =
         Optional.ofNullable(RequestUtils.getQueryMap(refererURL.getQuery()).get("redirect"))
+            .map(redirect -> URLDecoder.decode(redirect, StandardCharsets.UTF_8))
             .orElse("/");
 
+    URL redirect =
+        RequestUtils.sneakyURL(
+            UriBuilder.fromUri(RequestUtils.parseBaseURL(refererURL))
+                .path(relativeRedirect)
+                .build());
+
     return ssoService
-        .passwordLogin(email, password, ipAddress, serverBaseURL, redirect)
+        .passwordLogin(email, password, ipAddress, redirect, serverBaseURI)
         .thenApply(loginResult -> loginResult.loginResponse(cookieDomain));
   }
 

@@ -1,32 +1,52 @@
 package com.meemaw.auth.sso.setup.resource.v1;
 
 import com.meemaw.auth.core.EmailUtils;
+import com.meemaw.auth.sso.IdpServiceRegistry;
 import com.meemaw.auth.sso.model.InsightPrincipal;
-import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
+import com.meemaw.auth.sso.setup.service.SsoSetupService;
+import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import io.vertx.core.http.HttpServerRequest;
+import java.net.URI;
 import java.net.URL;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SsoSetupResourceImpl implements SsoSetupResource {
 
   @Inject SsoSetupDatasource ssoSetupDatasource;
-  @Inject SamlServiceImpl samlService;
+  @Inject SsoSetupService ssoSetupService;
   @Inject InsightPrincipal insightPrincipal;
+  @Inject IdpServiceRegistry idpServiceRegistry;
+  @Context UriInfo info;
+  @Context HttpServerRequest request;
 
   @Override
   public CompletionStage<Response> setup(CreateSsoSetupDTO body) {
+    AuthUser user = insightPrincipal.user();
     SsoMethod method = body.getMethod();
     URL configurationEndpoint = body.getConfigurationEndpoint();
-    String organizationId = insightPrincipal.user().getOrganizationId();
-    String domain = EmailUtils.domainFromEmail(insightPrincipal.user().getEmail());
+    if (SsoMethod.SAML.equals(method) && configurationEndpoint == null) {
+      log.info(
+          "[AUTH]: Trying to setup SAML SSO without configuration endpoint email={}",
+          user.getEmail());
+
+      throw Boom.validationErrors(Map.of("configurationEndpoint", "Required")).exception();
+    }
+
+    String organizationId = user.getOrganizationId();
+    String domain = EmailUtils.domainFromEmail(user.getEmail());
     log.info(
         "[AUTH]: SSO setup request organization={} domain={} method={} configurationEndpoint={}",
         organizationId,
@@ -34,9 +54,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
         method,
         configurationEndpoint);
 
-    return samlService
-        .setupSamlSso(organizationId, domain, configurationEndpoint)
-        .thenApply(DataResponse::created);
+    return ssoSetupService.setup(organizationId, domain, body).thenApply(DataResponse::created);
   }
 
   @Override
@@ -59,8 +77,19 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
   @Override
   public CompletionStage<Response> get(String domain) {
     log.info("[AUTH] SSO setup get request domain={}", domain);
+    URI serverBaseURI = RequestUtils.getServerBaseURI(info, request);
+
     return ssoSetupDatasource
         .getByDomain(domain)
-        .thenApply(maybeSsoSetup -> DataResponse.ok(maybeSsoSetup.isPresent()));
+        .thenApply(
+            maybeSsoSetup -> {
+              if (maybeSsoSetup.isEmpty()) {
+                return DataResponse.ok(false);
+              }
+
+              return DataResponse.ok(
+                  idpServiceRegistry.ssoSignInLocationBase(
+                      maybeSsoSetup.get().getMethod(), serverBaseURI));
+            });
   }
 }

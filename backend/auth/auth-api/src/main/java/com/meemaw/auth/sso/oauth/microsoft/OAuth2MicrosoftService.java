@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftErrorResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
 import java.util.Collection;
@@ -32,10 +33,15 @@ public class OAuth2MicrosoftService
   @Inject OAuth2MicrosoftClient OAuth2MicrosoftClient;
 
   @Override
-  public URI buildAuthorizationUri(String state, String redirectUri) {
+  public LoginMethod getLoginMethod() {
+    return LoginMethod.MICROSOFT;
+  }
+
+  @Override
+  public URI buildAuthorizationURL(String state, URI serverRedirect) {
     return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
         .queryParam("client_id", appConfig.getMicrosoftOpenIdClientId())
-        .queryParam("redirect_uri", redirectUri)
+        .queryParam("redirect_uri", serverRedirect)
         .queryParam("response_type", "code")
         .queryParam("scope", SCOPES)
         .queryParam("response_mode", "query")
@@ -49,8 +55,8 @@ public class OAuth2MicrosoftService
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Microsoft oauth2callback")
   public CompletionStage<SsoLoginResult<?>> oauth2callback(
-      String state, String sessionState, String code, String redirectUri) {
-    log.info("[AUTH]: OAuth2 callback request code={} redirectUri={}", code, redirectUri);
-    return oauth2callback(OAuth2MicrosoftClient, state, sessionState, code, redirectUri);
+      String state, String sessionState, String code, URI serverBaseURI) {
+    log.info("[AUTH]: OAuth2 callback request code={} serverBaseURI={}", code, serverBaseURI);
+    return oauth2callback(OAuth2MicrosoftClient, state, sessionState, code, serverBaseURI);
   }
 }

@@ -8,6 +8,7 @@ import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
 import io.vertx.mutiny.core.MultiMap;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
+import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -49,10 +50,10 @@ public class OAuth2MicrosoftClient
 
   @Override
   protected CompletionStage<HttpResponse<Buffer>> requestCodeExchange(
-      String authorizationCode, String redirectUri) {
+      String authorizationCode, URI redirect) {
     MultiMap map = MultiMap.caseInsensitiveMultiMap();
     map.add("code", authorizationCode);
-    map.add("redirect_uri", redirectUri);
+    map.add("redirect_uri", redirect.toString());
     map.add("grant_type", "authorization_code");
     map.add("client_id", appConfig.getMicrosoftOpenIdClientId());
     map.add("client_secret", appConfig.getMicrosoftOpenIdClientSecret());

@@ -9,6 +9,7 @@ import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
+import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,7 +39,7 @@ public abstract class AbstractOAuth2Client<T, U extends OAuthUserInfo, E extends
   protected abstract CompletionStage<HttpResponse<Buffer>> requestUserInfo(T token);
 
   protected abstract CompletionStage<HttpResponse<Buffer>> requestCodeExchange(
-      String code, String serverRedirectUri);
+      String code, URI serverRedirect);
 
   @Traced
   public CompletionStage<U> userInfo(T token) {
@@ -48,12 +49,9 @@ public abstract class AbstractOAuth2Client<T, U extends OAuthUserInfo, E extends
   }
 
   @Traced
-  public CompletionStage<T> codeExchange(String code, String serverRedirectUri) {
-    log.info(
-        "[AUTH]: OAuth2 code exchange request code={} serverRedirectUri={}",
-        code,
-        serverRedirectUri);
-    return requestCodeExchange(code, serverRedirectUri)
+  public CompletionStage<T> codeExchange(String code, URI redirect) {
+    log.info("[AUTH]: OAuth2 code exchange request code={} redirect={}", code, redirect);
+    return requestCodeExchange(code, redirect)
         .thenApply(response -> parseResponse(response, getTokenClazz(), getErrorClazz()));
   }
 

@@ -2,14 +2,13 @@ package com.meemaw.auth.sso.setup.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.meemaw.auth.sso.resource.v1.SsoResource;
-import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
-import java.util.Optional;
-import javax.annotation.Nullable;
-import javax.ws.rs.core.UriBuilder;
+import com.meemaw.auth.sso.session.model.LoginMethod;
 
 public enum SsoMethod {
-  SAML("saml");
+  SAML(LoginMethod.SAML.getKey()),
+  GOOGLE(LoginMethod.GOOGLE.getKey()),
+  MICROSOFT(LoginMethod.MICROSOFT.getKey()),
+  GITHUB(LoginMethod.GITHUB.getKey());
 
   private final String key;
 
@@ -25,18 +24,5 @@ public enum SsoMethod {
   @JsonValue
   public String getKey() {
     return key;
-  }
-
-  public String getSsoServerRedirect(
-      String serverBaseUrl, String email, @Nullable String redirect) {
-    UriBuilder builder =
-        UriBuilder.fromUri(serverBaseUrl)
-            .path(SsoResource.PATH)
-            .queryParam("email", email)
-            .queryParam("redirect", Optional.ofNullable(redirect).orElse("/"))
-            .path(key)
-            .path(SamlResource.SIGNIN_PATH);
-
-    return builder.build().toString();
   }
 }

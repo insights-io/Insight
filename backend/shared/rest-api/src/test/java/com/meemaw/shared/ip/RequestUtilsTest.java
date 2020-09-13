@@ -28,4 +28,12 @@ public class RequestUtilsTest {
     assertEquals(Optional.empty(), RequestUtils.parseTLD("http://localhost:3000"));
     assertEquals(Optional.empty(), RequestUtils.parseTLD(""));
   }
+
+  @Test
+  public void should_parse_base_url() throws MalformedURLException {
+    assertEquals(
+        "http://localhost:3000", RequestUtils.parseBaseURL(new URL("http://localhost:3000/")));
+    assertEquals(
+        "http://localhost:3000", RequestUtils.parseBaseURL(new URL("http://localhost:3000/more")));
+  }
 }

@@ -1,5 +1,8 @@
 package com.meemaw.auth.sso;
 
+import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
+import com.meemaw.auth.sso.session.model.LoginMethod;
+import com.meemaw.shared.rest.response.Boom;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -9,6 +12,18 @@ public abstract class AbstractIdpService {
 
   public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final SecureRandom random = new SecureRandom();
+
+  public abstract LoginMethod getLoginMethod();
+
+  public abstract String basePath();
+
+  public String callbackPath() {
+    return String.join("/", basePath(), OAuth2Resource.CALLBACK_PATH);
+  }
+
+  public String signInPath() {
+    return String.join("/", basePath(), OAuth2Resource.SIGNIN_PATH);
+  }
 
   public String secureState(String data) {
     return secureState() + data;
@@ -25,7 +40,11 @@ public abstract class AbstractIdpService {
    * @return data that was encoded in the state
    */
   public String secureStateData(String secureState) {
-    return URLDecoder.decode(
-        secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
+    try {
+      return URLDecoder.decode(
+          secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
+    } catch (StringIndexOutOfBoundsException ex) {
+      throw Boom.badRequest().message("Invalid state parameter").exception(ex);
+    }
   }
 }
