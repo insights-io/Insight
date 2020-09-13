@@ -1,6 +1,6 @@
 import { getAllByText } from '@testing-library/testcafe';
 
-import { getLocation } from '../../utils';
+import { getLocation, getTitle } from '../../utils';
 import config from '../../config';
 import { LoginPage, PasswordForgotPage } from '../../pages';
 
@@ -10,6 +10,8 @@ test('Login email form should be validated both client & server side', async (t)
   await t
     .expect(getLocation())
     .eql(`${LoginPage.path}?redirect=%2F`)
+    .expect(getTitle())
+    .eql('Insight | Login')
     .click(LoginPage.signInButton)
     .expect(getAllByText('Required').count)
     .eql(2, 'Both fields should be required')
@@ -41,7 +43,7 @@ test('User should see a nice error message when trying to login using SAML SSO w
   await t
     .expect(getLocation())
     .eql(`${LoginPage.path}?redirect=%2F`)
-    .click(LoginPage.tabs.samlSso)
+    .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, 'matej.snuderl@insight.io')
     .click(LoginPage.signInButton)
     .expect(LoginPage.samlSsoDisabledErrorMessage.visible)

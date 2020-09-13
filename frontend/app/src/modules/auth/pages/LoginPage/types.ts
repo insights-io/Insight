@@ -1,1 +1,1 @@
-export type LoginMethod = 'email' | 'sso-samil';
+export type LoginMethod = 'email' | 'sso';

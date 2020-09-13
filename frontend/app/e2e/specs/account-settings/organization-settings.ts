@@ -18,8 +18,7 @@ const {
   configurationEndpointInput,
   submitButton,
   nonBusinessEmailErrorMessage,
-  setupCompleteMessage,
-} = AccountSettingsPage.organizationSettings.tabs.security.ssoSetup;
+} = AccountSettingsPage.OrganizationSettings.tabs.security.sso;
 
 test('[TEAM INVITE]: User should be able to invite new members to an organization', async (t) => {
   await LoginPage.loginWithInsightUser(t);
@@ -59,7 +58,7 @@ test('[SSO  SAML]: User with non-business email address should not be able to se
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
     .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(AccountSettingsPage.organizationSettings.tabs.security.button)
+    .click(AccountSettingsPage.OrganizationSettings.tabs.security.button)
     .typeText(configurationEndpointInput, 'htqw')
     .click(submitButton)
     .expect(
@@ -88,19 +87,16 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
   await t
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(AccountSettingsPage.organizationSettings.tabs.security.button)
-    .typeText(
-      configurationEndpointInput,
-      'https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
-    )
-    .click(submitButton)
-    .expect(setupCompleteMessage.visible)
-    .ok('SSO setup complete');
+    .click(AccountSettingsPage.tabs.organizationSettings);
+
+  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+    configurationEndpoint:
+      'https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata',
+  });
 
   // Is on okta page on SSO saml flow
   await Sidebar.signOut(t)
-    .click(LoginPage.tabs.samlSso)
+    .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, 'matej.snuderl@snuderls.eu')
     .click(LoginPage.signInButton)
     .expect(getLocation())
@@ -133,17 +129,16 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
   await t
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(AccountSettingsPage.organizationSettings.tabs.security.button)
-    .click(queryByText('SAML'))
-    .click(queryByText('Google'))
-    .click(submitButton)
-    .expect(setupCompleteMessage.visible)
-    .ok('SSO setup complete');
+    .click(AccountSettingsPage.tabs.organizationSettings);
+
+  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+    from: 'SAML',
+    to: 'Google',
+  });
 
   // Is on Google SSO flow
   await Sidebar.signOut(t)
-    .click(LoginPage.tabs.samlSso)
+    .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, otherUser)
     .click(LoginPage.signInButton)
     .expect(getLocation())
@@ -176,17 +171,16 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
   await t
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(AccountSettingsPage.organizationSettings.tabs.security.button)
-    .click(queryByText('SAML'))
-    .click(queryByText('Microsoft'))
-    .click(submitButton)
-    .expect(setupCompleteMessage.visible)
-    .ok('SSO setup complete');
+    .click(AccountSettingsPage.tabs.organizationSettings);
+
+  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+    from: 'SAML',
+    to: 'Microsoft',
+  });
 
   // Is on Microsoft SSO flow
   await Sidebar.signOut(t)
-    .click(LoginPage.tabs.samlSso)
+    .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, otherUser)
     .click(LoginPage.signInButton)
     .expect(getLocation())
@@ -219,17 +213,16 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
   await t
     .click(Sidebar.accountSettings.item)
     .click(Sidebar.accountSettings.accountSettings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(AccountSettingsPage.organizationSettings.tabs.security.button)
-    .click(queryByText('SAML'))
-    .click(queryByText('Github'))
-    .click(submitButton)
-    .expect(setupCompleteMessage.visible)
-    .ok('SSO setup complete');
+    .click(AccountSettingsPage.tabs.organizationSettings);
+
+  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+    from: 'SAML',
+    to: 'Github',
+  });
 
   // Is on Github SSO flow
   await Sidebar.signOut(t)
-    .click(LoginPage.tabs.samlSso)
+    .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, otherUser)
     .click(LoginPage.signInButton)
     .expect(getLocation())

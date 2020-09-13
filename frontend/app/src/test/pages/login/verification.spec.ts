@@ -2,7 +2,7 @@ import { mockApiError } from '@insight/storybook';
 import { sandbox } from '@insight/testing';
 import { AuthApi } from 'api';
 import { getServerSideProps } from 'pages/login/verification';
-import { mockServerSideRequest } from 'test/utils/next';
+import { mockServerSideRequest } from '@insight/next-testing';
 
 describe('pages/login/verification', () => {
   it('Injects correct server side data', async () => {

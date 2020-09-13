@@ -9,7 +9,7 @@ import { TRY_BASE_URL } from 'shared/config';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
 import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import SsoButton from 'modules/auth/components/SsoButton';
-import { Tab, Tabs } from 'baseui/tabs-motion';
+import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 
 import { createOAuth2IntegrationHrefBuilder } from './utils';
 import LoginEmailForm from './EmailForm';
@@ -22,9 +22,9 @@ const LoginPage = () => {
   const [_css, theme] = useStyletron();
   const relativeRedirect = (router.query.redirect || '/') as string;
   const absoluteRedirect = `${window.location.origin}${relativeRedirect}`;
-  const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder(
-    absoluteRedirect
-  );
+  const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder({
+    absoluteRedirect,
+  });
 
   return (
     <AuthPageLayout>
@@ -66,6 +66,7 @@ const LoginPage = () => {
         activeKey={activeMethod}
         onChange={(params) => setActiveMethod(params.activeKey as LoginMethod)}
         activateOnFocus
+        fill={FILL.fixed}
       >
         <Tab title="Email" key="email">
           <LoginEmailForm
@@ -73,7 +74,7 @@ const LoginPage = () => {
             replace={router.replace}
           />
         </Tab>
-        <Tab title="SAML SSO" key="saml-sso">
+        <Tab title="SSO" key="sso">
           <LoginSamlSsoForm absoluteRedirect={absoluteRedirect} />
         </Tab>
       </Tabs>

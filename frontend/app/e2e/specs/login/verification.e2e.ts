@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { getLocation, findLinkFromDockerLogs } from '../../utils';
+import { getLocation, findLinkFromDockerLogs, getTitle } from '../../utils';
 import {
   Sidebar,
   AccountSettingsPage,
@@ -54,6 +54,8 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
     .click(PasswordResetPage.submitButton)
     .expect(getLocation())
     .eql(`${VerificationPage.path}?redirect=%2F`)
+    .expect(getTitle())
+    .eql('Insight | Verification')
     .expect(VerificationPage.tabs.totp.title.visible)
     .ok('TOTP TFA tab visible')
     .expect(VerificationPage.tabs.sms.title.visible)

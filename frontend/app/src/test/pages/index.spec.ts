@@ -2,8 +2,9 @@ import { sandbox } from '@insight/testing';
 import { AuthApi, SessionApi } from 'api';
 import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
 import { INSIGHT_ADMIN } from 'test/data';
-import { mockServerSideRequest, authenticatedTestCases } from 'test/utils/next';
+import { authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/index';
+import { mockServerSideRequest } from '@insight/next-testing';
 
 describe('pages/index', () => {
   authenticatedTestCases(getServerSideProps);

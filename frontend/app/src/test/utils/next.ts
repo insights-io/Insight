@@ -1,22 +1,9 @@
-/* eslint-disable jest/no-export */
-import { IncomingMessage, ServerResponse } from 'http';
-
 import { sandbox } from '@insight/testing';
 import { GetServerSideProps } from 'next';
 import { AuthApi } from 'api';
+import { mockServerSideRequest } from '@insight/next-testing';
 
-export const mockServerSideRequest = () => {
-  const writeHead = sandbox.stub();
-  const end = sandbox.stub();
-  const res = ({ writeHead, end } as unknown) as ServerResponse;
-  const req = {
-    url: '/',
-    method: 'GET',
-  } as IncomingMessage;
-
-  return { req, res, writeHead, end };
-};
-
+// eslint-disable-next-line jest/no-export
 export function authenticatedTestCases<T>(
   getServerSideProps: GetServerSideProps<T>
 ) {
