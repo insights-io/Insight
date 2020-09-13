@@ -70,7 +70,6 @@ const LoginPage = () => {
         <Tab title="Email" key="email">
           <LoginEmailForm
             relativeRedirect={relativeRedirect}
-            absoluteRedirect={absoluteRedirect}
             replace={router.replace}
           />
         </Tab>

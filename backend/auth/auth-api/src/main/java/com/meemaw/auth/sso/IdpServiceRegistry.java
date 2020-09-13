@@ -23,8 +23,8 @@ import javax.ws.rs.core.UriBuilder;
 public class IdpServiceRegistry {
 
   @Inject OAuth2MicrosoftService microsoftService;
-  @Inject OAuth2GoogleService oAuth2GoogleService;
-  @Inject OAuth2GithubService oAuth2GithubService;
+  @Inject OAuth2GoogleService googleService;
+  @Inject OAuth2GithubService githubService;
   @Inject SamlServiceImpl samlService;
 
   private Map<SsoMethod, AbstractIdpService> services;
@@ -32,8 +32,8 @@ public class IdpServiceRegistry {
   public void init(@Observes StartupEvent event) {
     services = new HashMap<>();
     services.put(SsoMethod.MICROSOFT, microsoftService);
-    services.put(SsoMethod.GOOGLE, oAuth2GoogleService);
-    services.put(SsoMethod.GITHUB, oAuth2GithubService);
+    services.put(SsoMethod.GOOGLE, googleService);
+    services.put(SsoMethod.GITHUB, githubService);
     services.put(SsoMethod.SAML, samlService);
   }
 

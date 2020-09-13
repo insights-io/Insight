@@ -22,11 +22,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const requestSpan = startRequestSpan(context.req);
   try {
     const { ChallengeId } = nextCookie(context);
-    const redirect = (context.query.redirect || '/') as string;
-    const encodedRedirect = encodeURIComponent(redirect);
-
+    const relativeRedirect = (context.query.redirect || '/') as string;
     const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
-      const Location = `/login?redirect=${encodedRedirect}`;
+      const Location = `/login?redirect=${encodeURIComponent(
+        relativeRedirect
+      )}`;
       context.res.writeHead(302, { Location, ...headers });
       context.res.end();
       return { props: {} as Props };

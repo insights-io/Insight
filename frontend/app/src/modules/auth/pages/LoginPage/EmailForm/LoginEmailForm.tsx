@@ -22,15 +22,10 @@ type LoginEmailFormData = {
 
 type Props = {
   relativeRedirect: string;
-  absoluteRedirect: string;
   replace: (location: string) => void;
 };
 
-const LoginEmailForm = ({
-  replace,
-  relativeRedirect,
-  absoluteRedirect,
-}: Props) => {
+const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
   const [_css, theme] = useStyletron();
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +46,7 @@ const LoginEmailForm = ({
         } else {
           replace(
             `/login/verification?redirect=${encodeURIComponent(
-              absoluteRedirect
+              relativeRedirect
             )}`
           );
         }
