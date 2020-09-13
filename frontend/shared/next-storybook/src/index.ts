@@ -1,0 +1,1 @@
+export { createNextDecorator } from './decorator';
