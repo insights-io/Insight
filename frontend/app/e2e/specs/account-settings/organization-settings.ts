@@ -138,6 +138,7 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
   });
 
   // Is on Google SSO flow
+  const googleInput = Selector('input[type="email"]').with({ timeout: 5000 });
   await Sidebar.signOut(t)
     .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, otherUser)
@@ -150,6 +151,11 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
         )}&state=(.*)http%3A%2F%2Flocalhost%3A3000%2F&flowName=GeneralOAuthFlow$`
       ),
       'Is on google page'
+    )
+    .expect(googleInput.value)
+    .eql(
+      '',
+      'Does prefill user only if one of the known ones from account selector'
     );
 
   // Is on Google SSO flow after normal login
@@ -166,6 +172,11 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
         )}&state=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings&flowName=GeneralOAuthFlow$`
       ),
       'Is on google page'
+    )
+    .expect(googleInput.value)
+    .eql(
+      '',
+      'Does prefill user only if one of the known ones from account selector'
     );
 });
 
@@ -188,6 +199,10 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
   });
 
   // Is on Microsoft SSO flow
+  const microsoftInput = Selector(
+    'input[placeholder="Email address, phone number or Skype"]'
+  ).with({ timeout: 5000 });
+
   await Sidebar.signOut(t)
     .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, otherUser)
@@ -200,7 +215,9 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
         )}&state=(.*)http%3A%2F%2Flocalhost%3A3000%2F$`
       ),
       'Is on microsoft page'
-    );
+    )
+    .expect(microsoftInput.value)
+    .eql(otherUser, 'Should prefill user');
 
   // Is on Microsoft SSO flow after normal login
   await t
@@ -216,7 +233,9 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
         )}&state=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$`
       ),
       'Is on microsoft page'
-    );
+    )
+    .expect(microsoftInput.value)
+    .eql(otherUser, 'Should prefill user');
 });
 
 test.only('[SSO Github]: User with business email should be able to setup Github SSO', async (t) => {
@@ -238,6 +257,9 @@ test.only('[SSO Github]: User with business email should be able to setup Github
   });
 
   // Is on Github SSO flow
+  const githubLoginInput = Selector('input[name="login"]').with({
+    timeout: 5000,
+  });
   const login = encodeURIComponent(otherUser);
   await Sidebar.signOut(t)
     .click(LoginPage.tabs.sso)
@@ -251,7 +273,9 @@ test.only('[SSO Github]: User with business email should be able to setup Github
         )}%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Fv1%252Fsso%252Foauth2%252Fgithub%252Fcallback%26response_type%3Dcode%26scope%3Dread%253Auser%2Buser%253Aemail%26state(.*)http%253A%252F%252Flocalhost%253A3000%252F$`
       ),
       'Is on github page'
-    );
+    )
+    .expect(githubLoginInput.value)
+    .eql(otherUser, 'Should prefill user');
 
   // Is on Github SSO flow after normal login
   await t
@@ -267,5 +291,7 @@ test.only('[SSO Github]: User with business email should be able to setup Github
         )}%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Fv1%252Fsso%252Foauth2%252Fgithub%252Fcallback%26response_type%3Dcode%26scope%3Dread%253Auser%2Buser%253Aemail%26state(.*)http%253A%252F%252Flocalhost%253A3000%252Faccount%252Fsettings$`
       ),
       'Is on github page'
-    );
+    )
+    .expect(githubLoginInput.value)
+    .eql(otherUser, 'Should prefill user');
 });
