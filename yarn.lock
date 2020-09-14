@@ -4766,10 +4766,10 @@
     "@babel/runtime" "^7.11.2"
     "@testing-library/dom" "^7.24.2"
 
-"@testing-library/testcafe@4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@testing-library/testcafe/-/testcafe-4.2.1.tgz#0a24f3367e726b8fee601a0103c063aa4145cd95"
-  integrity sha512-zE3C8MeddZSbSZm5xmWv1geLXq18ikHSrWVgLmdKTAhQ8Om1sIv9L1WV3G4p1a0prk4H2INzsTJITru7V+tbIQ==
+"@testing-library/testcafe@4.2.2":
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/@testing-library/testcafe/-/testcafe-4.2.2.tgz#18c037523960fa7f67345b6ef6aeb2251d2ff1d3"
+  integrity sha512-zfeoWK5wLIKsJdLL4+Isyaj2rl5ZcFyxs74RRAv/v3AKpH7TXPenrtTb+pme0UTvAUukORujbWhrOFPfqYZSwA==
   dependencies:
     "@testing-library/dom" "^7.2.2"
 
