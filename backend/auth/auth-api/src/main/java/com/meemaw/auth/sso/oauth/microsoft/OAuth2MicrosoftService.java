@@ -38,8 +38,25 @@ public class OAuth2MicrosoftService
     return LoginMethod.MICROSOFT;
   }
 
+  /**
+   * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow#send-the-sign-in-request
+   *
+   * @param state A value included in the request that will also be returned in the token response.
+   *     It can be a string of any content that you wish. A randomly generated unique value is
+   *     typically used for preventing cross-site request forgery attacks. The state is also used to
+   *     encode information about the user's state in the app before the authentication request
+   *     occurred, such as the page or view they were on.
+   * @param serverRedirect The redirect_uri of your app, where authentication responses can be sent
+   *     and received by your app. It must exactly match one of the redirect_uris you registered in
+   *     the portal, except it must be url encoded.
+   * @param loginHint Can be used to pre-fill the username/email address field of the sign in page
+   *     for the user, if you know their username ahead of time. Often apps will use this parameter
+   *     during re-authentication, having already extracted the username from a previous sign-in
+   *     using the preferred_username claim.
+   * @return constructed URI
+   */
   @Override
-  public URI buildAuthorizationURL(String state, URI serverRedirect, @Nullable String email) {
+  public URI buildAuthorizationURL(String state, URI serverRedirect, @Nullable String loginHint) {
     UriBuilder builder =
         UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
             .queryParam("client_id", appConfig.getMicrosoftOpenIdClientId())
@@ -48,8 +65,8 @@ public class OAuth2MicrosoftService
             .queryParam("scope", SCOPES)
             .queryParam("response_mode", "query");
 
-    if (email != null) {
-      builder = builder.queryParam("login_hint", email);
+    if (loginHint != null) {
+      builder = builder.queryParam("login_hint", loginHint);
     }
 
     return builder.queryParam("state", state).build();
