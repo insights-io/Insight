@@ -9,6 +9,7 @@ import io.vertx.core.http.HttpServerRequest;
 import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -30,10 +31,11 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
         .build();
   }
 
-  public Response signIn(AbstractOAuth2Service<T, U, E> oauthService, URL redirect) {
+  public Response signIn(
+      AbstractOAuth2Service<T, U, E> oauthService, URL redirect, @Nullable String email) {
     String state = oauthService.secureState(redirect.toString());
     URI serverRedirectURI = getServerRedirectURI(oauthService, info, request);
-    URI authorizationURI = oauthService.buildAuthorizationURL(state, serverRedirectURI);
+    URI authorizationURI = oauthService.buildAuthorizationURL(state, serverRedirectURI, email);
     String cookieDomain = RequestUtils.parseCookieDomain(serverRedirectURI);
     log.info("[AUTH]: OAuth2 sign in request authorizationURI={}", authorizationURI);
 

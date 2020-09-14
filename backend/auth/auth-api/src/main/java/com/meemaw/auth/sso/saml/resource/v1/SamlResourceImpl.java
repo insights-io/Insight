@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.saml.resource.v1;
 
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
+import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.shared.context.RequestUtils;
@@ -23,7 +23,7 @@ public class SamlResourceImpl implements SamlResource {
 
   @Context UriInfo info;
   @Context HttpServerRequest request;
-  @Inject SamlServiceImpl samlService;
+  @Inject SamlService samlService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
 
   @Override

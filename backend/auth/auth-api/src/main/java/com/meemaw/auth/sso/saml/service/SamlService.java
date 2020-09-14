@@ -58,7 +58,7 @@ import org.w3c.dom.NodeList;
 
 @ApplicationScoped
 @Slf4j
-public class SamlServiceImpl extends AbstractIdpService {
+public class SamlService extends AbstractIdpService {
 
   private CertificateFactory certificateFactory;
   private BasicParserPool parsePool;

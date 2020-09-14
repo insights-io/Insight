@@ -83,6 +83,20 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoResourceTest {
   }
 
   @Test
+  public void sign_in__should_fail__when_malformed_email() {
+    given()
+        .when()
+        .queryParam("redirect", "http://localhost:3000")
+        .queryParam("email", "random")
+        .get(googleSignInURI)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"email\":\"must be a well-formed email address\"}}}"));
+  }
+
+  @Test
   public void google_sign_in_should_use_x_forwarded_headers_when_present() {
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
@@ -321,7 +335,9 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoResourceTest {
             + appConfig.getMicrosoftOpenIdClientId()
             + "&redirect_uri="
             + URLEncoder.encode(microsoftCallbackURI.toString(), StandardCharsets.UTF_8)
-            + "&response_type=code&scope=openid+email+profile&response_mode=query&state=";
+            + "&response_type=code&scope=openid+email+profile&response_mode=query&login_hint="
+            + URLEncoder.encode(otherUserEmail, StandardCharsets.UTF_8)
+            + "&state=";
 
     String redirect = "https://www.insight.io/my_path";
     String paramState = googleService.secureState(redirect);

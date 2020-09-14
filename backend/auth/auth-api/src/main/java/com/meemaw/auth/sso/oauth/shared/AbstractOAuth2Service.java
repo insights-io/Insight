@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
@@ -24,7 +25,8 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
 
   @Inject SsoService ssoService;
 
-  public abstract URI buildAuthorizationURL(String state, URI serverRedirect);
+  public abstract URI buildAuthorizationURL(
+      String state, URI serverRedirect, @Nullable String email);
 
   public abstract CompletionStage<SsoLoginResult<?>> oauth2callback(
       String state, String sessionState, String code, URI serverBase);

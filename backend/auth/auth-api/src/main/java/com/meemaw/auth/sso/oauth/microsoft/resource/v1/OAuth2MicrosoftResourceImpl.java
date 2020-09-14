@@ -7,6 +7,7 @@ import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Resource;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
@@ -18,8 +19,8 @@ public class OAuth2MicrosoftResourceImpl
   @Inject OAuth2MicrosoftService OAuth2MicrosoftService;
 
   @Override
-  public Response signIn(URL redirect) {
-    return signIn(OAuth2MicrosoftService, redirect);
+  public Response signIn(URL redirect, @Nullable String email) {
+    return signIn(OAuth2MicrosoftService, redirect, email);
   }
 
   @Override

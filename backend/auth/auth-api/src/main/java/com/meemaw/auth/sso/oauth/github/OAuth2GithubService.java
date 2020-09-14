@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
@@ -37,14 +38,19 @@ public class OAuth2GithubService
   }
 
   @Override
-  public URI buildAuthorizationURL(String state, URI serverRedirectURI) {
-    return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
-        .queryParam("client_id", appConfig.getGithubOpenIdClientId())
-        .queryParam("redirect_uri", serverRedirectURI)
-        .queryParam("response_type", "code")
-        .queryParam("scope", SCOPES)
-        .queryParam("state", state)
-        .build();
+  public URI buildAuthorizationURL(String state, URI serverRedirectURI, @Nullable String email) {
+    UriBuilder builder =
+        UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
+            .queryParam("client_id", appConfig.getGithubOpenIdClientId())
+            .queryParam("redirect_uri", serverRedirectURI)
+            .queryParam("response_type", "code")
+            .queryParam("scope", SCOPES);
+
+    if (email != null) {
+      builder = builder.queryParam("login", email);
+    }
+
+    return builder.queryParam("state", state).build();
   }
 
   @Override

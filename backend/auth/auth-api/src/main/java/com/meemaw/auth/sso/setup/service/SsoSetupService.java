@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.setup.service;
 
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
+import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
@@ -20,7 +20,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 public class SsoSetupService {
 
   @Inject SsoSetupDatasource ssoSetupDatasource;
-  @Inject SamlServiceImpl samlService;
+  @Inject SamlService samlService;
 
   @Traced
   public CompletionStage<SsoSetupDTO> setup(

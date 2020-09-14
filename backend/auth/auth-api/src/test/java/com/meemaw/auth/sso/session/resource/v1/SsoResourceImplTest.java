@@ -214,15 +214,14 @@ public class SsoResourceImplTest {
             .get(URLDecoder.decode(signInRedirect, StandardCharsets.UTF_8));
     response.then().statusCode(302).cookie(SsoSignInSession.COOKIE_NAME);
 
-    String oauth2CallbackURL =
-        URLEncoder.encode(oauth2CallbackUri.toString(), StandardCharsets.UTF_8);
-
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="
             + appConfig.getGoogleOpenIdClientId()
             + "&redirect_uri="
-            + oauth2CallbackURL
-            + "&response_type=code&scope=openid+email+profile&state=";
+            + URLEncoder.encode(oauth2CallbackUri.toString(), StandardCharsets.UTF_8)
+            + "&response_type=code&scope=openid+email+profile&login_hint="
+            + URLEncoder.encode(email, StandardCharsets.UTF_8)
+            + "&state=";
 
     assertThat(response.header("Location"), Matchers.startsWith(expectedLocationBase));
     String state = response.header("Location").replace(expectedLocationBase, "");

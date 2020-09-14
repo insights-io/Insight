@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
@@ -38,14 +39,19 @@ public class OAuth2GoogleService
   }
 
   @Override
-  public URI buildAuthorizationURL(String state, URI redirect) {
-    return UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
-        .queryParam("client_id", appConfig.getGoogleOpenIdClientId())
-        .queryParam("redirect_uri", redirect)
-        .queryParam("response_type", "code")
-        .queryParam("scope", SCOPES)
-        .queryParam("state", state)
-        .build();
+  public URI buildAuthorizationURL(String state, URI redirect, @Nullable String email) {
+    UriBuilder builder =
+        UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
+            .queryParam("client_id", appConfig.getGoogleOpenIdClientId())
+            .queryParam("redirect_uri", redirect)
+            .queryParam("response_type", "code")
+            .queryParam("scope", SCOPES);
+
+    if (email != null) {
+      builder = builder.queryParam("login_hint", email);
+    }
+
+    return builder.queryParam("state", state).build();
   }
 
   @Override

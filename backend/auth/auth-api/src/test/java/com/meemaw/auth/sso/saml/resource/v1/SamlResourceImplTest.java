@@ -10,7 +10,7 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
+import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class SamlResourceImplTest extends AbstractSsoResourceTest {
 
-  @Inject SamlServiceImpl samlService;
+  @Inject SamlService samlService;
   @Inject UserDatasource userDatasource;
   @Inject OrganizationDatasource organizationDatasource;
   @Inject SsoSetupDatasource ssoSetupDatasource;
