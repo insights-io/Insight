@@ -6,7 +6,8 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.auth.sso.AbstractSsoResourceTest;
+import com.meemaw.auth.sso.AbstractIdpService;
+import com.meemaw.auth.sso.AbstractSsoOAuth2ResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftClient;
@@ -44,34 +45,24 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OAuth2MicrosoftResourceImplTest extends AbstractSsoResourceTest {
+public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTest {
 
   @Inject OAuth2MicrosoftClient microsoftClient;
   @Inject OAuth2MicrosoftService microsoftService;
 
-  @Test
-  public void microsoft_sign_in__should_fail__when_missing_redirect() {
-    given()
-        .when()
-        .get(microsoftSignInURI)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"redirect\":\"Required\"}}}"));
+  @Override
+  public URI signInUri() {
+    return microsoftSignInURI;
   }
 
-  @Test
-  public void microsoft_sign_in__should_fail__when_malformed_redirect() {
-    given()
-        .when()
-        .queryParam("redirect", "random")
-        .get(microsoftSignInURI)
-        .then()
-        .statusCode(404)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Resource Not Found\"}}"));
+  @Override
+  public URI callbackUri() {
+    return microsoftCallbackURI;
+  }
+
+  @Override
+  public AbstractIdpService service() {
+    return microsoftService;
   }
 
   @Test
@@ -141,34 +132,6 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoResourceTest {
   }
 
   @Test
-  public void microsoft_oauth2callback__should_fail__when_no_params() {
-    given()
-        .when()
-        .get(microsoftCallbackURI)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"code\":\"Required\",\"state\":\"Required\"}}}"));
-  }
-
-  @Test
-  public void microsoft_oauth2callback__should_fail__on_too_short_state_parameter() {
-    String state = URLEncoder.encode("test", StandardCharsets.UTF_8);
-    given()
-        .when()
-        .queryParam("code", "random")
-        .queryParam("state", state)
-        .cookie("state", state)
-        .get(microsoftCallbackURI)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Invalid state parameter\"}}"));
-  }
-
-  @Test
   public void microsoft_oauth2callback__should_fail__on_random_code() {
     String state =
         microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
@@ -227,24 +190,7 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoResourceTest {
   }
 
   @Test
-  public void microsoft_oauth2callback__should_fail__on_invalid_state_cookie() {
-    String state =
-        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
-
-    given()
-        .when()
-        .queryParam("code", "04fc2d3f11120e6ca0e2")
-        .queryParam("state", state)
-        .get(microsoftCallbackURI)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Invalid state parameter\"}}"));
-  }
-
-  @Test
-  public void oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
+  public void microsoft_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
     String email = "sso-microsoft-login-tfa-full-flow@gmail.com";
     String password = "sso-microsoft-login-tfa-full-flow";

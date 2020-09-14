@@ -7,7 +7,8 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.auth.sso.AbstractSsoResourceTest;
+import com.meemaw.auth.sso.AbstractIdpService;
+import com.meemaw.auth.sso.AbstractSsoOAuth2ResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.oauth.google.OAuth2GoogleClient;
@@ -52,41 +53,31 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OAuth2GoogleResourceImplTest extends AbstractSsoResourceTest {
+public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest {
 
   @Inject OAuth2GoogleClient googleClient;
   @Inject OAuth2GoogleService googleService;
 
-  @Test
-  public void google_sign_in__should_fail__when_missing_redirect() {
-    given()
-        .when()
-        .get(googleSignInURI)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"redirect\":\"Required\"}}}"));
+  @Override
+  public URI signInUri() {
+    return googleSignInURI;
   }
 
-  @Test
-  public void sign_in__should_fail__when_malformed_redirect() {
-    given()
-        .when()
-        .queryParam("redirect", "random")
-        .get(googleSignInURI)
-        .then()
-        .statusCode(404)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Resource Not Found\"}}"));
+  @Override
+  public URI callbackUri() {
+    return googleCallbackURI;
+  }
+
+  @Override
+  public AbstractIdpService service() {
+    return googleService;
   }
 
   @Test
   public void google_sign_in_should_use_x_forwarded_headers_when_present() {
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
-    String oAuth2CallbackURL =
+    String callbackURI =
         forwardedProto
             + "://"
             + forwardedHost
@@ -94,12 +85,11 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoResourceTest {
             + "/"
             + OAuth2Resource.CALLBACK_PATH;
 
-    String encodedOAuth2CallbackURL = URLEncoder.encode(oAuth2CallbackURL, StandardCharsets.UTF_8);
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="
             + appConfig.getGoogleOpenIdClientId()
             + "&redirect_uri="
-            + encodedOAuth2CallbackURL
+            + URLEncoder.encode(callbackURI, StandardCharsets.UTF_8)
             + "&response_type=code&scope=openid+email+profile&state=";
 
     Response response =
@@ -150,18 +140,6 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoResourceTest {
   }
 
   @Test
-  public void google_oauth2callback__should_fail__when_no_params() {
-    given()
-        .when()
-        .get(googleCallbackURI)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"code\":\"Required\",\"state\":\"Required\"}}}"));
-  }
-
-  @Test
   public void google_oauth2callback__should_fail__on_random_code() {
     String state =
         googleService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
@@ -197,41 +175,6 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoResourceTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"invalid_grant. Bad Request\"}}"));
-  }
-
-  @Test
-  public void gogle_oauth2callback__should_fail__on_too_short_state_parameter() {
-    String state = URLEncoder.encode("test", StandardCharsets.UTF_8);
-    given()
-        .when()
-        .queryParam("code", "random")
-        .queryParam("state", state)
-        .cookie("state", state)
-        .get(googleCallbackURI)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Invalid state parameter\"}}"));
-  }
-
-  @Test
-  public void google_oauth2callback__should_fail__on_invalid_state_cookie() {
-    String state =
-        googleService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
-
-    given()
-        .when()
-        .queryParam(
-            "code",
-            "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
-        .queryParam("state", state)
-        .get(googleCallbackURI)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Invalid state parameter\"}}"));
   }
 
   @Test
@@ -321,7 +264,9 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoResourceTest {
             + appConfig.getMicrosoftOpenIdClientId()
             + "&redirect_uri="
             + URLEncoder.encode(microsoftCallbackURI.toString(), StandardCharsets.UTF_8)
-            + "&response_type=code&scope=openid+email+profile&response_mode=query&state=";
+            + "&response_type=code&scope=openid+email+profile&response_mode=query&login_hint="
+            + URLEncoder.encode(otherUserEmail, StandardCharsets.UTF_8)
+            + "&state=";
 
     String redirect = "https://www.insight.io/my_path";
     String paramState = googleService.secureState(redirect);

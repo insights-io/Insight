@@ -20,6 +20,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -226,9 +227,8 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   @Test
   public void sso_saml_setup__should_fail__when_non_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
-    String sessionId =
-        signUpAndLogin(
-            mailbox, objectMapper, "sso-setup-regular-email@gmail.com", "sso-setup-regular-email");
+    String password = UUID.randomUUID().toString();
+    String sessionId = signUpAndLogin(mailbox, objectMapper, password + "@gmail.com", password);
 
     CreateSsoSetupDTO body =
         new CreateSsoSetupDTO(
@@ -251,12 +251,9 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   @Test
   public void sso_saml_setup__should_work__when_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
-    String sessionId =
-        signUpAndLogin(
-            mailbox,
-            objectMapper,
-            "sso-saml-setup-business-email@snuderls.io",
-            "sso-saml-setup-business-emai");
+    String password = UUID.randomUUID().toString();
+    String email = password + "@snuderls5.io";
+    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
 
     URL configurationEndpoint =
         new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
@@ -281,11 +278,11 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     Assertions.assertEquals(
         configurationEndpoint, dataResponse.getData().getConfigurationEndpoint());
     Assertions.assertEquals(SsoMethod.SAML, dataResponse.getData().getMethod());
-    Assertions.assertEquals("snuderls.io", dataResponse.getData().getDomain());
+    Assertions.assertEquals(EmailUtils.domainFromEmail(email), dataResponse.getData().getDomain());
 
     given()
         .when()
-        .get(SsoSetupResource.PATH + "/snuderls.io")
+        .get(SsoSetupResource.PATH + "/" + EmailUtils.domainFromEmail(email))
         .then()
         .statusCode(200)
         .body(sameJson(String.format("{\"data\":\"%s\"}", samlSignInURI)));
@@ -306,9 +303,9 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
 
   @Test
   public void sso_google_setup__should_work__when_business_email() throws JsonProcessingException {
-    String email = "sso-google-setup-business-email@snuderls.io2";
-    String sessionId =
-        signUpAndLogin(mailbox, objectMapper, email, "sso-google-setup-business-email");
+    String password = UUID.randomUUID().toString();
+    String email = password + "@snuderls10.io";
+    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
     CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
 
     given()

@@ -3,7 +3,7 @@ package com.meemaw.auth.sso;
 import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
 import com.meemaw.auth.sso.oauth.google.OAuth2GoogleService;
 import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftService;
-import com.meemaw.auth.sso.saml.service.SamlServiceImpl;
+import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import io.quarkus.runtime.StartupEvent;
 import java.net.URI;
@@ -24,7 +24,7 @@ public class IdpServiceRegistry {
   @Inject OAuth2MicrosoftService microsoftService;
   @Inject OAuth2GoogleService googleService;
   @Inject OAuth2GithubService githubService;
-  @Inject SamlServiceImpl samlService;
+  @Inject SamlService samlService;
 
   private Map<SsoMethod, AbstractIdpService> services;
 

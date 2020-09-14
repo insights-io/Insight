@@ -7,6 +7,7 @@ import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Resource;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
@@ -17,8 +18,8 @@ public class OAuth2GithubResourceImpl
   @Inject OAuth2GithubService oauthService;
 
   @Override
-  public Response signIn(URL redirect) {
-    return signIn(oauthService, redirect);
+  public Response signIn(URL redirect, @Nullable String email) {
+    return signIn(oauthService, redirect, email);
   }
 
   @Override
