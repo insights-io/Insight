@@ -3,14 +3,15 @@ plugins {
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-reactive-pg-client'
-    implementation 'io.quarkus:quarkus-mailer'
-    implementation 'io.smallrye.reactive:smallrye-mutiny-vertx-web-client'
-    implementation 'org.mindrot:jbcrypt:0.4'
+    implementation "io.quarkus:quarkus-reactive-pg-client"
+    implementation "io.quarkus:quarkus-mailer"
+    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
+    implementation "org.mindrot:jbcrypt:0.4"
     implementation "com.hazelcast:hazelcast:${hazelcastVersion}"
-    implementation 'com.j256.two-factor-auth:two-factor-auth:1.0'
-    implementation 'net.glxn.qrgen:javase:2.0'
-    implementation 'org.opensaml:opensaml-saml-impl:3.4.5'
+    implementation "com.j256.two-factor-auth:two-factor-auth:1.0"
+    implementation "net.glxn.qrgen:javase:2.0"
+    implementation "org.opensaml:opensaml-saml-impl:3.4.5"
+    implementation "com.stripe:stripe-java:20.6.0"
     implementation project(":auth:auth-cookie")
     implementation project(":auth:auth-api-contracts")
     implementation project(":shared:rest-api")

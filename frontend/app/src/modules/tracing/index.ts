@@ -8,6 +8,7 @@ import {
   Tags,
   FORMAT_HTTP_HEADERS,
   SpanContext,
+  SpanOptions,
 } from 'opentracing';
 
 let _tracer: Tracer | undefined;
@@ -33,19 +34,34 @@ export const getTracer = (): Tracer => {
   return _tracer;
 };
 
-export const startRequestSpan = (req: IncomingMessage): Span => {
+export type IncomingTracedMessage = IncomingMessage & {
+  span?: Span;
+};
+
+export const startSpan = (name: string, spanOptions?: SpanOptions) => {
+  return getTracer().startSpan(name, spanOptions);
+};
+
+export const startRequestSpan = (
+  req: IncomingMessage,
+  tags?: Record<string, unknown>
+): Span => {
   const { url, method, headers } = req;
   const tracer = getTracer();
   const wireCtx = tracer.extract(FORMAT_HTTP_HEADERS, headers) || undefined;
 
-  return tracer.startSpan(`${method} ${url}`, {
+  const requestSpan = tracer.startSpan(`${method} ${url}`, {
     childOf: wireCtx,
     tags: {
       [Tags.HTTP_URL]: url,
       [Tags.HTTP_METHOD]: method,
       [Tags.SPAN_KIND]: Tags.SPAN_KIND_RPC_SERVER,
+      ...tags,
     },
   });
+
+  (req as IncomingTracedMessage).span = requestSpan;
+  return requestSpan;
 };
 
 export const prepareCrossServiceHeaders = (spanContext: SpanContext | Span) => {
@@ -53,3 +69,5 @@ export const prepareCrossServiceHeaders = (spanContext: SpanContext | Span) => {
   getTracer().inject(spanContext, FORMAT_HTTP_HEADERS, headers);
   return headers;
 };
+
+export { Span };

@@ -6,11 +6,9 @@ class InsightApp extends App {
   render() {
     const { Component, pageProps } = this.props;
     return (
-      <>
-        <AppProviders>
-          <Component {...pageProps} />
-        </AppProviders>
-      </>
+      <AppProviders>
+        <Component {...pageProps} />
+      </AppProviders>
     );
   }
 }

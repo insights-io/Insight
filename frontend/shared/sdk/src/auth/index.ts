@@ -4,6 +4,7 @@ import { signupApi } from './signup/api';
 import { tfaApi } from './tfa/api';
 import { userApi } from './user/api';
 import { ssoSetupApi, ssoSessionApi } from './sso';
+import { billingApi } from './billing';
 
 export * from './organization';
 export * from './password';
@@ -11,6 +12,7 @@ export * from './signup';
 export * from './sso';
 export * from './tfa';
 export * from './user';
+export * from './billing';
 
 export const createAuthClient = (authApiBaseURL: string) => {
   return {
@@ -23,5 +25,6 @@ export const createAuthClient = (authApiBaseURL: string) => {
     },
     tfa: tfaApi(authApiBaseURL),
     user: userApi(authApiBaseURL),
+    billing: billingApi(authApiBaseURL),
   };
 };
