@@ -1,4 +1,4 @@
-FROM flyway/flyway:6.5.5
+FROM flyway/flyway:6.5.6
 
 WORKDIR /usr/app
 
