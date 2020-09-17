@@ -1,8 +1,8 @@
 package com.meemaw.auth.billing.datasource.sql;
 
 import static com.meemaw.auth.billing.datasource.sql.SqlBillingCustomerTable.CREATED_AT;
-import static com.meemaw.auth.billing.datasource.sql.SqlBillingCustomerTable.CUSTOMER_ID;
 import static com.meemaw.auth.billing.datasource.sql.SqlBillingCustomerTable.FIELDS;
+import static com.meemaw.auth.billing.datasource.sql.SqlBillingCustomerTable.ID;
 import static com.meemaw.auth.billing.datasource.sql.SqlBillingCustomerTable.INSERT_FIELDS;
 import static com.meemaw.auth.billing.datasource.sql.SqlBillingCustomerTable.ORGANIZATION_ID;
 import static com.meemaw.auth.billing.datasource.sql.SqlBillingCustomerTable.TABLE;
@@ -24,6 +24,12 @@ public class SqlBillingCustomerDatasource implements BillingCustomerDatasource {
   @Inject SqlPool sqlPool;
 
   @Override
+  public CompletionStage<Optional<BillingCustomer>> get(String id) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
+    return sqlPool.execute(query).thenApply(this::onFindBillingCustomer);
+  }
+
+  @Override
   public CompletionStage<Optional<BillingCustomer>> findByOrganization(String organizationId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
     return sqlPool.execute(query).thenApply(this::onFindBillingCustomer);
@@ -36,7 +42,7 @@ public class SqlBillingCustomerDatasource implements BillingCustomerDatasource {
             .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(organizationId, customerId)
+            .values(customerId, organizationId)
             .returning(FIELDS);
 
     return sqlPool.execute(query).thenApply(rows -> mapBillingCustomer(rows.iterator().next()));
@@ -53,8 +59,8 @@ public class SqlBillingCustomerDatasource implements BillingCustomerDatasource {
 
   public static BillingCustomer mapBillingCustomer(Row row) {
     return new BillingCustomer(
+        row.getString(ID.getName()),
         row.getString(ORGANIZATION_ID.getName()),
-        row.getString(CUSTOMER_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

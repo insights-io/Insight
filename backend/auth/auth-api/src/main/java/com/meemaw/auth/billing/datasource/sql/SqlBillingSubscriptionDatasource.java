@@ -14,6 +14,8 @@ import com.meemaw.auth.billing.model.BillingSubscription;
 import com.meemaw.auth.billing.model.CreateBillingSubscriptionParams;
 import com.meemaw.shared.sql.client.SqlPool;
 import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -39,6 +41,22 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
             .returning(FIELDS);
 
     return sqlPool.execute(query).thenApply(rows -> mapBillingSubscription(rows.iterator().next()));
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingSubscription>> findByOrganizationId(
+      String organizationId) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
+    return sqlPool.execute(query).thenApply(this::onFindBillingSubscription);
+  }
+
+  private Optional<BillingSubscription> onFindBillingSubscription(RowSet<Row> rows) {
+    if (!rows.iterator().hasNext()) {
+      return Optional.empty();
+    }
+
+    Row row = rows.iterator().next();
+    return Optional.of(mapBillingSubscription(row));
   }
 
   public static BillingSubscription mapBillingSubscription(Row row) {

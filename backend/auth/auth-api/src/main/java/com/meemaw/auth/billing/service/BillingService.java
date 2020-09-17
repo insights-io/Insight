@@ -1,12 +1,15 @@
 package com.meemaw.auth.billing.service;
 
 import com.meemaw.auth.billing.datasource.BillingCustomerDatasource;
+import com.meemaw.auth.billing.datasource.BillingInvoiceDatasource;
 import com.meemaw.auth.billing.datasource.BillingSubscriptionDatasource;
 import com.meemaw.auth.billing.model.BillingSubscription;
+import com.meemaw.auth.billing.model.CreateBillingInvoiceParams;
 import com.meemaw.auth.billing.model.CreateBillingSubscriptionParams;
 import com.meemaw.auth.billing.model.dto.CreateSubscriptionDTO;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.stripe.model.Customer;
 import com.stripe.model.Event;
@@ -25,11 +28,13 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
 public class BillingService {
 
+  @Inject BillingInvoiceDatasource billingInvoiceDatasource;
   @Inject BillingCustomerDatasource billingCustomerDatasource;
   @Inject BillingSubscriptionDatasource billingSubscriptionDatasource;
   @Inject BillingProvider billingProvider;
@@ -75,7 +80,7 @@ public class BillingService {
                                     }));
               }
 
-              return billingProvider.retrieveCustomer(maybeBillingCustomer.get().getExternalId());
+              return billingProvider.retrieveCustomer(maybeBillingCustomer.get().getId());
             })
         .thenCompose(customer -> createSubscription(customer.getId(), priceId))
         .thenCompose(
@@ -116,7 +121,7 @@ public class BillingService {
     return billingProvider.createSubscription(params);
   }
 
-  private CompletionStage<Customer> createCustomer(AuthUser user, PaymentMethod paymentMethod) {
+  CompletionStage<Customer> createCustomer(AuthUser user, PaymentMethod paymentMethod) {
     String phoneNumber =
         Optional.ofNullable(user.getPhoneNumber()).map(PhoneNumber::getNumber).orElse(null);
 
@@ -149,8 +154,6 @@ public class BillingService {
   }
 
   public CompletionStage<Void> processEvent(Event event) {
-    log.info("[AUTH]: Processing billing event={}", event);
-
     switch (event.getType()) {
       case "invoice.paid":
         return handleInvoicePaid(event);
@@ -163,13 +166,39 @@ public class BillingService {
   private CompletionStage<Void> handleInvoicePaid(Event event) {
     EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
     if (dataObjectDeserializer.getObject().isEmpty()) {
-      log.warn("[AUTH]: Failed to deserialize invoice event={}", event);
+      log.error("[AUTH]: Failed to deserialize invoice event={}", event);
       throw Boom.badRequest().message("[AUTH]: Failed to deserialize invoice").exception();
     }
 
     Invoice invoice = (Invoice) dataObjectDeserializer.getObject().get();
-    String customerId = invoice.getCustomer();
+    return billingCustomerDatasource
+        .get(invoice.getCustomer())
+        .thenCompose(
+            maybeBillingCustomer -> {
+              if (maybeBillingCustomer.isEmpty()) {
+                log.error(
+                    "[AUTH]: Failed to associate invoice payment with organization event={}",
+                    event);
+                throw Boom.badRequest().exception();
+              }
+              String organizationId = maybeBillingCustomer.get().getOrganizationId();
+              MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
-    return CompletableFuture.completedStage(null);
+              CreateBillingInvoiceParams params =
+                  new CreateBillingInvoiceParams(
+                      invoice.getId(),
+                      invoice.getCustomer(),
+                      invoice.getSubscription(),
+                      organizationId,
+                      invoice.getCurrency(),
+                      invoice.getAmountPaid());
+
+              return billingInvoiceDatasource.create(params);
+            })
+        .thenApply(
+            billingInvoice -> {
+              log.info("[AUTH] Successfully created billing invoice={}", billingInvoice);
+              return null;
+            });
   }
 }

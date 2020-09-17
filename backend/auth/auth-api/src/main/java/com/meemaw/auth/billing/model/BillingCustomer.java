@@ -11,7 +11,7 @@ import lombok.Value;
 @AllArgsConstructor
 public class BillingCustomer {
 
-  String internalId;
-  String externalId;
+  String id;
+  String organizationId;
   OffsetDateTime createdAt;
 }

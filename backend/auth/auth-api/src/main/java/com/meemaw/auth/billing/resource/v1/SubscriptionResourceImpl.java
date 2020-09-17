@@ -31,7 +31,7 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   public CompletionStage<Response> event(String body, String signature) {
     try {
       Event event = Webhook.constructEvent(body, signature, stripeWebhookSecret);
-      return billingService.processEvent(event).thenApply(DataResponse::ok);
+      return billingService.processEvent(event).thenApply(ignored -> Response.noContent().build());
     } catch (SignatureVerificationException ex) {
       throw Boom.badRequest().message(ex.getMessage()).exception(ex);
     }
@@ -40,6 +40,6 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   @Override
   public CompletionStage<Response> create(CreateSubscriptionDTO body) {
     AuthUser user = insightPrincipal.user();
-    return billingService.createSubscription(body, user).thenApply(DataResponse::ok);
+    return billingService.createSubscription(body, user).thenApply(DataResponse::created);
   }
 }

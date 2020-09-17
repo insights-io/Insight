@@ -93,11 +93,12 @@ export const getAuthenticatedServerSideProps: GetServerSideProps<AuthenticatedSe
 ) => {
   const requestSpan = startRequestSpan(context.req);
   try {
-    const { user } = (await authenticated(
-      context,
-      requestSpan
-    )) as Authenticated;
-    return { props: { user } };
+    const response = await authenticated(context, requestSpan);
+    if (response) {
+      return { props: { user: response.user } };
+    }
+    // This can never happen -- user is redirected
+    return { props: { user: (null as unknown) as UserDTO } };
   } finally {
     requestSpan.finish();
   }

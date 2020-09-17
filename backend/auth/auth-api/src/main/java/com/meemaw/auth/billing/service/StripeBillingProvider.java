@@ -50,6 +50,7 @@ public class StripeBillingProvider implements BillingProvider {
         });
   }
 
+  @Override
   public CompletionStage<Customer> updateCustomer(Customer customer, CustomerUpdateParams params) {
     return async(
         () -> {

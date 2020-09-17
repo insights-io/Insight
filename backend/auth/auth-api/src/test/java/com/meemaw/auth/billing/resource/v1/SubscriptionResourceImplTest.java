@@ -63,6 +63,23 @@ public class SubscriptionResourceImplTest {
   }
 
   @Test
+  public void event__should_fail__when_no_signature_match_found_in_payload() {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(
+            "Stripe-Signature",
+            "t=1600283731,v1=f882164c89cc73d2fcebda8d9f28bae66e47f7f995950a39a2d13ee36dec5245,v0=fe8e3f054d5dbd84fc0c841bbd168c8181400b7294d4afa6337038f85043dfb8")
+        .body("{}")
+        .post(eventPath)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"No signatures found matching the expected signature for payload\"}}"));
+  }
+
+  @Test
   public void create__should_fail__when_invalid_content_type() {
     given()
         .when()
@@ -129,5 +146,22 @@ public class SubscriptionResourceImplTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"No such PaymentMethod: 'random'\"}}"));
+  }
+
+  @Test
+  public void create__should_fail__when_obsolete_payment_id() throws JsonProcessingException {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(new CreateSubscriptionDTO("pm_1HS5TUI1ysvdCIIxoLNYYB9S")))
+        .post(SubscriptionResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"This PaymentMethod was previously used without being attached to a Customer or was detached from a Customer, and may not be used again.\"}}"));
   }
 }

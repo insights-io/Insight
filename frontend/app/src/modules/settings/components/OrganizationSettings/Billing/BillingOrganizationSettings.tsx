@@ -46,7 +46,7 @@ const CheckoutForm = () => {
       } else if (paymentMethod) {
         await AuthApi.billing
           .createSubscription({ paymentMethodId: paymentMethod.id })
-          .then(() => toaster.positive('Subscription created', {}))
+          .then(() => toaster.positive('Subscription created.', {}))
           .catch(async (apiErrorResponse) => {
             const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
             setApiError(errorDTO.error);
@@ -87,4 +87,4 @@ const BillingOrganizationSettings = () => {
   );
 };
 
-export default BillingOrganizationSettings;
+export default React.memo(BillingOrganizationSettings);

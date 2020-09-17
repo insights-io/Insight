@@ -1,4 +1,4 @@
-import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
+import { queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
@@ -238,7 +238,7 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
     .eql(otherUser, 'Should prefill user');
 });
 
-test.only('[SSO Github]: User with business email should be able to setup Github SSO', async (t) => {
+test('[SSO Github]: User with business email should be able to setup Github SSO', async (t) => {
   const domain = 'biz3.only';
   const { email, password } = SignUpPage.generateRandomCredentialsForDomain(
     domain
@@ -294,4 +294,35 @@ test.only('[SSO Github]: User with business email should be able to setup Github
     )
     .expect(githubLoginInput.value)
     .eql(otherUser, 'Should prefill user');
+});
+
+test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
+  const { password, email } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password });
+
+  const {
+    tab,
+    cardNumberInputElement,
+    exipiryInputElement,
+    cvcInputElement,
+    payButton,
+    paidMessage,
+    formIframe,
+  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
+
+  await t
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
+    .click(AccountSettingsPage.tabs.organizationSettings)
+    .click(tab);
+
+  await t
+    .switchToIframe(formIframe)
+    .typeText(cardNumberInputElement, '4242 4242 4242 4242')
+    .typeText(exipiryInputElement, '1044')
+    .typeText(cvcInputElement, '222')
+    .switchToMainWindow()
+    .click(payButton)
+    .expect(paidMessage.with({ timeout: 5000 }).visible)
+    .ok('Subscription should be created');
 });
