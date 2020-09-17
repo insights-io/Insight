@@ -153,17 +153,23 @@ public class BillingService {
                         .build()));
   }
 
-  public CompletionStage<Void> processEvent(Event event) {
+  /**
+   * Process Stripe Webhook event
+   *
+   * @param event stripe event as received from Webhook
+   * @return boolean indicating if the event was processed
+   */
+  public CompletionStage<Boolean> processEvent(Event event) {
     switch (event.getType()) {
       case "invoice.paid":
         return handleInvoicePaid(event);
       default:
         log.warn("[AUTH]: Unhandled billing event type={}", event.getType());
-        return CompletableFuture.completedStage(null);
+        return CompletableFuture.completedStage(false);
     }
   }
 
-  private CompletionStage<Void> handleInvoicePaid(Event event) {
+  private CompletionStage<Boolean> handleInvoicePaid(Event event) {
     EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
     if (dataObjectDeserializer.getObject().isEmpty()) {
       log.error("[AUTH]: Failed to deserialize invoice event={}", event);
@@ -198,7 +204,7 @@ public class BillingService {
         .thenApply(
             billingInvoice -> {
               log.info("[AUTH] Successfully created billing invoice={}", billingInvoice);
-              return null;
+              return true;
             });
   }
 }
