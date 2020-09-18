@@ -201,9 +201,9 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
   });
 
   // Is on Microsoft SSO flow
-  const microsoftInput = queryByPlaceholderText(
-    'Email address, phone number or Skype'
-  ).with({ timeout: 5000 });
+  const microsoftInput = Selector('input[type="email"]').with({
+    timeout: 5000,
+  });
 
   await Sidebar.signOut(t)
     .click(LoginPage.tabs.sso)
