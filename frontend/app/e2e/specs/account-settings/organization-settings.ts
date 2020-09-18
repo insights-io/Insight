@@ -120,10 +120,11 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
 });
 
 test('[SSO Google]: User with business email should be able to setup Google SSO', async (t) => {
-  const domain = 'biz.only';
-  const { email, password } = SignUpPage.generateRandomCredentialsForDomain(
-    domain
-  );
+  const {
+    email,
+    password,
+    domain,
+  } = SignUpPage.generateRandomBussinessCredentials();
   const otherUser = `${uuid()}@${domain}`;
 
   await SignUpPage.signUpAndLogin(t, { email, password });
@@ -181,10 +182,11 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
 });
 
 test('[SSO Microsoft]: User with business email should be able to setup Microsoft SSO', async (t) => {
-  const domain = 'biz2.only';
-  const { email, password } = SignUpPage.generateRandomCredentialsForDomain(
-    domain
-  );
+  const {
+    email,
+    password,
+    domain,
+  } = SignUpPage.generateRandomBussinessCredentials();
   const otherUser = `${uuid()}@${domain}`;
 
   await SignUpPage.signUpAndLogin(t, { email, password });
@@ -239,10 +241,11 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
 });
 
 test('[SSO Github]: User with business email should be able to setup Github SSO', async (t) => {
-  const domain = 'biz3.only';
-  const { email, password } = SignUpPage.generateRandomCredentialsForDomain(
-    domain
-  );
+  const {
+    email,
+    password,
+    domain,
+  } = SignUpPage.generateRandomBussinessCredentials();
   const otherUser = `${uuid()}@${domain}`;
 
   await SignUpPage.signUpAndLogin(t, { email, password });

@@ -66,6 +66,11 @@ class SignUp {
     return { password, email };
   };
 
+  public generateRandomBussinessCredentials = () => {
+    const domain = `${uuid()}.com`;
+    return { ...this.generateRandomCredentialsForDomain(domain), domain };
+  };
+
   public verifyEmail = (t: TestController) => {
     const link = findLinkFromDockerLogs();
     if (!link) {
