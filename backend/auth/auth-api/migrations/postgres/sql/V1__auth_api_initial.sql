@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS auth.organization
 (
     id         TEXT        NOT NULL UNIQUE,
     name       TEXT,
+    plan       TEXT        NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
@@ -129,8 +130,8 @@ CREATE TABLE auth.organization_sso_setup
 );
 
 /* Bootstrap Insight organization */
-INSERT INTO auth.organization(id, name)
-VALUES ('000000', 'Insight');
+INSERT INTO auth.organization(id, name, plan)
+VALUES ('000000', 'Insight', 'enterprise');
 
 /* Bootstrap user for Insight organization */
 INSERT INTO auth.user(id, email, organization_id, role, full_name)

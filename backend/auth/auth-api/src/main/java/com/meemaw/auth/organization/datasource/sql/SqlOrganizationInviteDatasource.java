@@ -1,14 +1,14 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.CREATED_AT;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.CREATOR_ID;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.EMAIL;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.INSERT_FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.ORGANIZATION_ID;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.ROLE;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.TABLE;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationInviteTable.TOKEN;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.CREATOR_ID;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.EMAIL;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.ORGANIZATION_ID;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.ROLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.TOKEN;
 
 import com.meemaw.auth.organization.datasource.OrganizationInviteDatasource;
 import com.meemaw.auth.organization.model.Organization;
@@ -52,7 +52,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
   public CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> getWithOrganization(
       UUID token) {
     Table<?> joined =
-        TABLE.leftJoin(OrganizationTable.TABLE).on(OrganizationTable.ID.eq(ORGANIZATION_ID));
+        TABLE.leftJoin(SqlOrganizationTable.TABLE).on(SqlOrganizationTable.ID.eq(ORGANIZATION_ID));
     Query query = sqlPool.getContext().selectFrom(joined).where(TOKEN.eq(token));
 
     return sqlPool

@@ -1,10 +1,10 @@
 plugins {
-    id 'io.quarkus'
+    id "io.quarkus"
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-hibernate-validator'
-    implementation 'io.quarkus:quarkus-resteasy-jackson'
+    implementation "io.quarkus:quarkus-hibernate-validator"
+    implementation "io.quarkus:quarkus-resteasy-jackson"
     implementation project(":auth:auth-model")
 
     testImplementation project(":shared:testing-utils")

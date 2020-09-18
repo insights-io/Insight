@@ -40,22 +40,27 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
                 int statusCode = response.getStatus();
                 if (statusCode == Status.OK.getStatusCode()) {
                   try {
+                    // TODO: why is this needed? Open issue in Quarkus
                     DataResponse<UserDTO> dataResponse =
                         objectMapper.readValue(
                             response.readEntity(String.class), new TypeReference<>() {});
                     return Optional.of(dataResponse.getData());
                   } catch (JsonProcessingException ex) {
+                    log.error("[AUTH]: Failed to parse user", ex);
                     throw Boom.serverError().exception(ex);
                   }
                 }
 
                 // session not found
                 if (statusCode == Status.NO_CONTENT.getStatusCode()) {
-                  log.debug("Session not found");
+                  log.debug("[AUTH]: Session not found sessionId={}", sessionId);
                   return Optional.empty();
                 }
 
-                log.error("Failed to findSession statusCode: {}", statusCode);
+                log.error(
+                    "[AUTH]: Failed to find session sessionId={} statusCode={}",
+                    sessionId,
+                    statusCode);
                 throw Boom.serverError().exception();
               });
     }

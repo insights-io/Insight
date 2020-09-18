@@ -2,6 +2,7 @@ package com.meemaw.auth.signup.service;
 
 import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
+import com.meemaw.auth.organization.model.CreateOrganizationParams;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.auth.password.service.PasswordService;
@@ -173,7 +174,9 @@ public class SignUpServiceImpl implements SignUpService {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
     return organizationDatasource
-        .createOrganization(organizationId, signUpRequest.getCompany(), transaction)
+        .createOrganization(
+            CreateOrganizationParams.freePlan(organizationId, signUpRequest.getCompany()),
+            transaction)
         .thenCompose(
             organization ->
                 userDatasource
@@ -253,13 +256,14 @@ public class SignUpServiceImpl implements SignUpService {
   @Timed(name = "socialSignUp", description = "A measure of how long it takes to do social sign up")
   public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
     log.info("[AUTH]: Social sign up attempt email={}", email);
+
     return ssoSignUp(
         email,
         fullName,
         UserRole.ADMIN,
         (transaction) ->
             organizationDatasource.createOrganization(
-                Organization.identifier(), null, transaction));
+                CreateOrganizationParams.freePlan(Organization.identifier(), null), transaction));
   }
 
   /**

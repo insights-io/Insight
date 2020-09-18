@@ -5,7 +5,8 @@ plugins {
 
 dependencies {
     implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'io.quarkus:quarkus-rest-client'
+    implementation 'io.quarkus:quarkus-rest-client-jackson'
+    api project(":auth:auth-cookie")
     api project(":auth:auth-model")
     api project(":shared:rest")
 }

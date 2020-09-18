@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -48,7 +49,8 @@ public class BillingServiceTest {
   @Inject UserDatasource userDatasource;
 
   @SneakyThrows
-  private Event readStripeEvent(String path, String customerId, String subscriptionId) {
+  private Event readStripeEvent(
+      String path, @Nullable String customerId, @Nullable String subscriptionId) {
     String payload = Files.readString(Path.of(getClass().getResource(path).toURI()));
     JsonObject event = ApiResource.GSON.fromJson(payload, JsonObject.class);
     JsonObject dataObject = event.getAsJsonObject("data").getAsJsonObject("object");

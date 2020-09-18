@@ -80,7 +80,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_invalid_contentType() {
+  public void login__should_fail__when_invalid_content_type() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
@@ -93,7 +93,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_no_payload() {
+  public void login__should_fail__when_no_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -106,7 +106,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_invalid_payload() {
+  public void login__should_fail__when_invalid_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -121,7 +121,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_invalid_credentials() {
+  public void login__should_fail__when_invalid_credentials() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)

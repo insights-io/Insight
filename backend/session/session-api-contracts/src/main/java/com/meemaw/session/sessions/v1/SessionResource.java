@@ -5,6 +5,7 @@ import com.meemaw.session.model.CreatePageDTO;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,7 +31,7 @@ public interface SessionResource {
   @POST
   CompletionStage<Response> createPage(
       @NotNull(message = "Required") @Valid CreatePageDTO body,
-      @HeaderParam(HttpHeaders.USER_AGENT) String userAgentString);
+      @NotBlank(message = "Required") @HeaderParam(HttpHeaders.USER_AGENT) String userAgent);
 
   @GET
   @CookieAuth

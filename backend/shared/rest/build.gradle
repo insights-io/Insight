@@ -1,13 +1,13 @@
 plugins {
-    id 'io.quarkus'
-    id 'java-library'
+    id "io.quarkus"
+    id "java-library"
 }
 
 dependencies {
-    api 'io.quarkus:quarkus-resteasy'
-    api 'io.quarkus:quarkus-hibernate-validator'
-    api 'io.quarkus:quarkus-smallrye-opentracing'
-    api 'org.apache.commons:commons-lang3:3.11'
+    api "io.quarkus:quarkus-resteasy"
+    api "io.quarkus:quarkus-hibernate-validator"
+    api "io.quarkus:quarkus-smallrye-opentracing"
+    api "org.apache.commons:commons-lang3:3.11"
 
     testImplementation project(":shared:testing-utils")
 }

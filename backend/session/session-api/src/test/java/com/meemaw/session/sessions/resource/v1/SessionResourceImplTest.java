@@ -11,15 +11,18 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.location.service.LocationService;
+import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.test.matchers.SameJSON;
 import com.meemaw.test.rest.data.UserAgentData;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -79,7 +82,41 @@ public class SessionResourceImplTest {
   @Inject PgPool pgPool;
 
   @Test
-  public void post_page_should_link_sessions_when_matching_device_id()
+  public void post_page__should_throw__when_missing_organization()
+      throws URISyntaxException, IOException {
+    CreatePageDTO createPageDTO =
+        objectMapper.readValue(
+            Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI())),
+            CreatePageDTO.class);
+
+    CreatePageDTO withRandomOrganization =
+        new CreatePageDTO(
+            Organization.identifier(),
+            createPageDTO.getDeviceId(),
+            createPageDTO.getUrl(),
+            createPageDTO.getReferrer(),
+            createPageDTO.getDoctype(),
+            createPageDTO.getScreenWidth(),
+            createPageDTO.getScreenHeight(),
+            createPageDTO.getWidth(),
+            createPageDTO.getHeight(),
+            createPageDTO.getCompiledTs());
+
+    given()
+        .when()
+        .contentType(ContentType.JSON)
+        .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+        .body(objectMapper.writeValueAsString(withRandomOrganization))
+        .post(SessionResource.PATH)
+        .then()
+        .statusCode(404)
+        .body(
+            SameJSON.sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
+
+  @Test
+  public void post_page__should_link_sessions__when_matching_device_id()
       throws IOException, URISyntaxException {
     String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
 
@@ -175,7 +212,7 @@ public class SessionResourceImplTest {
   }
 
   @Test
-  public void post_page_should_create_new_session_when_no_matching_device_id()
+  public void post_page__should_create_new_session__when_no_matching_device_id()
       throws IOException, URISyntaxException {
     String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
 
@@ -248,7 +285,7 @@ public class SessionResourceImplTest {
   }
 
   @Test
-  public void post_page_should_create_new_session_when_no_session_timeout()
+  public void post_page__should_create_new_session__when_no_session_timeout()
       throws IOException, URISyntaxException {
     ObjectNode payload =
         objectMapper.readValue(

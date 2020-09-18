@@ -1,8 +1,11 @@
 import { UserRole } from './user';
 
+export type SubscriptionPlan = 'free' | 'business' | 'enterprise';
+
 export type OrganizationDTO = {
   id: string;
   name: string;
+  plan: SubscriptionPlan;
   createdAt: string;
   updatedAt: string;
 };

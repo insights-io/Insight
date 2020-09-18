@@ -31,11 +31,11 @@ public class SessionResourceImpl implements SessionResource {
   @Inject SessionSocketService sessionSocketService;
 
   @Override
-  public CompletionStage<Response> createPage(CreatePageDTO body, String userAgentString) {
+  public CompletionStage<Response> createPage(CreatePageDTO body, String userAgent) {
     String ipAddress = RequestUtils.getRemoteAddress(request);
 
     return pageService
-        .createPage(body, userAgentString, ipAddress)
+        .createPage(body, userAgent, ipAddress)
         .thenApply(
             pageIdentity -> {
               sessionSocketService.pageStart(pageIdentity.getPageId());

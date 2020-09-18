@@ -23,4 +23,7 @@ public class AppConfig extends AppConfigBase {
 
   @ConfigProperty(name = "sso-resource/mp-rest/url")
   String ssoResourceBaseURL;
+
+  @ConfigProperty(name = "organization-resource/mp-rest/url")
+  String organizationResourceBaseURL;
 }
