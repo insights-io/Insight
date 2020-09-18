@@ -36,6 +36,8 @@
   "dependencies": {
     "@amcharts/amcharts4": "4.10.2",
     "@amcharts/amcharts4-geodata": "4.1.17",
+    "@stripe/stripe-js": "1.9.0",
+    "@stripe/react-stripe-js": "1.1.2",
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
     "@insight/ui": "0.0.0-development",

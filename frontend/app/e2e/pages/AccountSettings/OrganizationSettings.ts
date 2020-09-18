@@ -1,5 +1,8 @@
+import 'testcafe';
 import { queryByText, TestcafeBoundFunctions } from '@testing-library/testcafe';
 import { queries } from '@testing-library/react';
+
+import BillingSettings from './BillingSettings';
 
 type SsoMethodWithConfigurationEndpointText = 'SAML';
 type SsoMethodWithoutConfigurationEndpointText =
@@ -79,6 +82,7 @@ export const OrganizationSettings = (
           submitButton: ssoSubmitButton,
         },
       },
+      billing: BillingSettings,
     },
   };
 };
