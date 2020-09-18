@@ -1,4 +1,4 @@
-import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
+import { queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
