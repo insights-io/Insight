@@ -1,4 +1,4 @@
-import { queryByText } from '@testing-library/testcafe';
+import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
@@ -201,8 +201,8 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
   });
 
   // Is on Microsoft SSO flow
-  const microsoftInput = Selector(
-    'input[placeholder="Email address, phone number or Skype"]'
+  const microsoftInput = queryByPlaceholderText(
+    'Email address, phone number or Skype'
   ).with({ timeout: 5000 });
 
   await Sidebar.signOut(t)
