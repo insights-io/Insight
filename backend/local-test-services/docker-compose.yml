@@ -28,7 +28,7 @@ services:
       - MAILER_PASSWORD=${MAILER_PASSWORD}
       - MAILER_MOCK=${MAILER_MOCK}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-dev_secret}
     depends_on:
       - auth-api-postgres-migrations
 
