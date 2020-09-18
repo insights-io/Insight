@@ -35,6 +35,8 @@ public class StripeBillingProvider implements BillingProvider {
 
   public void init(@Observes StartupEvent event) {
     Stripe.apiKey = stripeApiKey;
+    Stripe.enableTelemetry = false;
+    Stripe.setMaxNetworkRetries(2);
   }
 
   @Override

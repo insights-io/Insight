@@ -4,6 +4,7 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromAuthApi;
 import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,6 +40,9 @@ import io.restassured.response.Response;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Tag;
@@ -321,15 +325,16 @@ public class TfaChallengeResourceTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
 
-    int tfaCode = TotpUtils.generateCurrentNumber(secret);
-
     // Complete tfa setup works on valid code
     Response response =
         given()
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
+            .body(
+                JacksonMapper.get()
+                    .writeValueAsString(
+                        new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
             .post(TfaResource.PATH + "/totp/setup");
 
     DataResponse<TfaSetupDTO> responseData = response.as(new TypeRef<>() {});
@@ -399,23 +404,10 @@ public class TfaChallengeResourceTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
 
-    response =
-        given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .cookie(SsoChallenge.COOKIE_NAME, challengeId)
-            .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-            .post(TfaChallengeResourceImpl.PATH + "/totp/complete");
-
-    response
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\": true}"))
-        .cookie(SsoSession.COOKIE_NAME)
-        .cookie(SsoChallenge.COOKIE_NAME, "");
+    Response completeChallengeResponse = completeTotpTfaChallenge(challengeId, secret);
 
     // new session id from TFA flow
-    sessionId = response.detailedCookie(SsoSession.COOKIE_NAME).getValue();
+    sessionId = completeChallengeResponse.detailedCookie(SsoSession.COOKIE_NAME).getValue();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -431,7 +423,10 @@ public class TfaChallengeResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoChallenge.COOKIE_NAME, challengeId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(
+                    new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
         .post(TfaChallengeResourceImpl.PATH + "/totp/complete")
         .then()
         .statusCode(400)
@@ -625,5 +620,46 @@ public class TfaChallengeResourceTest {
         .body(sameJson("{\"data\": true}"))
         .cookie(SsoSession.COOKIE_NAME)
         .cookie(SsoChallenge.COOKIE_NAME, "");
+  }
+
+  private Response completeTotpTfaChallenge(String challengeId, String secret) {
+    return completeTfaChallenge(
+        challengeId,
+        () -> {
+          try {
+            return TotpUtils.generateCurrentNumber(secret);
+          } catch (GeneralSecurityException ex) {
+            throw new RuntimeException(ex);
+          }
+        });
+  }
+
+  private Response completeTfaChallenge(String challengeId, Supplier<Integer> codeSupplier) {
+    AtomicReference<Response> responseWrapper = new AtomicReference<>();
+
+    await()
+        .atMost(5, TimeUnit.SECONDS)
+        .untilAsserted(
+            () -> {
+              Response response =
+                  given()
+                      .when()
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .cookie(SsoChallenge.COOKIE_NAME, challengeId)
+                      .body(
+                          JacksonMapper.get()
+                              .writeValueAsString(new TfaChallengeCompleteDTO(codeSupplier.get())))
+                      .post(TfaChallengeResourceImpl.PATH + "/totp/complete");
+
+              responseWrapper.set(response);
+              response
+                  .then()
+                  .statusCode(200)
+                  .body(sameJson("{\"data\": true}"))
+                  .cookie(SsoSession.COOKIE_NAME)
+                  .cookie(SsoChallenge.COOKIE_NAME, "");
+            });
+
+    return responseWrapper.get();
   }
 }
