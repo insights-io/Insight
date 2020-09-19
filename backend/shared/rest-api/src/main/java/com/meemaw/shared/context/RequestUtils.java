@@ -86,6 +86,12 @@ public final class RequestUtils {
     return base + ":" + url.getPort();
   }
 
+  public static URI getServerBaseURI(UriInfo info, HttpServerRequest request) {
+    String proto = request.getHeader(MissingHttpHeaders.X_FORWARDED_PROTO);
+    String host = request.getHeader(MissingHttpHeaders.X_FORWARDED_HOST);
+    return URI.create(getServerBaseURL(info, proto, host));
+  }
+
   /**
    * Returns server base URL as seen from outer World. In cases when service is behind an Ingress,
    * X-Forwarded-* headers are used.
@@ -96,12 +102,6 @@ public final class RequestUtils {
    */
   public static URL getServerBaseURL(UriInfo info, HttpServerRequest request) {
     return sneakyURL(getServerBaseURI(info, request));
-  }
-
-  public static URI getServerBaseURI(UriInfo info, HttpServerRequest request) {
-    String proto = request.getHeader(MissingHttpHeaders.X_FORWARDED_PROTO);
-    String host = request.getHeader(MissingHttpHeaders.X_FORWARDED_HOST);
-    return URI.create(getServerBaseURL(info, proto, host));
   }
 
   /**

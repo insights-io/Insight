@@ -1,5 +1,6 @@
 package com.meemaw.session.datasource.hazelcast;
 
+import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -17,7 +18,11 @@ public class HazelcastProvider {
   public HazelcastInstance getInstance() {
     if (instance == null) {
       log.info("Initializing HazelcastInstance...");
-      instance = Hazelcast.newHazelcastInstance(new XmlConfigBuilder().build());
+      instance =
+          Hazelcast.newHazelcastInstance(
+              new XmlConfigBuilder()
+                  .build()
+                  .setNetworkConfig(new NetworkConfig().setPort(NetworkConfig.DEFAULT_PORT + 1)));
     }
     return instance;
   }

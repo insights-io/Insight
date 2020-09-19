@@ -1,6 +1,7 @@
 package com.meemaw.test.testconainers.api;
 
 import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.api.auth.AuthApiTestContainer;
 import com.meemaw.test.testconainers.pg.PostgresTestContainer;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +25,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   public AbstractApiTestContainer(Api api) {
     super(imageFromDockerfile(Objects.requireNonNull(api)));
     withExposedPorts(PORT)
+        .withNetworkAliases(api.fullName())
         .waitingFor(Wait.forHttp("/health").forStatusCode(200))
         .withNetwork(Network.SHARED)
         .withLogConsumer(new Slf4jLogConsumer(log));
@@ -37,18 +39,32 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
         .forEach(
             container -> {
               container.start();
+              // TODO: this should be better
               if (container instanceof PostgresTestContainer) {
                 PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
                 postgresTestContainer.applyFlywayMigrations(api.postgresMigrations());
                 withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
+              } else if (container instanceof AuthApiTestContainer) {
+                AuthApiTestContainer authApiTestContainer = (AuthApiTestContainer) container;
+                withEnv(
+                    "organization-resource/mp-rest/url", authApiTestContainer.getDockerBaseURI());
+                withEnv("sso-resource/mp-rest/url", authApiTestContainer.getDockerBaseURI());
               }
             });
 
     super.start();
   }
 
+  public String getDockerBaseURI() {
+    return getBaseURI(api.fullName(), 8080);
+  }
+
   public String getBaseURI() {
-    return String.format("http://%s:%s", getContainerIpAddress(), getPort());
+    return getBaseURI(getContainerIpAddress(), getPort());
+  }
+
+  private static String getBaseURI(String host, int port) {
+    return String.format("http://%s:%s", host, port);
   }
 
   public int getPort() {

@@ -1,6 +1,7 @@
 package com.meemaw.test.testconainers.api;
 
 import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
 import com.meemaw.test.testconainers.pg.PostgresTestExtension;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -11,7 +12,7 @@ public enum Api {
   SESSION {
     @Override
     public Collection<GenericContainer<?>> dependencies() {
-      return List.of(PostgresTestExtension.getInstance());
+      return List.of(PostgresTestExtension.getInstance(), AuthApiTestExtension.getInstance());
     }
   },
   AUTH {

@@ -5,6 +5,7 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.location.model.Location;
+import com.meemaw.session.core.config.model.AppConfig;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
@@ -17,8 +18,6 @@ import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.useragent.model.UserAgentDTO;
-import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -35,21 +34,13 @@ import org.slf4j.MDC;
 @Slf4j
 public class PageService {
 
+  @Inject AppConfig appConfig;
   @Inject UserAgentService userAgentService;
   @Inject LocationService locationService;
   @Inject SessionDatasource sessionDatasource;
   @Inject PageDatasource pageDatasource;
   @Inject SessionCountDatasource sessionCountDatasource;
   @Inject @RestClient OrganizationResource organizationResource;
-
-  private OffsetDateTime getStartOfCurrentBillingPeriod(Organization organization) {
-    int periodDurationDays = 30;
-    OffsetDateTime createdAt = organization.getCreatedAt();
-    Duration duration = Duration.between(createdAt, OffsetDateTime.now());
-    long createdDaysAgo = duration.toDays();
-    long periodsElapsed = createdDaysAgo / periodDurationDays;
-    return createdAt.plus(Duration.ofDays(periodDurationDays).multipliedBy(periodsElapsed));
-  }
 
   /**
    * Create a new page. This method is called as a first action of the tracking script to link
@@ -83,6 +74,8 @@ public class PageService {
     MDC.put(LoggingConstants.PAGE_ID, pageId.toString());
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+
+    System.out.println("APP CONFIG: " + appConfig.getOrganizationResourceBaseURL());
 
     return organizationResource
         .organization(organizationId)
