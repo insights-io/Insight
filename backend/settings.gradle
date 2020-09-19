@@ -16,6 +16,7 @@ pluginManagement {
 rootProject.name = 'backend'
 
 include ':shared:rest'
+include ':shared:shared-hazelcast'
 include ':shared:shared-elasticsearch'
 include ':shared:shared-sql'
 include ':shared:shared-sms'

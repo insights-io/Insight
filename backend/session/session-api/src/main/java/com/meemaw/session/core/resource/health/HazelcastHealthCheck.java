@@ -1,7 +1,7 @@
 package com.meemaw.session.core.resource.health;
 
 import com.hazelcast.cluster.ClusterState;
-import com.meemaw.session.datasource.hazelcast.HazelcastProvider;
+import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import javax.inject.Inject;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;

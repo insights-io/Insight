@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.tfa.totp.datasource;
 
 import com.hazelcast.map.IMap;
-import com.meemaw.auth.sso.session.datasource.hazelcast.HazelcastProvider;
+import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;

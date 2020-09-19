@@ -1,8 +1,9 @@
 package com.meemaw.session.sessions.datasource.hazelcast;
 
 import com.hazelcast.map.IMap;
-import com.meemaw.session.datasource.hazelcast.HazelcastProvider;
 import com.meemaw.session.sessions.datasource.SessionCountDatasource;
+import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
+import com.meemaw.shared.hazelcast.processors.IncrementCounterEntryProcessor;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -26,6 +27,6 @@ public class HazelcastSessionCountDatasource implements SessionCountDatasource {
 
   @Override
   public CompletionStage<Long> incrementAndGet(String key) {
-    return countMap.submitToKey(key, new IncrementCountEntryProcessor());
+    return countMap.submitToKey(key, new IncrementCounterEntryProcessor());
   }
 }
