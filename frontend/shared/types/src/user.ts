@@ -3,7 +3,7 @@ export type PhoneNumber = {
   digits: string;
 };
 
-export type UserRole = 'ADMIN' | 'STANDARD';
+export type UserRole = 'admin' | 'standard';
 
 export type UserDTO = {
   id: string;

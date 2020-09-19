@@ -6,7 +6,7 @@ export const INSIGHT_ADMIN_DTO: UserDTO = {
   email: 'admin@insight.io',
   fullName: 'Admin Admin',
   organizationId: '000000',
-  role: 'ADMIN',
+  role: 'admin',
   createdAt: new Date().toUTCString(),
   updatedAt: new Date().toUTCString(),
   phoneNumber: { countryCode: '+386', digits: '51111222' },

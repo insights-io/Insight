@@ -9,6 +9,7 @@ class TeamInvite {
 
   public readonly role = {
     admin: queryByText('Admin'),
+    standard: queryByText('Standard'),
   };
 }
 

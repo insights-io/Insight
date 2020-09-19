@@ -12,6 +12,7 @@ import {
   TeamInviteCreateDTO,
   APIErrorDataResponse,
   TeamInvite,
+  UserRole,
 } from '@insight/types';
 import { useForm, Controller } from 'react-hook-form';
 import { FormControl } from 'baseui/form-control';
@@ -27,6 +28,9 @@ import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
 type Props = {
   createInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInvite>;
 };
+
+const ADMIN: UserRole = 'admin';
+const STANDARD: UserRole = 'standard';
 
 const TeamInviteModal = ({ createInvite }: Props) => {
   const [_css, theme] = useStyletron();
@@ -93,8 +97,8 @@ const TeamInviteModal = ({ createInvite }: Props) => {
                 rules={REQUIRED_VALIDATION}
                 as={
                   <RadioGroup>
-                    <Radio value="ADMIN">Admin</Radio>
-                    <Radio value="STANDARD">Regular</Radio>
+                    <Radio value={ADMIN}>Admin</Radio>
+                    <Radio value={STANDARD}>Regular</Radio>
                   </RadioGroup>
                 }
               />
