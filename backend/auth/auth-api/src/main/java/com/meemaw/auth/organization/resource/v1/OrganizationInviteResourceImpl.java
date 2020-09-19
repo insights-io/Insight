@@ -3,7 +3,7 @@ package com.meemaw.auth.organization.resource.v1;
 import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
 import com.meemaw.auth.organization.service.OrganizationInviteService;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;

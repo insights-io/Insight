@@ -1,6 +1,7 @@
 package com.meemaw.auth.sso.oauth.shared;
 
 import com.meemaw.auth.sso.SsoSignInSession;
+import com.meemaw.auth.sso.oauth.OAuth2Resource;
 import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;

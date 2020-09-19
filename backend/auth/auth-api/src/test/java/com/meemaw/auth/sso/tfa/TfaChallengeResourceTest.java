@@ -1,8 +1,6 @@
 package com.meemaw.auth.sso.tfa;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromAuthApi;
-import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
@@ -10,15 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.NotFoundException;
-import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.tfa.challenge.resource.v1.TfaChallengeResource;
 import com.meemaw.auth.sso.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
-import com.meemaw.auth.sso.tfa.setup.dto.TfaSetupDTO;
+import com.meemaw.auth.sso.tfa.setup.model.dto.TfaSetupDTO;
 import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
@@ -30,9 +27,8 @@ import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.setup.SsoTestSetupUtils;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -53,12 +49,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class TfaChallengeResourceTest {
+public class TfaChallengeResourceTest extends AbstractAuthApiTest {
 
   @Inject UserDatasource userDatasource;
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject MockSmsbox mockSmsbox;
 
@@ -121,7 +115,7 @@ public class TfaChallengeResourceTest {
   public void post_setup_tfa__should_throw__when_invalid_content_type(String method) {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(String.join("/", TfaResource.PATH, method, "setup"))
         .then()
         .statusCode(415)
@@ -136,7 +130,7 @@ public class TfaChallengeResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(String.join("/", TfaResource.PATH, method, "setup"))
         .then()
         .statusCode(400)
@@ -151,7 +145,7 @@ public class TfaChallengeResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body("{}")
         .post(String.join("/", TfaResource.PATH, method, "setup"))
         .then()
@@ -164,12 +158,7 @@ public class TfaChallengeResourceTest {
   @Test
   public void setup_top_tfa_complete__should_throw__when_missing_qr_request()
       throws JsonProcessingException {
-    String sessionId =
-        signUpAndLogin(
-            mailbox,
-            objectMapper,
-            "setup-tfa-missing-qa-request@gmail.com",
-            "setup-tfa-missing-qa-request");
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
         .when()
@@ -247,7 +236,7 @@ public class TfaChallengeResourceTest {
       throws JsonProcessingException, GeneralSecurityException {
     String email = "tfa-complete-not-configured-flow@gmail.com";
     String password = "tfa-complete-not-configured-flow";
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     String secret = AuthApiSetupUtils.setupTotpTfa(userId, sessionId, tfaTotpSetupDatasource);
 
@@ -294,7 +283,7 @@ public class TfaChallengeResourceTest {
       throws IOException, GeneralSecurityException, NotFoundException {
     String password = UUID.randomUUID().toString();
     String email = password + "@gmail.com";
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     DataResponse<TfaTotpSetupStartDTO> dataResponse =
         given()
@@ -453,8 +442,7 @@ public class TfaChallengeResourceTest {
     String email = "tfa-sms-full-flow@gmail.com";
     String password = "tfa-sms-full-flow";
     PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222333");
-    String sessionId =
-        SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password, phoneNumber);
+    String sessionId = authApi().signUpAndLogin(email, password, phoneNumber);
 
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);
     Response response =
@@ -530,8 +518,7 @@ public class TfaChallengeResourceTest {
     String email = "tfa-sms-and-totp-full-flow@gmail.com";
     String password = "tfa-sms-and-top-full-flow";
     PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222334");
-    String sessionId =
-        SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password, phoneNumber);
+    String sessionId = authApi().signUpAndLogin(email, password, phoneNumber);
 
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);

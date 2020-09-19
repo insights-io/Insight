@@ -10,14 +10,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.AbstractIdpService;
 import com.meemaw.auth.sso.AbstractSsoOAuth2ResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.oauth.OAuth2Resource;
 import com.meemaw.auth.sso.oauth.google.OAuth2GoogleClient;
 import com.meemaw.auth.sso.oauth.google.OAuth2GoogleService;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
@@ -26,7 +26,6 @@ import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
-import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
@@ -201,7 +200,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
       throws JsonProcessingException, GeneralSecurityException {
     String email = "sso-login-tfa-full-flow@gmail.com";
     String password = "sso-login-tfa-full-flow";
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     given()
         .when()
@@ -244,7 +243,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
       throws JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = password + "@company.io";
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.MICROSOFT, null);
     given()
@@ -309,7 +308,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
     String password = UUID.randomUUID().toString();
     String domain = "company.io100";
     String email = String.join("@", password, domain);
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
     CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
 
     given()
@@ -351,7 +350,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
     String password = UUID.randomUUID().toString();
     String domain = "company.io10";
     String email = password + "@" + domain;
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     CreateSsoSetupDTO body =
         new CreateSsoSetupDTO(

@@ -3,7 +3,7 @@ package com.meemaw.auth.organization.service;
 import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;

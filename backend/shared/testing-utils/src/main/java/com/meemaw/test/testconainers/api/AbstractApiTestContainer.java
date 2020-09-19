@@ -27,6 +27,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
         .waitingFor(Wait.forHttp("/health").forStatusCode(200))
         .withNetwork(Network.SHARED)
         .withLogConsumer(new Slf4jLogConsumer(log));
+
     this.api = api;
   }
 
@@ -42,6 +43,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
                 withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
               }
             });
+
     super.start();
   }
 

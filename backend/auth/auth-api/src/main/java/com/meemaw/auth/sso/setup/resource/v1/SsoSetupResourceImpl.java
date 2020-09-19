@@ -2,10 +2,10 @@ package com.meemaw.auth.sso.setup.resource.v1;
 
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.IdpServiceRegistry;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.service.SsoSetupService;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;

@@ -135,5 +135,5 @@ VALUES ('000000', 'Insight', 'enterprise');
 
 /* Bootstrap user for Insight organization */
 INSERT INTO auth.user(id, email, organization_id, role, full_name)
-VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', 'admin@insight.io', '000000', 'ADMIN',
+VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', 'admin@insight.io', '000000', 'admin',
         'Admin Admin');

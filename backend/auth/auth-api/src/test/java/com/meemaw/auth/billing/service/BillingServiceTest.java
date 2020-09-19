@@ -2,7 +2,6 @@ package com.meemaw.auth.billing.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.meemaw.auth.billing.datasource.BillingCustomerDatasource;
 import com.meemaw.auth.billing.datasource.BillingInvoiceDatasource;
@@ -12,7 +11,7 @@ import com.meemaw.auth.billing.model.BillingSubscription;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.exception.BoomException;
-import com.meemaw.test.setup.SsoTestSetupUtils;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -21,7 +20,6 @@ import com.stripe.net.ApiResource;
 import com.stripe.param.PaymentMethodCreateParams;
 import com.stripe.param.PaymentMethodCreateParams.CardDetails;
 import com.stripe.param.PaymentMethodCreateParams.Type;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.io.IOException;
@@ -39,11 +37,9 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class BillingServiceTest {
+public class BillingServiceTest extends AbstractAuthApiTest {
 
   @Inject BillingService billingService;
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
   @Inject BillingCustomerDatasource billingCustomerDatasource;
   @Inject BillingInvoiceDatasource billingInvoiceDatasource;
   @Inject UserDatasource userDatasource;
@@ -101,7 +97,7 @@ public class BillingServiceTest {
       throws IOException, StripeException {
     String password = UUID.randomUUID().toString();
     String email = password + "@gmail.com";
-    SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    authApi().signUpAndLogin(email, password);
     AuthUser user = userDatasource.findUser(email).toCompletableFuture().join().get();
 
     // Create new BillingSubscription

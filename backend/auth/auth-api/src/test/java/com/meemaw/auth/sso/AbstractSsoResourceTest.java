@@ -1,25 +1,22 @@
 package com.meemaw.auth.sso;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.auth.sso.oauth.OAuth2Resource;
 import com.meemaw.auth.sso.oauth.github.resource.v1.OAuth2GithubResource;
 import com.meemaw.auth.sso.oauth.google.resource.v1.OAuth2GoogleResource;
 import com.meemaw.auth.sso.oauth.microsoft.resource.v1.OAuth2MicrosoftResource;
-import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
-import io.quarkus.mailer.MockMailbox;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import io.quarkus.test.common.http.TestHTTPResource;
 import java.net.URI;
 import javax.inject.Inject;
 
-public abstract class AbstractSsoResourceTest {
+public abstract class AbstractSsoResourceTest extends AbstractAuthApiTest {
 
   public static final String SIMPLE_REDIRECT = "http://localhost:3000/test";
 
-  @Inject protected MockMailbox mailbox;
-  @Inject protected ObjectMapper objectMapper;
   @Inject protected AppConfig appConfig;
   @Inject protected UserDatasource userDatasource;
   @Inject protected TfaTotpSetupDatasource tfaTotpSetupDatasource;

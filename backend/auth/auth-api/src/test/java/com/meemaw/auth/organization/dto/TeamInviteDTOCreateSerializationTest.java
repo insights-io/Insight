@@ -13,11 +13,12 @@ import org.junit.jupiter.api.Test;
 public class TeamInviteDTOCreateSerializationTest {
 
   @Test
-  public void jacksonSerialization() throws JsonProcessingException {
+  public void jackson___should_correctly_serialize_invite_create_dto()
+      throws JsonProcessingException {
     InviteCreateDTO teamInviteCreate = new InviteCreateDTO("test@gmail.com", UserRole.STANDARD);
-
     String payload = JacksonMapper.get().writeValueAsString(teamInviteCreate);
-    assertThat(payload, sameJson("{\"email\":\"test@gmail.com\",\"role\":\"STANDARD\"}"));
+
+    assertThat(payload, sameJson("{\"email\":\"test@gmail.com\",\"role\":\"standard\"}"));
 
     InviteCreateDTO deserialized = JacksonMapper.get().readValue(payload, InviteCreateDTO.class);
     assertEquals(teamInviteCreate, deserialized);

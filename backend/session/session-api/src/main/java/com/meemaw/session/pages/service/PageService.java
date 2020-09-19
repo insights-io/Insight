@@ -1,5 +1,7 @@
 package com.meemaw.session.pages.service;
 
+import com.meemaw.auth.billing.model.SubscriptionPlan;
+import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.location.model.Location;
@@ -8,12 +10,15 @@ import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.pages.datasource.PageDatasource;
+import com.meemaw.session.sessions.datasource.SessionCountDatasource;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.useragent.model.UserAgentDTO;
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -34,7 +39,17 @@ public class PageService {
   @Inject LocationService locationService;
   @Inject SessionDatasource sessionDatasource;
   @Inject PageDatasource pageDatasource;
+  @Inject SessionCountDatasource sessionCountDatasource;
   @Inject @RestClient OrganizationResource organizationResource;
+
+  private OffsetDateTime getStartOfCurrentBillingPeriod(Organization organization) {
+    int periodDurationDays = 30;
+    OffsetDateTime createdAt = organization.getCreatedAt();
+    Duration duration = Duration.between(createdAt, OffsetDateTime.now());
+    long createdDaysAgo = duration.toDays();
+    long periodsElapsed = createdDaysAgo / periodDurationDays;
+    return createdAt.plus(Duration.ofDays(periodDurationDays).multipliedBy(periodsElapsed));
+  }
 
   /**
    * Create a new page. This method is called as a first action of the tracking script to link
@@ -85,36 +100,57 @@ public class PageService {
                 throw dataResponse.getError().exception();
               }
 
-              // TODO: increment atomic counter
-              // TODO: if free plan and counter > 1000 -- rate limit
+              Organization organization = dataResponse.getData();
+              String sessionCounterKey =
+                  String.format(
+                      "%s-%s",
+                      organization.getId(),
+                      organization.getStartOfCurrentBillingPeriod().toString());
 
-              if (!deviceId.equals(page.getDeviceId())) {
-                log.debug(
-                    "[SESSION]: Unrecognized device -- starting a new session organizationId={}",
-                    organizationId);
-                return createPageAndNewSession(pageId, deviceId, userAgent, ipAddress, page);
-              }
-
-              // recognized device; try to link it with an existing session
-              return sessionDatasource
-                  .findSessionDeviceLink(page.getOrganizationId(), deviceId)
+              // TODO: we should probably only read here and do the incrementing in a separate
+              // TODO: process that reads from Kafka
+              return sessionCountDatasource
+                  .incrementAndGet(sessionCounterKey)
                   .thenCompose(
-                      maybeSessionId -> {
-                        if (maybeSessionId.isEmpty()) {
+                      sessionCount -> {
+                        if (SubscriptionPlan.FREE.equals(organization.getPlan())
+                            && sessionCount > 1000) {
+                          throw Boom.badRequest()
+                              .message(
+                                  "Free plan quota reached. Please upgrade your plan to continue collecting Insights.")
+                              .exception();
+                        }
+
+                        if (!deviceId.equals(page.getDeviceId())) {
                           log.debug(
-                              "[SESSION]: Failed to link to an existing session -- starting new session");
+                              "[SESSION]: Unrecognized device -- starting a new session organizationId={}",
+                              organizationId);
                           return createPageAndNewSession(
                               pageId, deviceId, userAgent, ipAddress, page);
                         }
-                        UUID sessionId = maybeSessionId.get();
-                        MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
-                        log.info(
-                            "[SESSION]: Linking page to an existing session pageId={} sessionId={} organizationId={}",
-                            pageId,
-                            sessionId,
-                            organizationId);
 
-                        return pageDatasource.insertPage(pageId, sessionId, deviceId, page);
+                        // recognized device; try to link it with an existing session
+                        return sessionDatasource
+                            .findSessionDeviceLink(page.getOrganizationId(), deviceId)
+                            .thenCompose(
+                                maybeSessionId -> {
+                                  if (maybeSessionId.isEmpty()) {
+                                    log.debug(
+                                        "[SESSION]: Could not link to an existing session -- starting new session");
+                                    return createPageAndNewSession(
+                                        pageId, deviceId, userAgent, ipAddress, page);
+                                  }
+                                  UUID sessionId = maybeSessionId.get();
+                                  MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
+                                  log.info(
+                                      "[SESSION]: Linking page to an existing session pageId={} sessionId={} organizationId={}",
+                                      pageId,
+                                      sessionId,
+                                      organizationId);
+
+                                  return pageDatasource.insertPage(
+                                      pageId, sessionId, deviceId, page);
+                                });
                       });
             });
   }

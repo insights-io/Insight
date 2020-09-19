@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.tfa.setup.resource.v1;
 
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.sso.tfa.TfaMethod;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.tfa.setup.model.TfaSetup;

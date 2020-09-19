@@ -118,7 +118,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
             .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(creatorId, email, organizationId, role.toString())
+            .values(creatorId, email, organizationId, role.getKey())
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
@@ -144,7 +144,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
         row.getUUID(TOKEN.getName()),
         row.getString(EMAIL.getName()),
         row.getString(ORGANIZATION_ID.getName()),
-        UserRole.valueOf(row.getString(ROLE.getName())),
+        UserRole.fromString(row.getString(ROLE.getName())),
         row.getUUID(CREATOR_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }

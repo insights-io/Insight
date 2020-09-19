@@ -1,8 +1,8 @@
 package com.meemaw.auth.sso.cookie;
 
-import com.meemaw.auth.sso.model.InsightPrincipal;
-import com.meemaw.auth.sso.model.InsightSecurityContext;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightSecurityContext;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestContextUtils;
 import com.meemaw.shared.logging.LoggingConstants;

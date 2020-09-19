@@ -10,7 +10,7 @@ import com.meemaw.auth.organization.model.CreateOrganizationParams;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;

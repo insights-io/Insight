@@ -1,37 +1,29 @@
 package com.meemaw.auth.organization.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromAuthApi;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.billing.model.SubscriptionPlan;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.meemaw.test.setup.SsoTestSetupUtils;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import java.util.List;
-import java.util.UUID;
-import javax.inject.Inject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OrganizationResourceImplTest {
-
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
+public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   private static final String GET_ORGANIZATION_MEMBERS_PATH =
       String.join("/", OrganizationResource.PATH, "members");
@@ -66,7 +58,7 @@ public class OrganizationResourceImplTest {
     DataResponse<OrganizationDTO> dataResponse =
         given()
             .when()
-            .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
             .get(OrganizationResource.PATH)
             .then()
             .statusCode(200)
@@ -82,9 +74,7 @@ public class OrganizationResourceImplTest {
   @Test
   public void get_organization__should_return_organization_with_free_plan__when_new_user()
       throws JsonProcessingException {
-    String password = UUID.randomUUID().toString();
-    String sessionId =
-        SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, password + "@gmail.com", password);
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     DataResponse<OrganizationDTO> dataResponse =
         given()
@@ -130,7 +120,7 @@ public class OrganizationResourceImplTest {
     DataResponse<List<UserDTO>> dataResponse =
         given()
             .when()
-            .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
             .get(GET_ORGANIZATION_MEMBERS_PATH)
             .then()
             .statusCode(200)

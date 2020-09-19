@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 public class PasswordResetRequestSerializationTest {
 
   @Test
-  public void jacksonSerialization() throws JsonProcessingException {
+  public void jackson__should_correctly_serialize_password_reset_request_dto()
+      throws JsonProcessingException {
     PasswordResetRequestDTO signUpCompleteRequest = new PasswordResetRequestDTO("superPassword");
 
     String payload = JacksonMapper.get().writeValueAsString(signUpCompleteRequest);

@@ -2,7 +2,7 @@ package com.meemaw.auth.organization.resource.v1;
 
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.service.OrganizationService;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.Optional;

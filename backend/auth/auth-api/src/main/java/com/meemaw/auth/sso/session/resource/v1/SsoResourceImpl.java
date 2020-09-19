@@ -1,7 +1,6 @@
 package com.meemaw.auth.sso.session.resource.v1;
 
-import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;

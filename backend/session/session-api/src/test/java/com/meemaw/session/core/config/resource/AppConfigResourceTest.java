@@ -29,7 +29,7 @@ public class AppConfigResourceTest {
     String gitCommitSha = "<GIT_COMMIT_SHA>";
     String datasourceURL = PostgresTestExtension.getInstance().getDatasourceURL();
     String kafkaBootstrapServers = KafkaTestExtension.getInstance().getBootstrapServers();
-    String ssoResourceBaseURL = AuthApiTestExtension.getInstance().getBaseURI();
+    String authApiBaseURI = AuthApiTestExtension.getInstance().getBaseURI();
     int elasticsearchPort = ElasticsearchTestExtension.getInstance().getHttpHost().getPort();
 
     given()
@@ -40,11 +40,12 @@ public class AppConfigResourceTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"elasticsearchHttpHost\":[{\"port\":%d,\"schemeName\":\"http\",\"hostName\":\"localhost\"}], \"gitCommitSha\":\"%s\",\"datasourceURL\":\"%s\",\"kafkaBootstrapServers\":\"%s\", \"ssoResourceBaseURL\":\"%s\"}",
+                    "{\"elasticsearchHttpHost\":[{\"port\":%d,\"schemeName\":\"http\",\"hostName\":\"localhost\"}], \"gitCommitSha\":\"%s\",\"datasourceURL\":\"%s\",\"kafkaBootstrapServers\":\"%s\", \"ssoResourceBaseURL\":\"%s\", \"organizationResourceBaseURL\":\"%s\"}",
                     elasticsearchPort,
                     gitCommitSha,
                     datasourceURL,
                     kafkaBootstrapServers,
-                    ssoResourceBaseURL)));
+                    authApiBaseURI,
+                    authApiBaseURI)));
   }
 }

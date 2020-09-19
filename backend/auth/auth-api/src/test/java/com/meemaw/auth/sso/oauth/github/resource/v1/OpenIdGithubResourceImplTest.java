@@ -9,19 +9,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.AbstractIdpService;
 import com.meemaw.auth.sso.AbstractSsoOAuth2ResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.oauth.OAuth2Resource;
 import com.meemaw.auth.sso.oauth.github.OAuth2GithubClient;
 import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
-import com.meemaw.test.setup.SsoTestSetupUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
@@ -171,7 +170,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
       throws JsonProcessingException, GeneralSecurityException {
     String email = "sso-github-login-tfa-full-flow@gmail.com";
     String password = "sso-github-login-tfa-full-flow";
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     given()
         .when()

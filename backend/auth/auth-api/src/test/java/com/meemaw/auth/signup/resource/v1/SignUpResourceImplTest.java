@@ -1,8 +1,8 @@
 package com.meemaw.auth.signup.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.EmailTestUtils.parseLink;
 import static com.meemaw.test.setup.RestAssuredUtils.dontFollowRedirects;
-import static com.meemaw.test.setup.SsoTestSetupUtils.parseLink;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -10,40 +10,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.PhoneNumberDTO;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.setup.SsoTestSetupUtils;
+import com.meemaw.test.setup.AbstractAuthApiTest;
+import com.meemaw.test.setup.EmailTestUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
-import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SignUpResourceImplTest {
+public class SignUpResourceImplTest extends AbstractAuthApiTest {
 
   @TestHTTPResource(SignUpResource.PATH)
   URL signUpResourceBasePath;
-
-  @Inject MockMailbox mailbox;
-
-  @BeforeEach
-  void init() {
-    mailbox.clear();
-  }
 
   @Test
   public void sign_up_not_valid_on_random_id() {
@@ -182,7 +173,7 @@ public class SignUpResourceImplTest {
 
     Mail completeSignUpMail = sent.get(0);
     assertEquals("Insight Support <support@insight.com>", completeSignUpMail.getFrom());
-    String token = SsoTestSetupUtils.parseConfirmationToken(completeSignUpMail);
+    String token = EmailTestUtils.parseConfirmationToken(completeSignUpMail);
 
     assertThat(
         completeSignUpMail.getHtml(),

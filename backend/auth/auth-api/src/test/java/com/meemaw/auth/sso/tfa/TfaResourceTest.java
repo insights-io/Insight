@@ -1,21 +1,18 @@
 package com.meemaw.auth.sso.tfa;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromAuthApi;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.setup.SsoTestSetupUtils;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.security.GeneralSecurityException;
@@ -30,11 +27,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class TfaResourceTest {
+public class TfaResourceTest extends AbstractAuthApiTest {
 
   @Inject UserDatasource userDatasource;
-  @Inject MockMailbox mailbox;
-  @Inject ObjectMapper objectMapper;
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @Test
@@ -53,7 +48,7 @@ public class TfaResourceTest {
   public void list_tfa__should_return_empty_list__when_tfa_no_configured() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(TfaResource.PATH)
         .then()
         .statusCode(200)
@@ -64,7 +59,7 @@ public class TfaResourceTest {
   public void get_tfa__should_throw__when_invalid_method() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(TfaResource.PATH + "/random")
         .then()
         .statusCode(404)
@@ -78,7 +73,7 @@ public class TfaResourceTest {
   public void get_tfa__should_throw__when_tfa_no_configured(String method) {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.join("/", TfaResource.PATH, method))
         .then()
         .statusCode(404)
@@ -118,7 +113,7 @@ public class TfaResourceTest {
   public void delete_tfa__should_return_false__when_user_without_tfa(String method) {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .delete(String.join("/", TfaResource.PATH, method))
         .then()
         .statusCode(200)
@@ -130,7 +125,7 @@ public class TfaResourceTest {
       throws JsonProcessingException, GeneralSecurityException {
     String email = "user-tfa-delete-full-flow@gmail.com";
     String password = "user-tfa-delete-full-flow";
-    String sessionId = SsoTestSetupUtils.signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     given()
         .when()

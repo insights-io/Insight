@@ -84,7 +84,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
   public void writeData(ObjectDataOutput out) throws IOException {
     out.writeUTF(this.id.toString());
     out.writeUTF(this.email);
-    out.writeUTF(this.role.toString());
+    out.writeUTF(this.role.getKey());
     out.writeUTF(this.organizationId);
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
@@ -98,7 +98,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
   public void readData(ObjectDataInput in) throws IOException {
     this.id = UUID.fromString(in.readUTF());
     this.email = in.readUTF();
-    this.role = UserRole.valueOf(in.readUTF());
+    this.role = UserRole.fromString(in.readUTF());
     this.organizationId = in.readUTF();
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();

@@ -1,6 +1,5 @@
 package com.meemaw.auth.sso.session.model;
 
-import com.meemaw.auth.sso.model.SsoSession;
 import javax.ws.rs.core.NewCookie;
 import lombok.Value;
 

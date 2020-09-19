@@ -9,7 +9,7 @@ import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.organization.service.OrganizationInviteService;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;

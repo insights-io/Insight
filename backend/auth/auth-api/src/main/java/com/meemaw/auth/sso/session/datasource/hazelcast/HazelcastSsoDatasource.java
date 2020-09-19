@@ -1,8 +1,8 @@
 package com.meemaw.auth.sso.session.datasource.hazelcast;
 
 import com.hazelcast.map.IMap;
-import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.session.datasource.SsoDatasource;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import io.smallrye.mutiny.Uni;

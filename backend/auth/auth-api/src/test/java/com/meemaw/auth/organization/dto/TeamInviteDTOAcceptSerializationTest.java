@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Test;
 public class TeamInviteDTOAcceptSerializationTest {
 
   @Test
-  public void jacksonSerialization() throws JsonProcessingException {
+  public void jackson__should_correctly_serialize_invite_accept_dto()
+      throws JsonProcessingException {
     InviteAcceptDTO teamInviteAccept = new InviteAcceptDTO("Marko Novak", "superPassword");
     String payload = JacksonMapper.get().writeValueAsString(teamInviteAccept);
     assertThat(payload, sameJson("{\"fullName\":\"Marko Novak\",\"password\":\"superPassword\"}"));
