@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path(SsoResource.PATH)
-@RegisterRestClient(configKey = "sso-resource")
+@RegisterRestClient(configKey = "auth-api")
 public interface SsoResource {
 
   String PATH = "/v1/sso";

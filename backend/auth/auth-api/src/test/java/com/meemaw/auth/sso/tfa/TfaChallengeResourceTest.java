@@ -22,7 +22,7 @@ import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.sso.tfa.totp.model.dto.TfaTotpSetupStartDTO;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sms.MockSmsbox;

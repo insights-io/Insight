@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.UserDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.Optional;

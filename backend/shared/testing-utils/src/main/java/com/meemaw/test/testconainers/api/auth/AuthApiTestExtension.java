@@ -39,10 +39,6 @@ public class AuthApiTestExtension implements BeforeAllCallback {
     String authApiBaseURI = authApi.getBaseURI();
     System.out.println(String.format("[TEST-SETUP]: Connecting to auth-api on=%s", authApiBaseURI));
 
-    return Map.of(
-        "sso-resource/mp-rest/url",
-        authApiBaseURI,
-        "organization-resource/mp-rest/url",
-        authApiBaseURI);
+    return Map.of("auth-api/mp-rest/url", authApiBaseURI);
   }
 }

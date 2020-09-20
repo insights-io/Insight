@@ -13,7 +13,7 @@ import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;

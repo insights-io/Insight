@@ -37,18 +37,22 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   public void start() {
     api.dependencies()
         .forEach(
-            container -> {
-              container.start();
+            dependantContainer -> {
+              if (dependantContainer.isRunning()) {
+                return;
+              }
+
+              dependantContainer.start();
               // TODO: this should be better
-              if (container instanceof PostgresTestContainer) {
-                PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
+              if (dependantContainer instanceof PostgresTestContainer) {
+                PostgresTestContainer postgresTestContainer =
+                    (PostgresTestContainer) dependantContainer;
                 postgresTestContainer.applyFlywayMigrations(api.postgresMigrations());
                 withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
-              } else if (container instanceof AuthApiTestContainer) {
-                AuthApiTestContainer authApiTestContainer = (AuthApiTestContainer) container;
-                withEnv(
-                    "organization-resource/mp-rest/url", authApiTestContainer.getDockerBaseURI());
-                withEnv("sso-resource/mp-rest/url", authApiTestContainer.getDockerBaseURI());
+              } else if (dependantContainer instanceof AuthApiTestContainer) {
+                AuthApiTestContainer authApiTestContainer =
+                    (AuthApiTestContainer) dependantContainer;
+                withEnv("auth-api/mp-rest/url", authApiTestContainer.getDockerBaseURI());
               }
             });
 

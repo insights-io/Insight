@@ -1,7 +1,7 @@
 package com.meemaw.auth.organization.resource.v1;
 
-import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -27,7 +27,7 @@ public interface OrganizationInviteResource {
   @POST
   @CookieAuth
   CompletionStage<Response> createTeamInvite(
-      @NotNull(message = "Required") @Valid InviteCreateDTO body);
+      @NotNull(message = "Required") @Valid TeamInviteCreateDTO body);
 
   @GET
   @CookieAuth
@@ -41,7 +41,7 @@ public interface OrganizationInviteResource {
   @POST
   @Path("{token}/accept")
   CompletionStage<Response> acceptTeamInvite(
-      @PathParam("token") UUID token, @NotNull(message = "Required") @Valid InviteAcceptDTO body);
+      @PathParam("token") UUID token, @NotNull(message = "Required") @Valid TeamInviteAcceptDTO body);
 
   @POST
   @CookieAuth

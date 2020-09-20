@@ -5,7 +5,6 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.location.model.Location;
-import com.meemaw.session.core.config.model.AppConfig;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageDTO;
@@ -24,6 +23,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -34,7 +34,6 @@ import org.slf4j.MDC;
 @Slf4j
 public class PageService {
 
-  @Inject AppConfig appConfig;
   @Inject UserAgentService userAgentService;
   @Inject LocationService locationService;
   @Inject SessionDatasource sessionDatasource;
@@ -52,9 +51,9 @@ public class PageService {
    * included, we try to link it to a existing session active in last 45 minutes. In case such
    * session is not found (doesn't exist or it is more than 45 minutes old), new session is created.
    *
-   * @param page CreatePageDTO payload
-   * @param userAgentString as obtained from User-Agent header
-   * @param ipAddress request ip address
+   * @param page containing all information about the page visit
+   * @param userAgentString obtained from User-Agent header
+   * @param ipAddress page visit request ip address
    * @return PageIdentity
    */
   @Timed(name = "createPage", description = "A measure of how long it takes to create a page")
@@ -75,8 +74,6 @@ public class PageService {
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
-    System.out.println("APP CONFIG: " + appConfig.getOrganizationResourceBaseURL());
-
     return organizationResource
         .organization(organizationId)
         .thenCompose(
@@ -85,7 +82,7 @@ public class PageService {
               DataResponse<OrganizationDTO> dataResponse =
                   response.readEntity(new GenericType<>() {});
 
-              if (status != 200) {
+              if (status != Response.Status.OK.getStatusCode()) {
                 log.error(
                     "[SESSION]: Something went wrong while fetching organization organizationId={} response={}",
                     organizationId,
@@ -153,7 +150,11 @@ public class PageService {
       UUID pageId, UUID deviceId, UserAgentDTO userAgent, String ipAddress, CreatePageDTO page) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
-    log.info("[SESSION]: Creating new session");
+    log.info(
+        "[SESSION]: Creating new session id={} deviceId={} organizationId={}",
+        sessionId,
+        deviceId,
+        page.getOrganizationId());
 
     // TODO: move this to a async queue processing
     Location location = locationService.lookupByIp(ipAddress);
@@ -167,7 +168,11 @@ public class PageService {
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
     MDC.put(LoggingConstants.PAGE_ID, id.toString());
-    log.debug("[SESSION]: get page by id");
+    log.debug(
+        "[SESSION]: get page by id={} sessionId={} organizationId={}",
+        id,
+        sessionId,
+        organizationId);
     return pageDatasource.getPage(id, sessionId, organizationId);
   }
 }

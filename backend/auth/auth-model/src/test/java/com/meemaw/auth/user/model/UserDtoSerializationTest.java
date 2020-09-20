@@ -3,6 +3,7 @@ package com.meemaw.auth.user.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import java.time.OffsetDateTime;
 import java.util.UUID;

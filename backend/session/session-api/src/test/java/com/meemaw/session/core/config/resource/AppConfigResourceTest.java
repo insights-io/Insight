@@ -40,12 +40,11 @@ public class AppConfigResourceTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"elasticsearchHttpHost\":[{\"port\":%d,\"schemeName\":\"http\",\"hostName\":\"localhost\"}], \"gitCommitSha\":\"%s\",\"datasourceURL\":\"%s\",\"kafkaBootstrapServers\":\"%s\", \"ssoResourceBaseURL\":\"%s\", \"organizationResourceBaseURL\":\"%s\"}",
+                    "{\"elasticsearchHttpHost\":[{\"port\":%d,\"schemeName\":\"http\",\"hostName\":\"localhost\"}], \"gitCommitSha\":\"%s\",\"datasourceURL\":\"%s\",\"kafkaBootstrapServers\":\"%s\", \"authApiBaseURL\":\"%s\"}",
                     elasticsearchPort,
                     gitCommitSha,
                     datasourceURL,
                     kafkaBootstrapServers,
-                    authApiBaseURI,
                     authApiBaseURI)));
   }
 }

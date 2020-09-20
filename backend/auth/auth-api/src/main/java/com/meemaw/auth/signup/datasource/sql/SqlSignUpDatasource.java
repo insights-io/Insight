@@ -14,7 +14,7 @@ import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.user.datasource.sql.SqlUserTable;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;

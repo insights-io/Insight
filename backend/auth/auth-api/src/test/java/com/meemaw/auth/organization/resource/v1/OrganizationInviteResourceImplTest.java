@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.MailingConstants;
-import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.test.setup.AbstractAuthApiTest;
@@ -130,7 +130,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void invite_should_fail_when_invalid_email() throws IOException {
     String payload =
-        objectMapper.writeValueAsString(new InviteCreateDTO("notEmail", UserRole.ADMIN));
+        objectMapper.writeValueAsString(new TeamInviteCreateDTO("notEmail", UserRole.ADMIN));
 
     given()
         .when()
@@ -149,7 +149,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   public void invite_flow_should_succeed_on_valid_payload() throws IOException {
     String payload =
         objectMapper.writeValueAsString(
-            new InviteCreateDTO("test-team-invitation@gmail.com", UserRole.ADMIN));
+            new TeamInviteCreateDTO("test-team-invitation@gmail.com", UserRole.ADMIN));
 
     given()
         .when()
@@ -189,7 +189,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
 
     String inviteAcceptPayload =
         objectMapper.writeValueAsString(
-            new InviteAcceptDTO("Marko Novak", "superDuperPassword123"));
+            new TeamInviteAcceptDTO("Marko Novak", "superDuperPassword123"));
 
     given()
         .when()
@@ -228,7 +228,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
 
     String payload =
         objectMapper.writeValueAsString(
-            new InviteCreateDTO("list-invites-test@gmail.com", UserRole.STANDARD));
+            new TeamInviteCreateDTO("list-invites-test@gmail.com", UserRole.STANDARD));
 
     given()
         .when()
@@ -342,7 +342,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
       throws JsonProcessingException {
     String invitedUserEmail = "send-invite-flow@gmail.com";
     String invitePayload =
-        objectMapper.writeValueAsString(new InviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
+        objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
 
     // Invite the user
     given()

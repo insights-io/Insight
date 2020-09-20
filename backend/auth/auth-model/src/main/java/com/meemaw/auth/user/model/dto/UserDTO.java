@@ -1,5 +1,7 @@
-package com.meemaw.auth.user.model;
+package com.meemaw.auth.user.model.dto;
 
+import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserRole;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;

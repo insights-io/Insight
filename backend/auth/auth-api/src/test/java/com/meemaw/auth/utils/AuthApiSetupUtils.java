@@ -9,7 +9,7 @@ import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
 import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.shared.sms.SmsMessage;
