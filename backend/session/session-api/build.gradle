@@ -12,7 +12,6 @@ dependencies {
     implementation project(":auth:auth-api-contracts")
     implementation project(":session:session-model")
     implementation project(":session:session-api-contracts")
-    implementation project(":shared:shared-hazelcast")
     implementation project(":shared:shared-elasticsearch")
     implementation project(":shared:shared-sql")
 

@@ -1,32 +1,25 @@
 package com.meemaw.session.sessions.datasource.hazelcast;
 
-import com.hazelcast.map.IMap;
 import com.meemaw.session.sessions.datasource.SessionCountDatasource;
-import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
-import com.meemaw.shared.hazelcast.processors.IncrementCounterEntryProcessor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+// TODO: this should be moved to billing api and actually use Hazelcast
+// TODO: using in memory implementation for now as there are issues with classloading
+// TODO: when multiple hazelcast instances are started on same machine (locally)
 @ApplicationScoped
 public class HazelcastSessionCountDatasource implements SessionCountDatasource {
 
-  @Inject HazelcastProvider hazelcastProvider;
-
-  private IMap<String, Long> countMap;
-
-  @ConfigProperty(name = "hazelcast.session.count-map")
-  String sessionCountMapName;
-
-  @PostConstruct
-  public void init() {
-    countMap = hazelcastProvider.getInstance().getMap(sessionCountMapName);
-  }
+  private final Map<String, Long> countMap = new HashMap<>();
 
   @Override
   public CompletionStage<Long> incrementAndGet(String key) {
-    return countMap.submitToKey(key, new IncrementCounterEntryProcessor());
+    long currentValue = countMap.getOrDefault(key, 0L);
+    long updatedValue = currentValue + 1;
+    countMap.put(key, updatedValue);
+    return CompletableFuture.completedStage(updatedValue);
   }
 }
