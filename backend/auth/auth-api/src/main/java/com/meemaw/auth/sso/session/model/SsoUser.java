@@ -5,9 +5,9 @@ import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
-import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -84,7 +84,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
   public void writeData(ObjectDataOutput out) throws IOException {
     out.writeUTF(this.id.toString());
     out.writeUTF(this.email);
-    out.writeUTF(this.role.toString());
+    out.writeUTF(this.role.getKey());
     out.writeUTF(this.organizationId);
     out.writeUTF(this.fullName);
     out.writeObject(this.createdAt);
@@ -98,7 +98,7 @@ public class SsoUser implements AuthUser, IdentifiedDataSerializable, Serializab
   public void readData(ObjectDataInput in) throws IOException {
     this.id = UUID.fromString(in.readUTF());
     this.email = in.readUTF();
-    this.role = UserRole.valueOf(in.readUTF());
+    this.role = UserRole.fromString(in.readUTF());
     this.organizationId = in.readUTF();
     this.fullName = in.readUTF();
     this.createdAt = in.readObject();

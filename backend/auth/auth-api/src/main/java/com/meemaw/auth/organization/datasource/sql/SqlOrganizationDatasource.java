@@ -1,14 +1,17 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.CREATED_AT;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.ID;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.INSERT_FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.NAME;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.TABLE;
-import static com.meemaw.auth.organization.datasource.sql.OrganizationTable.UPDATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ID;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.NAME;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.PLAN;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.UPDATED_AT;
 
+import com.meemaw.auth.billing.model.SubscriptionPlan;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
+import com.meemaw.auth.organization.model.CreateOrganizationParams;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.shared.sql.client.SqlPool;
@@ -20,7 +23,6 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -30,46 +32,36 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
   @Inject SqlPool sqlPool;
 
   @Override
-  @Traced
   public CompletionStage<Organization> createOrganization(
-      String id, String company, SqlTransaction transaction) {
-    Query query =
-        sqlPool
-            .getContext()
-            .insertInto(TABLE)
-            .columns(INSERT_FIELDS)
-            .values(id, company)
-            .returning(FIELDS);
-
+      CreateOrganizationParams params, SqlTransaction transaction) {
     return transaction
-        .query(query)
+        .query(createOrganizationQuery(params))
         .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
   }
 
   @Override
-  public CompletionStage<Organization> createOrganization(String organizationId, String company) {
-    Query query =
-        sqlPool
-            .getContext()
-            .insertInto(TABLE)
-            .columns(INSERT_FIELDS)
-            .values(organizationId, company)
-            .returning(FIELDS);
-
+  public CompletionStage<Organization> createOrganization(CreateOrganizationParams params) {
     return sqlPool
-        .execute(query)
+        .execute(createOrganizationQuery(params))
         .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
   }
 
+  private Query createOrganizationQuery(CreateOrganizationParams params) {
+    return sqlPool
+        .getContext()
+        .insertInto(TABLE)
+        .columns(INSERT_FIELDS)
+        .values(params.getId(), params.getName(), params.getPlan())
+        .returning(FIELDS);
+  }
+
   @Override
-  @Traced
   public CompletionStage<Optional<Organization>> findOrganization(String id) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
     return sqlPool.execute(query).thenApply(this::mapOrganizationIfPresent);
   }
 
   @Override
-  @Traced
   public CompletionStage<Optional<Organization>> findOrganization(
       String id, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
@@ -87,6 +79,7 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
     return new OrganizationDTO(
         row.getString(ID.getName()),
         row.getString(NAME.getName()),
+        SubscriptionPlan.fromString(row.getString(PLAN.getName())),
         row.getOffsetDateTime(CREATED_AT.getName()),
         row.getOffsetDateTime(UPDATED_AT.getName()));
   }

@@ -5,11 +5,11 @@ import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.datasource.OrganizationInviteDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
-import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.organization.service.OrganizationInviteService;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
@@ -46,7 +46,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   @Override
   @Traced
   public CompletionStage<TeamInviteDTO> createTeamInvite(
-      InviteCreateDTO invite, InsightPrincipal principal, String acceptInviteURL) {
+      TeamInviteCreateDTO invite, InsightPrincipal principal, String acceptInviteURL) {
     AuthUser authUser = principal.user();
     String organizationId = principal.user().getOrganizationId();
     log.info(
@@ -109,7 +109,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
 
   @Override
   @Traced
-  public CompletionStage<Boolean> acceptTeamInvite(UUID token, InviteAcceptDTO inviteAccept) {
+  public CompletionStage<Boolean> acceptTeamInvite(UUID token, TeamInviteAcceptDTO inviteAccept) {
     log.info("[AUTH]: Accepting team invite attempt for token: {}", token);
     return sqlPool
         .beginTransaction()
@@ -117,7 +117,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   }
 
   private CompletionStage<Boolean> acceptTeamInvite(
-      UUID token, InviteAcceptDTO inviteAccept, SqlTransaction transaction) {
+      UUID token, TeamInviteAcceptDTO inviteAccept, SqlTransaction transaction) {
 
     return inviteDatasource
         .get(token, transaction)

@@ -2,7 +2,7 @@ package com.meemaw.auth.billing.resource.v1;
 
 import com.meemaw.auth.billing.model.dto.CreateSubscriptionDTO;
 import com.meemaw.auth.billing.service.BillingService;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;

@@ -1,5 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/no-danger */
+import { IncomingMessage } from 'http';
+
 import React from 'react';
 import Document, {
   Html,
@@ -14,65 +16,73 @@ import {
   STYLETRON_HYDRATE_CLASSNAME,
 } from 'shared/styles/styletron';
 import { Server, Sheet } from 'styletron-engine-atomic';
-import ky from 'ky-universal';
-import { RenderPageResult } from 'next/dist/next-server/lib/utils';
+import type { RenderPageResult } from 'next/dist/next-server/lib/utils';
 import {
   startSpan,
   IncomingTracedMessage,
   startRequestSpan,
   Span,
 } from 'modules/tracing';
+import { getBoostrapScript } from '@insight/sdk';
 
 type Props = RenderPageResult & {
   stylesheets: Sheet[];
   bootstrapScript: string;
 };
 
+export const getInitialProps = async (
+  req: IncomingMessage | undefined,
+  renderPage: DocumentContext['renderPage'],
+  stylestron: Server
+): Promise<Props> => {
+  const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
+  const tags = { bootstrapScriptURI };
+
+  let span: Span | undefined;
+
+  // Request will be undefined if we are prerendering page
+  if (req) {
+    const incomingTracedMessage = req as IncomingTracedMessage;
+    span = incomingTracedMessage.span
+      ? startSpan('_document.getInitialProps', {
+          childOf: incomingTracedMessage.span,
+          tags,
+        })
+      : startRequestSpan(incomingTracedMessage, tags);
+  }
+
+  const fetchBootstrapScriptPromise = getBoostrapScript(bootstrapScriptURI);
+  const renderPagePromise = renderPage({
+    enhanceApp: (App) => (props) => (
+      <StyletronProvider value={styletron}>
+        <App {...props} />
+      </StyletronProvider>
+    ),
+  });
+
+  const stylesheets = stylestron.getStylesheets() || [];
+
+  try {
+    const [page, bootstrapScript] = await Promise.all([
+      renderPagePromise,
+      fetchBootstrapScriptPromise,
+    ]);
+
+    return {
+      ...page,
+      stylesheets,
+      bootstrapScript: bootstrapScript.replace('<ORG>', '000000'),
+    };
+  } finally {
+    if (span) {
+      span.finish();
+    }
+  }
+};
+
 class InsightDocument extends Document<Props> {
   static async getInitialProps(ctx: DocumentContext): Promise<Props> {
-    const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
-    const tags = { bootstrapScriptURI };
-
-    let span: Span | undefined;
-
-    // Request will be undefined if we are prerendering page
-    if (ctx.req) {
-      const incomingTracedMessage = ctx.req as IncomingTracedMessage;
-      span = incomingTracedMessage.span
-        ? startSpan('_document.getInitialProps', {
-            childOf: incomingTracedMessage.span,
-            tags,
-          })
-        : startRequestSpan(incomingTracedMessage, tags);
-    }
-
-    const fetchBootstrapScriptPromise = ky(bootstrapScriptURI).text();
-    const renderPagePromise = ctx.renderPage({
-      enhanceApp: (App) => (props) => (
-        <StyletronProvider value={styletron}>
-          <App {...props} />
-        </StyletronProvider>
-      ),
-    });
-
-    const stylesheets = (styletron as Server).getStylesheets() || [];
-
-    try {
-      const [page, bootstrapScript] = await Promise.all([
-        renderPagePromise,
-        fetchBootstrapScriptPromise,
-      ]);
-
-      return {
-        ...page,
-        stylesheets,
-        bootstrapScript: bootstrapScript.replace('<ORG>', '000000'),
-      };
-    } finally {
-      if (span) {
-        span.finish();
-      }
-    }
+    return getInitialProps(ctx.req, ctx.renderPage, styletron as Server);
   }
 
   render() {

@@ -2,6 +2,7 @@ package com.meemaw.auth.sso.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.auth.sso.session.model.SsoSession;
 import org.junit.jupiter.api.Test;
 
 public class SsoSessionTest {

@@ -26,3 +26,4 @@ export const createClient = (clientConfig: ClientConfig) => {
 export * from './auth';
 export * from './sessions';
 export * from './core';
+export * from './tracking';

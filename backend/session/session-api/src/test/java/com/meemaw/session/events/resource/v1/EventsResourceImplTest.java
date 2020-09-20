@@ -1,14 +1,13 @@
 package com.meemaw.session.events.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
-import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.test.setup.RestAssuredUtils.sessionCookieExpect401;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.UserEvent;
@@ -16,6 +15,7 @@ import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import com.meemaw.test.rest.data.EventTestData;
 import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(AuthApiTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class EventsResourceImplTest {
+public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
 
   private static final String SEARCH_EVENTS_PATH_TEMPLATE =
       String.join("/", SessionResource.PATH, "%s/events/search");
@@ -87,16 +87,16 @@ public class EventsResourceImplTest {
   @Test
   public void events_search_should_throw_when_unauthenticated() {
     String path = String.format(SEARCH_EVENTS_PATH_TEMPLATE, UUID.randomUUID());
-    cookieExpect401(path, null);
-    cookieExpect401(path, "random");
-    cookieExpect401(path, SsoSession.newIdentifier());
+    sessionCookieExpect401(path, null);
+    sessionCookieExpect401(path, "random");
+    sessionCookieExpect401(path, SsoSession.newIdentifier());
   }
 
   @Test
   public void events_search_should_return_empty_list_on_random_session() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, UUID.randomUUID()))
         .then()
         .statusCode(200)
@@ -111,7 +111,7 @@ public class EventsResourceImplTest {
 
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(path)
         .then()
         .statusCode(400)
@@ -124,7 +124,7 @@ public class EventsResourceImplTest {
   public void events_search_should_return_all_events() throws IOException, URISyntaxException {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?limit=100")
         .then()
         .statusCode(200)
@@ -135,7 +135,7 @@ public class EventsResourceImplTest {
   public void events_search_should_return_event_type_matching_events() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:4")
         .then()
         .statusCode(200)
@@ -145,7 +145,7 @@ public class EventsResourceImplTest {
 
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:100")
         .then()
         .statusCode(200)
@@ -156,7 +156,7 @@ public class EventsResourceImplTest {
   public void events_search_should_return_event_timestamp_matching_events() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.t=lt:1250")
         .then()
         .statusCode(200)
@@ -166,7 +166,7 @@ public class EventsResourceImplTest {
 
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.t=lt:5")
         .then()
         .statusCode(200)
@@ -178,7 +178,7 @@ public class EventsResourceImplTest {
     String searchQuery = "?event.e=gte:11&event.e=lte:12";
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + searchQuery)
         .then()
         .statusCode(200)

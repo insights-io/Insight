@@ -1,10 +1,12 @@
 package com.meemaw.auth.sso.session.datasource.hazelcast;
 
 import com.hazelcast.map.IMap;
-import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.session.datasource.SsoDatasource;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
+import com.meemaw.shared.hazelcast.processors.SetValueEntryProcessor;
 import io.smallrye.mutiny.Uni;
 import java.util.Collections;
 import java.util.Optional;
@@ -117,7 +119,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
         .thenCompose(
             sessions ->
                 sessionToUserMap
-                    .submitToKeys(sessions, new SetUserEntryProcessor(value))
+                    .submitToKeys(sessions, new SetValueEntryProcessor<>(value))
                     .thenApply(ignored -> sessions));
   }
 }

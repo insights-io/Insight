@@ -1,9 +1,9 @@
 package com.meemaw.auth.organization.resource.v1;
 
-import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.service.OrganizationInviteService;
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
@@ -34,7 +34,7 @@ public class OrganizationInviteResourceImpl implements OrganizationInviteResourc
   }
 
   @Override
-  public CompletionStage<Response> createTeamInvite(InviteCreateDTO body) {
+  public CompletionStage<Response> createTeamInvite(TeamInviteCreateDTO body) {
     return inviteService
         .createTeamInvite(body, principal, getAcceptInviteURL())
         .thenApply(DataResponse::created);
@@ -51,7 +51,7 @@ public class OrganizationInviteResourceImpl implements OrganizationInviteResourc
   }
 
   @Override
-  public CompletionStage<Response> acceptTeamInvite(UUID token, InviteAcceptDTO body) {
+  public CompletionStage<Response> acceptTeamInvite(UUID token, TeamInviteAcceptDTO body) {
     return inviteService.acceptTeamInvite(token, body).thenApply(DataResponse::created);
   }
 

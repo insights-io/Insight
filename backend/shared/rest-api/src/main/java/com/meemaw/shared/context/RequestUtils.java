@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
@@ -85,6 +86,12 @@ public final class RequestUtils {
     return base + ":" + url.getPort();
   }
 
+  public static URI getServerBaseURI(UriInfo info, HttpServerRequest request) {
+    String proto = request.getHeader(MissingHttpHeaders.X_FORWARDED_PROTO);
+    String host = request.getHeader(MissingHttpHeaders.X_FORWARDED_HOST);
+    return URI.create(getServerBaseURL(info, proto, host));
+  }
+
   /**
    * Returns server base URL as seen from outer World. In cases when service is behind an Ingress,
    * X-Forwarded-* headers are used.
@@ -97,22 +104,17 @@ public final class RequestUtils {
     return sneakyURL(getServerBaseURI(info, request));
   }
 
-  public static URI getServerBaseURI(UriInfo info, HttpServerRequest request) {
-    String proto = request.getHeader(MissingHttpHeaders.X_FORWARDED_PROTO);
-    String host = request.getHeader(MissingHttpHeaders.X_FORWARDED_HOST);
-    return URI.create(getServerBaseURL(info, proto, host));
-  }
-
   /**
    * Returns server base URL as seen from outer World. In cases when service is behind an Ingress, *
    * X-Forwarded-* headers are used.
    *
    * @param info request uri info
-   * @param forwardedProto X-Forwarded-Proto header value (can be null)
-   * @param forwardedHost X-Forwarded-Host header value (can be null)
+   * @param forwardedProto X-Forwarded-Proto header value
+   * @param forwardedHost X-Forwarded-Host header value
    * @return server base URL
    */
-  public static String getServerBaseURL(UriInfo info, String forwardedProto, String forwardedHost) {
+  public static String getServerBaseURL(
+      UriInfo info, @Nullable String forwardedProto, @Nullable String forwardedHost) {
     if (forwardedProto != null && forwardedHost != null) {
       return forwardedProto + "://" + forwardedHost;
     }

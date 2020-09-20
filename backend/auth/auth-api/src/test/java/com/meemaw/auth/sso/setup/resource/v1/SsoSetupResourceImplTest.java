@@ -1,17 +1,15 @@
 package com.meemaw.auth.sso.setup.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromAuthApi;
-import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.AbstractSsoResourceTest;
-import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -57,7 +55,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   public void get_setup__should_throw_404__when_no_setup() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(SsoSetupResource.PATH)
         .then()
         .statusCode(404)
@@ -82,7 +80,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   public void setup__should_fail__when_invalid_content_type() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(415)
@@ -96,7 +94,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
@@ -111,7 +109,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body("{}")
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
@@ -126,7 +124,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body("{\"method\": \"random\", \"configurationEndpoint\": \"random\"}")
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
@@ -141,7 +139,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body("{\"method\": \"saml\"}")
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
@@ -156,7 +154,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body("{\"method\": \"saml\", \"configurationEndpoint\": \"random\"}")
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(422)
@@ -175,7 +173,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(JacksonMapper.get().writeValueAsString(body))
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
@@ -194,7 +192,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(JacksonMapper.get().writeValueAsString(body))
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
@@ -215,7 +213,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(JacksonMapper.get().writeValueAsString(body))
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
@@ -228,7 +226,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   public void sso_saml_setup__should_fail__when_non_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
     String password = UUID.randomUUID().toString();
-    String sessionId = signUpAndLogin(mailbox, objectMapper, password + "@gmail.com", password);
+    String sessionId = authApi().signUpAndLogin(password + "@gmail.com", password);
 
     CreateSsoSetupDTO body =
         new CreateSsoSetupDTO(
@@ -253,7 +251,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
       throws MalformedURLException, JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = password + "@snuderls5.io";
-    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     URL configurationEndpoint =
         new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
@@ -305,7 +303,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   public void sso_google_setup__should_work__when_business_email() throws JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = password + "@snuderls10.io";
-    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
     CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
 
     given()

@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso;
 
-import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
+import com.meemaw.auth.sso.oauth.OAuth2Resource;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URLDecoder;

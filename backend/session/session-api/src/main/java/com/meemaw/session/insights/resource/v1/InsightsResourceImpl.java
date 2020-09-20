@@ -1,6 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.shared.context.RequestUtils;

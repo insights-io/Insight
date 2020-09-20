@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.tfa.challenge.resource.v1;
 
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.tfa.TfaMethod;
 import com.meemaw.auth.sso.tfa.VerificationSessionExpiredException;
 import com.meemaw.auth.sso.tfa.challenge.datasource.TfaChallengeDatasource;

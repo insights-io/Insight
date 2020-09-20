@@ -1,13 +1,13 @@
 package com.meemaw.auth.billing.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromAuthApi;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.billing.model.dto.CreateSubscriptionDTO;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SubscriptionResourceImplTest {
+public class SubscriptionResourceImplTest extends AbstractAuthApiTest {
 
   String eventPath = SubscriptionResource.PATH + "/" + "event";
 
@@ -109,7 +109,7 @@ public class SubscriptionResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SubscriptionResource.PATH)
         .then()
         .statusCode(400)
@@ -123,7 +123,7 @@ public class SubscriptionResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body("{}")
         .post(SubscriptionResource.PATH)
         .then()
@@ -138,7 +138,7 @@ public class SubscriptionResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body(JacksonMapper.get().writeValueAsString(new CreateSubscriptionDTO("random")))
         .post(SubscriptionResource.PATH)
         .then()
@@ -153,7 +153,7 @@ public class SubscriptionResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body(
             JacksonMapper.get()
                 .writeValueAsString(new CreateSubscriptionDTO("pm_1HS5TUI1ysvdCIIxoLNYYB9S")))

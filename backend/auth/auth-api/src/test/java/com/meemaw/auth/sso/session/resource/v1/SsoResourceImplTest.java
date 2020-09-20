@@ -1,37 +1,32 @@
 package com.meemaw.auth.sso.session.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.login;
-import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
-import static com.meemaw.test.setup.SsoTestSetupUtils.signUpRequestMock;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.oauth.OAuth2Resource;
 import com.meemaw.auth.sso.oauth.google.resource.v1.OAuth2GoogleResource;
-import com.meemaw.auth.sso.oauth.shared.OAuth2Resource;
-import com.meemaw.auth.sso.resource.v1.SsoResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
-import com.meemaw.auth.sso.setup.model.CreateSsoSetupDTO;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.UserDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -58,11 +53,9 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SsoResourceImplTest {
+public class SsoResourceImplTest extends AbstractAuthApiTest {
 
-  @Inject MockMailbox mailbox;
   @Inject UserDatasource userDatasource;
-  @Inject ObjectMapper objectMapper;
   @Inject AppConfig appConfig;
 
   @TestHTTPResource(SamlResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
@@ -80,7 +73,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_invalid_contentType() {
+  public void login__should_fail__when_invalid_content_type() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
@@ -93,7 +86,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_no_payload() {
+  public void login__should_fail__when_no_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -106,7 +99,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_invalid_payload() {
+  public void login__should_fail__when_invalid_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -121,7 +114,7 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void login_should_fail_when_invalid_credentials() {
+  public void login__should_fail__when_invalid_credentials() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -172,7 +165,7 @@ public class SsoResourceImplTest {
       throws JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = password + "@insight-io.com2";
-    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
     CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
     given()
         .when()
@@ -237,7 +230,7 @@ public class SsoResourceImplTest {
           throws JsonProcessingException, MalformedURLException {
     String password = UUID.randomUUID().toString();
     String email = password + "@insight-io.com";
-    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
     CreateSsoSetupDTO body =
         new CreateSsoSetupDTO(
             SsoMethod.SAML,
@@ -291,7 +284,7 @@ public class SsoResourceImplTest {
   @Test
   public void login_should_fail_when_user_with_unfinished_signUp() throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
-        signUpRequestMock("login-no-complete@gmail.com", "password123");
+        authApi().signUpRequestMock("login-no-complete@gmail.com", "password123");
 
     given()
         .when()
@@ -343,8 +336,7 @@ public class SsoResourceImplTest {
 
   @Test
   public void logout_should_clear_cookie_on_existing_cookie() throws JsonProcessingException {
-    String sessionId =
-        signUpAndLogin(mailbox, objectMapper, "test-logout@gmail.com", "test-logout-password");
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
         .when()
@@ -361,8 +353,8 @@ public class SsoResourceImplTest {
     String email = "test-logoug-sso-sessions@gmail.com";
     String password = "password123";
 
-    String firstSessionId = signUpAndLogin(mailbox, objectMapper, email, password);
-    String secondSessionId = login(email, password);
+    String firstSessionId = authApi().signUpAndLogin(email, password);
+    String secondSessionId = authApi().login(email, password);
 
     given()
         .when()
@@ -443,8 +435,8 @@ public class SsoResourceImplTest {
     String email = "test-logout-from-all-devices@gmail.com";
     String password = "test-logout-password";
 
-    String firstSessionId = signUpAndLogin(mailbox, objectMapper, email, password);
-    String secondSessionId = login(email, password);
+    String firstSessionId = authApi().signUpAndLogin(email, password);
+    String secondSessionId = authApi().login(email, password);
 
     // Make sure sessions are not the same
     assertNotEquals(firstSessionId, secondSessionId);
@@ -586,7 +578,7 @@ public class SsoResourceImplTest {
   public void sso_flow_should_work_with_registered_user() throws JsonProcessingException {
     String email = "sso_flow_test@gmail.com";
     String password = "sso_flow_test_password";
-    String sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+    String sessionId = authApi().signUpAndLogin(email, password);
 
     AuthUser authUser = userDatasource.findUser(email).toCompletableFuture().join().orElseThrow();
 
@@ -644,10 +636,9 @@ public class SsoResourceImplTest {
   }
 
   @Test
-  public void sessions_should_return_collection_on_existing_sessionId_cookie()
+  public void sessions__should_return_collection__when_existing_sessionId_cookie()
       throws JsonProcessingException {
-    String sessionId =
-        signUpAndLogin(mailbox, objectMapper, "test-sso-sessions@gmail.com", "password123");
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
         .when()

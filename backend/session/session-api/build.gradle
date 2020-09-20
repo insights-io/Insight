@@ -1,17 +1,18 @@
 plugins {
-    id 'io.quarkus'
+    id "io.quarkus"
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-undertow-websockets'
-    implementation 'io.quarkus:quarkus-reactive-pg-client'
-    implementation 'io.quarkus:quarkus-rest-client'
-    implementation 'nl.basjes.parse.useragent:yauaa:5.19'
-    implementation project(':events:events-model')
-    implementation project(':auth:auth-sidecar')
-    implementation project(':session:session-model')
-    implementation project(':session:session-api-contracts')
-    implementation project(':shared:shared-elasticsearch')
+    implementation "io.quarkus:quarkus-undertow-websockets"
+    implementation "io.quarkus:quarkus-reactive-pg-client"
+    implementation "io.quarkus:quarkus-rest-client-jackson"
+    implementation "nl.basjes.parse.useragent:yauaa:5.19"
+    implementation project(":events:events-model")
+    implementation project(":auth:auth-sidecar")
+    implementation project(":auth:auth-api-contracts")
+    implementation project(":session:session-model")
+    implementation project(":session:session-api-contracts")
+    implementation project(":shared:shared-elasticsearch")
     implementation project(":shared:shared-sql")
 
     testImplementation project(':shared:testing-utils')
@@ -19,5 +20,5 @@ dependencies {
 }
 
 configurations {
-    testRuntimeClasspath.exclude group: 'io.smallrye.reactive', module: 'smallrye-reactive-streams-operators'
+    testRuntimeClasspath.exclude group: "io.smallrye.reactive", module: "smallrye-reactive-streams-operators"
 }

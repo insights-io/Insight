@@ -3,7 +3,7 @@ package com.meemaw.auth.signup.resource.v1;
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.service.SignUpServiceImpl;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;

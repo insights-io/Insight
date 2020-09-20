@@ -1,14 +1,14 @@
 package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
+import static com.meemaw.test.setup.RestAssuredUtils.sessionCookieExpect401;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.session.sessions.v1.SessionResource;
+import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 @QuarkusTestResource(AuthApiTestResource.class)
-public class SessionResourceValidationTest {
+public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
 
   @Test
-  public void post_page_should_throw_error_when_unsupported_media_type() {
+  public void post_page__should_throw_error__when_unsupported_media_type() {
     given()
         .when()
         .contentType(TEXT_PLAIN)
@@ -41,7 +41,7 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void post_page_should_throw_error_when_empty_payload() {
+  public void post_page__should_throw_error__when_empty_payload() {
     given()
         .when()
         .contentType(APPLICATION_JSON)
@@ -54,7 +54,7 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void post_page_should_throw_error_when_empty_json() {
+  public void post_page__should_throw__when_empty_json() {
     given()
         .when()
         .contentType(APPLICATION_JSON)
@@ -68,7 +68,7 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void post_page_should_throw_error_when_robot_user_agent()
+  public void post_page__should_throw_error__when_robot_user_agent()
       throws URISyntaxException, IOException {
     String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
 
@@ -85,7 +85,7 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void post_page_should_throw_error_when_hacker_user_agent()
+  public void post_page__should_throw_error__when_hacker_user_agent()
       throws URISyntaxException, IOException {
     String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
 
@@ -103,7 +103,7 @@ public class SessionResourceValidationTest {
   }
 
   @Test
-  public void post_page_should_throw_error_when_missing_user_agent()
+  public void post_page__should_throw_error__when_empty_user_agent()
       throws URISyntaxException, IOException {
     String payload = Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI()));
 
@@ -117,14 +117,14 @@ public class SessionResourceValidationTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"You're a robot\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"userAgent\":\"Required\"}}}"));
   }
 
   @Test
-  public void get_sessions_should_be_under_cookie_auth() {
-    cookieExpect401(SessionResource.PATH, null);
-    cookieExpect401(SessionResource.PATH, "random");
-    cookieExpect401(SessionResource.PATH, SsoSession.newIdentifier());
+  public void get_sessions__should_be_under_cookie_auth() {
+    sessionCookieExpect401(SessionResource.PATH, null);
+    sessionCookieExpect401(SessionResource.PATH, "random");
+    sessionCookieExpect401(SessionResource.PATH, SsoSession.newIdentifier());
   }
 
   @Test
@@ -135,7 +135,7 @@ public class SessionResourceValidationTest {
 
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(path)
         .then()
         .statusCode(400)
@@ -146,15 +146,15 @@ public class SessionResourceValidationTest {
 
   @Test
   @Disabled // TODO: enable once S2S auth
-  public void get_page_should_be_under_cookie_auth() {
+  public void get_page__should_be_under_cookie_auth() {
     String path =
         String.format(
             SessionResourceImplTest.SESSION_PAGE_PATH_TEMPLATE,
             UUID.randomUUID(),
             UUID.randomUUID());
 
-    cookieExpect401(path, null);
-    cookieExpect401(path, "random");
-    cookieExpect401(path, SsoSession.newIdentifier());
+    sessionCookieExpect401(path, null);
+    sessionCookieExpect401(path, "random");
+    sessionCookieExpect401(path, SsoSession.newIdentifier());
   }
 }

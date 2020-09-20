@@ -2,7 +2,7 @@ package com.meemaw.auth.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;

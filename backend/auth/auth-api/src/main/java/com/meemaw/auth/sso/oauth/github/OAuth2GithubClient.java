@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,7 +44,7 @@ public class OAuth2GithubClient
   protected CompletionStage<HttpResponse<Buffer>> requestUserInfo(GithubTokenResponse token) {
     return webClient
         .getAbs(TOKEN_INFO_SERVER_URL)
-        .putHeader("Authorization", "token " + token.getAccessToken())
+        .putHeader(HttpHeaders.AUTHORIZATION, "token " + token.getAccessToken())
         .send()
         .subscribeAsCompletionStage();
   }

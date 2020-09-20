@@ -1,21 +1,19 @@
 package com.meemaw.auth.organization.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.signUpAndLogin;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.core.MailingConstants;
-import com.meemaw.auth.organization.model.dto.InviteAcceptDTO;
-import com.meemaw.auth.organization.model.dto.InviteCreateDTO;
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
@@ -27,30 +25,19 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OrganizationInviteResourceImplTest {
-
-  @Inject MockMailbox mailbox;
-
-  @Inject ObjectMapper objectMapper;
+public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
 
   private static String sessionId;
-
-  @BeforeEach
-  void init() {
-    mailbox.clear();
-  }
 
   /**
    * Signs up and logins with a test user if necessary.
@@ -61,7 +48,7 @@ public class OrganizationInviteResourceImplTest {
     if (sessionId == null) {
       String email = "org_invite_test@gmail.com";
       String password = "org_invite_test_password";
-      sessionId = signUpAndLogin(mailbox, objectMapper, email, password);
+      sessionId = authApi().signUpAndLogin(email, password);
     }
 
     return sessionId;
@@ -123,7 +110,7 @@ public class OrganizationInviteResourceImplTest {
   }
 
   @Test
-  public void invite_should_fail_when_invalid_role() throws URISyntaxException, IOException {
+  public void invite__should_fail__when_invalid_role() throws URISyntaxException, IOException {
     String payload =
         Files.readString(Path.of(getClass().getResource("/org/invite/invalidRole.json").toURI()));
 
@@ -134,16 +121,16 @@ public class OrganizationInviteResourceImplTest {
         .body(payload)
         .post(OrganizationInviteResource.PATH)
         .then()
-        .statusCode(422)
+        .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"role\":\"not one of the values accepted for Enum class: [STANDARD, ADMIN]\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"role\":\"Invalid Value\"}}}"));
   }
 
   @Test
   public void invite_should_fail_when_invalid_email() throws IOException {
     String payload =
-        objectMapper.writeValueAsString(new InviteCreateDTO("notEmail", UserRole.ADMIN));
+        objectMapper.writeValueAsString(new TeamInviteCreateDTO("notEmail", UserRole.ADMIN));
 
     given()
         .when()
@@ -162,7 +149,7 @@ public class OrganizationInviteResourceImplTest {
   public void invite_flow_should_succeed_on_valid_payload() throws IOException {
     String payload =
         objectMapper.writeValueAsString(
-            new InviteCreateDTO("test-team-invitation@gmail.com", UserRole.ADMIN));
+            new TeamInviteCreateDTO("test-team-invitation@gmail.com", UserRole.ADMIN));
 
     given()
         .when()
@@ -202,7 +189,7 @@ public class OrganizationInviteResourceImplTest {
 
     String inviteAcceptPayload =
         objectMapper.writeValueAsString(
-            new InviteAcceptDTO("Marko Novak", "superDuperPassword123"));
+            new TeamInviteAcceptDTO("Marko Novak", "superDuperPassword123"));
 
     given()
         .when()
@@ -228,9 +215,7 @@ public class OrganizationInviteResourceImplTest {
 
   @Test
   public void list_invites_should_return_collection() throws IOException {
-    String sessionId =
-        signUpAndLogin(
-            mailbox, objectMapper, "list-invites-fetcher@gmail.com", "list-invites-fetcher");
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
         .when()
@@ -243,7 +228,7 @@ public class OrganizationInviteResourceImplTest {
 
     String payload =
         objectMapper.writeValueAsString(
-            new InviteCreateDTO("list-invites-test@gmail.com", UserRole.STANDARD));
+            new TeamInviteCreateDTO("list-invites-test@gmail.com", UserRole.STANDARD));
 
     given()
         .when()
@@ -310,7 +295,8 @@ public class OrganizationInviteResourceImplTest {
   }
 
   @Test
-  public void delete_invite_should_fail_when_invalid_token_param() throws JsonProcessingException {
+  public void delete_invite__should_fail__when_invalid_token_param()
+      throws JsonProcessingException {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, getSessionId())
@@ -324,7 +310,7 @@ public class OrganizationInviteResourceImplTest {
   }
 
   @Test
-  public void send_invite_should_fail_when_invalid_contentType() {
+  public void send_invite__should_fail__when_invalid_content_type() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
@@ -338,7 +324,7 @@ public class OrganizationInviteResourceImplTest {
   }
 
   @Test
-  public void send_invite_should_fail_when_not_authenticated() {
+  public void send_invite__should_fail__when_not_authenticated() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -352,10 +338,11 @@ public class OrganizationInviteResourceImplTest {
   }
 
   @Test
-  public void send_invite_flow_should_succeed_on_existing_invite() throws JsonProcessingException {
+  public void send_invite_flow__should_succeed__when_existing_invite()
+      throws JsonProcessingException {
     String invitedUserEmail = "send-invite-flow@gmail.com";
     String invitePayload =
-        objectMapper.writeValueAsString(new InviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
+        objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
 
     // Invite the user
     given()

@@ -1,15 +1,15 @@
 package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
-import static com.meemaw.test.setup.SsoTestSetupUtils.cookieExpect401;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdmin;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.test.setup.RestAssuredUtils.sessionCookieExpect401;
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.auth.sso.model.SsoSession;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTestResource(AuthApiTestResource.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class InsightResourceImplTest {
+public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   private static OffsetDateTime createdAt;
   private static final AtomicBoolean hasBeenSetup = new AtomicBoolean(false);
@@ -43,16 +43,16 @@ public class InsightResourceImplTest {
 
   @Test
   public void get_session_insights_count__should_throw__on_unauthenticated() {
-    cookieExpect401(COUNT_PATH, null);
-    cookieExpect401(COUNT_PATH, "random");
-    cookieExpect401(COUNT_PATH, SsoSession.newIdentifier());
+    sessionCookieExpect401(COUNT_PATH, null);
+    sessionCookieExpect401(COUNT_PATH, "random");
+    sessionCookieExpect401(COUNT_PATH, SsoSession.newIdentifier());
   }
 
   @Test
   public void get_session_insights_count__should_throw__on_unsupported_fields() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("random", "gte:aba")
         .queryParam("aba", "gtecaba")
         .queryParam("group_by", "another")
@@ -70,7 +70,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_count__should_return_count__on_empty_request() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
         .then()
@@ -82,7 +82,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_count__should_return_count__on_request_with_filters() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .queryParam("location.city", "eq:Maribor")
         .get(COUNT_PATH)
@@ -95,7 +95,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_count__should_return_counts__on_group_by_country() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("group_by", "location.countryName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
@@ -111,7 +111,7 @@ public class InsightResourceImplTest {
       get_session_insights_count__should_return_counts__on_group_by_country_and_continent() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("group_by", "location.countryName,location.continentName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
@@ -126,7 +126,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_count__should_return_counts__on_group_by_device() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("group_by", "user_agent.deviceClass")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
@@ -139,16 +139,16 @@ public class InsightResourceImplTest {
 
   @Test
   public void get_session_insights_distinct__should_throw__on_unauthenticated() {
-    cookieExpect401(DISTINCT_PATH, null);
-    cookieExpect401(DISTINCT_PATH, "random");
-    cookieExpect401(DISTINCT_PATH, SsoSession.newIdentifier());
+    sessionCookieExpect401(DISTINCT_PATH, null);
+    sessionCookieExpect401(DISTINCT_PATH, "random");
+    sessionCookieExpect401(DISTINCT_PATH, SsoSession.newIdentifier());
   }
 
   @Test
   public void get_session_insights_distinct__should_throw__when_no_columns() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .get(DISTINCT_PATH)
         .then()
         .statusCode(400)
@@ -161,7 +161,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_return_cities() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "location.city")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -174,7 +174,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_return_continents() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "location.continentName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -187,7 +187,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_return_countries() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "location.countryName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -200,7 +200,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_return_regions() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "location.regionName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -213,7 +213,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_return_browser_name() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "user_agent.browserName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -226,7 +226,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_return_operating_system_name() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "user_agent.operatingSystemName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -239,7 +239,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_return_device_class() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "user_agent.deviceClass")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -252,7 +252,7 @@ public class InsightResourceImplTest {
   public void get_session_insights_distinct__should_throw__when_unexpected_fields() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .queryParam("on", "random")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)

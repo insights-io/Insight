@@ -1,6 +1,6 @@
 package com.meemaw.auth.signup.model.dto;
 
-import com.meemaw.auth.user.model.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.shared.validation.Password;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;

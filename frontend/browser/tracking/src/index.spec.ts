@@ -16,7 +16,8 @@ declare global {
 }
 
 const SERVE_PORT = process.env.SERVE_PORT || 5000;
-const I_ORGANIZATION = 'test-1';
+// TODO: should probably use some other organization to not abuse
+const I_ORGANIZATION = '000000';
 const I_HOST = `localhost:${SERVE_PORT}`;
 const beaconApiBaseURL =
   process.env.BEACON_API_BASE_URL || 'http://localhost:8081';
@@ -81,9 +82,9 @@ describe('tracking script', () => {
 
       console.log('Waiting for session api response...');
       const createSessionURI = `${sessionApiBaseURL}/v1/sessions`;
-      const pageResponse = await page.waitForResponse((resp: Response) => {
-        return resp.url() === createSessionURI;
-      });
+      const pageResponse = await page.waitForResponse(
+        (resp: Response) => resp.url() === createSessionURI
+      );
 
       const pageRequest = pageResponse.request();
       const pageRequestHeaders = responseRequestHeaders(pageResponse);
@@ -116,9 +117,9 @@ describe('tracking script', () => {
       await page.click('button[data-testid="xhr-button"]');
 
       console.log('Waiting for beacon api response...');
-      let beaconResponse = await page.waitForResponse((resp: Response) => {
-        return resp.url() === beaconBeatURI;
-      });
+      let beaconResponse = await page.waitForResponse(
+        (resp: Response) => resp.url() === beaconBeatURI
+      );
 
       const beaconRequestHeaders = responseRequestHeaders(beaconResponse);
 

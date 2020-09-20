@@ -1,5 +1,5 @@
 plugins {
-    id 'io.quarkus'
+    id "io.quarkus"
 }
 
 dependencies {
@@ -7,7 +7,6 @@ dependencies {
     implementation "io.quarkus:quarkus-mailer"
     implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
     implementation "org.mindrot:jbcrypt:0.4"
-    implementation "com.hazelcast:hazelcast:${hazelcastVersion}"
     implementation "com.j256.two-factor-auth:two-factor-auth:1.0"
     implementation "net.glxn.qrgen:javase:2.0"
     implementation "org.opensaml:opensaml-saml-impl:3.4.5"
@@ -17,6 +16,7 @@ dependencies {
     implementation project(":shared:rest-api")
     implementation project(":shared:shared-sql")
     implementation project(":shared:shared-sms")
+    implementation project(":shared:shared-hazelcast")
 
     testImplementation project(":shared:testing-utils")
 }

@@ -1,6 +1,5 @@
 package com.meemaw.auth.sso.session.model;
 
-import com.meemaw.auth.sso.model.SsoSession;
 import java.net.URL;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;

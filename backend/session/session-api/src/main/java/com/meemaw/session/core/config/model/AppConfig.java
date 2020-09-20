@@ -21,6 +21,6 @@ public class AppConfig extends AppConfigBase {
   @ConfigProperty(name = "kafka.bootstrap.servers")
   String kafkaBootstrapServers;
 
-  @ConfigProperty(name = "sso-resource/mp-rest/url")
-  String ssoResourceBaseURL;
+  @ConfigProperty(name = "auth-api/mp-rest/url")
+  String authApiBaseURL;
 }

@@ -1,6 +1,6 @@
 package com.meemaw.session.sessions.resource.v1;
 
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.pages.service.PageService;
 import com.meemaw.session.sessions.datasource.SessionTable;
@@ -31,11 +31,11 @@ public class SessionResourceImpl implements SessionResource {
   @Inject SessionSocketService sessionSocketService;
 
   @Override
-  public CompletionStage<Response> createPage(CreatePageDTO body, String userAgentString) {
+  public CompletionStage<Response> createPage(CreatePageDTO body, String userAgent) {
     String ipAddress = RequestUtils.getRemoteAddress(request);
 
     return pageService
-        .createPage(body, userAgentString, ipAddress)
+        .createPage(body, userAgent, ipAddress)
         .thenApply(
             pageIdentity -> {
               sessionSocketService.pageStart(pageIdentity.getPageId());

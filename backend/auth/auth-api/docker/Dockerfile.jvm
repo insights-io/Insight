@@ -11,6 +11,7 @@ COPY shared/rest-api/ /backend/shared/rest-api/
 COPY shared/rest/ /backend/shared/rest/
 COPY shared/shared-sql/ /backend/shared/shared-sql/
 COPY shared/shared-sms/ /backend/shared/shared-sms/
+COPY shared/shared-hazelcast/ /backend/shared/shared-hazelcast/
 
 RUN gradle auth:auth-api:quarkusBuild --uber-jar
 

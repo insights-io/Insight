@@ -1,7 +1,7 @@
 package com.meemaw.auth.user.phone.datasource;
 
 import com.hazelcast.map.IMap;
-import com.meemaw.auth.sso.session.datasource.hazelcast.HazelcastProvider;
+import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -35,7 +35,7 @@ public class HazelcastUserPhoneCodeDatasource implements UserPhoneCodeDatasource
   public CompletionStage<Integer> setCode(UUID userId, int code) {
     return userPhoneCodeMap
         .setAsync(userId, code, VALIDITY_SECONDS, TimeUnit.SECONDS)
-        .thenApply(i1 -> VALIDITY_SECONDS);
+        .thenApply(ignored -> VALIDITY_SECONDS);
   }
 
   @Override

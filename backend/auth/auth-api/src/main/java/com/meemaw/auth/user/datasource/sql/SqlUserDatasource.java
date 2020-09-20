@@ -20,10 +20,10 @@ import com.meemaw.auth.sso.tfa.TfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
-import com.meemaw.auth.user.model.UserDTO;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.core.json.JsonObject;
@@ -78,8 +78,7 @@ public class SqlUserDatasource implements UserDatasource {
             .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(
-                email, fullName, organizationId, role.toString(), JsonObject.mapFrom(phoneNumber))
+            .values(email, fullName, organizationId, role.getKey(), JsonObject.mapFrom(phoneNumber))
             .returning(FIELDS);
 
     return transaction.query(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
@@ -138,7 +137,7 @@ public class SqlUserDatasource implements UserDatasource {
         row.getUUID(ID.getName()),
         row.getString(EMAIL.getName()),
         row.getString(FULL_NAME.getName()),
-        UserRole.valueOf(row.getString(ROLE.getName())),
+        UserRole.fromString(row.getString(ROLE.getName())),
         row.getString(ORGANIZATION_ID.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()),
         row.getOffsetDateTime(UPDATED_AT.getName()),

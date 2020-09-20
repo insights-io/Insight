@@ -6,11 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
+import com.meemaw.auth.organization.model.CreateOrganizationParams;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.model.SsoSession;
 import com.meemaw.auth.sso.saml.service.SamlService;
+import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
@@ -103,7 +104,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(organizationId, "Test")
+            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -187,7 +188,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(organizationId, "Test")
+            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -228,7 +229,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(organizationId, "Test")
+            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -269,7 +270,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(organizationId, "Test")
+            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -310,7 +311,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(organizationId, "Test")
+            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -379,7 +380,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
 
     Organization organization =
         organizationDatasource
-            .createOrganization(organizationId, "Test")
+            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 

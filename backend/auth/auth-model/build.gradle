@@ -1,13 +1,13 @@
 plugins {
-    id 'java-library'
-    id 'io.quarkus'
+    id "java-library"
+    id "io.quarkus"
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-hibernate-validator'
-    implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'io.quarkus:quarkus-resteasy-jackson'
-    implementation 'org.apache.commons:commons-text:1.9'
+    implementation "io.quarkus:quarkus-hibernate-validator"
+    implementation "io.quarkus:quarkus-resteasy"
+    implementation "io.quarkus:quarkus-resteasy-jackson"
+    implementation "org.apache.commons:commons-text:1.9"
     api project(":shared:rest")
 
     testImplementation project(":shared:testing-utils")

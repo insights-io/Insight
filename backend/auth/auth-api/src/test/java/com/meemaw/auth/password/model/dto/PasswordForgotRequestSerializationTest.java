@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 public class PasswordForgotRequestSerializationTest {
 
   @Test
-  public void jacksonSerialization() throws JsonProcessingException {
+  public void jackson__should_correctly_serialize_password_forgot_request_dto()
+      throws JsonProcessingException {
     PasswordForgotRequestDTO passwordForgotRequestDTO =
         new PasswordForgotRequestDTO("test@gmail.com");
 

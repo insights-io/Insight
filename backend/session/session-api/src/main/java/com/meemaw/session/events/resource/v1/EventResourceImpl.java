@@ -1,6 +1,6 @@
 package com.meemaw.session.events.resource.v1;
 
-import com.meemaw.auth.sso.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.session.events.datasource.EventsTable;
 import com.meemaw.session.events.service.EventsSearchService;
 import com.meemaw.shared.context.RequestUtils;

@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 
 @ApplicationScoped
 public class OAuth2MicrosoftClient
@@ -43,7 +44,7 @@ public class OAuth2MicrosoftClient
   protected CompletionStage<HttpResponse<Buffer>> requestUserInfo(MicrosoftTokenResponse token) {
     return webClient
         .getAbs(USER_INFO_SERVER_URL)
-        .putHeader("Authorization", "Bearer " + token.getAccessToken())
+        .putHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token.getAccessToken())
         .send()
         .subscribeAsCompletionStage();
   }

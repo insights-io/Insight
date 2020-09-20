@@ -6,7 +6,7 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.json.JsonObject;

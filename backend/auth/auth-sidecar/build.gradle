@@ -1,14 +1,14 @@
 plugins {
-    id 'java-library'
-    id 'io.quarkus'
+    id "java-library"
+    id "io.quarkus"
 }
 
 dependencies {
-    api 'io.smallrye.reactive:smallrye-mutiny-vertx-web-client'
+    api "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
     api project(":shared:rest-api")
     api project(":auth:auth-model")
     api project(":auth:auth-cookie")
-    implementation 'io.quarkus:quarkus-rest-client'
+    implementation "io.quarkus:quarkus-rest-client-jackson"
     implementation project(":auth:auth-api-contracts")
 
     testImplementation project(":shared:testing-utils")

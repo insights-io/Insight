@@ -1,6 +1,6 @@
 package com.meemaw.events.search.indexer;
 
-import static com.meemaw.test.setup.SsoTestSetupUtils.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ORGANIZATION_ID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -1,28 +1,25 @@
 package com.meemaw.auth.user.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.SsoTestSetupUtils.loginWithInsightAdminFromAuthApi;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.sso.model.SsoSession;
-import com.meemaw.auth.sso.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
-import com.meemaw.auth.user.model.PhoneNumberDTO;
-import com.meemaw.auth.user.model.UserDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.test.matchers.SameJSON;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.setup.SsoTestSetupUtils;
+import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -35,7 +32,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class UserResourceImplTest {
+public class UserResourceImplTest extends AbstractAuthApiTest {
 
   private static final String PHONE_NUMBER_VERIFY_PATH =
       String.join("/", UserResource.PATH, "phone_number", "verify");
@@ -44,8 +41,6 @@ public class UserResourceImplTest {
       String.join("/", PHONE_NUMBER_VERIFY_PATH, "send_code");
 
   @Inject MockSmsbox mockSmsbox;
-  @Inject MockMailbox mockMailbox;
-  @Inject ObjectMapper objectMapper;
 
   @Test
   public void phone_number_verify_send_code__should_throw__when_no_authentication() {
@@ -63,9 +58,7 @@ public class UserResourceImplTest {
   @Test
   public void phone_number_verify_send_code__should_throw__when_no_phone_number()
       throws JsonProcessingException {
-    String sessionId =
-        SsoTestSetupUtils.signUpAndLogin(
-            mockMailbox, objectMapper, "user-no-phone-number@gmail.com", "user-12345");
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
         .when()
@@ -110,7 +103,7 @@ public class UserResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
         .statusCode(400)
@@ -124,7 +117,7 @@ public class UserResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body("{}")
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
@@ -139,12 +132,11 @@ public class UserResourceImplTest {
       throws JsonProcessingException {
     PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "512121");
     String sessionId =
-        SsoTestSetupUtils.signUpAndLogin(
-            mockMailbox,
-            objectMapper,
-            "phone-number-verify-invalid-code@gmail.com",
-            "phone-number-verify-invalid-code",
-            phoneNumber);
+        authApi()
+            .signUpAndLogin(
+                "phone-number-verify-invalid-code@gmail.com",
+                "phone-number-verify-invalid-code",
+                phoneNumber);
 
     given()
         .when()
@@ -162,12 +154,7 @@ public class UserResourceImplTest {
   @Test
   public void phone_number_verify__should_throw__when_no_phone_number()
       throws JsonProcessingException {
-    String sessionId =
-        SsoTestSetupUtils.signUpAndLogin(
-            mockMailbox,
-            objectMapper,
-            "phone-number-verify-no-phone-number@gmail.com",
-            "phone-number-verify-no-phone-number");
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
         .when()
@@ -214,7 +201,7 @@ public class UserResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .patch(UserResource.PATH)
         .then()
         .statusCode(400)
@@ -228,7 +215,7 @@ public class UserResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body("{}")
         .patch(UserResource.PATH)
         .then()
@@ -243,7 +230,7 @@ public class UserResourceImplTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, loginWithInsightAdminFromAuthApi())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body(JacksonMapper.get().writeValueAsString(Map.of("a", "b")))
         .patch(UserResource.PATH)
         .then()
@@ -255,7 +242,7 @@ public class UserResourceImplTest {
 
   @Test
   public void update_user__should_work__when_valid_body() throws JsonProcessingException {
-    String sessionId = loginWithInsightAdminFromAuthApi();
+    String sessionId = authApi().loginWithInsightAdmin();
 
     PhoneNumber updatedPhoneNumber = new PhoneNumberDTO("+386", "51222333");
     DataResponse<UserDTO> updateUserDataResponse =

@@ -1,14 +1,14 @@
 plugins {
-    id 'java-library'
+    id "java-library"
 }
 
 dependencies {
     api "org.jooq:jooq:${jooqVersion}"
     api project(":shared:rest")
-    implementation 'io.quarkus:quarkus-smallrye-opentracing'
-    implementation 'io.quarkus:quarkus-reactive-pg-client'
+    implementation "io.quarkus:quarkus-smallrye-opentracing"
+    implementation "io.quarkus:quarkus-reactive-pg-client"
 
-    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation "io.quarkus:quarkus-junit5"
 }
 
 test {

@@ -1,8 +1,8 @@
 package com.meemaw.auth.sso.tfa.challenge.datasource;
 
 import com.hazelcast.map.IMap;
-import com.meemaw.auth.sso.session.datasource.hazelcast.HazelcastProvider;
 import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
+import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
