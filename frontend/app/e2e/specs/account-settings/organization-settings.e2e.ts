@@ -326,6 +326,6 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .typeText(cvcInputElement, '222')
     .switchToMainWindow()
     .click(payButton)
-    .expect(paidMessage.with({ timeout: 5000 }).visible)
+    .expect(paidMessage.with({ timeout: 10000 }).visible)
     .ok('Subscription should be created');
 });
