@@ -120,14 +120,14 @@ public class StripeBillingProvider implements BillingProvider {
         });
   }
 
-  private <T> CompletionStage<T> async(Supplier<T> supplier) {
-    return threadContext.withContextCapture(
-        CompletableFuture.supplyAsync(supplier, managedExecutor));
-  }
-
   @Override
   public BoomException mapException(StripeException ex) {
     String message = ex.getMessage().split(";")[0];
     return Boom.status(ex.getStatusCode()).message(message).exception(ex);
+  }
+
+  private <T> CompletionStage<T> async(Supplier<T> supplier) {
+    return threadContext.withContextCapture(
+        CompletableFuture.supplyAsync(supplier, managedExecutor));
   }
 }
