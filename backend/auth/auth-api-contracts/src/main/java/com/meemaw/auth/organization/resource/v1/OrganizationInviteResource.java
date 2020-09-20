@@ -41,7 +41,8 @@ public interface OrganizationInviteResource {
   @POST
   @Path("{token}/accept")
   CompletionStage<Response> acceptTeamInvite(
-      @PathParam("token") UUID token, @NotNull(message = "Required") @Valid TeamInviteAcceptDTO body);
+      @PathParam("token") UUID token,
+      @NotNull(message = "Required") @Valid TeamInviteAcceptDTO body);
 
   @POST
   @CookieAuth
