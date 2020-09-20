@@ -320,7 +320,7 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .click(tab);
 
   await t
-    .switchToIframe(formIframe)
+    .switchToIframe(formIframe.with({ timeout: 5000 }))
     .typeText(cardNumberInputElement, '4242 4242 4242 4242')
     .typeText(exipiryInputElement, '1044')
     .typeText(cvcInputElement, '222')
