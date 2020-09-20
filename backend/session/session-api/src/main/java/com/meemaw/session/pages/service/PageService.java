@@ -91,76 +91,84 @@ public class PageService {
               }
 
               Organization organization = dataResponse.getData();
-              String sessionCounterKey =
-                  String.format(
-                      "%s-%s",
-                      organization.getId(),
-                      organization.getStartOfCurrentBillingPeriod().toString());
+              if (!deviceId.equals(page.getDeviceId())) {
+                log.debug(
+                    "[SESSION]: Unrecognized device -- starting a new session organizationId={}",
+                    organizationId);
+                return createPageSession(
+                    pageId, deviceId, userAgent, ipAddress, page, organization);
+              }
 
-              // TODO: we should probably only read here and do the incrementing in a separate
-              // TODO: process that reads from Kafka
-              return sessionCountDatasource
-                  .incrementAndGet(sessionCounterKey)
+              // recognized device; try to link it with an existing session
+              return sessionDatasource
+                  .findSessionDeviceLink(page.getOrganizationId(), deviceId)
                   .thenCompose(
-                      sessionCount -> {
-                        if (SubscriptionPlan.FREE.equals(organization.getPlan())
-                            && sessionCount > 1000) {
-                          throw Boom.badRequest()
-                              .message(
-                                  "Free plan quota reached. Please upgrade your plan to continue collecting Insights.")
-                              .exception();
-                        }
-
-                        if (!deviceId.equals(page.getDeviceId())) {
+                      maybeSessionId -> {
+                        if (maybeSessionId.isEmpty()) {
                           log.debug(
-                              "[SESSION]: Unrecognized device -- starting a new session organizationId={}",
-                              organizationId);
-                          return createPageAndNewSession(
-                              pageId, deviceId, userAgent, ipAddress, page);
+                              "[SESSION]: Could not link to an existing session -- starting new session");
+                          return createPageSession(
+                              pageId, deviceId, userAgent, ipAddress, page, organization);
                         }
+                        UUID sessionId = maybeSessionId.get();
+                        MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
+                        log.info(
+                            "[SESSION]: Linking page to an existing session pageId={} sessionId={} organizationId={}",
+                            pageId,
+                            sessionId,
+                            organizationId);
 
-                        // recognized device; try to link it with an existing session
-                        return sessionDatasource
-                            .findSessionDeviceLink(page.getOrganizationId(), deviceId)
-                            .thenCompose(
-                                maybeSessionId -> {
-                                  if (maybeSessionId.isEmpty()) {
-                                    log.debug(
-                                        "[SESSION]: Could not link to an existing session -- starting new session");
-                                    return createPageAndNewSession(
-                                        pageId, deviceId, userAgent, ipAddress, page);
-                                  }
-                                  UUID sessionId = maybeSessionId.get();
-                                  MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
-                                  log.info(
-                                      "[SESSION]: Linking page to an existing session pageId={} sessionId={} organizationId={}",
-                                      pageId,
-                                      sessionId,
-                                      organizationId);
-
-                                  return pageDatasource.insertPage(
-                                      pageId, sessionId, deviceId, page);
-                                });
+                        return pageDatasource.insertPage(pageId, sessionId, deviceId, page);
                       });
             });
   }
 
   @Traced
-  private CompletionStage<PageIdentity> createPageAndNewSession(
-      UUID pageId, UUID deviceId, UserAgentDTO userAgent, String ipAddress, CreatePageDTO page) {
+  private CompletionStage<PageIdentity> createPageSession(
+      UUID pageId,
+      UUID deviceId,
+      UserAgentDTO userAgent,
+      String ipAddress,
+      CreatePageDTO page,
+      Organization organization) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
-    log.info(
-        "[SESSION]: Creating new session id={} deviceId={} organizationId={}",
-        sessionId,
-        deviceId,
-        page.getOrganizationId());
 
-    // TODO: move this to a async queue processing
-    Location location = locationService.lookupByIp(ipAddress);
+    String organizationId = organization.getId();
+    String sessionCounterKey =
+        String.format(
+            "%s-%s", organizationId, organization.getStartOfCurrentBillingPeriod().toString());
 
-    return pageDatasource.createPageAndNewSession(
-        pageId, sessionId, deviceId, userAgent, location, page);
+    return sessionCountDatasource
+        .incrementAndGet(sessionCounterKey)
+        .thenCompose(
+            sessionCount -> {
+              if (SubscriptionPlan.FREE.equals(organization.getPlan()) && sessionCount > 1000) {
+                log.debug(
+                    "[SESSION]: Create session free quota exceeded organizationId={}",
+                    organizationId);
+
+                throw Boom.badRequest()
+                    .message(
+                        "Free plan quota reached. Please upgrade your plan to continue collecting Insights.")
+                    .exception();
+              }
+
+              // TODO: move this to a async queue processing
+              Location location = locationService.lookupByIp(ipAddress);
+
+              return pageDatasource
+                  .createPageAndNewSession(pageId, sessionId, deviceId, userAgent, location, page)
+                  .thenApply(
+                      identity -> {
+                        log.info(
+                            "[SESSION]: Created session id={} organizationId={}",
+                            sessionId,
+                            organizationId);
+
+                        return identity;
+                      });
+            });
   }
 
   public CompletionStage<Optional<PageDTO>> getPage(

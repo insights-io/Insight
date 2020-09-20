@@ -38,6 +38,8 @@ public class SessionResourceImpl implements SessionResource {
         .createPage(body, userAgent, ipAddress)
         .thenApply(
             pageIdentity -> {
+              // TODO: should be done in service not resource
+              // TODO: notify with session object
               sessionSocketService.pageStart(pageIdentity.getPageId());
               return DataResponse.ok(pageIdentity);
             });
@@ -54,6 +56,7 @@ public class SessionResourceImpl implements SessionResource {
 
   @Override
   public CompletionStage<Response> getPage(UUID sessionId, UUID pageId, String organizationId) {
+    // TODO: S2S auth
     // String organizationId = principal.user().getOrganizationId();
     return pageService
         .getPage(pageId, sessionId, organizationId)
