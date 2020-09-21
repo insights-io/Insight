@@ -1,7 +1,6 @@
 package com.meemaw.auth.organization.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meemaw.auth.billing.model.SubscriptionPlan;
 import com.meemaw.shared.date.DateUtils;
 import java.time.OffsetDateTime;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,8 +13,6 @@ public interface Organization {
   String getId();
 
   String getName();
-
-  SubscriptionPlan getPlan();
 
   OffsetDateTime getCreatedAt();
 

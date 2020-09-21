@@ -5,11 +5,9 @@ import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.F
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.INSERT_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.NAME;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.PLAN;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.TABLE;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.UPDATED_AT;
 
-import com.meemaw.auth.billing.model.SubscriptionPlan;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.CreateOrganizationParams;
 import com.meemaw.auth.organization.model.Organization;
@@ -51,7 +49,7 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
         .getContext()
         .insertInto(TABLE)
         .columns(INSERT_FIELDS)
-        .values(params.getId(), params.getName(), params.getPlan())
+        .values(params.getId(), params.getName())
         .returning(FIELDS);
   }
 
@@ -79,7 +77,6 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
     return new OrganizationDTO(
         row.getString(ID.getName()),
         row.getString(NAME.getName()),
-        SubscriptionPlan.fromString(row.getString(PLAN.getName())),
         row.getOffsetDateTime(CREATED_AT.getName()),
         row.getOffsetDateTime(UPDATED_AT.getName()));
   }

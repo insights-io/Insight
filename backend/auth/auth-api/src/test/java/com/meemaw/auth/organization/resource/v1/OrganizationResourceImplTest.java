@@ -4,8 +4,6 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.auth.billing.model.SubscriptionPlan;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
@@ -68,26 +66,6 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
     assertEquals("000000", dataResponse.getData().getId());
     assertEquals("Insight", dataResponse.getData().getName());
-    assertEquals(SubscriptionPlan.ENTERPRISE, dataResponse.getData().getPlan());
-  }
-
-  @Test
-  public void get_organization__should_return_organization_with_free_plan__when_new_user()
-      throws JsonProcessingException {
-    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-
-    DataResponse<OrganizationDTO> dataResponse =
-        given()
-            .when()
-            .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(OrganizationResource.PATH)
-            .then()
-            .statusCode(200)
-            .extract()
-            .response()
-            .as(new TypeRef<>() {});
-
-    assertEquals(SubscriptionPlan.FREE, dataResponse.getData().getPlan());
   }
 
   @Test

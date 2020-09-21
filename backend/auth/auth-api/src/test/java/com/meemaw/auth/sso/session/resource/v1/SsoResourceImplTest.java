@@ -282,7 +282,8 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void login_should_fail_when_user_with_unfinished_signUp() throws JsonProcessingException {
+  public void login__should_fail__when_user_with_unfinished_signUp()
+      throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
         authApi().signUpRequestMock("login-no-complete@gmail.com", "password123");
 
@@ -309,7 +310,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void logout_should_fail_when_no_cookie() {
+  public void logout__should_fail__when_no_cookie() {
     given()
         .when()
         .post(SsoResource.PATH + "/logout")
@@ -321,7 +322,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void logout_should_fail_and_clear_cookie_on_random_cookie() {
+  public void logout__should_fail_and_clear_cookie__when_random_cookie() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
@@ -335,7 +336,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void logout_should_clear_cookie_on_existing_cookie() throws JsonProcessingException {
+  public void logout__should_clear_cookie__when_existing_cookie() throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
@@ -348,7 +349,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void logout_should_clear_session_from_future_sessions_lookups()
+  public void logout__should_clear_session_from_future_sessions_lookups()
       throws JsonProcessingException {
     String email = "test-logoug-sso-sessions@gmail.com";
     String password = "password123";
@@ -407,7 +408,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void logout_from_all_devices_should_fail_when_no_cookie() {
+  public void logout_from_all_devices__should_fail__when_no_cookie() {
     given()
         .when()
         .post(SsoResource.PATH + "/logout-from-all-devices")
@@ -419,7 +420,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void logout_from_all_devices_should_fail_when_random_cookie() {
+  public void logout_from_all_devices__should_fail__when_random_cookie() {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
@@ -430,7 +431,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void logout_from_all_devices_should_work_on_existing_session()
+  public void logout_from_all_devices__should_work__when_existing_session()
       throws JsonProcessingException {
     String email = "test-logout-from-all-devices@gmail.com";
     String password = "test-logout-password";
@@ -611,7 +612,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void sessions_should_fail_when_missing_sessionId_cookie() {
+  public void sessions__should_fail__when_missing_session_id_cookie() {
     given()
         .when()
         .get(SsoResource.PATH + "/sessions")

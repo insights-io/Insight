@@ -12,7 +12,7 @@ import org.jooq.Table;
 
 public final class SqlOrganizationInviteTable {
 
-  public static final Table<?> TABLE = table("auth.organization_invite");
+  public static final Table<?> TABLE = table("auth.organization_team_invite");
 
   public static final Field<UUID> TOKEN = field(OrganizationInviteTable.TOKEN, UUID.class);
   public static final Field<String> EMAIL = field(OrganizationInviteTable.EMAIL, String.class);

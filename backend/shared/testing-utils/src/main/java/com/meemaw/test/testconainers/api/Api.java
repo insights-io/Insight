@@ -15,6 +15,12 @@ public enum Api {
       return List.of(PostgresTestExtension.getInstance(), AuthApiTestExtension.getInstance());
     }
   },
+  BILLING {
+    @Override
+    public Collection<GenericContainer<?>> dependencies() {
+      return List.of(PostgresTestExtension.getInstance(), AuthApiTestExtension.getInstance());
+    }
+  },
   AUTH {
     @Override
     public Collection<GenericContainer<?>> dependencies() {
