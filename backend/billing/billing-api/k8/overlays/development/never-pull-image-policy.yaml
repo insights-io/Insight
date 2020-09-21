@@ -1,0 +1,13 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-api
+  namespace: recording
+spec:
+  template:
+    spec:
+      containers:
+        - image: insightio/billing-api
+          name: billing-api
+          imagePullPolicy: Never

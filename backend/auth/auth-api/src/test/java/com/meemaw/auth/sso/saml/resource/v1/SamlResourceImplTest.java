@@ -104,7 +104,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
+            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -188,7 +188,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
+            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -229,7 +229,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
+            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -270,7 +270,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
+            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -311,7 +311,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
+            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -380,7 +380,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
 
     Organization organization =
         organizationDatasource
-            .createOrganization(CreateOrganizationParams.freePlan(organizationId, "Test"))
+            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 

@@ -1,6 +1,5 @@
 package com.meemaw.auth.organization.model;
 
-import com.meemaw.auth.billing.model.SubscriptionPlan;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Assertions;
@@ -9,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class OrganizationTest {
 
   private Organization organizationWithStartTime(OffsetDateTime createdAt) {
-    return new OrganizationDTO("", "", SubscriptionPlan.FREE, createdAt, OffsetDateTime.now());
+    return new OrganizationDTO("", "", createdAt, OffsetDateTime.now());
   }
 
   @Test

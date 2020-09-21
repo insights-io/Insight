@@ -9,7 +9,7 @@ import {
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
-import { AuthApi } from 'api';
+import { BillingApi } from 'api';
 import { toaster } from 'baseui/toast';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import FormError from 'shared/components/FormError';
@@ -44,8 +44,8 @@ const CheckoutForm = () => {
       if (error) {
         setStripeSetupError(error);
       } else if (paymentMethod) {
-        await AuthApi.billing
-          .createSubscription({ paymentMethodId: paymentMethod.id })
+        await BillingApi.subscriptions
+          .create({ paymentMethodId: paymentMethod.id })
           .then(() => toaster.positive('Subscription created.', {}))
           .catch(async (apiErrorResponse) => {
             const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();

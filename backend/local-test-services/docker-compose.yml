@@ -28,13 +28,39 @@ services:
       - MAILER_PASSWORD=${MAILER_PASSWORD}
       - MAILER_MOCK=${MAILER_MOCK}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-dev_secret}
     depends_on:
       - auth-api-postgres-migrations
 
   auth-api-postgres-migrations:
     build:
       context: ../auth/auth-api/migrations/postgres
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+
+  billing-api:
+    build:
+      context: ..
+      dockerfile: billing/billing-api/docker/Dockerfile.jvm
+    ports:
+      - '${BILLING_API_PORT:-8083}:8080'
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - POSTGRES_HOST=db
+      - JAEGER_AGENT_HOST=jaeger:6831
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-dev_secret}
+    depends_on:
+      - auth-api
+      - billing-api-postgres-migrations
+
+  billing-api-postgres-migrations:
+    build:
+      context: ../billing/billing-api/migrations/postgres
       dockerfile: Dockerfile
     depends_on:
       - db

@@ -40,7 +40,13 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   }
 
   private void startDependantContainer(GenericContainer<?> container) {
+    System.out.println(
+        String.format(
+            "[TEST-SETUP]: Starting %s as a dependency of %s",
+            container.getDockerImageName(), api.fullName()));
+
     container.start();
+
     if (container instanceof PostgresTestContainer) {
       PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
       postgresTestContainer.applyFlywayMigrations(api.postgresMigrations());

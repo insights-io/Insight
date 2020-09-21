@@ -1,6 +1,5 @@
 package com.meemaw.session.pages.service;
 
-import com.meemaw.auth.billing.model.SubscriptionPlan;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.organization.resource.v1.OrganizationResource;
@@ -143,7 +142,8 @@ public class PageService {
         .incrementAndGet(sessionCounterKey)
         .thenCompose(
             sessionCount -> {
-              if (SubscriptionPlan.FREE.equals(organization.getPlan()) && sessionCount > 1000) {
+              // TODO: check for plan
+              if (sessionCount > 1000) {
                 log.debug(
                     "[SESSION]: Create session free quota exceeded organizationId={}",
                     organizationId);

@@ -56,7 +56,7 @@ jobs:
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
-          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
+          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
@@ -99,7 +99,9 @@ jobs:
           node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 600000
           node_modules/wait-on/bin/wait-on http-get://localhost:5000 --timeout 600000
           node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 600000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8081/health/ready --timeout 600000
           node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 600000
+          node_modules/wait-on/bin/wait-on http-get://localhost:8083/health/ready --timeout 600000
           docker-compose -f backend/local-test-services/docker-compose.yml exec -T db psql -U postgres -c "INSERT INTO auth.password (user_id, hash) VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', '\$2a\$13\$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS')"
       - name: frontend/app | test:e2e
         run: |

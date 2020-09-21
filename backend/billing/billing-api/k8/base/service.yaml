@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-api
+spec:
+  type: ClusterIP
+  selector:
+    app: billing-api
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080

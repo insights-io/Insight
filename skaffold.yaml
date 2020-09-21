@@ -35,6 +35,15 @@ build:
         buildCommand: ./custom_build.sh auth/auth-api/docker/Dockerfile.jvm
     - image: insightio/auth-api-postgres-migrations
       context: backend/auth/auth-api/migrations/postgres
+    - image: insightio/billing-api
+      context: backend
+      custom:
+        dependencies:
+          dockerfile:
+            path: billing/billing-api/docker/Dockerfile.jvm
+        buildCommand: ./custom_build.sh billing/billing-api/docker/Dockerfile.jvm
+    - image: insightio/billing-api-postgres-migrations
+      context: backend/billing/billing-api/migrations/postgres
     - image: insightio/beacon-api
       context: backend
       custom:
@@ -65,6 +74,7 @@ profiles:
         path: /build/artifacts/0/docker/buildArgs
         value:
           jaeger_agent_host: jaeger-agent.monitoring
+          billing_api_client_base_url: https://billing-api.dev.snuderls.eu
           session_api_client_base_url: https://session-api.dev.snuderls.eu
           session_api_server_base_url: http://session-api
           auth_api_client_base_url: https://auth-api.dev.snuderls.eu

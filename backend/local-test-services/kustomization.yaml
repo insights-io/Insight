@@ -4,6 +4,7 @@ kind: Kustomization
 
 bases:
   - ../auth/auth-api/k8/overlays/development
-  - ../beacon/beacon-api/k8/overlays/development
   - ../session/session-api/k8/overlays/development
+  - ../beacon/beacon-api/k8/overlays/development
+  - ../billing/billing-api/k8/overlays/development
   - ../events/search-indexer/k8/base

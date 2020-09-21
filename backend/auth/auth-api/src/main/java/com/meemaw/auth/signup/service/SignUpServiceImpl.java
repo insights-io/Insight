@@ -175,8 +175,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     return organizationDatasource
         .createOrganization(
-            CreateOrganizationParams.freePlan(organizationId, signUpRequest.getCompany()),
-            transaction)
+            new CreateOrganizationParams(organizationId, signUpRequest.getCompany()), transaction)
         .thenCompose(
             organization ->
                 userDatasource
@@ -263,7 +262,7 @@ public class SignUpServiceImpl implements SignUpService {
         UserRole.ADMIN,
         (transaction) ->
             organizationDatasource.createOrganization(
-                CreateOrganizationParams.freePlan(Organization.identifier(), null), transaction));
+                new CreateOrganizationParams(Organization.identifier(), null), transaction));
   }
 
   /**
