@@ -28,6 +28,6 @@ spec:
                   key: password
           resources:
             requests:
-              cpu: 100m
+              cpu: 50m
               memory: 200Mi
       restartPolicy: Never

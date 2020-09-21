@@ -33,10 +33,10 @@ spec:
               value: elasticsearch-master:9200
           resources:
             requests:
-              cpu: 100m
+              cpu: 50m
               memory: 400Mi
       tolerations:
-        - key: "arm"
-          operator: "Equal"
-          value: "true"
-          effect: "NoExecute"
+        - key: 'arm'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoExecute'

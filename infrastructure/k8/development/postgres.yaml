@@ -4,8 +4,8 @@ postgresqlPassword: postgres
 
 resources:
   requests:
-    memory: 100Mi
     cpu: 100m
+    memory: 100Mi
 
 postgresqlExtendedConf:
   shared_preload_libraries: 'pg_stat_statements'
