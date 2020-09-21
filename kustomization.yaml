@@ -43,6 +43,18 @@ patchesJson6902:
       kind: Job
       name: session-api-postgres-migrations
     path: image-pull-secret.patch
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: billing-api
+    path: image-pull-secret.patch
+  - target:
+      group: batch
+      version: v1
+      kind: Job
+      name: billing-api-postgres-migrations
+    path: image-pull-secret.patch
   # - target:
   #     group: batch
   #     version: v1
