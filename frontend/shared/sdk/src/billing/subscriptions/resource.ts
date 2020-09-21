@@ -9,9 +9,9 @@ type CreateSubscriptionDTO = {
   paymentMethodId: string;
 };
 
-export const billingApi = (billingApiBaseURL: string) => {
+export const subscriptionResource = (billingApiBaseURL: string) => {
   return {
-    createSubscription: (
+    create: (
       json: CreateSubscriptionDTO,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
