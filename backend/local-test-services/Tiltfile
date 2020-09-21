@@ -1,7 +1,7 @@
 print('Hello Tiltfile')
 allow_k8s_contexts('k3s-dev')
 
-k8s_yaml('../../infrastructure/k8/base/namespaces.yml')
+k8s_yaml('../../infrastructure/k8/base/namespaces.yaml')
 k8s_yaml(kustomize('.'))
 
 k8s_resource('auth-api-postgres-migrations')
@@ -10,14 +10,20 @@ docker_build('insightio/auth-api-postgres-migrations', '../auth/auth-api/migrati
 k8s_resource('auth-api', port_forwards=8080, resource_deps=['auth-api-postgres-migrations'])
 docker_build('insightio/auth-api', '..', {}, '../auth/auth-api/docker/Dockerfile.jvm')
 
-k8s_resource('session-api', port_forwards=8082, resource_deps=['session-api-postgres-migrations', 'auth-api'])
-docker_build('insightio/session-api', '..', {}, '../session/session-api/docker/Dockerfile.jvm')
-
 k8s_resource('session-api-postgres-migrations')
 docker_build('insightio/session-api-postgres-migrations', '../session/session-api/migrations/postgres', {})
 
 k8s_resource('beacon-api', port_forwards=8081, resource_deps=['session-api'])
 docker_build('insightio/beacon-api', '..', {}, '../beacon/beacon-api/docker/Dockerfile.jvm')
+
+k8s_resource('session-api', port_forwards=8082, resource_deps=['session-api-postgres-migrations', 'auth-api'])
+docker_build('insightio/session-api', '..', {}, '../session/session-api/docker/Dockerfile.jvm')
+
+k8s_resource('billing-api-postgres-migrations')
+docker_build('insightio/billing-api-postgres-migrations', '../billing/billing-api/migrations/postgres', {})
+
+k8s_resource('billing-api', port_forwards=8083, resource_deps=['billing-api-postgres-migrations', 'auth-api'])
+docker_build('insightio/billing-api', '..', {}, '../billing/billing-api/docker/Dockerfile.jvm')
 
 k8s_resource('search-indexer')
 docker_build('insightio/search-indexer', '..', {}, '../events/search-indexer/docker/Dockerfile.jvm')

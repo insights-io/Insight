@@ -35,6 +35,15 @@ build:
         buildCommand: ./custom_build.sh auth/auth-api/docker/Dockerfile.jvm
     - image: insightio/auth-api-postgres-migrations
       context: backend/auth/auth-api/migrations/postgres
+    - image: insightio/billing-api
+      context: backend
+      custom:
+        dependencies:
+          dockerfile:
+            path: billing/billing-api/docker/Dockerfile.jvm
+        buildCommand: ./custom_build.sh billing/billing-api/docker/Dockerfile.jvm
+    - image: insightio/billing-api-postgres-migrations
+      context: backend/billing/billing-api/migrations/postgres
     - image: insightio/beacon-api
       context: backend
       custom:
