@@ -26,7 +26,7 @@ CREATE TABLE billing.subscription
     price_id             TEXT        NOT NULL,
     current_period_ends  BIGINT      NOT NULL,
     created_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
-    cancelled_at         TIMESTAMPTZ
+    canceled_at          TIMESTAMPTZ
 );
 
 CREATE TABLE billing.invoice

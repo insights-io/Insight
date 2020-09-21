@@ -1,6 +1,6 @@
 package com.meemaw.billing.subscription.datasource.sql;
 
-import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CANCELLED_AT;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CANCELED_AT;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CREATED_AT;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CURRENT_PERIOD_ENDS;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CUSTOMER_EXTERNAL_ID;
@@ -75,6 +75,6 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
         row.getString(PRICE_ID.getName()),
         row.getLong(CURRENT_PERIOD_ENDS.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()),
-        row.getOffsetDateTime(CANCELLED_AT.getName()));
+        row.getOffsetDateTime(CANCELED_AT.getName()));
   }
 }

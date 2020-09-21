@@ -8,15 +8,15 @@ export type BillingSubscriptionDTO = {
   priceId: string;
   currentPeriodEnd: number;
   createdAt: string;
-  cancelledAt?: string;
+  canceledAt?: string;
 };
 
 export type BillingSubscription = Omit<
   BillingSubscriptionDTO,
-  'createdAt' | 'cancelledAt'
+  'createdAt' | 'canceledAt'
 > & {
   createdAt: Date;
-  cancelledAt?: Date;
+  canceledAt?: Date;
 };
 
 export const mapBillingSubscriptip = (
@@ -25,6 +25,6 @@ export const mapBillingSubscriptip = (
   return {
     ...dto,
     createdAt: new Date(dto.createdAt),
-    cancelledAt: dto.cancelledAt ? new Date(dto.cancelledAt) : undefined,
+    canceledAt: dto.canceledAt ? new Date(dto.canceledAt) : undefined,
   };
 };

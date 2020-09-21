@@ -13,5 +13,5 @@ public class BillingSubscription {
   String priceId;
   long currentPeriodEnd;
   OffsetDateTime createdAt;
-  OffsetDateTime cancelledAt;
+  OffsetDateTime canceledAt;
 }

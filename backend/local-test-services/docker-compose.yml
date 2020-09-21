@@ -48,7 +48,7 @@ services:
       context: ..
       dockerfile: billing/billing-api/docker/Dockerfile.jvm
     ports:
-      - '${BILLING_API_PORT:-8080}:8083'
+      - '${BILLING_API_PORT:-8083}:8080'
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - POSTGRES_HOST=db

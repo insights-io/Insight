@@ -27,8 +27,8 @@ public class SqlBillingSubscriptionTable {
       field(BillingSubscriptionTable.CURRENT_PERIOD_ENDS, Long.class);
   public static final Field<OffsetDateTime> CREATED_AT =
       field(BillingSubscriptionTable.CREATED_AT, OffsetDateTime.class);
-  public static final Field<OffsetDateTime> CANCELLED_AT =
-      field(BillingSubscriptionTable.CANCELLED_AT, OffsetDateTime.class);
+  public static final Field<OffsetDateTime> CANCELED_AT =
+      field(BillingSubscriptionTable.CANCELED_AT, OffsetDateTime.class);
 
   public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT);
 
@@ -37,7 +37,7 @@ public class SqlBillingSubscriptionTable {
 
   public static final List<Field<?>> FIELDS =
       Stream.concat(
-              Stream.of(CANCELLED_AT),
+              Stream.of(CANCELED_AT),
               Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream()))
           .collect(Collectors.toList());
 

@@ -9,7 +9,7 @@ public final class BillingSubscriptionTable {
   public static final String PRICE_ID = "price_id";
   public static final String CURRENT_PERIOD_ENDS = "current_period_ends";
   public static final String CREATED_AT = "created_at";
-  public static final String CANCELLED_AT = "cancelled_at";
+  public static final String CANCELED_AT = "canceled_at";
 
   private BillingSubscriptionTable() {}
 }
