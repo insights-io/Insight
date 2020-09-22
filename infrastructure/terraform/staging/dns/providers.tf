@@ -1,9 +1,8 @@
 provider "aws" {
-  version = "~> 3.0"
+  version = "3.7.0"
   region  = module.project_vars.region
 }
 
 provider "cloudflare" {
-  version = "~> 2.0"
-  email   = "blaz.snuderl@gmail.com"
+  email = "blaz.snuderl@gmail.com"
 }

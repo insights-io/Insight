@@ -2,7 +2,7 @@ resource "github_repository" "insight" {
   name           = "Insight"
   description    = "Find insights into your frontend applications."
   default_branch = "master"
-  private        = false
+  visibility     = "public"
   has_issues     = true
   has_wiki       = true
   has_projects   = true
@@ -24,7 +24,7 @@ resource "github_repository" "ops" {
   name           = "ops"
   description    = "Insight operations"
   default_branch = "master"
-  private        = true
+  visibility     = "private"
   has_issues     = false
   has_wiki       = false
   has_projects   = false

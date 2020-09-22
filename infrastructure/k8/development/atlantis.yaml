@@ -7,6 +7,10 @@ vcsSecretName: atlantis-vcs
 awsSecretName: atlantis-aws
 
 environmentSecrets:
+  - name: STRIPE_API_TOKEN
+    secretKeyRef:
+      name: stripe-credentials
+      key: secret-key
   - name: CLOUDFLARE_API_KEY
     secretKeyRef:
       name: cloudflare-apikey-secret
@@ -40,3 +44,6 @@ ingress:
 resources:
   requests: null
   limits: null
+
+image:
+  tag: v0.15.0
