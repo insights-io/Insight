@@ -1,23 +1,4 @@
-import { SubscriptionPlan } from '@insight/types';
-
-export type BillingSubscriptionDTO = {
-  id: string;
-  plan: SubscriptionPlan;
-  customerExternalId: string;
-  customerInternalId: string;
-  priceId: string;
-  currentPeriodEnd: number;
-  createdAt: string;
-  canceledAt?: string;
-};
-
-export type BillingSubscription = Omit<
-  BillingSubscriptionDTO,
-  'createdAt' | 'canceledAt'
-> & {
-  createdAt: Date;
-  canceledAt?: Date;
-};
+import { BillingSubscription, BillingSubscriptionDTO } from '@insight/types';
 
 export const mapBillingSubscriptip = (
   dto: BillingSubscriptionDTO

@@ -54,6 +54,7 @@ services:
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-dev_secret}
+      - AUTH_API_BASE_URL=http://auth-api:8080
     depends_on:
       - auth-api
       - billing-api-postgres-migrations
@@ -102,7 +103,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
-      - AUTH_SERVICE_BASE_URL=http://auth-api:8080
+      - AUTH_API_BASE_URL=http://auth-api:8080
       - ELASTICSEARCH_HOSTS=elasticsearch:9200
 
   session-api-elasticsearch-migrations:
