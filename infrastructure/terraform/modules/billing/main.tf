@@ -3,11 +3,13 @@ resource "stripe_product" "insight" {
   type = "service"
 }
 
-resource "stripe_plan" "business" {
-  product  = stripe_product.insight.id
-  amount   = 200
-  interval = "month"
-  currency = "eur"
+resource "stripe_price" "business" {
+  product     = stripe_product.insight.id
+  unit_amount = 200
+  currency    = "eur"
+  recurring = {
+    interval = "month"
+  }
 }
 
 resource "stripe_webhook_endpoint" "event" {
