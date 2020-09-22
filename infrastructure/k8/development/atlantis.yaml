@@ -40,3 +40,6 @@ ingress:
 resources:
   requests: null
   limits: null
+
+image:
+  tag: v0.15.0
