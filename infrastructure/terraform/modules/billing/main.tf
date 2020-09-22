@@ -5,7 +5,7 @@ resource "stripe_product" "insight" {
 
 resource "stripe_plan" "business" {
   product  = stripe_product.insight.id
-  amount   = 199.99
+  amount   = 200
   interval = "month"
   currency = "eur"
 }
