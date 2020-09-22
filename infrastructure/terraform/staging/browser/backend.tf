@@ -4,6 +4,4 @@ terraform {
     key    = "staging/browser"
     region = "us-east-1"
   }
-
-  required_version = "0.13.0"
 }
