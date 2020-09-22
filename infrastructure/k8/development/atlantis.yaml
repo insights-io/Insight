@@ -7,7 +7,7 @@ vcsSecretName: atlantis-vcs
 awsSecretName: atlantis-aws
 
 environmentSecrets:
-  - name: TF_VAR_stripe_api_token
+  - name: STRIPE_API_TOKEN
     secretKeyRef:
       name: stripe-credentials
       key: secret-key
