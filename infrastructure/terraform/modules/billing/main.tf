@@ -7,6 +7,7 @@ resource "stripe_price" "business" {
   product             = stripe_product.insight.id
   unit_amount_decimal = 199.99
   currency            = "eur"
+  billing_scheme      = "per_unit"
   recurring = {
     interval = "month"
   }
