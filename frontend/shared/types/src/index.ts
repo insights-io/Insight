@@ -7,3 +7,4 @@ export * from './signup';
 export * from './organization';
 export * from './sessions';
 export * from './tfa';
+export * from './billing';

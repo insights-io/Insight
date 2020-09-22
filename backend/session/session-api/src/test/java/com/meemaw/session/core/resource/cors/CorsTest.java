@@ -16,20 +16,19 @@ public class CorsTest {
   @ParameterizedTest
   @ValueSource(
       strings = {"https://app.dev.snuderls.eu", "https://www.google.com", "http://localhost:3000"})
-  public void cors_on_create_page_should_be_enabled_for_all_origins(String origin) {
-    List.of("POST", "OPTIONS")
+  public void cors_on_create_page__should_be_enabled_for_all_origins(String origin) {
+    List.of("GET", "POST", "OPTIONS")
         .forEach(
-            method -> {
-              given()
-                  .header("Origin", origin)
-                  .header("Access-Control-Request-Method", method)
-                  .when()
-                  .options(SessionResource.PATH)
-                  .then()
-                  .statusCode(200)
-                  .header("access-control-allow-origin", origin)
-                  .header("access-control-allow-credentials", "true")
-                  .header("access-control-allow-methods", method);
-            });
+            method ->
+                given()
+                    .header("Origin", origin)
+                    .header("Access-Control-Request-Method", method)
+                    .when()
+                    .options(SessionResource.PATH)
+                    .then()
+                    .statusCode(200)
+                    .header("access-control-allow-origin", origin)
+                    .header("access-control-allow-credentials", "true")
+                    .header("access-control-allow-methods", method));
   }
 }

@@ -1,13 +1,11 @@
 import ky from 'ky-universal';
-import type { DataResponse } from '@insight/types';
+import type {
+  DataResponse,
+  CreateSubscriptionDTO,
+  BillingSubscriptionDTO,
+} from '@insight/types';
 
 import { RequestOptions, withCredentials } from '../../core';
-
-import { BillingSubscriptionDTO, mapBillingSubscriptip } from './utils';
-
-type CreateSubscriptionDTO = {
-  paymentMethodId: string;
-};
 
 export const subscriptionResource = (billingApiBaseURL: string) => {
   return {
@@ -20,8 +18,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
           json,
           ...withCredentials(rest),
         })
-        .json<DataResponse<BillingSubscriptionDTO>>()
-        .then((response) => mapBillingSubscriptip(response.data));
+        .json<DataResponse<BillingSubscriptionDTO>>();
     },
   };
 };

@@ -29,6 +29,8 @@ spec:
           env:
             - name: JAEGER_AGENT_HOST
               value: jaeger-agent.monitoring:6831
+            - name: AUTH_API_BASE_URL
+              value: http://auth-api
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
