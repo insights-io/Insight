@@ -31,6 +31,16 @@ spec:
               value: jaeger-agent.monitoring:6831
             - name: AUTH_API_BASE_URL
               value: http://auth-api
+            - name: STRIPE_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-webhook-signing-secrets
+                  key: event
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-credentials
+                  key: api_key
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
