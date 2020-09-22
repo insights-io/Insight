@@ -4,9 +4,9 @@ resource "stripe_product" "insight" {
 }
 
 resource "stripe_price" "business" {
-  product     = stripe_product.insight.id
-  unit_amount = 200
-  currency    = "eur"
+  product             = stripe_product.insight.id
+  unit_amount_decimal = 199.99
+  currency            = "eur"
   recurring = {
     interval = "month"
   }
