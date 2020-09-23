@@ -66,7 +66,11 @@ const CountByLocationMapChart = ({
     pieSeriesTemplate.dataFields.value = 'count';
     pieSeriesTemplate.labels.template.fontSize = 6;
     pieSeries.data = chartData;
-  });
+
+    return () => {
+      chart.dispose();
+    };
+  }, [id, chartData]);
 
   return <div id={id} style={{ width, height }} />;
 };

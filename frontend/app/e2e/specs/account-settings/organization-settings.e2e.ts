@@ -12,7 +12,7 @@ import {
 import { getLocation } from '../../utils';
 
 fixture('/account-settings/organization-settings').page(
-  AccountSettingsPage.path
+  AccountSettingsPage.organizationSettingsPath
 );
 
 const {
@@ -108,7 +108,7 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
 
   // Is on okta page even after normal login flow
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, 'matej.snuderl@snuderls.eu')
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -161,7 +161,7 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
 
   // Is on Google SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -223,7 +223,7 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
 
   // Is on Microsoft SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -282,7 +282,7 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
 
   // Is on Github SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -299,10 +299,21 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
     .eql(otherUser, 'Should prefill user');
 });
 
-test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
-  const { password, email } = SignUpPage.generateRandomCredentials();
-  await SignUpPage.signUpAndLogin(t, { email, password });
+test('[BILLING]: Should not be able to upgrade plan on enterprise', async (t) => {
+  const {
+    tab,
+    upgradeButton,
+  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
 
+  await LoginPage.loginWithInsightUser(t)
+    .click(tab)
+    .expect(queryByText('Insight Enterprise').visible)
+    .ok('Insight should be on enterprise plan')
+    .expect(upgradeButton.visible)
+    .notOk('Upgrade button is not visible');
+});
+
+test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
   const {
     tab,
     cardNumberInputElement,
@@ -311,7 +322,11 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     payButton,
     paidMessage,
     formIframe,
+    upgradeButton,
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
+
+  const { password, email } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
     .click(Sidebar.accountSettings.item)
@@ -320,6 +335,9 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .click(tab);
 
   await t
+    .expect(queryByText('Insight Free').visible)
+    .ok('Should have free plan by default')
+    .click(upgradeButton)
     .switchToIframe(formIframe.with({ timeout: 5000 }))
     .typeText(cardNumberInputElement, '4242 4242 4242 4242')
     .typeText(exipiryInputElement, '1044')
@@ -327,5 +345,7 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .switchToMainWindow()
     .click(payButton)
     .expect(paidMessage.with({ timeout: 10000 }).visible)
-    .ok('Subscription should be created');
+    .ok('Subscription should be created')
+    .expect(queryByText('Insight Business').visible)
+    .ok('Plan should be upgraded');
 });

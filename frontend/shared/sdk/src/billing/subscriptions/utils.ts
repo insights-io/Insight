@@ -1,11 +1,12 @@
-import { BillingSubscription, BillingSubscriptionDTO } from '@insight/types';
+import { SubscriptionDTO, Subscription } from '@insight/types';
 
-export const mapBillingSubscriptip = (
-  dto: BillingSubscriptionDTO
-): BillingSubscription => {
+export const mapSubscription = (
+  subscription: SubscriptionDTO | Subscription
+): Subscription => {
   return {
-    ...dto,
-    createdAt: new Date(dto.createdAt),
-    canceledAt: dto.canceledAt ? new Date(dto.canceledAt) : undefined,
+    ...subscription,
+    createdAt: subscription.createdAt
+      ? new Date(subscription.createdAt)
+      : undefined,
   };
 };

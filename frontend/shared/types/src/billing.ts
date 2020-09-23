@@ -1,24 +1,25 @@
-export type SubscriptionPlan = 'free' | 'business' | 'enterprise';
+export type PaidSubscriptionPlan = 'business' | 'enterprise';
+
+export type SubscriptionPlan = 'free' | PaidSubscriptionPlan;
 
 export type CreateSubscriptionDTO = {
   paymentMethodId: string;
+  plan: PaidSubscriptionPlan;
 };
 
-export type BillingSubscriptionDTO = {
-  id: string;
+export type PriceDTO = {
+  amount: number;
+  interval: 'month';
+};
+
+export type SubscriptionDTO = {
+  id?: string;
+  organizationId: string;
   plan: SubscriptionPlan;
-  customerExternalId: string;
-  customerInternalId: string;
-  priceId: string;
-  currentPeriodEnd: number;
-  createdAt: string;
-  canceledAt?: string;
+  price: PriceDTO;
+  createdAt?: string;
 };
 
-export type BillingSubscription = Omit<
-  BillingSubscriptionDTO,
-  'createdAt' | 'canceledAt'
-> & {
-  createdAt: Date;
-  canceledAt?: Date;
+export type Subscription = Omit<SubscriptionDTO, 'createdAt'> & {
+  createdAt?: Date;
 };

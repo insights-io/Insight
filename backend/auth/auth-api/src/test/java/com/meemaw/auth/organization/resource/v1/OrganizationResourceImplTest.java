@@ -1,5 +1,6 @@
 package com.meemaw.auth.organization.resource.v1;
 
+import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,7 +65,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals("000000", dataResponse.getData().getId());
+    assertEquals(INSIGHT_ORGANIZATION_ID, dataResponse.getData().getId());
     assertEquals("Insight", dataResponse.getData().getName());
   }
 

@@ -6,7 +6,7 @@ import nextCookie from 'next-cookies';
 import { AuthApi } from 'api';
 import { DataResponse, UserDTO } from '@insight/types';
 import {
-  getTracer,
+  startSpan,
   startRequestSpan,
   prepareCrossServiceHeaders,
 } from 'modules/tracing';
@@ -23,7 +23,7 @@ export const authenticated = async (
   const { SessionId, ChallengeId } = nextCookie(context);
   const pathname = context.req.url;
 
-  const span = getTracer().startSpan('authMiddleware.authenticated', {
+  const span = startSpan('authMiddleware.authenticated', {
     childOf: requestSpan,
     tags: { SessionId, ChallengeId, pathname },
   });

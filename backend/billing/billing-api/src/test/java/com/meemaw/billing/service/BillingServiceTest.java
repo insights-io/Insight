@@ -11,7 +11,8 @@ import com.meemaw.billing.customer.datasource.BillingCustomerDatasource;
 import com.meemaw.billing.customer.model.BillingCustomer;
 import com.meemaw.billing.invoice.datasource.BillingInvoiceDatasource;
 import com.meemaw.billing.invoice.model.BillingInvoice;
-import com.meemaw.billing.subscription.model.BillingSubscription;
+import com.meemaw.billing.subscription.model.SubscriptionPlan;
+import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -110,11 +111,14 @@ public class BillingServiceTest extends AbstractAuthApiTest {
 
     // Create new BillingSubscription
     PaymentMethod paymentMethod = createVisaTestPaymentMethod();
-    BillingSubscription subscription =
-        billingService.createSubscription(user, paymentMethod).toCompletableFuture().join();
+    SubscriptionDTO subscription =
+        billingService
+            .createSubscription(user, SubscriptionPlan.ENTERPRISE, paymentMethod)
+            .toCompletableFuture()
+            .join();
 
     String subscriptionId = subscription.getId();
-    String organizationId = subscription.getCustomerInternalId();
+    String organizationId = subscription.getOrganizationId();
 
     // Fetch the customer that was created for subscription
     BillingCustomer customer =

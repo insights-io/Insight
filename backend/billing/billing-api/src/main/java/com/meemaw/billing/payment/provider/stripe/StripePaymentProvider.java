@@ -7,6 +7,7 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
+import com.stripe.model.Price;
 import com.stripe.model.Subscription;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerUpdateParams;
@@ -38,6 +39,19 @@ public class StripePaymentProvider implements PaymentProvider {
     Stripe.apiKey = stripeApiKey;
     Stripe.enableTelemetry = false;
     Stripe.setMaxNetworkRetries(2);
+  }
+
+  @Override
+  public CompletionStage<Price> getPrice(String priceId) {
+    return async(
+        () -> {
+          try {
+            return Price.retrieve(priceId);
+          } catch (StripeException ex) {
+            log.error("[AUTH]: Failed to retrieve Stripe price id={}", priceId, ex);
+            throw mapException(ex);
+          }
+        });
   }
 
   @Override

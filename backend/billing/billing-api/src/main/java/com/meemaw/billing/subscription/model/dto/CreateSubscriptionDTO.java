@@ -1,6 +1,8 @@
 package com.meemaw.billing.subscription.model.dto;
 
+import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,4 +15,7 @@ public class CreateSubscriptionDTO {
 
   @NotBlank(message = "Required")
   String paymentMethodId;
+
+  @NotNull(message = "Required")
+  SubscriptionPlan plan;
 }

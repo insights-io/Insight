@@ -42,4 +42,10 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
     AuthUser user = insightPrincipal.user();
     return billingService.createSubscription(body, user).thenApply(DataResponse::created);
   }
+
+  @Override
+  public CompletionStage<Response> get() {
+    String organizationId = insightPrincipal.user().getOrganizationId();
+    return billingService.getSubscription(organizationId).thenApply(DataResponse::ok);
+  }
 }

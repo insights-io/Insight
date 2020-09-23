@@ -49,7 +49,9 @@ const PAYMENT_METHOD_MOCK: PaymentMethod = {
   },
 };
 
-export const Base = () => <BillingOrganizationSettings />;
+export const Base = () => (
+  <BillingOrganizationSettings organizationCreatedAt={new Date()} />
+);
 
 Base.story = configureStory({
   setupMocks: (sandbox) => {
