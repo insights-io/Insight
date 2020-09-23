@@ -111,9 +111,7 @@ describe('pages/_document', () => {
       '_document.getInitialProps',
       {
         childOf: tracedRequest.span,
-        tags: {
-          bootstrapScriptURI: 'fromEnv',
-        },
+        tags: { bootstrapScriptURI: 'fromEnv' },
       }
     );
 

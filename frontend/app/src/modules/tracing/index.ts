@@ -13,7 +13,7 @@ import {
 
 let _tracer: Tracer | undefined;
 
-const getTracer = (): Tracer => {
+export const getTracer = (): Tracer => {
   if (!_tracer) {
     const config: TracingConfig = {
       serviceName: 'frontend-app',
