@@ -9,7 +9,7 @@ class BillingSettings {
     'Card number'
   );
 
-  public readonly upgradeButton = queryByPlaceholderText('Upgrade');
+  public readonly upgradeButton = queryByText('Upgrade');
 
   public readonly exipiryInputElement = queryByPlaceholderText('MM / YY');
   public readonly cvcInputElement = queryByPlaceholderText('CVC');
