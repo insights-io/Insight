@@ -45,7 +45,7 @@ const CheckoutForm = () => {
         setStripeSetupError(error);
       } else if (paymentMethod) {
         await BillingApi.subscriptions
-          .create({ paymentMethodId: paymentMethod.id })
+          .create({ paymentMethodId: paymentMethod.id, plan: 'business' })
           .then(() => toaster.positive('Subscription created.', {}))
           .catch(async (apiErrorResponse) => {
             const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
