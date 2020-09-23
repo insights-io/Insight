@@ -15,7 +15,8 @@ import TeamInvite from './TeamInvite';
 import { OrganizationSettings } from './OrganizationSettings';
 
 class AccountSettings {
-  public readonly path = `${config.appBaseURL}/account/settings`;
+  public readonly userSettingsPath = `${config.appBaseURL}/account/settings`;
+  public readonly organizationSettingsPath = `${config.appBaseURL}/account/organization-settings`;
 
   /* Selectors */
   private readonly container = within('div.account-settings');

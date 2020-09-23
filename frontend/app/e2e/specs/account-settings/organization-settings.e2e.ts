@@ -12,7 +12,7 @@ import {
 import { getLocation } from '../../utils';
 
 fixture('/account-settings/organization-settings').page(
-  AccountSettingsPage.path
+  AccountSettingsPage.organizationSettingsPath
 );
 
 const {
@@ -108,7 +108,7 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
 
   // Is on okta page even after normal login flow
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, 'matej.snuderl@snuderls.eu')
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -161,7 +161,7 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
 
   // Is on Google SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -223,7 +223,7 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
 
   // Is on Microsoft SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -282,7 +282,7 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
 
   // Is on Github SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.path)
+    .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)

@@ -9,7 +9,9 @@ import {
   VerificationPage,
 } from '../../pages';
 
-fixture('/account-settings/user-settings').page(AccountSettingsPage.path);
+fixture('/account-settings/user-settings').page(
+  AccountSettingsPage.userSettingsPath
+);
 
 test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) => {
   const {
