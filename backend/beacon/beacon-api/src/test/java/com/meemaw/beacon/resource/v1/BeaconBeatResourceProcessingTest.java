@@ -8,9 +8,9 @@ import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.sessions.v1.SessionResource;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.data.UserAgentData;
-import com.meemaw.test.setup.AuthApiTestProvider;
 import com.meemaw.test.testconainers.api.session.SessionApiTestResource;
 import com.meemaw.test.testconainers.kafka.KafkaTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -40,7 +40,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class BeaconBeatResourceProcessingTest {
 
   // TODO: create new organization -- dont reuse Insight
-  private static final String ORGANIZATION_ID = AuthApiTestProvider.INSIGHT_ORGANIZATION_ID;
+  private static final String ORGANIZATION_ID = SharedConstants.INSIGHT_ORGANIZATION_ID;
   private static final String BEACON_RESOURCE_BEAT_PATH = BeaconResource.PATH + "/beat";
 
   @Inject @RestClient SessionResource sessionResource;

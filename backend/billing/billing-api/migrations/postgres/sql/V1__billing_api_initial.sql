@@ -1,9 +1,9 @@
-CREATE TABLE billing.plan
+CREATE TABLE billing.subscription_plan
 (
     name text PRIMARY KEY
 );
 
-INSERT INTO billing.plan
+INSERT INTO billing.subscription_plan
 VALUES ('free'),
        ('business'),
        ('enterprise');
@@ -20,7 +20,7 @@ CREATE TABLE billing.customer
 CREATE TABLE billing.subscription
 (
     id                   TEXT        NOT NULL PRIMARY KEY,
-    plan                 TEXT REFERENCES billing.plan (name) ON UPDATE CASCADE,
+    plan                 TEXT REFERENCES billing.subscription_plan (name) ON UPDATE CASCADE,
     customer_internal_id TEXT REFERENCES billing.customer (internal_id) ON DELETE CASCADE,
     customer_external_id TEXT REFERENCES billing.customer (external_id) ON DELETE CASCADE,
     price_id             TEXT        NOT NULL,

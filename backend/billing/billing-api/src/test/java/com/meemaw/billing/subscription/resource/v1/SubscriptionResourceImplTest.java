@@ -5,6 +5,7 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
@@ -132,7 +133,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"paymentMethodId\":\"Required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"paymentMethodId\":\"Required\",\"plan\":\"Required\"}}}"));
   }
 
   @Test
@@ -141,7 +142,10 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
-        .body(JacksonMapper.get().writeValueAsString(new CreateSubscriptionDTO("random")))
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(
+                    new CreateSubscriptionDTO("random", SubscriptionPlan.ENTERPRISE)))
         .post(SubscriptionResource.PATH)
         .then()
         .statusCode(404)
@@ -158,12 +162,76 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body(
             JacksonMapper.get()
-                .writeValueAsString(new CreateSubscriptionDTO("pm_1HS5TUI1ysvdCIIxoLNYYB9S")))
+                .writeValueAsString(
+                    new CreateSubscriptionDTO(
+                        "pm_1HS5TUI1ysvdCIIxoLNYYB9S", SubscriptionPlan.ENTERPRISE)))
         .post(SubscriptionResource.PATH)
         .then()
         .statusCode(400)
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"This PaymentMethod was previously used without being attached to a Customer or was detached from a Customer, and may not be used again.\"}}"));
+  }
+
+  @Test
+  public void create__should_fail__when_free_plan() throws JsonProcessingException {
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .body(
+            JacksonMapper.get()
+                .writeValueAsString(
+                    new CreateSubscriptionDTO(
+                        "pm_1HS5TUI1ysvdCIIxoLNYYB9S", SubscriptionPlan.FREE)))
+        .post(SubscriptionResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Invalid plan\"}}"));
+  }
+
+  @Test
+  public void get__should_fail__when_not_authenticated() {
+    given()
+        .when()
+        .get(SubscriptionResource.PATH)
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void get__should_return_enterprise_plan__when_insight() {
+    given()
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .when()
+        .get(SubscriptionResource.PATH)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":{\"organizationId\":\"000000\",\"plan\":\"enterprise\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
+  }
+
+  @Test
+  public void get__should_return_free_plan__when_no_subscription() throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().getOrganization(sessionId).get().getId();
+
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .get(SubscriptionResource.PATH)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                String.format(
+                    "{\"data\":{\"organizationId\":\"%s\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    organizationId)));
   }
 }

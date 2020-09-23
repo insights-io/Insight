@@ -2,8 +2,8 @@ package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
+import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ORGANIZATION_ID;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;

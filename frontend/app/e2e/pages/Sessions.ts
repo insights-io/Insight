@@ -1,3 +1,4 @@
+import 'testcafe';
 import { queryAllByText } from '@testing-library/testcafe';
 
 import config from '../config';
@@ -7,7 +8,7 @@ class SessionsPage {
 
   /* Utils */
   public getLastSession = () => {
-    return queryAllByText(/^.*less than 5 seconds ago$/);
+    return queryAllByText(/^.*less than [1-9][0-9]* seconds ago$/);
   };
 }
 

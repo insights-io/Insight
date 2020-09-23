@@ -1,7 +1,7 @@
 package com.meemaw.session.events.resource.v1;
 
+import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.setup.RestAssuredUtils.sessionCookieExpect401;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;

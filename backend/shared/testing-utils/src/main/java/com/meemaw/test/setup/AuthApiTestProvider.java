@@ -25,7 +25,6 @@ import javax.ws.rs.core.MediaType;
 
 public class AuthApiTestProvider {
 
-  public static final String INSIGHT_ORGANIZATION_ID = "000000";
   public static final String INSIGHT_ADMIN_EMAIL = "admin@insight.io";
   public static final String INSIGHT_ADMIN_PASSWORD = "superDuperPassword123";
   public static final UUID INSIGHT_ADMIN_ID =

@@ -4,6 +4,7 @@ import com.meemaw.shared.rest.exception.BoomException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
+import com.stripe.model.Price;
 import com.stripe.model.Subscription;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerUpdateParams;
@@ -12,6 +13,8 @@ import com.stripe.param.SubscriptionCreateParams;
 import java.util.concurrent.CompletionStage;
 
 public interface PaymentProvider {
+
+  CompletionStage<Price> getPrice(String priceId);
 
   CompletionStage<Customer> createCustomer(CustomerCreateParams params);
 
