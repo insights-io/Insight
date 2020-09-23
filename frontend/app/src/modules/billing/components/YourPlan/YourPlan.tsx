@@ -13,13 +13,24 @@ import type { SubscriptionPlan } from '@insight/types';
 type DataRetention = '1mo';
 
 type Props = {
-  sessionsUsed: number;
-  resetsOn: Date;
-  plan: SubscriptionPlan;
-  dataRetention: DataRetention;
+  resetsOn?: Date;
+  plan?: SubscriptionPlan;
+  sessionsUsed?: number;
+  dataRetention?: DataRetention;
+  isLoading: boolean;
+  onUpgradeClick: (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
 };
 
-const YourPlan = ({ plan, sessionsUsed, resetsOn, dataRetention }: Props) => {
+const YourPlan = ({
+  plan,
+  sessionsUsed,
+  resetsOn,
+  isLoading,
+  dataRetention,
+  onUpgradeClick,
+}: Props) => {
   const [_css, theme] = useStyletron();
 
   const {
@@ -29,14 +40,14 @@ const YourPlan = ({ plan, sessionsUsed, resetsOn, dataRetention }: Props) => {
   const totalSessions = plan === 'free' ? 1000 : undefined;
 
   const violatesPlan =
-    totalSessions !== undefined && sessionsUsed > totalSessions;
+    sessionsUsed && totalSessions !== undefined && sessionsUsed > totalSessions;
 
   const totalSessionsText =
     totalSessions === undefined ? '\u221e' : totalSessions.toLocaleString();
 
   const progressBarProps: ProgressBarProps = useMemo(
     () =>
-      totalSessions === undefined
+      totalSessions === undefined || sessionsUsed === undefined
         ? { infinite: true }
         : {
             value: (sessionsUsed / totalSessions) * 100,
@@ -51,7 +62,7 @@ const YourPlan = ({ plan, sessionsUsed, resetsOn, dataRetention }: Props) => {
       <StyledBody>
         <Flex justifyContent="space-between">
           <H4 marginTop={0} marginBottom={theme.sizing.scale500}>
-            Insight {plan[0].toUpperCase() + plan.substring(1)}
+            Insight {plan ? plan[0].toUpperCase() + plan.substring(1) : ''}
           </H4>
           <Block flex={1} maxWidth="400px">
             <ProgressBar
@@ -78,13 +89,14 @@ const YourPlan = ({ plan, sessionsUsed, resetsOn, dataRetention }: Props) => {
                     {sessionsUsed} of {totalSessionsText} sessions
                   </span>
                   <br />
-                  <span>
-                    Resets{' '}
-                    {`${format(resetsOn, 'MMM d, yyyy')} at ${format(
-                      resetsOn,
-                      'h:mma'
-                    )}`}
-                  </span>
+                  {resetsOn && (
+                    <span>
+                      {`Resets ${format(resetsOn, 'MMM d, yyyy')} at ${format(
+                        resetsOn,
+                        'h:mma'
+                      )}`}
+                    </span>
+                  )}
                 </>
               )}
             />
@@ -102,16 +114,22 @@ const YourPlan = ({ plan, sessionsUsed, resetsOn, dataRetention }: Props) => {
         </Block>
       </StyledBody>
 
-      <Divider />
-      <StyledAction>
-        <Button
-          size={SIZE.compact}
-          shape={SHAPE.pill}
-          $style={{ width: '100%', maxWidth: '300px' }}
-        >
-          Upgrade
-        </Button>
-      </StyledAction>
+      {plan !== 'enterprise' && (
+        <>
+          <Divider />
+          <StyledAction>
+            <Button
+              size={SIZE.compact}
+              shape={SHAPE.pill}
+              $style={{ width: '100%', maxWidth: '300px' }}
+              onClick={onUpgradeClick}
+              disabled={isLoading}
+            >
+              Upgrade
+            </Button>
+          </StyledAction>
+        </>
+      )}
     </Card>
   );
 };

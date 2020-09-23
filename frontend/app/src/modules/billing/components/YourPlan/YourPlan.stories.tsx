@@ -1,4 +1,6 @@
 import React from 'react';
+import { action } from '@storybook/addon-actions';
+import { addDays } from 'date-fns';
 
 import YourPlan from './YourPlan';
 
@@ -6,29 +8,29 @@ export default {
   title: 'billing/components/YourPlan',
 };
 
-export const Base = () => (
-  <YourPlan
-    sessionsUsed={400}
-    resetsOn={new Date()}
-    dataRetention="1mo"
-    plan="free"
-  />
+const baseProps = {
+  dataRetention: '1mo',
+  isLoading: false,
+  onUpgradeClick: action('onUpgradeClick'),
+  resetsOn: addDays(new Date(), 30),
+} as const;
+
+export const FreePlan = () => (
+  <YourPlan {...baseProps} sessionsUsed={400} plan="free" />
 );
 
-export const WithFreePlanViolation = () => (
-  <YourPlan
-    sessionsUsed={1200}
-    resetsOn={new Date()}
-    dataRetention="1mo"
-    plan="free"
-  />
+export const FreePlanWithUsageViolation = () => (
+  <YourPlan {...baseProps} sessionsUsed={1200} plan="free" />
 );
 
-export const WithUnlimited = () => (
-  <YourPlan
-    sessionsUsed={1200}
-    resetsOn={new Date()}
-    dataRetention="1mo"
-    plan="enterprise"
-  />
+export const BusinessPlan = () => (
+  <YourPlan {...baseProps} sessionsUsed={1200} plan="business" />
+);
+
+export const EnterprisePlan = () => (
+  <YourPlan {...baseProps} sessionsUsed={1200} plan="enterprise" />
+);
+
+export const Loading = () => (
+  <YourPlan isLoading onUpgradeClick={action('onUpgradeClick')} />
 );

@@ -41,7 +41,9 @@ const OrganizationSettings = () => {
           />
         </Tab>
         <Tab key="billing" title="Billing">
-          <AsyncBillingOrganizationSettings />
+          <AsyncBillingOrganizationSettings
+            organizationCreatedAt={organization?.createdAt}
+          />
         </Tab>
       </Tabs>
     </Block>

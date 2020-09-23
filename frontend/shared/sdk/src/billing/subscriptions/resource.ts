@@ -5,7 +5,7 @@ import type {
   SubscriptionDTO,
 } from '@insight/types';
 
-import { RequestOptions, withCredentials } from '../../core';
+import { RequestOptions, withCredentials, getData } from '../../core';
 
 export const subscriptionResource = (billingApiBaseURL: string) => {
   return {
@@ -18,13 +18,15 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
           json,
           ...withCredentials(rest),
         })
-        .json<DataResponse<SubscriptionDTO>>();
+        .json<DataResponse<SubscriptionDTO>>()
+        .then(getData);
     },
 
     get: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
         .get(`${baseURL}/v1/billing/subscriptions`, withCredentials(rest))
-        .json<DataResponse<SubscriptionDTO>>();
+        .json<DataResponse<SubscriptionDTO>>()
+        .then(getData);
     },
   };
 };

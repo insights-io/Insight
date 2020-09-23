@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { loadStripe, StripeError } from '@stripe/stripe-js';
 import {
   CardElement,
@@ -11,8 +11,16 @@ import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { BillingApi } from 'api';
 import { toaster } from 'baseui/toast';
-import { APIError, APIErrorDataResponse } from '@insight/types';
+import {
+  APIError,
+  APIErrorDataResponse,
+  SubscriptionDTO,
+} from '@insight/types';
 import FormError from 'shared/components/FormError';
+import YourPlan from 'modules/billing/components/YourPlan';
+import { Modal } from 'baseui/modal';
+import { addDays } from 'date-fns';
+import useSubscription from 'modules/billing/hooks/useSubscription';
 
 import { createCardPaymentMethod } from './stripe';
 
@@ -21,7 +29,11 @@ const TEST_PUBLISHABLE_KEY =
 
 const stripePromise = loadStripe(TEST_PUBLISHABLE_KEY);
 
-const CheckoutForm = () => {
+type CheckoutFormProps = {
+  onSubscriptionCreated: (subscription: SubscriptionDTO) => void;
+};
+
+const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_stripeSetupError, setStripeSetupError] = useState<StripeError>();
   const [apiError, setApiError] = useState<APIError>();
@@ -46,7 +58,10 @@ const CheckoutForm = () => {
       } else if (paymentMethod) {
         await BillingApi.subscriptions
           .create({ paymentMethodId: paymentMethod.id, plan: 'business' })
-          .then(() => toaster.positive('Subscription created.', {}))
+          .then((subscription) => {
+            onSubscriptionCreated(subscription);
+            toaster.positive('Subscription created.', {});
+          })
           .catch(async (apiErrorResponse) => {
             const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
             setApiError(errorDTO.error);
@@ -79,12 +94,49 @@ const CheckoutForm = () => {
   );
 };
 
-const BillingOrganizationSettings = () => {
-  return (
-    <Elements stripe={stripePromise}>
-      <CheckoutForm />
-    </Elements>
+type Props = {
+  organizationCreatedAt: Date | undefined;
+};
+
+const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
+  const [isUpgrading, setIsUpgrading] = useState(false);
+  const { subscription, isLoading, setSubscription } = useSubscription();
+
+  const onUpgradeClick = useCallback(() => setIsUpgrading(true), []);
+
+  const resetsOn = useMemo(
+    () =>
+      organizationCreatedAt ? addDays(organizationCreatedAt, 30) : undefined,
+    [organizationCreatedAt]
   );
+
+  const onSubscriptionCreated = useCallback(
+    (createdSubscription: SubscriptionDTO) => {
+      setSubscription(createdSubscription);
+      setIsUpgrading(false);
+    },
+    [setSubscription]
+  );
+
+  return subscription ? (
+    <>
+      <YourPlan
+        plan={subscription.plan}
+        sessionsUsed={0}
+        dataRetention="1mo"
+        resetsOn={resetsOn}
+        onUpgradeClick={onUpgradeClick}
+        isLoading={isLoading}
+      />
+      {subscription.plan !== 'enterprise' && (
+        <Modal isOpen={isUpgrading} onClose={() => setIsUpgrading(false)}>
+          <Elements stripe={stripePromise}>
+            <CheckoutForm onSubscriptionCreated={onSubscriptionCreated} />
+          </Elements>
+        </Modal>
+      )}
+    </>
+  ) : null;
 };
 
 export default React.memo(BillingOrganizationSettings);
