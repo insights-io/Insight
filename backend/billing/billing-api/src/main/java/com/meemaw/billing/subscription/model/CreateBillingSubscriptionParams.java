@@ -9,6 +9,8 @@ public class CreateBillingSubscriptionParams {
   SubscriptionPlan plan;
   String customerExternalId;
   String customerInternalId;
+  String status;
   String priceId;
+  long currentPeriodStart;
   long currentPeriodEnd;
 }

@@ -7,6 +7,16 @@ import type {
 
 import { RequestOptions, withCredentials, getData } from '../../core';
 
+export type CreateSubscriptionResponseDTO =
+  | {
+      clientSecret: undefined;
+      subscription: SubscriptionDTO;
+    }
+  | {
+      clientSecret: string;
+      subscription: undefined;
+    };
+
 export const subscriptionResource = (billingApiBaseURL: string) => {
   return {
     create: (
@@ -18,7 +28,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
           json,
           ...withCredentials(rest),
         })
-        .json<DataResponse<SubscriptionDTO>>()
+        .json<DataResponse<CreateSubscriptionResponseDTO>>()
         .then(getData);
     },
 

@@ -10,3 +10,15 @@ export const createCardPaymentMethod = (
     card: elements.getElement(CardElement) as StripeCardElement,
   });
 };
+
+export const confirmCardPayment = (
+  clientSecret: string,
+  stripe: Stripe,
+  elements: StripeElements
+) => {
+  return stripe.confirmCardPayment(clientSecret, {
+    payment_method: {
+      card: elements.getElement(CardElement) as StripeCardElement,
+    },
+  });
+};

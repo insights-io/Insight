@@ -2,7 +2,8 @@ package com.meemaw.billing.subscription.datasource.sql;
 
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CANCELED_AT;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CREATED_AT;
-import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CURRENT_PERIOD_ENDS;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CURRENT_PERIOD_END;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CURRENT_PERIOD_START;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CUSTOMER_EXTERNAL_ID;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CUSTOMER_INTERNAL_ID;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.FIELDS;
@@ -10,12 +11,14 @@ import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscript
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.INSERT_FIELDS;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.PLAN;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.PRICE_ID;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.STATUS;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.TABLE;
 
 import com.meemaw.billing.subscription.datasource.BillingSubscriptionDatasource;
 import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.CreateBillingSubscriptionParams;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
+import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.shared.sql.client.SqlPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
@@ -42,11 +45,35 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
                 params.getPlan().getKey(),
                 params.getCustomerExternalId(),
                 params.getCustomerInternalId(),
+                params.getStatus(),
                 params.getPriceId(),
+                params.getCurrentPeriodStart(),
                 params.getCurrentPeriodEnd())
             .returning(FIELDS);
 
     return sqlPool.execute(query).thenApply(rows -> mapBillingSubscription(rows.iterator().next()));
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingSubscription>> update(
+      String subscriptionId, UpdateBillingSubscriptionParams params) {
+    Query query =
+        sqlPool
+            .getContext()
+            .update(TABLE)
+            .set(CURRENT_PERIOD_START, params.getCurrentPeriodStart())
+            .set(CURRENT_PERIOD_END, params.getCurrentPeriodEnd())
+            .set(STATUS, params.getStatus())
+            .where(ID.eq(subscriptionId))
+            .returning(FIELDS);
+
+    return sqlPool.execute(query).thenApply(this::onFindBillingSubscription);
+  }
+
+  @Override
+  public CompletionStage<Boolean> delete(String subscriptionId) {
+    Query query = sqlPool.getContext().deleteFrom(TABLE).where(ID.eq(subscriptionId)).returning(ID);
+    return sqlPool.execute(query).thenApply(pgRowSet -> pgRowSet.iterator().hasNext());
   }
 
   @Override
@@ -72,8 +99,10 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
         SubscriptionPlan.fromString(row.getString(PLAN.getName())),
         row.getString(CUSTOMER_EXTERNAL_ID.getName()),
         row.getString(CUSTOMER_INTERNAL_ID.getName()),
+        row.getString(STATUS.getName()),
         row.getString(PRICE_ID.getName()),
-        row.getLong(CURRENT_PERIOD_ENDS.getName()),
+        row.getLong(CURRENT_PERIOD_START.getName()),
+        row.getLong(CURRENT_PERIOD_END.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()),
         row.getOffsetDateTime(CANCELED_AT.getName()));
   }

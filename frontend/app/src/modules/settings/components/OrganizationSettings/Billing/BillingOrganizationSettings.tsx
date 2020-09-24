@@ -22,7 +22,7 @@ import { Modal } from 'baseui/modal';
 import { addDays } from 'date-fns';
 import useSubscription from 'modules/billing/hooks/useSubscription';
 
-import { createCardPaymentMethod } from './stripe';
+import { createCardPaymentMethod, confirmCardPayment } from './stripe';
 
 const TEST_PUBLISHABLE_KEY =
   'pk_test_51HRYgqI1ysvdCIIxDuWTE0dKP7FxVsdDkDq1d7uEqF5u8kuVQLLFfk3KMCxliCt6qCpyLIkYzfiFAnVkK0GDBgJv005WZqBCHB';
@@ -35,7 +35,7 @@ type CheckoutFormProps = {
 
 const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [_stripeSetupError, setStripeSetupError] = useState<StripeError>();
+  const [stripeSetupError, setStripeSetupError] = useState<StripeError>();
   const [apiError, setApiError] = useState<APIError>();
   const stripe = useStripe();
   const elements = useElements();
@@ -46,7 +46,10 @@ const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
       return;
     }
 
+    setApiError(undefined);
+    setStripeSetupError(undefined);
     setIsSubmitting(true);
+
     try {
       const { error, paymentMethod } = await createCardPaymentMethod(
         stripe,
@@ -58,9 +61,33 @@ const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
       } else if (paymentMethod) {
         await BillingApi.subscriptions
           .create({ paymentMethodId: paymentMethod.id, plan: 'business' })
-          .then((subscription) => {
-            onSubscriptionCreated(subscription);
-            toaster.positive('Subscription created.', {});
+          .then((createSubscriptionResponse) => {
+            if (createSubscriptionResponse.subscription) {
+              onSubscriptionCreated(createSubscriptionResponse.subscription);
+              toaster.positive('Subscription created', {});
+              return Promise.resolve();
+            }
+
+            return confirmCardPayment(
+              createSubscriptionResponse.clientSecret,
+              stripe,
+              elements
+            ).then((confirmation) => {
+              if (confirmation.error) {
+                setStripeSetupError(confirmation.error);
+              } else if (confirmation.paymentIntent?.status === 'succeeded') {
+                BillingApi.subscriptions
+                  .get()
+                  .then((subscription) => {
+                    onSubscriptionCreated(subscription);
+                    toaster.positive('Subscription created', {});
+                  })
+                  .catch(async (apiErrorResponse) => {
+                    const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
+                    setApiError(errorDTO.error);
+                  });
+              }
+            });
           })
           .catch(async (apiErrorResponse) => {
             const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
@@ -89,6 +116,13 @@ const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
           </Button>
         </Block>
         {apiError && <FormError error={apiError} />}
+        {stripeSetupError && (
+          <FormError
+            error={{
+              message: stripeSetupError.message || stripeSetupError.type,
+            }}
+          />
+        )}
       </form>
     </Card>
   );

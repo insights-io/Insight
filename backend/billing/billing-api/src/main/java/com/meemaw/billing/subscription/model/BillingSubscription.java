@@ -10,7 +10,9 @@ public class BillingSubscription {
   SubscriptionPlan plan;
   String customerExternalId;
   String customerInternalId;
+  String status;
   String priceId;
+  long currentPeriodStart;
   long currentPeriodEnd;
   OffsetDateTime createdAt;
   OffsetDateTime canceledAt;

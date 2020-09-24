@@ -1,14 +1,12 @@
 package com.meemaw.billing.invoice.model;
 
+import lombok.Builder;
 import lombok.Value;
 
 @Value
-public class CreateBillingInvoiceParams {
+@Builder
+public class UpdateBillingInvoiceParams {
 
-  String id;
-  String subscriptionId;
-  String paymentIntent;
-  String currency;
   long amountPaid;
   long amountDue;
   String status;
