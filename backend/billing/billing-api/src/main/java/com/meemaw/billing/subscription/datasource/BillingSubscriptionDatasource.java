@@ -15,6 +15,7 @@ public interface BillingSubscriptionDatasource {
 
   CompletionStage<Boolean> delete(String subscriptionId);
 
-  CompletionStage<Optional<BillingSubscription>> findByCustomerInternalId(
-      String customerInternalId);
+  CompletionStage<Optional<BillingSubscription>> get(String subscriptionId);
+
+  CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(String customerInternalId);
 }

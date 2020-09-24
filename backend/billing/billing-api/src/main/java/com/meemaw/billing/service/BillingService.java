@@ -103,7 +103,7 @@ public class BillingService {
                                             .thenApply(
                                                 ignored -> {
                                                   log.info(
-                                                      "[AUTH]: Created new customer for organizationId={} customerId={}",
+                                                      "[BILLING]: Created new customer for organizationId={} customerId={}",
                                                       organizationId,
                                                       customer.getId());
                                                   return customer;
@@ -220,8 +220,8 @@ public class BillingService {
   private <T> T deserializeEvent(Event event, Class<T> clazz) {
     EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
     if (dataObjectDeserializer.getObject().isEmpty()) {
-      log.error("[AUTH]: Failed to deserialize event={} to class={}", event, clazz);
-      throw Boom.badRequest().message("[AUTH]: Failed to deserialize event").exception();
+      log.error("[BILLING]: Failed to deserialize event={} to class={}", event, clazz);
+      throw Boom.badRequest().message("[BILLING]: Failed to deserialize event").exception();
     }
     return (T) dataObjectDeserializer.getObject().get();
   }
@@ -308,7 +308,7 @@ public class BillingService {
         .thenCompose(
             maybeBillingCustomer -> {
               if (maybeBillingCustomer.isEmpty()) {
-                log.error("[AUTH]: Failed to associate invoice with customer event={}", invoice);
+                log.error("[BILLING]: Failed to associate invoice with customer event={}", invoice);
                 throw Boom.badRequest().exception();
               }
 
@@ -329,7 +329,7 @@ public class BillingService {
             })
         .thenApply(
             billingInvoice -> {
-              log.info("[AUTH] Successfully created billing invoice={}", billingInvoice);
+              log.info("[BILLING] Successfully created billing invoice={}", billingInvoice);
               return true;
             });
   }
@@ -340,7 +340,7 @@ public class BillingService {
     }
 
     return billingSubscriptionDatasource
-        .findByCustomerInternalId(organizationId)
+        .getByCustomerInternalId(organizationId)
         .thenCompose(
             maybeSubscription -> {
               if (maybeSubscription.isEmpty()) {

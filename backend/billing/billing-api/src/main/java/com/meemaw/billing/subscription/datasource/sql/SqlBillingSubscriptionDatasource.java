@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jooq.Condition;
 import org.jooq.Query;
 
 @ApplicationScoped
@@ -77,10 +78,18 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   }
 
   @Override
-  public CompletionStage<Optional<BillingSubscription>> findByCustomerInternalId(
+  public CompletionStage<Optional<BillingSubscription>> get(String subscriptionId) {
+    return get(ID.eq(subscriptionId));
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
       String customerInternalId) {
-    Query query =
-        sqlPool.getContext().selectFrom(TABLE).where(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
+    return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
+  }
+
+  private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(condition);
     return sqlPool.execute(query).thenApply(this::onFindBillingSubscription);
   }
 
