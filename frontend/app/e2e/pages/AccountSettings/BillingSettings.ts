@@ -3,15 +3,17 @@ import { Selector } from 'testcafe';
 
 class BillingSettings {
   public readonly tab = queryByText('Billing');
-  public readonly formIframe = Selector('iframe');
+  public readonly formIframe = Selector(
+    'iframe[src^="https://js.stripe.com/v3/elements-inner-card"]'
+  );
 
   public readonly threedSecure = {
     outerIframe: Selector(
       'iframe[src^="https://js.stripe.com/v3/three-ds-2-challenge"]'
     ),
     innerIframe: Selector('iframe[id="challengeFrame"]'),
-    complete: queryByText('Complete'),
-    fail: queryByText('Fail'),
+    completeButton: queryByText('Complete'),
+    failButton: queryByText('Fail'),
     failMessage: queryByText(
       'We are unable to authenticate your payment method. Please choose a different payment method and try again.'
     ),
