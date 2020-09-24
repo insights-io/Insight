@@ -32,7 +32,7 @@
     "@types/styletron-react": "5.0.2"
   },
   "peerDependencies": {
-    "baseui": "9.100.0",
+    "baseui": "9.101.0",
     "react-hook-form": "6.8.4"
   }
 }
