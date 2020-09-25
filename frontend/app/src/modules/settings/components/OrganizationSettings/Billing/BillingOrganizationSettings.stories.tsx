@@ -1,9 +1,9 @@
+import React from 'react';
 import { configureStory } from '@insight/storybook';
 import { PaymentMethod } from '@stripe/stripe-js';
-import React from 'react';
+import * as stripeApi from 'modules/billing/components/CheckoutForm/stripe';
 
 import BillingOrganizationSettings from './BillingOrganizationSettings';
-import * as stripeApi from './stripe';
 
 export default {
   title: 'settings/components/BillingOrganizationSettings',
