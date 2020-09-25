@@ -27,6 +27,7 @@ import com.stripe.param.PaymentMethodAttachParams;
 import com.stripe.param.SubscriptionCreateParams;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -82,10 +83,16 @@ public class StripeBillingService implements BillingService {
                           new SubscriptionDTO(
                               subscription.getId(),
                               organizationId,
+                              subscription.getStatus(),
                               subscription.getPlan(),
                               PriceDTO.fromStripe(price),
                               subscription.getCreatedAt()));
             });
+  }
+
+  @Override
+  public CompletionStage<List<BillingSubscription>> listSubscriptions(String organizationId) {
+    return billingSubscriptionDatasource.list(organizationId);
   }
 
   @Override
@@ -194,6 +201,7 @@ public class StripeBillingService implements BillingService {
                                                     new SubscriptionDTO(
                                                         billingSubscription.getId(),
                                                         billingSubscription.getCustomerInternalId(),
+                                                        billingSubscription.getStatus(),
                                                         billingSubscription.getPlan(),
                                                         PriceDTO.fromStripe(price),
                                                         billingSubscription.getCreatedAt());

@@ -22,6 +22,9 @@ import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.shared.sql.client.SqlPool;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -68,7 +71,7 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
             .where(ID.eq(subscriptionId))
             .returning(FIELDS);
 
-    return sqlPool.execute(query).thenApply(this::onFindBillingSubscription);
+    return sqlPool.execute(query).thenApply(this::onGetBillingSubscription);
   }
 
   @Override
@@ -83,6 +86,12 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   }
 
   @Override
+  public CompletionStage<List<BillingSubscription>> list(String subscriptionId) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(subscriptionId));
+    return sqlPool.execute(query).thenApply(this::onListBillingSubscriptions);
+  }
+
+  @Override
   public CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
       String customerInternalId) {
     return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
@@ -90,10 +99,21 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
 
   private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(condition);
-    return sqlPool.execute(query).thenApply(this::onFindBillingSubscription);
+    return sqlPool.execute(query).thenApply(this::onGetBillingSubscription);
   }
 
-  private Optional<BillingSubscription> onFindBillingSubscription(RowSet<Row> rows) {
+  private List<BillingSubscription> onListBillingSubscriptions(RowSet<Row> rows) {
+    if (!rows.iterator().hasNext()) {
+      return Collections.emptyList();
+    }
+    List<BillingSubscription> subscriptions = new ArrayList<>();
+    for (Row row : rows) {
+      subscriptions.add(mapBillingSubscription(row));
+    }
+    return subscriptions;
+  }
+
+  private Optional<BillingSubscription> onGetBillingSubscription(RowSet<Row> rows) {
     if (!rows.iterator().hasNext()) {
       return Optional.empty();
     }

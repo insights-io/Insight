@@ -16,19 +16,20 @@ public class SubscriptionDTO {
 
   String id;
   String organizationId;
+  String status;
   SubscriptionPlan plan;
   PriceDTO price;
   OffsetDateTime createdAt;
 
-  private static SubscriptionDTO predefined(String organizationId, SubscriptionPlan plan) {
-    return new SubscriptionDTO(null, organizationId, plan, PriceDTO.free(), null);
+  private static SubscriptionDTO active(String organizationId, SubscriptionPlan plan) {
+    return new SubscriptionDTO(null, organizationId, "active", plan, PriceDTO.free(), null);
   }
 
   public static SubscriptionDTO free(String organizationId) {
-    return predefined(organizationId, SubscriptionPlan.FREE);
+    return active(organizationId, SubscriptionPlan.FREE);
   }
 
   public static SubscriptionDTO insight() {
-    return predefined(INSIGHT_ORGANIZATION_ID, SubscriptionPlan.ENTERPRISE);
+    return active(INSIGHT_ORGANIZATION_ID, SubscriptionPlan.ENTERPRISE);
   }
 }

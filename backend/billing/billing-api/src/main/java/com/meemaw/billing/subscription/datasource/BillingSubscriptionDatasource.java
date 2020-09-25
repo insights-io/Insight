@@ -3,6 +3,7 @@ package com.meemaw.billing.subscription.datasource;
 import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.CreateBillingSubscriptionParams;
 import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
@@ -16,6 +17,8 @@ public interface BillingSubscriptionDatasource {
   CompletionStage<Boolean> delete(String subscriptionId);
 
   CompletionStage<Optional<BillingSubscription>> get(String subscriptionId);
+
+  CompletionStage<List<BillingSubscription>> list(String subscriptionId);
 
   CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(String customerInternalId);
 }

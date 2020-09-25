@@ -28,6 +28,11 @@ public interface SubscriptionResource {
 
   @GET
   @CookieAuth
+  @Path("list")
+  CompletionStage<Response> list();
+
+  @GET
+  @CookieAuth
   CompletionStage<Response> get();
 
   @DELETE

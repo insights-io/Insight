@@ -26,6 +26,12 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   }
 
   @Override
+  public CompletionStage<Response> list() {
+    String organizationId = insightPrincipal.user().getOrganizationId();
+    return billingService.listSubscriptions(organizationId).thenApply(DataResponse::ok);
+  }
+
+  @Override
   public CompletionStage<Response> get() {
     String organizationId = insightPrincipal.user().getOrganizationId();
     return billingService.getSubscription(organizationId).thenApply(DataResponse::ok);

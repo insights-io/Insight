@@ -8,9 +8,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.billing.service.stripe.StripeBillingService;
-import com.meemaw.billing.subscription.datasource.BillingSubscriptionDatasource;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
+import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
+import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
@@ -19,6 +20,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +34,6 @@ import org.junit.jupiter.api.Test;
 public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Inject StripeBillingService billingService;
-  @Inject BillingSubscriptionDatasource billingSubscriptionDatasource;
 
   String eventPath = SubscriptionResource.PATH + "/" + "event";
 
@@ -225,7 +226,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"data\":{\"organizationId\":\"000000\",\"plan\":\"enterprise\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
+                "{\"data\":{\"organizationId\":\"000000\",\"status\":\"active\",\"plan\":\"enterprise\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
   }
 
   @Test
@@ -242,7 +243,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"data\":{\"organizationId\":\"%s\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    "{\"data\":{\"organizationId\":\"%s\",\"status\":\"active\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
                     organizationId)));
   }
 
@@ -281,13 +282,14 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
     AuthUser user = authApi().getUser(sessionId).get();
 
     PaymentMethod threedSecurePaymentMethod = createVisaTestPaymentMethod();
-    String subscriptionId =
+    SubscriptionDTO subscription =
         billingService
             .createSubscription(user, SubscriptionPlan.ENTERPRISE, threedSecurePaymentMethod)
             .toCompletableFuture()
             .join()
-            .getSubscription()
-            .getId();
+            .getSubscription();
+
+    Assertions.assertEquals("active", subscription.getStatus());
 
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -298,16 +300,42 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"data\":{\"organizationId\":\"%s\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    "{\"data\":{\"organizationId\":\"%s\",\"status\":\"active\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
                     user.getOrganizationId())));
 
-    Assertions.assertEquals(
-        "canceled",
-        billingSubscriptionDatasource
-            .get(subscriptionId)
-            .toCompletableFuture()
-            .join()
-            .get()
-            .getStatus());
+    DataResponse<SubscriptionDTO> dataResponse =
+        given()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .when()
+            .get(SubscriptionResource.PATH)
+            .as(new TypeRef<>() {});
+
+    Assertions.assertEquals("canceled", dataResponse.getData().getStatus());
+  }
+
+  @Test
+  public void list__should_throw_error__when_not_authenticated() {
+    given()
+        .when()
+        .get(SubscriptionResource.PATH + "/list")
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void list__should_return_empty_collection__when_user_with_no_subscriptions()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .get(SubscriptionResource.PATH + "/list")
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[]}"));
   }
 }
