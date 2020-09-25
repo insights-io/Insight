@@ -1,4 +1,4 @@
-package com.meemaw.billing.service;
+package com.meemaw.billing.service.stripe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,6 +18,7 @@ import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
+import com.meemaw.billing.webhook.service.WebhookProcessor;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -45,9 +46,10 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class BillingServiceTest extends AbstractAuthApiTest {
+public class StripeBillingServiceTest extends AbstractAuthApiTest {
 
-  @Inject BillingService billingService;
+  @Inject WebhookProcessor<Event> webhookProcessor;
+  @Inject StripeBillingService billingService;
   @Inject BillingCustomerDatasource billingCustomerDatasource;
   @Inject BillingInvoiceDatasource billingInvoiceDatasource;
   @Inject BillingSubscriptionDatasource billingSubscriptionDatasource;
@@ -99,7 +101,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
     return readStripeInvoiceEvent(path, null, null);
   }
 
-  private PaymentMethod createVisaTestPaymentMethod() throws StripeException {
+  public static PaymentMethod createVisaTestPaymentMethod() throws StripeException {
     return PaymentMethod.create(
         PaymentMethodCreateParams.builder()
             .setType(Type.CARD)
@@ -113,7 +115,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
             .build());
   }
 
-  private PaymentMethod create3DSecurePaymentMethod() throws StripeException {
+  public static PaymentMethod create3DSecurePaymentMethod() throws StripeException {
     return PaymentMethod.create(
         PaymentMethodCreateParams.builder()
             .setType(Type.CARD)
@@ -134,7 +136,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
     CompletionException exception =
         Assertions.assertThrows(
             CompletionException.class,
-            () -> billingService.processEvent(event).toCompletableFuture().join());
+            () -> webhookProcessor.process(event).toCompletableFuture().join());
 
     BoomException cause = (BoomException) exception.getCause();
     assertEquals(400, cause.getBoom().getStatusCode());
@@ -175,7 +177,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
             billingSubscription.getId());
 
     // Process the "invoice.created" event
-    billingService.processEvent(invoiceCreatedEvent).toCompletableFuture().join();
+    webhookProcessor.process(invoiceCreatedEvent).toCompletableFuture().join();
     BillingInvoice invoice =
         billingInvoiceDatasource
             .listBySubscription(billingSubscription.getId())
@@ -196,7 +198,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
             billingSubscription.getId());
 
     // Process the "invoice.paid" event
-    billingService.processEvent(invoicePaidEvent).toCompletableFuture().join();
+    webhookProcessor.process(invoicePaidEvent).toCompletableFuture().join();
     invoice =
         billingInvoiceDatasource
             .listBySubscription(billingSubscription.getId())
@@ -217,7 +219,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
             billingSubscription.getId());
 
     // Process the "customer.subscription.updated" event
-    billingService.processEvent(subscriptionUpdatedEvent).toCompletableFuture().join();
+    webhookProcessor.process(subscriptionUpdatedEvent).toCompletableFuture().join();
     billingSubscription =
         billingSubscriptionDatasource
             .getByCustomerInternalId(user.getOrganizationId())
@@ -266,7 +268,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
             "/billing/invoice/invoiceCreated.json", customer.getExternalId(), subscriptionId);
 
     // Process the "invoice.created" event
-    billingService.processEvent(invoiceCreatedEvent).toCompletableFuture().join();
+    webhookProcessor.process(invoiceCreatedEvent).toCompletableFuture().join();
     BillingInvoice invoice =
         billingInvoiceDatasource
             .listBySubscription(subscriptionId)
@@ -285,7 +287,7 @@ public class BillingServiceTest extends AbstractAuthApiTest {
             "/billing/invoice/invoicePaid.json", customer.getExternalId(), subscriptionId);
 
     // Process the "invoice.paid" event
-    billingService.processEvent(invoicePaidEvent).toCompletableFuture().join();
+    webhookProcessor.process(invoicePaidEvent).toCompletableFuture().join();
     invoice = billingInvoiceDatasource.get(invoice.getId()).toCompletableFuture().join().get();
 
     assertEquals(1500, invoice.getAmountDue());

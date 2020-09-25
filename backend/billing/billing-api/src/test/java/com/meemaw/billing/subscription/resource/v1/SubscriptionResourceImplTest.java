@@ -1,19 +1,27 @@
 package com.meemaw.billing.subscription.resource.v1;
 
+import static com.meemaw.billing.service.stripe.StripeBillingServiceTest.createVisaTestPaymentMethod;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.billing.service.stripe.StripeBillingService;
+import com.meemaw.billing.subscription.datasource.BillingSubscriptionDatasource;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentMethod;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +30,9 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
+
+  @Inject StripeBillingService billingService;
+  @Inject BillingSubscriptionDatasource billingSubscriptionDatasource;
 
   String eventPath = SubscriptionResource.PATH + "/" + "event";
 
@@ -233,5 +244,70 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
                 String.format(
                     "{\"data\":{\"organizationId\":\"%s\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
                     organizationId)));
+  }
+
+  @Test
+  public void cancel__should_throw_error__when_not_authenticated() {
+    given()
+        .when()
+        .delete(SubscriptionResource.PATH)
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void cancel__should_throw_error__when_not_existing_subscription()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .delete(SubscriptionResource.PATH)
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
+
+  @Test
+  public void cancel__should_return_free_plan_subscription__when_successfully_canceled()
+      throws JsonProcessingException, StripeException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    AuthUser user = authApi().getUser(sessionId).get();
+
+    PaymentMethod threedSecurePaymentMethod = createVisaTestPaymentMethod();
+    String subscriptionId =
+        billingService
+            .createSubscription(user, SubscriptionPlan.ENTERPRISE, threedSecurePaymentMethod)
+            .toCompletableFuture()
+            .join()
+            .getSubscription()
+            .getId();
+
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .delete(SubscriptionResource.PATH)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                String.format(
+                    "{\"data\":{\"organizationId\":\"%s\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    user.getOrganizationId())));
+
+    Assertions.assertEquals(
+        "canceled",
+        billingSubscriptionDatasource
+            .get(subscriptionId)
+            .toCompletableFuture()
+            .join()
+            .get()
+            .getStatus());
   }
 }

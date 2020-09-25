@@ -1,4 +1,4 @@
-package com.meemaw.billing.payment.provider.stripe;
+package com.meemaw.billing.webhook.service.stripe;
 
 public final class StripeWebhookEvents {
 

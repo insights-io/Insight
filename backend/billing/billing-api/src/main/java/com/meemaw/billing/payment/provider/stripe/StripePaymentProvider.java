@@ -6,13 +6,11 @@ import com.meemaw.shared.rest.response.Boom;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethod;
 import com.stripe.model.Price;
 import com.stripe.model.Subscription;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerUpdateParams;
-import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentMethodAttachParams;
 import com.stripe.param.SubscriptionCreateParams;
 import io.quarkus.runtime.StartupEvent;
@@ -41,19 +39,6 @@ public class StripePaymentProvider implements PaymentProvider {
     Stripe.apiKey = stripeApiKey;
     Stripe.enableTelemetry = false;
     Stripe.setMaxNetworkRetries(2);
-  }
-
-  @Override
-  public CompletionStage<PaymentIntent> createPaymentIntent(PaymentIntentCreateParams params) {
-    return async(
-        () -> {
-          try {
-            return PaymentIntent.create(params);
-          } catch (StripeException ex) {
-            log.error("[AUTH]: Failed to create Stripe PaymentIntent params={}", params, ex);
-            throw mapException(ex);
-          }
-        });
   }
 
   @Override
@@ -103,7 +88,20 @@ public class StripePaymentProvider implements PaymentProvider {
           try {
             return Customer.retrieve(customerId);
           } catch (StripeException ex) {
-            log.error("[AUTH]: Failed to update Stripe customer={}", customerId, ex);
+            log.error("[AUTH]: Failed to retrieve Stripe customer={}", customerId, ex);
+            throw mapException(ex);
+          }
+        });
+  }
+
+  @Override
+  public CompletionStage<Subscription> retrieveSubscription(String subscriptionId) {
+    return async(
+        () -> {
+          try {
+            return Subscription.retrieve(subscriptionId);
+          } catch (StripeException ex) {
+            log.error("[AUTH]: Failed to retrieve Stripe subscription={}", subscriptionId, ex);
             throw mapException(ex);
           }
         });
@@ -117,6 +115,19 @@ public class StripePaymentProvider implements PaymentProvider {
             return Subscription.create(params);
           } catch (StripeException ex) {
             log.error("[AUTH]: Failed to create Stripe subscription params={}", params, ex);
+            throw mapException(ex);
+          }
+        });
+  }
+
+  @Override
+  public CompletionStage<Subscription> cancelSubscription(Subscription subscription) {
+    return async(
+        () -> {
+          try {
+            return subscription.cancel();
+          } catch (StripeException ex) {
+            log.error("[AUTH]: Failed to cancel Stripe subscription={}", subscription, ex);
             throw mapException(ex);
           }
         });
