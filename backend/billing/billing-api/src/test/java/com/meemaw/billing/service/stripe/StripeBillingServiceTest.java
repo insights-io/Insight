@@ -1,5 +1,7 @@
 package com.meemaw.billing.service.stripe;
 
+import static com.meemaw.billing.BillingTestUtils.create3DSecurePaymentMethod;
+import static com.meemaw.billing.BillingTestUtils.createVisaTestPaymentMethod;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -17,7 +19,7 @@ import com.meemaw.billing.subscription.datasource.BillingSubscriptionDatasource;
 import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
-import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
+import com.meemaw.billing.subscription.model.dto.PlanDTO;
 import com.meemaw.billing.webhook.service.WebhookProcessor;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.test.setup.AbstractAuthApiTest;
@@ -26,9 +28,6 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentMethod;
 import com.stripe.net.ApiResource;
-import com.stripe.param.PaymentMethodCreateParams;
-import com.stripe.param.PaymentMethodCreateParams.CardDetails;
-import com.stripe.param.PaymentMethodCreateParams.Type;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.nio.file.Files;
@@ -101,34 +100,6 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
     return readStripeInvoiceEvent(path, null, null);
   }
 
-  public static PaymentMethod createVisaTestPaymentMethod() throws StripeException {
-    return PaymentMethod.create(
-        PaymentMethodCreateParams.builder()
-            .setType(Type.CARD)
-            .setCard(
-                CardDetails.builder()
-                    .setNumber("4242 4242 4242 4242")
-                    .setCvc("222")
-                    .setExpMonth(10L)
-                    .setExpYear(22L)
-                    .build())
-            .build());
-  }
-
-  public static PaymentMethod create3DSecurePaymentMethod() throws StripeException {
-    return PaymentMethod.create(
-        PaymentMethodCreateParams.builder()
-            .setType(Type.CARD)
-            .setCard(
-                CardDetails.builder()
-                    .setNumber("4000 0000 0000 3220")
-                    .setCvc("222")
-                    .setExpMonth(10L)
-                    .setExpYear(22L)
-                    .build())
-            .build());
-  }
-
   @Test
   public void process_event__should_fail__when_invoice_paid_with_that_cannot_be_associated() {
     Event event = readStripeInvoiceEvent("/billing/invoice/invoicePaid.json");
@@ -157,7 +128,7 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
             .toCompletableFuture()
             .join();
 
-    assertNull(createSubscriptionResponse.getSubscription());
+    assertNull(createSubscriptionResponse.getPlan());
     assertNotNull(createSubscriptionResponse.getClientSecret());
 
     BillingSubscription billingSubscription =
@@ -245,12 +216,16 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
 
     assertNull(createSubscriptionResponse.getClientSecret());
 
-    SubscriptionDTO subscription = createSubscriptionResponse.getSubscription();
-    String subscriptionId = subscription.getId();
-    String organizationId = subscription.getOrganizationId();
+    PlanDTO plan = createSubscriptionResponse.getPlan();
+    String subscriptionId = plan.getSubscriptionId();
+    String organizationId = plan.getOrganizationId();
 
     BillingSubscription billingSubscription =
-        billingSubscriptionDatasource.get(subscription.getId()).toCompletableFuture().join().get();
+        billingSubscriptionDatasource
+            .get(plan.getSubscriptionId())
+            .toCompletableFuture()
+            .join()
+            .get();
 
     assertEquals("active", billingSubscription.getStatus());
 

@@ -1,5 +1,6 @@
 package com.meemaw.billing.subscription.model;
 
+import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
 import java.time.OffsetDateTime;
 import lombok.Value;
 
@@ -16,4 +17,17 @@ public class BillingSubscription {
   long currentPeriodEnd;
   OffsetDateTime createdAt;
   OffsetDateTime canceledAt;
+
+  public SubscriptionDTO dto() {
+    return new SubscriptionDTO(
+        id,
+        plan,
+        customerInternalId,
+        status,
+        priceId,
+        currentPeriodStart,
+        currentPeriodEnd,
+        createdAt,
+        canceledAt);
+  }
 }

@@ -86,8 +86,10 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   }
 
   @Override
-  public CompletionStage<List<BillingSubscription>> list(String subscriptionId) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(subscriptionId));
+  public CompletionStage<List<BillingSubscription>> listSubscriptionsByCustomerInternalId(
+      String customerInternalId) {
+    Query query =
+        sqlPool.getContext().selectFrom(TABLE).where(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
     return sqlPool.execute(query).thenApply(this::onListBillingSubscriptions);
   }
 

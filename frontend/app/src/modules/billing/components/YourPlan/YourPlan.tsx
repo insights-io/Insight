@@ -8,15 +8,13 @@ import { ProgressBar, ProgressBarProps } from 'baseui/progress-bar';
 import { useStyletron } from 'baseui';
 import { format } from 'date-fns';
 import { Button, SHAPE, SIZE } from 'baseui/button';
-import type { SubscriptionPlan } from '@insight/types';
-
-type DataRetention = '1mo';
+import type { Plan } from '@insight/types';
 
 type Props = {
   resetsOn?: Date;
-  plan?: SubscriptionPlan;
+  plan?: Plan['type'];
   sessionsUsed?: number;
-  dataRetention?: DataRetention;
+  dataRetention?: Plan['dataRetention'];
   isLoading: boolean;
   onUpgradeClick: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>

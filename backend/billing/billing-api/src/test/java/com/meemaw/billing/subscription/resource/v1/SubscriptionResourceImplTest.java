@@ -1,6 +1,6 @@
 package com.meemaw.billing.subscription.resource.v1;
 
-import static com.meemaw.billing.service.stripe.StripeBillingServiceTest.createVisaTestPaymentMethod;
+import static com.meemaw.billing.BillingTestUtils.createVisaTestPaymentMethod;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
@@ -21,6 +21,7 @@ import com.stripe.model.PaymentMethod;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Assertions;
@@ -205,10 +206,10 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void get__should_fail__when_not_authenticated() {
+  public void get_plan__should_fail__when_not_authenticated() {
     given()
         .when()
-        .get(SubscriptionResource.PATH)
+        .get(SubscriptionResource.PATH + "/plan")
         .then()
         .statusCode(401)
         .body(
@@ -217,33 +218,34 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void get__should_return_enterprise_plan__when_insight() {
+  public void get_plan__should_return_enterprise_plan__when_insight() {
     given()
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .when()
-        .get(SubscriptionResource.PATH)
+        .get(SubscriptionResource.PATH + "/plan")
         .then()
         .statusCode(200)
         .body(
             sameJson(
-                "{\"data\":{\"organizationId\":\"000000\",\"status\":\"active\",\"plan\":\"enterprise\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
+                "{\"data\":{\"organizationId\":\"000000\",\"type\":\"enterprise\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
   }
 
   @Test
-  public void get__should_return_free_plan__when_no_subscription() throws JsonProcessingException {
+  public void get_plan__should_return_free_plan__when_no_subscription()
+      throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     String organizationId = authApi().getOrganization(sessionId).get().getId();
 
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .when()
-        .get(SubscriptionResource.PATH)
+        .get(SubscriptionResource.PATH + "/plan")
         .then()
         .statusCode(200)
         .body(
             sameJson(
                 String.format(
-                    "{\"data\":{\"organizationId\":\"%s\",\"status\":\"active\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    "{\"data\":{\"organizationId\":\"%s\",\"type\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
                     organizationId)));
   }
 
@@ -276,48 +278,42 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void cancel__should_return_free_plan_subscription__when_successfully_canceled()
+  public void cancel__should_return_free_plan__when_successfully_canceled()
       throws JsonProcessingException, StripeException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     AuthUser user = authApi().getUser(sessionId).get();
 
-    PaymentMethod threedSecurePaymentMethod = createVisaTestPaymentMethod();
-    SubscriptionDTO subscription =
-        billingService
-            .createSubscription(user, SubscriptionPlan.ENTERPRISE, threedSecurePaymentMethod)
-            .toCompletableFuture()
-            .join()
-            .getSubscription();
+    PaymentMethod visaTestPaymentMethod = createVisaTestPaymentMethod();
+    billingService
+        .createSubscription(user, SubscriptionPlan.ENTERPRISE, visaTestPaymentMethod)
+        .toCompletableFuture()
+        .join();
 
-    Assertions.assertEquals("active", subscription.getStatus());
-
-    given()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .when()
-        .delete(SubscriptionResource.PATH)
-        .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                String.format(
-                    "{\"data\":{\"organizationId\":\"%s\",\"status\":\"active\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
-                    user.getOrganizationId())));
-
-    DataResponse<SubscriptionDTO> dataResponse =
+    DataResponse<List<SubscriptionDTO>> listDataResponse =
         given()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
             .when()
             .get(SubscriptionResource.PATH)
             .as(new TypeRef<>() {});
 
-    Assertions.assertEquals("canceled", dataResponse.getData().getStatus());
+    SubscriptionDTO subscription = listDataResponse.getData().get(0);
+    Assertions.assertEquals("active", subscription.getStatus());
+
+    DataResponse<SubscriptionDTO> deleteDataResponse =
+        given()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .when()
+            .delete(SubscriptionResource.PATH)
+            .as(new TypeRef<>() {});
+
+    Assertions.assertEquals("canceled", deleteDataResponse.getData().getStatus());
   }
 
   @Test
   public void list__should_throw_error__when_not_authenticated() {
     given()
         .when()
-        .get(SubscriptionResource.PATH + "/list")
+        .get(SubscriptionResource.PATH)
         .then()
         .statusCode(401)
         .body(
@@ -333,7 +329,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .when()
-        .get(SubscriptionResource.PATH + "/list")
+        .get(SubscriptionResource.PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":[]}"));

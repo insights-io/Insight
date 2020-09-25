@@ -11,13 +11,12 @@ import lombok.Value;
 @AllArgsConstructor
 public class CreateSubscriptionResponseDTO {
 
-  SubscriptionDTO subscription;
+  PlanDTO plan;
   String clientSecret;
 
-  public static CreateSubscriptionResponseDTO create(
-      SubscriptionDTO subscription, PaymentIntent paymentIntent) {
+  public static CreateSubscriptionResponseDTO create(PlanDTO plan, PaymentIntent paymentIntent) {
     if ("succeeded".equals(paymentIntent.getStatus())) {
-      return new CreateSubscriptionResponseDTO(subscription, null);
+      return new CreateSubscriptionResponseDTO(plan, null);
     }
     return new CreateSubscriptionResponseDTO(null, paymentIntent.getClientSecret());
   }

@@ -7,20 +7,18 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 import { Button, SHAPE, SIZE } from 'baseui/button';
-import { Card } from 'baseui/card';
+import { Card, StyledBody } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { BillingApi } from 'api';
 import { toaster } from 'baseui/toast';
-import {
-  APIError,
-  APIErrorDataResponse,
-  SubscriptionDTO,
-} from '@insight/types';
 import FormError from 'shared/components/FormError';
 import YourPlan from 'modules/billing/components/YourPlan';
 import { Modal } from 'baseui/modal';
 import { addDays } from 'date-fns';
-import useSubscription from 'modules/billing/hooks/useSubscription';
+import useActivePlan from 'modules/billing/hooks/useActivePlan';
+import type { APIError, APIErrorDataResponse, PlanDTO } from '@insight/types';
+import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
+import { SubscriptionList } from 'modules/billing/components/SubscriptionList';
 
 import { createCardPaymentMethod, confirmCardPayment } from './stripe';
 
@@ -30,15 +28,20 @@ const TEST_PUBLISHABLE_KEY =
 const stripePromise = loadStripe(TEST_PUBLISHABLE_KEY);
 
 type CheckoutFormProps = {
-  onSubscriptionCreated: (subscription: SubscriptionDTO) => void;
+  onPlanUpgraded: (plan: PlanDTO) => void;
 };
 
-const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
+const CheckoutForm = ({ onPlanUpgraded }: CheckoutFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stripeSetupError, setStripeSetupError] = useState<StripeError>();
   const [apiError, setApiError] = useState<APIError>();
   const stripe = useStripe();
   const elements = useElements();
+
+  const handlePlanUpdated = (plan: PlanDTO) => {
+    onPlanUpgraded(plan);
+    toaster.positive(`Successfully upgraded plan to ${plan.type}`, {});
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,9 +65,9 @@ const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
         await BillingApi.subscriptions
           .create({ paymentMethodId: paymentMethod.id, plan: 'business' })
           .then((createSubscriptionResponse) => {
-            if (createSubscriptionResponse.subscription) {
-              onSubscriptionCreated(createSubscriptionResponse.subscription);
-              toaster.positive('Subscription created', {});
+            if (createSubscriptionResponse.plan) {
+              handlePlanUpdated(createSubscriptionResponse.plan);
+
               return Promise.resolve();
             }
 
@@ -77,11 +80,8 @@ const CheckoutForm = ({ onSubscriptionCreated }: CheckoutFormProps) => {
                 setStripeSetupError(confirmation.error);
               } else if (confirmation.paymentIntent?.status === 'succeeded') {
                 BillingApi.subscriptions
-                  .get()
-                  .then((subscription) => {
-                    onSubscriptionCreated(subscription);
-                    toaster.positive('Subscription created', {});
-                  })
+                  .getActivePlan()
+                  .then(handlePlanUpdated)
                   .catch(async (apiErrorResponse) => {
                     const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
                     setApiError(errorDTO.error);
@@ -134,7 +134,13 @@ type Props = {
 
 const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const { subscription, isLoading, setSubscription } = useSubscription();
+  const {
+    plan,
+    isLoading: isLoadingActivePlan,
+    setActivePlan,
+  } = useActivePlan();
+
+  const { subscriptions } = useSubscriptions();
 
   const onUpgradeClick = useCallback(() => setIsUpgrading(true), []);
 
@@ -144,33 +150,42 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
     [organizationCreatedAt]
   );
 
-  const onSubscriptionCreated = useCallback(
-    (createdSubscription: SubscriptionDTO) => {
-      setSubscription(createdSubscription);
+  const onPlanUpgraded = useCallback(
+    (upgradedPlan: PlanDTO) => {
+      setActivePlan(upgradedPlan);
       setIsUpgrading(false);
     },
-    [setSubscription]
+    [setActivePlan]
   );
 
-  return subscription ? (
-    <>
+  return (
+    <Block>
       <YourPlan
-        plan={subscription.plan}
+        plan={plan?.type}
         sessionsUsed={0}
-        dataRetention="1mo"
+        dataRetention={plan?.dataRetention}
         resetsOn={resetsOn}
         onUpgradeClick={onUpgradeClick}
-        isLoading={isLoading}
+        isLoading={isLoadingActivePlan}
       />
-      {subscription.plan !== 'enterprise' && (
+      {plan?.type !== 'enterprise' && (
         <Modal isOpen={isUpgrading} onClose={() => setIsUpgrading(false)}>
           <Elements stripe={stripePromise}>
-            <CheckoutForm onSubscriptionCreated={onSubscriptionCreated} />
+            <CheckoutForm onPlanUpgraded={onPlanUpgraded} />
           </Elements>
         </Modal>
       )}
-    </>
-  ) : null;
+
+      <Card
+        title="Subscriptions"
+        overrides={{ Root: { style: { marginTop: '20px' } } }}
+      >
+        <StyledBody>
+          <SubscriptionList subscriptions={subscriptions} />
+        </StyledBody>
+      </Card>
+    </Block>
+  );
 };
 
 export default React.memo(BillingOrganizationSettings);

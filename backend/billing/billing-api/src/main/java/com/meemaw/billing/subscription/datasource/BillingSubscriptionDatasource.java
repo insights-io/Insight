@@ -18,7 +18,8 @@ public interface BillingSubscriptionDatasource {
 
   CompletionStage<Optional<BillingSubscription>> get(String subscriptionId);
 
-  CompletionStage<List<BillingSubscription>> list(String subscriptionId);
+  CompletionStage<List<BillingSubscription>> listSubscriptionsByCustomerInternalId(
+      String customerInternalId);
 
   CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(String customerInternalId);
 }

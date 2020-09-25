@@ -3,19 +3,11 @@ import type {
   DataResponse,
   CreateSubscriptionDTO,
   SubscriptionDTO,
+  CreateSubscriptionResponseDTO,
+  PlanDTO,
 } from '@insight/types';
 
 import { RequestOptions, withCredentials, getData } from '../../core';
-
-export type CreateSubscriptionResponseDTO =
-  | {
-      clientSecret: undefined;
-      subscription: SubscriptionDTO;
-    }
-  | {
-      clientSecret: string;
-      subscription: undefined;
-    };
 
 export const subscriptionResource = (billingApiBaseURL: string) => {
   return {
@@ -32,10 +24,27 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
         .then(getData);
     },
 
-    get: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
+    list: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
         .get(`${baseURL}/v1/billing/subscriptions`, withCredentials(rest))
+        .json<DataResponse<SubscriptionDTO[]>>()
+        .then(getData);
+    },
+
+    cancel: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
+      return ky
+        .delete(`${baseURL}/v1/billing/subscriptions`, withCredentials(rest))
         .json<DataResponse<SubscriptionDTO>>()
+        .then(getData);
+    },
+
+    getActivePlan: ({
+      baseURL = billingApiBaseURL,
+      ...rest
+    }: RequestOptions = {}) => {
+      return ky
+        .get(`${baseURL}/v1/billing/subscriptions/plan`, withCredentials(rest))
+        .json<DataResponse<PlanDTO>>()
         .then(getData);
     },
   };

@@ -14,6 +14,7 @@ import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
+import com.meemaw.billing.subscription.model.dto.PlanDTO;
 import com.meemaw.billing.subscription.model.dto.PriceDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
 import com.meemaw.shared.rest.response.Boom;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -62,9 +64,9 @@ public class StripeBillingService implements BillingService {
   }
 
   @Override
-  public CompletionStage<SubscriptionDTO> getSubscription(String organizationId) {
+  public CompletionStage<PlanDTO> getActivePlan(String organizationId) {
     if (INSIGHT_ORGANIZATION_ID.equals(organizationId)) {
-      return CompletableFuture.completedStage(SubscriptionDTO.insight());
+      return CompletableFuture.completedStage(PlanDTO.insight());
     }
 
     return billingSubscriptionDatasource
@@ -72,7 +74,7 @@ public class StripeBillingService implements BillingService {
         .thenCompose(
             maybeSubscription -> {
               if (maybeSubscription.isEmpty()) {
-                return CompletableFuture.completedStage(SubscriptionDTO.free(organizationId));
+                return CompletableFuture.completedStage(PlanDTO.free(organizationId));
               }
 
               BillingSubscription subscription = maybeSubscription.get();
@@ -80,23 +82,28 @@ public class StripeBillingService implements BillingService {
                   .getPrice(subscription.getPriceId())
                   .thenApply(
                       price ->
-                          new SubscriptionDTO(
+                          new PlanDTO(
                               subscription.getId(),
                               organizationId,
-                              subscription.getStatus(),
                               subscription.getPlan(),
+                              "1m",
                               PriceDTO.fromStripe(price),
                               subscription.getCreatedAt()));
             });
   }
 
   @Override
-  public CompletionStage<List<BillingSubscription>> listSubscriptions(String organizationId) {
-    return billingSubscriptionDatasource.list(organizationId);
+  public CompletionStage<List<SubscriptionDTO>> listSubscriptionsByOrganizationId(
+      String organizationId) {
+    return billingSubscriptionDatasource
+        .listSubscriptionsByCustomerInternalId(organizationId)
+        .thenApply(
+            subscriptions ->
+                subscriptions.stream().map(BillingSubscription::dto).collect(Collectors.toList()));
   }
 
   @Override
-  public CompletionStage<SubscriptionDTO> cancelSubscription(String organizationId) {
+  public CompletionStage<Optional<SubscriptionDTO>> cancelSubscription(String organizationId) {
     return billingSubscriptionDatasource
         .getByCustomerInternalId(organizationId)
         .thenCompose(
@@ -107,25 +114,19 @@ public class StripeBillingService implements BillingService {
               }
 
               String subscriptionId = maybeBillingSubscription.get().getId();
-              return paymentProvider
-                  .retrieveSubscription(subscriptionId)
-                  .thenCompose(paymentProvider::cancelSubscription)
-                  .thenCompose(
-                      canceledSubscription -> {
-                        UpdateBillingSubscriptionParams params =
-                            UpdateBillingSubscriptionParams.builder()
-                                .status(canceledSubscription.getStatus())
-                                .currentPeriodStart(canceledSubscription.getCurrentPeriodStart())
-                                .currentPeriodEnd(canceledSubscription.getCurrentPeriodEnd())
-                                .build();
-                        return billingSubscriptionDatasource.update(subscriptionId, params);
-                      })
-                  .thenApply(
-                      ignored -> {
-                        log.info("[BILLING]: Billing subscription cancelled id={}", subscriptionId);
-                        return SubscriptionDTO.free(organizationId);
-                      });
-            });
+              return paymentProvider.retrieveSubscription(subscriptionId);
+            })
+        .thenCompose(paymentProvider::cancelSubscription)
+        .thenCompose(
+            canceledSubscription ->
+                billingSubscriptionDatasource.update(
+                    canceledSubscription.getId(),
+                    UpdateBillingSubscriptionParams.builder()
+                        .status(canceledSubscription.getStatus())
+                        .currentPeriodStart(canceledSubscription.getCurrentPeriodStart())
+                        .currentPeriodEnd(canceledSubscription.getCurrentPeriodEnd())
+                        .build()))
+        .thenApply(billingSubscription -> billingSubscription.map(BillingSubscription::dto));
   }
 
   @Override
@@ -197,17 +198,22 @@ public class StripeBillingService implements BillingService {
                                           .create(params)
                                           .thenApply(
                                               billingSubscription -> {
-                                                SubscriptionDTO subscriptionDTO =
-                                                    new SubscriptionDTO(
+                                                log.info(
+                                                    "[BILLING]: Created billing subscription for organizationId={} subscriptionId={}",
+                                                    organizationId,
+                                                    billingSubscription.getId());
+
+                                                PlanDTO upgradedPlan =
+                                                    new PlanDTO(
                                                         billingSubscription.getId(),
                                                         billingSubscription.getCustomerInternalId(),
-                                                        billingSubscription.getStatus(),
                                                         billingSubscription.getPlan(),
+                                                        "1m",
                                                         PriceDTO.fromStripe(price),
                                                         billingSubscription.getCreatedAt());
 
                                                 return CreateSubscriptionResponseDTO.create(
-                                                    subscriptionDTO, paymentIntent);
+                                                    upgradedPlan, paymentIntent);
                                               });
                                     })));
   }

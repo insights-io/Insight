@@ -23,19 +23,19 @@ public interface SubscriptionResource {
 
   @POST
   @CookieAuth
-  CompletionStage<Response> create(
+  CompletionStage<Response> createSubscription(
       @NotNull(message = "Required") @Valid CreateSubscriptionDTO body);
 
   @GET
   @CookieAuth
-  @Path("list")
-  CompletionStage<Response> list();
-
-  @GET
-  @CookieAuth
-  CompletionStage<Response> get();
+  CompletionStage<Response> listSubscriptions();
 
   @DELETE
   @CookieAuth
-  CompletionStage<Response> cancel();
+  CompletionStage<Response> cancelSubscription();
+
+  @GET
+  @CookieAuth
+  @Path("plan")
+  CompletionStage<Response> getActivePlan();
 }

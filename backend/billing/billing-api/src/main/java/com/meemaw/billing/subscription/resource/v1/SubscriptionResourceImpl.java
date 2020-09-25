@@ -4,6 +4,7 @@ import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.billing.service.BillingService;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
+import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
 import java.util.concurrent.CompletionStage;
@@ -20,26 +21,36 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   @Context HttpServerRequest request;
 
   @Override
-  public CompletionStage<Response> create(CreateSubscriptionDTO body) {
+  public CompletionStage<Response> createSubscription(CreateSubscriptionDTO body) {
     AuthUser user = insightPrincipal.user();
     return billingService.createSubscription(body, user).thenApply(DataResponse::created);
   }
 
   @Override
-  public CompletionStage<Response> list() {
+  public CompletionStage<Response> listSubscriptions() {
     String organizationId = insightPrincipal.user().getOrganizationId();
-    return billingService.listSubscriptions(organizationId).thenApply(DataResponse::ok);
+    return billingService
+        .listSubscriptionsByOrganizationId(organizationId)
+        .thenApply(DataResponse::ok);
   }
 
   @Override
-  public CompletionStage<Response> get() {
+  public CompletionStage<Response> getActivePlan() {
     String organizationId = insightPrincipal.user().getOrganizationId();
-    return billingService.getSubscription(organizationId).thenApply(DataResponse::ok);
+    return billingService.getActivePlan(organizationId).thenApply(DataResponse::ok);
   }
 
   @Override
-  public CompletionStage<Response> cancel() {
+  public CompletionStage<Response> cancelSubscription() {
     String organizationId = insightPrincipal.user().getOrganizationId();
-    return billingService.cancelSubscription(organizationId).thenApply(DataResponse::ok);
+    return billingService
+        .cancelSubscription(organizationId)
+        .thenApply(
+            maybeCanceledSubscription -> {
+              if (maybeCanceledSubscription.isEmpty()) {
+                throw Boom.notFound().exception();
+              }
+              return DataResponse.ok(maybeCanceledSubscription.get());
+            });
   }
 }
