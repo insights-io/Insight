@@ -38,6 +38,22 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   @Inject SqlPool sqlPool;
 
   @Override
+  public CompletionStage<Optional<BillingSubscription>> get(String subscriptionId) {
+    return get(ID.eq(subscriptionId));
+  }
+
+  private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(condition);
+    return sqlPool.execute(query).thenApply(this::onGetBillingSubscription);
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
+      String customerInternalId) {
+    return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
+  }
+
+  @Override
   public CompletionStage<BillingSubscription> create(CreateBillingSubscriptionParams params) {
     Query query =
         sqlPool
@@ -81,27 +97,11 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   }
 
   @Override
-  public CompletionStage<Optional<BillingSubscription>> get(String subscriptionId) {
-    return get(ID.eq(subscriptionId));
-  }
-
-  @Override
   public CompletionStage<List<BillingSubscription>> listSubscriptionsByCustomerInternalId(
       String customerInternalId) {
     Query query =
         sqlPool.getContext().selectFrom(TABLE).where(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
     return sqlPool.execute(query).thenApply(this::onListBillingSubscriptions);
-  }
-
-  private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(condition);
-    return sqlPool.execute(query).thenApply(this::onGetBillingSubscription);
-  }
-
-  @Override
-  public CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
-      String customerInternalId) {
-    return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
   }
 
   private List<BillingSubscription> onListBillingSubscriptions(RowSet<Row> rows) {

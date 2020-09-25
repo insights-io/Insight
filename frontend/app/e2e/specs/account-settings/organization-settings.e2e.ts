@@ -320,7 +320,7 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     exipiryInputElement,
     cvcInputElement,
     payButton,
-    paidMessage,
+    planUpgradedToBusinessMessage,
     formIframe,
     upgradeButton,
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
@@ -344,7 +344,7 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .typeText(cvcInputElement, '222')
     .switchToMainWindow()
     .click(payButton)
-    .expect(paidMessage.with({ timeout: 15000 }).visible)
+    .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').visible)
     .ok('Plan should be upgraded');
@@ -360,7 +360,7 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
     exipiryInputElement,
     cvcInputElement,
     payButton,
-    paidMessage,
+    planUpgradedToBusinessMessage,
     formIframe,
     upgradeButton,
     threedSecure,
@@ -386,7 +386,7 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
     .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
     .click(threedSecure.completeButton.with({ timeout: 15000 }))
     .switchToMainWindow()
-    .expect(paidMessage.with({ timeout: 15000 }).visible)
+    .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').visible)
     .ok('Plan should be upgraded');

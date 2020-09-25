@@ -29,7 +29,9 @@ class BillingSettings {
   public readonly cvcInputElement = queryByPlaceholderText('CVC');
 
   public readonly payButton = queryByText('Pay');
-  public readonly paidMessage = queryByText('Subscription created');
+  public readonly planUpgradedToBusinessMessage = queryByText(
+    'Successfully upgraded to business plan'
+  );
 }
 
 export default new BillingSettings();

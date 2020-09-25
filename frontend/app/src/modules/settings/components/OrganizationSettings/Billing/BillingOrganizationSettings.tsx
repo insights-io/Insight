@@ -9,6 +9,7 @@ import type { PlanDTO } from '@insight/types';
 import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
 import { SubscriptionList } from 'modules/billing/components/SubscriptionList';
 import { CheckoutForm } from 'modules/billing/components/CheckoutForm';
+import { toaster } from 'baseui/toast';
 
 type Props = {
   organizationCreatedAt: Date | undefined;
@@ -35,6 +36,10 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
     (upgradedPlan: PlanDTO) => {
       setActivePlan(upgradedPlan);
       setIsUpgrading(false);
+      toaster.positive(
+        `Successfully upgraded to ${upgradedPlan.type} plan`,
+        {}
+      );
     },
     [setActivePlan]
   );

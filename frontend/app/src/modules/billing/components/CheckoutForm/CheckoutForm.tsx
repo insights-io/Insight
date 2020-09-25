@@ -6,13 +6,12 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { loadStripe, StripeError } from '@stripe/stripe-js';
-import { toaster } from 'baseui/toast';
-import type { APIError, APIErrorDataResponse, PlanDTO } from '@insight/types';
 import { BillingApi } from 'api';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { Button, SIZE, SHAPE } from 'baseui/button';
 import FormError from 'shared/components/FormError';
+import type { APIError, APIErrorDataResponse, PlanDTO } from '@insight/types';
 
 import { confirmCardPayment, createCardPaymentMethod } from './stripe';
 
@@ -40,11 +39,6 @@ const StripeChekoutForm = ({ onPlanUpgraded }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
 
-  const handlePlanUpdated = (plan: PlanDTO) => {
-    onPlanUpgraded(plan);
-    toaster.positive(`Successfully upgraded plan to ${plan.type}`, {});
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!stripe || !elements || isSubmitting) {
@@ -68,7 +62,7 @@ const StripeChekoutForm = ({ onPlanUpgraded }: Props) => {
           .create({ paymentMethodId: paymentMethod.id, plan: 'business' })
           .then((createSubscriptionResponse) => {
             if (createSubscriptionResponse.plan) {
-              handlePlanUpdated(createSubscriptionResponse.plan);
+              onPlanUpgraded(createSubscriptionResponse.plan);
 
               return Promise.resolve();
             }
@@ -83,7 +77,7 @@ const StripeChekoutForm = ({ onPlanUpgraded }: Props) => {
               } else if (confirmation.paymentIntent?.status === 'succeeded') {
                 BillingApi.subscriptions
                   .getActivePlan()
-                  .then(handlePlanUpdated)
+                  .then(onPlanUpgraded)
                   .catch(async (apiErrorResponse) => {
                     const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
                     setApiError(errorDTO.error);
