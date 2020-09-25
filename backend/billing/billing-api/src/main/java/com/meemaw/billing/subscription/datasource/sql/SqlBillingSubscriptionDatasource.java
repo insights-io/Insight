@@ -93,15 +93,15 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
     return sqlPool.execute(query).thenApply(this::onListBillingSubscriptions);
   }
 
+  private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(condition);
+    return sqlPool.execute(query).thenApply(this::onGetBillingSubscription);
+  }
+
   @Override
   public CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
       String customerInternalId) {
     return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
-  }
-
-  private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(condition);
-    return sqlPool.execute(query).thenApply(this::onGetBillingSubscription);
   }
 
   private List<BillingSubscription> onListBillingSubscriptions(RowSet<Row> rows) {

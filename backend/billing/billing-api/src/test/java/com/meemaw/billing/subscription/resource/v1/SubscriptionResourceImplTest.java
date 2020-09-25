@@ -227,7 +227,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"data\":{\"organizationId\":\"000000\",\"type\":\"enterprise\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
+                "{\"data\":{\"organizationId\":\"000000\",\"type\":\"enterprise\",\"dataRetention\":\"∞\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
   }
 
   @Test
@@ -245,7 +245,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .body(
             sameJson(
                 String.format(
-                    "{\"data\":{\"organizationId\":\"%s\",\"type\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    "{\"data\":{\"organizationId\":\"%s\",\"type\":\"free\",\"dataRetention\":\"1m\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
                     organizationId)));
   }
 

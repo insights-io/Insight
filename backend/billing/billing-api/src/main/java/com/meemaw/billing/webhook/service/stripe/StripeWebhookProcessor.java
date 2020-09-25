@@ -48,7 +48,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
   }
 
   /**
-   * Process a valid Stripe Webhook event
+   * Process a valid Stripe Webhook event.
    *
    * @param event stripe event as received from Webhook
    * @return boolean indicating if the event was processed
