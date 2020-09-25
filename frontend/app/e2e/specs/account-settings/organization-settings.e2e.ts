@@ -320,7 +320,7 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     exipiryInputElement,
     cvcInputElement,
     payButton,
-    paidMessage,
+    planUpgradedToBusinessMessage,
     formIframe,
     upgradeButton,
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
@@ -338,14 +338,95 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .expect(queryByText('Insight Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
-    .switchToIframe(formIframe.with({ timeout: 5000 }))
+    .switchToIframe(formIframe.with({ timeout: 15000 }))
     .typeText(cardNumberInputElement, '4242 4242 4242 4242')
     .typeText(exipiryInputElement, '1044')
     .typeText(cvcInputElement, '222')
     .switchToMainWindow()
     .click(payButton)
-    .expect(paidMessage.with({ timeout: 10000 }).visible)
+    .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').visible)
     .ok('Plan should be upgraded');
+});
+
+test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => {
+  const { password, email } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password });
+
+  const {
+    tab,
+    cardNumberInputElement,
+    exipiryInputElement,
+    cvcInputElement,
+    payButton,
+    planUpgradedToBusinessMessage,
+    formIframe,
+    upgradeButton,
+    threedSecure,
+  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
+
+  await t
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
+    .click(AccountSettingsPage.tabs.organizationSettings)
+    .click(tab);
+
+  await t
+    .expect(queryByText('Insight Free').visible)
+    .ok('Should have free plan by default')
+    .click(upgradeButton)
+    .switchToIframe(formIframe.with({ timeout: 15000 }))
+    .typeText(cardNumberInputElement, '4000 0000 0000 3220')
+    .typeText(exipiryInputElement, '1044')
+    .typeText(cvcInputElement, '222')
+    .switchToMainWindow()
+    .click(payButton)
+    .switchToIframe(threedSecure.outerIframe.with({ timeout: 15000 }))
+    .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
+    .click(threedSecure.completeButton.with({ timeout: 15000 }))
+    .switchToMainWindow()
+    .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
+    .ok('Subscription should be created')
+    .expect(queryByText('Insight Business').visible)
+    .ok('Plan should be upgraded');
+});
+
+test('[BILLING]: Should handle 3D secure flow authentication failures', async (t) => {
+  const { password, email } = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, { email, password });
+
+  const {
+    tab,
+    cardNumberInputElement,
+    exipiryInputElement,
+    cvcInputElement,
+    payButton,
+    formIframe,
+    upgradeButton,
+    threedSecure,
+  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
+
+  await t
+    .click(Sidebar.accountSettings.item)
+    .click(Sidebar.accountSettings.accountSettings)
+    .click(AccountSettingsPage.tabs.organizationSettings)
+    .click(tab);
+
+  await t
+    .expect(queryByText('Insight Free').visible)
+    .ok('Should have free plan by default')
+    .click(upgradeButton)
+    .switchToIframe(formIframe.with({ timeout: 15000 }))
+    .typeText(cardNumberInputElement, '4000 0000 0000 3220')
+    .typeText(exipiryInputElement, '1044')
+    .typeText(cvcInputElement, '222')
+    .switchToMainWindow()
+    .click(payButton)
+    .switchToIframe(threedSecure.outerIframe.with({ timeout: 15000 }))
+    .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
+    .click(threedSecure.failButton.with({ timeout: 15000 }))
+    .switchToMainWindow()
+    .expect(threedSecure.failMessage.with({ timeout: 15000 }).visible)
+    .ok('Should display reason for failure');
 });

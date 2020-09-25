@@ -1,12 +1,15 @@
 import React from 'react';
 import { Paragraph3 } from 'baseui/typography';
-import { APIError } from '@insight/types';
 import { useStyletron } from 'baseui';
 
 import Flex from '../Flex';
 
+type HasMessage = {
+  message: string;
+};
+
 type Props = {
-  error: APIError;
+  error: HasMessage;
 };
 
 const FormError = React.forwardRef<HTMLElement, Props>(({ error }, ref) => {

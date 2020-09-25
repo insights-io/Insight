@@ -22,7 +22,11 @@ public interface PaymentProvider {
 
   CompletionStage<Customer> retrieveCustomer(String customerId);
 
+  CompletionStage<Subscription> retrieveSubscription(String subscriptionId);
+
   CompletionStage<Subscription> createSubscription(SubscriptionCreateParams params);
+
+  CompletionStage<Subscription> cancelSubscription(Subscription subscription);
 
   CompletionStage<PaymentMethod> retrievePaymentMethod(String paymentMethodId);
 

@@ -12,14 +12,42 @@ export type PriceDTO = {
   interval: 'month';
 };
 
-export type SubscriptionDTO = {
-  id?: string;
+export type PlanDTO = {
+  subscriptionId?: string;
   organizationId: string;
-  plan: SubscriptionPlan;
+  type: SubscriptionPlan;
   price: PriceDTO;
+  dataRetention: '1m' | '∞';
   createdAt?: string;
 };
 
-export type Subscription = Omit<SubscriptionDTO, 'createdAt'> & {
+export type Plan = Omit<PlanDTO, 'createdAt'> & {
   createdAt?: Date;
+};
+
+export type CreateSubscriptionResponseDTO =
+  | {
+      clientSecret: undefined;
+      plan: PlanDTO;
+    }
+  | {
+      clientSecret: string;
+      plan: undefined;
+    };
+
+export type SubscriptionDTO = {
+  id: string;
+  plan: SubscriptionPlan;
+  organizationId: string;
+  status: string;
+  priceId: string;
+  currentPeriodStart: number;
+  currentPeriodEnd: number;
+  createdAt: string;
+  canceledAt: string;
+};
+
+export type Subscription = Omit<SubscriptionDTO, 'createdAt' | 'canceledAt'> & {
+  createdAt: Date;
+  canceledAt: Date;
 };

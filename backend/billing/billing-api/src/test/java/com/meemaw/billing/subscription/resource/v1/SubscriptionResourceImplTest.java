@@ -1,19 +1,30 @@
 package com.meemaw.billing.subscription.resource.v1;
 
+import static com.meemaw.billing.BillingTestUtils.createVisaTestPaymentMethod;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.billing.service.stripe.StripeBillingService;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
+import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
+import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentMethod;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
+import java.util.List;
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +33,8 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
+
+  @Inject StripeBillingService billingService;
 
   String eventPath = SubscriptionResource.PATH + "/" + "event";
 
@@ -193,7 +206,111 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void get__should_fail__when_not_authenticated() {
+  public void get_plan__should_fail__when_not_authenticated() {
+    given()
+        .when()
+        .get(SubscriptionResource.PATH + "/plan")
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void get_plan__should_return_enterprise_plan__when_insight() {
+    given()
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .when()
+        .get(SubscriptionResource.PATH + "/plan")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":{\"organizationId\":\"000000\",\"type\":\"enterprise\",\"dataRetention\":\"∞\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
+  }
+
+  @Test
+  public void get_plan__should_return_free_plan__when_no_subscription()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().getOrganization(sessionId).get().getId();
+
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .get(SubscriptionResource.PATH + "/plan")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                String.format(
+                    "{\"data\":{\"organizationId\":\"%s\",\"type\":\"free\",\"dataRetention\":\"1m\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    organizationId)));
+  }
+
+  @Test
+  public void cancel__should_throw_error__when_not_authenticated() {
+    given()
+        .when()
+        .delete(SubscriptionResource.PATH)
+        .then()
+        .statusCode(401)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  }
+
+  @Test
+  public void cancel__should_throw_error__when_not_existing_subscription()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .delete(SubscriptionResource.PATH)
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
+
+  @Test
+  public void cancel__should_return_free_plan__when_successfully_canceled()
+      throws JsonProcessingException, StripeException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    AuthUser user = authApi().getUser(sessionId).get();
+
+    PaymentMethod visaTestPaymentMethod = createVisaTestPaymentMethod();
+    billingService
+        .createSubscription(user, SubscriptionPlan.ENTERPRISE, visaTestPaymentMethod)
+        .toCompletableFuture()
+        .join();
+
+    DataResponse<List<SubscriptionDTO>> listDataResponse =
+        given()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .when()
+            .get(SubscriptionResource.PATH)
+            .as(new TypeRef<>() {});
+
+    SubscriptionDTO subscription = listDataResponse.getData().get(0);
+    Assertions.assertEquals("active", subscription.getStatus());
+
+    DataResponse<SubscriptionDTO> deleteDataResponse =
+        given()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .when()
+            .delete(SubscriptionResource.PATH)
+            .as(new TypeRef<>() {});
+
+    Assertions.assertEquals("canceled", deleteDataResponse.getData().getStatus());
+  }
+
+  @Test
+  public void list__should_throw_error__when_not_authenticated() {
     given()
         .when()
         .get(SubscriptionResource.PATH)
@@ -205,22 +322,9 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void get__should_return_enterprise_plan__when_insight() {
-    given()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
-        .when()
-        .get(SubscriptionResource.PATH)
-        .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":{\"organizationId\":\"000000\",\"plan\":\"enterprise\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}"));
-  }
-
-  @Test
-  public void get__should_return_free_plan__when_no_subscription() throws JsonProcessingException {
+  public void list__should_return_empty_collection__when_user_with_no_subscriptions()
+      throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    String organizationId = authApi().getOrganization(sessionId).get().getId();
 
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -228,10 +332,6 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .get(SubscriptionResource.PATH)
         .then()
         .statusCode(200)
-        .body(
-            sameJson(
-                String.format(
-                    "{\"data\":{\"organizationId\":\"%s\",\"plan\":\"free\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
-                    organizationId)));
+        .body(sameJson("{\"data\":[]}"));
   }
 }

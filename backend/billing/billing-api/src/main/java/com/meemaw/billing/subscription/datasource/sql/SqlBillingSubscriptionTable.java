@@ -21,10 +21,13 @@ public class SqlBillingSubscriptionTable {
       field(BillingSubscriptionTable.CUSTOMER_EXTERNAL_ID, String.class);
   public static final Field<String> CUSTOMER_INTERNAL_ID =
       field(BillingSubscriptionTable.CUSTOMER_INTERNAL_ID, String.class);
+  public static final Field<String> STATUS = field(BillingSubscriptionTable.STATUS, String.class);
   public static final Field<String> PRICE_ID =
       field(BillingSubscriptionTable.PRICE_ID, String.class);
-  public static final Field<Long> CURRENT_PERIOD_ENDS =
-      field(BillingSubscriptionTable.CURRENT_PERIOD_ENDS, Long.class);
+  public static final Field<Long> CURRENT_PERIOD_START =
+      field(BillingSubscriptionTable.CURRENT_PERIOD_START, Long.class);
+  public static final Field<Long> CURRENT_PERIOD_END =
+      field(BillingSubscriptionTable.CURRENT_PERIOD_END, Long.class);
   public static final Field<OffsetDateTime> CREATED_AT =
       field(BillingSubscriptionTable.CREATED_AT, OffsetDateTime.class);
   public static final Field<OffsetDateTime> CANCELED_AT =
@@ -33,7 +36,15 @@ public class SqlBillingSubscriptionTable {
   public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT);
 
   public static final List<Field<?>> INSERT_FIELDS =
-      List.of(ID, PLAN, CUSTOMER_EXTERNAL_ID, CUSTOMER_INTERNAL_ID, PRICE_ID, CURRENT_PERIOD_ENDS);
+      List.of(
+          ID,
+          PLAN,
+          CUSTOMER_EXTERNAL_ID,
+          CUSTOMER_INTERNAL_ID,
+          STATUS,
+          PRICE_ID,
+          CURRENT_PERIOD_START,
+          CURRENT_PERIOD_END);
 
   public static final List<Field<?>> FIELDS =
       Stream.concat(

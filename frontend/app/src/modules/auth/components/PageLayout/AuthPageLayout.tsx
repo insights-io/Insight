@@ -21,6 +21,7 @@ const AuthPageLayout = ({ children, subtitle }: Props) => {
         marginLeft="auto"
         marginRight="auto"
         padding={theme.sizing.scale600}
+        $style={{ boxSizing: 'border-box' }}
       >
         <Block
           marginBottom={theme.sizing.scale700}

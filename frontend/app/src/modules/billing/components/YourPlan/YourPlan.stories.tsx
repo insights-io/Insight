@@ -9,7 +9,7 @@ export default {
 };
 
 const baseProps = {
-  dataRetention: '1mo',
+  dataRetention: '1m',
   isLoading: false,
   onUpgradeClick: action('onUpgradeClick'),
   resetsOn: addDays(new Date(), 30),
