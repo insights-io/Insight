@@ -20,6 +20,7 @@ import com.meemaw.billing.subscription.model.CreateBillingSubscriptionParams;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
@@ -42,6 +43,13 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
     return get(ID.eq(subscriptionId));
   }
 
+  @Override
+  public CompletionStage<Optional<BillingSubscription>> get(
+      String subscriptionId, SqlTransaction transaction) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(subscriptionId));
+    return transaction.query(query).thenApply(this::onGetBillingSubscription);
+  }
+
   private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(condition);
     return sqlPool.execute(query).thenApply(this::onGetBillingSubscription);
@@ -51,6 +59,12 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   public CompletionStage<Optional<BillingSubscription>> getActiveSubscriptionByCustomerInternalId(
       String customerInternalId) {
     return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId).and(STATUS.eq("active")));
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
+      String subscriptionId, String customerInternalId) {
+    return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId).and(ID.eq(subscriptionId)));
   }
 
   @Override
@@ -90,6 +104,7 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
             .set(CURRENT_PERIOD_START, params.getCurrentPeriodStart())
             .set(CURRENT_PERIOD_END, params.getCurrentPeriodEnd())
             .set(STATUS, params.getStatus())
+            .set(CANCELED_AT, params.getCanceledAt())
             .where(ID.eq(subscriptionId))
             .returning(FIELDS);
 

@@ -41,10 +41,10 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   }
 
   @Override
-  public CompletionStage<Response> cancelSubscription() {
+  public CompletionStage<Response> cancelSubscription(String subscriptionId) {
     String organizationId = insightPrincipal.user().getOrganizationId();
     return billingService
-        .cancelSubscription(organizationId)
+        .cancelSubscription(subscriptionId, organizationId)
         .thenApply(
             maybeCanceledSubscription -> {
               if (maybeCanceledSubscription.isEmpty()) {

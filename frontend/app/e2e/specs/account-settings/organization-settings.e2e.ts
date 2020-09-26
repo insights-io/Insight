@@ -319,7 +319,7 @@ test('[BILLING]: Should not be able to upgrade plan on enterprise', async (t) =>
     .notOk('Upgrade button is not visible');
 });
 
-test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
+test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then cancel my subscription', async (t) => {
   const {
     tab,
     cardNumberInputElement,
@@ -355,16 +355,34 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').visible)
     .ok('Plan should be upgraded')
-    .click(queryByText('Insight Business subscription'))
+    .click(queryByText('Insight Business subscription'));
+
+  /* Subscription details page */
+  await t
     .click(queryByText('Invoices'))
     .expect(queryByText('Amount: 1500 usd').with({ timeout: 15000 }).visible)
     .ok('Displays amount due')
+    .click(queryByText('Cancel'))
+    .expect(queryByText('Successfully canceled subscription').visible)
+    .ok('Should cancel the subscription')
+    .expect(queryByText('Status: Canceled').visible)
+    .ok('Subscription is canceled');
+
+  /* External (Stripe) invoice details window */
+  await t
     .click(queryByTestId('invoice-link'))
     .click(InvoiceDetails.downloadButton)
-    .click(InvoiceDetails.downloadReceipt);
+    .click(InvoiceDetails.downloadReceipt)
+    .closeWindow();
+
+  await t
+    .click(AccountSettingsPage.OrganizationSettings.tabs.security.button)
+    .click(tab)
+    .expect(queryByText('Insight Free').visible)
+    .ok('Should be back on Free plan');
 });
 
-test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => {
+test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment method and then cancel my subscription', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
@@ -407,16 +425,34 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').with({ timeout: 15000 }).visible)
     .ok('Plan should be upgraded')
-    .click(queryByText('Insight Business subscription'))
+    .click(queryByText('Insight Business subscription'));
+
+  /* Subscription details page */
+  await t
     .click(queryByText('Invoices'))
     .expect(queryByText('Amount: 1500 usd').with({ timeout: 15000 }).visible)
     .ok('Displays amount due')
+    .click(queryByText('Cancel'))
+    .expect(queryByText('Successfully canceled subscription').visible)
+    .ok('Should cancel the subscription')
+    .expect(queryByText('Status: Canceled').visible)
+    .ok('Subscription is canceled');
+
+  /* External (Stripe) invoice details window */
+  await t
     .click(queryByTestId('invoice-link'))
     .click(InvoiceDetails.downloadButton)
-    .click(InvoiceDetails.downloadReceipt);
+    .click(InvoiceDetails.downloadReceipt)
+    .closeWindow();
+
+  await t
+    .click(AccountSettingsPage.OrganizationSettings.tabs.security.button)
+    .click(tab)
+    .expect(queryByText('Insight Free').visible)
+    .ok('Should be back on Free plan');
 });
 
-test('[BILLING]: Should handle 3D secure flow authentication failures', async (t) => {
+test('[BILLING](3DS-FAILURE+RECOVER): As a user I can recover and subscribe after failing to authenticate 3DS payment method', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
@@ -429,6 +465,7 @@ test('[BILLING]: Should handle 3D secure flow authentication failures', async (t
     formIframe,
     upgradeButton,
     threedSecure,
+    planUpgradedToBusinessPropagationMessage,
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
 
   await t
@@ -453,4 +490,15 @@ test('[BILLING]: Should handle 3D secure flow authentication failures', async (t
     .switchToMainWindow()
     .expect(threedSecure.failMessage.with({ timeout: 15000 }).visible)
     .ok('Should display reason for failure');
+
+  await t
+    .click(payButton)
+    .switchToIframe(threedSecure.outerIframe.with({ timeout: 15000 }))
+    .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
+    .click(threedSecure.completeButton.with({ timeout: 15000 }))
+    .switchToMainWindow()
+    .expect(
+      planUpgradedToBusinessPropagationMessage.with({ timeout: 15000 }).visible
+    )
+    .ok('Subscription should be created');
 });

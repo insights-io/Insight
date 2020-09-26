@@ -36,7 +36,8 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Inject StripeBillingService billingService;
 
-  String eventPath = SubscriptionResource.PATH + "/" + "event";
+  String eventPath = SubscriptionResource.PATH + "/event";
+  String cancelSubscriptionPath = SubscriptionResource.PATH + "/{subscriptionId}/cancel";
 
   @Test
   public void event__should_fail__invalid_content_type() {
@@ -253,7 +254,8 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   public void cancel__should_throw_error__when_not_authenticated() {
     given()
         .when()
-        .delete(SubscriptionResource.PATH)
+        .pathParam("subscriptionId", "random")
+        .delete(cancelSubscriptionPath)
         .then()
         .statusCode(401)
         .body(
@@ -269,7 +271,8 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .when()
-        .delete(SubscriptionResource.PATH)
+        .pathParam("subscriptionId", "random")
+        .delete(cancelSubscriptionPath)
         .then()
         .statusCode(404)
         .body(
@@ -303,7 +306,8 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         given()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
             .when()
-            .delete(SubscriptionResource.PATH)
+            .pathParam("subscriptionId", subscription.getId())
+            .delete(cancelSubscriptionPath)
             .as(new TypeRef<>() {});
 
     Assertions.assertEquals("canceled", deleteDataResponse.getData().getStatus());
@@ -312,12 +316,13 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .when()
-        .delete(SubscriptionResource.PATH)
+        .pathParam("subscriptionId", subscription.getId())
+        .delete(cancelSubscriptionPath)
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Subscription already canceled\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Only active subscription can be canceled\"}}"));
 
     // get plan should return free plan after subscription canceled
     given()

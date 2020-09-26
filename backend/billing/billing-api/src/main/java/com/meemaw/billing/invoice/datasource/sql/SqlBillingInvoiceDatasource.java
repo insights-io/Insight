@@ -20,6 +20,7 @@ import com.meemaw.billing.invoice.model.BillingInvoice;
 import com.meemaw.billing.invoice.model.CreateBillingInvoiceParams;
 import com.meemaw.billing.invoice.model.UpdateBillingInvoiceParams;
 import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
@@ -37,41 +38,60 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
 
   @Override
   public CompletionStage<BillingInvoice> create(CreateBillingInvoiceParams params) {
-    Query query =
-        sqlPool
-            .getContext()
-            .insertInto(TABLE)
-            .columns(INSERT_FIELDS)
-            .values(
-                params.getId(),
-                params.getSubscriptionId(),
-                params.getCustomerInternalId(),
-                params.getCustomerExternalId(),
-                params.getPaymentIntent(),
-                params.getCurrency(),
-                params.getAmountPaid(),
-                params.getAmountDue(),
-                params.getStatus(),
-                params.getLink())
-            .returning(FIELDS);
-
+    Query query = buildCreateBillingInvoiceQuery(params);
     return sqlPool.execute(query).thenApply(rows -> mapBillingInvoice(rows.iterator().next()));
   }
 
   @Override
-  public CompletionStage<Optional<BillingInvoice>> update(
-      String id, UpdateBillingInvoiceParams params) {
-    Query query =
-        sqlPool
-            .getContext()
-            .update(TABLE)
-            .set(AMOUNT_PAID, params.getAmountPaid())
-            .set(AMOUNT_DUE, params.getAmountDue())
-            .set(STATUS, params.getStatus())
-            .where(ID.eq(id))
-            .returning(FIELDS);
+  public CompletionStage<BillingInvoice> create(
+      CreateBillingInvoiceParams params, SqlTransaction transaction) {
+    Query query = buildCreateBillingInvoiceQuery(params);
+    return transaction.query(query).thenApply(rows -> mapBillingInvoice(rows.iterator().next()));
+  }
 
+  private Query buildCreateBillingInvoiceQuery(CreateBillingInvoiceParams params) {
+    return sqlPool
+        .getContext()
+        .insertInto(TABLE)
+        .columns(INSERT_FIELDS)
+        .values(
+            params.getId(),
+            params.getSubscriptionId(),
+            params.getCustomerInternalId(),
+            params.getCustomerExternalId(),
+            params.getPaymentIntent(),
+            params.getCurrency(),
+            params.getAmountPaid(),
+            params.getAmountDue(),
+            params.getStatus(),
+            params.getLink())
+        .returning(FIELDS);
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingInvoice>> update(
+      String invoiceId, UpdateBillingInvoiceParams params) {
+    Query query = buildUpdateBillingInvoiceQuery(invoiceId, params);
     return sqlPool.execute(query).thenApply(this::onGetBillingInvoice);
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingInvoice>> update(
+      String invoiceId, UpdateBillingInvoiceParams params, SqlTransaction transaction) {
+    Query query = buildUpdateBillingInvoiceQuery(invoiceId, params);
+    return transaction.query(query).thenApply(this::onGetBillingInvoice);
+  }
+
+  private Query buildUpdateBillingInvoiceQuery(
+      String invoiceId, UpdateBillingInvoiceParams params) {
+    return sqlPool
+        .getContext()
+        .update(TABLE)
+        .set(AMOUNT_PAID, params.getAmountPaid())
+        .set(AMOUNT_DUE, params.getAmountDue())
+        .set(STATUS, params.getStatus())
+        .where(ID.eq(invoiceId))
+        .returning(FIELDS);
   }
 
   @Override
@@ -93,6 +113,11 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
                     .and(CUSTOMER_INTERNAL_ID.eq(customerInternalId)));
 
     return sqlPool.execute(query).thenApply(this::mapBillingInvoices);
+  }
+
+  @Override
+  public CompletionStage<SqlTransaction> startTransaction() {
+    return sqlPool.beginTransaction();
   }
 
   private Optional<BillingInvoice> onGetBillingInvoice(RowSet<Row> rows) {

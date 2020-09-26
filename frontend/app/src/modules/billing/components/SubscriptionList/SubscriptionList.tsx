@@ -12,7 +12,7 @@ import type { Subscription } from '@insight/types';
 
 type Props = {
   subscriptions: Subscription[];
-  onClick: (subscription: Subscription) => void;
+  onClick: (subscriptionId: string) => void;
 };
 
 export const SubscriptionList = ({ subscriptions, onClick }: Props) => {
@@ -31,7 +31,7 @@ export const SubscriptionList = ({ subscriptions, onClick }: Props) => {
             key={subscription.id}
             overrides={{
               Root: {
-                props: { onClick: () => onClick(subscription) },
+                props: { onClick: () => onClick(subscription.id) },
                 style: {
                   ':hover': {
                     background: theme.colors.primary200,

@@ -5,30 +5,43 @@ import YourPlan from 'modules/billing/components/YourPlan';
 import { Modal } from 'baseui/modal';
 import { addDays } from 'date-fns';
 import useActivePlan from 'modules/billing/hooks/useActivePlan';
-import type { PlanDTO, Subscription, SubscriptionPlan } from '@insight/types';
 import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
 import { SubscriptionList } from 'modules/billing/components/SubscriptionList';
 import { CheckoutForm } from 'modules/billing/components/CheckoutForm';
 import { toaster } from 'baseui/toast';
 import { SubscriptionDetailsContainer } from 'modules/billing/containers/SubscriptionDetails';
+import type {
+  PlanDTO,
+  SubscriptionDTO,
+  SubscriptionPlan,
+} from '@insight/types';
 
 type Props = {
   organizationCreatedAt: Date | undefined;
 };
 
 const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
-  const [selectedSubscription, setSelectedSubscription] = useState<
-    Subscription
+  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<
+    string
   >();
 
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const { subscriptions, revalidateSubscriptions } = useSubscriptions();
+  const {
+    subscriptions,
+    revalidateSubscriptions,
+    updateSubscription,
+  } = useSubscriptions();
   const {
     plan,
     isLoading: isLoadingActivePlan,
     setActivePlan,
     revalidateActivePlan,
   } = useActivePlan();
+
+  const selectedSubscription = useMemo(
+    () => subscriptions.find((s) => s.id === selectedSubscriptionId),
+    [selectedSubscriptionId, subscriptions]
+  );
 
   const onUpgradeClick = useCallback(() => setIsUpgrading(true), []);
 
@@ -69,9 +82,22 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
     [revalidateActivePlan, revalidateSubscriptions]
   );
 
+  const onSubscriptionUpdated = useCallback(
+    (subscription: SubscriptionDTO) => {
+      updateSubscription(subscription);
+      revalidateActivePlan();
+    },
+    [updateSubscription, revalidateActivePlan]
+  );
+
   // TODO: this should be a separate SSR route
   if (selectedSubscription) {
-    return <SubscriptionDetailsContainer subscription={selectedSubscription} />;
+    return (
+      <SubscriptionDetailsContainer
+        subscription={selectedSubscription}
+        onSubscriptionUpdated={onSubscriptionUpdated}
+      />
+    );
   }
 
   return (
@@ -100,7 +126,7 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
         <StyledBody>
           <SubscriptionList
             subscriptions={subscriptions}
-            onClick={setSelectedSubscription}
+            onClick={setSelectedSubscriptionId}
           />
         </StyledBody>
       </Card>

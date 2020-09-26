@@ -31,9 +31,15 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
         .then(getData);
     },
 
-    cancel: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
+    cancel: (
+      subscriptionId: string,
+      { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
       return ky
-        .delete(`${baseURL}/v1/billing/subscriptions`, withCredentials(rest))
+        .delete(
+          `${baseURL}/v1/billing/subscriptions/${subscriptionId}/cancel`,
+          withCredentials(rest)
+        )
         .json<DataResponse<SubscriptionDTO>>()
         .then(getData);
     },

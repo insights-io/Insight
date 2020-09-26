@@ -16,7 +16,8 @@ public interface BillingService {
 
   CompletionStage<List<SubscriptionDTO>> listSubscriptionsByOrganizationId(String organizationId);
 
-  CompletionStage<Optional<SubscriptionDTO>> cancelSubscription(String organizationId);
+  CompletionStage<Optional<SubscriptionDTO>> cancelSubscription(
+      String subscriptionId, String organizationId);
 
   CompletionStage<PlanDTO> getActivePlan(String organizationId);
 }
