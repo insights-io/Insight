@@ -54,8 +54,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="$STRIPE_TEST_API_KEY")
-      - run: echo "$STRIPE_WEBHOOK_SECRET"
+      - run: |
+          export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="$STRIPE_TEST_API_KEY")
+          echo "BEFORE"
+          echo "$STRIPE_WEBHOOK_SECRET"
+          echo "AFTER"
+      - run: |
+          echo "BEFORE"
+          echo "$STRIPE_WEBHOOK_SECRET"
+          echo "AFTER"
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
