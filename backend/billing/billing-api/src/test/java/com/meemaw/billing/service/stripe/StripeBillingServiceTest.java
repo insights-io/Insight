@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+// TODO: rewrite tests to use resource only (mock signature verification)
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
@@ -143,12 +144,13 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
     // Link example payload with current subscription
     Event invoiceCreatedEvent =
         readStripeInvoiceEvent(
-            "/billing/invoice/invoiceCreated3DSecure.json",
+            "/billing/invoice/invoiceFinalized3DSecure.json",
             billingSubscription.getCustomerExternalId(),
             billingSubscription.getId());
 
-    // Process the "invoice.created" event
+    // Process the "invoice.finalized" event
     webhookProcessor.process(invoiceCreatedEvent).toCompletableFuture().join();
+
     BillingInvoice invoice =
         billingInvoiceDatasource
             .listBySubscription(billingSubscription.getId(), user.getOrganizationId())
@@ -240,7 +242,7 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
     // Link example payload with current subscription
     Event invoiceCreatedEvent =
         readStripeInvoiceEvent(
-            "/billing/invoice/invoiceCreated.json", customer.getExternalId(), subscriptionId);
+            "/billing/invoice/invoiceFinalized.json", customer.getExternalId(), subscriptionId);
 
     // Process the "invoice.created" event
     webhookProcessor.process(invoiceCreatedEvent).toCompletableFuture().join();

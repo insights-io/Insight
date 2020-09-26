@@ -11,6 +11,7 @@ import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.billing.webhook.service.WebhookProcessor;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
+import com.meemaw.shared.sql.exception.SqlException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
@@ -97,12 +98,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
 
   private CompletionStage<Boolean> handleSubscriptionUpdated(Event event) {
     Subscription subscription = deserializeEvent(event, Subscription.class);
-    UpdateBillingSubscriptionParams params =
-        UpdateBillingSubscriptionParams.builder()
-            .status(subscription.getStatus())
-            .currentPeriodStart(subscription.getCurrentPeriodStart())
-            .currentPeriodEnd(subscription.getCurrentPeriodEnd())
-            .build();
+    UpdateBillingSubscriptionParams params = UpdateBillingSubscriptionParams.from(subscription);
 
     return billingSubscriptionDatasource
         .update(subscription.getId(), params)
@@ -121,62 +117,108 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
             });
   }
 
+  /**
+   * It can happen that "invoice.paid" event comes before "invoice.finalized". In that case we try
+   * to link it with an existing subscription.
+   */
   private CompletionStage<Boolean> handleInvoicePaidEvent(Event event) {
     Invoice invoice = deserializeEvent(event, Invoice.class);
-    UpdateBillingInvoiceParams params =
-        UpdateBillingInvoiceParams.builder()
-            .status(invoice.getStatus())
-            .amountPaid(invoice.getAmountPaid())
-            .amountDue(invoice.getAmountDue())
-            .build();
+    UpdateBillingInvoiceParams updateParams = UpdateBillingInvoiceParams.from(invoice);
 
     return billingInvoiceDatasource
-        .update(invoice.getId(), params)
-        .thenApply(
-            maybeBillingInvoice -> {
-              if (maybeBillingInvoice.isEmpty()) {
-                log.error("[BILLING]: Failed to find paid invoice={}", event);
-                throw Boom.badRequest().exception();
-              }
-              BillingInvoice billingInvoice = maybeBillingInvoice.get();
-              log.info("[BILLING]: Successfully updated billing invoice={}", billingInvoice);
-              return true;
-            });
+        .startTransaction()
+        .thenCompose(
+            transaction ->
+                billingInvoiceDatasource
+                    .update(invoice.getId(), updateParams, transaction)
+                    .thenCompose(
+                        maybeUpdatedBillingInvoice -> {
+                          if (maybeUpdatedBillingInvoice.isEmpty()) {
+                            String subscriptionId = invoice.getSubscription();
+                            return billingSubscriptionDatasource
+                                .get(subscriptionId, transaction)
+                                .thenCompose(
+                                    maybeBillingSubscription -> {
+                                      if (maybeBillingSubscription.isEmpty()) {
+                                        log.error(
+                                            "[BILLING]: Failed to associate \"invoice.paid\" event with subscription event={}",
+                                            event);
+                                        throw Boom.badRequest().exception();
+                                      }
+
+                                      String organizationId =
+                                          maybeBillingSubscription.get().getCustomerInternalId();
+                                      CreateBillingInvoiceParams createParams =
+                                          CreateBillingInvoiceParams.from(invoice, organizationId);
+
+                                      return billingInvoiceDatasource
+                                          .create(createParams, transaction)
+                                          .thenApply(
+                                              billingInvoice -> {
+                                                log.info(
+                                                    "[BILLING]: Successfully created new invoice after linking \"invoice.paid\" with existing subscription");
+                                                return true;
+                                              });
+                                    });
+                          }
+
+                          log.info(
+                              "[BILLING]: Successfully updated existing invoice on \"invoice.paid\" event");
+                          return CompletableFuture.completedStage(true);
+                        })
+                    .thenCompose(result -> transaction.commit().thenApply(ignored -> result)));
   }
 
+  /**
+   * It can happen that "invoice.paid" event comes before "invoice.finalized". In that case we will
+   * get a unique constraint violation on "invoice_pkey" which we can just catch & ignore not to
+   * spam error logs.
+   */
   private CompletionStage<Boolean> handleInvoiceFinalizedEvent(Event event) {
     Invoice invoice = deserializeEvent(event, Invoice.class);
-    return billingCustomerDatasource
-        .getByExternalId(invoice.getCustomer())
+    return billingInvoiceDatasource
+        .startTransaction()
         .thenCompose(
-            maybeBillingCustomer -> {
-              if (maybeBillingCustomer.isEmpty()) {
-                log.error("[BILLING]: Failed to associate invoice with customer event={}", invoice);
-                throw Boom.badRequest().exception();
+            transaction ->
+                billingCustomerDatasource
+                    .getByExternalId(invoice.getCustomer(), transaction)
+                    .thenCompose(
+                        maybeBillingCustomer -> {
+                          if (maybeBillingCustomer.isEmpty()) {
+                            log.error(
+                                "[BILLING]: Failed to associate invoice with customer event={}",
+                                invoice);
+                            throw Boom.badRequest().exception();
+                          }
+
+                          String organizationId = maybeBillingCustomer.get().getInternalId();
+                          CreateBillingInvoiceParams createParams =
+                              CreateBillingInvoiceParams.from(invoice, organizationId);
+                          MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+                          return billingInvoiceDatasource.create(createParams, transaction);
+                        })
+                    .thenCompose(
+                        billingInvoice ->
+                            transaction
+                                .commit()
+                                .thenApply(
+                                    ignored -> {
+                                      log.info(
+                                          "[BILLING] Successfully created billing invoice={}",
+                                          billingInvoice);
+                                      return true;
+                                    })))
+        .exceptionally(
+            throwable -> {
+              SqlException cause = (SqlException) throwable.getCause();
+              if (cause.hadConflict()) {
+                log.info(
+                    "[BILLING]: Conflict on \"invoice.finalized\" event invoice={}",
+                    invoice.getId());
+                return true;
               }
 
-              String organizationId = maybeBillingCustomer.get().getInternalId();
-              MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
-
-              CreateBillingInvoiceParams params =
-                  new CreateBillingInvoiceParams(
-                      invoice.getId(),
-                      invoice.getSubscription(),
-                      organizationId,
-                      invoice.getCustomer(),
-                      invoice.getPaymentIntent(),
-                      invoice.getCurrency(),
-                      invoice.getAmountPaid(),
-                      invoice.getAmountDue(),
-                      invoice.getHostedInvoiceUrl(),
-                      invoice.getStatus());
-
-              return billingInvoiceDatasource.create(params);
-            })
-        .thenApply(
-            billingInvoice -> {
-              log.info("[BILLING] Successfully created billing invoice={}", billingInvoice);
-              return true;
+              throw cause;
             });
   }
 

@@ -103,9 +103,11 @@ public class StripeBillingService implements BillingService {
   }
 
   @Override
-  public CompletionStage<Optional<SubscriptionDTO>> cancelSubscription(String organizationId) {
+  public CompletionStage<Optional<SubscriptionDTO>> cancelSubscription(
+      String subscriptionId, String organizationId) {
+
     return billingSubscriptionDatasource
-        .getByCustomerInternalId(organizationId)
+        .getByCustomerInternalId(subscriptionId, organizationId)
         .thenCompose(
             maybeBillingSubscription -> {
               if (maybeBillingSubscription.isEmpty()) {
@@ -114,9 +116,13 @@ public class StripeBillingService implements BillingService {
               }
 
               BillingSubscription subscription = maybeBillingSubscription.get();
-              if ("canceled".equals(subscription.getStatus())) {
-                log.info("[BILLING]: Tried to cancel subscription that is already canceled");
-                throw Boom.badRequest().message("Subscription already canceled").exception();
+              if (!"active".equals(subscription.getStatus())) {
+                log.info(
+                    "[BILLING]: Tried to cancel subscription that is not active subscriptionId={}",
+                    subscriptionId);
+                throw Boom.badRequest()
+                    .message("Only active subscription can be canceled")
+                    .exception();
               }
 
               return paymentProvider.retrieveSubscription(subscription.getId());
@@ -126,11 +132,7 @@ public class StripeBillingService implements BillingService {
             canceledSubscription ->
                 billingSubscriptionDatasource.update(
                     canceledSubscription.getId(),
-                    UpdateBillingSubscriptionParams.builder()
-                        .status(canceledSubscription.getStatus())
-                        .currentPeriodStart(canceledSubscription.getCurrentPeriodStart())
-                        .currentPeriodEnd(canceledSubscription.getCurrentPeriodEnd())
-                        .build()))
+                    UpdateBillingSubscriptionParams.from(canceledSubscription)))
         .thenApply(billingSubscription -> billingSubscription.map(BillingSubscription::dto));
   }
 

@@ -1,5 +1,4 @@
-import React from 'react';
-import type { Invoice, Subscription } from '@insight/types';
+import React, { useState } from 'react';
 import { Card, StyledBody, StyledAction } from 'baseui/card';
 import {
   capitalize,
@@ -17,22 +16,65 @@ import { ListItem, ListItemLabel } from 'baseui/list';
 import { StatefulTooltip } from 'baseui/tooltip';
 import { FaFileDownload, FaLink } from 'react-icons/fa';
 import { ExternalLink } from 'shared/components/ExternalLink';
+import { BillingApi } from 'api';
+import type {
+  APIError,
+  APIErrorDataResponse,
+  Invoice,
+  Subscription,
+  SubscriptionDTO,
+} from '@insight/types';
+import { toaster } from 'baseui/toast';
 
 type Props = {
   subscription: Subscription;
   invoices: Invoice[];
+  onSubscriptionUpdated: (subscription: SubscriptionDTO) => void;
 };
 
-export const SubscriptionDetails = ({ subscription, invoices }: Props) => {
+export const SubscriptionDetails = ({
+  subscription,
+  invoices,
+  onSubscriptionUpdated,
+}: Props) => {
+  const [isCanceling, setIsCanceling] = useState(false);
+  const [_formError, setFormError] = useState<APIError>();
+
   const [css, theme] = useStyletron();
   const title = subscriptionPlanText(subscription.plan);
+
+  const cancelSubscription = async () => {
+    if (isCanceling) {
+      return;
+    }
+
+    setIsCanceling(true);
+
+    BillingApi.subscriptions
+      .cancel(subscription.id)
+      .then((canceledSubscription) => {
+        onSubscriptionUpdated(canceledSubscription);
+        toaster.positive('Successfully canceled subscription', {});
+      })
+      .catch(async (error) => {
+        const errorDTO: APIErrorDataResponse = await error.response.json();
+        setFormError(errorDTO.error);
+        toaster.negative('Something went wrong', {});
+      })
+      .finally(() => setIsCanceling(false));
+  };
 
   return (
     <Card title={title}>
       <Divider />
       <StyledBody>
-        <Block>Created on: {subscription.createdAt.toLocaleDateString()}</Block>
         <Block>Status: {subscriptionStatusText(subscription.status)}</Block>
+        <Block>Created on: {subscription.createdAt.toLocaleDateString()}</Block>
+        {subscription.canceledAt && (
+          <Block>
+            Canceled on: {subscription.canceledAt.toLocaleDateString()}
+          </Block>
+        )}
       </StyledBody>
       <Divider />
 
@@ -117,11 +159,19 @@ export const SubscriptionDetails = ({ subscription, invoices }: Props) => {
         </Accordion>
       </Block>
 
-      <StyledAction>
-        <Button kind="secondary" size={SIZE.compact} shape={SHAPE.pill}>
-          {subscriptionStatusIcon.canceled(theme)} Cancel
-        </Button>
-      </StyledAction>
+      {subscription.status === 'active' && (
+        <StyledAction>
+          <Button
+            kind="secondary"
+            size={SIZE.compact}
+            shape={SHAPE.pill}
+            isLoading={isCanceling}
+            onClick={cancelSubscription}
+          >
+            {subscriptionStatusIcon.canceled(theme)} Cancel
+          </Button>
+        </StyledAction>
+      )}
     </Card>
   );
 };

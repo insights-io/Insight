@@ -10,6 +10,7 @@ import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable
 import com.meemaw.billing.customer.datasource.BillingCustomerDatasource;
 import com.meemaw.billing.customer.model.BillingCustomer;
 import com.meemaw.shared.sql.client.SqlPool;
+import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
@@ -27,6 +28,13 @@ public class SqlBillingCustomerDatasource implements BillingCustomerDatasource {
   public CompletionStage<Optional<BillingCustomer>> getByExternalId(String externalId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(EXTERNAL_ID.eq(externalId));
     return sqlPool.execute(query).thenApply(this::onFindBillingCustomer);
+  }
+
+  @Override
+  public CompletionStage<Optional<BillingCustomer>> getByExternalId(
+      String externalId, SqlTransaction transaction) {
+    Query query = sqlPool.getContext().selectFrom(TABLE).where(EXTERNAL_ID.eq(externalId));
+    return transaction.query(query).thenApply(this::onFindBillingCustomer);
   }
 
   @Override

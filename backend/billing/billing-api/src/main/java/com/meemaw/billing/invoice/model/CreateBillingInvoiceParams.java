@@ -1,5 +1,6 @@
 package com.meemaw.billing.invoice.model;
 
+import com.stripe.model.Invoice;
 import lombok.Value;
 
 @Value
@@ -15,4 +16,18 @@ public class CreateBillingInvoiceParams {
   long amountDue;
   String link;
   String status;
+
+  public static CreateBillingInvoiceParams from(Invoice invoice, String organizationId) {
+    return new CreateBillingInvoiceParams(
+        invoice.getId(),
+        invoice.getSubscription(),
+        organizationId,
+        invoice.getCustomer(),
+        invoice.getPaymentIntent(),
+        invoice.getCurrency(),
+        invoice.getAmountPaid(),
+        invoice.getAmountDue(),
+        invoice.getHostedInvoiceUrl(),
+        invoice.getStatus());
+  }
 }
