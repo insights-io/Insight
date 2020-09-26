@@ -13,6 +13,7 @@
   <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly"/>
   <rule ref="category/java/bestpractices.xml/AvoidMessageDigestField"/>
   <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
+  <rule ref="category/java/bestpractices.xml/AvoidReassigningCatchVariables"/>
   <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables"/>
   <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters"/>
   <rule ref="category/java/bestpractices.xml/AvoidStringBufferField"/>
@@ -40,6 +41,7 @@
   <rule ref="category/java/bestpractices.xml/ReplaceVectorWithList"/>
   <rule ref="category/java/bestpractices.xml/SwitchStmtsShouldHaveDefault"/>
   <rule ref="category/java/bestpractices.xml/SystemPrintln"/>
+  <rule ref="category/java/bestpractices.xml/UnusedAssignment"/>
   <rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
   <rule ref="category/java/bestpractices.xml/UnusedImports"/>
   <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
