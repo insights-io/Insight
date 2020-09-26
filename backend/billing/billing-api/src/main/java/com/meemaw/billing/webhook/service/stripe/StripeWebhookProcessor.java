@@ -210,15 +210,15 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                                     })))
         .exceptionally(
             throwable -> {
-              SqlException cause = (SqlException) throwable.getCause();
-              if (cause.hadConflict()) {
+              Throwable cause = throwable.getCause();
+              if (cause instanceof SqlException && ((SqlException) cause).hadConflict()) {
                 log.info(
                     "[BILLING]: Conflict on \"invoice.finalized\" event invoice={}",
                     invoice.getId());
                 return true;
               }
 
-              throw cause;
+              throw (RuntimeException) cause;
             });
   }
 

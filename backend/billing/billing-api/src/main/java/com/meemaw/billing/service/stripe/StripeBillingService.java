@@ -116,16 +116,17 @@ public class StripeBillingService implements BillingService {
               }
 
               BillingSubscription subscription = maybeBillingSubscription.get();
-              if (!"active".equals(subscription.getStatus())) {
-                log.info(
-                    "[BILLING]: Tried to cancel subscription that is not active subscriptionId={}",
-                    subscriptionId);
-                throw Boom.badRequest()
-                    .message("Only active subscription can be canceled")
-                    .exception();
+              if ("active".equals(subscription.getStatus())) {
+                return paymentProvider.retrieveSubscription(subscription.getId());
               }
 
-              return paymentProvider.retrieveSubscription(subscription.getId());
+              log.info(
+                  "[BILLING]: Tried to cancel subscription that is not active subscriptionId={}",
+                  subscriptionId);
+
+              throw Boom.badRequest()
+                  .message("Only active subscription can be canceled")
+                  .exception();
             })
         .thenCompose(paymentProvider::cancelSubscription)
         .thenCompose(
