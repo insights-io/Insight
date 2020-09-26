@@ -53,10 +53,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: backend | setup stripe webhook
+        run: |
+          stripe listen --print-secret
+          export STRIPE_WEBHOOK_SECRET=$(stripe listen --print-secret)
+          stripe listen --forward-to localhost:8083/v1/billing/subscriptions/event &
       - name: backend | docker-compose up
         run: |
-          export STRIPE_WEBHOOK_SECRET=$(stripe listen --print-secret)
-          echo $STRIPE_WEBHOOK_SECRET
           mkdir -p $ARTIFACTS_PATH
           docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
