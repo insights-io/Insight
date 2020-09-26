@@ -1,0 +1,1 @@
+export { SubscriptionDetailsContainer } from './SubscriptionDetails';

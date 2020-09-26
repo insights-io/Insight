@@ -33,12 +33,15 @@ CREATE TABLE billing.subscription
 
 CREATE TABLE billing.invoice
 (
-    id              TEXT        NOT NULL PRIMARY KEY,
-    subscription_id TEXT REFERENCES billing.subscription (id) ON DELETE CASCADE,
-    amount_paid     BIGINT      NOT NULL,
-    amount_due      BIGINT      NOT NULL,
-    status          TEXT        NOT NULL,
-    currency        TEXT        NOT NULL,
-    payment_intent  TEXT        NOT NULL,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+    id                   TEXT        NOT NULL PRIMARY KEY,
+    subscription_id      TEXT REFERENCES billing.subscription (id) ON DELETE CASCADE,
+    customer_internal_id TEXT REFERENCES billing.customer (internal_id) ON DELETE CASCADE,
+    customer_external_id TEXT REFERENCES billing.customer (external_id) ON DELETE CASCADE,
+    amount_paid          BIGINT      NOT NULL,
+    amount_due           BIGINT      NOT NULL,
+    status               TEXT        NOT NULL,
+    currency             TEXT        NOT NULL,
+    payment_intent       TEXT        NOT NULL,
+    link                 TEXT        NOT NULL,
+    created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );

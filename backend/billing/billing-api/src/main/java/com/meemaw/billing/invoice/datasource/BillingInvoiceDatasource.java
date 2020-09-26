@@ -16,5 +16,6 @@ public interface BillingInvoiceDatasource {
   CompletionStage<Optional<BillingInvoice>> update(
       String invoiceId, UpdateBillingInvoiceParams params);
 
-  CompletionStage<List<BillingInvoice>> listBySubscription(String subscriptionId);
+  CompletionStage<List<BillingInvoice>> listBySubscription(
+      String subscriptionId, String customerInternalId);
 }

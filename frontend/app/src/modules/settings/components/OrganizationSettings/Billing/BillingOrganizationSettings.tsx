@@ -5,19 +5,24 @@ import YourPlan from 'modules/billing/components/YourPlan';
 import { Modal } from 'baseui/modal';
 import { addDays } from 'date-fns';
 import useActivePlan from 'modules/billing/hooks/useActivePlan';
-import type { PlanDTO } from '@insight/types';
+import type { PlanDTO, Subscription } from '@insight/types';
 import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
 import { SubscriptionList } from 'modules/billing/components/SubscriptionList';
 import { CheckoutForm } from 'modules/billing/components/CheckoutForm';
 import { toaster } from 'baseui/toast';
+import { SubscriptionDetailsContainer } from 'modules/billing/containers/SubscriptionDetails';
 
 type Props = {
   organizationCreatedAt: Date | undefined;
 };
 
 const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
+  const [selectedSubscription, setSelectedSubscription] = useState<
+    Subscription
+  >();
+
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const { subscriptions } = useSubscriptions();
+  const { subscriptions, revalidateSubscriptions } = useSubscriptions();
   const {
     plan,
     isLoading: isLoadingActivePlan,
@@ -34,6 +39,7 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
 
   const onPlanUpgraded = useCallback(
     (upgradedPlan: PlanDTO) => {
+      revalidateSubscriptions();
       setActivePlan(upgradedPlan);
       setIsUpgrading(false);
       toaster.positive(
@@ -41,8 +47,13 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
         {}
       );
     },
-    [setActivePlan]
+    [setActivePlan, revalidateSubscriptions]
   );
+
+  // TODO: this should be a separete SSR route
+  if (selectedSubscription) {
+    return <SubscriptionDetailsContainer subscription={selectedSubscription} />;
+  }
 
   return (
     <Block>
@@ -65,7 +76,10 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
         overrides={{ Root: { style: { marginTop: '20px' } } }}
       >
         <StyledBody>
-          <SubscriptionList subscriptions={subscriptions} />
+          <SubscriptionList
+            subscriptions={subscriptions}
+            onClick={setSelectedSubscription}
+          />
         </StyledBody>
       </Card>
     </Block>

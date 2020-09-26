@@ -162,10 +162,13 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                   new CreateBillingInvoiceParams(
                       invoice.getId(),
                       invoice.getSubscription(),
+                      organizationId,
+                      invoice.getCustomer(),
                       invoice.getPaymentIntent(),
                       invoice.getCurrency(),
                       invoice.getAmountPaid(),
                       invoice.getAmountDue(),
+                      invoice.getHostedInvoiceUrl(),
                       invoice.getStatus());
 
               return billingInvoiceDatasource.create(params);

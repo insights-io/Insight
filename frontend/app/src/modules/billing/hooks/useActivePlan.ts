@@ -2,13 +2,10 @@ import { BillingApi } from 'api';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
 import type { PlanDTO } from '@insight/types';
 
+const CACHE_KEY = 'BillingApi.subscriptions.getActivePlan';
+
 const useActivePlan = () => {
-  const {
-    data: plan,
-    isLoading,
-    error,
-    mutate,
-  } = useSWRQuery('BillingApi.subscriptions.getActivePlan', () =>
+  const { data: plan, isLoading, error, mutate } = useSWRQuery(CACHE_KEY, () =>
     BillingApi.subscriptions.getActivePlan()
   );
 

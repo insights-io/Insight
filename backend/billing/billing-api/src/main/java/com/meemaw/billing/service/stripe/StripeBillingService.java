@@ -70,7 +70,7 @@ public class StripeBillingService implements BillingService {
     }
 
     return billingSubscriptionDatasource
-        .getByCustomerInternalId(organizationId)
+        .getActiveSubscriptionByCustomerInternalId(organizationId)
         .thenCompose(
             maybeSubscription -> {
               if (maybeSubscription.isEmpty()) {
@@ -113,8 +113,13 @@ public class StripeBillingService implements BillingService {
                 throw Boom.notFound().exception();
               }
 
-              String subscriptionId = maybeBillingSubscription.get().getId();
-              return paymentProvider.retrieveSubscription(subscriptionId);
+              BillingSubscription subscription = maybeBillingSubscription.get();
+              if ("canceled".equals(subscription.getStatus())) {
+                log.info("[BILLING]: Tried to cancel subscription that is already canceled");
+                throw Boom.badRequest().message("Subscription already canceled").exception();
+              }
+
+              return paymentProvider.retrieveSubscription(subscription.getId());
             })
         .thenCompose(paymentProvider::cancelSubscription)
         .thenCompose(

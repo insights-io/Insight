@@ -23,12 +23,9 @@ class Sidebar {
   public readonly toggleCollapseTooltip = queryByText('Collapse');
 
   public readonly accountSettings = {
-    item: this.container
-      .find('svg')
-      .withAttribute('id', 'account-settings')
-      .parent(),
+    item: this.container.find('svg').withAttribute('id', 'account').parent(),
 
-    accountSettings: queryByText('Account settings'),
+    accountSettings: queryByText('Settings'),
     signOut: queryByText('Sign out'),
   };
 

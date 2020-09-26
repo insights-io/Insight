@@ -307,6 +307,30 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
             .as(new TypeRef<>() {});
 
     Assertions.assertEquals("canceled", deleteDataResponse.getData().getStatus());
+
+    // Trying to cancel same subscription again should throw
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .delete(SubscriptionResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Subscription already canceled\"}}"));
+
+    // get plan should return free plan after subscription canceled
+    given()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .get(SubscriptionResource.PATH + "/plan")
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                String.format(
+                    "{\"data\":{\"organizationId\":\"%s\",\"type\":\"free\",\"dataRetention\":\"1m\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
+                    user.getOrganizationId())));
   }
 
   @Test

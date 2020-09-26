@@ -1,4 +1,4 @@
-import { queryByText } from '@testing-library/testcafe';
+import { queryByTestId, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
@@ -313,7 +313,7 @@ test('[BILLING]: Should not be able to upgrade plan on enterprise', async (t) =>
     .notOk('Upgrade button is not visible');
 });
 
-test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
+test.only('[BILLING]: Should be able to subscribe with VISA', async (t) => {
   const {
     tab,
     cardNumberInputElement,
@@ -347,7 +347,14 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').visible)
-    .ok('Plan should be upgraded');
+    .ok('Plan should be upgraded')
+    .click(queryByText('Insight Business subscription'))
+    .click(queryByText('Invoices'))
+    .expect(queryByText('Amount: 1500 usd').with({ timeout: 15000 }).visible)
+    .ok('Displays amount due')
+    .click(queryByTestId('invoice-link')) // Webhook might be slow
+    .click(queryByText('Download as PDF…')) // on stripe page
+    .click(queryByText('Download receipt'));
 });
 
 test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => {

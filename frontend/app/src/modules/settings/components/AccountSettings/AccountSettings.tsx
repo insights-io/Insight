@@ -5,23 +5,32 @@ import { useStyletron } from 'baseui';
 import { Tabs, Tab } from 'baseui/tabs-motion';
 import { User } from '@insight/types';
 import useAuth from 'modules/auth/hooks/useAuth';
+import {
+  API_KEYS_SETTINGS_PAGE,
+  ORGANIZATION_SETTINGS_PAGE,
+  USER_SETTINGS_PAGE,
+} from 'shared/constants/routes';
 
 import UserSettings from '../UserSettings';
 import OrganizationSettings from '../OrganizationSettings';
 
 type Props = {
-  activeKey: string;
+  activeTab: string;
   onTabChange: (key: string) => void;
   user: User;
 };
 
 const AccountSettings = ({
-  activeKey,
+  activeTab,
   onTabChange,
   user: initialUser,
 }: Props) => {
   const { user, updateUser, updateUserCache } = useAuth(initialUser);
   const [_css, theme] = useStyletron();
+
+  const getActiveKey = (tab: string) => {
+    return tab.split('/').slice(0, 3).join('/');
+  };
 
   return (
     <AppLayout
@@ -45,21 +54,24 @@ const AccountSettings = ({
 
       <Tabs
         renderAll={false}
-        activeKey={activeKey}
+        activeKey={getActiveKey(activeTab)}
         onChange={(args) => onTabChange(String(args.activeKey))}
         overrides={{ Root: { style: { marginTop: theme.sizing.scale600 } } }}
       >
-        <Tab key="/account/settings" title="User settings">
+        <Tab key={USER_SETTINGS_PAGE} title="User settings">
           <UserSettings
             user={user}
             updateUser={updateUser}
             updateUserCache={updateUserCache}
           />
         </Tab>
-        <Tab key="/account/organization-settings" title="Organization settings">
-          <OrganizationSettings />
+        <Tab key={ORGANIZATION_SETTINGS_PAGE} title="Organization settings">
+          <OrganizationSettings
+            activeTab={activeTab}
+            onTabChange={onTabChange}
+          />
         </Tab>
-        <Tab key="/account/api-keys" title="API Keys">
+        <Tab key={API_KEYS_SETTINGS_PAGE} title="API Keys">
           <div>TODO</div>
         </Tab>
       </Tabs>

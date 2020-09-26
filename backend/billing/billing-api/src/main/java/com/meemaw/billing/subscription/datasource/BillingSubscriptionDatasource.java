@@ -22,4 +22,7 @@ public interface BillingSubscriptionDatasource {
       String customerInternalId);
 
   CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(String customerInternalId);
+
+  CompletionStage<Optional<BillingSubscription>> getActiveSubscriptionByCustomerInternalId(
+      String customerInternalId);
 }

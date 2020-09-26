@@ -4,9 +4,12 @@ import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.A
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.AMOUNT_PAID;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CREATED_AT;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CURRENCY;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CUSTOMER_EXTERNAL_ID;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CUSTOMER_INTERNAL_ID;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.FIELDS;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.ID;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.INSERT_FIELDS;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.LINK;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.PAYMENT_INTENT;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.STATUS;
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.SUBSCRIPTION_ID;
@@ -42,12 +45,16 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
             .values(
                 params.getId(),
                 params.getSubscriptionId(),
+                params.getCustomerInternalId(),
+                params.getCustomerExternalId(),
                 params.getPaymentIntent(),
                 params.getCurrency(),
                 params.getAmountPaid(),
                 params.getAmountDue(),
-                params.getStatus())
+                params.getStatus(),
+                params.getLink())
             .returning(FIELDS);
+
     return sqlPool.execute(query).thenApply(rows -> mapBillingInvoice(rows.iterator().next()));
   }
 
@@ -74,8 +81,17 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
   }
 
   @Override
-  public CompletionStage<List<BillingInvoice>> listBySubscription(String subscriptionId) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(SUBSCRIPTION_ID.eq(subscriptionId));
+  public CompletionStage<List<BillingInvoice>> listBySubscription(
+      String subscriptionId, String customerInternalId) {
+    Query query =
+        sqlPool
+            .getContext()
+            .selectFrom(TABLE)
+            .where(
+                SUBSCRIPTION_ID
+                    .eq(subscriptionId)
+                    .and(CUSTOMER_INTERNAL_ID.eq(customerInternalId)));
+
     return sqlPool.execute(query).thenApply(this::mapBillingInvoices);
   }
 
@@ -96,11 +112,14 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
     return new BillingInvoice(
         row.getString(ID.getName()),
         row.getString(SUBSCRIPTION_ID.getName()),
+        row.getString(CUSTOMER_INTERNAL_ID.getName()),
+        row.getString(CUSTOMER_EXTERNAL_ID.getName()),
         row.getString(PAYMENT_INTENT.getName()),
         row.getString(CURRENCY.getName()),
         row.getLong(AMOUNT_PAID.getName()),
         row.getLong(AMOUNT_DUE.getName()),
         row.getString(STATUS.getName()),
+        row.getString(LINK.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }
