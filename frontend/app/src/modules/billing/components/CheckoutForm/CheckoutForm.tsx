@@ -5,18 +5,27 @@ import {
   useElements,
   useStripe,
 } from '@stripe/react-stripe-js';
-import { loadStripe, StripeError } from '@stripe/stripe-js';
+import { loadStripe, PaymentIntent, StripeError } from '@stripe/stripe-js';
 import { BillingApi } from 'api';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { Button, SIZE, SHAPE } from 'baseui/button';
 import FormError from 'shared/components/FormError';
-import type { APIError, APIErrorDataResponse, PlanDTO } from '@insight/types';
+import type {
+  APIError,
+  APIErrorDataResponse,
+  PlanDTO,
+  SubscriptionPlan,
+} from '@insight/types';
 
 import { confirmCardPayment, createCardPaymentMethod } from './stripe';
 
 type Props = {
   onPlanUpgraded: (subscription: PlanDTO) => void;
+  onPaymentIntentSucceeded: (
+    plan: SubscriptionPlan,
+    paymentIntent: PaymentIntent
+  ) => void;
 };
 
 const TEST_PUBLISHABLE_KEY =
@@ -32,7 +41,10 @@ export const CheckoutForm = (props: Props) => {
   );
 };
 
-const StripeChekoutForm = ({ onPlanUpgraded }: Props) => {
+const StripeChekoutForm = ({
+  onPlanUpgraded,
+  onPaymentIntentSucceeded,
+}: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stripeSetupError, setStripeSetupError] = useState<StripeError>();
   const [apiError, setApiError] = useState<APIError>();
@@ -58,12 +70,13 @@ const StripeChekoutForm = ({ onPlanUpgraded }: Props) => {
       if (error) {
         setStripeSetupError(error);
       } else if (paymentMethod) {
+        const plan: SubscriptionPlan = 'business';
+
         await BillingApi.subscriptions
-          .create({ paymentMethodId: paymentMethod.id, plan: 'business' })
+          .create({ paymentMethodId: paymentMethod.id, plan })
           .then((createSubscriptionResponse) => {
             if (createSubscriptionResponse.plan) {
               onPlanUpgraded(createSubscriptionResponse.plan);
-
               return Promise.resolve();
             }
 
@@ -75,13 +88,7 @@ const StripeChekoutForm = ({ onPlanUpgraded }: Props) => {
               if (confirmation.error) {
                 setStripeSetupError(confirmation.error);
               } else if (confirmation.paymentIntent?.status === 'succeeded') {
-                BillingApi.subscriptions
-                  .getActivePlan()
-                  .then(onPlanUpgraded)
-                  .catch(async (apiErrorResponse) => {
-                    const errorDTO: APIErrorDataResponse = await apiErrorResponse.response.json();
-                    setApiError(errorDTO.error);
-                  });
+                onPaymentIntentSucceeded(plan, confirmation.paymentIntent);
               }
             });
           })

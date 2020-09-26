@@ -5,7 +5,7 @@ import YourPlan from 'modules/billing/components/YourPlan';
 import { Modal } from 'baseui/modal';
 import { addDays } from 'date-fns';
 import useActivePlan from 'modules/billing/hooks/useActivePlan';
-import type { PlanDTO, Subscription } from '@insight/types';
+import type { PlanDTO, Subscription, SubscriptionPlan } from '@insight/types';
 import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
 import { SubscriptionList } from 'modules/billing/components/SubscriptionList';
 import { CheckoutForm } from 'modules/billing/components/CheckoutForm';
@@ -27,6 +27,7 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
     plan,
     isLoading: isLoadingActivePlan,
     setActivePlan,
+    revalidateActivePlan,
   } = useActivePlan();
 
   const onUpgradeClick = useCallback(() => setIsUpgrading(true), []);
@@ -42,12 +43,30 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
       revalidateSubscriptions();
       setActivePlan(upgradedPlan);
       setIsUpgrading(false);
-      toaster.positive(
-        `Successfully upgraded to ${upgradedPlan.type} plan`,
-        {}
-      );
+      toaster.positive(`Successfully upgraded to ${upgradedPlan.type} plan`, {
+        autoHideDuration: 10000,
+      });
     },
     [setActivePlan, revalidateSubscriptions]
+  );
+
+  const onPaymentIntentSucceeded = useCallback(
+    (planType: SubscriptionPlan) => {
+      revalidateSubscriptions();
+      setIsUpgrading(false);
+      toaster.positive(
+        `Successfully upgraded to ${planType} plan. It might take a moment for the change to propagete through our systems.`,
+        { autoHideDuration: 10000 }
+      );
+
+      // After 10 seconds webhook should surely be processed
+      // TODO: find more elegant solution to this, e.g. websockets
+      setTimeout(() => {
+        revalidateSubscriptions();
+        revalidateActivePlan();
+      }, 10000);
+    },
+    [revalidateActivePlan, revalidateSubscriptions]
   );
 
   // TODO: this should be a separate SSR route
@@ -67,7 +86,10 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
       />
       {plan?.type !== 'enterprise' && (
         <Modal isOpen={isUpgrading} onClose={() => setIsUpgrading(false)}>
-          <CheckoutForm onPlanUpgraded={onPlanUpgraded} />
+          <CheckoutForm
+            onPlanUpgraded={onPlanUpgraded}
+            onPaymentIntentSucceeded={onPaymentIntentSucceeded}
+          />
         </Modal>
       )}
 

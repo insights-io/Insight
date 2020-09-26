@@ -1,6 +1,7 @@
 import { configureStory } from '@insight/storybook';
 import { AuthApi } from 'api';
 import React from 'react';
+import { USER_SETTINGS_PAGE } from 'shared/constants/routes';
 
 import LoginSamlSsoForm from './LoginSamlSsoForm';
 
@@ -21,7 +22,9 @@ Base.story = configureStory({
 
 export const SsoNotEnabled = () => {
   return (
-    <LoginSamlSsoForm absoluteRedirect="http://localhost:3000/account/settings" />
+    <LoginSamlSsoForm
+      absoluteRedirect={`http://localhost:3000${USER_SETTINGS_PAGE}`}
+    />
   );
 };
 SsoNotEnabled.story = configureStory({

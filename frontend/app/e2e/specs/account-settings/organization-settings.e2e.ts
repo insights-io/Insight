@@ -2,6 +2,7 @@ import { queryByTestId, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
+import { USER_SETTINGS_PAGE } from '../../../src/shared/constants/routes';
 import config from '../../config';
 import {
   AccountSettingsPage,
@@ -114,7 +115,7 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
     .click(LoginPage.signInButton)
     .expect(getLocation())
     .match(
-      /^https:\/\/snuderls\.okta\.com\/login\/login\.htm\?fromURI=%2Fapp%2Fsnuderlsorg446661_insightdev_1%2Fexkw843tlucjMJ0kL4x6%2Fsso%2Fsaml%3FRelayState%3D(.*)http%253A%252F%252Flocalhost%253A3000%252Faccount%252Fsettings$/,
+      /^https:\/\/snuderls\.okta\.com\/login\/login\.htm\?fromURI=%2Fapp%2Fsnuderlsorg446661_insightdev_1%2Fexkw843tlucjMJ0kL4x6%2Fsso%2Fsaml%3FRelayState%3D(.*)http%253A%252F%252Flocalhost%253A3000%252Fsettings%252Fuser$/,
       'Is on okta page'
     );
 });
@@ -170,7 +171,9 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
       new RegExp(
         `^https://accounts.google.com/o/oauth2/auth/identifier\\?client_id=237859759623-rfpiq8eo37afp0qc294ioqrjtq17q25h.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fv1%2Fsso%2Foauth2%2Fgoogle%2Fcallback&response_type=code&scope=openid%20email%20profile&login_hint=${encodeURIComponent(
           otherUser
-        )}&state=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings&flowName=GeneralOAuthFlow$`
+        )}&state=(.*)http%3A%2F%2Flocalhost%3A3000${encodeURIComponent(
+          USER_SETTINGS_PAGE
+        )}&flowName=GeneralOAuthFlow$`
       ),
       'Is on google page'
     )
@@ -232,7 +235,9 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
       new RegExp(
         `^https://login\\.microsoftonline\\.com/common/oauth2/v2\\.0/authorize\\?client_id=783370b6-ee5d-47b5-bc12-2b9ebe4a4f1b&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fv1%2Fsso%2Foauth2%2Fmicrosoft%2Fcallback&response_type=code&scope=openid\\+email\\+profile&response_mode=query&login_hint=${encodeURIComponent(
           otherUser
-        )}&state=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$`
+        )}&state=(.*)http%3A%2F%2Flocalhost%3A3000${encodeURIComponent(
+          USER_SETTINGS_PAGE
+        )}$`
       ),
       'Is on microsoft page'
     )
@@ -281,6 +286,7 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
     .eql(otherUser, 'Should prefill user');
 
   // Is on Github SSO flow after normal login
+
   await t
     .navigateTo(AccountSettingsPage.userSettingsPath)
     .typeText(LoginPage.emailInput, otherUser)
@@ -291,7 +297,7 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
       new RegExp(
         `^https://github\\.com/login\\?client_id=210a475f7ac15d91bd3c&login=${login}&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3D210a475f7ac15d91bd3c%26login%3D${encodeURIComponent(
           login
-        )}%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Fv1%252Fsso%252Foauth2%252Fgithub%252Fcallback%26response_type%3Dcode%26scope%3Dread%253Auser%2Buser%253Aemail%26state(.*)http%253A%252F%252Flocalhost%253A3000%252Faccount%252Fsettings$`
+        )}%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Fv1%252Fsso%252Foauth2%252Fgithub%252Fcallback%26response_type%3Dcode%26scope%3Dread%253Auser%2Buser%253Aemail%26state(.*)http%253A%252F%252Flocalhost%253A3000%252Fsettings%252Fuser$`
       ),
       'Is on github page'
     )
@@ -368,7 +374,7 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
     exipiryInputElement,
     cvcInputElement,
     payButton,
-    planUpgradedToBusinessMessage,
+    planUpgradedToBusinessPropagationMessage,
     formIframe,
     upgradeButton,
     threedSecure,
@@ -395,9 +401,11 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
     .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
     .click(threedSecure.completeButton.with({ timeout: 15000 }))
     .switchToMainWindow()
-    .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
+    .expect(
+      planUpgradedToBusinessPropagationMessage.with({ timeout: 15000 }).visible
+    )
     .ok('Subscription should be created')
-    .expect(queryByText('Insight Business').visible)
+    .expect(queryByText('Insight Business').with({ timeout: 15000 }).visible)
     .ok('Plan should be upgraded')
     .click(queryByText('Insight Business subscription'))
     .click(queryByText('Invoices'))

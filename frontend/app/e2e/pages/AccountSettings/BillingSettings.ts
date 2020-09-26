@@ -33,7 +33,11 @@ class BillingSettings {
 
   public readonly payButton = queryByText('Pay');
   public readonly planUpgradedToBusinessMessage = queryByText(
-    'Successfully upgraded to business plan'
+    'Sucesfully upgraded to business plan'
+  );
+
+  public readonly planUpgradedToBusinessPropagationMessage = queryByText(
+    'Successfully upgraded to business plan. It might take a moment for the change to propagete through our systems.'
   );
 }
 

@@ -56,8 +56,8 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
   @Override
   public CompletionStage<Boolean> process(Event event) {
     switch (event.getType()) {
-      case StripeWebhookEvents.INVOICE_CREATED:
-        return handleInvoiceCreatedEvent(event);
+      case StripeWebhookEvents.INVOICE_FINALIZED:
+        return handleInvoiceFinalizedEvent(event);
       case StripeWebhookEvents.INVOICE_PAID:
         return handleInvoicePaidEvent(event);
       case StripeWebhookEvents.SUBSCRIPTION_UPDATED:
@@ -144,7 +144,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
             });
   }
 
-  private CompletionStage<Boolean> handleInvoiceCreatedEvent(Event event) {
+  private CompletionStage<Boolean> handleInvoiceFinalizedEvent(Event event) {
     Invoice invoice = deserializeEvent(event, Invoice.class);
     return billingCustomerDatasource
         .getByExternalId(invoice.getCustomer())
