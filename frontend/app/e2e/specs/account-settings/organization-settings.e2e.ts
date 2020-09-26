@@ -323,6 +323,7 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     planUpgradedToBusinessMessage,
     formIframe,
     upgradeButton,
+    InvoiceDetails,
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
 
   const { password, email } = SignUpPage.generateRandomCredentials();
@@ -352,9 +353,9 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
     .click(queryByText('Invoices'))
     .expect(queryByText('Amount: 1500 usd').with({ timeout: 15000 }).visible)
     .ok('Displays amount due')
-    .click(queryByTestId('invoice-link')) // Webhook might be slow
-    .click(queryByText('Download as PDF…')) // on stripe page
-    .click(queryByText('Download receipt'));
+    .click(queryByTestId('invoice-link'))
+    .click(InvoiceDetails.downloadButton)
+    .click(InvoiceDetails.downloadReceipt);
 });
 
 test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => {
@@ -371,6 +372,7 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
     formIframe,
     upgradeButton,
     threedSecure,
+    InvoiceDetails,
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
 
   await t
@@ -396,7 +398,14 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
     .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').visible)
-    .ok('Plan should be upgraded');
+    .ok('Plan should be upgraded')
+    .click(queryByText('Insight Business subscription'))
+    .click(queryByText('Invoices'))
+    .expect(queryByText('Amount: 1500 usd').with({ timeout: 15000 }).visible)
+    .ok('Displays amount due')
+    .click(queryByTestId('invoice-link'))
+    .click(InvoiceDetails.downloadButton)
+    .click(InvoiceDetails.downloadReceipt);
 });
 
 test('[BILLING]: Should handle 3D secure flow authentication failures', async (t) => {

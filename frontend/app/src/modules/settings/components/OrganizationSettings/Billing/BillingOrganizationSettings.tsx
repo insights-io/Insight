@@ -50,7 +50,7 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
     [setActivePlan, revalidateSubscriptions]
   );
 
-  // TODO: this should be a seperate SSR route
+  // TODO: this should be a separate SSR route
   if (selectedSubscription) {
     return <SubscriptionDetailsContainer subscription={selectedSubscription} />;
   }
