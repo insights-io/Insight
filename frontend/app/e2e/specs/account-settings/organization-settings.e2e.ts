@@ -313,7 +313,7 @@ test('[BILLING]: Should not be able to upgrade plan on enterprise', async (t) =>
     .notOk('Upgrade button is not visible');
 });
 
-test.only('[BILLING]: Should be able to subscribe with VISA', async (t) => {
+test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
   const {
     tab,
     cardNumberInputElement,
