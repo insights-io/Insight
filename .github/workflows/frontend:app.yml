@@ -55,11 +55,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: backend | setup stripe webhook
         run: |
-          stripe listen --print-secret
-          export STRIPE_WEBHOOK_SECRET=$(stripe listen --print-secret)
-          stripe listen --forward-to localhost:8083/v1/billing/subscriptions/event &
+          export STRIPE_WEBHOOK_SECRET=$(docker run --rm -it stripe/stripe-cli:latest listen --print-secret --api-key=sk_test_51HRYgqI1ysvdCIIx21zf8xpaQ2p1M6DCaoEd4UD1c2Yr2p0sCw7PHVkV13WWFwjYqg8blbLk0llVbmpkeADxmELt00OIkvh5bT)
+          docker run stripe/stripe-cli:latest listen --forward-to localhost:8083/v1/billing/subscriptions/event --api-key=sk_test_51HRYgqI1ysvdCIIx21zf8xpaQ2p1M6DCaoEd4UD1c2Yr2p0sCw7PHVkV13WWFwjYqg8blbLk0llVbmpkeADxmELt00OIkvh5bT &
       - name: backend | docker-compose up
         run: |
+          echo "$STRIPE_WEBHOOK_SECRET"
           mkdir -p $ARTIFACTS_PATH
           docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
