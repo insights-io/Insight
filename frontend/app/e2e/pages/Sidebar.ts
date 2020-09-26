@@ -33,9 +33,7 @@ class Sidebar {
   };
 
   public signOut = (t: TestController) => {
-    return t
-      .click(this.accountTab.trigger)
-      .click(this.accountTab.menu.settings);
+    return t.click(this.accountTab.trigger).click(this.accountTab.menu.signOut);
   };
 }
 
