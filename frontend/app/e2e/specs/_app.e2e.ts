@@ -9,11 +9,11 @@ test('User should be able to navigate around the app', async (t) => {
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .hover(Sidebar.accountSettings.item)
-    .expect(Sidebar.accountSettings.accountSettings.visible)
+    .hover(Sidebar.accountTab.trigger)
+    .expect(Sidebar.accountTab.tooltip.visible)
     .ok('Should display text on hover')
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.signOut)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.signOut)
     .expect(LoginPage.createFreeAccount.visible)
     .ok('Should be on the login page');
 

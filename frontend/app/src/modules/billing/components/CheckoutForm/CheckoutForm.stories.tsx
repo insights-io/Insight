@@ -10,5 +10,8 @@ export default {
 } as Meta;
 
 export const Simple = () => (
-  <CheckoutForm onPlanUpgraded={action('onPlanUpgraded')} />
+  <CheckoutForm
+    onPlanUpgraded={action('onPlanUpgraded')}
+    onPaymentIntentSucceeded={action('onPaymentIntentSucceeded')}
+  />
 );

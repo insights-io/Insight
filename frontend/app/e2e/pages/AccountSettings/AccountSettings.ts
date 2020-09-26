@@ -9,14 +9,18 @@ import { Selector } from 'testcafe';
 import config from '../../config';
 import { getImageData } from '../../utils';
 import VerificationPage from '../Verification';
+import {
+  ORGANIZATION_SETTINGS_PAGE,
+  USER_SETTINGS_PAGE,
+} from '../../../src/shared/constants/routes';
 
 import ChangePassword from './ChangePassword';
 import TeamInvite from './TeamInvite';
 import { OrganizationSettings } from './OrganizationSettings';
 
 class AccountSettings {
-  public readonly userSettingsPath = `${config.appBaseURL}/account/settings`;
-  public readonly organizationSettingsPath = `${config.appBaseURL}/account/organization-settings`;
+  public readonly userSettingsPath = `${config.appBaseURL}${USER_SETTINGS_PAGE}`;
+  public readonly organizationSettingsPath = `${config.appBaseURL}${ORGANIZATION_SETTINGS_PAGE}`;
 
   /* Selectors */
   private readonly container = within('div.account-settings');

@@ -1,12 +1,15 @@
 import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
+import InvoiceDetails from './InvoiceDetails';
+
 class BillingSettings {
   public readonly tab = queryByText('Billing');
   public readonly formIframe = Selector(
     'iframe[src^="https://js.stripe.com/v3/elements-inner-card"]'
   );
 
+  public readonly InvoiceDetails = InvoiceDetails;
   public readonly threedSecure = {
     outerIframe: Selector(
       'iframe[src^="https://js.stripe.com/v3/three-ds-2-challenge"]'
@@ -31,6 +34,10 @@ class BillingSettings {
   public readonly payButton = queryByText('Pay');
   public readonly planUpgradedToBusinessMessage = queryByText(
     'Successfully upgraded to business plan'
+  );
+
+  public readonly planUpgradedToBusinessPropagationMessage = queryByText(
+    'Successfully upgraded to business plan. It might take a moment for the change to propagete through our systems.'
   );
 }
 

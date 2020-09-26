@@ -10,6 +10,12 @@ import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
 import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
 import FlexColumn from 'shared/components/FlexColumn';
+import {
+  INDEX_PAGE,
+  LOGIN_PAGE,
+  SESSIONS_PAGE,
+  USER_SETTINGS_PAGE,
+} from 'shared/constants/routes';
 
 type Props = {
   width: BlockProps['width'];
@@ -23,30 +29,29 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
   ({ width, expanded, onCollapseItemClick, renderLogo, style }, ref) => {
     const [_css, theme] = useStyletron();
 
-    const menuItems = useMemo(() => {
+    const accountMenuItems = useMemo(() => {
       return {
         __ungrouped: [],
         Account: [
           {
-            label: 'Account settings',
-            handler: () => Router.push('/account/settings'),
+            label: 'Settings',
+            handler: () => Router.push(USER_SETTINGS_PAGE),
           },
           {
             label: 'Sign out',
             handler: () =>
-              AuthApi.sso.session.logout().then((_) => Router.push('/login')),
+              AuthApi.sso.session.logout().then((_) => Router.push(LOGIN_PAGE)),
           },
         ],
       };
     }, []);
 
-    type MenuItem = typeof menuItems.Account[number];
+    type AccountMenuItem = typeof accountMenuItems.Account[number];
 
-    const onItemSelect = (close: () => void): OnItemSelect => async ({
-      item,
-      event: _event,
-    }) => {
-      await (item as MenuItem).handler();
+    const onAccountMenuItemSelect = (
+      close: () => void
+    ): OnItemSelect => async ({ item, event: _event }) => {
+      await (item as AccountMenuItem).handler();
       close();
     };
 
@@ -71,14 +76,14 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
         <Block as="ul" $style={{ listStyle: 'none' }} margin={0} padding={0}>
           {renderLogo && (
             <NavbarItem
-              to="/"
+              to={INDEX_PAGE}
               artwork={<FaInfo />}
               text="Insights"
               showText={expanded}
             />
           )}
           <NavbarItem
-            to="/sessions"
+            to={SESSIONS_PAGE}
             artwork={<FaListUl />}
             text="Sessions"
             showText={expanded}
@@ -115,15 +120,16 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
             }}
             content={({ close }) => (
               <StatefulMenu
-                items={menuItems}
-                onItemSelect={onItemSelect(close)}
+                overrides={{ List: { style: { minWidth: '200px' } } }}
+                items={accountMenuItems}
+                onItemSelect={onAccountMenuItemSelect(close)}
               />
             )}
           >
             <Block>
               <NavbarItem
-                artwork={<FaUser id="account-settings" />}
-                text="Account settings"
+                artwork={<FaUser id="account" />}
+                text="Account"
                 showText={expanded}
               />
             </Block>

@@ -151,7 +151,7 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
     webhookProcessor.process(invoiceCreatedEvent).toCompletableFuture().join();
     BillingInvoice invoice =
         billingInvoiceDatasource
-            .listBySubscription(billingSubscription.getId())
+            .listBySubscription(billingSubscription.getId(), user.getOrganizationId())
             .toCompletableFuture()
             .join()
             .get(0);
@@ -172,7 +172,7 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
     webhookProcessor.process(invoicePaidEvent).toCompletableFuture().join();
     invoice =
         billingInvoiceDatasource
-            .listBySubscription(billingSubscription.getId())
+            .listBySubscription(billingSubscription.getId(), user.getOrganizationId())
             .toCompletableFuture()
             .join()
             .get(0);
@@ -246,7 +246,7 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
     webhookProcessor.process(invoiceCreatedEvent).toCompletableFuture().join();
     BillingInvoice invoice =
         billingInvoiceDatasource
-            .listBySubscription(subscriptionId)
+            .listBySubscription(subscriptionId, organizationId)
             .toCompletableFuture()
             .join()
             .get(0);

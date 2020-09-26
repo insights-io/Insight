@@ -18,11 +18,8 @@ test('User should be able to reset its password', async (t) => {
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .hover(Sidebar.accountSettings.item)
-    .expect(Sidebar.accountSettings.accountSettings.visible)
-    .ok('Should display text on hover')
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.signOut)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.signOut)
     .click(LoginPage.forgotPasswordButton)
     .typeText(PasswordForgotPage.emailInput, email)
     .click(PasswordForgotPage.submitButton)
@@ -37,7 +34,7 @@ test('User should be able to reset its password', async (t) => {
     .ok('Password input is visible')
     .typeText(PasswordResetPage.passwordInput, newPassword)
     .click(PasswordResetPage.submitButton)
-    .expect(Sidebar.accountSettings.item.visible)
+    .expect(Sidebar.accountTab.trigger.visible)
     .ok('Should be signed in to app');
 });
 

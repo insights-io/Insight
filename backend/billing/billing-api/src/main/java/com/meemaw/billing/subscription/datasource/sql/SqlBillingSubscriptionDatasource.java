@@ -48,6 +48,12 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   }
 
   @Override
+  public CompletionStage<Optional<BillingSubscription>> getActiveSubscriptionByCustomerInternalId(
+      String customerInternalId) {
+    return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId).and(STATUS.eq("active")));
+  }
+
+  @Override
   public CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
       String customerInternalId) {
     return get(CUSTOMER_INTERNAL_ID.eq(customerInternalId));

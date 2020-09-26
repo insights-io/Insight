@@ -5,23 +5,29 @@ import YourPlan from 'modules/billing/components/YourPlan';
 import { Modal } from 'baseui/modal';
 import { addDays } from 'date-fns';
 import useActivePlan from 'modules/billing/hooks/useActivePlan';
-import type { PlanDTO } from '@insight/types';
+import type { PlanDTO, Subscription, SubscriptionPlan } from '@insight/types';
 import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
 import { SubscriptionList } from 'modules/billing/components/SubscriptionList';
 import { CheckoutForm } from 'modules/billing/components/CheckoutForm';
 import { toaster } from 'baseui/toast';
+import { SubscriptionDetailsContainer } from 'modules/billing/containers/SubscriptionDetails';
 
 type Props = {
   organizationCreatedAt: Date | undefined;
 };
 
 const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
+  const [selectedSubscription, setSelectedSubscription] = useState<
+    Subscription
+  >();
+
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const { subscriptions } = useSubscriptions();
+  const { subscriptions, revalidateSubscriptions } = useSubscriptions();
   const {
     plan,
     isLoading: isLoadingActivePlan,
     setActivePlan,
+    revalidateActivePlan,
   } = useActivePlan();
 
   const onUpgradeClick = useCallback(() => setIsUpgrading(true), []);
@@ -34,15 +40,39 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
 
   const onPlanUpgraded = useCallback(
     (upgradedPlan: PlanDTO) => {
+      revalidateSubscriptions();
       setActivePlan(upgradedPlan);
       setIsUpgrading(false);
-      toaster.positive(
-        `Successfully upgraded to ${upgradedPlan.type} plan`,
-        {}
-      );
+      toaster.positive(`Successfully upgraded to ${upgradedPlan.type} plan`, {
+        autoHideDuration: 10000,
+      });
     },
-    [setActivePlan]
+    [setActivePlan, revalidateSubscriptions]
   );
+
+  const onPaymentIntentSucceeded = useCallback(
+    (planType: SubscriptionPlan) => {
+      revalidateSubscriptions();
+      setIsUpgrading(false);
+      toaster.positive(
+        `Successfully upgraded to ${planType} plan. It might take a moment for the change to propagete through our systems.`,
+        { autoHideDuration: 10000 }
+      );
+
+      // After 10 seconds webhook should surely be processed
+      // TODO: find more elegant solution to this, e.g. websockets
+      setTimeout(() => {
+        revalidateSubscriptions();
+        revalidateActivePlan();
+      }, 10000);
+    },
+    [revalidateActivePlan, revalidateSubscriptions]
+  );
+
+  // TODO: this should be a separate SSR route
+  if (selectedSubscription) {
+    return <SubscriptionDetailsContainer subscription={selectedSubscription} />;
+  }
 
   return (
     <Block>
@@ -56,7 +86,10 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
       />
       {plan?.type !== 'enterprise' && (
         <Modal isOpen={isUpgrading} onClose={() => setIsUpgrading(false)}>
-          <CheckoutForm onPlanUpgraded={onPlanUpgraded} />
+          <CheckoutForm
+            onPlanUpgraded={onPlanUpgraded}
+            onPaymentIntentSucceeded={onPaymentIntentSucceeded}
+          />
         </Modal>
       )}
 
@@ -65,7 +98,10 @@ const BillingOrganizationSettings = ({ organizationCreatedAt }: Props) => {
         overrides={{ Root: { style: { marginTop: '20px' } } }}
       >
         <StyledBody>
-          <SubscriptionList subscriptions={subscriptions} />
+          <SubscriptionList
+            subscriptions={subscriptions}
+            onClick={setSelectedSubscription}
+          />
         </StyledBody>
       </Card>
     </Block>

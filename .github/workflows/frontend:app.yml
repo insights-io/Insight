@@ -19,6 +19,7 @@ env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
   MAILER_MOCK: true
+  STRIPE_TEST_API_KEY: ${{ secrets.STRIPE_TEST_API_KEY }}
 
 jobs:
   unit_tests:
@@ -56,6 +57,7 @@ jobs:
       - name: backend | docker-compose up
         run: |
           mkdir -p $ARTIFACTS_PATH
+          export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="$STRIPE_TEST_API_KEY")
           docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
         with:
@@ -103,6 +105,7 @@ jobs:
           node_modules/wait-on/bin/wait-on http-get://localhost:8082/health/ready --timeout 600000
           node_modules/wait-on/bin/wait-on http-get://localhost:8083/health/ready --timeout 600000
           docker-compose -f backend/local-test-services/docker-compose.yml exec -T db psql -U postgres -c "INSERT INTO auth.password (user_id, hash) VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', '\$2a\$13\$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS')"
+      - run: docker run --network="host" --rm stripe/stripe-cli:latest listen --forward-to localhost:8083/v1/billing/subscriptions/event --skip-verify --api-key="$STRIPE_TEST_API_KEY" 2>&1 | tee $ARTIFACTS_PATH/webhook.log &
       - name: frontend/app | test:e2e
         run: |
           mkdir -p $ARTIFACTS_PATH/screenshots

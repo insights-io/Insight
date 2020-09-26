@@ -22,20 +22,18 @@ class Sidebar {
   public readonly toggleExpandTooltip = queryByText('Expand');
   public readonly toggleCollapseTooltip = queryByText('Collapse');
 
-  public readonly accountSettings = {
-    item: this.container
-      .find('svg')
-      .withAttribute('id', 'account-settings')
-      .parent(),
+  public readonly accountTab = {
+    trigger: this.container.find('svg').withAttribute('id', 'account').parent(),
+    tooltip: queryByText('Account'),
 
-    accountSettings: queryByText('Account settings'),
-    signOut: queryByText('Sign out'),
+    menu: {
+      settings: queryByText('Settings'),
+      signOut: queryByText('Sign out'),
+    },
   };
 
   public signOut = (t: TestController) => {
-    return t
-      .click(this.accountSettings.item)
-      .click(this.accountSettings.signOut);
+    return t.click(this.accountTab.trigger).click(this.accountTab.menu.signOut);
   };
 }
 

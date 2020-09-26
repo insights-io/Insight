@@ -6,12 +6,13 @@ import { User } from '@insight/types';
 
 type Props = {
   user: User;
+  activeTab: string;
 };
 
-const AccountOrganizationSettingsPage = ({ user }: Props) => {
+const AccountOrganizationSettingsPage = ({ user, activeTab }: Props) => {
   return (
     <AccountSettings
-      activeKey="/account/organization-settings"
+      activeTab={activeTab}
       onTabChange={(key) => Router.push(key)}
       user={mapUser(user)}
     />

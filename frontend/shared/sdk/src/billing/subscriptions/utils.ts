@@ -11,7 +11,9 @@ export const mapSubscription = (
   return {
     ...subscription,
     createdAt: new Date(subscription.createdAt),
-    canceledAt: new Date(subscription.canceledAt),
+    canceledAt: subscription.canceledAt
+      ? new Date(subscription.canceledAt)
+      : undefined,
   };
 };
 
