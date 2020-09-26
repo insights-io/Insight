@@ -57,8 +57,8 @@ test('[SSO  SAML]: User with non-business email address should not be able to se
   });
 
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings)
     .click(AccountSettingsPage.OrganizationSettings.tabs.security.button)
     .typeText(configurationEndpointInput, 'htqw')
@@ -87,8 +87,8 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
   });
 
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings);
 
   await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
@@ -130,8 +130,8 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings);
 
   await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
@@ -194,8 +194,8 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings);
 
   await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
@@ -255,8 +255,8 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings);
 
   await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
@@ -336,8 +336,8 @@ test('[BILLING]: Should be able to subscribe with VISA', async (t) => {
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings)
     .click(tab);
 
@@ -382,8 +382,8 @@ test('[BILLING]: Should be able to subscribe with 3D secure flow', async (t) => 
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
 
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings)
     .click(tab);
 
@@ -432,8 +432,8 @@ test('[BILLING]: Should handle 3D secure flow authentication failures', async (t
   } = AccountSettingsPage.OrganizationSettings.tabs.billing;
 
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.tabs.organizationSettings)
     .click(tab);
 

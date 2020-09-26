@@ -20,8 +20,8 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
   } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password: currentPassword });
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings);
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings);
 
   const newPassword = uuid();
   const {
@@ -62,8 +62,8 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
 
   await Sidebar.signOut(t);
   await LoginPage.login(t, { email, password: newPassword })
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings);
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings);
 
   // SUCCESS: Change password back to initial one
   await AccountSettingsPage.ChangePassword.changePassword(t, {
@@ -80,8 +80,8 @@ test('[PHONE-NUMBER]: User should be able to set and verify a phone number', asy
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountSettings.item)
-    .click(Sidebar.accountSettings.accountSettings)
+    .click(Sidebar.accountTab.trigger)
+    .click(Sidebar.accountTab.menu.settings)
     .click(AccountSettingsPage.phoneNumber.configureButton)
     .typeText(AccountSettingsPage.phoneNumber.input, '51222333')
     .click(AccountSettingsPage.phoneNumber.nextStep);
