@@ -1,6 +1,5 @@
 import { queryByText } from '@testing-library/testcafe';
 
-import config from '../../../config';
 import { ORGANIZATION_SETTINGS_AUTH_PAGE } from '../../../../src/shared/constants/routes';
 
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';
@@ -29,9 +28,6 @@ type SetupSsoParams =
     };
 
 export class OrganizationAuthSettingsPage extends AbstractOrganizationSettingsPage {
-  public readonly relativePath = ORGANIZATION_SETTINGS_AUTH_PAGE;
-  public readonly path = `${config.appBaseURL}${this.relativePath}`;
-
   public readonly header = this.container.queryByText('Authentication');
   public readonly ssoConfigurationEndpointInput = this.container.queryByPlaceholderText(
     'https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
@@ -72,4 +68,6 @@ export class OrganizationAuthSettingsPage extends AbstractOrganizationSettingsPa
   };
 }
 
-export default new OrganizationAuthSettingsPage();
+export default new OrganizationAuthSettingsPage(
+  ORGANIZATION_SETTINGS_AUTH_PAGE
+);

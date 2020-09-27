@@ -1,14 +1,9 @@
-import { within } from '@testing-library/testcafe';
-import { Selector } from 'testcafe';
-
+import { AbstractSettingsPage } from '../AbstractSettingsPage';
 import SettingsTopbar from '../SettingsTopbar';
 
 import OrganizationSettingsSidebar from './OrganizationSettingsSidebar';
 
-export abstract class AbstractOrganizationSettingsPage {
+export abstract class AbstractOrganizationSettingsPage extends AbstractSettingsPage {
   public readonly sidebar = OrganizationSettingsSidebar;
   public readonly topbar = SettingsTopbar;
-
-  protected readonly containerSelector = Selector('main');
-  protected readonly container = within(this.containerSelector);
 }

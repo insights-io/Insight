@@ -1,13 +1,11 @@
 import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 
-import config from '../../../config';
 import { ACCOUNT_SETTINGS_DETAILS_PAGE } from '../../../../src/shared/constants/routes';
 import { VerificationPage } from '../..';
 
 import { AbstractAccountSettingsPage } from './AbstractAccountSettingsPage';
 
 export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
-  public readonly path = `${config.appBaseURL}/${ACCOUNT_SETTINGS_DETAILS_PAGE}`;
   public readonly title = this.container.queryByText('Account details');
 
   public readonly fullName = this.container
@@ -55,4 +53,4 @@ export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
   };
 }
 
-export default new AccountSettingsDetailsPage();
+export default new AccountSettingsDetailsPage(ACCOUNT_SETTINGS_DETAILS_PAGE);

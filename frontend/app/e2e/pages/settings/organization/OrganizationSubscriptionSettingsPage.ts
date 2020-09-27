@@ -5,13 +5,11 @@ import {
 } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
-import config from '../../../config';
 import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from '../../../../src/shared/constants/routes';
 
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';
 
 export class OrganizationSubscriptionSettingsPage extends AbstractOrganizationSettingsPage {
-  public readonly path = `${config.appBaseURL}/${ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE}`;
   public readonly header = this.container.queryByText('Usage & Billing');
 
   public readonly checkoutForm = {
@@ -55,4 +53,6 @@ export class OrganizationSubscriptionSettingsPage extends AbstractOrganizationSe
   };
 }
 
-export default new OrganizationSubscriptionSettingsPage();
+export default new OrganizationSubscriptionSettingsPage(
+  ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE
+);

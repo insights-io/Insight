@@ -2,7 +2,6 @@ import { queryByTestId, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
-import { ORGANIZATION_SETTINGS_GENERAL_PAGE } from '../../../src/shared/constants/routes';
 import config from '../../config';
 import {
   LoginPage,
@@ -15,14 +14,14 @@ import {
 } from '../../pages';
 import { getLocation } from '../../utils';
 
-fixture('/settings/organization').page(ORGANIZATION_SETTINGS_GENERAL_PAGE);
+fixture('/settings/organization').page(OrganizationGeneralSettingsPage.path);
 
 test('[TEAM INVITE]: User should be able to invite new members to an organization', async (t) => {
   await LoginPage.loginWithInsightUser(t);
   await t
-    .expect(OrganizationGeneralSettingsPage.id.value)
+    .expect(OrganizationGeneralSettingsPage.id.innerText)
     .eql('000000', 'Should display Insight organization id')
-    .expect(OrganizationGeneralSettingsPage.name.value)
+    .expect(OrganizationGeneralSettingsPage.name.innerText)
     .eql('Insight', 'Should display Insight organization name');
 
   await t
@@ -59,7 +58,7 @@ test('[SSO  SAML]: User with non-business email address should not be able to se
   await t
     .click(Sidebar.accountTab.trigger)
     .click(Sidebar.accountTab.menu.organizationSettings)
-    .click(OrganizationGeneralSettingsPage.sidebar.securityAndPrivacy)
+    .click(OrganizationGeneralSettingsPage.sidebar.auth)
     .typeText(
       OrganizationAuthSettingsPage.ssoConfigurationEndpointInput,
       'htqw'

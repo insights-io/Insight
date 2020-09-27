@@ -3,7 +3,6 @@ import { queryByText, TestcafeBoundFunctions } from '@testing-library/testcafe';
 import { queries } from '@testing-library/react';
 
 import VerificationPage from '../../Verification';
-import config from '../../../config';
 import { ACCOUNT_SETTINGS_SECURITY_PAGE } from '../../../../src/shared/constants/routes';
 
 import { AbstractAccountSettingsPage } from './AbstractAccountSettingsPage';
@@ -108,11 +107,10 @@ class ChangePassword {
 }
 
 export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
-  public readonly path = `${config.appBaseURL}/${ACCOUNT_SETTINGS_SECURITY_PAGE}`;
   public readonly title = this.container.queryByText('Security');
 
   public readonly tfa = new TwoFactorAuthentication(this.container);
   public readonly changePassword = new ChangePassword(this.container);
 }
 
-export default new AccountSettingsDetailsPage();
+export default new AccountSettingsDetailsPage(ACCOUNT_SETTINGS_SECURITY_PAGE);
