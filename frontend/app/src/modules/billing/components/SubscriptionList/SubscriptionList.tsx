@@ -12,6 +12,7 @@ import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constant
 import Link from 'next/link';
 import type { StyleObject } from 'styletron-react';
 import type { Subscription } from '@insight/types';
+import { Block } from 'baseui/block';
 
 type SubscriptionListElementProps = PropsWithChildren<{
   link: string;
@@ -49,7 +50,7 @@ export const SubscriptionList = ({ subscriptions }: Props) => {
   const [css, theme] = useStyletron();
 
   return (
-    <ul className={css({ paddingLeft: 0, paddingRight: 0 })}>
+    <Block as="ul" className="subscriptions" paddingLeft={0} paddingRight={0}>
       {subscriptions.map((subscription) => {
         const status = subscriptionStatusText(subscription.status);
         const label = subscriptionPlanText(subscription.plan);
@@ -83,6 +84,6 @@ export const SubscriptionList = ({ subscriptions }: Props) => {
           </ListItem>
         );
       })}
-    </ul>
+    </Block>
   );
 };

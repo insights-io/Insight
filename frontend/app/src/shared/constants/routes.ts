@@ -1,4 +1,7 @@
-import type { PathPart } from 'modules/settings/types';
+type PathPart = {
+  segment: string;
+  text: string;
+};
 
 export const INDEX_PAGE = '/';
 

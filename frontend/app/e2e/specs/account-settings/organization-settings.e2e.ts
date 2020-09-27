@@ -2,34 +2,31 @@ import { queryByTestId, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
-import { USER_SETTINGS_PAGE } from '../../../src/shared/constants/routes';
+import { ORGANIZATION_SETTINGS_GENERAL_PAGE } from '../../../src/shared/constants/routes';
 import config from '../../config';
 import {
-  AccountSettingsPage,
   LoginPage,
   Sidebar,
   SignUpPage,
+  OrganizationMembersSettingsPage,
+  OrganizationGeneralSettingsPage,
+  OrganizationSubscriptionSettingsPage,
+  OrganizationAuthSettingsPage,
 } from '../../pages';
 import { getLocation } from '../../utils';
 
-fixture('/account-settings/organization-settings').page(
-  AccountSettingsPage.organizationSettingsPath
-);
-
-const {
-  configurationEndpointInput,
-  submitButton,
-  nonBusinessEmailErrorMessage,
-} = AccountSettingsPage.OrganizationSettings.tabs.security.sso;
+fixture('/settings/organization').page(ORGANIZATION_SETTINGS_GENERAL_PAGE);
 
 test('[TEAM INVITE]: User should be able to invite new members to an organization', async (t) => {
   await LoginPage.loginWithInsightUser(t);
   await t
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .expect(queryByText('000000').visible)
-    .ok('Should display Insight organization id')
-    .expect(queryByText('Insight').visible)
-    .ok('Should display Insight organization name')
+    .expect(OrganizationGeneralSettingsPage.id.value)
+    .eql('000000', 'Should display Insight organization id')
+    .expect(OrganizationGeneralSettingsPage.name.value)
+    .eql('Insight', 'Should display Insight organization name');
+
+  await t
+    .click(OrganizationGeneralSettingsPage.sidebar.members)
     .expect(queryByText(config.insightUserEmail).visible)
     .ok('Should display user email in the members table');
 
@@ -39,11 +36,17 @@ test('[TEAM INVITE]: User should be able to invite new members to an organizatio
   }`;
 
   await t
-    .click(AccountSettingsPage.TeamInvite.inviteNewMember)
-    .typeText(AccountSettingsPage.TeamInvite.emailInput, newMemberEmail)
-    .click(AccountSettingsPage.TeamInvite.role.admin)
-    .click(AccountSettingsPage.TeamInvite.invite)
-    .expect(AccountSettingsPage.TeamInvite.invitedMessage.visible)
+    .click(OrganizationMembersSettingsPage.inviteNewTeamMemberButton)
+    .typeText(
+      OrganizationMembersSettingsPage.inviteNewMemberModal.emailInput,
+      newMemberEmail
+    )
+    .click(OrganizationMembersSettingsPage.inviteNewMemberModal.role.admin)
+    .click(OrganizationMembersSettingsPage.inviteNewMemberModal.inviteButton)
+    .expect(
+      OrganizationMembersSettingsPage.inviteNewMemberModal.invitedMessage
+        .visible
+    )
     .ok('Should display notification')
     .expect(queryByText(newMemberEmail).visible)
     .ok('Should display new member email in the team invites list');
@@ -51,29 +54,31 @@ test('[TEAM INVITE]: User should be able to invite new members to an organizatio
 
 test('[SSO  SAML]: User with non-business email address should not be able to setup SAML SSO', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
-  await SignUpPage.signUpAndLogin(t, {
-    email,
-    password,
-  });
+  await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(AccountSettingsPage.OrganizationSettings.tabs.security.button)
-    .typeText(configurationEndpointInput, 'htqw')
-    .click(submitButton)
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.securityAndPrivacy)
+    .typeText(
+      OrganizationAuthSettingsPage.ssoConfigurationEndpointInput,
+      'htqw'
+    )
+    .click(OrganizationAuthSettingsPage.ssoSubmitButton)
     .expect(
       queryByText(
         'Cannot deserialize value of type `java.net.URL` from String "htqw": not a valid textual representation, problem: no protocol: htqw'
       ).visible
     )
     .ok('Validates URL')
-    .selectText(configurationEndpointInput)
+    .selectText(OrganizationAuthSettingsPage.ssoConfigurationEndpointInput)
     .pressKey('delete')
-    .typeText(configurationEndpointInput, 'https:///www.google.com')
-    .click(submitButton)
-    .expect(nonBusinessEmailErrorMessage.visible)
+    .typeText(
+      OrganizationAuthSettingsPage.ssoConfigurationEndpointInput,
+      'https:///www.google.com'
+    )
+    .click(OrganizationAuthSettingsPage.ssoSubmitButton)
+    .expect(OrganizationAuthSettingsPage.nonBusinessEmailErrorMessage.visible)
     .ok('Checks if work domain');
 });
 
@@ -81,17 +86,13 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
   const { email, password } = SignUpPage.generateRandomCredentialsForDomain(
     'snuderls.eu'
   );
-  await SignUpPage.signUpAndLogin(t, {
-    email,
-    password,
-  });
+  await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings);
 
-  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+  await OrganizationAuthSettingsPage.setupSso(t, {
     configurationEndpoint:
       'https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata',
   });
@@ -109,7 +110,7 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
 
   // Is on okta page even after normal login flow
   await t
-    .navigateTo(AccountSettingsPage.userSettingsPath)
+    .navigateTo(OrganizationAuthSettingsPage.path)
     .typeText(LoginPage.emailInput, 'matej.snuderl@snuderls.eu')
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -127,14 +128,13 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
     domain,
   } = SignUpPage.generateRandomBussinessCredentials();
   const otherUser = `${uuid()}@${domain}`;
-
   await SignUpPage.signUpAndLogin(t, { email, password });
+
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings);
 
-  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+  await OrganizationAuthSettingsPage.setupSso(t, {
     from: 'SAML',
     to: 'Google',
   });
@@ -162,7 +162,7 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
 
   // Is on Google SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.userSettingsPath)
+    .navigateTo(OrganizationAuthSettingsPage.path)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -172,7 +172,7 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
         `^https://accounts.google.com/o/oauth2/auth/identifier\\?client_id=237859759623-rfpiq8eo37afp0qc294ioqrjtq17q25h.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fv1%2Fsso%2Foauth2%2Fgoogle%2Fcallback&response_type=code&scope=openid%20email%20profile&login_hint=${encodeURIComponent(
           otherUser
         )}&state=(.*)http%3A%2F%2Flocalhost%3A3000${encodeURIComponent(
-          USER_SETTINGS_PAGE
+          OrganizationAuthSettingsPage.relativePath
         )}&flowName=GeneralOAuthFlow$`
       ),
       'Is on google page'
@@ -195,10 +195,9 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings);
 
-  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+  await OrganizationAuthSettingsPage.setupSso(t, {
     from: 'SAML',
     to: 'Microsoft',
   });
@@ -226,7 +225,7 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
 
   // Is on Microsoft SSO flow after normal login
   await t
-    .navigateTo(AccountSettingsPage.userSettingsPath)
+    .navigateTo(OrganizationAuthSettingsPage.path)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -236,7 +235,7 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
         `^https://login\\.microsoftonline\\.com/common/oauth2/v2\\.0/authorize\\?client_id=783370b6-ee5d-47b5-bc12-2b9ebe4a4f1b&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fv1%2Fsso%2Foauth2%2Fmicrosoft%2Fcallback&response_type=code&scope=openid\\+email\\+profile&response_mode=query&login_hint=${encodeURIComponent(
           otherUser
         )}&state=(.*)http%3A%2F%2Flocalhost%3A3000${encodeURIComponent(
-          USER_SETTINGS_PAGE
+          OrganizationAuthSettingsPage.relativePath
         )}$`
       ),
       'Is on microsoft page'
@@ -256,10 +255,9 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings);
 
-  await AccountSettingsPage.OrganizationSettings.tabs.security.sso.setup(t, {
+  await OrganizationAuthSettingsPage.setupSso(t, {
     from: 'SAML',
     to: 'Github',
   });
@@ -288,7 +286,7 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
   // Is on Github SSO flow after normal login
 
   await t
-    .navigateTo(AccountSettingsPage.userSettingsPath)
+    .navigateTo(OrganizationAuthSettingsPage.path)
     .typeText(LoginPage.emailInput, otherUser)
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
@@ -306,51 +304,44 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
 });
 
 test('[BILLING]: Should not be able to upgrade plan on enterprise', async (t) => {
-  const {
-    tab,
-    upgradeButton,
-  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
-
   await LoginPage.loginWithInsightUser(t)
-    .click(tab)
+    .click(OrganizationGeneralSettingsPage.sidebar.subscription)
     .expect(queryByText('Insight Enterprise').visible)
     .ok('Insight should be on enterprise plan')
-    .expect(upgradeButton.visible)
+    .expect(OrganizationSubscriptionSettingsPage.upgradeButton.visible)
     .notOk('Upgrade button is not visible');
 });
 
 test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then cancel my subscription', async (t) => {
-  const {
-    tab,
-    cardNumberInputElement,
-    exipiryInputElement,
-    cvcInputElement,
-    payButton,
-    planUpgradedToBusinessMessage,
-    formIframe,
-    upgradeButton,
-    InvoiceDetails,
-  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
-
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(tab);
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.subscription);
+
+  const {
+    checkoutForm,
+    planUpgradedToBusinessMessage,
+    upgradeButton,
+    invoiceDetails,
+  } = OrganizationSubscriptionSettingsPage;
 
   await t
     .expect(queryByText('Insight Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
-    .switchToIframe(formIframe.with({ timeout: 15000 }))
-    .typeText(cardNumberInputElement, '4242 4242 4242 4242')
-    .typeText(exipiryInputElement, '1044')
-    .typeText(cvcInputElement, '222')
+    .switchToIframe(
+      checkoutForm.iframe.with({
+        timeout: 15000,
+      })
+    )
+    .typeText(checkoutForm.cardNumberInputElement, '4242 4242 4242 4242')
+    .typeText(checkoutForm.exipiryInputElement, '1044')
+    .typeText(checkoutForm.cvcInputElement, '222')
     .switchToMainWindow()
-    .click(payButton)
+    .click(checkoutForm.payButton)
     .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
     .ok('Subscription should be created')
     .expect(queryByText('Insight Business').visible)
@@ -371,13 +362,12 @@ test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then
   /* External (Stripe) invoice details window */
   await t
     .click(queryByTestId('invoice-link'))
-    .click(InvoiceDetails.downloadButton)
-    .click(InvoiceDetails.downloadReceipt)
+    .click(invoiceDetails.downloadButton)
+    .click(invoiceDetails.downloadReceipt)
     .closeWindow();
 
   await t
-    .click(AccountSettingsPage.OrganizationSettings.tabs.security.button)
-    .click(tab)
+    .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
     .expect(queryByText('Insight Free').visible)
     .ok('Should be back on Free plan');
 });
@@ -386,38 +376,35 @@ test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment metho
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
-  const {
-    tab,
-    cardNumberInputElement,
-    exipiryInputElement,
-    cvcInputElement,
-    payButton,
-    planUpgradedToBusinessPropagationMessage,
-    formIframe,
-    upgradeButton,
-    threedSecure,
-    InvoiceDetails,
-  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
-
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(tab);
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.subscription);
+
+  const {
+    checkoutForm,
+    planUpgradedToBusinessPropagationMessage,
+    upgradeButton,
+    invoiceDetails,
+  } = OrganizationSubscriptionSettingsPage;
 
   await t
     .expect(queryByText('Insight Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
-    .switchToIframe(formIframe.with({ timeout: 15000 }))
-    .typeText(cardNumberInputElement, '4000 0000 0000 3220')
-    .typeText(exipiryInputElement, '1044')
-    .typeText(cvcInputElement, '222')
+    .switchToIframe(checkoutForm.iframe.with({ timeout: 15000 }))
+    .typeText(checkoutForm.cardNumberInputElement, '4000 0000 0000 3220')
+    .typeText(checkoutForm.exipiryInputElement, '1044')
+    .typeText(checkoutForm.cvcInputElement, '222')
     .switchToMainWindow()
-    .click(payButton)
-    .switchToIframe(threedSecure.outerIframe.with({ timeout: 15000 }))
-    .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
-    .click(threedSecure.completeButton.with({ timeout: 15000 }))
+    .click(checkoutForm.payButton)
+    .switchToIframe(
+      checkoutForm.threedSecure.outerIframe.with({ timeout: 15000 })
+    )
+    .switchToIframe(
+      checkoutForm.threedSecure.innerIframe.with({ timeout: 15000 })
+    )
+    .click(checkoutForm.threedSecure.completeButton.with({ timeout: 15000 }))
     .switchToMainWindow()
     .expect(
       planUpgradedToBusinessPropagationMessage.with({ timeout: 15000 }).visible
@@ -441,13 +428,12 @@ test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment metho
   /* External (Stripe) invoice details window */
   await t
     .click(queryByTestId('invoice-link'))
-    .click(InvoiceDetails.downloadButton)
-    .click(InvoiceDetails.downloadReceipt)
+    .click(invoiceDetails.downloadButton)
+    .click(invoiceDetails.downloadReceipt)
     .closeWindow();
 
   await t
-    .click(AccountSettingsPage.OrganizationSettings.tabs.security.button)
-    .click(tab)
+    .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
     .expect(queryByText('Insight Free').visible)
     .ok('Should be back on Free plan');
 });
@@ -456,46 +442,49 @@ test('[BILLING](3DS-FAILURE+RECOVER): As a user I can recover and subscribe afte
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
-  const {
-    tab,
-    cardNumberInputElement,
-    exipiryInputElement,
-    cvcInputElement,
-    payButton,
-    formIframe,
-    upgradeButton,
-    threedSecure,
-    planUpgradedToBusinessPropagationMessage,
-  } = AccountSettingsPage.OrganizationSettings.tabs.billing;
-
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tabs.organizationSettings)
-    .click(tab);
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.subscription);
+
+  const {
+    checkoutForm,
+    planUpgradedToBusinessPropagationMessage,
+    upgradeButton,
+  } = OrganizationSubscriptionSettingsPage;
 
   await t
     .expect(queryByText('Insight Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
-    .switchToIframe(formIframe.with({ timeout: 15000 }))
-    .typeText(cardNumberInputElement, '4000 0000 0000 3220')
-    .typeText(exipiryInputElement, '1044')
-    .typeText(cvcInputElement, '222')
+    .switchToIframe(checkoutForm.iframe.with({ timeout: 15000 }))
+    .typeText(checkoutForm.cardNumberInputElement, '4000 0000 0000 3220')
+    .typeText(checkoutForm.exipiryInputElement, '1044')
+    .typeText(checkoutForm.cvcInputElement, '222')
     .switchToMainWindow()
-    .click(payButton)
-    .switchToIframe(threedSecure.outerIframe.with({ timeout: 15000 }))
-    .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
-    .click(threedSecure.failButton.with({ timeout: 15000 }))
+    .click(checkoutForm.payButton)
+    .switchToIframe(
+      checkoutForm.threedSecure.outerIframe.with({ timeout: 15000 })
+    )
+    .switchToIframe(
+      checkoutForm.threedSecure.innerIframe.with({ timeout: 15000 })
+    )
+    .click(checkoutForm.threedSecure.failButton.with({ timeout: 15000 }))
     .switchToMainWindow()
-    .expect(threedSecure.failMessage.with({ timeout: 15000 }).visible)
+    .expect(
+      checkoutForm.threedSecure.failMessage.with({ timeout: 15000 }).visible
+    )
     .ok('Should display reason for failure');
 
   await t
-    .click(payButton)
-    .switchToIframe(threedSecure.outerIframe.with({ timeout: 15000 }))
-    .switchToIframe(threedSecure.innerIframe.with({ timeout: 15000 }))
-    .click(threedSecure.completeButton.with({ timeout: 15000 }))
+    .click(checkoutForm.payButton)
+    .switchToIframe(
+      checkoutForm.threedSecure.outerIframe.with({ timeout: 15000 })
+    )
+    .switchToIframe(
+      checkoutForm.threedSecure.innerIframe.with({ timeout: 15000 })
+    )
+    .click(checkoutForm.threedSecure.completeButton.with({ timeout: 15000 }))
     .switchToMainWindow()
     .expect(
       planUpgradedToBusinessPropagationMessage.with({ timeout: 15000 }).visible

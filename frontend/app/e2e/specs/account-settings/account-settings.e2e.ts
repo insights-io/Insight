@@ -2,16 +2,15 @@ import { queryByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
 import {
-  AccountSettingsPage,
   LoginPage,
   Sidebar,
   SignUpPage,
   VerificationPage,
+  AccountSettingsDetailsPage,
+  AccountSettingsSecurityPage,
 } from '../../pages';
 
-fixture('/account-settings/user-settings').page(
-  AccountSettingsPage.userSettingsPath
-);
+fixture('/settings/account').page(AccountSettingsDetailsPage.path);
 
 test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) => {
   const {
@@ -21,33 +20,36 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
   await SignUpPage.signUpAndLogin(t, { email, password: currentPassword });
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings);
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.sidebar.security);
 
   const newPassword = uuid();
   const {
     currentPasswordInput,
-    saveNewPasswordButton,
+    changePasswordButton,
     newPasswordSameAsOldErrorMessage,
     passwordMissmatchErrorMessage,
     passwordChangedMessage,
-  } = AccountSettingsPage.ChangePassword;
+  } = AccountSettingsSecurityPage.changePassword;
 
   // ERROR: Try changing password to the same as current one
-  await AccountSettingsPage.ChangePassword.changePassword(t, {
-    currentPassword,
-    newPassword: currentPassword,
-    newPasswordConfirm: currentPassword,
-  })
+  await AccountSettingsSecurityPage.changePassword
+    .changePassword(t, {
+      currentPassword,
+      newPassword: currentPassword,
+      newPasswordConfirm: currentPassword,
+    })
     .expect(newPasswordSameAsOldErrorMessage.visible)
     .ok('Should not allow to change password to the same as previous one');
 
   // ERROR: Try changing password with a wrong current one
-  await AccountSettingsPage.ChangePassword.clearInputs(t);
-  await AccountSettingsPage.ChangePassword.changePassword(t, {
-    currentPassword: uuid(),
-    newPassword,
-    newPasswordConfirm: newPassword,
-  })
+  await AccountSettingsSecurityPage.changePassword.clearInputs(t);
+  await AccountSettingsSecurityPage.changePassword
+    .changePassword(t, {
+      currentPassword: uuid(),
+      newPassword,
+      newPasswordConfirm: newPassword,
+    })
     .expect(passwordMissmatchErrorMessage.visible)
     .ok('Should not allow to change password if current one is wrong');
 
@@ -56,21 +58,23 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
     .selectText(currentPasswordInput)
     .pressKey('delete')
     .typeText(currentPasswordInput, currentPassword)
-    .click(saveNewPasswordButton)
+    .click(changePasswordButton)
     .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
 
   await Sidebar.signOut(t);
   await LoginPage.login(t, { email, password: newPassword })
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings);
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.sidebar.security);
 
   // SUCCESS: Change password back to initial one
-  await AccountSettingsPage.ChangePassword.changePassword(t, {
-    currentPassword: newPassword,
-    newPassword: currentPassword,
-    newPasswordConfirm: currentPassword,
-  })
+  await AccountSettingsSecurityPage.changePassword
+    .changePassword(t, {
+      currentPassword: newPassword,
+      newPassword: currentPassword,
+      newPasswordConfirm: currentPassword,
+    })
     .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
 });
@@ -81,14 +85,14 @@ test('[PHONE-NUMBER]: User should be able to set and verify a phone number', asy
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.phoneNumber.configureButton)
-    .typeText(AccountSettingsPage.phoneNumber.input, '51222333')
-    .click(AccountSettingsPage.phoneNumber.nextStep);
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.phoneNumberConfigureButton)
+    .typeText(AccountSettingsDetailsPage.phoneNumberInput, '51222333')
+    .click(AccountSettingsDetailsPage.phoneNumberNextStep);
 
   await VerificationPage.completeSmsChallenge(t);
   await t
-    .expect(AccountSettingsPage.phoneNumber.verifiedMessage.visible)
+    .expect(AccountSettingsDetailsPage.phoneNumberVerifiedMessage.visible)
     .ok('Success message is visible')
     .expect(queryByText('+151222333').visible)
     .ok('American phone number visible in the data table');

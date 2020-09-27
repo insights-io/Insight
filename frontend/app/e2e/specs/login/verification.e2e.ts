@@ -3,7 +3,8 @@ import { v4 as uuid } from 'uuid';
 import { getLocation, findLinkFromDockerLogs, getTitle } from '../../utils';
 import {
   Sidebar,
-  AccountSettingsPage,
+  AccountSettingsSecurityPage,
+  AccountSettingsDetailsPage,
   SignUpPage,
   LoginPage,
   VerificationPage,
@@ -20,18 +21,30 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
+    .click(Sidebar.accountTab.menu.accountSettings)
     .expect(getLocation())
-    .eql(AccountSettingsPage.userSettingsPath)
-    .click(AccountSettingsPage.tfa.totp.checkbox)
-    .typeText(AccountSettingsPage.tfa.codeInput, '111111')
-    .click(AccountSettingsPage.tfa.submitButton)
-    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
+    .eql(AccountSettingsDetailsPage.path)
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
+    .typeText(
+      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.codeInput,
+      '111111'
+    )
+    .click(AccountSettingsSecurityPage.tfa.authenticatorSetupModal.submitButton)
+    .expect(
+      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.invalidCodeError
+        .visible
+    )
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsPage.tfa.totp.setup(t);
+  const tfaSecret = await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(
+    t
+  );
+
   await t
-    .expect(AccountSettingsPage.tfa.totp.enabledToast.visible)
+    .expect(
+      AccountSettingsSecurityPage.tfa.authenticatorTfaEnabledToast.visible
+    )
     .ok('TFA enabled message')
     .click(Sidebar.accountTab.trigger)
     .click(Sidebar.accountTab.menu.signOut)
@@ -61,10 +74,13 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
   await VerificationPage.completeTotpChallenge(t, tfaSecret);
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tfa.totp.checkbox)
-    .click(AccountSettingsPage.tfa.disableSubmitButton)
-    .expect(AccountSettingsPage.tfa.totp.disabledToast.visible)
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
+    .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
+    .expect(
+      AccountSettingsSecurityPage.tfa.authenticatorTfaDisabledToast.visible
+    )
     .ok('Should display message that TOTP TFA is disabled');
 });
 
@@ -75,18 +91,27 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .expect(getLocation())
-    .eql(AccountSettingsPage.userSettingsPath)
-    .click(AccountSettingsPage.tfa.totp.checkbox)
-    .typeText(AccountSettingsPage.tfa.codeInput, '111111')
-    .click(AccountSettingsPage.tfa.submitButton)
-    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
+    .typeText(
+      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.codeInput,
+      '111111'
+    )
+    .click(AccountSettingsSecurityPage.tfa.authenticatorSetupModal.submitButton)
+    .expect(
+      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.invalidCodeError
+        .visible
+    )
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsPage.tfa.totp.setup(t);
+  const tfaSecret = await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(
+    t
+  );
   await t
-    .expect(AccountSettingsPage.tfa.totp.enabledToast.visible)
+    .expect(
+      AccountSettingsSecurityPage.tfa.authenticatorTfaEnabledToast.visible
+    )
     .ok('TFA enabled message')
     .click(Sidebar.accountTab.trigger)
     .click(Sidebar.accountTab.menu.signOut);
@@ -104,10 +129,13 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
   await VerificationPage.completeTotpChallenge(t, tfaSecret);
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tfa.totp.checkbox)
-    .click(AccountSettingsPage.tfa.disableSubmitButton)
-    .expect(AccountSettingsPage.tfa.totp.disabledToast.visible)
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
+    .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
+    .expect(
+      AccountSettingsSecurityPage.tfa.authenticatorTfaDisabledToast.visible
+    )
     .ok('Should display message that TOTP TFA is disabled');
 });
 
@@ -123,24 +151,36 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .expect(getLocation())
-    .eql(AccountSettingsPage.userSettingsPath)
-    .hover(AccountSettingsPage.tfa.sms.checkbox)
-    .expect(AccountSettingsPage.tfa.sms.disabledText.visible)
-    .ok('Should be disabled');
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .hover(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
+    .expect(
+      AccountSettingsSecurityPage.tfa.textMessageDisabledTooltipText.visible
+    )
+    .ok('Should be disabled')
+    .click(AccountSettingsSecurityPage.sidebar.details);
 
-  await AccountSettingsPage.verifyCurrentPhoneNumber(t);
+  await AccountSettingsDetailsPage.verifyCurrentPhoneNumber(t);
+
   await t
-    .click(AccountSettingsPage.tfa.sms.checkbox)
-    .typeText(AccountSettingsPage.tfa.codeInput, '111111')
-    .click(AccountSettingsPage.tfa.submitButton)
-    .expect(AccountSettingsPage.tfa.invalidCodeError.visible)
+    .click(AccountSettingsSecurityPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
+    .typeText(
+      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.codeInput,
+      '111111'
+    )
+    .click(AccountSettingsSecurityPage.tfa.authenticatorSetupModal.submitButton)
+    .expect(
+      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.invalidCodeError
+        .visible
+    )
     .ok('Should display invalid code error');
 
-  await AccountSettingsPage.tfa.sms.setup(t);
+  await AccountSettingsSecurityPage.tfa.setupTextMessageTFA(t);
   await t
-    .expect(AccountSettingsPage.tfa.sms.enabledToast.visible)
+    .expect(
+      AccountSettingsSecurityPage.tfa.textMessageEnabledToastMessage.visible
+    )
     .ok('TFA enabled message')
     .click(Sidebar.accountTab.trigger)
     .click(Sidebar.accountTab.menu.signOut)
@@ -168,10 +208,13 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
   await VerificationPage.completeSmsChallenge(t);
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings)
-    .click(AccountSettingsPage.tfa.sms.checkbox)
-    .click(AccountSettingsPage.tfa.disableSubmitButton)
-    .expect(AccountSettingsPage.tfa.sms.disabledToast.visible)
+    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
+    .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
+    .expect(
+      AccountSettingsSecurityPage.tfa.textMessageDisabledToastMessage.visible
+    )
     .ok('Should display message that SMS TFA is disabled');
 });
 
@@ -187,14 +230,19 @@ test('[SMS + TOTP]: Should be able to complete full TFA flow', async (t) => {
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.settings);
+    .click(Sidebar.accountTab.menu.accountSettings);
 
-  await AccountSettingsPage.verifyCurrentPhoneNumber(t);
-  await t.click(AccountSettingsPage.tfa.sms.checkbox);
-  await AccountSettingsPage.tfa.sms.setup(t);
+  await AccountSettingsDetailsPage.verifyCurrentPhoneNumber(t);
+  await t
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.tfa.textMessageCheckbox);
 
-  await t.click(AccountSettingsPage.tfa.totp.checkbox);
-  const tfaSecret = await AccountSettingsPage.tfa.totp.setup(t);
+  await AccountSettingsSecurityPage.tfa.setupTextMessageTFA(t);
+
+  await t.click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox);
+  const tfaSecret = await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(
+    t
+  );
   await Sidebar.signOut(t);
 
   await LoginPage.login(t, { email, password })

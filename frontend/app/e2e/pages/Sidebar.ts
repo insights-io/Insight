@@ -27,7 +27,8 @@ class Sidebar {
     tooltip: queryByText('Account'),
 
     menu: {
-      settings: queryByText('Settings'),
+      accountSettings: queryByText('Account settings'),
+      organizationSettings: queryByText('Organization settings'),
       signOut: queryByText('Sign out'),
     },
   };

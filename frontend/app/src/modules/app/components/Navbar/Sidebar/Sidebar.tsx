@@ -11,10 +11,11 @@ import { StyleObject } from 'styletron-react';
 import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
 import FlexColumn from 'shared/components/FlexColumn';
 import {
+  ACCOUNT_SETTINGS_DETAILS_PAGE,
   INDEX_PAGE,
   LOGIN_PAGE,
+  ORGANIZATION_SETTINGS_GENERAL_PAGE,
   SESSIONS_PAGE,
-  SETTINGS_PAGE,
 } from 'shared/constants/routes';
 
 type Props = {
@@ -34,8 +35,12 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
         __ungrouped: [],
         Account: [
           {
-            label: 'Settings',
-            handler: () => Router.push(SETTINGS_PAGE),
+            label: 'Account settings',
+            handler: () => Router.push(ACCOUNT_SETTINGS_DETAILS_PAGE),
+          },
+          {
+            label: 'Organization settings',
+            handler: () => Router.push(ORGANIZATION_SETTINGS_GENERAL_PAGE),
           },
           {
             label: 'Sign out',
