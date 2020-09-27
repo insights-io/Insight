@@ -2,7 +2,11 @@ import React, { useMemo, useCallback } from 'react';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
-import { APIErrorDataResponse, TfaMethod, TfaSetupDTO } from '@insight/types';
+import type {
+  APIErrorDataResponse,
+  TfaMethod,
+  TfaSetupDTO,
+} from '@insight/types';
 import useSWR from 'swr';
 import { AuthApi } from 'api';
 import { isBefore } from 'date-fns';
@@ -12,7 +16,7 @@ import FormError from 'shared/components/FormError';
 
 import TimeBasedTwoFactorAuthentication from './TimaBasedTwoFactorAuthentication';
 import SmsTwoFactorAuthentication from './SmsTwoFactorAuthentication';
-import { Props } from './types';
+import type { Props } from './types';
 
 const EMPTY_LIST: TfaSetupDTO[] = [];
 const CACHE_KEY = `AuthApi.tfa.listSetups`;

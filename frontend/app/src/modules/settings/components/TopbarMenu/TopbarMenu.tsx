@@ -57,7 +57,7 @@ export const TopbarMenu = ({ path, searchOptions }: Props) => {
             );
 
             return (
-              <Link key={pathPart.segment} href={link}>
+              <Link key={link} href={link}>
                 <a
                   href={link}
                   className={css({ textDecoration: 'none', color: 'inherit' })}

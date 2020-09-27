@@ -30,6 +30,7 @@ TfaEnabled.story = configureStory({
       listSetups: sandbox
         .stub(AuthApi.tfa, 'listSetups')
         .resolves([{ createdAt: new Date().toUTCString(), method: 'totp' }]),
+
       setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),

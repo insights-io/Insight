@@ -1,6 +1,6 @@
-import { sandbox } from '@insight/testing';
-import { waitFor } from '@testing-library/react';
 import React from 'react';
+import { sandbox } from '@insight/testing';
+import { BoundFunction, GetByText, waitFor } from '@testing-library/react';
 import { render } from 'test/utils';
 
 import {
@@ -9,35 +9,61 @@ import {
   WithError,
 } from './AccountSettingsSecurityPage.stories';
 
+const getCheckboxByText = (
+  getByText: BoundFunction<GetByText>,
+  text: string
+) => {
+  return getByText(text).parentElement?.querySelector(
+    'input'
+  ) as HTMLInputElement;
+};
+
 describe('<AccountSettingsSecurityPage />', () => {
   it('Should render enabled checkbox', async () => {
     const { listSetups } = TfaEnabled.story.setupMocks(sandbox);
-    const { container } = render(<TfaEnabled />);
-    const checkbox = container.querySelector('input');
+    const { getByText } = render(<TfaEnabled />);
+
+    const authenticatorAppCheckbox = getCheckboxByText(
+      getByText,
+      'Authy / Google Authenticator'
+    );
+    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(listSetups);
     });
 
-    expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'true');
+    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
   });
 
-  it('Should render checkbox', async () => {
+  it('Should render checkbox disabled', async () => {
     const { listSetups } = TfaDisabled.story.setupMocks(sandbox);
-    const { container } = render(<TfaDisabled />);
-    const checkbox = container.querySelector('input');
+    const { getByText } = render(<TfaDisabled />);
+
+    const authenticatorAppCheckbox = getCheckboxByText(
+      getByText,
+      'Authy / Google Authenticator'
+    );
+    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(listSetups);
     });
 
-    expect(checkbox).toHaveAttribute('aria-checked', 'false');
+    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
+    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
   });
 
-  it('Should render errror', async () => {
+  it('Should render error and checkboxes disabled', async () => {
     const { listSetups } = WithError.story.setupMocks(sandbox);
-    const { container, findByText } = render(<WithError />);
-    const checkbox = container.querySelector('input');
+    const { getByText, findByText } = render(<WithError />);
+
+    const authenticatorAppCheckbox = getCheckboxByText(
+      getByText,
+      'Authy / Google Authenticator'
+    );
+    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(listSetups);
@@ -45,7 +71,10 @@ describe('<AccountSettingsSecurityPage />', () => {
 
     await findByText('Internal Server Error');
 
-    expect(checkbox).toHaveAttribute('aria-checked', 'false');
-    expect(checkbox).toHaveAttribute('disabled');
+    expect(authenticatorAppCheckbox).toHaveAttribute('disabled');
+    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
+
+    expect(textMessageCheckbox).toHaveAttribute('disabled');
+    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
   });
 });

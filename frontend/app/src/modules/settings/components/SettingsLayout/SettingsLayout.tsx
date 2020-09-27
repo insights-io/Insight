@@ -52,7 +52,8 @@ export const SettingsLayout = ({
         <Block padding="16px" overflow="auto" width="100%" as="main">
           {header && (
             <H1
-              margin={0}
+              marginBottom={0}
+              marginTop={0}
               $style={{
                 fontSize: '26px',
                 lineHeight: '26px',

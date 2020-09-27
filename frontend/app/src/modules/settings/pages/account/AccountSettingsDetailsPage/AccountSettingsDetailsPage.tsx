@@ -8,7 +8,7 @@ import {
 import { AccountInfoTable } from 'modules/settings/components/account/AccountInfoTable';
 import { useUser } from 'shared/hooks/useUser';
 import type { Path } from 'modules/settings/types';
-import type { User, UserDTO } from '@insight/types';
+import type { UserDTO } from '@insight/types';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,

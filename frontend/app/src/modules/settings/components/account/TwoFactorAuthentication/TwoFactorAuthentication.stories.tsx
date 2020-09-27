@@ -8,7 +8,7 @@ import { Meta } from '@storybook/react';
 import { TwoFactorAuthentication } from './TwoFactorAuthentication';
 
 export default {
-  title: 'settings/components/TwoFactorAuthentication',
+  title: 'settings/components/account/TwoFactorAuthentication',
   component: TwoFactorAuthentication,
 } as Meta;
 

@@ -108,6 +108,7 @@ export const SidebarMenu = memo(
 
                   return (
                     <SidebarMenuListItem
+                      key={sectionItem.link}
                       to={sectionItem.link}
                       isActive={isActive}
                       theme={theme}
