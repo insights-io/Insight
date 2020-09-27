@@ -14,7 +14,7 @@ import {
   INDEX_PAGE,
   LOGIN_PAGE,
   SESSIONS_PAGE,
-  USER_SETTINGS_PAGE,
+  SETTINGS_PAGE,
 } from 'shared/constants/routes';
 
 type Props = {
@@ -35,7 +35,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, Props>(
         Account: [
           {
             label: 'Settings',
-            handler: () => Router.push(USER_SETTINGS_PAGE),
+            handler: () => Router.push(SETTINGS_PAGE),
           },
           {
             label: 'Sign out',

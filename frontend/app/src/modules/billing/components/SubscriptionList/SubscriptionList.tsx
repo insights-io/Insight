@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { useStyletron } from 'baseui';
-import { ListItem, ListItemLabel } from 'baseui/list';
+import { ListItem, ListItemLabel, StyledRoot } from 'baseui/list';
 import { StatefulTooltip } from 'baseui/tooltip';
 import { ChevronRight } from 'baseui/icon';
 import {
@@ -8,14 +8,44 @@ import {
   subscriptionStatusIcon,
   subscriptionStatusText,
 } from 'modules/billing/utils';
+import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constants/routes';
+import Link from 'next/link';
+import type { StyleObject } from 'styletron-react';
 import type { Subscription } from '@insight/types';
+
+type SubscriptionListElementProps = PropsWithChildren<{
+  link: string;
+  css: (arg: StyleObject) => string;
+}>;
+
+const SubscriptionListElement = ({
+  children,
+  link,
+  css,
+}: SubscriptionListElementProps) => {
+  const linkStyles = css({
+    textDecoration: 'none',
+    color: 'inherit',
+    display: 'flex',
+    width: '100%',
+  });
+
+  return (
+    <StyledRoot>
+      <Link href={link}>
+        <a href={link} className={linkStyles}>
+          {children}
+        </a>
+      </Link>
+    </StyledRoot>
+  );
+};
 
 type Props = {
   subscriptions: Subscription[];
-  onClick: (subscriptionId: string) => void;
 };
 
-export const SubscriptionList = ({ subscriptions, onClick }: Props) => {
+export const SubscriptionList = ({ subscriptions }: Props) => {
   const [css, theme] = useStyletron();
 
   return (
@@ -25,13 +55,15 @@ export const SubscriptionList = ({ subscriptions, onClick }: Props) => {
         const label = subscriptionPlanText(subscription.plan);
         const description = `Created: ${subscription.createdAt.toLocaleDateString()}`;
         const artwork = subscriptionStatusIcon[subscription.status](theme);
+        const link = `${ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE}/${subscription.id}`;
 
         return (
           <ListItem
             key={subscription.id}
             overrides={{
               Root: {
-                props: { onClick: () => onClick(subscription.id) },
+                component: SubscriptionListElement as React.ComponentType,
+                props: { link, css },
                 style: {
                   ':hover': {
                     background: theme.colors.primary200,

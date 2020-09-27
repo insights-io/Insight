@@ -1,30 +1,34 @@
 import React from 'react';
 import {
-  INSIGHT_ADMIN,
+  INSIGHT_ADMIN_DTO,
   INSIGHT_SESSIONS,
   INSIGHT_SESSIONS_DTOS,
 } from 'test/data';
 import { fullHeightDecorator, configureStory } from '@insight/storybook';
 import { SessionApi } from 'api';
-import { SessionDTO } from '@insight/types';
+import type { SessionDTO } from '@insight/types';
 import { SessionSearchBean } from '@insight/sdk/dist/sessions';
 import get from 'lodash/get';
+import type { Meta } from '@storybook/react';
 
 import SessionsPage from './SessionsPage';
 
 export default {
   title: 'sessions/pages/SessionsPage',
+  component: SessionsPage,
   decorators: [fullHeightDecorator],
-};
+} as Meta;
 
 export const NoSessions = () => {
-  return <SessionsPage user={INSIGHT_ADMIN} sessions={[]} sessionCount={0} />;
+  return (
+    <SessionsPage user={INSIGHT_ADMIN_DTO} sessions={[]} sessionCount={0} />
+  );
 };
 
 export const WithSessions = () => {
   return (
     <SessionsPage
-      user={INSIGHT_ADMIN}
+      user={INSIGHT_ADMIN_DTO}
       sessions={INSIGHT_SESSIONS}
       sessionCount={INSIGHT_SESSIONS.length}
     />

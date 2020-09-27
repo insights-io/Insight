@@ -5,7 +5,6 @@ import {
   CANCELED_ENTERPRISE_SUBSCRIPTION,
   INCOMPLETE_ENTERPRISE_SUBSCRIPTION,
 } from 'test/data/billing';
-import { action } from '@storybook/addon-actions';
 
 import { SubscriptionList } from './SubscriptionList';
 
@@ -14,9 +13,7 @@ export default {
   component: SubscriptionList,
 } as Meta;
 
-export const Empty = () => (
-  <SubscriptionList subscriptions={[]} onClick={action('onClick')} />
-);
+export const Empty = () => <SubscriptionList subscriptions={[]} />;
 
 export const NonEmpty = () => {
   return (
@@ -26,7 +23,6 @@ export const NonEmpty = () => {
         CANCELED_ENTERPRISE_SUBSCRIPTION,
         INCOMPLETE_ENTERPRISE_SUBSCRIPTION,
       ]}
-      onClick={action('onClick')}
     />
   );
 };

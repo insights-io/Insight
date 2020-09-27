@@ -8,9 +8,7 @@ import type {
 } from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
-import { withCredentials } from '../../core/utils';
-
-import { mapOrganization, mapTeamInvite } from './utils';
+import { getData, withCredentials } from '../../core/utils';
 
 export const organizationsApi = (authApiBaseURL: string) => {
   return {
@@ -18,7 +16,7 @@ export const organizationsApi = (authApiBaseURL: string) => {
       return ky
         .get(`${baseURL}/v1/organizations`, withCredentials(rest))
         .json<DataResponse<OrganizationDTO>>()
-        .then((response) => mapOrganization(response.data));
+        .then(getData);
     },
     members: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
@@ -27,14 +25,14 @@ export const organizationsApi = (authApiBaseURL: string) => {
           ...rest,
         })
         .json<DataResponse<UserDTO[]>>()
-        .then((response) => response.data);
+        .then(getData);
     },
     teamInvite: {
       list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
         return ky
           .get(`${baseURL}/v1/organizations/invites`, withCredentials(rest))
           .json<DataResponse<TeamInviteDTO[]>>()
-          .then((response) => response.data.map(mapTeamInvite));
+          .then(getData);
       },
       delete: (
         token: string,
@@ -58,7 +56,7 @@ export const organizationsApi = (authApiBaseURL: string) => {
             withCredentials({ json, ...rest })
           )
           .json<DataResponse<TeamInviteDTO>>()
-          .then((response) => mapTeamInvite(response.data));
+          .then(getData);
       },
       resend: (
         email: string,

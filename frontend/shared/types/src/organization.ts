@@ -2,7 +2,7 @@ import { UserRole } from './user';
 
 export type OrganizationDTO = {
   id: string;
-  name: string;
+  name: string | undefined;
   createdAt: string;
   updatedAt: string;
 };

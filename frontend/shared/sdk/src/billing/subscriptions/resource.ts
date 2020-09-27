@@ -24,6 +24,19 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
         .then(getData);
     },
 
+    get: (
+      subscriptionId: string,
+      { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .get(
+          `${baseURL}/v1/billing/subscriptions/${subscriptionId}`,
+          withCredentials(rest)
+        )
+        .json<DataResponse<SubscriptionDTO>>()
+        .then(getData);
+    },
+
     list: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
         .get(`${baseURL}/v1/billing/subscriptions`, withCredentials(rest))

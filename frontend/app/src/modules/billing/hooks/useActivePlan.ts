@@ -1,28 +1,31 @@
 import { BillingApi } from 'api';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
 import type { PlanDTO } from '@insight/types';
+import { useCallback } from 'react';
 
 const CACHE_KEY = 'BillingApi.subscriptions.getActivePlan';
 
-const useActivePlan = () => {
-  const {
-    data: plan,
-    isLoading,
-    error,
-    mutate,
-    revalidate,
-  } = useSWRQuery(CACHE_KEY, () => BillingApi.subscriptions.getActivePlan());
+const useActivePlan = (initialData: PlanDTO) => {
+  const { data, error, mutate, revalidate: revalidateActivePlan } = useSWRQuery(
+    CACHE_KEY,
+    () => BillingApi.subscriptions.getActivePlan(),
+    {
+      initialData,
+    }
+  );
 
-  const setActivePlan = (upgradedPlan: PlanDTO) => {
-    mutate(upgradedPlan);
-  };
+  const setActivePlan = useCallback(
+    (upgradedPlan: PlanDTO) => {
+      mutate(upgradedPlan);
+    },
+    [mutate]
+  );
 
   return {
-    plan,
-    isLoading,
+    plan: data as PlanDTO,
     error,
     setActivePlan,
-    revalidateActivePlan: revalidate,
+    revalidateActivePlan,
   };
 };
 

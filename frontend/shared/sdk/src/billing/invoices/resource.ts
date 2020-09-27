@@ -5,13 +5,23 @@ import { RequestOptions, withCredentials, getData } from '../../core';
 
 export const invoicesResource = (billingApiBaseURL: string) => {
   return {
-    list: (
+    listBySubscription: (
       subscriptionId: string,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
         .get(
           `${baseURL}/v1/billing/subscriptions/${subscriptionId}/invoices`,
+          withCredentials(rest)
+        )
+        .json<DataResponse<InvoiceDTO[]>>()
+        .then(getData);
+    },
+
+    list: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
+      return ky
+        .get(
+          `${baseURL}/v1/billing/subscriptions/invoices`,
           withCredentials(rest)
         )
         .json<DataResponse<InvoiceDTO[]>>()

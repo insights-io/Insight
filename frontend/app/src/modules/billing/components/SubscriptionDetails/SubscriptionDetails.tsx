@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Card, StyledBody, StyledAction } from 'baseui/card';
 import {
-  capitalize,
-  invoiceStatusIcon,
   subscriptionPlanText,
   subscriptionStatusIcon,
   subscriptionStatusText,
@@ -12,10 +10,6 @@ import { useStyletron } from 'baseui';
 import Divider from 'shared/components/Divider';
 import { Block } from 'baseui/block';
 import { Accordion, Panel } from 'baseui/accordion';
-import { ListItem, ListItemLabel } from 'baseui/list';
-import { StatefulTooltip } from 'baseui/tooltip';
-import { FaFileDownload, FaLink } from 'react-icons/fa';
-import { ExternalLink } from 'shared/components/ExternalLink';
 import { BillingApi } from 'api';
 import type {
   APIError,
@@ -25,6 +19,8 @@ import type {
   SubscriptionDTO,
 } from '@insight/types';
 import { toaster } from 'baseui/toast';
+
+import { InvoiceList } from '../InvoiceList';
 
 type Props = {
   subscription: Subscription;
@@ -40,7 +36,7 @@ export const SubscriptionDetails = ({
   const [isCanceling, setIsCanceling] = useState(false);
   const [_formError, setFormError] = useState<APIError>();
 
-  const [css, theme] = useStyletron();
+  const [_css, theme] = useStyletron();
   const title = subscriptionPlanText(subscription.plan);
 
   const cancelSubscription = async () => {
@@ -93,68 +89,7 @@ export const SubscriptionDetails = ({
               },
             }}
           >
-            <ul className={css({ padding: 0 })}>
-              {invoices.map((invoice) => {
-                const artwork = invoiceStatusIcon[invoice.status](theme);
-
-                return (
-                  <ListItem
-                    key={invoice.id}
-                    artwork={() => (
-                      <StatefulTooltip
-                        content={capitalize(invoice.status)}
-                        placement="top"
-                        showArrow
-                      >
-                        {artwork}
-                      </StatefulTooltip>
-                    )}
-                    endEnhancer={() => (
-                      <>
-                        <StatefulTooltip
-                          content="Download invoice"
-                          placement="top"
-                          showArrow
-                        >
-                          <ExternalLink
-                            link={`${invoice.link}/pdf`}
-                            data-testid="invoice-pdf"
-                          >
-                            <Button size={SIZE.compact} shape={SHAPE.pill}>
-                              <FaFileDownload />
-                            </Button>
-                          </ExternalLink>
-                        </StatefulTooltip>
-                        <StatefulTooltip
-                          content="Open invoice"
-                          placement="top"
-                          showArrow
-                        >
-                          <ExternalLink
-                            link={invoice.link}
-                            className={css({
-                              marginLeft: theme.sizing.scale400,
-                            })}
-                          >
-                            <Button
-                              size={SIZE.compact}
-                              shape={SHAPE.pill}
-                              data-testid="invoice-link"
-                            >
-                              <FaLink />
-                            </Button>
-                          </ExternalLink>
-                        </StatefulTooltip>
-                      </>
-                    )}
-                  >
-                    <ListItemLabel>
-                      Amount: {invoice.amountDue} {invoice.currency}
-                    </ListItemLabel>
-                  </ListItem>
-                );
-              })}
-            </ul>
+            <InvoiceList invoices={invoices} />
           </Panel>
         </Accordion>
       </Block>

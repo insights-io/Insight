@@ -22,6 +22,11 @@ public interface SubscriptionResource {
 
   String PATH = "/v1/billing/subscriptions";
 
+  @GET
+  @CookieAuth
+  @Path("{subscriptionId}")
+  CompletionStage<Response> get(@PathParam("subscriptionId") String subscriptionId);
+
   @POST
   @CookieAuth
   CompletionStage<Response> createSubscription(
@@ -29,7 +34,7 @@ public interface SubscriptionResource {
 
   @GET
   @CookieAuth
-  CompletionStage<Response> listSubscriptions();
+  CompletionStage<Response> list();
 
   @DELETE
   @CookieAuth

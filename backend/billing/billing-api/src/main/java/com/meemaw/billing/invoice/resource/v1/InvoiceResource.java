@@ -22,4 +22,9 @@ public interface InvoiceResource {
   @Path("{subscriptionId}/invoices")
   @CookieAuth
   CompletionStage<Response> listInvoices(@PathParam("subscriptionId") String subscriptionId);
+
+  @GET
+  @Path("invoices")
+  @CookieAuth
+  CompletionStage<Response> listInvoices();
 }

@@ -17,4 +17,10 @@ public class InvoiceResourceImpl implements InvoiceResource {
     String organizationId = principal.user().getOrganizationId();
     return invoiceService.listInvoices(subscriptionId, organizationId).thenApply(DataResponse::ok);
   }
+
+  @Override
+  public CompletionStage<Response> listInvoices() {
+    String organizationId = principal.user().getOrganizationId();
+    return invoiceService.listInvoices(organizationId).thenApply(DataResponse::ok);
+  }
 }
