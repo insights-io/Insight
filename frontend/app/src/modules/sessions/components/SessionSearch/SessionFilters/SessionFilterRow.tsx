@@ -7,7 +7,7 @@ import { StatefulPopover, PLACEMENT } from 'baseui/popover';
 import { Button, KIND, SIZE, SHAPE } from 'baseui/button';
 import AutocompleteInput from 'shared/components/AutocompleteInput';
 import { Plus, Delete } from 'baseui/icon';
-import VerticalAligned from 'shared/components/VerticalAligned';
+import { SpacedBetween, VerticalAligned } from '@insight/elements';
 
 import useAutocomplete from './useAutocomplete';
 import {
@@ -58,10 +58,8 @@ const SessionFilterRow = ({
   const option = key === undefined ? undefined : FILTER_LOOKUPS[key];
 
   return (
-    <Block
+    <SpacedBetween
       as="li"
-      display="flex"
-      justifyContent="space-between"
       $style={{
         padding: theme.sizing.scale200,
         ...createBorderRadius(theme),
@@ -140,7 +138,7 @@ const SessionFilterRow = ({
           </Button>
         </Block>
       </VerticalAligned>
-    </Block>
+    </SpacedBetween>
   );
 };
 export default React.memo(SessionFilterRow);

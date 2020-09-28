@@ -61,7 +61,7 @@ COPY --from=build /src/frontend/app/public /usr/app/public
 
 COPY --from=build /src/frontend/shared/sdk/package.json /usr/app/node_modules/@insight/sdk/package.json
 COPY --from=build /src/frontend/shared/sdk/dist /usr/app/node_modules/@insight/sdk/dist
-COPY --from=build /src/frontend/shared/ui/package.json /usr/app/node_modules/@insight/ui/package.json
-COPY --from=build /src/frontend/shared/ui/dist /usr/app/node_modules/@insight/ui/dist
+COPY --from=build /src/frontend/shared/ui/package.json /usr/app/node_modules/@insight/elements/package.json
+COPY --from=build /src/frontend/shared/ui/dist /usr/app/node_modules/@insight/elements/dist
 
 CMD ["npm", "start"]

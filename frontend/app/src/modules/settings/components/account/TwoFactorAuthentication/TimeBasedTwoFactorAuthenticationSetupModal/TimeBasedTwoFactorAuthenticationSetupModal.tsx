@@ -3,7 +3,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'baseui/modal';
 import AuthApi from 'api/auth';
 import { Block } from 'baseui/block';
 import { Button } from 'baseui/button';
-import CodeInput from 'shared/components/CodeInput';
+import { CodeInput } from '@insight/elements';
 import useCodeInput from 'shared/hooks/useCodeInput';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import FormError from 'shared/components/FormError';

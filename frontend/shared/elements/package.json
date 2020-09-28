@@ -1,11 +1,10 @@
 {
-  "name": "@insight/ui",
+  "name": "@insight/elements",
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "umd:main": "dist/ui.umd.production.min.js",
-  "module": "dist/ui.esm.js",
+  "module": "dist/elements.esm.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
   "author": "Insight Engineering",
@@ -19,19 +18,19 @@
     "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
-    "build": "tsdx build --tsconfig tsconfig.build.json --format cjs,esm,umd,es",
+    "build": "tsdx build --tsconfig tsconfig.build.json",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
+    "prettier:fix": "prettier -l 'src/**/*' --write",
+    "storybook": "start-storybook",
     "storybook:build": "build-storybook"
   },
-  "devDependencies": {
-    "@types/react": "16.9.49",
-    "@types/react-dom": "16.9.8",
-    "@types/styletron-engine-atomic": "1.1.0",
-    "@types/styletron-react": "5.0.2"
-  },
+  "devDependencies": {},
+  "dependencies": {},
   "peerDependencies": {
+    "@insight/storybook": "0.0.0-development",
+    "@testing-library/react": "11.0.4",
     "baseui": "9.101.0",
     "react-hook-form": "6.8.6"
   }

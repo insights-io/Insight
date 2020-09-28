@@ -3,8 +3,7 @@ import { Block } from 'baseui/block';
 import { Button } from 'baseui/button';
 import { toaster } from 'baseui/toast';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import CodeInput from 'shared/components/CodeInput';
-import Flex from 'shared/components/Flex';
+import { Flex, CodeInput } from '@insight/elements';
 
 import { TfaInputMethodProps } from '../types';
 

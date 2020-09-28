@@ -4,10 +4,8 @@ import { Breadcrumbs } from 'baseui/breadcrumbs';
 import Link from 'next/link';
 import { useStyletron } from 'baseui';
 import { Select, SIZE, TYPE, Option } from 'baseui/select';
-import Flex from 'shared/components/Flex';
-import FlexColumn from 'shared/components/FlexColumn';
+import { FlexColumn, VerticalAligned, SpacedBetween } from '@insight/elements';
 import { FaLink } from 'react-icons/fa';
-import VerticalAligned from 'shared/components/VerticalAligned';
 import { joinSegments } from 'modules/settings/utils';
 import type { Path, SearchOption } from 'modules/settings/types';
 
@@ -24,7 +22,7 @@ const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
         href={option.link}
         style={{ textDecoration: 'none', color: 'inherit' }}
       >
-        <Flex justifyContent="space-between" padding="8px 16px">
+        <SpacedBetween padding="8px 16px">
           <FlexColumn>
             <Block $style={{ fontSize: '1.05rem' }}>{option.label}</Block>
             <Block marginTop="4px">{option.description}</Block>
@@ -32,7 +30,7 @@ const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
           <VerticalAligned marginLeft="24px">
             <FaLink />
           </VerticalAligned>
-        </Flex>
+        </SpacedBetween>
       </a>
     </Link>
   );
@@ -42,13 +40,7 @@ export const TopbarMenu = ({ path, searchOptions }: Props) => {
   const [css, _theme] = useStyletron();
 
   return (
-    <Block
-      as="nav"
-      padding="20px 30px"
-      display="flex"
-      justifyContent="space-between"
-      className="topbar menu"
-    >
+    <SpacedBetween as="nav" padding="20px 30px" className="topbar menu">
       <VerticalAligned>
         <Breadcrumbs>
           {path.map((pathPart, index) => {
@@ -100,6 +92,6 @@ export const TopbarMenu = ({ path, searchOptions }: Props) => {
           />
         </Block>
       )}
-    </Block>
+    </SpacedBetween>
   );
 };

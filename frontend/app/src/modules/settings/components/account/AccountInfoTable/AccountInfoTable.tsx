@@ -6,7 +6,7 @@ import { useStyletron } from 'baseui';
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import { FaCogs } from 'react-icons/fa';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import VerticalAligned from 'shared/components/VerticalAligned';
+import { VerticalAligned } from '@insight/elements';
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';
 import ConfigurePhoneNumberModal from 'modules/settings/components/account/ConfigurePhoneNumberModal';
 

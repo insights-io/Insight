@@ -1,5 +1,5 @@
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';
-import { PhoneNumberInput } from '@insight/ui';
+import { PhoneNumberInput } from '@insight/elements';
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';

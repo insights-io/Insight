@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { FormControl } from 'baseui/form-control';
 import { PinCode } from 'baseui/pin-code';
 
-type Props = {
+export type Props = {
   code: string[];
   handleChange: (code: string[]) => void;
   error: React.ReactNode | undefined;
@@ -10,7 +10,7 @@ type Props = {
   disabled?: boolean;
 };
 
-const CodeInput = React.forwardRef<HTMLInputElement, Props>(
+export const CodeInput = forwardRef<HTMLInputElement, Props>(
   ({ code, handleChange, label, error, disabled = false }, ref) => {
     return (
       <FormControl
@@ -30,5 +30,3 @@ const CodeInput = React.forwardRef<HTMLInputElement, Props>(
     );
   }
 );
-
-export default CodeInput;

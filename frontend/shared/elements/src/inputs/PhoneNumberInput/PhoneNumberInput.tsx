@@ -9,31 +9,35 @@ import {
   Country,
 } from 'baseui/phone-input';
 
-type Props<TFieldValues> = {
+export type Values = {
+  phoneNumber: string | null;
+};
+
+export type Props<V> = {
   country: Country;
   setCountry: (country: Country) => void;
   error: FieldError | undefined;
-  control: Control<TFieldValues>;
+  control: Control<V>;
 };
 
-function PhoneNumberInput<TFieldValues extends FieldValues = FieldValues>({
+export function PhoneNumberInput<TFieldValues extends Values = Values>({
   country,
   setCountry,
   error,
   control,
 }: Props<TFieldValues>) {
-  const [css, theme] = useStyletron();
+  const [_css, theme] = useStyletron();
   return (
     <Block>
       <FormControl
         error={error?.message}
         label={() => (
-          <div>
+          <Block>
             Phone{' '}
-            <span className={css({ color: theme.colors.primary400 })}>
+            <Block as="span" color={theme.colors.primary400}>
               (optional)
-            </span>
-          </div>
+            </Block>
+          </Block>
         )}
       >
         <Controller
@@ -69,5 +73,3 @@ function PhoneNumberInput<TFieldValues extends FieldValues = FieldValues>({
     </Block>
   );
 }
-
-export default PhoneNumberInput;

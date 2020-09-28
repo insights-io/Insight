@@ -3,7 +3,7 @@ import { Card, StyledAction, StyledBody } from 'baseui/card';
 import { H4, ParagraphSmall } from 'baseui/typography';
 import { Block } from 'baseui/block';
 import Divider from 'shared/components/Divider';
-import Flex from 'shared/components/Flex';
+import { SpacedBetween } from '@insight/elements';
 import { ProgressBar, ProgressBarProps } from 'baseui/progress-bar';
 import { useStyletron } from 'baseui';
 import { format } from 'date-fns';
@@ -58,7 +58,7 @@ const YourPlan = ({
     <Card title="Your plan">
       <Divider />
       <StyledBody>
-        <Flex justifyContent="space-between">
+        <SpacedBetween>
           <H4 marginTop={0} marginBottom={theme.sizing.scale500}>
             Insight {plan ? plan[0].toUpperCase() + plan.substring(1) : ''}
           </H4>
@@ -99,7 +99,7 @@ const YourPlan = ({
               )}
             />
           </Block>
-        </Flex>
+        </SpacedBetween>
         <Block>
           <ParagraphSmall>
             Sessions: <b>{totalSessionsText}/mo</b>

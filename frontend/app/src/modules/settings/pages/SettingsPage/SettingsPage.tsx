@@ -12,9 +12,8 @@ import {
 import { SettingsLayout } from 'modules/settings/components/SettingsLayout';
 import { SETTINGS_SEARCH_OPTIONS } from 'modules/settings/constants';
 import { Card } from 'baseui/card';
-import Flex from 'shared/components/Flex';
+import { Flex, FlexColumn } from '@insight/elements';
 import { Block } from 'baseui/block';
-import FlexColumn from 'shared/components/FlexColumn';
 import type { Path } from 'modules/settings/types';
 import { Avatar } from 'baseui/avatar';
 import Divider from 'shared/components/Divider';
