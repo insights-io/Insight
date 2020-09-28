@@ -17,6 +17,9 @@ resource "stripe_webhook_endpoint" "event" {
   url = "${var.billing_api_base_url}/v1/billing/subscriptions/event"
 
   enabled_events = [
-    "invoice.paid"
+    "invoice.paid",
+    "invoice.finalized",
+    "customer.subscription.updated",
+    "payment_intent.payment_failed",
   ]
 }
