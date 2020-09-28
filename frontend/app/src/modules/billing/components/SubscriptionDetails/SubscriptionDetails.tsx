@@ -25,13 +25,13 @@ import { InvoiceList } from '../InvoiceList';
 type Props = {
   subscription: Subscription;
   invoices: Invoice[];
-  onSubscriptionUpdated: (subscription: SubscriptionDTO) => void;
+  onSubscriptionCanceled: (subscription: SubscriptionDTO) => void;
 };
 
 export const SubscriptionDetails = ({
   subscription,
   invoices,
-  onSubscriptionUpdated,
+  onSubscriptionCanceled,
 }: Props) => {
   const [isCanceling, setIsCanceling] = useState(false);
   const [_formError, setFormError] = useState<APIError>();
@@ -49,7 +49,7 @@ export const SubscriptionDetails = ({
     BillingApi.subscriptions
       .cancel(subscription.id)
       .then((canceledSubscription) => {
-        onSubscriptionUpdated(canceledSubscription);
+        onSubscriptionCanceled(canceledSubscription);
         toaster.positive('Successfully canceled subscription', {});
       })
       .catch(async (error) => {

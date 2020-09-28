@@ -42,7 +42,7 @@ export const OrganizationSettingsBillingSubscriptionDetailsPage = ({
       <SubscriptionDetails
         invoices={invoices}
         subscription={subscription}
-        onSubscriptionUpdated={setSubscription}
+        onSubscriptionCanceled={setSubscription}
       />
     </OrganizationSettingsPageLayout>
   );

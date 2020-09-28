@@ -374,13 +374,16 @@ test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then
     .click(invoiceDetails.downloadReceipt)
     .closeWindow();
 
+  await t.click(OrganizationSubscriptionSettingsPage.sidebar.subscription);
+  // eslint-disable-next-line no-restricted-globals
+  await t.eval(() => location.reload());
+
   await t
-    .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
     .expect(queryByText('Insight Free').visible)
     .ok('Should be back on Free plan');
 });
 
-test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment method and then cancel my subscription', async (t) => {
+test.only('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment method and then cancel my subscription', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
@@ -440,8 +443,11 @@ test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment metho
     .click(invoiceDetails.downloadReceipt)
     .closeWindow();
 
+  await t.click(OrganizationSubscriptionSettingsPage.sidebar.subscription);
+  // eslint-disable-next-line no-restricted-globals
+  await t.eval(() => location.reload());
+
   await t
-    .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
     .expect(queryByText('Insight Free').visible)
     .ok('Should be back on Free plan');
 });

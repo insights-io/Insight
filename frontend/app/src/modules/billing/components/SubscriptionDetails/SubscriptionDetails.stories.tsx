@@ -14,6 +14,6 @@ export const Active = () => (
   <SubscriptionDetails
     subscription={ACTIVE_BUSINESS_SUBSCRIPTION}
     invoices={[PAID_INVOICE]}
-    onSubscriptionUpdated={action('onSubscriptionUpdated')}
+    onSubscriptionCanceled={action('onSubscriptionUpdated')}
   />
 );
