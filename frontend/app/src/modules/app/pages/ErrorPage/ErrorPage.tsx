@@ -2,7 +2,7 @@ import React from 'react';
 import { Block } from 'baseui/block';
 import { H1, Paragraph3 } from 'baseui/typography';
 import { DeleteAlt } from 'baseui/icon';
-import VerticalAligned from 'shared/components/VerticalAligned';
+import { VerticalAligned } from '@insight/elements';
 
 type Props = {
   statusCode: number;

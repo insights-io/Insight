@@ -11,7 +11,7 @@ import useSWR from 'swr';
 import { AuthApi } from 'api';
 import { isBefore } from 'date-fns';
 import { Check } from 'baseui/icon';
-import VerticalAligned from 'shared/components/VerticalAligned';
+import { SpacedBetween, VerticalAligned } from '@insight/elements';
 import FormError from 'shared/components/FormError';
 
 import TimeBasedTwoFactorAuthentication from './TimaBasedTwoFactorAuthentication';
@@ -72,7 +72,7 @@ export const TwoFactorAuthentication = ({ user }: Props) => {
   let cardTitle: React.ReactNode = 'Two-factor Authentication (2FA) Methods';
   if (enabledSince) {
     cardTitle = (
-      <Block display="flex" justifyContent="space-between">
+      <SpacedBetween>
         {cardTitle}{' '}
         <Block display="flex">
           <VerticalAligned>
@@ -84,7 +84,7 @@ export const TwoFactorAuthentication = ({ user }: Props) => {
             (enabled since {enabledSince.toLocaleDateString()})
           </span>
         </Block>
-      </Block>
+      </SpacedBetween>
     );
   }
 

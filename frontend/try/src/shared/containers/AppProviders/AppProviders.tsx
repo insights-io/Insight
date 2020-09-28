@@ -1,9 +1,7 @@
 import React from 'react';
 import { Client, Server } from 'styletron-engine-atomic';
-import { Provider as StyletronProvider } from 'styletron-react';
-import { styletron, debug } from 'shared/styles/styletron';
-
-import ThemeProvider from '../ThemeProvider';
+import { styletron } from 'shared/styles/styletron';
+import { UIProvider } from '@insight/elements';
 
 export type Props = {
   children: JSX.Element;
@@ -11,11 +9,7 @@ export type Props = {
 };
 
 const AppProviders = ({ children, engine = styletron }: Props) => {
-  return (
-    <StyletronProvider value={engine} debug={debug} debugAfterHydration>
-      <ThemeProvider>{children}</ThemeProvider>
-    </StyletronProvider>
-  );
+  return <UIProvider engine={engine}>{children}</UIProvider>;
 };
 
 export default AppProviders;

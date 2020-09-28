@@ -4,7 +4,6 @@
   "private": true,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "umd:main": "dist/sdk.umd.production.min.js",
   "module": "dist/sdk.esm.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
@@ -19,7 +18,7 @@
     "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
-    "build": "tsdx build --tsconfig tsconfig.build.json --format cjs,esm,umd,es",
+    "build": "tsdx build --tsconfig tsconfig.build.json",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"

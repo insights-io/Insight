@@ -11,10 +11,7 @@ import Document, {
   DocumentContext,
 } from 'next/document';
 import { Provider as StyletronProvider } from 'styletron-react';
-import {
-  styletron,
-  STYLETRON_HYDRATE_CLASSNAME,
-} from 'shared/styles/styletron';
+import { styletron } from 'shared/styles/styletron';
 import { Server, Sheet } from 'styletron-engine-atomic';
 import type { RenderPageResult } from 'next/dist/next-server/lib/utils';
 import {
@@ -24,6 +21,7 @@ import {
   Span,
 } from 'modules/tracing';
 import { getBoostrapScript } from '@insight/sdk';
+import { STYLETRON_HYDRATE_CLASSNAME } from '@insight/elements';
 
 type Props = RenderPageResult & {
   stylesheets: Sheet[];
@@ -33,7 +31,7 @@ type Props = RenderPageResult & {
 export const getInitialProps = async (
   req: IncomingMessage | undefined,
   renderPage: DocumentContext['renderPage'],
-  stylestron: Server
+  serverStyletron: Server
 ): Promise<Props> => {
   const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
   const tags = { bootstrapScriptURI };
@@ -60,7 +58,7 @@ export const getInitialProps = async (
     ),
   });
 
-  const stylesheets = stylestron.getStylesheets() || [];
+  const stylesheets = serverStyletron.getStylesheets() || [];
 
   try {
     const [page, bootstrapScript] = await Promise.all([

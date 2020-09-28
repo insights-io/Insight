@@ -3,6 +3,7 @@ import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H6 } from 'baseui/typography';
 import { Button, SHAPE } from 'baseui/button';
+import { SpacedBetween } from '@insight/elements';
 
 type Props = {
   appBaseURL: string;
@@ -13,13 +14,12 @@ const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
   const [css, theme] = useStyletron();
 
   return (
-    <nav
-      className={css({
-        padding: theme.sizing.scale600,
-        borderBottom: `1px solid ${theme.colors.primary200}`,
-      })}
+    <Block
+      as="nav"
+      padding={theme.sizing.scale600}
+      $style={{ borderBottom: `1px solid ${theme.colors.primary200}` }}
     >
-      <Block display="flex" justifyContent="space-between">
+      <SpacedBetween>
         <H6 margin={0}>Insight</H6>
         <Block>
           <a
@@ -40,8 +40,8 @@ const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
             </Button>
           </a>
         </Block>
-      </Block>
-    </nav>
+      </SpacedBetween>
+    </Block>
   );
 };
 

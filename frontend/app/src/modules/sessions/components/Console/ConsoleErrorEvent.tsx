@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserErrorEventDTO } from '@insight/types';
 import { Block } from 'baseui/block';
-import VerticalAligned from 'shared/components/VerticalAligned';
+import { SpacedBetween, VerticalAligned } from '@insight/elements';
 import { ArrowDown, ArrowUp } from 'baseui/icon';
 import { useStyletron } from 'baseui';
 import { Accordion, Panel } from 'baseui/accordion';
@@ -53,7 +53,7 @@ const ConsoleErrorEvent = ({ event }: Props) => {
           },
         }}
         title={
-          <Block display="flex" justifyContent="space-between" width="100%">
+          <SpacedBetween width="100%">
             <Block display="flex">
               <VerticalAligned>
                 <ToggleComponent size={16} color={theme.colors.mono500} />
@@ -67,7 +67,7 @@ const ConsoleErrorEvent = ({ event }: Props) => {
                 {loc}
               </span>
             )}
-          </Block>
+          </SpacedBetween>
         }
       >
         <span className={css({ color: theme.colors.white })}>

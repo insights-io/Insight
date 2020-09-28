@@ -1,11 +1,10 @@
 /* eslint-disable lodash/prefer-lodash-typecheck */
 import React, { useState, useMemo } from 'react';
 import { useStyletron } from 'baseui';
-import Flex from 'shared/components/Flex';
 import { Block } from 'baseui/block';
 import { Input } from 'baseui/input';
 import { StyleObject } from 'styletron-react';
-import VerticalAligned from 'shared/components/VerticalAligned';
+import { Flex, VerticalAligned } from '@insight/elements';
 import Divider from 'shared/components/Divider';
 import { StyledSpinnerNext } from 'baseui/spinner';
 

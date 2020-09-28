@@ -3,7 +3,7 @@ import { H3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
 import { Session } from '@insight/types';
 import DevTools from 'modules/sessions/containers/DevTools';
-import FlexColumn from 'shared/components/FlexColumn';
+import { FlexColumn } from '@insight/elements';
 
 type Props = {
   session: Session;

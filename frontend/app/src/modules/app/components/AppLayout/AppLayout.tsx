@@ -10,7 +10,7 @@ import {
 } from 'shared/theme';
 import useSidebar from 'modules/app/hooks/useSidebar';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
-import FlexColumn from 'shared/components/FlexColumn';
+import { FlexColumn } from '@insight/elements';
 
 import Sidebar from '../Navbar/Sidebar';
 import Topbar from '../Navbar/Topbar';

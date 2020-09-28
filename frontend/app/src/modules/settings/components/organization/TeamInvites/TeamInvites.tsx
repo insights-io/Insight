@@ -5,7 +5,7 @@ import TeamInviteModal from 'modules/settings/components/organization/TeamInvite
 import { H3 } from 'baseui/typography';
 import { Table } from 'baseui/table';
 import { StatefulTooltip } from 'baseui/tooltip';
-import VerticalAligned from 'shared/components/VerticalAligned';
+import { SpacedBetween, VerticalAligned } from '@insight/elements';
 import { Alert } from 'baseui/icon';
 import { differenceInSeconds } from 'date-fns';
 import type {
@@ -54,12 +54,12 @@ export const TeamInvites = ({ invites, createTeamInvite }: Props) => {
       overrides={{ Block: { props: { className: 'invites' } } }}
       marginTop={theme.sizing.scale800}
     >
-      <Block display="flex" justifyContent="space-between" marginBottom="12px">
+      <SpacedBetween marginBottom="12px">
         <H3 margin="0" $style={{ fontSize: '18px', lineHeight: '18px' }}>
           Team invites
         </H3>
         <TeamInviteModal createTeamInvite={createTeamInvite} />
-      </Block>
+      </SpacedBetween>
       <Block width="100%" height="fit-content">
         <Table
           columns={['Email', 'Role', 'Invited on', 'Valid']}

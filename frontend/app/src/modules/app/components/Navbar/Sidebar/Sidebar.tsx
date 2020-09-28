@@ -9,7 +9,7 @@ import { FaUser, FaListUl, FaInfo } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
 import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
-import FlexColumn from 'shared/components/FlexColumn';
+import { FlexColumn } from '@insight/elements';
 import {
   ACCOUNT_SETTINGS_DETAILS_PAGE,
   INDEX_PAGE,

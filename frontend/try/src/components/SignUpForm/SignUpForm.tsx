@@ -13,7 +13,7 @@ import {
 } from '@insight/types';
 import FormError from 'shared/components/FormError';
 import Router from 'next/router';
-import { PhoneNumberInput } from '@insight/ui';
+import { PhoneNumberInput } from '@insight/elements';
 
 type SignUpFormData = Omit<SignUpRequestDTO, 'phoneNumber'> & {
   phoneNumber: string | undefined;

@@ -1,0 +1,40 @@
+{
+  "name": "@insight/elements",
+  "version": "0.0.0-development",
+  "private": true,
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/elements.esm.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "author": "Insight Engineering",
+  "license": "MIT",
+  "homepage": "https://github.com/insights-io/insight#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insights-io/insight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/insights-io/insight/issues"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
+    "prettier": "prettier -l 'src/**/*'",
+    "prettier:fix": "prettier -l 'src/**/*' --write",
+    "storybook": "start-storybook",
+    "storybook:build": "build-storybook",
+    "pretest": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/testing build\" \"yarn workspace @insight/storybook build\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@insight/testing": "0.0.0-development",
+    "@insight/storybook": "0.0.0-development"
+  },
+  "peerDependencies": {
+    "baseui": "9.101.0",
+    "react-hook-form": "6.8.6"
+  }
+}

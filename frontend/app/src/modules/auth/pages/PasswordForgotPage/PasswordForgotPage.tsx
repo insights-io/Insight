@@ -14,6 +14,7 @@ import Head from 'next/head';
 import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
+import { SpacedBetween } from '@insight/elements';
 
 type FormData = {
   email: string;
@@ -75,12 +76,12 @@ const PasswordForgotPage = () => {
             <Block>
               <FormControl
                 label={
-                  <Block display="flex" justifyContent="space-between">
+                  <SpacedBetween>
                     <span>Email</span>
                     <Link href="/login">
                       <a>Remember password?</a>
                     </Link>
-                  </Block>
+                  </SpacedBetween>
                 }
                 error={errors.email?.message}
               >

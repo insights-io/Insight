@@ -5,6 +5,7 @@ import { Input } from 'baseui/input';
 import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api';
 import { APIError, APIErrorDataResponse } from '@insight/types';
+import { SpacedBetween } from '@insight/elements';
 import { createInputOverrides } from 'shared/styles/input';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import Link from 'next/link';
@@ -84,12 +85,12 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
       <Block marginBottom={theme.sizing.scale1200}>
         <FormControl
           label={
-            <Block display="flex" justifyContent="space-between">
+            <SpacedBetween>
               <span>Password</span>
               <Link href="/password-forgot">
                 <a>Forgot?</a>
               </Link>
-            </Block>
+            </SpacedBetween>
           }
           error={errors.password?.message}
         >

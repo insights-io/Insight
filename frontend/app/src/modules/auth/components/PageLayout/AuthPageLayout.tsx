@@ -2,8 +2,7 @@ import React from 'react';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H1, H2 } from 'baseui/typography';
-import VerticalAligned from 'shared/components/VerticalAligned';
-import FlexColumn from 'shared/components/FlexColumn';
+import { FlexColumn, VerticalAligned } from '@insight/elements';
 
 type Props = {
   children: React.ReactNode;
