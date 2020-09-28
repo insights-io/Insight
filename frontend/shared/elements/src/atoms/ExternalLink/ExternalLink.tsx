@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-type Props = Omit<
+export type Props = Omit<
   React.DetailedHTMLProps<
     React.AnchorHTMLAttributes<HTMLAnchorElement>,
     HTMLAnchorElement
@@ -10,7 +10,7 @@ type Props = Omit<
   link: string;
 };
 
-export const ExternalLink = React.forwardRef<HTMLAnchorElement, Props>(
+export const ExternalLink = forwardRef<HTMLAnchorElement, Props>(
   ({ link, children, ...rest }, ref) => {
     return (
       <a

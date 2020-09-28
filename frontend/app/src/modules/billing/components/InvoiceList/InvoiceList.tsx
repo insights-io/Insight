@@ -3,7 +3,7 @@ import { useStyletron } from 'baseui';
 import { capitalize, invoiceStatusIcon } from 'modules/billing/utils';
 import { ListItem, ListItemLabel } from 'baseui/list';
 import { StatefulTooltip } from 'baseui/tooltip';
-import { ExternalLink } from 'shared/components/ExternalLink';
+import { ExternalLink } from '@insight/elements';
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import { FaFileDownload, FaLink } from 'react-icons/fa';
 import type { Invoice } from '@insight/types';
