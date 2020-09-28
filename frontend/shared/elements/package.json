@@ -25,13 +25,15 @@
     "prettier": "prettier -l 'src/**/*'",
     "prettier:fix": "prettier -l 'src/**/*' --write",
     "storybook": "start-storybook",
-    "storybook:build": "build-storybook"
+    "storybook:build": "build-storybook",
+    "pretest": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/testing build\" \"yarn workspace @insight/storybook build\""
   },
-  "devDependencies": {},
   "dependencies": {},
+  "devDependencies": {
+    "@insight/testing": "0.0.0-development",
+    "@insight/storybook": "0.0.0-development"
+  },
   "peerDependencies": {
-    "@insight/storybook": "0.0.0-development",
-    "@testing-library/react": "11.0.4",
     "baseui": "9.101.0",
     "react-hook-form": "6.8.6"
   }
