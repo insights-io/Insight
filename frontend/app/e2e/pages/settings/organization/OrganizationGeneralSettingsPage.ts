@@ -3,17 +3,20 @@ import { ORGANIZATION_SETTINGS_GENERAL_PAGE } from '../../../../src/shared/const
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';
 
 export class OrganizationGeneralSettingsPage extends AbstractOrganizationSettingsPage {
-  public readonly header = this.container.queryByText('General');
+  public readonly header = this.withinContainer.queryByText('General');
 
-  public readonly id = this.container.queryByText('ID').parent().child(1);
-  public readonly name = this.container.queryByText('Name').parent().child(1);
+  public readonly id = this.withinContainer.queryByText('ID').parent().child(1);
+  public readonly name = this.withinContainer
+    .queryByText('Name')
+    .parent()
+    .child(1);
 
-  public readonly createdAt = this.container
+  public readonly createdAt = this.withinContainer
     .queryByText('Created at')
     .parent()
     .child(1);
 
-  public readonly updatedAt = this.container
+  public readonly updatedAt = this.withinContainer
     .queryByText('Updated at')
     .parent()
     .child(1);

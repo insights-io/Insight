@@ -19,9 +19,9 @@ class InviteNewMemberModal {
 }
 
 export class OrganizationMembersSettingsPage extends AbstractOrganizationSettingsPage {
-  public readonly header = this.container.queryByText('Members');
+  public readonly header = this.withinContainer.queryByText('Members');
 
-  public readonly inviteNewTeamMemberButton = this.container.queryByText(
+  public readonly inviteNewTeamMemberButton = this.withinContainer.queryByText(
     'Invite new member'
   );
 

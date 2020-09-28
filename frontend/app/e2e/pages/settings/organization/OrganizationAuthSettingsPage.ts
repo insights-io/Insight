@@ -28,12 +28,12 @@ type SetupSsoParams =
     };
 
 export class OrganizationAuthSettingsPage extends AbstractOrganizationSettingsPage {
-  public readonly header = this.container.queryByText('Authentication');
-  public readonly ssoConfigurationEndpointInput = this.container.queryByPlaceholderText(
+  public readonly header = this.withinContainer.queryByText('Authentication');
+  public readonly ssoConfigurationEndpointInput = this.withinContainer.queryByPlaceholderText(
     'https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
   );
-  public readonly ssoSubmitButton = this.container.queryByText('Setup');
-  public readonly nonBusinessEmailErrorMessage = this.container.queryByText(
+  public readonly ssoSubmitButton = this.withinContainer.queryByText('Setup');
+  public readonly nonBusinessEmailErrorMessage = this.withinContainer.queryByText(
     'SSO setup is only possible for work domain.'
   );
   public readonly ssoSetupCompleteMessage = queryByText('SSO setup complete');

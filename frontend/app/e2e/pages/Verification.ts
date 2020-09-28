@@ -2,12 +2,12 @@ import { queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { totp as _totp } from 'speakeasy';
 
-import config from '../config';
+import { VERIFICATION_PAGE } from '../../src/shared/constants/routes';
 import { findPatternInDockerLogs } from '../utils';
 
-class Verification {
-  public readonly path = `${config.appBaseURL}/login/verification`;
+import { AbstractPage } from './AbstractPage';
 
+class Verification extends AbstractPage {
   /* Selectors */
   public readonly message = queryByText(
     'To protect your account, please complete the following verification.'
@@ -66,4 +66,4 @@ class Verification {
   };
 }
 
-export default new Verification();
+export default new Verification(VERIFICATION_PAGE);

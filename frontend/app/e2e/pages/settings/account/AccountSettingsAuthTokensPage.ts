@@ -3,7 +3,7 @@ import { ACCOUNT_SETTINGS_AUTH_TOKENS_PAGE } from '../../../../src/shared/consta
 import { AbstractAccountSettingsPage } from './AbstractAccountSettingsPage';
 
 export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
-  public readonly title = this.container.queryByText('Auth Tokens');
+  public readonly title = this.withinContainer.queryByText('Auth Tokens');
 }
 
 export default new AccountSettingsDetailsPage(

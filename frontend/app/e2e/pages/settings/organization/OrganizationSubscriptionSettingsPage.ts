@@ -10,7 +10,7 @@ import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from '../../../../src
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';
 
 export class OrganizationSubscriptionSettingsPage extends AbstractOrganizationSettingsPage {
-  public readonly header = this.container.queryByText('Usage & Billing');
+  public readonly header = this.withinContainer.queryByText('Usage & Billing');
 
   public readonly checkoutForm = {
     cardNumberInputElement: queryByPlaceholderText('Card number'),
@@ -38,7 +38,7 @@ export class OrganizationSubscriptionSettingsPage extends AbstractOrganizationSe
     downloadReceipt: queryByText('Download receipt'),
   };
 
-  public readonly upgradeButton = this.container.queryByText('Upgrade');
+  public readonly upgradeButton = this.withinContainer.queryByText('Upgrade');
   public readonly planUpgradedToBusinessMessage = queryByText(
     'Successfully upgraded to business plan'
   );
@@ -47,9 +47,9 @@ export class OrganizationSubscriptionSettingsPage extends AbstractOrganizationSe
   );
 
   public readonly subscriptions = {
-    header: this.container.queryByText('Subscriptions'),
+    header: this.withinContainer.queryByText('Subscriptions'),
     nth: (n: number) =>
-      within(this.containerSelector.find('ul.subscriptions').child(n)),
+      within(this.container.find('ul.subscriptions').child(n)),
   };
 }
 

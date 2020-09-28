@@ -1,17 +1,19 @@
 import { AbstractSettingsSidebar } from '../AbstractSettingsSidebar';
 
 export class OrganizationSettingsSidebar extends AbstractSettingsSidebar {
-  public readonly generalSettings = this.container.queryByText(
+  public readonly generalSettings = this.withinContainer.queryByText(
     'General settings'
   );
-  public readonly securityAndPrivacy = this.container.queryByText(
+  public readonly securityAndPrivacy = this.withinContainer.queryByText(
     'Security & Privacy'
   );
-  public readonly members = this.container.queryByText('Members');
-  public readonly auth = this.container.queryByText('Auth');
+  public readonly members = this.withinContainer.queryByText('Members');
+  public readonly auth = this.withinContainer.queryByText('Auth');
 
-  public readonly subscription = this.container.queryByText('Subscription');
-  public readonly usageAndPayments = this.container.queryByText(
+  public readonly subscription = this.withinContainer.queryByText(
+    'Subscription'
+  );
+  public readonly usageAndPayments = this.withinContainer.queryByText(
     'Usage & Payments'
   );
 }

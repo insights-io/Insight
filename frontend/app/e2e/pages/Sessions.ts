@@ -1,15 +1,14 @@
-import 'testcafe';
 import { queryAllByText } from '@testing-library/testcafe';
 
-import config from '../config';
+import { SESSIONS_PAGE } from '../../src/shared/constants/routes';
 
-class SessionsPage {
-  public readonly path = `${config.appBaseURL}/sessions`;
+import { AbstractPage } from './AbstractPage';
 
+class SessionsPage extends AbstractPage {
   /* Utils */
   public getLastSession = () => {
     return queryAllByText(/^.*less than [1-9][0-9]* seconds ago$/);
   };
 }
 
-export default new SessionsPage();
+export default new SessionsPage(SESSIONS_PAGE);

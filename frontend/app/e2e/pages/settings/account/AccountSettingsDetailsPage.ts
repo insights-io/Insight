@@ -6,31 +6,34 @@ import { VerificationPage } from '../..';
 import { AbstractAccountSettingsPage } from './AbstractAccountSettingsPage';
 
 export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
-  public readonly title = this.container.queryByText('Account details');
+  public readonly title = this.withinContainer.queryByText('Account details');
 
-  public readonly fullName = this.container
+  public readonly fullName = this.withinContainer
     .queryByText('Full name')
     .parent()
     .child(1);
 
-  public readonly email = this.container.queryByText('Email').parent().child(1);
-  public readonly organizationId = this.container
+  public readonly email = this.withinContainer
+    .queryByText('Email')
+    .parent()
+    .child(1);
+  public readonly organizationId = this.withinContainer
     .queryByText('Organization ID')
     .parent()
     .child(1);
 
-  public readonly memberSince = this.container
+  public readonly memberSince = this.withinContainer
     .queryByText('Member since')
     .parent()
     .child(1);
 
-  public readonly phoneNumber = this.container
+  public readonly phoneNumber = this.withinContainer
     .queryByText('Phone number')
     .parent()
     .child(1)
     .child(0);
 
-  public readonly phoneNumberConfigureButton = this.container
+  public readonly phoneNumberConfigureButton = this.withinContainer
     .queryByText('Phone number')
     .parent()
     .child(1)

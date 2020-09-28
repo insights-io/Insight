@@ -107,10 +107,10 @@ class ChangePassword {
 }
 
 export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
-  public readonly title = this.container.queryByText('Security');
+  public readonly title = this.withinContainer.queryByText('Security');
 
-  public readonly tfa = new TwoFactorAuthentication(this.container);
-  public readonly changePassword = new ChangePassword(this.container);
+  public readonly tfa = new TwoFactorAuthentication(this.withinContainer);
+  public readonly changePassword = new ChangePassword(this.withinContainer);
 }
 
 export default new AccountSettingsDetailsPage(ACCOUNT_SETTINGS_SECURITY_PAGE);
