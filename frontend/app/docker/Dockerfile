@@ -38,7 +38,7 @@ COPY frontend/shared/testing/package.json /src/frontend/shared/testing/package.j
 COPY frontend/shared/next-testing/package.json /src/frontend/shared/next-testing/package.json
 COPY frontend/shared/next-storybook/package.json /src/frontend/shared/next-storybook/package.json
 COPY frontend/shared/storybook/package.json /src/frontend/shared/storybook/package.json
-COPY frontend/shared/ui/package.json /src/frontend/shared/ui/package.json
+COPY frontend/shared/elements/package.json /src/frontend/shared/elements/package.json
 RUN yarn install --frozen-lockfile
 
 COPY frontend/app/ /src/frontend/app/
@@ -61,7 +61,7 @@ COPY --from=build /src/frontend/app/public /usr/app/public
 
 COPY --from=build /src/frontend/shared/sdk/package.json /usr/app/node_modules/@insight/sdk/package.json
 COPY --from=build /src/frontend/shared/sdk/dist /usr/app/node_modules/@insight/sdk/dist
-COPY --from=build /src/frontend/shared/ui/package.json /usr/app/node_modules/@insight/elements/package.json
-COPY --from=build /src/frontend/shared/ui/dist /usr/app/node_modules/@insight/elements/dist
+COPY --from=build /src/frontend/shared/elements/package.json /usr/app/node_modules/@insight/elements/package.json
+COPY --from=build /src/frontend/shared/elements/dist /usr/app/node_modules/@insight/elements/dist
 
 CMD ["npm", "start"]

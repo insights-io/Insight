@@ -20,7 +20,7 @@ COPY frontend/shared/testing/package.json /src/frontend/shared/testing/package.j
 COPY frontend/shared/next-testing/package.json /src/frontend/shared/next-testing/package.json
 COPY frontend/shared/next-storybook/package.json /src/frontend/shared/next-storybook/package.json
 COPY frontend/shared/storybook/package.json /src/frontend/shared/storybook/package.json
-COPY frontend/shared/ui/package.json /src/frontend/shared/ui/package.json
+COPY frontend/shared/elements/package.json /src/frontend/shared/elements/package.json
 RUN yarn install --frozen-lockfile
 
 COPY frontend/try/ /src/frontend/try/
