@@ -21,4 +21,11 @@ public class InvoiceService {
         .thenApply(
             invoices -> invoices.stream().map(BillingInvoice::dto).collect(Collectors.toList()));
   }
+
+  public CompletionStage<List<InvoiceDTO>> listInvoices(String organizationId) {
+    return invoiceDatasource
+        .list(organizationId)
+        .thenApply(
+            invoices -> invoices.stream().map(BillingInvoice::dto).collect(Collectors.toList()));
+  }
 }

@@ -4,12 +4,13 @@ import type { SubscriptionDTO } from '@insight/types';
 import { useMemo } from 'react';
 import { mapSubscription } from '@insight/sdk';
 
-const CACHE_KEY = 'BillingApi.subscriptions.get';
+const CACHE_KEY = 'BillingApi.subscriptions.list';
 
-const useSubscriptions = () => {
-  const { data, isLoading, error, mutate, revalidate } = useSWRQuery(
+const useSubscriptions = (initialData: SubscriptionDTO[]) => {
+  const { data, error, mutate, revalidate } = useSWRQuery(
     CACHE_KEY,
-    () => BillingApi.subscriptions.list()
+    () => BillingApi.subscriptions.list(),
+    { initialData }
   );
 
   const updateSubscription = (updatedSubscription: SubscriptionDTO) => {
@@ -28,7 +29,6 @@ const useSubscriptions = () => {
 
   return {
     subscriptions,
-    isLoading,
     error,
     updateSubscription,
     revalidateSubscriptions: revalidate,

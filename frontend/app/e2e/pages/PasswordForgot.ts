@@ -1,12 +1,11 @@
 import { getByText } from '@testing-library/testcafe';
 
-import config from '../config';
+import { PASSWORD_FORGOT_PAGE } from '../../src/shared/constants/routes';
 
+import { AbstractPage } from './AbstractPage';
 import Login from './Login';
 
-class PasswordForgot {
-  public readonly path = `${config.appBaseURL}/password-forgot`;
-
+class PasswordForgot extends AbstractPage {
   /* Selectors */
   public readonly emailInput = Login.emailInput;
   public readonly submitButton = getByText('Reset password');
@@ -17,4 +16,4 @@ class PasswordForgot {
   );
 }
 
-export default new PasswordForgot();
+export default new PasswordForgot(PASSWORD_FORGOT_PAGE);

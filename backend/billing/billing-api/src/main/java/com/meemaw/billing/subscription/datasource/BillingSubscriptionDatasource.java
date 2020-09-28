@@ -19,6 +19,8 @@ public interface BillingSubscriptionDatasource {
 
   CompletionStage<Optional<BillingSubscription>> get(String subscriptionId);
 
+  CompletionStage<Optional<BillingSubscription>> get(String subscriptionId, String organizationId);
+
   CompletionStage<Optional<BillingSubscription>> get(
       String subscriptionId, SqlTransaction transaction);
 

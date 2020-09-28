@@ -7,7 +7,7 @@ import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { SessionApi } from 'api';
 import { SessionDTO } from '@insight/types';
-import { mapSession, mapUser } from '@insight/sdk';
+import { mapSession } from '@insight/sdk';
 import SessionsPage from 'modules/sessions/pages/SessionsPage';
 
 type Props = AuthenticatedServerSideProps & {
@@ -22,7 +22,7 @@ const Sessions = ({
 }: Props) => {
   return (
     <SessionsPage
-      user={mapUser(initialUser)}
+      user={initialUser}
       sessions={initialSessions.map(mapSession)}
       sessionCount={sessionCount}
     />

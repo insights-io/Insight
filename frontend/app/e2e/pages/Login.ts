@@ -1,13 +1,13 @@
-import 'testcafe';
 import { getByPlaceholderText, queryByText } from '@testing-library/testcafe';
 
 import config from '../config';
+import { LOGIN_PAGE } from '../../src/shared/constants/routes';
+
+import { AbstractPage } from './AbstractPage';
 
 export type LoginCredentials = { email: string; password: string };
 
-class Login {
-  public readonly path = `${config.appBaseURL}/login`;
-
+class Login extends AbstractPage {
   /* Selectors */
   public readonly emailInput = getByPlaceholderText('Email');
   public readonly workEmailInput = getByPlaceholderText('user@company.com');
@@ -50,4 +50,4 @@ class Login {
   };
 }
 
-export default new Login();
+export default new Login(LOGIN_PAGE);

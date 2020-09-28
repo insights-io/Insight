@@ -1,17 +1,11 @@
-import { mapInvoice } from '@insight/sdk';
-import type { Invoice, InvoiceDTO, Subscription } from '@insight/types';
-
-export const ACTIVE_BUSINESS_SUBSCRIPTION: Subscription = {
-  id: '123',
-  plan: 'business',
-  status: 'active',
-  priceId: '123',
-  organizationId: '123',
-  currentPeriodStart: 1000,
-  currentPeriodEnd: 1500,
-  createdAt: new Date(),
-  canceledAt: undefined,
-};
+import { mapInvoice, mapSubscription } from '@insight/sdk';
+import type {
+  Invoice,
+  InvoiceDTO,
+  PlanDTO,
+  Subscription,
+  SubscriptionDTO,
+} from '@insight/types';
 
 export const CANCELED_ENTERPRISE_SUBSCRIPTION: Subscription = {
   id: '1234',
@@ -45,3 +39,25 @@ export const PAID_INVOICE_DTO: InvoiceDTO = {
 };
 
 export const PAID_INVOICE: Invoice = mapInvoice(PAID_INVOICE_DTO);
+
+export const FREE_PLAN_DTO: PlanDTO = {
+  dataRetention: '1m',
+  organizationId: '000000',
+  price: { amount: 0, interval: 'month' },
+  type: 'free',
+};
+
+export const ACTIVE_BUSINESS_SUBSCRIPTION_DTO: SubscriptionDTO = {
+  id: '123',
+  plan: 'business',
+  status: 'active',
+  priceId: '123',
+  organizationId: '123',
+  currentPeriodStart: 1000,
+  currentPeriodEnd: 1500,
+  createdAt: new Date().toUTCString(),
+};
+
+export const ACTIVE_BUSINESS_SUBSCRIPTION = mapSubscription(
+  ACTIVE_BUSINESS_SUBSCRIPTION_DTO
+);

@@ -23,6 +23,8 @@ public interface BillingInvoiceDatasource {
   CompletionStage<Optional<BillingInvoice>> update(
       String invoiceId, UpdateBillingInvoiceParams params, SqlTransaction transaction);
 
+  CompletionStage<List<BillingInvoice>> list(String customerInternalId);
+
   CompletionStage<List<BillingInvoice>> listBySubscription(
       String subscriptionId, String customerInternalId);
 

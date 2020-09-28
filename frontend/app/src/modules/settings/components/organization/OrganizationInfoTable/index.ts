@@ -1,0 +1,1 @@
+export { OrganizationInfoTable } from './OrganizationInfoTable';

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import { useStyletron } from 'baseui';
-import useAuth from 'modules/auth/hooks/useAuth';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
-import { Session, User } from '@insight/types';
+import type { Session, UserDTO } from '@insight/types';
 import SessionList from 'modules/sessions/containers/SessionList';
 import SessionSearch from 'modules/sessions/components/SessionSearch';
 import { Block } from 'baseui/block';
@@ -13,9 +12,10 @@ import {
   createDateRange,
 } from 'modules/sessions/components/SessionSearch/utils';
 import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
+import { useUser } from 'shared/hooks/useUser';
 
 type Props = {
-  user: User;
+  user: UserDTO;
   sessions: Session[];
   sessionCount: number;
 };
@@ -26,7 +26,7 @@ const HomePage = ({
   sessionCount: initialSessionCount,
 }: Props) => {
   const [_css, theme] = useStyletron();
-  const { user } = useAuth(initialUser);
+  const { user } = useUser(initialUser);
   const hasSessions = initialSessions.length > 0;
   const [dateRange, setDataRange] = useState<DateRange>(() =>
     createDateRange('all-time')

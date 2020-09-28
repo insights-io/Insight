@@ -8,11 +8,13 @@ services:
       args:
         auth_api_server_base_url: http://auth-api:8080
         session_api_server_base_url: http://session-api:8080
+        billing_api_server_base_url: http://billing-api:8080
     ports:
       - '${APP_PORT:-3000}:3000'
     depends_on:
       - auth-api
       - session-api
+      - billing-api
 
   auth-api:
     build:

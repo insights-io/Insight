@@ -75,6 +75,7 @@ profiles:
         value:
           jaeger_agent_host: jaeger-agent.monitoring
           billing_api_client_base_url: https://billing-api.dev.snuderls.eu
+          billing_api_server_base_url: http://billing-api
           session_api_client_base_url: https://session-api.dev.snuderls.eu
           session_api_server_base_url: http://session-api
           auth_api_client_base_url: https://auth-api.dev.snuderls.eu

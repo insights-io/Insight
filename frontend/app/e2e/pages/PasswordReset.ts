@@ -1,12 +1,11 @@
 import { getByText } from '@testing-library/testcafe';
 
-import config from '../config';
+import { PASSWORD_RESET_PAGE } from '../../src/shared/constants/routes';
 
 import { LoginPage } from '.';
+import { AbstractPage } from './AbstractPage';
 
-class PasswordReset {
-  public readonly path = `${config.appBaseURL}/password-reset`;
-
+class PasswordReset extends AbstractPage {
   /* Selectors */
   public readonly passwordInput = LoginPage.passwordInput;
   public readonly submitButton = getByText('Reset password and sign in');
@@ -19,4 +18,4 @@ class PasswordReset {
   );
 }
 
-export default new PasswordReset();
+export default new PasswordReset(PASSWORD_RESET_PAGE);

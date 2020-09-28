@@ -101,6 +101,13 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
   }
 
   @Override
+  public CompletionStage<List<BillingInvoice>> list(String customerInternalId) {
+    Query query =
+        sqlPool.getContext().selectFrom(TABLE).where(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
+    return sqlPool.execute(query).thenApply(this::mapBillingInvoices);
+  }
+
+  @Override
   public CompletionStage<List<BillingInvoice>> listBySubscription(
       String subscriptionId, String customerInternalId) {
     Query query =

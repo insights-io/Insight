@@ -1,16 +1,24 @@
+import { mapOrganization } from '@insight/sdk';
+import { OrganizationDTO } from '@insight/types';
 import { AuthApi } from 'api';
-import useSWR from 'swr';
+import { useMemo } from 'react';
+
+import useSWRQuery from './useSWRQuery';
 
 const CACHE_KEY = 'AuthApi.organizations.get';
 
-const useOrganization = () => {
-  const { data: organization } = useSWR(CACHE_KEY, () =>
-    AuthApi.organization.get()
+const useOrganization = (initialData: OrganizationDTO) => {
+  const { data, error } = useSWRQuery(
+    CACHE_KEY,
+    () => AuthApi.organization.get(),
+    { initialData }
   );
 
-  const isLoading = organization === undefined;
+  const organization = useMemo(() => mapOrganization(data as OrganizationDTO), [
+    data,
+  ]);
 
-  return { organization, isLoading };
+  return { organization, error };
 };
 
 export default useOrganization;

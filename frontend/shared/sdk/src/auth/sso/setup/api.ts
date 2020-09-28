@@ -1,7 +1,7 @@
 import ky from 'ky-universal';
 import type { DataResponse, SsoMethod, SsoSetupDTO } from '@insight/types';
 
-import { withCredentials } from '../../../core';
+import { getData, withCredentials } from '../../../core';
 import type { RequestOptions } from '../../../core/types';
 
 export const ssoSetupApi = (authApiBaseURL: string) => {
@@ -10,7 +10,7 @@ export const ssoSetupApi = (authApiBaseURL: string) => {
       return ky
         .get(`${baseURL}/v1/sso/setup`, withCredentials(rest))
         .json<DataResponse<SsoSetupDTO>>()
-        .then((dataResponse) => dataResponse);
+        .then(getData);
     },
     create: (
       method: SsoMethod,
@@ -22,7 +22,8 @@ export const ssoSetupApi = (authApiBaseURL: string) => {
           `${baseURL}/v1/sso/setup`,
           withCredentials({ json: { method, configurationEndpoint }, ...rest })
         )
-        .json<DataResponse<SsoSetupDTO>>();
+        .json<DataResponse<SsoSetupDTO>>()
+        .then(getData);
     },
     getByDomain: (
       domain: string,
