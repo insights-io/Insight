@@ -5,9 +5,12 @@ import { Block } from 'baseui/block';
 import { createBorderRadius } from 'shared/styles/input';
 import { StatefulPopover, PLACEMENT } from 'baseui/popover';
 import { Button, KIND, SIZE, SHAPE } from 'baseui/button';
-import AutocompleteInput from 'shared/components/AutocompleteInput';
+import {
+  AutocompleteInput,
+  SpacedBetween,
+  VerticalAligned,
+} from '@insight/elements';
 import { Plus, Delete } from 'baseui/icon';
-import { SpacedBetween, VerticalAligned } from '@insight/elements';
 
 import useAutocomplete from './useAutocomplete';
 import {

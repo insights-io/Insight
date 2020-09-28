@@ -17,7 +17,7 @@
     "dev": "next -p 3001",
     "build": "next build",
     "start": "next start",
-    "test": "jest --env=jest-environment-jsdom-sixteen",
+    "test": "jest",
     "test:e2e": "testcafe chrome e2e/specs",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",

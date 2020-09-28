@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Select, SelectProps, STATE_CHANGE_TYPE } from 'baseui/select';
 
-type Props = Omit<
+export type Props = Omit<
   SelectProps,
   'onInputChange' | 'onChange' | 'value' | 'valueKey' | 'options'
 > & {
@@ -10,7 +10,7 @@ type Props = Omit<
   options: string[];
 };
 
-const AutocompleteInput = React.forwardRef<Select, Props>(
+export const AutocompleteInput = forwardRef<Select, Props>(
   ({ onChange, value, options, ...rest }, ref) => {
     return (
       <Select
