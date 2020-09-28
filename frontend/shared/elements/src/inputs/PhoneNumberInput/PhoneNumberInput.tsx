@@ -10,7 +10,7 @@ import {
 } from 'baseui/phone-input';
 
 export type Values = {
-  phoneNumber: string | null;
+  phoneNumber: string | undefined;
 };
 
 export type Props<V> = {

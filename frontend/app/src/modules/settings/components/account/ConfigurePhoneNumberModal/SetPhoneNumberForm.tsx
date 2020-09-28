@@ -14,7 +14,7 @@ import type {
 import { getCountryFromPhoneNumber } from './utils';
 
 type Data = {
-  phoneNumber: string | null;
+  phoneNumber: string | undefined;
 };
 
 type Props = {
