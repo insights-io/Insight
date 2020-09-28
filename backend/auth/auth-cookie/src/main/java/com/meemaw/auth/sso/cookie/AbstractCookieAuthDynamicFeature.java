@@ -39,24 +39,28 @@ public abstract class AbstractCookieAuthDynamicFeature
     @Override
     @Traced(operationName = "AbstractCookieAuthFilter.filter")
     public void filter(ContainerRequestContext context) {
+      Span span = tracer.activeSpan();
       Map<String, Cookie> cookies = context.getCookies();
       Cookie ssoCookie = cookies.get(SsoSession.COOKIE_NAME);
       if (ssoCookie == null) {
         log.debug("[AUTH]: Missing SessionId");
+        span.log("[CookieAuth]: Missing SessionId");
         throw Boom.status(Status.UNAUTHORIZED).exception();
       }
 
       String sessionId = ssoCookie.getValue();
+      span.setTag(LoggingConstants.SSO_SESSION_ID, sessionId);
+      MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
+
       if (sessionId.length() != SsoSession.SIZE) {
         log.debug("[AUTH]: Invalid SsoSession size sessionId={}", sessionId);
+        span.log("[CookieAuth]: Invalid SessionId size");
         throw Boom.status(Status.UNAUTHORIZED).exception();
       }
 
-      MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
       Optional<T> maybeUser = findSession(sessionId).toCompletableFuture().join();
       T user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
-      Span span = setUserContext(user);
-      span.setTag(LoggingConstants.SSO_SESSION_ID, sessionId);
+      setUserContext(span, user);
       boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
       context.setSecurityContext(new InsightSecurityContext(user, isSecure));
       principal.user(user);

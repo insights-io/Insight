@@ -12,6 +12,7 @@ import com.meemaw.auth.sso.session.model.InsightSecurityContext;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.context.RequestContextUtils;
 import com.meemaw.shared.rest.response.Boom;
+import io.opentracing.Span;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
@@ -66,14 +67,18 @@ public class BearerTokenAuthDynamicFeature extends AbstractAuthDynamicFeature<Be
     @Override
     @Traced(operationName = "BearerTokenAuthDynamicFeature.filter")
     public void filter(ContainerRequestContext context) {
+      Span span = tracer.activeSpan();
       String authorization = context.getHeaderString(HttpHeaders.AUTHORIZATION);
       if (authorization == null) {
         log.debug("[AUTH]: Missing authorization header");
+        span.log("[BearerTokenAuth]: Missing authorization header");
         throw Boom.status(Status.UNAUTHORIZED).exception();
       }
       Matcher matcher = BEARER_PATTERN.matcher(authorization);
       if (!matcher.matches()) {
         log.debug("[AUTH]: Malformed authorization header");
+        span.setTag(HttpHeaders.AUTHORIZATION, authorization);
+        span.log("[BearerTokenAuth]: Malformed authorization header");
         throw Boom.status(Status.UNAUTHORIZED).exception();
       }
 
@@ -81,7 +86,7 @@ public class BearerTokenAuthDynamicFeature extends AbstractAuthDynamicFeature<Be
       try {
         DecodedJWT jwt = jwtVerifier.verify(token);
         UserDTO user = objectMapper.readValue(jwt.getPayload(), UserDTO.class);
-        setUserContext(user);
+        setUserContext(span, user);
         boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
         context.setSecurityContext(new InsightSecurityContext(user, isSecure));
         principal.user(user);

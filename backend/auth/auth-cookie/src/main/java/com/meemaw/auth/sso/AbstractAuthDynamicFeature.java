@@ -35,8 +35,7 @@ public abstract class AbstractAuthDynamicFeature<T extends Annotation> implement
     }
   }
 
-  protected Span setUserContext(AuthUser user) {
-    Span span = tracer.activeSpan();
+  protected Span setUserContext(Span span, AuthUser user) {
     String userId = user.getId().toString();
     String role = user.getRole().toString();
     String organizationId = user.getOrganizationId();
