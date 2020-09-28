@@ -33,12 +33,10 @@ export class OrganizationAuthSettingsPage extends AbstractOrganizationSettingsPa
     'https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
   );
   public readonly ssoSubmitButton = this.container.queryByText('Setup');
-  public readonly ssoSetupCompleteMessage = this.container.queryByText(
-    'SSO setup complete'
-  );
   public readonly nonBusinessEmailErrorMessage = this.container.queryByText(
     'SSO setup is only possible for work domain.'
   );
+  public readonly ssoSetupCompleteMessage = queryByText('SSO setup complete');
 
   public setupSso = (
     t: TestController,

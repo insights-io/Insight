@@ -89,7 +89,8 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
     configurationEndpoint:
@@ -115,7 +116,7 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
     .click(LoginPage.signInButton)
     .expect(getLocation())
     .match(
-      /^https:\/\/snuderls\.okta\.com\/login\/login\.htm\?fromURI=%2Fapp%2Fsnuderlsorg446661_insightdev_1%2Fexkw843tlucjMJ0kL4x6%2Fsso%2Fsaml%3FRelayState%3D(.*)http%253A%252F%252Flocalhost%253A3000%252Fsettings%252Fuser$/,
+      /^https:\/\/snuderls\.okta\.com\/login\/login\.htm\?fromURI=%2Fapp%2Fsnuderlsorg446661_insightdev_1%2Fexkw843tlucjMJ0kL4x6%2Fsso%2Fsaml%3FRelayState%3D(.*)http%253A%252F%252Flocalhost%253A3000%252Fsettings%252Forganization%252Fauth$/,
       'Is on okta page'
     );
 });
@@ -131,7 +132,8 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
 
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
     from: 'SAML',
@@ -189,12 +191,15 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
     password,
     domain,
   } = SignUpPage.generateRandomBussinessCredentials();
-  const otherUser = `${uuid()}@${domain}`;
+  const { email: otherUser } = SignUpPage.generateRandomCredentialsForDomain(
+    domain
+  );
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
     from: 'SAML',
@@ -249,12 +254,15 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
     password,
     domain,
   } = SignUpPage.generateRandomBussinessCredentials();
-  const otherUser = `${uuid()}@${domain}`;
+  const { email: otherUser } = SignUpPage.generateRandomCredentialsForDomain(
+    domain
+  );
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
     .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings);
+    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
     from: 'SAML',
@@ -283,7 +291,6 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
     .eql(otherUser, 'Should prefill user');
 
   // Is on Github SSO flow after normal login
-
   await t
     .navigateTo(OrganizationAuthSettingsPage.path)
     .typeText(LoginPage.emailInput, otherUser)
@@ -294,7 +301,9 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
       new RegExp(
         `^https://github\\.com/login\\?client_id=210a475f7ac15d91bd3c&login=${login}&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3D210a475f7ac15d91bd3c%26login%3D${encodeURIComponent(
           login
-        )}%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Fv1%252Fsso%252Foauth2%252Fgithub%252Fcallback%26response_type%3Dcode%26scope%3Dread%253Auser%2Buser%253Aemail%26state(.*)http%253A%252F%252Flocalhost%253A3000%252Fsettings%252Fuser$`
+        )}%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Fv1%252Fsso%252Foauth2%252Fgithub%252Fcallback%26response_type%3Dcode%26scope%3Dread%253Auser%2Buser%253Aemail%26state(.*)http%253A%252F%252Flocalhost%253A3000${encodeURIComponent(
+          encodeURIComponent(OrganizationAuthSettingsPage.relativePath)
+        )}$`
       ),
       'Is on github page'
     )
