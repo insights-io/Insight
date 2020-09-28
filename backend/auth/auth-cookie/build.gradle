@@ -6,6 +6,7 @@ plugins {
 dependencies {
     api project(":auth:auth-model")
     compileOnly project(":shared:rest-api")
+    implementation "com.auth0:java-jwt:3.11.0"
 
     testImplementation project(":shared:rest-api")
     testImplementation project(":shared:testing-utils")

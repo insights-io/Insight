@@ -15,7 +15,7 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
   @Inject SsoDatasource ssoDatasource;
 
   @Override
-  protected ContainerRequestFilter cookieAuthFilter() {
+  public ContainerRequestFilter authFilter() {
     return new CookieAuthFilter();
   }
 

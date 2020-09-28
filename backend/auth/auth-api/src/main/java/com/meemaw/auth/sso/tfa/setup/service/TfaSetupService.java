@@ -19,7 +19,7 @@ public class TfaSetupService {
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject TfaProvidersRegistry tfaProvidersRegistry;
 
-  @ConfigProperty(name = "tfa.totp.verification.issuer")
+  @ConfigProperty(name = "authorization.issuer")
   String issuer;
 
   public CompletionStage<Boolean> tfaSetupDisable(UUID userId, TfaMethod method) {

@@ -25,12 +25,11 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
   @Inject ObjectMapper objectMapper;
 
   @Override
-  protected ContainerRequestFilter cookieAuthFilter() {
+  public ContainerRequestFilter authFilter() {
     return new CookieAuthFilter();
   }
 
   private class CookieAuthFilter extends AbstractCookieAuthFilter<AuthUser> {
-
     @Override
     protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
       return ssoResource
