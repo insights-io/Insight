@@ -9,12 +9,10 @@ import Document, {
   DocumentContext,
 } from 'next/document';
 import { Provider as StyletronProvider } from 'styletron-react';
-import {
-  styletron,
-  STYLETRON_HYDRATE_CLASSNAME,
-} from 'shared/styles/styletron';
+import { styletron } from 'shared/styles/styletron';
 import ky from 'ky-universal';
 import { Server, Sheet } from 'styletron-engine-atomic';
+import { STYLETRON_HYDRATE_CLASSNAME } from '@insight/elements';
 
 type Props = {
   stylesheets: Sheet[];
