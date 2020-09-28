@@ -383,7 +383,7 @@ test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then
     .ok('Should be back on Free plan');
 });
 
-test.only('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment method and then cancel my subscription', async (t) => {
+test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment method and then cancel my subscription', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 

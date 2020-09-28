@@ -2,8 +2,13 @@ import { BillingApi } from 'api';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
 import type { PlanDTO } from '@insight/types';
 import { useCallback } from 'react';
+import { mutate as globalMutate } from 'swr';
 
 const CACHE_KEY = 'BillingApi.subscriptions.getActivePlan';
+
+export const mutateActivePlan = (plan: PlanDTO) => {
+  globalMutate(CACHE_KEY, plan);
+};
 
 const useActivePlan = (initialData: PlanDTO) => {
   const { data, error, mutate, revalidate: revalidateActivePlan } = useSWRQuery(
