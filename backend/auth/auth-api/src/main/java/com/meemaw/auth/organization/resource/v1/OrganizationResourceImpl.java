@@ -33,7 +33,9 @@ public class OrganizationResourceImpl implements OrganizationResource {
   @Override
   public CompletionStage<Response> organization(String organizationId) {
     AuthUser user = insightPrincipal.user();
-    if (!user.getOrganizationId().equals(organizationId)) {
+    // TODO: write a clean module to handle permissions
+    if (!user.getOrganizationId().equals("internal-s2s")
+        && !user.getOrganizationId().equals(organizationId)) {
       throw Boom.notFound().exception();
     }
 

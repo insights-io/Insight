@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class BearerTokenAuthDynamicFeature extends AbstractBearerTokenAuthDynamicFeature<AuthUser> {
+public class BearerTokenAuthDynamicFeature extends AbstractBearerTokenAuthDynamicFeature {
 
   @Inject AuthTokenDatasource authTokenDatasource;
 

@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -39,6 +40,9 @@ public class PageService {
   @Inject PageDatasource pageDatasource;
   @Inject SessionCountDatasource sessionCountDatasource;
   @Inject @RestClient OrganizationResource organizationResource;
+
+  @ConfigProperty(name = "authorization.s2s.auth.token")
+  String s2sAuthToken;
 
   /**
    * Create a new page. This method is called as a first action of the tracking script to link
@@ -74,7 +78,7 @@ public class PageService {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
     return organizationResource
-        .organization(organizationId)
+        .organization(organizationId, String.format("Bearer %s", s2sAuthToken))
         .thenCompose(
             response -> {
               int status = response.getStatus();
