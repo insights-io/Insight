@@ -158,7 +158,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
     AuthTokenDTO authToken =
         authTokenDatasource
-            .createToken(CreateAuthTokenParams.builder().token("todo").userId(user.getId()).build())
+            .create(CreateAuthTokenParams.builder().token("todo").userId(user.getId()).build())
             .toCompletableFuture()
             .join();
 
