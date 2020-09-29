@@ -30,7 +30,7 @@ public class TfaTotpProvider extends AbstractTfaProvider<TfaTotpSetupStartDTO> {
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject SqlPool sqlPool;
 
-  @ConfigProperty(name = "tfa.totp.verification.issuer")
+  @ConfigProperty(name = "authorization.issuer")
   String issuer;
 
   @Override

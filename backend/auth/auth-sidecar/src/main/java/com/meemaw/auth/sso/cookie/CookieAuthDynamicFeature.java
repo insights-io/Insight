@@ -11,7 +11,6 @@ import com.meemaw.shared.rest.response.DataResponse;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +18,17 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Provider
 @Slf4j
-public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
+public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature<AuthUser> {
 
   @Inject @RestClient SsoResource ssoResource;
   @Inject ObjectMapper objectMapper;
 
   @Override
-  protected ContainerRequestFilter cookieAuthFilter() {
+  public AbstractCookieAuthFilter authFilter() {
     return new CookieAuthFilter();
   }
 
-  private class CookieAuthFilter extends AbstractCookieAuthFilter<AuthUser> {
-
+  private class CookieAuthFilter extends AbstractCookieAuthFilter {
     @Override
     protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
       return ssoResource

@@ -4,7 +4,9 @@ plugins {
 }
 
 dependencies {
-    api "com.hazelcast:hazelcast:${hazelcastVersion}"
+    api("com.hazelcast:hazelcast:${hazelcastVersion}") {
+        force = true
+    }
 
     compileOnly "io.quarkus:quarkus-core"
 }

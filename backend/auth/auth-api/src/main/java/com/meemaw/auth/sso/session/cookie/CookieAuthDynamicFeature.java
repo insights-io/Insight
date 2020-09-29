@@ -6,20 +6,19 @@ import com.meemaw.auth.sso.session.model.SsoUser;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
+public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature<SsoUser> {
 
   @Inject SsoDatasource ssoDatasource;
 
   @Override
-  protected ContainerRequestFilter cookieAuthFilter() {
+  public AbstractCookieAuthFilter authFilter() {
     return new CookieAuthFilter();
   }
 
-  private class CookieAuthFilter extends AbstractCookieAuthFilter<SsoUser> {
+  private class CookieAuthFilter extends AbstractCookieAuthFilter {
 
     @Override
     protected CompletionStage<Optional<SsoUser>> findSession(String sessionId) {

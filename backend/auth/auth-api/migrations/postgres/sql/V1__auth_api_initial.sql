@@ -125,6 +125,16 @@ CREATE TABLE auth.organization_sso_setup
     PRIMARY KEY (organization_id, domain)
 );
 
+CREATE TABLE auth.token
+(
+    token      TEXT        NOT NULL,
+    user_id    UUID REFERENCES auth.user (id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    PRIMARY KEY (token, user_id)
+);
+
+
 /* Bootstrap Insight organization */
 INSERT INTO auth.organization(id, name)
 VALUES ('000000', 'Insight');
