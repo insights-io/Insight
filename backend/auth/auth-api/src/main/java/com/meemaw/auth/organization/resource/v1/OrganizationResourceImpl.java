@@ -3,6 +3,7 @@ package com.meemaw.auth.organization.resource.v1;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.service.OrganizationService;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.Optional;
@@ -17,20 +18,25 @@ public class OrganizationResourceImpl implements OrganizationResource {
 
   @Override
   public CompletionStage<Response> members() {
-    return organizationService
-        .members(insightPrincipal.user().getOrganizationId())
-        .thenApply(DataResponse::ok);
+    AuthUser user = insightPrincipal.user();
+    return organizationService.members(user.getOrganizationId()).thenApply(DataResponse::ok);
   }
 
   @Override
   public CompletionStage<Response> organization() {
+    AuthUser user = insightPrincipal.user();
     return organizationService
-        .getOrganization(insightPrincipal.user().getOrganizationId())
+        .getOrganization(user.getOrganizationId())
         .thenApply(this::mapOrganization);
   }
 
   @Override
   public CompletionStage<Response> organization(String organizationId) {
+    AuthUser user = insightPrincipal.user();
+    if (!user.getOrganizationId().equals(organizationId)) {
+      throw Boom.notFound().exception();
+    }
+
     return organizationService.getOrganization(organizationId).thenApply(this::mapOrganization);
   }
 

@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -55,6 +56,9 @@ public class TfaChallengeResourceTest extends AbstractAuthApiTest {
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject MockSmsbox mockSmsbox;
+
+  @ConfigProperty(name = "authorization.issuer")
+  String issuer;
 
   @Test
   public void get_challenge__should_throw__when_no_verification_cookie() {
@@ -298,7 +302,7 @@ public class TfaChallengeResourceTest extends AbstractAuthApiTest {
     UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
     String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
     assertEquals(
-        String.format("otpauth://totp/Insight:%s?secret=%s", email, secret),
+        String.format("otpauth://totp/%s:%s?secret=%s", issuer, email, secret),
         TotpUtils.readBarcode(dataResponse.getData().getQrImage()).getText());
 
     // Complete tfa setup fails on invalid code

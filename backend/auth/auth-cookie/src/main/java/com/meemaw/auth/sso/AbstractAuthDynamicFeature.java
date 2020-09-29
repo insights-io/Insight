@@ -13,14 +13,16 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 import org.slf4j.MDC;
 
-public abstract class AbstractAuthDynamicFeature<T extends Annotation> implements DynamicFeature {
+public abstract class AbstractAuthDynamicFeature<
+        T extends Annotation, F extends ContainerRequestFilter>
+    implements DynamicFeature {
 
   @Inject protected InsightPrincipal principal;
   @Inject protected Tracer tracer;
 
   public abstract Class<T> getAnnotation();
 
-  public abstract ContainerRequestFilter authFilter();
+  public abstract F authFilter();
 
   @Override
   public void configure(ResourceInfo resourceInfo, FeatureContext context) {

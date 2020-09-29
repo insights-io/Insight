@@ -1,6 +1,7 @@
 package com.meemaw.auth.sso.cookie;
 
 import com.meemaw.auth.sso.AbstractAuthDynamicFeature;
+import com.meemaw.auth.sso.cookie.AbstractCookieAuthDynamicFeature.AbstractCookieAuthFilter;
 import com.meemaw.auth.sso.session.model.InsightSecurityContext;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.AuthUser;
@@ -22,8 +23,8 @@ import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @Slf4j
-public abstract class AbstractCookieAuthDynamicFeature
-    extends AbstractAuthDynamicFeature<CookieAuth> {
+public abstract class AbstractCookieAuthDynamicFeature<U extends AuthUser>
+    extends AbstractAuthDynamicFeature<CookieAuth, AbstractCookieAuthFilter> {
 
   @Override
   public Class<CookieAuth> getAnnotation() {
@@ -31,10 +32,9 @@ public abstract class AbstractCookieAuthDynamicFeature
   }
 
   @Priority(Priorities.AUTHENTICATION)
-  public abstract class AbstractCookieAuthFilter<T extends AuthUser>
-      implements ContainerRequestFilter {
+  public abstract class AbstractCookieAuthFilter implements ContainerRequestFilter {
 
-    protected abstract CompletionStage<Optional<T>> findSession(String sessionId);
+    protected abstract CompletionStage<Optional<U>> findSession(String sessionId);
 
     @Override
     @Traced(operationName = "AbstractCookieAuthFilter.filter")
@@ -58,8 +58,8 @@ public abstract class AbstractCookieAuthDynamicFeature
         throw Boom.status(Status.UNAUTHORIZED).exception();
       }
 
-      Optional<T> maybeUser = findSession(sessionId).toCompletableFuture().join();
-      T user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
+      Optional<U> maybeUser = findSession(sessionId).toCompletableFuture().join();
+      U user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
       setUserContext(span, user);
       boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
       context.setSecurityContext(new InsightSecurityContext(user, isSecure));

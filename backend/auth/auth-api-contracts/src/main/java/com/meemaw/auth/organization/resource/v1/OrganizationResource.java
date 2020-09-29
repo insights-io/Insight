@@ -1,5 +1,6 @@
 package com.meemaw.auth.organization.resource.v1;
 
+import com.meemaw.auth.sso.bearer.BearerTokenAuth;
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;
@@ -28,8 +29,8 @@ public interface OrganizationResource {
   @CookieAuth
   CompletionStage<Response> organization();
 
-  // TODO: S2S authentication
   @GET
   @Path("{organizationId}")
+  @BearerTokenAuth
   CompletionStage<Response> organization(@PathParam("organizationId") String organizationId);
 }
