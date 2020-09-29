@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,6 +18,10 @@ import javax.ws.rs.core.Response;
 public interface AuthTokenResource {
 
   String PATH = SsoResource.PATH + "/auth/token";
+
+  @GET
+  @CookieAuth
+  CompletionStage<Response> list();
 
   @POST
   @CookieAuth

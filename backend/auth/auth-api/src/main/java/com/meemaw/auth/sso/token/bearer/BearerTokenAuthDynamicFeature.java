@@ -22,7 +22,7 @@ public class BearerTokenAuthDynamicFeature extends AbstractBearerTokenAuthDynami
 
     @Override
     public CompletionStage<Optional<AuthUser>> findUser(String token) {
-      return authTokenDatasource.getUser(token);
+      return authTokenDatasource.getTokenUser(token);
     }
   }
 }

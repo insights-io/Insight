@@ -3,6 +3,7 @@ package com.meemaw.session.pages.service;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.organization.resource.v1.OrganizationResource;
+import com.meemaw.auth.sso.bearer.AbstractBearerTokenAuthDynamicFeature;
 import com.meemaw.location.model.Location;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
@@ -78,7 +79,7 @@ public class PageService {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
     return organizationResource
-        .organization(organizationId, String.format("Bearer %s", s2sAuthToken))
+        .organization(organizationId, AbstractBearerTokenAuthDynamicFeature.header(s2sAuthToken))
         .thenCompose(
             response -> {
               int status = response.getStatus();

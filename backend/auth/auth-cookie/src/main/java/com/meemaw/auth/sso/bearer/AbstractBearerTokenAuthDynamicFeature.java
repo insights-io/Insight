@@ -31,6 +31,10 @@ public abstract class AbstractBearerTokenAuthDynamicFeature
   @ConfigProperty(name = "authorization.s2s.auth.token")
   String s2sAuthToken;
 
+  public static String header(String token) {
+    return String.format("Bearer %s", token);
+  }
+
   @Override
   public Class<BearerTokenAuth> getAnnotation() {
     return BearerTokenAuth.class;
