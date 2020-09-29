@@ -1,5 +1,7 @@
 package com.meemaw.auth.organization.resource.v1;
 
+import static com.meemaw.auth.user.UserRegistry.S2S_INTERNAL_USER;
+
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.service.OrganizationService;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
@@ -34,7 +36,7 @@ public class OrganizationResourceImpl implements OrganizationResource {
   public CompletionStage<Response> organization(String organizationId) {
     AuthUser user = insightPrincipal.user();
     // TODO: write a clean module to handle permissions
-    if (!user.getOrganizationId().equals("internal-s2s")
+    if (!user.getOrganizationId().equals(S2S_INTERNAL_USER.getOrganizationId())
         && !user.getOrganizationId().equals(organizationId)) {
       throw Boom.notFound().exception();
     }
