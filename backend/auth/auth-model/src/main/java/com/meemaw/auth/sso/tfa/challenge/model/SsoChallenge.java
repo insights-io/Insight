@@ -1,11 +1,6 @@
 package com.meemaw.auth.sso.tfa.challenge.model;
 
-import com.meemaw.auth.sso.tfa.TfaMethod;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.ChallengeResponseDTO;
-import com.meemaw.shared.rest.response.DataResponse;
-import java.util.List;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class SsoChallenge {
@@ -38,12 +33,5 @@ public class SsoChallenge {
 
   public static String newIdentifier() {
     return RandomStringUtils.randomAlphanumeric(SIZE);
-  }
-
-  public static Response cookieResponse(
-      String value, String cookieDomain, List<TfaMethod> tfaMethodList) {
-    return DataResponse.okBuilder(new ChallengeResponseDTO(value, tfaMethodList))
-        .cookie(SsoChallenge.cookie(value, cookieDomain))
-        .build();
   }
 }

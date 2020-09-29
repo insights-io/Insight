@@ -1,4 +1,5 @@
 import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
+import { Selector } from 'testcafe';
 
 import { ACCOUNT_SETTINGS_DETAILS_PAGE } from '../../../../src/shared/constants/routes';
 import { VerificationPage } from '../..';
@@ -43,15 +44,26 @@ export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
     'Phone number verified'
   );
 
+  public readonly phoneNumberCountryPicker = Selector('input')
+    .withAttribute('aria-label', 'Select country')
+    .parent()
+    .parent();
+
   public readonly phoneNumberInput = queryByPlaceholderText('Phone number');
   public readonly phoneNumberNextStep = queryByText('Next');
 
-  public verifyCurrentPhoneNumber = async (t: TestController) => {
-    await t.click(this.phoneNumberConfigureButton).click(queryByText('Next'));
+  public completeSmsChallenge = (t: TestController) => {
+    return VerificationPage.completeSmsChallenge(t);
+  };
 
-    await VerificationPage.completeSmsChallenge(t);
+  public verifyCurrentPhoneNumber = async (t: TestController) => {
+    await t
+      .click(this.phoneNumberConfigureButton)
+      .click(this.phoneNumberNextStep);
+
+    await this.completeSmsChallenge(t);
     return t
-      .expect(queryByText('Phone number verified').visible)
+      .expect(this.phoneNumberVerifiedMessage.visible)
       .ok('Success message');
   };
 }

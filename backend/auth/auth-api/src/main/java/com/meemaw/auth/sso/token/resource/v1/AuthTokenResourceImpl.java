@@ -6,10 +6,10 @@ import com.meemaw.auth.sso.token.model.CreateAuthTokenParams;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import org.apache.commons.lang3.RandomStringUtils;
 
 public class AuthTokenResourceImpl implements AuthTokenResource {
 
@@ -25,11 +25,9 @@ public class AuthTokenResourceImpl implements AuthTokenResource {
   @Override
   public CompletionStage<Response> create() {
     AuthUser user = insightPrincipal.user();
+    String token = RandomStringUtils.randomAlphanumeric(50);
     CreateAuthTokenParams params =
-        CreateAuthTokenParams.builder()
-            .token(UUID.randomUUID().toString())
-            .userId(user.getId())
-            .build();
+        CreateAuthTokenParams.builder().token(token).userId(user.getId()).build();
 
     return authTokenDatasource.create(params).thenApply(DataResponse::ok);
   }

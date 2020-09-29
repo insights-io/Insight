@@ -66,6 +66,7 @@ public abstract class AbstractBearerTokenAuthDynamicFeature
       AuthUser user;
       if (s2sAuthToken.equals(token)) {
         user = UserRegistry.S2S_INTERNAL_USER;
+        span.log("[BearerTokenAuth]: S2S Request");
       } else {
         Optional<AuthUser> maybeUser = findUser(token).toCompletableFuture().join();
         user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
