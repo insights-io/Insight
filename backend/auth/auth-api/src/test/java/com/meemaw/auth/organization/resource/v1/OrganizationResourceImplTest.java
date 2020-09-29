@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
+import com.meemaw.auth.sso.bearer.AbstractBearerTokenAuthDynamicFeature;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.token.datasource.AuthTokenDatasource;
 import com.meemaw.auth.sso.token.model.CreateAuthTokenParams;
@@ -165,7 +166,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     DataResponse<OrganizationDTO> dataResponse =
         given()
             .when()
-            .header("Authorization", String.format("Bearer %s", authToken.getToken()))
+            .header(
+                "Authorization", AbstractBearerTokenAuthDynamicFeature.header(authToken.getToken()))
             .pathParam("organizationId", user.getOrganizationId())
             .get(OrganizationResource.PATH + "/{organizationId}")
             .then()
