@@ -21,7 +21,6 @@ type Props = {
 const NavbarItem = forwardRef<HTMLLIElement, Props>(
   ({ artwork, text, showText, onClick, to, overrides }, ref) => {
     const [css, theme] = useStyletron();
-    const { scale300: marginLeft } = theme.sizing;
 
     let content = (
       <Button
@@ -38,16 +37,14 @@ const NavbarItem = forwardRef<HTMLLIElement, Props>(
       >
         {artwork}
         {showText && text && (
-          <span
-            className={css({
-              marginLeft,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            })}
+          <Block
+            as="span"
+            marginLeft={theme.sizing.scale300}
+            overflow="hidden"
+            className={css({ whiteSpace: 'nowrap', textOverflow: 'ellipsis' })}
           >
             {text}
-          </span>
+          </Block>
         )}
       </Button>
     );
@@ -65,7 +62,10 @@ const NavbarItem = forwardRef<HTMLLIElement, Props>(
         content={showText ? undefined : text}
         placement={PLACEMENT.right}
         showArrow
-        {...overrides?.Tooltip}
+        overrides={{
+          ...overrides?.Tooltip,
+          Body: { style: { marginLeft: '16px' } },
+        }}
       >
         <Block as="li" margin="12px" ref={ref}>
           {content}
