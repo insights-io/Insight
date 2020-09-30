@@ -14,7 +14,7 @@ import {
 
 fixture('/login/verification').page(VerificationPage.path);
 
-test('[TOTP]: Should be able to complete full TFA flow after password reset', async (t) => {
+test('[TFA](TOTP): User should be able to complete full TFA flow after password reset', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
@@ -84,7 +84,7 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
     .ok('Should display message that TOTP TFA is disabled');
 });
 
-test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
+test('[TFA](TOTP): Should be able to complete full TFA flow', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { email, password } = SignUpPage.generateRandomCredentials();
 
@@ -139,7 +139,7 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
     .ok('Should display message that TOTP TFA is disabled');
 });
 
-test('[SMS]: Should be able to complete full TFA flow after password reset', async (t) => {
+test('[TFA](SMS): User should be able to complete full TFA flow after password reset', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
@@ -218,7 +218,7 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
     .ok('Should display message that SMS TFA is disabled');
 });
 
-test('[SMS + TOTP]: Should be able to complete full TFA flow', async (t) => {
+test('[TFA](SMS + TOTP): User should be able to complete full TFA flow', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 

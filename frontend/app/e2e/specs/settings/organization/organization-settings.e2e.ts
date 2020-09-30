@@ -2,7 +2,7 @@ import { queryByTestId, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
-import config from '../../config';
+import config from '../../../config';
 import {
   LoginPage,
   Sidebar,
@@ -11,8 +11,8 @@ import {
   OrganizationGeneralSettingsPage,
   OrganizationSubscriptionSettingsPage,
   OrganizationAuthSettingsPage,
-} from '../../pages';
-import { getLocation } from '../../utils';
+} from '../../../pages';
+import { getLocation } from '../../../utils';
 
 fixture('/settings/organization').page(OrganizationGeneralSettingsPage.path);
 
