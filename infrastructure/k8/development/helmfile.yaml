@@ -13,6 +13,8 @@ repositories:
     url: https://kubernetes.github.io/dashboard/
   - name: incubator
     url: https://kubernetes-charts-incubator.storage.googleapis.com/
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
 
 
 helmfiles:
@@ -44,13 +46,13 @@ releases:
 
   - name: kafka
     chart: bitnami/kafka
-    version: 11.8.2
+    version: 11.8.6
     namespace: {{ .Values.appNamespace }}
     values:
       - kafka.yaml
   - name: es5
     chart: elastic/elasticsearch
-    version: 7.9.0
+    version: 7.9.2
     namespace: {{ .Values.appNamespace }}
     values:
       - es.yaml
@@ -61,7 +63,7 @@ releases:
           storageClassName: "{{ .Values.storageClassName }}"
   - name: fluentbit
     chart: stable/fluent-bit
-    version: 2.10.0
+    version: 2.10.1
     namespace: {{ .Values.infraNamespace }}
     values:
       - fluentbit.yaml
@@ -73,7 +75,7 @@ releases:
             parser: {{ .Values.fluentbitParser }}
   - name: kibana
     chart: elastic/kibana
-    version: 7.9.0
+    version: 7.9.2
     namespace: {{ .Values.infraNamespace }}
     values:
       - kibana.yaml
@@ -134,8 +136,8 @@ releases:
 {{ toYaml .Values.ingressAnnotations | indent 14 }}
 
   - name: grafana
-    chart: stable/grafana
-    version: 5.5.5
+    chart: grafana/grafana
+    version: 5.6.12
     namespace: {{ .Values.infraNamespace }}
     values:
       - grafana.yaml
@@ -155,7 +157,7 @@ releases:
   - name: jaeger
     chart: jaegertracing/jaeger
     namespace: monitoring
-    version: 0.36.0
+    version: 0.38.2
     values:
       - jaeger.yaml
       - storage:
@@ -176,7 +178,7 @@ releases:
 {{ if eq .Environment.Name "production" }}
   - name: oauth2-proxy
     chart: stable/oauth2-proxy
-    version: 3.2.2
+    version: 3.2.3
     namespace: {{ .Values.infraNamespace }}
     values:
       - oauth-proxy.yaml
