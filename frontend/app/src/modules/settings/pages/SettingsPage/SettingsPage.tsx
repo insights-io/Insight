@@ -1,5 +1,4 @@
 import AppLayout from 'modules/app/components/AppLayout';
-import Link from 'next/link';
 import React from 'react';
 import {
   ACCOUNT_SETTINGS_DETAILS_PAGE,
@@ -11,15 +10,14 @@ import {
 } from 'shared/constants/routes';
 import { SettingsLayout } from 'modules/settings/components/SettingsLayout';
 import { SETTINGS_SEARCH_OPTIONS } from 'modules/settings/constants';
-import { Card } from 'baseui/card';
-import { Flex, FlexColumn } from '@insight/elements';
-import { Block } from 'baseui/block';
+import { Flex } from '@insight/elements';
 import type { Path } from 'modules/settings/types';
-import { Avatar } from 'baseui/avatar';
-import Divider from 'shared/components/Divider';
 import { OrganizationDTO, UserDTO } from '@insight/types';
 import { useUser } from 'shared/hooks/useUser';
 import useOrganization from 'shared/hooks/useOrganization';
+import { MEMBERS_SECTION } from 'shared/constants/copy';
+
+import { SettingsSectionCard } from './SettingsSectionCard';
 
 const PATH: Path = [SETTINGS_PATH_PART];
 
@@ -36,83 +34,40 @@ export const SettingsPage = ({
   const { organization } = useOrganization(initialOrganization);
 
   return (
-    <AppLayout>
+    <AppLayout user={user}>
       <SettingsLayout searchOptions={SETTINGS_SEARCH_OPTIONS} path={PATH}>
         <Flex flexWrap>
-          <Card
-            overrides={{
-              Root: { style: { width: '100%', maxWidth: '350px' } },
-            }}
-          >
-            <Flex justifyContent="center">
-              <Link href={ACCOUNT_SETTINGS_DETAILS_PAGE}>
-                <a>
-                  <FlexColumn>
-                    <Flex justifyContent="center">
-                      <Avatar name={user.fullName} />
-                    </Flex>
-                    <Block marginTop="12px">My account</Block>
-                  </FlexColumn>
-                </a>
-              </Link>
-            </Flex>
+          <SettingsSectionCard
+            header="My account"
+            headerLink={ACCOUNT_SETTINGS_DETAILS_PAGE}
+            avatar={user.fullName}
+            quickLinks={[
+              {
+                text: 'Chamge my password',
+                link: ACCOUNT_SETTINGS_SECURITY_PAGE,
+              },
+              {
+                text: 'Setup Two-Factor Authentication',
+                link: ACCOUNT_SETTINGS_SECURITY_PAGE,
+              },
+            ]}
+          />
 
-            <Divider />
-
-            <FlexColumn>
-              <Block>Quick links:</Block>
-              <ul>
-                <li>
-                  <Link href={ACCOUNT_SETTINGS_SECURITY_PAGE}>
-                    <a>Change my password</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={ACCOUNT_SETTINGS_SECURITY_PAGE}>
-                    <a>Setup Two-Factor Authentication</a>
-                  </Link>
-                </li>
-              </ul>
-            </FlexColumn>
-          </Card>
-
-          <Card
-            overrides={{
-              Root: { style: { width: '100%', maxWidth: '350px' } },
-            }}
-          >
-            <Flex justifyContent="center">
-              <Link href={ORGANIZATION_SETTINGS_GENERAL_PAGE}>
-                <a>
-                  <FlexColumn>
-                    <Flex justifyContent="center">
-                      <Avatar name={organization.name || 'O'} />
-                    </Flex>
-                    <Block marginTop="12px">
-                      {organization.name || 'Organization'}
-                    </Block>
-                  </FlexColumn>
-                </a>
-              </Link>
-            </Flex>
-            <Divider />
-
-            <FlexColumn>
-              <Block>Quick links:</Block>
-              <ul>
-                <li>
-                  <Link href={ORGANIZATION_SETTINGS_MEMBERS_PAGE}>
-                    <a>Members</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={ORGANIZATION_SETTINGS_AUTH_PAGE}>
-                    <a>Setup authentication</a>
-                  </Link>
-                </li>
-              </ul>
-            </FlexColumn>
-          </Card>
+          <SettingsSectionCard
+            header={organization.name || 'Organization'}
+            headerLink={ORGANIZATION_SETTINGS_GENERAL_PAGE}
+            avatar={organization.name || 'O'}
+            quickLinks={[
+              {
+                text: MEMBERS_SECTION,
+                link: ORGANIZATION_SETTINGS_MEMBERS_PAGE,
+              },
+              {
+                text: 'Setup authentication',
+                link: ORGANIZATION_SETTINGS_AUTH_PAGE,
+              },
+            ]}
+          />
         </Flex>
       </SettingsLayout>
     </AppLayout>

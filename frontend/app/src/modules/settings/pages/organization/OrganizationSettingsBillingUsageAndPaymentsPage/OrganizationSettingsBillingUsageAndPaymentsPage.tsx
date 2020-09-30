@@ -8,7 +8,8 @@ import { OrganizationSettingsPageLayout } from 'modules/settings/components/orga
 import { mapInvoice } from '@insight/sdk';
 import { InvoiceList } from 'modules/billing/components/InvoiceList';
 import type { Path } from 'modules/settings/types';
-import type { InvoiceDTO } from '@insight/types';
+import type { InvoiceDTO, UserDTO } from '@insight/types';
+import { useUser } from 'shared/hooks/useUser';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -18,17 +19,24 @@ const PATH: Path = [
 
 type Props = {
   invoices: InvoiceDTO[];
+  user: UserDTO;
 };
 
 export const OrganizationSettingsBillingUsageAndPaymentsPage = ({
   invoices: initialInvoices,
+  user: initialUser,
 }: Props) => {
+  const { user } = useUser(initialUser);
   const invoices = useMemo(() => initialInvoices.map(mapInvoice), [
     initialInvoices,
   ]);
 
   return (
-    <OrganizationSettingsPageLayout path={PATH} header="Usage & Payments">
+    <OrganizationSettingsPageLayout
+      user={user}
+      path={PATH}
+      header="Usage & Payments"
+    >
       <InvoiceList invoices={invoices} />
     </OrganizationSettingsPageLayout>
   );

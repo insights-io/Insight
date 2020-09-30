@@ -20,8 +20,8 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .expect(getLocation())
     .eql(AccountSettingsDetailsPage.path)
     .click(AccountSettingsDetailsPage.sidebar.security)
@@ -46,8 +46,8 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
       AccountSettingsSecurityPage.tfa.authenticatorTfaEnabledToast.visible
     )
     .ok('TFA enabled message')
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.signOut)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.signOut)
     .click(LoginPage.forgotPasswordButton)
     .typeText(PasswordForgotPage.emailInput, email)
     .click(PasswordForgotPage.submitButton)
@@ -73,8 +73,8 @@ test('[TOTP]: Should be able to complete full TFA flow after password reset', as
 
   await VerificationPage.completeTotpChallenge(t, tfaSecret);
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
     .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
     .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
@@ -90,8 +90,8 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
     .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
     .typeText(
@@ -113,8 +113,8 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
       AccountSettingsSecurityPage.tfa.authenticatorTfaEnabledToast.visible
     )
     .ok('TFA enabled message')
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.signOut);
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.signOut);
 
   await LoginPage.login(t, { email, password })
     .expect(VerificationPage.message.visible)
@@ -128,8 +128,8 @@ test('[TOTP]: Should be able to complete full TFA flow', async (t) => {
 
   await VerificationPage.completeTotpChallenge(t, tfaSecret);
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
     .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
     .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
@@ -150,8 +150,8 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
   });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
     .hover(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
     .expect(
@@ -182,8 +182,8 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
       AccountSettingsSecurityPage.tfa.textMessageEnabledToastMessage.visible
     )
     .ok('TFA enabled message')
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.signOut)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.signOut)
     .click(LoginPage.forgotPasswordButton)
     .typeText(PasswordForgotPage.emailInput, email)
     .click(PasswordForgotPage.submitButton)
@@ -207,8 +207,8 @@ test('[SMS]: Should be able to complete full TFA flow after password reset', asy
 
   await VerificationPage.completeSmsChallenge(t);
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
     .click(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
     .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
@@ -229,8 +229,8 @@ test('[SMS + TOTP]: Should be able to complete full TFA flow', async (t) => {
   });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings);
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings);
 
   await AccountSettingsDetailsPage.verifyCurrentPhoneNumber(t);
   await t

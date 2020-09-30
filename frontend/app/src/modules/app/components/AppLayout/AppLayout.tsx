@@ -11,12 +11,14 @@ import {
 import useSidebar from 'modules/app/hooks/useSidebar';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 import { FlexColumn } from '@insight/elements';
+import type { User } from '@insight/types';
 
 import Sidebar from '../Navbar/Sidebar';
 import Topbar from '../Navbar/Topbar';
 
 type Props = {
   children: React.ReactNode;
+  user: User;
   overrides?: {
     Root?: {
       style?: $StyleProp<BlockProps>;
@@ -28,7 +30,7 @@ type Props = {
   };
 };
 
-const AppLayout = ({ children, overrides }: Props) => {
+const AppLayout = ({ children, user, overrides }: Props) => {
   const { width = 0 } = useWindowSize();
   const [_css, theme] = useStyletron();
   const renderTopbar = width < theme.breakpoints.medium;
@@ -57,6 +59,7 @@ const AppLayout = ({ children, overrides }: Props) => {
 
   let sidebar: React.ReactNode = (
     <Sidebar
+      user={user}
       ref={sidebarRef}
       width={renderTopbar ? EXPANDED_SIDEBAR_WIDTH : sidebarProps.width}
       expanded={renderTopbar ? true : sidebarProps.expanded}

@@ -5,8 +5,7 @@ import {
 } from 'modules/auth/middleware/authMiddleware';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
-import InsightsPage from 'modules/insights/pages/InsightsPage';
-import { mapUser } from '@insight/sdk';
+import { InsightsPage } from 'modules/insights/pages/InsightsPage';
 import { SessionApi } from 'api';
 import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 
@@ -15,14 +14,10 @@ type Props = AuthenticatedServerSideProps & {
   countByDeviceClass: Record<string, number>;
 };
 
-const Home = ({
-  user: initialUser,
-  countByLocation,
-  countByDeviceClass,
-}: Props) => {
+const Home = ({ user, countByLocation, countByDeviceClass }: Props) => {
   return (
     <InsightsPage
-      user={mapUser(initialUser)}
+      user={user}
       countByLocation={countByLocation}
       countByDeviceClass={countByDeviceClass}
     />

@@ -13,8 +13,10 @@ type Props = AuthenticatedServerSideProps & {
   organization: OrganizationDTO;
 };
 
-export const OrganizationSettingsGeneral = ({ organization }: Props) => {
-  return <OrganizationSettingsGeneralPage organization={organization} />;
+export const OrganizationSettingsGeneral = ({ organization, user }: Props) => {
+  return (
+    <OrganizationSettingsGeneralPage organization={organization} user={user} />
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (

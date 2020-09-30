@@ -6,14 +6,24 @@ fixture('_app').page(config.appBaseURL);
 
 test('User should be able to navigate around the app', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentials();
-  await SignUpPage.signUpAndLogin(t, { email, password });
+  await SignUpPage.signUpAndLogin(t, {
+    email,
+    password,
+    company: 'My company',
+    fullName: 'Marko skace',
+  });
 
   await t
-    .hover(Sidebar.accountTab.trigger)
-    .expect(Sidebar.accountTab.tooltip.visible)
-    .ok('Should display text on hover')
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.signOut)
+    .click(Sidebar.banner.trigger)
+    .expect(Sidebar.banner.menu.organization.cardTitle.innerText)
+    .eql('My company', 'Mathces company name')
+    .expect(Sidebar.banner.menu.organization.cardSubtitle.innerText)
+    .eql('Marko skace', 'Mathces full name')
+    .expect(Sidebar.banner.menu.account.cardTitle.innerText)
+    .eql('Marko skace', 'Mathces full name')
+    .expect(Sidebar.banner.menu.account.cardSubtitle.innerText)
+    .eql(email, 'Mathces email')
+    .click(Sidebar.banner.menu.account.signOut)
     .expect(LoginPage.createFreeAccount.visible)
     .ok('Should be on the login page');
 

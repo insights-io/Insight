@@ -56,8 +56,8 @@ test('[SSO  SAML]: User with non-business email address should not be able to se
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth)
     .typeText(
       OrganizationAuthSettingsPage.ssoConfigurationEndpointInput,
@@ -88,8 +88,8 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
@@ -131,8 +131,8 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
@@ -197,8 +197,8 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
@@ -260,8 +260,8 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
 
   await SignUpPage.signUpAndLogin(t, { email, password });
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
@@ -325,8 +325,8 @@ test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.subscription);
 
   const {
@@ -388,8 +388,8 @@ test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment metho
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.subscription);
 
   const {
@@ -457,8 +457,8 @@ test('[BILLING](3DS-FAILURE+RECOVER): As a user I can recover and subscribe afte
   await SignUpPage.signUpAndLogin(t, { email, password });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.organizationSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.subscription);
 
   const {

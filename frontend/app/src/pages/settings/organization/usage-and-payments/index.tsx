@@ -15,9 +15,13 @@ type Props = AuthenticatedServerSideProps & {
 
 export const OrganizationSettingsBillingUsageAndPayments = ({
   invoices,
+  user,
 }: Props) => {
   return (
-    <OrganizationSettingsBillingUsageAndPaymentsPage invoices={invoices} />
+    <OrganizationSettingsBillingUsageAndPaymentsPage
+      invoices={invoices}
+      user={user}
+    />
   );
 };
 

@@ -9,8 +9,14 @@ import { BillingSubscription } from 'modules/settings/components/organization/Bi
 import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
 import useActivePlan from 'modules/billing/hooks/useActivePlan';
 import useOrganization from 'shared/hooks/useOrganization';
-import type { OrganizationDTO, PlanDTO, SubscriptionDTO } from '@insight/types';
+import type {
+  OrganizationDTO,
+  PlanDTO,
+  SubscriptionDTO,
+  UserDTO,
+} from '@insight/types';
 import type { Path } from 'modules/settings/types';
+import { useUser } from 'shared/hooks/useUser';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -22,13 +28,16 @@ type Props = {
   organization: OrganizationDTO;
   plan: PlanDTO;
   subscriptions: SubscriptionDTO[];
+  user: UserDTO;
 };
 
 export const OrganizationSettingsBillingSubscriptionPage = ({
   organization: initialOrganization,
   plan: initialPlan,
   subscriptions: initialSubscriptions,
+  user: initialUser,
 }: Props) => {
+  const { user } = useUser(initialUser);
   const { plan, setActivePlan, revalidateActivePlan } = useActivePlan(
     initialPlan
   );
@@ -38,7 +47,11 @@ export const OrganizationSettingsBillingSubscriptionPage = ({
   const { organization } = useOrganization(initialOrganization);
 
   return (
-    <OrganizationSettingsPageLayout path={PATH} header="Usage & Billing">
+    <OrganizationSettingsPageLayout
+      user={user}
+      path={PATH}
+      header="Usage & Billing"
+    >
       <BillingSubscription
         subscriptions={subscriptions}
         plan={plan}

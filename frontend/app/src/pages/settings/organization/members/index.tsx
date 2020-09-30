@@ -17,11 +17,13 @@ type Props = AuthenticatedServerSideProps & {
 export const OrganizationSettingsMembers = ({
   members,
   teamInvites,
+  user,
 }: Props) => {
   return (
     <OrganizationSettingsMembersPage
       members={members}
       teamInvites={teamInvites}
+      user={user}
     />
   );
 };

@@ -6,7 +6,7 @@ import {
 } from 'shared/constants/routes';
 import { AccountSettingsPageLayout } from 'modules/settings/components/account/AccountSettingsPageLayout';
 import type { Path } from 'modules/settings/types';
-import { AuthTokenDTO } from '@insight/types';
+import { AuthTokenDTO, UserDTO } from '@insight/types';
 import { useAuthTokens } from 'modules/settings/hooks/useAuthTokens';
 import { Block } from 'baseui/block';
 import { Delete, Plus } from 'baseui/icon';
@@ -22,7 +22,7 @@ import { Button, SHAPE, SIZE } from 'baseui/button';
 import { StatefulTooltip } from 'baseui/tooltip';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { AuthApi } from 'api';
-import { SpacedBetween } from '@insight/elements';
+import { useUser } from 'shared/hooks/useUser';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -32,11 +32,14 @@ const PATH: Path = [
 
 type Props = {
   authTokens: AuthTokenDTO[];
+  user: UserDTO;
 };
 
 export const AccountSettingsAuthTokensPage = ({
   authTokens: initialAuthTokens,
+  user: initialUser,
 }: Props) => {
+  const { user } = useUser(initialUser);
   const [selectedAuthToken, setSelectedAuthToken] = useState<string>();
   const { authTokens, removeAuthToken, addAuthToken } = useAuthTokens(
     initialAuthTokens
@@ -74,19 +77,16 @@ export const AccountSettingsAuthTokensPage = ({
   }, [selectedAuthToken, deletingAuthToken, removeAuthToken]);
 
   return (
-    <AccountSettingsPageLayout path={PATH} header="Auth Tokens">
-      <SpacedBetween>
-        <div />
-        <Button
-          size={SIZE.compact}
-          shape={SHAPE.pill}
-          isLoading={creatingAuthToken}
-          onClick={createAuthToken}
-        >
-          <Plus />
-          Create new
-        </Button>
-      </SpacedBetween>
+    <AccountSettingsPageLayout user={user} path={PATH} header="Auth Tokens">
+      <Button
+        size={SIZE.compact}
+        shape={SHAPE.pill}
+        isLoading={creatingAuthToken}
+        onClick={createAuthToken}
+      >
+        <Plus />
+        Create new
+      </Button>
 
       <Block width="100%" height="fit-content" marginTop="24px">
         <StyledTable className="auth-tokens">

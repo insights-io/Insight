@@ -13,6 +13,7 @@ import type {
   SettingsLayoutPropsBase,
   SidebarSection,
 } from 'modules/settings/types';
+import { MEMBERS_SECTION } from 'shared/constants/copy';
 
 export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
@@ -27,7 +28,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
         link: ORGANIZATION_SETTINGS_SECURITY_AND_PRIVACY_PAGE,
       },
       {
-        text: 'Members',
+        text: MEMBERS_SECTION,
         link: ORGANIZATION_SETTINGS_MEMBERS_PAGE,
       },
       { text: 'Auth', link: ORGANIZATION_SETTINGS_AUTH_PAGE },

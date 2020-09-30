@@ -13,8 +13,11 @@ type Props = AuthenticatedServerSideProps & {
   organization: OrganizationDTO;
 };
 
-export const OrganizationSettingsSecurityAndPrivacy = (_props: Props) => {
-  return <OrganizationSettingsSecurityAndPrivacyPage />;
+export const OrganizationSettingsSecurityAndPrivacy = ({
+  user,
+  organization: _organization,
+}: Props) => {
+  return <OrganizationSettingsSecurityAndPrivacyPage user={user} />;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (

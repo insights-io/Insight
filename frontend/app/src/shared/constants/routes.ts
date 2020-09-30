@@ -1,3 +1,5 @@
+import { MEMBERS_SECTION } from './copy';
+
 type PathPart = {
   segment: string;
   text: string;
@@ -43,7 +45,7 @@ export const ORGANIZATION_SETTINGS_AUTH_PAGE_PART: PathPart = {
 export const ORGANIZATION_SETTINGS_AUTH_PAGE = `${ORGANIZATION_SETTINGS_PAGE}/${ORGANIZATION_SETTINGS_AUTH_PAGE_PART.segment}`;
 export const ORGANIZATION_SETTINGS_MEMBERS_PAGE_PART: PathPart = {
   segment: 'members',
-  text: 'Members',
+  text: MEMBERS_SECTION,
 };
 export const ORGANIZATION_SETTINGS_MEMBERS_PAGE = `${ORGANIZATION_SETTINGS_PAGE}/${ORGANIZATION_SETTINGS_MEMBERS_PAGE_PART.segment}`;
 

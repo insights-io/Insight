@@ -2,9 +2,13 @@ import React from 'react';
 import { Block } from 'baseui/block';
 import { Breadcrumbs } from 'baseui/breadcrumbs';
 import Link from 'next/link';
-import { useStyletron } from 'baseui';
 import { Select, SIZE, TYPE, Option } from 'baseui/select';
-import { FlexColumn, VerticalAligned, SpacedBetween } from '@insight/elements';
+import {
+  FlexColumn,
+  VerticalAligned,
+  SpacedBetween,
+  UnstyledLink,
+} from '@insight/elements';
 import { FaLink } from 'react-icons/fa';
 import { joinSegments } from 'modules/settings/utils';
 import type { Path, SearchOption } from 'modules/settings/types';
@@ -18,10 +22,7 @@ const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
   const option = untypedOption as SearchOption;
   return (
     <Link href={option.link}>
-      <a
-        href={option.link}
-        style={{ textDecoration: 'none', color: 'inherit' }}
-      >
+      <UnstyledLink href={option.link}>
         <SpacedBetween padding="8px 16px">
           <FlexColumn>
             <Block $style={{ fontSize: '1.05rem' }}>{option.label}</Block>
@@ -31,14 +32,12 @@ const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
             <FaLink />
           </VerticalAligned>
         </SpacedBetween>
-      </a>
+      </UnstyledLink>
     </Link>
   );
 };
 
 export const TopbarMenu = ({ path, searchOptions }: Props) => {
-  const [css, _theme] = useStyletron();
-
   return (
     <SpacedBetween as="nav" padding="20px 30px" className="topbar menu">
       <VerticalAligned>
@@ -50,12 +49,7 @@ export const TopbarMenu = ({ path, searchOptions }: Props) => {
 
             return (
               <Link key={link} href={link}>
-                <a
-                  href={link}
-                  className={css({ textDecoration: 'none', color: 'inherit' })}
-                >
-                  {pathPart.text}
-                </a>
+                <UnstyledLink href={link}>{pathPart.text}</UnstyledLink>
               </Link>
             );
           })}

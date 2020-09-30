@@ -35,6 +35,7 @@ const HomePage = ({
 
   return (
     <AppLayout
+      user={user}
       overrides={{
         MainContent: {
           style: {
