@@ -1,6 +1,15 @@
 import { queryByText, within } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
+import {
+  MEMBERS_SECTION,
+  ORGANIZATION_SETTINGS_SECTION,
+  USAGE_AND_BILLING_SECTION,
+  ACCOUNT_SETTINGS_SECTION,
+  AUTH_TOKENS_SECTION,
+  SIGN_OUT_SECTION,
+} from '../../src/shared/constants/copy';
+
 class Sidebar {
   private readonly container = Selector('nav.sidebar');
 
@@ -45,17 +54,21 @@ class Sidebar {
           .child(1)
           .child(0)
           .child(1),
-        settings: this.withinBannerMenu.queryByText('Organization settings'),
-        members: this.withinBannerMenu.queryByText('Members'),
-        usageAndBilling: this.withinBannerMenu.queryByText('Usage & Billing'),
+        settings: this.withinBannerMenu.queryByText(
+          ORGANIZATION_SETTINGS_SECTION
+        ),
+        members: this.withinBannerMenu.queryByText(MEMBERS_SECTION),
+        usageAndBilling: this.withinBannerMenu.queryByText(
+          USAGE_AND_BILLING_SECTION
+        ),
       },
 
       account: {
         cardTitle: this.bannerMenuUserCard.child(1).child(0).child(0),
         cardSubtitle: this.bannerMenuUserCard.child(1).child(0).child(1),
-        settings: this.withinBannerMenu.queryByText('Account settings'),
-        authTokens: this.withinBannerMenu.queryByText('Auth Tokens'),
-        signOut: this.withinBannerMenu.queryByText('Sign out'),
+        settings: this.withinBannerMenu.queryByText(ACCOUNT_SETTINGS_SECTION),
+        authTokens: this.withinBannerMenu.queryByText(AUTH_TOKENS_SECTION),
+        signOut: this.withinBannerMenu.queryByText(SIGN_OUT_SECTION),
       },
     },
   };
