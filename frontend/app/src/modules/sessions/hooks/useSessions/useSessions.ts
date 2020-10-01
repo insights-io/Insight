@@ -7,7 +7,7 @@ import {
   useReducer,
   Reducer,
 } from 'react';
-import { Session } from '@insight/types';
+import { Session, SessionDTO } from '@insight/types';
 import { mapSession } from '@insight/sdk';
 import debounce from 'lodash/debounce';
 import { UnreachableCaseError } from 'shared/utils/error';
@@ -15,7 +15,6 @@ import { SessionSearchBean } from '@insight/sdk/dist/sessions';
 import { DateRange } from 'modules/sessions/components/SessionSearch/utils';
 import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 
-const EMPTY_LIST: Session[] = [];
 const EMPTY_FILTER: Filter = { filters: [] };
 
 type Filter = {
@@ -101,8 +100,8 @@ const getSearchQuery = ({ dateRange, filters }: Filter): SessionSearchBean => {
   return searchBean;
 };
 
-const useSessions = (
-  initialSessions: Session[],
+export const useSessions = (
+  initialSessions: SessionDTO[],
   initialSessionCount: number,
   filter: Filter = EMPTY_FILTER
 ) => {
@@ -113,21 +112,18 @@ const useSessions = (
     () => {
       return {
         fetchingStartIndex: undefined,
-        data: initialSessions,
+        data: initialSessions.map(mapSession),
         count: initialSessionCount,
       };
     }
   );
 
-  const sessions = useMemo(() => data || EMPTY_LIST, [data]);
+  const sessions = useMemo(() => data, [data]);
 
   const onFilterChange = useMemo(
     () =>
       debounce(async (paramFilter: Filter) => {
-        dispatch({
-          type: actionTypes.SET_SESSIONS,
-          sessions: [],
-        });
+        dispatch({ type: actionTypes.SET_SESSIONS, sessions: [] });
 
         const search = getSearchQuery(paramFilter);
         const countPromise = SessionApi.count({
@@ -218,7 +214,7 @@ const useSessions = (
   const loading = useMemo(() => data === undefined, [data]);
 
   return {
-    data: sessions,
+    sessions,
     loading,
     count,
     loadMoreItems,
@@ -226,5 +222,3 @@ const useSessions = (
     isLoadingMore: fetchingStartIndex !== undefined,
   };
 };
-
-export default useSessions;

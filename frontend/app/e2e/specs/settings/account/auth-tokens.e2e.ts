@@ -25,8 +25,8 @@ test('[AUTH-TOKENS]: As a user I want to create Auth Token, use it to make authe
   });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings);
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings);
 
   const organizationId = await AccountSettingsDetailsPage.organizationId
     .innerText;

@@ -1,15 +1,18 @@
 import React from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import type { SettingsLayoutPropsBase } from 'modules/settings/types';
+import { User } from '@insight/types';
 
 import { OrganizationSettingsLayout } from '../OrganizationSettingsLayout';
 
-type Props = SettingsLayoutPropsBase;
+type Props = SettingsLayoutPropsBase & {
+  user: User;
+};
 
-export const OrganizationSettingsPageLayout = (props: Props) => {
+export const OrganizationSettingsPageLayout = ({ user, ...rest }: Props) => {
   return (
-    <AppLayout>
-      <OrganizationSettingsLayout {...props} />
+    <AppLayout user={user}>
+      <OrganizationSettingsLayout {...rest} />
     </AppLayout>
   );
 };

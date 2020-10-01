@@ -1,1 +1,1 @@
-export { default } from './InsightsPage';
+export { InsightsPage } from './InsightsPage';

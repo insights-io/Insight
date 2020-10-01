@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
 import { useStyletron } from 'baseui';
 import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
-import type { Session, UserDTO } from '@insight/types';
-import SessionList from 'modules/sessions/containers/SessionList';
+import type { SessionDTO, UserDTO } from '@insight/types';
+import { SessionList } from 'modules/sessions/components/SessionList';
 import SessionSearch from 'modules/sessions/components/SessionSearch';
 import { Block } from 'baseui/block';
 import {
@@ -13,10 +13,11 @@ import {
 } from 'modules/sessions/components/SessionSearch/utils';
 import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 import { useUser } from 'shared/hooks/useUser';
+import { useSessions } from 'modules/sessions/hooks/useSessions';
 
 type Props = {
   user: UserDTO;
-  sessions: Session[];
+  sessions: SessionDTO[];
   sessionCount: number;
 };
 
@@ -28,13 +29,21 @@ const HomePage = ({
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
   const hasSessions = initialSessions.length > 0;
+  const [filters, setFilters] = useState<SessionFilter[]>([]);
   const [dateRange, setDataRange] = useState<DateRange>(() =>
     createDateRange('all-time')
   );
-  const [filters, setFilters] = useState<SessionFilter[]>([]);
+
+  const options = useMemo(() => ({ dateRange, filters }), [dateRange, filters]);
+  const { sessions, count, loadMoreItems, isItemLoaded } = useSessions(
+    initialSessions,
+    initialSessionCount,
+    options
+  );
 
   return (
     <AppLayout
+      user={user}
       overrides={{
         MainContent: {
           style: {
@@ -53,10 +62,10 @@ const HomePage = ({
           />
           <Block marginTop={theme.sizing.scale400} height="100%">
             <SessionList
-              initialSessions={initialSessions}
-              initialSessionCount={initialSessionCount}
-              dateRange={dateRange}
-              filters={filters}
+              sessions={sessions}
+              count={count}
+              loadMoreItems={loadMoreItems}
+              isItemLoaded={isItemLoaded}
             />
           </Block>
         </>

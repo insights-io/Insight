@@ -8,8 +8,9 @@ import { OrganizationSettingsPageLayout } from 'modules/settings/components/orga
 import { SubscriptionDetails } from 'modules/billing/components/SubscriptionDetails';
 import useInvoices from 'modules/billing/hooks/useInvoices';
 import { useSubscription } from 'modules/billing/hooks/useSubscription';
-import type { InvoiceDTO, SubscriptionDTO } from '@insight/types';
+import type { InvoiceDTO, SubscriptionDTO, UserDTO } from '@insight/types';
 import type { Path } from 'modules/settings/types';
+import { useUser } from 'shared/hooks/useUser';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -20,17 +21,20 @@ const PATH: Path = [
 type Props = {
   invoices: InvoiceDTO[];
   subscription: SubscriptionDTO;
+  user: UserDTO;
 };
 
 export const OrganizationSettingsBillingSubscriptionDetailsPage = ({
   invoices: initialInvoices,
   subscription: initialSubscription,
+  user: initialUser,
 }: Props) => {
   const subscriptionId = initialSubscription.id;
   const { invoices } = useInvoices(subscriptionId, initialInvoices);
   const { subscription, setSubscription } = useSubscription(
     initialSubscription
   );
+  const { user } = useUser(initialUser);
 
   const path = useMemo(
     () => [...PATH, { segment: subscriptionId, text: subscriptionId }],
@@ -38,7 +42,11 @@ export const OrganizationSettingsBillingSubscriptionDetailsPage = ({
   );
 
   return (
-    <OrganizationSettingsPageLayout path={path} header="Subscription details">
+    <OrganizationSettingsPageLayout
+      user={user}
+      path={path}
+      header="Subscription details"
+    >
       <SubscriptionDetails
         invoices={invoices}
         subscription={subscription}

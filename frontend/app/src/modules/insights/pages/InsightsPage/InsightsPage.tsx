@@ -1,15 +1,16 @@
 import React from 'react';
 import AppLayout from 'modules/app/components/AppLayout';
-import { User } from '@insight/types';
+import type { UserDTO } from '@insight/types';
 import CountByDeviceClass from 'modules/insights/components/CountByDeviceClass';
 import { Block } from 'baseui/block';
 import { CardProps } from 'baseui/card';
 import LocationDistribution from 'modules/insights/components/LocationDistribution';
 import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 import { useStyletron } from 'baseui';
+import { useUser } from 'shared/hooks/useUser';
 
 type Props = {
-  user: User;
+  user: UserDTO;
   countByLocation: CountByLocation;
   countByDeviceClass: Record<string, number>;
 };
@@ -25,14 +26,17 @@ const countByCardOverrides = {
   } as CardProps,
 };
 
-const InsightsPage = ({
+export const InsightsPage = ({
   countByLocation,
   countByDeviceClass,
-  user: _user,
+  user: initialUser,
 }: Props) => {
+  const { user } = useUser(initialUser);
   const [_css, theme] = useStyletron();
+
   return (
     <AppLayout
+      user={user}
       overrides={{
         MainContent: {
           style: {
@@ -52,5 +56,3 @@ const InsightsPage = ({
     </AppLayout>
   );
 };
-
-export default InsightsPage;

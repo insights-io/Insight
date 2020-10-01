@@ -13,8 +13,10 @@ type Props = AuthenticatedServerSideProps & {
   maybeSsoSetup?: SsoSetupDTO;
 };
 
-export const OrganizationSettingsAuth = ({ maybeSsoSetup }: Props) => {
-  return <OrganizationSettingsAuthPage maybeSsoSetup={maybeSsoSetup} />;
+export const OrganizationSettingsAuth = ({ maybeSsoSetup, user }: Props) => {
+  return (
+    <OrganizationSettingsAuthPage maybeSsoSetup={maybeSsoSetup} user={user} />
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (

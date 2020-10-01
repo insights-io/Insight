@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { useStyletron } from 'baseui';
-import { Button, SHAPE, ButtonProps } from 'baseui/button';
+import { Button, SHAPE, SIZE, ButtonProps } from 'baseui/button';
 import Link from 'next/link';
 import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
 import { StatefulPopoverProps } from 'baseui/popover';
+import { UnstyledLink } from '@insight/elements';
+import { Block } from 'baseui/block';
 
 type Props = {
   artwork: React.ReactNode;
@@ -16,36 +18,33 @@ type Props = {
   };
 };
 
-const NavbarItem = React.forwardRef<HTMLLIElement, Props>(
+const NavbarItem = forwardRef<HTMLLIElement, Props>(
   ({ artwork, text, showText, onClick, to, overrides }, ref) => {
     const [css, theme] = useStyletron();
-    const { scale300: marginLeft } = theme.sizing;
 
     let content = (
       <Button
-        size="mini"
+        size={SIZE.compact}
         shape={SHAPE.pill}
         onClick={onClick}
         $style={{
           justifyContent: showText ? 'start' : 'center',
           width: '100%',
           height: '100%',
-          paddingTop: theme.sizing.scale400,
-          paddingBottom: theme.sizing.scale400,
+          color: '#d3d3d3',
+          ':hover': { color: theme.colors.white },
         }}
       >
         {artwork}
         {showText && text && (
-          <span
-            className={css({
-              marginLeft,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            })}
+          <Block
+            as="span"
+            marginLeft={theme.sizing.scale300}
+            overflow="hidden"
+            className={css({ whiteSpace: 'nowrap', textOverflow: 'ellipsis' })}
           >
             {text}
-          </span>
+          </Block>
         )}
       </Button>
     );
@@ -53,7 +52,9 @@ const NavbarItem = React.forwardRef<HTMLLIElement, Props>(
     if (to) {
       content = (
         <Link href={to}>
-          <a tabIndex={-1}>{content}</a>
+          <UnstyledLink tabIndex={-1} href={to}>
+            {content}
+          </UnstyledLink>
         </Link>
       );
     }
@@ -63,9 +64,14 @@ const NavbarItem = React.forwardRef<HTMLLIElement, Props>(
         content={showText ? undefined : text}
         placement={PLACEMENT.right}
         showArrow
-        {...overrides?.Tooltip}
+        overrides={{
+          ...overrides?.Tooltip,
+          Body: { style: { marginLeft: '16px' } },
+        }}
       >
-        <li ref={ref}>{content}</li>
+        <Block as="li" margin="12px" ref={ref}>
+          {content}
+        </Block>
       </StatefulTooltip>
     );
   }

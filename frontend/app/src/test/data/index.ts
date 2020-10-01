@@ -1,6 +1,6 @@
 import { Session, SessionDTO, UserAgentDTO, TfaMethod } from '@insight/types';
 import { v4 as uuid } from 'uuid';
-import { subSeconds, subDays } from 'date-fns';
+import { subSeconds, subDays, subMonths } from 'date-fns';
 import { mapSession } from '@insight/sdk';
 
 import { INSIGHT_ADMIN } from './user';
@@ -70,16 +70,31 @@ export const INSIGHT_SESSION_DAY_AGO_NO_LOCATION: Session = mapSession(
   INSIGHT_SESSION_DAY_AGO_NO_LOCATION_DTO
 );
 
+export const INSIGHT_SESSION_MONTH_AGO_NO_LOCATION_DTO: SessionDTO = {
+  id: uuid(),
+  createdAt: subMonths(new Date(), 1).toUTCString(),
+  deviceId: '123',
+  location: { ip: '13.77.88.76' },
+  organizationId: INSIGHT_ADMIN.organizationId,
+  userAgent: MOBILE_USER_AGENT,
+};
+
+export const INSIGHT_SESSION_MONTH_AGO_NO_LOCATION: Session = mapSession(
+  INSIGHT_SESSION_MONTH_AGO_NO_LOCATION_DTO
+);
+
 export const INSIGHT_SESSIONS_DTOS = [
   INSIGHT_SESSION_DTO,
   INSIGHT_SESSION_HOUR_AGO_DTO,
   INSIGHT_SESSION_DAY_AGO_NO_LOCATION_DTO,
+  INSIGHT_SESSION_MONTH_AGO_NO_LOCATION_DTO,
 ];
 
 export const INSIGHT_SESSIONS = [
   INSIGHT_SESSION,
   INSIGHT_SESSION_HOUR_AGO,
   INSIGHT_SESSION_DAY_AGO_NO_LOCATION,
+  INSIGHT_SESSION_MONTH_AGO_NO_LOCATION,
 ];
 
 export * from './events';

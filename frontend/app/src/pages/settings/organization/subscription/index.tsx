@@ -19,12 +19,14 @@ export const OrganizationSettingsBillingSubscription = ({
   organization,
   plan,
   subscriptions,
+  user,
 }: Props) => {
   return (
     <OrganizationSettingsBillingSubscriptionPage
       organization={organization}
       plan={plan}
       subscriptions={subscriptions}
+      user={user}
     />
   );
 };

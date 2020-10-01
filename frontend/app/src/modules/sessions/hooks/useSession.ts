@@ -1,14 +1,13 @@
-import { Session } from '@insight/types';
-import useSWR from 'swr';
 import { SessionApi } from 'api';
 import { mapSession } from '@insight/sdk';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import type { SessionDTO } from '@insight/types';
+import useSWRQuery from 'shared/hooks/useSWRQuery';
 
-const useSession = (sessionId: string, initialData: Session) => {
-  const { data, mutate } = useSWR(
+export const useSession = (sessionId: string, initialData: SessionDTO) => {
+  const { data = initialData, mutate } = useSWRQuery(
     'SessionApi.getSession',
-    () =>
-      SessionApi.getSession(sessionId).then((session) => mapSession(session)),
+    () => SessionApi.getSession(sessionId),
     { initialData }
   );
 
@@ -16,7 +15,7 @@ const useSession = (sessionId: string, initialData: Session) => {
     mutate(initialData);
   }, [initialData, mutate]);
 
-  return { session: data || initialData };
-};
+  const session = useMemo(() => mapSession(data), [data]);
 
-export default useSession;
+  return { session };
+};

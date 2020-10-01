@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { SessionApi } from 'api';
 import { INSIGHT_SESSION, INSIGHT_SESSION_DTO } from 'test/data';
 
-import useSessions from './useSessions';
+import { useSessions } from './useSessions';
 
 describe('useSessions', () => {
   it('Should correctly load more sessions', async () => {
@@ -22,7 +22,7 @@ describe('useSessions', () => {
     );
 
     expect(result.current.count).toEqual(0);
-    expect(result.current.data).toEqual([]);
+    expect(result.current.sessions).toEqual([]);
 
     result.current.loadMoreItems(0, 0);
     sandbox.assert.calledWithExactly(searchSessionsStub, {
@@ -36,7 +36,7 @@ describe('useSessions', () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.data).toEqual([INSIGHT_SESSION]);
+    expect(result.current.sessions).toEqual([INSIGHT_SESSION]);
 
     result.current.loadMoreItems(1, 1);
     sandbox.assert.calledWithExactly(searchSessionsStub, {
@@ -52,6 +52,6 @@ describe('useSessions', () => {
     });
 
     await waitForNextUpdate();
-    expect(result.current.data).toEqual([INSIGHT_SESSION, INSIGHT_SESSION]);
+    expect(result.current.sessions).toEqual([INSIGHT_SESSION, INSIGHT_SESSION]);
   });
 });

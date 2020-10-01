@@ -1,16 +1,14 @@
-import { queryByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
 import {
-  LoginPage,
+  AccountSettingsSecurityPage,
+  AccountSettingsDetailsPage,
   Sidebar,
   SignUpPage,
-  VerificationPage,
-  AccountSettingsDetailsPage,
-  AccountSettingsSecurityPage,
-} from '../../pages';
+  LoginPage,
+} from '../../../pages';
 
-fixture('/settings/account').page(AccountSettingsDetailsPage.path);
+fixture('/settings/account').page(AccountSettingsSecurityPage.path);
 
 test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) => {
   const {
@@ -19,8 +17,8 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
   } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password: currentPassword });
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security);
 
   const newPassword = uuid();
@@ -64,8 +62,8 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
 
   await Sidebar.signOut(t);
   await LoginPage.login(t, { email, password: newPassword })
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security);
 
   // SUCCESS: Change password back to initial one
@@ -77,23 +75,4 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
     })
     .expect(passwordChangedMessage.visible)
     .ok('Should display notification that password was changed');
-});
-
-test('[PHONE-NUMBER]: User should be able to set and verify a phone number', async (t) => {
-  const { email, password } = SignUpPage.generateRandomCredentials();
-  await SignUpPage.signUpAndLogin(t, { email, password });
-
-  await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings)
-    .click(AccountSettingsDetailsPage.phoneNumberConfigureButton)
-    .typeText(AccountSettingsDetailsPage.phoneNumberInput, '51222333')
-    .click(AccountSettingsDetailsPage.phoneNumberNextStep);
-
-  await VerificationPage.completeSmsChallenge(t);
-  await t
-    .expect(AccountSettingsDetailsPage.phoneNumberVerifiedMessage.visible)
-    .ok('Success message is visible')
-    .expect(queryByText('+151222333').visible)
-    .ok('American phone number visible in the data table');
 });

@@ -24,7 +24,7 @@ export const AccountSettingsDetailsPage = ({ user: initialUser }: Props) => {
   const { user, updateUser, setUser } = useUser(initialUser);
 
   return (
-    <AccountSettingsPageLayout path={PATH} header="Account details">
+    <AccountSettingsPageLayout user={user} path={PATH} header="Account details">
       <AccountInfoTable user={user} updateUser={updateUser} setUser={setUser} />
     </AccountSettingsPageLayout>
   );

@@ -26,7 +26,7 @@ export const AccountSettingsSecurityPage = ({ user: initialUser }: Props) => {
   const { user } = useUser(initialUser);
 
   return (
-    <AccountSettingsPageLayout path={PATH} header="Security">
+    <AccountSettingsPageLayout user={user} path={PATH} header="Security">
       <TwoFactorAuthentication user={user} />
       <Block marginTop="24px">
         <ChangePassword />

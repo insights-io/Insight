@@ -1,6 +1,7 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
 import { Block } from 'baseui/block';
+import { INSIGHT_ADMIN } from 'test/data';
 
 import AppLayout from './AppLayout';
 
@@ -11,7 +12,7 @@ export default {
 
 export const Base = () => {
   return (
-    <AppLayout>
+    <AppLayout user={INSIGHT_ADMIN}>
       <Block display="flex" justifyContent="center">
         Some content
       </Block>

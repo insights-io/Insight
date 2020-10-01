@@ -47,7 +47,7 @@ describe('<SessionsPage />', () => {
     );
 
     expect(queryAllByText(MAC_CHROME).length).toEqual(2);
-    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(2);
 
     expect(queryByText(LJUBLJANA_LOCATION)).toBeInTheDocument();
     expect(queryByText(BOYDTON_LOCATION)).toBeInTheDocument();
@@ -121,7 +121,7 @@ describe('<SessionsPage />', () => {
     });
 
     expect(queryAllByText(MAC_CHROME).length).toEqual(2);
-    expect(queryAllByText(ANDROID_CHROME).length).toEqual(1);
+    expect(queryAllByText(ANDROID_CHROME).length).toEqual(2);
   });
 
   it('Should be able to navigate to a session details page', async () => {

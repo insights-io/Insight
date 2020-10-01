@@ -18,8 +18,8 @@ test('[ACCOUNT-DETAILS]: As a user I want to be able to see details about my acc
   });
 
   await t
-    .click(Sidebar.accountTab.trigger)
-    .click(Sidebar.accountTab.menu.accountSettings);
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings);
 
   await t
     .expect(AccountSettingsDetailsPage.fullName.innerText)

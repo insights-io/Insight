@@ -11,6 +11,7 @@ import { TeamInvites } from 'modules/settings/components/organization/TeamInvite
 import { mapUser } from '@insight/sdk';
 import type { Path } from 'modules/settings/types';
 import type { TeamInviteDTO, UserDTO } from '@insight/types';
+import { useUser } from 'shared/hooks/useUser';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -21,17 +22,20 @@ const PATH: Path = [
 type Props = {
   members: UserDTO[];
   teamInvites: TeamInviteDTO[];
+  user: UserDTO;
 };
 
 export const OrganizationSettingsMembersPage = ({
   members: initialMembers,
   teamInvites: initialTeamInvites,
+  user: initialUser,
 }: Props) => {
+  const { user } = useUser(initialUser);
   const { invites, createTeamInvite } = useTeamInvites(initialTeamInvites);
   const members = useMemo(() => initialMembers.map(mapUser), [initialMembers]);
 
   return (
-    <OrganizationSettingsPageLayout path={PATH} header="Members">
+    <OrganizationSettingsPageLayout path={PATH} header="Members" user={user}>
       <OrganizationMembersTable members={members} />
       <TeamInvites invites={invites} createTeamInvite={createTeamInvite} />
     </OrganizationSettingsPageLayout>

@@ -7,14 +7,14 @@ import type { TeamInviteCreateDTO, TeamInviteDTO } from '@insight/types';
 const CACHE_KEY = 'AuthApi.teamInvite.list';
 
 const useTeamInvites = (initialData: TeamInviteDTO[]) => {
-  const { data, mutate } = useSWR(
+  const { data = initialData, mutate } = useSWR(
     CACHE_KEY,
     () => AuthApi.organization.teamInvite.list(),
     { initialData }
   );
 
   const invites = useMemo(() => {
-    return (data || []).map(mapTeamInvite);
+    return data.map(mapTeamInvite);
   }, [data]);
 
   const deleteTeamInvite = useCallback(

@@ -7,7 +7,6 @@ import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { SessionApi } from 'api';
 import { SessionDTO } from '@insight/types';
-import { mapSession } from '@insight/sdk';
 import SessionsPage from 'modules/sessions/pages/SessionsPage';
 
 type Props = AuthenticatedServerSideProps & {
@@ -15,17 +14,9 @@ type Props = AuthenticatedServerSideProps & {
   sessionCount: number;
 };
 
-const Sessions = ({
-  user: initialUser,
-  sessions: initialSessions,
-  sessionCount,
-}: Props) => {
+const Sessions = ({ user, sessions, sessionCount }: Props) => {
   return (
-    <SessionsPage
-      user={initialUser}
-      sessions={initialSessions.map(mapSession)}
-      sessionCount={sessionCount}
-    />
+    <SessionsPage user={user} sessions={sessions} sessionCount={sessionCount} />
   );
 };
 

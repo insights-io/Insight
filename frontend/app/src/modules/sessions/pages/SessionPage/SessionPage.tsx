@@ -1,22 +1,27 @@
 import React from 'react';
-import useSession from 'modules/sessions/hooks/useSession';
 import AppLayout from 'modules/app/components/AppLayout';
 import SessionDetails from 'modules/sessions/components/SessionDetails.tsx';
-import { Session } from '@insight/types';
+import { useUser } from 'shared/hooks/useUser';
+import { useSession } from 'modules/sessions/hooks/useSession';
+import type { SessionDTO, UserDTO } from '@insight/types';
 
 type Props = {
   sessionId: string;
-  session: Session;
+  session: SessionDTO;
+  user: UserDTO;
 };
 
-const SessionPage = ({ sessionId, session: initialSession }: Props) => {
+export const SessionPage = ({
+  user: initialUser,
+  sessionId,
+  session: initialSession,
+}: Props) => {
   const { session } = useSession(sessionId, initialSession);
+  const { user } = useUser(initialUser);
 
   return (
-    <AppLayout>
+    <AppLayout user={user}>
       <SessionDetails session={session} />
     </AppLayout>
   );
 };
-
-export default SessionPage;

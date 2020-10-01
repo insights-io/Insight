@@ -1,37 +1,27 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList, FixedSizeListProps } from 'react-window';
 import { Session } from '@insight/types';
 import SessionListItem from 'modules/sessions/containers/SessionListItem';
-import useSessions from 'modules/sessions/hooks/useSessions';
-import { DateRange } from 'modules/sessions/components/SessionSearch/utils';
-import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 
 type Props = {
-  initialSessions: Session[];
-  initialSessionCount: number;
-  dateRange: DateRange;
-  filters: SessionFilter[];
+  sessions: Session[];
+  count: number;
+  loadMoreItems: (startIndex: number, endIndex: number) => Promise<void>;
+  isItemLoaded: (index: number) => boolean;
   overrides?: {
     List?: Partial<FixedSizeListProps>;
   };
 };
 
-const SessionList = ({
-  initialSessions,
-  initialSessionCount,
-  dateRange,
-  filters,
+export const SessionList = ({
+  sessions,
+  count,
+  isItemLoaded,
+  loadMoreItems,
   overrides,
 }: Props) => {
-  const options = useMemo(() => ({ dateRange, filters }), [dateRange, filters]);
-  const { data, count, loadMoreItems, isItemLoaded } = useSessions(
-    initialSessions,
-    initialSessionCount,
-    options
-  );
-
   return (
     <InfiniteLoader
       isItemLoaded={isItemLoaded}
@@ -39,15 +29,16 @@ const SessionList = ({
       loadMoreItems={loadMoreItems}
     >
       {({ onItemsRendered, ref }) => (
-        <AutoSizer ref={ref}>
+        <AutoSizer>
           {({ height, width }) => (
             <FixedSizeList
+              ref={ref}
               height={height}
               itemCount={count}
               itemSize={73}
               onItemsRendered={onItemsRendered}
               width={width}
-              itemData={data}
+              itemData={sessions}
               {...overrides?.List}
             >
               {SessionListItem}
@@ -58,5 +49,3 @@ const SessionList = ({
     </InfiniteLoader>
   );
 };
-
-export default SessionList;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
 import type { Meta } from '@storybook/react';
+import { INSIGHT_ADMIN_DTO } from 'test/data';
 
 import { OrganizationSettingsSecurityAndPrivacyPage } from './OrganizationSettingsSecurityAndPrivacyPage';
 
@@ -12,5 +13,7 @@ export default {
 } as Meta;
 
 export const Base = () => {
-  return <OrganizationSettingsSecurityAndPrivacyPage />;
+  return (
+    <OrganizationSettingsSecurityAndPrivacyPage user={INSIGHT_ADMIN_DTO} />
+  );
 };

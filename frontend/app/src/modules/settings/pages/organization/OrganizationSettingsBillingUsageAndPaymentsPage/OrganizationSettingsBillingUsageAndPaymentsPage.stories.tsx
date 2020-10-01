@@ -2,6 +2,7 @@ import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
 import { PAID_INVOICE_DTO } from 'test/data/billing';
 import type { Meta } from '@storybook/react';
+import { INSIGHT_ADMIN_DTO } from 'test/data';
 
 import { OrganizationSettingsBillingUsageAndPaymentsPage } from './OrganizationSettingsBillingUsageAndPaymentsPage';
 
@@ -16,6 +17,7 @@ export const Base = () => {
   return (
     <OrganizationSettingsBillingUsageAndPaymentsPage
       invoices={[PAID_INVOICE_DTO]}
+      user={INSIGHT_ADMIN_DTO}
     />
   );
 };
