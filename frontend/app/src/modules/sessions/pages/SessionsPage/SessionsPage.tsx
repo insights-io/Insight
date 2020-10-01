@@ -28,12 +28,11 @@ const HomePage = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
-
   const hasSessions = initialSessions.length > 0;
+  const [filters, setFilters] = useState<SessionFilter[]>([]);
   const [dateRange, setDataRange] = useState<DateRange>(() =>
     createDateRange('all-time')
   );
-  const [filters, setFilters] = useState<SessionFilter[]>([]);
 
   const options = useMemo(() => ({ dateRange, filters }), [dateRange, filters]);
   const { sessions, count, loadMoreItems, isItemLoaded } = useSessions(

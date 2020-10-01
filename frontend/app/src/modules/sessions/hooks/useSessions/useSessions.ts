@@ -15,7 +15,6 @@ import { SessionSearchBean } from '@insight/sdk/dist/sessions';
 import { DateRange } from 'modules/sessions/components/SessionSearch/utils';
 import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 
-const EMPTY_LIST: Session[] = [];
 const EMPTY_FILTER: Filter = { filters: [] };
 
 type Filter = {
@@ -119,7 +118,7 @@ export const useSessions = (
     }
   );
 
-  const sessions = useMemo(() => data || EMPTY_LIST, [data]);
+  const sessions = useMemo(() => data, [data]);
 
   const onFilterChange = useMemo(
     () =>
