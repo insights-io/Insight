@@ -4,20 +4,27 @@ import {
   INSIGHT_SESSION_DTO,
   CONSOLE_EVENTS,
   ERROR_EVENTS,
+  INSIGHT_ADMIN_DTO,
 } from 'test/data';
 import { configureStory, fullHeightDecorator } from '@insight/storybook';
 import { SessionApi } from 'api';
+import { Meta } from '@storybook/react';
 
-import SessionPage from './SessionPage';
+import { SessionPage } from './SessionPage';
 
 export default {
   title: 'sessions/pages/SessionPage',
+  component: SessionPage,
   decorators: [fullHeightDecorator],
-};
+} as Meta;
 
 export const Base = () => {
   return (
-    <SessionPage sessionId={INSIGHT_SESSION.id} session={INSIGHT_SESSION} />
+    <SessionPage
+      sessionId={INSIGHT_SESSION.id}
+      session={INSIGHT_SESSION_DTO}
+      user={INSIGHT_ADMIN_DTO}
+    />
   );
 };
 Base.story = configureStory({

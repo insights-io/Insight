@@ -29,7 +29,7 @@ export const WithSessions = () => {
   return (
     <SessionsPage
       user={INSIGHT_ADMIN_DTO}
-      sessions={INSIGHT_SESSIONS}
+      sessions={INSIGHT_SESSIONS_DTOS}
       sessionCount={INSIGHT_SESSIONS.length}
     />
   );

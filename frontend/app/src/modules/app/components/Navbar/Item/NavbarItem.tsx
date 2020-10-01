@@ -52,7 +52,9 @@ const NavbarItem = forwardRef<HTMLLIElement, Props>(
     if (to) {
       content = (
         <Link href={to}>
-          <UnstyledLink tabIndex={-1}>{content}</UnstyledLink>
+          <UnstyledLink tabIndex={-1} href={to}>
+            {content}
+          </UnstyledLink>
         </Link>
       );
     }

@@ -20,6 +20,7 @@ export const Base = () => {
   return (
     <OrganizationSettingsMembersPage
       members={[INSIGHT_ADMIN_DTO]}
+      user={INSIGHT_ADMIN_DTO}
       teamInvites={[
         STANDARD_TEAM_INVITE_DTO,
         ADMIN_TEAM_INVITE_DTO,

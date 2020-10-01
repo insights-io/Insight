@@ -62,11 +62,11 @@ const Sidebar = forwardRef<HTMLDivElement, Props>(
         </Block>
 
         <Block
-          marginTop="auto"
           as="ul"
-          $style={{ listStyle: 'none' }}
+          marginTop="auto"
+          marginBottom={0}
           padding={0}
-          margin={0}
+          $style={{ listStyle: 'none' }}
         >
           {onCollapseItemClick && (
             <NavbarItem

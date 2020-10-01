@@ -1,7 +1,7 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
 import type { Meta } from '@storybook/react';
-import { SSO_SETUP_DTO } from 'test/data';
+import { INSIGHT_ADMIN_DTO, SSO_SETUP_DTO } from 'test/data';
 
 import { OrganizationSettingsAuthPage } from './OrganizationSettingsAuthPage';
 
@@ -12,9 +12,19 @@ export default {
 } as Meta;
 
 export const Base = () => {
-  return <OrganizationSettingsAuthPage maybeSsoSetup={SSO_SETUP_DTO} />;
+  return (
+    <OrganizationSettingsAuthPage
+      maybeSsoSetup={SSO_SETUP_DTO}
+      user={INSIGHT_ADMIN_DTO}
+    />
+  );
 };
 
 export const WithNoSetup = () => {
-  return <OrganizationSettingsAuthPage maybeSsoSetup={undefined} />;
+  return (
+    <OrganizationSettingsAuthPage
+      maybeSsoSetup={undefined}
+      user={INSIGHT_ADMIN_DTO}
+    />
+  );
 };

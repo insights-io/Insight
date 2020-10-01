@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { StyledListItem } from 'baseui/menu';
 import Link from 'next/link';
 import { UnstyledLink } from '@insight/elements';
@@ -13,12 +13,14 @@ type Props = {
   item: Item;
 };
 
-export const MenuOptionItem = ({ item, ...rest }: Props) => {
-  return (
-    <Link href={item.link}>
-      <UnstyledLink href={item.link} onClick={item.onClick}>
-        <StyledListItem {...rest} />
-      </UnstyledLink>
-    </Link>
-  );
-};
+export const MenuOptionItem = forwardRef<HTMLLIElement, Props>(
+  ({ item, ...rest }, ref) => {
+    return (
+      <Link href={item.link}>
+        <UnstyledLink href={item.link} onClick={item.onClick}>
+          <StyledListItem ref={ref} {...rest} />
+        </UnstyledLink>
+      </Link>
+    );
+  }
+);

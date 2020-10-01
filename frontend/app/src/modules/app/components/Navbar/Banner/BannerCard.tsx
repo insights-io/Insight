@@ -34,7 +34,7 @@ export const BannerCard = forwardRef<HTMLDivElement, Props>(
             Root: {
               style: {
                 ...overrides?.Avatar?.style,
-                background: theme.colors.accent600,
+                backgroundColor: theme.colors.accent600,
               },
             },
           }}

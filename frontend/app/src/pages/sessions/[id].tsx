@@ -1,22 +1,21 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
-import { SessionDTO, APIErrorDataResponse } from '@insight/types';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
-import SessionPage from 'modules/sessions/pages/SessionPage';
+import { SessionPage } from 'modules/sessions/pages/SessionPage';
 import { SessionApi } from 'api';
-import { mapSession } from '@insight/sdk';
+import type { SessionDTO, APIErrorDataResponse } from '@insight/types';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 
 type Props = AuthenticatedServerSideProps & {
   sessionId: string;
   session: SessionDTO;
 };
 
-const Session = ({ sessionId, session }: Props) => {
-  return <SessionPage sessionId={sessionId} session={mapSession(session)} />;
+const Session = ({ sessionId, session, user }: Props) => {
+  return <SessionPage sessionId={sessionId} session={session} user={user} />;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
