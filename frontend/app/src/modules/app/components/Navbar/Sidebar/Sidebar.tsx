@@ -30,6 +30,7 @@ const Sidebar = forwardRef<HTMLDivElement, Props>(
         as="nav"
         overflow="hidden"
         position="fixed"
+        className="sidebar"
         height="100%"
         width={width}
         color={theme.colors.white}
