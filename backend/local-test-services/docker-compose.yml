@@ -1,6 +1,17 @@
 version: '3.7'
 
 services:
+  try:
+    build:
+      context: ../..
+      dockerfile: frontend/try/docker/Dockerfile
+      args:
+        auth_api_server_base_url: http://auth-api:8080
+    ports:
+      - '${TRY_PORT:-3002}:3000'
+    depends_on:
+      - auth-api
+
   app:
     build:
       context: ../..
