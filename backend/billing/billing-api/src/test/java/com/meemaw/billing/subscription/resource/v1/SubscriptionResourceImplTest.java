@@ -284,7 +284,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   public void cancel__should_return_free_plan__when_successfully_canceled()
       throws JsonProcessingException, StripeException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get();
+    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
 
     PaymentMethod visaTestPaymentMethod = createVisaTestPaymentMethod();
     billingService
