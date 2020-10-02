@@ -6,7 +6,7 @@ import type {
   CodeValidityDTO,
 } from '@insight/types';
 
-import { withCredentials } from '../../core/utils';
+import { getData, withCredentials } from '../../core/utils';
 import type { RequestOptions } from '../../core/types';
 
 import type { TfaSetupStart, TfaTotpSetupStart } from './types';
@@ -29,7 +29,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       return ky
         .get(`${baseURL}/v1/sso/tfa/${method}`, withCredentials(rest))
         .json<DataResponse<TfaSetupDTO>>()
-        .then((response) => response.data);
+        .then(getData);
     },
     listSetups: ({
       baseURL = authApiBaseURL,
@@ -38,7 +38,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       return ky
         .get(`${baseURL}/v1/sso/tfa`, withCredentials(rest))
         .json<DataResponse<TfaSetupDTO[]>>()
-        .then((response) => response.data);
+        .then(getData);
     },
     challengeComplete: (
       method: TfaMethod,
@@ -60,7 +60,7 @@ export const tfaApi = (authApiBaseURL: string) => {
         return ky
           .post(`${baseURL}/v1/sso/tfa/sms/send_code`, withCredentials(rest))
           .json<DataResponse<CodeValidityDTO>>()
-          .then((dataResponse) => dataResponse.data);
+          .then(getData);
       },
       challengeSendCode: ({
         baseURL = authApiBaseURL,
@@ -72,7 +72,7 @@ export const tfaApi = (authApiBaseURL: string) => {
             withCredentials(rest)
           )
           .json<DataResponse<CodeValidityDTO>>()
-          .then((dataResponse) => dataResponse.data);
+          .then(getData);
       },
     },
 
@@ -92,7 +92,7 @@ export const tfaApi = (authApiBaseURL: string) => {
           withCredentials({ json: { code }, ...rest })
         )
         .json<DataResponse<TfaSetupDTO>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
     disable: (
       method: TfaMethod,
@@ -112,7 +112,7 @@ export const tfaApi = (authApiBaseURL: string) => {
           ...rest,
         })
         .json<DataResponse<TfaMethod[]>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
   };
 };

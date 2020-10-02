@@ -1,7 +1,6 @@
 import ky from 'ky-universal';
 import type {
   DataResponse,
-  UserDTO,
   LoginResponseDTO,
   SessionInfoDTO,
 } from '@insight/types';

@@ -20,10 +20,7 @@ export const organizationsApi = (authApiBaseURL: string) => {
     },
     members: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/organizations/members`, {
-          credentials: 'include',
-          ...rest,
-        })
+        .get(`${baseURL}/v1/organizations/members`, withCredentials(rest))
         .json<DataResponse<UserDTO[]>>()
         .then(getData);
     },
