@@ -22,7 +22,7 @@ type PasswordResetFormData = {
   password: string;
 };
 
-const PasswordResetPage = ({ token }: Props) => {
+export const PasswordResetPage = ({ token }: Props) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
@@ -80,5 +80,3 @@ const PasswordResetPage = ({ token }: Props) => {
     </AuthPageLayout>
   );
 };
-
-export default PasswordResetPage;

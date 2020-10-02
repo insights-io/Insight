@@ -8,7 +8,7 @@ import { OrganizationSettingsPageLayout } from 'modules/settings/components/orga
 import type { Path } from 'modules/settings/types';
 import type { OrganizationDTO, UserDTO } from '@insight/types';
 import { OrganizationInfoTable } from 'modules/settings/components/organization/OrganizationInfoTable';
-import useOrganization from 'shared/hooks/useOrganization';
+import { useOrganization } from 'shared/hooks/useOrganization';
 import { useUser } from 'shared/hooks/useUser';
 
 const PATH: Path = [
@@ -30,7 +30,12 @@ export const OrganizationSettingsGeneralPage = ({
   const { organization } = useOrganization(initialOrganization);
 
   return (
-    <OrganizationSettingsPageLayout user={user} path={PATH} header="General">
+    <OrganizationSettingsPageLayout
+      user={user}
+      organization={organization}
+      path={PATH}
+      header="General"
+    >
       <OrganizationInfoTable organization={organization} />
     </OrganizationSettingsPageLayout>
   );

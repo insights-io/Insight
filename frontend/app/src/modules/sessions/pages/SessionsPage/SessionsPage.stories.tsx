@@ -10,8 +10,9 @@ import type { SessionDTO } from '@insight/types';
 import { SessionSearchBean } from '@insight/sdk/dist/sessions';
 import get from 'lodash/get';
 import type { Meta } from '@storybook/react';
+import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
-import SessionsPage from './SessionsPage';
+import { SessionsPage } from './SessionsPage';
 
 export default {
   title: 'sessions/pages/SessionsPage',
@@ -21,7 +22,12 @@ export default {
 
 export const NoSessions = () => {
   return (
-    <SessionsPage user={INSIGHT_ADMIN_DTO} sessions={[]} sessionCount={0} />
+    <SessionsPage
+      user={INSIGHT_ADMIN_DTO}
+      sessions={[]}
+      sessionCount={0}
+      organization={INSIGHT_ORGANIZATION_DTO}
+    />
   );
 };
 
@@ -31,6 +37,7 @@ export const WithSessions = () => {
       user={INSIGHT_ADMIN_DTO}
       sessions={INSIGHT_SESSIONS_DTOS}
       sessionCount={INSIGHT_SESSIONS.length}
+      organization={INSIGHT_ORGANIZATION_DTO}
     />
   );
 };

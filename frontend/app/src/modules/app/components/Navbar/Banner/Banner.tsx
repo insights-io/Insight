@@ -35,7 +35,7 @@ import { MenuOptionItem } from './MenuOptionItem';
 
 type Props = {
   theme: Theme;
-  organizationName: string;
+  organizationName: string | undefined;
   user: User;
   expanded: boolean;
 };
@@ -118,7 +118,7 @@ export const NavbarBanner = ({
     >
       <Block ref={callbackRef} className="banner">
         <BannerCard
-          title={organizationName}
+          title={organizationName || 'O'}
           titleExtra={
             <VerticalAligned marginLeft={theme.sizing.scale200}>
               <ChevronDown />

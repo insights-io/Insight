@@ -5,12 +5,12 @@ import { UpdateUserPayload } from '@insight/sdk/dist/auth';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
 import type { UserDTO } from '@insight/types';
 
-const CACHE_KEY = 'AuthApi.sso.session.me';
+const CACHE_KEY = 'AuthApi.user.me';
 
 export const useUser = (initialData: UserDTO) => {
-  const { data, mutate } = useSWRQuery(
+  const { data = initialData, mutate } = useSWRQuery(
     CACHE_KEY,
-    () => AuthApi.sso.session.me(),
+    () => AuthApi.user.me(),
     { initialData, refreshInterval: 30000 }
   );
 
@@ -31,7 +31,7 @@ export const useUser = (initialData: UserDTO) => {
     [setUser]
   );
 
-  const user = useMemo(() => mapUser(data as UserDTO), [data]);
+  const user = useMemo(() => mapUser(data), [data]);
 
   return { user, updateUser, setUser };
 };

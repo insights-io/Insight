@@ -3,6 +3,7 @@ import { fullHeightDecorator } from '@insight/storybook';
 import { Meta } from '@storybook/react';
 import { AuthTokenDTO } from '@insight/types';
 import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 import { AccountSettingsAuthTokensPage } from './AccountSettingsAuthTokensPage';
 
@@ -23,6 +24,7 @@ export const Base = () => {
     <AccountSettingsAuthTokensPage
       user={INSIGHT_ADMIN_DTO}
       authTokens={[AUTH_TOKEN_DTO]}
+      organization={INSIGHT_ORGANIZATION_DTO}
     />
   );
 };

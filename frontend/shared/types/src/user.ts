@@ -1,3 +1,7 @@
+import type { OrganizationDTO } from './organization';
+
+export type LoginResponseDTO = boolean | { challengeId: string };
+
 export type PhoneNumber = {
   countryCode: string;
   digits: string;
@@ -24,4 +28,9 @@ export type User = Omit<UserDTO, 'createdAt' | 'updatedAt'> & {
 
 export type CodeValidityDTO = {
   validitySeconds: number;
+};
+
+export type SessionInfoDTO = {
+  user: UserDTO;
+  organization: OrganizationDTO;
 };

@@ -1,1 +1,1 @@
-export { default } from './SessionsPage';
+export { SessionsPage } from './SessionsPage';

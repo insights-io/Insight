@@ -14,12 +14,18 @@ type Props = AuthenticatedServerSideProps & {
   countByDeviceClass: Record<string, number>;
 };
 
-const Home = ({ user, countByLocation, countByDeviceClass }: Props) => {
+const Home = ({
+  user,
+  countByLocation,
+  organization,
+  countByDeviceClass,
+}: Props) => {
   return (
     <InsightsPage
       user={user}
       countByLocation={countByLocation}
       countByDeviceClass={countByDeviceClass}
+      organization={organization}
     />
   );
 };
@@ -62,7 +68,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ]);
 
     return {
-      props: { user: authResponse.user, countByLocation, countByDeviceClass },
+      props: {
+        user: authResponse.user,
+        organization: authResponse.organization,
+        countByLocation,
+        countByDeviceClass,
+      },
     };
   } finally {
     requestSpan.finish();

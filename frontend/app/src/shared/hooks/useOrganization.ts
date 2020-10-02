@@ -7,7 +7,7 @@ import useSWRQuery from './useSWRQuery';
 
 const CACHE_KEY = 'AuthApi.organizations.get';
 
-const useOrganization = (initialData: OrganizationDTO) => {
+export const useOrganization = (initialData: OrganizationDTO) => {
   const { data, error } = useSWRQuery(
     CACHE_KEY,
     () => AuthApi.organization.get(),
@@ -20,5 +20,3 @@ const useOrganization = (initialData: OrganizationDTO) => {
 
   return { organization, error };
 };
-
-export default useOrganization;

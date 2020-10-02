@@ -16,6 +16,7 @@ import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
@@ -155,7 +156,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   public void get_organization_by_id__should_work__when_authenticated()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getUser(sessionId).get();
+    SessionInfoDTO sessionInfo = authApi().getSessionInfo(sessionId).get();
+    AuthUser user = sessionInfo.getUser();
 
     AuthTokenDTO authToken =
         authTokenDatasource

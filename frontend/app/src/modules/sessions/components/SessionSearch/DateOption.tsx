@@ -55,7 +55,6 @@ const DateOption = React.forwardRef<HTMLElement, DateOptionProps>(
                 display="flex"
                 width="100%"
                 padding="12px"
-                $style={{ boxSizing: 'border-box' }}
                 backgroundColor={theme.colors.white}
               >
                 <Block flex={1}>

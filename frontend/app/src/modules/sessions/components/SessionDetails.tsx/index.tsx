@@ -1,1 +1,1 @@
-export { default } from './SessionDetails';
+export { SessionDetails } from './SessionDetails';

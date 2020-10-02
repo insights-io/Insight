@@ -1,9 +1,9 @@
 import React from 'react';
-import { Block } from 'baseui/block';
 import { TOPBAR_HEIGHT } from 'shared/theme';
 import { useStyletron } from 'baseui';
 import { FaInfo, FaBars, FaTimes } from 'react-icons/fa';
 import { PLACEMENT } from 'baseui/tooltip';
+import { Flex } from '@insight/elements';
 
 import NavbarItem from '../Item';
 
@@ -18,21 +18,19 @@ const NAVBAR_ITEM_OVERRIDES = {
   },
 };
 
-const Topbar = ({ onMenuClick, sidebarVisible }: Props) => {
+export const NavbarTopbar = ({ onMenuClick, sidebarVisible }: Props) => {
   const [_css, theme] = useStyletron();
   const ToggleSidebarIcon = sidebarVisible ? FaTimes : FaBars;
 
   return (
-    <Block
+    <Flex
       width="100%"
-      display="flex"
       height={TOPBAR_HEIGHT}
       color={theme.colors.white}
       backgroundColor={theme.colors.black}
     >
-      <Block
+      <Flex
         height="100%"
-        display="flex"
         justifyContent="center"
         as="ul"
         margin={0}
@@ -52,9 +50,7 @@ const Topbar = ({ onMenuClick, sidebarVisible }: Props) => {
           overrides={NAVBAR_ITEM_OVERRIDES}
           showText
         />
-      </Block>
-    </Block>
+      </Flex>
+    </Flex>
   );
 };
-
-export default React.memo(Topbar);

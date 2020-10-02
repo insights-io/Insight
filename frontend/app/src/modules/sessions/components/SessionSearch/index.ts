@@ -1,1 +1,1 @@
-export { default } from './SessionSearch';
+export { SessionSearch } from './SessionSearch';

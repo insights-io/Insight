@@ -1,12 +1,10 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import type { GetServerSideProps } from 'next';
 import {
-  authenticated,
   AuthenticatedServerSideProps,
+  getAuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 import { OrganizationSettingsGeneralPage } from 'modules/settings/pages/organization/OrganizationSettingsGeneralPage';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
-import { AuthApi } from 'api';
 import type { OrganizationDTO } from '@insight/types';
 
 type Props = AuthenticatedServerSideProps & {
@@ -19,28 +17,6 @@ export const OrganizationSettingsGeneral = ({ organization, user }: Props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async (
-  context
-) => {
-  const requestSpan = startRequestSpan(context.req);
-  try {
-    const authResponse = await authenticated(context, requestSpan);
-    if (!authResponse) {
-      return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
-    }
-
-    const organization = await AuthApi.organization.get({
-      baseURL: process.env.AUTH_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
-
-    return { props: { user: authResponse.user, organization } };
-  } finally {
-    requestSpan.finish();
-  }
-};
+export const getServerSideProps: GetServerSideProps<Props> = getAuthenticatedServerSideProps;
 
 export default OrganizationSettingsGeneral;

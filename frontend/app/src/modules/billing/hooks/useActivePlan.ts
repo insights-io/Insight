@@ -10,7 +10,7 @@ export const mutateActivePlan = (plan: PlanDTO) => {
   globalMutate(CACHE_KEY, plan);
 };
 
-const useActivePlan = (initialData: PlanDTO) => {
+export const useActivePlan = (initialData: PlanDTO) => {
   const { data, error, mutate, revalidate: revalidateActivePlan } = useSWRQuery(
     CACHE_KEY,
     () => BillingApi.subscriptions.getActivePlan(),
@@ -33,5 +33,3 @@ const useActivePlan = (initialData: PlanDTO) => {
     revalidateActivePlan,
   };
 };
-
-export default useActivePlan;

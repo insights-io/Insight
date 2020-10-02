@@ -11,14 +11,15 @@ import {
 import useSidebar from 'modules/app/hooks/useSidebar';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 import { FlexColumn } from '@insight/elements';
-import type { User } from '@insight/types';
+import type { Organization, User } from '@insight/types';
 
-import Sidebar from '../Navbar/Sidebar';
-import Topbar from '../Navbar/Topbar';
+import { Sidebar } from '../Navbar/Sidebar';
+import { NavbarTopbar } from '../Navbar/Topbar';
 
 type Props = {
   children: React.ReactNode;
   user: User;
+  organization: Organization;
   overrides?: {
     Root?: {
       style?: $StyleProp<BlockProps>;
@@ -30,7 +31,12 @@ type Props = {
   };
 };
 
-const AppLayout = ({ children, user, overrides }: Props) => {
+export const AppLayout = ({
+  children,
+  user,
+  organization,
+  overrides,
+}: Props) => {
   const { width = 0 } = useWindowSize();
   const [_css, theme] = useStyletron();
   const renderTopbar = width < theme.breakpoints.medium;
@@ -54,12 +60,16 @@ const AppLayout = ({ children, user, overrides }: Props) => {
   }, []);
 
   const topbar = renderTopbar ? (
-    <Topbar onMenuClick={onSidebarMenuClick} sidebarVisible={sidebarVisible} />
+    <NavbarTopbar
+      onMenuClick={onSidebarMenuClick}
+      sidebarVisible={sidebarVisible}
+    />
   ) : null;
 
   let sidebar: React.ReactNode = (
     <Sidebar
       user={user}
+      organization={organization}
       ref={sidebarRef}
       width={renderTopbar ? EXPANDED_SIDEBAR_WIDTH : sidebarProps.width}
       expanded={renderTopbar ? true : sidebarProps.expanded}
@@ -87,7 +97,6 @@ const AppLayout = ({ children, user, overrides }: Props) => {
 
   const contentContainerStyle = useMemo(() => {
     return {
-      boxSizing: 'border-box',
       left: renderTopbar ? 0 : SIDEBAR_WIDTH,
       top: renderTopbar ? TOPBAR_HEIGHT : 0,
       width: renderTopbar ? '100%' : `calc(100% - ${SIDEBAR_WIDTH})`,
@@ -112,5 +121,3 @@ const AppLayout = ({ children, user, overrides }: Props) => {
     </Block>
   );
 };
-
-export default AppLayout;

@@ -9,7 +9,7 @@ type Props = {
   session: Session;
 };
 
-const SessionDetails = ({ session }: Props) => {
+export const SessionDetails = ({ session }: Props) => {
   return (
     <>
       <Block display="flex" height="100%">
@@ -22,5 +22,3 @@ const SessionDetails = ({ session }: Props) => {
     </>
   );
 };
-
-export default SessionDetails;

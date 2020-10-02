@@ -8,9 +8,10 @@ import {
   ACCOUNT_SETTINGS_SECURITY_PAGE_PART,
   ACCOUNT_SETTINGS_PATH_PART,
 } from 'shared/constants/routes';
-import type { UserDTO } from '@insight/types';
+import type { OrganizationDTO, UserDTO } from '@insight/types';
 import type { Path } from 'modules/settings/types';
 import { useUser } from 'shared/hooks/useUser';
+import { useOrganization } from 'shared/hooks/useOrganization';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -20,13 +21,23 @@ const PATH: Path = [
 
 type Props = {
   user: UserDTO;
+  organization: OrganizationDTO;
 };
 
-export const AccountSettingsSecurityPage = ({ user: initialUser }: Props) => {
+export const AccountSettingsSecurityPage = ({
+  user: initialUser,
+  organization: initialOrganization,
+}: Props) => {
   const { user } = useUser(initialUser);
+  const { organization } = useOrganization(initialOrganization);
 
   return (
-    <AccountSettingsPageLayout user={user} path={PATH} header="Security">
+    <AccountSettingsPageLayout
+      user={user}
+      organization={organization}
+      path={PATH}
+      header="Security"
+    >
       <TwoFactorAuthentication user={user} />
       <Block marginTop="24px">
         <ChangePassword />

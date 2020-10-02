@@ -1,7 +1,7 @@
 import ky from 'ky-universal';
 import type { DataResponse, SessionDTO, BrowserEventDTO } from '@insight/types';
 
-import { querystring, withCredentials } from '../core/utils';
+import { getData, querystring, withCredentials } from '../core/utils';
 import type { RequestOptions } from '../core/types';
 
 import type {
@@ -22,7 +22,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
         withCredentials(rest)
       )
       .json<DataResponse<T>>()
-      .then((dataResponse) => dataResponse.data);
+      .then(getData);
   }
 
   const SessionApi = {
@@ -33,7 +33,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
       return ky
         .get(`${baseURL}/v1/sessions/${sessionId}`, withCredentials(rest))
         .json<DataResponse<SessionDTO>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
     count,
     distinct: (
@@ -85,7 +85,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
       return ky
         .get(`${baseURL}/v1/sessions${searchQuery}`, withCredentials(rest))
         .json<DataResponse<SessionDTO[]>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
   };
 
@@ -105,7 +105,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
           withCredentials(rest)
         )
         .json<DataResponse<BrowserEventDTO[]>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
   };
 

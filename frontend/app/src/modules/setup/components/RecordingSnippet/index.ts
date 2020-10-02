@@ -1,1 +1,1 @@
-export { default } from './RecordingSnippet';
+export { RecordingSnippet } from './RecordingSnippet';

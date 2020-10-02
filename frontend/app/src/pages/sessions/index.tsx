@@ -7,16 +7,21 @@ import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { SessionApi } from 'api';
 import { SessionDTO } from '@insight/types';
-import SessionsPage from 'modules/sessions/pages/SessionsPage';
+import { SessionsPage } from 'modules/sessions/pages/SessionsPage';
 
 type Props = AuthenticatedServerSideProps & {
   sessions: SessionDTO[];
   sessionCount: number;
 };
 
-const Sessions = ({ user, sessions, sessionCount }: Props) => {
+const Sessions = ({ user, organization, sessions, sessionCount }: Props) => {
   return (
-    <SessionsPage user={user} sessions={sessions} sessionCount={sessionCount} />
+    <SessionsPage
+      user={user}
+      organization={organization}
+      sessions={sessions}
+      sessionCount={sessionCount}
+    />
   );
 };
 
@@ -52,7 +57,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       sessionCountPromise,
     ]);
 
-    return { props: { user: authResponse.user, sessions, sessionCount } };
+    return {
+      props: {
+        user: authResponse.user,
+        organization: authResponse.organization,
+        sessions,
+        sessionCount,
+      },
+    };
   } finally {
     requestSpan.finish();
   }

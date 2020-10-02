@@ -6,7 +6,7 @@ import {
 } from 'modules/auth/middleware/authMiddleware';
 import { OrganizationSettingsBillingSubscriptionPage } from 'modules/settings/pages/organization/OrganizationSettingsBillingSubscriptionPage';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
-import { AuthApi, BillingApi } from 'api';
+import { BillingApi } from 'api';
 import type { OrganizationDTO, PlanDTO, SubscriptionDTO } from '@insight/types';
 
 type Props = AuthenticatedServerSideProps & {
@@ -41,14 +41,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const organizationPromise = AuthApi.organization.get({
-      baseURL: process.env.AUTH_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
-
     const activePlanPromise = BillingApi.subscriptions.getActivePlan({
       baseURL: process.env.BILLING_API_BASE_URL,
       headers: {
@@ -65,14 +57,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       },
     });
 
-    const [plan, subscriptions, organization] = await Promise.all([
+    const [plan, subscriptions] = await Promise.all([
       activePlanPromise,
       subscriptionsPromise,
-      organizationPromise,
     ]);
 
     return {
-      props: { user: authResponse.user, plan, subscriptions, organization },
+      props: {
+        user: authResponse.user,
+        plan,
+        subscriptions,
+        organization: authResponse.organization,
+      },
     };
   } finally {
     requestSpan.finish();

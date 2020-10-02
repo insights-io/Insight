@@ -14,8 +14,15 @@ type Props = AuthenticatedServerSideProps & {
   session: SessionDTO;
 };
 
-const Session = ({ sessionId, session, user }: Props) => {
-  return <SessionPage sessionId={sessionId} session={session} user={user} />;
+const Session = ({ sessionId, session, user, organization }: Props) => {
+  return (
+    <SessionPage
+      sessionId={sessionId}
+      session={session}
+      user={user}
+      organization={organization}
+    />
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -44,7 +51,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       }
       throw error;
     });
-    return { props: { sessionId, user: authResponse.user, session } };
+    return {
+      props: {
+        sessionId,
+        user: authResponse.user,
+        organization: authResponse.organization,
+        session,
+      },
+    };
   } finally {
     requestSpan.finish();
   }

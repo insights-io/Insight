@@ -43,6 +43,10 @@ public class Boom<T> {
     return new Boom<>(status);
   }
 
+  public Response.ResponseBuilder responseBuilder() {
+    return DataResponse.error(this).builder(statusCode);
+  }
+
   public Response response() {
     return DataResponse.error(this).response(statusCode);
   }

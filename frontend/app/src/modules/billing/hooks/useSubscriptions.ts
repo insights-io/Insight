@@ -6,7 +6,7 @@ import { mapSubscription } from '@insight/sdk';
 
 const CACHE_KEY = 'BillingApi.subscriptions.list';
 
-const useSubscriptions = (initialData: SubscriptionDTO[]) => {
+export const useSubscriptions = (initialData: SubscriptionDTO[]) => {
   const { data, error, mutate, revalidate } = useSWRQuery(
     CACHE_KEY,
     () => BillingApi.subscriptions.list(),
@@ -34,5 +34,3 @@ const useSubscriptions = (initialData: SubscriptionDTO[]) => {
     revalidateSubscriptions: revalidate,
   };
 };
-
-export default useSubscriptions;

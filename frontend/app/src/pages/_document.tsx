@@ -113,6 +113,9 @@ class InsightDocument extends Document<Props> {
                 height: 100%;
                 margin: 0px;
               }
+              *, *::before, *::after {
+                box-sizing: border-box;
+              }
             `}
           </style>
 

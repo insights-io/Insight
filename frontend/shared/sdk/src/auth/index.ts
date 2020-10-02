@@ -1,8 +1,8 @@
-import { organizationsApi } from './organization/api';
-import { passwordApi } from './password/api';
-import { signupApi } from './signup/api';
-import { tfaApi } from './tfa/api';
-import { userApi } from './user/api';
+import { organizationsApi } from './organization/resource';
+import { passwordApi } from './password/resource';
+import { signupApi } from './signup/resource';
+import { tfaApi } from './tfa/resource';
+import { userApi } from './user/resource';
 import { ssoSetupApi, ssoSessionApi, ssoTokenResource } from './sso';
 
 export * from './organization';

@@ -29,6 +29,11 @@ public class UserResourceImpl implements UserResource {
   @Inject UserPhoneCodeService userPhoneCodeService;
 
   @Override
+  public CompletionStage<Response> me(String sessionId) {
+    return CompletableFuture.completedStage(DataResponse.ok(principal.user()));
+  }
+
+  @Override
   public CompletionStage<Response> update(Map<String, Object> body) {
     if (body.isEmpty()) {
       return CompletableFuture.completedStage(

@@ -14,13 +14,14 @@ import Head from 'next/head';
 import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
-import { SpacedBetween } from '@insight/elements';
+import { Flex, SpacedBetween } from '@insight/elements';
+import { LOGIN_PAGE } from 'shared/constants/routes';
 
 type FormData = {
   email: string;
 };
 
-const PasswordForgotPage = () => {
+export const PasswordForgotPage = () => {
   const [checkYourInbox, setCheckYourInbox] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
   const { register, handleSubmit, errors } = useForm<FormData>();
@@ -50,35 +51,27 @@ const PasswordForgotPage = () => {
         <title>Insight | Password forgot</title>
       </Head>
       {checkYourInbox ? (
-        <Block
-          display="flex"
-          justifyContent="center"
-          marginBottom={theme.sizing.scale400}
-        >
+        <Flex justifyContent="center" marginBottom={theme.sizing.scale400}>
           <Paragraph4>
             If your email address is associated with an Insight account, you
             will be receiving a password reset request shortly.
           </Paragraph4>
-        </Block>
+        </Flex>
       ) : (
         <>
-          <Block
-            display="flex"
-            justifyContent="center"
-            marginBottom={theme.sizing.scale400}
-          >
+          <Flex justifyContent="center" marginBottom={theme.sizing.scale400}>
             <Paragraph2>
               Enter your email below and we&apos;ll send you a link to reset
               your password.
             </Paragraph2>
-          </Block>
+          </Flex>
           <form onSubmit={onSubmit} noValidate>
             <Block>
               <FormControl
                 label={
                   <SpacedBetween>
                     <span>Email</span>
-                    <Link href="/login">
+                    <Link href={LOGIN_PAGE}>
                       <a>Remember password?</a>
                     </Link>
                   </SpacedBetween>
@@ -113,5 +106,3 @@ const PasswordForgotPage = () => {
     </AuthPageLayout>
   );
 };
-
-export default PasswordForgotPage;

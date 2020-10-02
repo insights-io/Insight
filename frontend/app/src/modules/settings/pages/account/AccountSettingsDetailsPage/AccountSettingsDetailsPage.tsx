@@ -8,7 +8,8 @@ import {
 import { AccountInfoTable } from 'modules/settings/components/account/AccountInfoTable';
 import { useUser } from 'shared/hooks/useUser';
 import type { Path } from 'modules/settings/types';
-import type { UserDTO } from '@insight/types';
+import type { OrganizationDTO, UserDTO } from '@insight/types';
+import { useOrganization } from 'shared/hooks/useOrganization';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -18,13 +19,23 @@ const PATH: Path = [
 
 type Props = {
   user: UserDTO;
+  organization: OrganizationDTO;
 };
 
-export const AccountSettingsDetailsPage = ({ user: initialUser }: Props) => {
+export const AccountSettingsDetailsPage = ({
+  user: initialUser,
+  organization: initialOrganization,
+}: Props) => {
   const { user, updateUser, setUser } = useUser(initialUser);
+  const { organization } = useOrganization(initialOrganization);
 
   return (
-    <AccountSettingsPageLayout user={user} path={PATH} header="Account details">
+    <AccountSettingsPageLayout
+      user={user}
+      organization={organization}
+      path={PATH}
+      header="Account details"
+    >
       <AccountInfoTable user={user} updateUser={updateUser} setUser={setUser} />
     </AccountSettingsPageLayout>
   );

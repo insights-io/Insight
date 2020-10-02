@@ -19,12 +19,14 @@ export const OrganizationSettingsBillingSubscriptionDetails = ({
   subscription,
   invoices,
   user,
+  organization,
 }: Props) => {
   return (
     <OrganizationSettingsBillingSubscriptionDetailsPage
       invoices={invoices}
       subscription={subscription}
       user={user}
+      organization={organization}
     />
   );
 };
@@ -72,7 +74,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         );
 
         return {
-          props: { user: authResponse.user, invoices, subscription },
+          props: {
+            user: authResponse.user,
+            invoices,
+            subscription,
+            organization: authResponse.organization,
+          },
         };
       });
   } finally {

@@ -1,7 +1,10 @@
 package com.meemaw.auth.sso.session.resource.v1;
 
+import com.meemaw.auth.organization.service.OrganizationService;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.service.SsoService;
+import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -11,6 +14,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -24,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SsoResourceImpl implements SsoResource {
 
   @Inject SsoService ssoService;
+  @Inject OrganizationService organizationService;
   @Context HttpServerRequest request;
   @Context UriInfo info;
 
@@ -77,17 +82,34 @@ public class SsoResourceImpl implements SsoResource {
   }
 
   @Override
-  public CompletionStage<Response> session(String sessionId) {
+  public CompletionStage<Response> getSession(String sessionId) {
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .findSession(sessionId)
-        .thenApply(
+        .thenCompose(
             maybeUser -> {
               if (maybeUser.isEmpty()) {
-                log.debug("Session not found");
-                return Response.noContent().cookie(SsoSession.clearCookie(cookieDomain)).build();
+                log.debug("[AUTH]: Session not found");
+                return CompletableFuture.completedStage(
+                    Response.noContent().cookie(SsoSession.clearCookie(cookieDomain)).build());
               }
-              return DataResponse.ok(maybeUser.get());
+
+              AuthUser user = maybeUser.get();
+              String organizationId = user.getOrganizationId();
+              return organizationService
+                  .getOrganization(organizationId)
+                  .thenApply(
+                      maybeOrganization -> {
+                        if (maybeOrganization.isEmpty()) {
+                          log.debug("[AUTH]: Organization not found for session={}", sessionId);
+                          return Boom.notFound()
+                              .responseBuilder()
+                              .cookie(SsoSession.clearCookie(cookieDomain))
+                              .build();
+                        }
+
+                        return DataResponse.ok(SessionInfoDTO.from(user, maybeOrganization.get()));
+                      });
             });
   }
 

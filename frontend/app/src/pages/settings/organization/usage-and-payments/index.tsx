@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
@@ -16,11 +16,13 @@ type Props = AuthenticatedServerSideProps & {
 export const OrganizationSettingsBillingUsageAndPayments = ({
   invoices,
   user,
+  organization,
 }: Props) => {
   return (
     <OrganizationSettingsBillingUsageAndPaymentsPage
       invoices={invoices}
       user={user}
+      organization={organization}
     />
   );
 };
@@ -44,7 +46,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     });
 
     return {
-      props: { user: authResponse.user, invoices },
+      props: {
+        user: authResponse.user,
+        invoices,
+        organization: authResponse.organization,
+      },
     };
   } finally {
     requestSpan.finish();

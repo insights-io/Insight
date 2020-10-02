@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
 import { FlexColumn } from '@insight/elements';
 import { INDEX_PAGE, SESSIONS_PAGE } from 'shared/constants/routes';
-import type { User } from '@insight/types';
+import type { Organization, User } from '@insight/types';
 
 import { NavbarBanner } from '../Banner';
 
@@ -18,10 +18,22 @@ type Props = {
   renderLogo?: boolean;
   style?: StyleObject;
   user: User;
+  organization: Organization;
 };
 
-const Sidebar = forwardRef<HTMLDivElement, Props>(
-  ({ width, expanded, onCollapseItemClick, renderLogo, style, user }, ref) => {
+export const Sidebar = forwardRef<HTMLDivElement, Props>(
+  (
+    {
+      width,
+      expanded,
+      onCollapseItemClick,
+      renderLogo,
+      style,
+      user,
+      organization,
+    },
+    ref
+  ) => {
     const [_css, theme] = useStyletron();
 
     return (
@@ -41,7 +53,7 @@ const Sidebar = forwardRef<HTMLDivElement, Props>(
           <Block margin="12px" as="li">
             <NavbarBanner
               expanded={expanded}
-              organizationName="Insight"
+              organizationName={organization.name}
               user={user}
               theme={theme}
             />
@@ -92,5 +104,3 @@ const Sidebar = forwardRef<HTMLDivElement, Props>(
     );
   }
 );
-
-export default React.memo(Sidebar);

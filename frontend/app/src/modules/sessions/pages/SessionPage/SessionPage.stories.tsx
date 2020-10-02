@@ -9,6 +9,7 @@ import {
 import { configureStory, fullHeightDecorator } from '@insight/storybook';
 import { SessionApi } from 'api';
 import { Meta } from '@storybook/react';
+import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 import { SessionPage } from './SessionPage';
 
@@ -24,6 +25,7 @@ export const Base = () => {
       sessionId={INSIGHT_SESSION.id}
       session={INSIGHT_SESSION_DTO}
       user={INSIGHT_ADMIN_DTO}
+      organization={INSIGHT_ORGANIZATION_DTO}
     />
   );
 };

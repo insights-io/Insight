@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.auth.organization.datasource.OrganizationDatasource;
+import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.SsoSignInSession;
@@ -20,7 +22,7 @@ import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.mappers.JacksonMapper;
@@ -57,6 +59,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
 
   @Inject UserDatasource userDatasource;
   @Inject AppConfig appConfig;
+  @Inject OrganizationDatasource organizationDatasource;
 
   @TestHTTPResource(SamlResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
   URI samlSignInUri;
@@ -442,7 +445,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     // Make sure sessions are not the same
     assertNotEquals(firstSessionId, secondSessionId);
 
-    DataResponse<UserDTO> firstSessionIdUser =
+    DataResponse<SessionInfoDTO> firstSessionIdInfo =
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, firstSessionId)
@@ -452,8 +455,9 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
             .extract()
             .response()
             .as(new TypeRef<>() {});
+    AuthUser firstUser = firstSessionIdInfo.getData().getUser();
 
-    DataResponse<UserDTO> secondSessionIdUser =
+    DataResponse<SessionInfoDTO> secondSessionIdInfo =
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, secondSessionId)
@@ -463,10 +467,11 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
             .extract()
             .response()
             .as(new TypeRef<>() {});
+    AuthUser secondUser = secondSessionIdInfo.getData().getUser();
 
     // Make sure both sessions are associated with same user
-    assertEquals(firstSessionIdUser, secondSessionIdUser);
-    assertEquals(email, firstSessionIdUser.getData().getEmail());
+    assertEquals(firstUser.getId(), secondUser.getId());
+    assertEquals(email, firstUser.getEmail());
 
     given()
         .when()
@@ -582,6 +587,12 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     String sessionId = authApi().signUpAndLogin(email, password);
 
     AuthUser authUser = userDatasource.findUser(email).toCompletableFuture().join().orElseThrow();
+    Organization organization =
+        organizationDatasource
+            .findOrganization(authUser.getOrganizationId())
+            .toCompletableFuture()
+            .join()
+            .get();
 
     // should be able to get session by id
     given()
@@ -590,7 +601,10 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .get(SsoResource.PATH + "/session")
         .then()
         .statusCode(200)
-        .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(authUser))));
+        .body(
+            sameJson(
+                objectMapper.writeValueAsString(
+                    DataResponse.data(SessionInfoDTO.from(authUser, organization)))));
 
     // should be able to get session via cookie
     given()
@@ -599,7 +613,10 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .get(SsoResource.PATH + "/me")
         .then()
         .statusCode(200)
-        .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(authUser))));
+        .body(
+            sameJson(
+                objectMapper.writeValueAsString(
+                    DataResponse.data(SessionInfoDTO.from(authUser, organization)))));
 
     // should be able to logout
     given()
