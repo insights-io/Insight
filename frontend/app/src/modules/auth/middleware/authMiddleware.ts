@@ -86,8 +86,9 @@ export const authenticated = async (
       }
       return redirectToLogin({ 'set-cookie': setCookie || undefined });
     }
+
     const {
-      data: { user, organization },
+      data: { organization, user },
     } = await responsePromise.json<DataResponse<SessionInfoDTO>>();
 
     span.setTag('user.id', user.id);

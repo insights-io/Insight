@@ -1,21 +1,26 @@
 import { authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/sessions';
 import { AuthApi, SessionApi } from 'api';
-import { INSIGHT_ADMIN, INSIGHT_SESSIONS_DTOS } from 'test/data';
+import { INSIGHT_ADMIN_DTO, INSIGHT_SESSIONS_DTOS } from 'test/data';
 import { sandbox } from '@insight/testing';
 import { mockServerSideRequest } from '@insight/next-testing';
+import { responsePromise } from 'test/utils/request';
+import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 describe('pages/sessions', () => {
   authenticatedTestCases(getServerSideProps);
 
   it('Injects correct server side data', async () => {
     sandbox.stub(document, 'cookie').value('SessionId=123');
-    const getSsoSessionStub = sandbox
-      .stub(AuthApi.sso.session, 'get')
-      .resolves(({
+    const getSsoSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
+      responsePromise({
         status: 200,
-        json: () => ({ data: INSIGHT_ADMIN }),
-      } as unknown) as Response);
+        data: {
+          user: INSIGHT_ADMIN_DTO,
+          organization: INSIGHT_ORGANIZATION_DTO,
+        },
+      })
+    );
 
     const getSessionsStub = sandbox
       .stub(SessionApi, 'getSessions')
@@ -48,7 +53,8 @@ describe('pages/sessions', () => {
       props: {
         sessionCount: INSIGHT_SESSIONS_DTOS.length,
         sessions: INSIGHT_SESSIONS_DTOS,
-        user: INSIGHT_ADMIN,
+        user: INSIGHT_ADMIN_DTO,
+        organization: INSIGHT_ORGANIZATION_DTO,
       },
     });
   });
