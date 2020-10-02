@@ -6,9 +6,9 @@ import {
 } from 'shared/constants/routes';
 import { OrganizationSettingsPageLayout } from 'modules/settings/components/organization/OrganizationSettingsPageLayout';
 import { BillingSubscription } from 'modules/settings/components/organization/BillingSubscription';
-import useSubscriptions from 'modules/billing/hooks/useSubscriptions';
-import useActivePlan from 'modules/billing/hooks/useActivePlan';
-import useOrganization from 'shared/hooks/useOrganization';
+import { useSubscriptions } from 'modules/billing/hooks/useSubscriptions';
+import { useActivePlan } from 'modules/billing/hooks/useActivePlan';
+import { useOrganization } from 'shared/hooks/useOrganization';
 import type {
   OrganizationDTO,
   PlanDTO,
@@ -48,6 +48,7 @@ export const OrganizationSettingsBillingSubscriptionPage = ({
 
   return (
     <OrganizationSettingsPageLayout
+      organization={organization}
       user={user}
       path={PATH}
       header="Usage & Billing"

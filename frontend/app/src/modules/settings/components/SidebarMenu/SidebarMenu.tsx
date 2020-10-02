@@ -91,7 +91,6 @@ export const SidebarMenu = memo(
         className="sidebar menu"
         height="100%"
         padding={`30px 16px 30px ${PADDING_LEFT}`}
-        $style={{ boxSizing: 'border-box' }}
       >
         {sections.map((section, index) => {
           const { header, items } = section;

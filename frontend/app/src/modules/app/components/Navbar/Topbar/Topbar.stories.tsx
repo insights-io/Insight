@@ -1,16 +1,18 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
 import { action } from '@storybook/addon-actions';
+import type { Meta } from '@storybook/react';
 
-import Topbar, { Props } from './Topbar';
+import { NavbarTopbar, Props } from './Topbar';
 
 export default {
-  title: 'app/components/Topbar',
+  title: 'app/components/NavbarTopbar',
+  component: NavbarTopbar,
   decorators: [fullHeightDecorator],
-};
+} as Meta;
 
 export const Controlled = (props: Pick<Props, 'sidebarVisible'>) => {
-  return <Topbar onMenuClick={action('onMenuClick')} {...props} />;
+  return <NavbarTopbar onMenuClick={action('onMenuClick')} {...props} />;
 };
 Controlled.args = { sidebarVisible: true };
 

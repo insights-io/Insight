@@ -3,7 +3,7 @@ import { Block } from 'baseui/block';
 import { Button } from 'baseui/button';
 import { toaster } from 'baseui/toast';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { Flex, CodeInput } from '@insight/elements';
+import { Flex, CodeInput, FlexColumn } from '@insight/elements';
 
 import { TfaInputMethodProps } from '../types';
 
@@ -43,7 +43,7 @@ const TfaSmsInputMethod = ({ code, handleChange, error, sendCode }: Props) => {
   };
 
   return (
-    <Block display="flex">
+    <Flex>
       <Block>
         <CodeInput
           label="Mobile verification code"
@@ -52,16 +52,12 @@ const TfaSmsInputMethod = ({ code, handleChange, error, sendCode }: Props) => {
           error={error}
         />
       </Block>
-      <Flex
-        flexDirection="column"
-        justifyContent={error ? 'center' : 'flex-end'}
-        width="100%"
-      >
+      <FlexColumn justifyContent={error ? 'center' : 'flex-end'} width="100%">
         <Button onClick={handleActionClick}>
           {validitySeconds ? `${validitySeconds}s` : 'Send Code'}
         </Button>
-      </Flex>
-    </Block>
+      </FlexColumn>
+    </Flex>
   );
 };
 

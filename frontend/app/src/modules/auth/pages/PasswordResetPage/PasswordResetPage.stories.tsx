@@ -1,12 +1,14 @@
 import React from 'react';
 import { configureStory } from '@insight/storybook';
 import { AuthApi } from 'api';
+import type { Meta } from '@storybook/react';
 
-import PasswordResetPage from './PasswordResetPage';
+import { PasswordResetPage } from './PasswordResetPage';
 
 export default {
   title: 'auth/pages/PasswordResetPage',
-};
+  component: PasswordResetPage,
+} as Meta;
 
 export const Base = () => {
   return <PasswordResetPage token="1234" />;

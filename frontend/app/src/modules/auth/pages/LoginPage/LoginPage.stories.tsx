@@ -1,16 +1,18 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
-import { DataResponse } from '@insight/types';
+import type { DataResponse } from '@insight/types';
+import type { Meta } from '@storybook/react';
 
-import Login from './LoginPage';
+import { LoginPage } from './LoginPage';
 
 export default {
   title: 'Auth/pages/LoginPage',
-};
+  component: LoginPage,
+} as Meta;
 
 export const Base = () => {
-  return <Login />;
+  return <LoginPage />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
@@ -23,7 +25,7 @@ Base.story = configureStory({
 });
 
 export const InvalidPassword = () => {
-  return <Login />;
+  return <LoginPage />;
 };
 InvalidPassword.story = configureStory({
   setupMocks: (sandbox) => {
@@ -42,7 +44,7 @@ InvalidPassword.story = configureStory({
 });
 
 export const WithSsoRedirect = () => {
-  return <Login />;
+  return <LoginPage />;
 };
 WithSsoRedirect.story = configureStory({
   setupMocks: (sandbox) => {

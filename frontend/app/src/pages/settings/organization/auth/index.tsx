@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
@@ -13,9 +13,17 @@ type Props = AuthenticatedServerSideProps & {
   maybeSsoSetup?: SsoSetupDTO;
 };
 
-export const OrganizationSettingsAuth = ({ maybeSsoSetup, user }: Props) => {
+export const OrganizationSettingsAuth = ({
+  maybeSsoSetup,
+  user,
+  organization,
+}: Props) => {
   return (
-    <OrganizationSettingsAuthPage maybeSsoSetup={maybeSsoSetup} user={user} />
+    <OrganizationSettingsAuthPage
+      maybeSsoSetup={maybeSsoSetup}
+      user={user}
+      organization={organization}
+    />
   );
 };
 
@@ -46,8 +54,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
     return {
       props: maybeSsoSetup
-        ? { user: authResponse.user, maybeSsoSetup }
-        : { user: authResponse.user },
+        ? {
+            user: authResponse.user,
+            organization: authResponse.organization,
+            maybeSsoSetup,
+          }
+        : { user: authResponse.user, organization: authResponse.organization },
     };
   } finally {
     requestSpan.finish();

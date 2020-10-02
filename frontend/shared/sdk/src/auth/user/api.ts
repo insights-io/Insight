@@ -2,12 +2,18 @@ import ky from 'ky-universal';
 import type { CodeValidityDTO, DataResponse, UserDTO } from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
-import { withCredentials } from '../../core/utils';
+import { getData, withCredentials } from '../../core/utils';
 
-import { UpdateUserPayload } from './types';
+import type { UpdateUserPayload } from './types';
 
 export const userApi = (authApiBaseURL: string) => {
   return {
+    me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+      return ky
+        .get(`${baseURL}/v1/user`, withCredentials(rest))
+        .json<DataResponse<UserDTO>>()
+        .then(getData);
+    },
     update: (
       json: UpdateUserPayload,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
@@ -15,7 +21,7 @@ export const userApi = (authApiBaseURL: string) => {
       return ky
         .patch(`${baseURL}/v1/user`, withCredentials({ json, ...rest }))
         .json<DataResponse<UserDTO>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
     phoneNumberVerifySendCode: ({
       baseURL = authApiBaseURL,
@@ -27,7 +33,7 @@ export const userApi = (authApiBaseURL: string) => {
           withCredentials(rest)
         )
         .json<DataResponse<CodeValidityDTO>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
     phoneNumberVerify: (
       code: number,
@@ -39,7 +45,7 @@ export const userApi = (authApiBaseURL: string) => {
           withCredentials({ json: { code }, ...rest })
         )
         .json<DataResponse<UserDTO>>()
-        .then((dataResponse) => dataResponse.data);
+        .then(getData);
     },
   };
 };

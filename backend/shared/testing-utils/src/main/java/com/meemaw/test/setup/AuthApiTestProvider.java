@@ -14,7 +14,7 @@ import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
-import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
@@ -116,10 +116,10 @@ public class AuthApiTestProvider {
     return Optional.of(dataResponse.getData());
   }
 
-  public Optional<UserDTO> getUser(String sessionId) {
+  public Optional<SessionInfoDTO> getSessionInfo(String sessionId) {
     String uri = resourcePath(SsoResource.PATH + "/me");
 
-    DataResponse<UserDTO> dataResponse =
+    DataResponse<SessionInfoDTO> dataResponse =
         given().cookie(SsoSession.COOKIE_NAME, sessionId).when().get(uri).as(new TypeRef<>() {});
 
     if (dataResponse.getError() != null) {

@@ -19,7 +19,11 @@ export type Props = {
   filters: SessionFilter[];
 };
 
-const SessionSearch = ({ onDateRangeChange, filters, setFilters }: Props) => {
+export const SessionSearch = ({
+  onDateRangeChange,
+  filters,
+  setFilters,
+}: Props) => {
   const [_css, theme] = useStyletron();
   const [showFilters, setShowFilters] = useState(false);
 
@@ -55,5 +59,3 @@ const SessionSearch = ({ onDateRangeChange, filters, setFilters }: Props) => {
     </Block>
   );
 };
-
-export default React.memo(SessionSearch);

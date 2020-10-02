@@ -1,4 +1,4 @@
-import AppLayout from 'modules/app/components/AppLayout';
+import { AppLayout } from 'modules/app/components/AppLayout';
 import React from 'react';
 import {
   ACCOUNT_SETTINGS_DETAILS_PAGE,
@@ -11,11 +11,11 @@ import {
 import { SettingsLayout } from 'modules/settings/components/SettingsLayout';
 import { SETTINGS_SEARCH_OPTIONS } from 'modules/settings/constants';
 import { Flex } from '@insight/elements';
-import type { Path } from 'modules/settings/types';
 import { OrganizationDTO, UserDTO } from '@insight/types';
 import { useUser } from 'shared/hooks/useUser';
-import useOrganization from 'shared/hooks/useOrganization';
+import { useOrganization } from 'shared/hooks/useOrganization';
 import { MEMBERS_SECTION } from 'shared/constants/copy';
+import type { Path } from 'modules/settings/types';
 
 import { SettingsSectionCard } from './SettingsSectionCard';
 
@@ -34,7 +34,7 @@ export const SettingsPage = ({
   const { organization } = useOrganization(initialOrganization);
 
   return (
-    <AppLayout user={user}>
+    <AppLayout user={user} organization={organization}>
       <SettingsLayout searchOptions={SETTINGS_SEARCH_OPTIONS} path={PATH}>
         <Flex flexWrap>
           <SettingsSectionCard

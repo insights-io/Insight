@@ -28,7 +28,7 @@ const TFA_METHOD_TO_TITLE_MAPPING = {
   },
 } as const;
 
-const VerificationPage = ({ methods }: Props) => {
+export const VerificationPage = ({ methods }: Props) => {
   const router = useRouter();
   const [activeMethod, setActiveMethod] = useState(methods[0]);
   const relativeRedirect = (router.query.redirect || '/') as string;
@@ -124,5 +124,3 @@ const VerificationPage = ({ methods }: Props) => {
     </AuthPageLayout>
   );
 };
-
-export default VerificationPage;

@@ -8,8 +8,9 @@ import { OrganizationSettingsPageLayout } from 'modules/settings/components/orga
 import { useSsoSetup } from 'modules/settings/hooks/useSsoSetup';
 import { AuthenticationSetup } from 'modules/settings/components/organization/AuthenticationSetup';
 import type { Path } from 'modules/settings/types';
-import type { SsoSetupDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, SsoSetupDTO, UserDTO } from '@insight/types';
 import { useUser } from 'shared/hooks/useUser';
+import { useOrganization } from 'shared/hooks/useOrganization';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -20,20 +21,24 @@ const PATH: Path = [
 type Props = {
   maybeSsoSetup: SsoSetupDTO | undefined;
   user: UserDTO;
+  organization: OrganizationDTO;
 };
 
 export const OrganizationSettingsAuthPage = ({
   maybeSsoSetup: initialMaybeSsoSetup,
   user: initialUser,
+  organization: initialOrganization,
 }: Props) => {
   const { maybeSsoSetup, setSsoSetup } = useSsoSetup(initialMaybeSsoSetup);
   const { user } = useUser(initialUser);
+  const { organization } = useOrganization(initialOrganization);
 
   return (
     <OrganizationSettingsPageLayout
       path={PATH}
       header="Authentication"
       user={user}
+      organization={organization}
     >
       <AuthenticationSetup
         maybeSsoSetup={maybeSsoSetup}

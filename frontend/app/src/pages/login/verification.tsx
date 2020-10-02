@@ -1,12 +1,12 @@
-import { OutgoingHttpHeaders } from 'http';
+import type { OutgoingHttpHeaders } from 'http';
 
 import React from 'react';
-import { GetServerSideProps } from 'next';
+import type { GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
-import VerificationPage from 'modules/auth/pages/VerificationPage';
+import { VerificationPage } from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import AuthApi from 'api/auth';
-import { APIErrorDataResponse, TfaMethod } from '@insight/types';
+import type { APIErrorDataResponse, TfaMethod } from '@insight/types';
 
 type Props = {
   methods: TfaMethod[];

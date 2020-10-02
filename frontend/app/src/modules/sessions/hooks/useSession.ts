@@ -11,6 +11,7 @@ export const useSession = (sessionId: string, initialData: SessionDTO) => {
     { initialData }
   );
 
+  // TODO: cache key should probably include session id
   useEffect(() => {
     mutate(initialData);
   }, [initialData, mutate]);

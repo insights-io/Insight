@@ -8,8 +8,10 @@ import type { GetServerSideProps } from 'next';
 
 type Props = AuthenticatedServerSideProps;
 
-export const AccountSettingsSecurity = ({ user }: Props) => {
-  return <AccountSettingsSecurityPage user={user} />;
+export const AccountSettingsSecurity = ({ user, organization }: Props) => {
+  return (
+    <AccountSettingsSecurityPage user={user} organization={organization} />
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = getAuthenticatedServerSideProps;

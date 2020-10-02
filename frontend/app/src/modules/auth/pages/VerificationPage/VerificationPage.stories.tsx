@@ -5,15 +5,17 @@ import {
   mockApiError,
 } from '@insight/storybook';
 import AuthApi from 'api/auth';
-import { ResponsePromise } from 'ky';
+import type { ResponsePromise } from 'ky';
 import { TFA_METHODS } from 'test/data';
+import type { Meta } from '@storybook/react';
 
-import VerificationPage from './VerificationPage';
+import { VerificationPage } from './VerificationPage';
 
 export default {
   title: 'auth/pages/VerificationPage',
+  component: VerificationPage,
   decorators: [fullHeightDecorator],
-};
+} as Meta;
 
 export const Base = () => {
   return <VerificationPage methods={TFA_METHODS} />;

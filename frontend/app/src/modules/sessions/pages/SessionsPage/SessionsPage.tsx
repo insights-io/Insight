@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import AppLayout from 'modules/app/components/AppLayout';
+import { AppLayout } from 'modules/app/components/AppLayout';
 import { useStyletron } from 'baseui';
-import RecordingSnippet from 'modules/setup/components/RecordingSnippet';
+import { RecordingSnippet } from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
-import type { SessionDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, SessionDTO, UserDTO } from '@insight/types';
 import { SessionList } from 'modules/sessions/components/SessionList';
-import SessionSearch from 'modules/sessions/components/SessionSearch';
+import { SessionSearch } from 'modules/sessions/components/SessionSearch';
 import { Block } from 'baseui/block';
 import {
   DateRange,
@@ -14,20 +14,24 @@ import {
 import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 import { useUser } from 'shared/hooks/useUser';
 import { useSessions } from 'modules/sessions/hooks/useSessions';
+import { useOrganization } from 'shared/hooks/useOrganization';
 
 type Props = {
   user: UserDTO;
+  organization: OrganizationDTO;
   sessions: SessionDTO[];
   sessionCount: number;
 };
 
-const HomePage = ({
+export const SessionsPage = ({
   user: initialUser,
+  organization: initialOrganization,
   sessions: initialSessions,
   sessionCount: initialSessionCount,
 }: Props) => {
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
+  const { organization } = useOrganization(initialOrganization);
   const hasSessions = initialSessions.length > 0;
   const [filters, setFilters] = useState<SessionFilter[]>([]);
   const [dateRange, setDataRange] = useState<DateRange>(() =>
@@ -44,6 +48,7 @@ const HomePage = ({
   return (
     <AppLayout
       user={user}
+      organization={organization}
       overrides={{
         MainContent: {
           style: {
@@ -80,5 +85,3 @@ const HomePage = ({
     </AppLayout>
   );
 };
-
-export default HomePage;

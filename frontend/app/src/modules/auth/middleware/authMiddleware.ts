@@ -1,10 +1,15 @@
-import { OutgoingHttpHeaders } from 'http';
+import type { OutgoingHttpHeaders } from 'http';
 
-import { Span } from 'opentracing';
-import { GetServerSidePropsContext, GetServerSideProps } from 'next';
+import type { Span } from 'opentracing';
+import type { GetServerSidePropsContext, GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
 import { AuthApi } from 'api';
-import { DataResponse, UserDTO } from '@insight/types';
+import type {
+  UserDTO,
+  DataResponse,
+  SessionInfoDTO,
+  OrganizationDTO,
+} from '@insight/types';
 import {
   startSpan,
   startRequestSpan,
@@ -12,6 +17,7 @@ import {
 } from 'modules/tracing';
 
 export type Authenticated = {
+  organization: OrganizationDTO;
   user: UserDTO;
   SessionId: string;
 };
@@ -61,10 +67,12 @@ export const authenticated = async (
   span.setTag('SessionId', SessionId);
 
   try {
-    const response = await AuthApi.sso.session.get(SessionId, {
+    const responsePromise = AuthApi.sso.session.get(SessionId, {
       baseURL: process.env.AUTH_API_BASE_URL,
       headers: prepareCrossServiceHeaders(span),
     });
+
+    const response = await responsePromise;
 
     if (response.status === 204) {
       span.log({ message: 'Session expired' });
@@ -78,15 +86,22 @@ export const authenticated = async (
       }
       return redirectToLogin({ 'set-cookie': setCookie || undefined });
     }
-    const dataResponse = (await response.json()) as DataResponse<UserDTO>;
-    span.setTag('user.id', dataResponse.data.id);
-    return { user: dataResponse.data, SessionId };
+    const {
+      data: { user, organization },
+    } = await responsePromise.json<DataResponse<SessionInfoDTO>>();
+
+    span.setTag('user.id', user.id);
+    span.setTag('organization.id', organization.id);
+    return { user, organization, SessionId };
   } finally {
     span.finish();
   }
 };
 
-export type AuthenticatedServerSideProps = Pick<Authenticated, 'user'>;
+export type AuthenticatedServerSideProps = Pick<
+  Authenticated,
+  'user' | 'organization'
+>;
 
 export const getAuthenticatedServerSideProps: GetServerSideProps<AuthenticatedServerSideProps> = async (
   context
@@ -95,10 +110,18 @@ export const getAuthenticatedServerSideProps: GetServerSideProps<AuthenticatedSe
   try {
     const response = await authenticated(context, requestSpan);
     if (response) {
-      return { props: { user: response.user } };
+      return {
+        props: { user: response.user, organization: response.organization },
+      };
     }
+
     // This can never happen -- user is redirected
-    return { props: { user: (null as unknown) as UserDTO } };
+    return {
+      props: {
+        user: (null as unknown) as UserDTO,
+        organization: (null as unknown) as OrganizationDTO,
+      },
+    };
   } finally {
     requestSpan.finish();
   }

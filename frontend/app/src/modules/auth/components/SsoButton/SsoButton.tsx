@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'baseui/button';
 import { Theme } from 'baseui/theme';
+import { UnstyledLink } from '@insight/elements';
 
 type Props = {
   href: string;
@@ -11,7 +12,7 @@ type Props = {
 
 const SsoButton = ({ href, children, icon, theme }: Props) => {
   return (
-    <a href={href} style={{ textDecoration: 'none' }}>
+    <UnstyledLink href={href}>
       <Button
         $style={{ width: '100%', marginTop: theme.sizing.scale200 }}
         startEnhancer={icon}
@@ -19,7 +20,7 @@ const SsoButton = ({ href, children, icon, theme }: Props) => {
       >
         {children}
       </Button>
-    </a>
+    </UnstyledLink>
   );
 };
 

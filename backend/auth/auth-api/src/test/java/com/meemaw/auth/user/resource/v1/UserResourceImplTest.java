@@ -12,6 +12,7 @@ import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -259,7 +260,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
     assertFalse(updateUserDataResponse.getData().isPhoneNumberVerified());
 
     // Should also update the sessions
-    DataResponse<UserDTO> getSessionDataResponse =
+    DataResponse<SessionInfoDTO> getSessionInfoDataResponse =
         given()
             .when()
             .contentType(MediaType.APPLICATION_JSON)
@@ -267,7 +268,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .get(String.join("/", SsoResource.PATH, "me"))
             .as(new TypeRef<>() {});
 
-    assertEquals(updateUserDataResponse.getData(), getSessionDataResponse.getData());
+    assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
 
     // Send code for phone number verification
     given()
@@ -297,13 +298,13 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
     assertTrue(updateUserDataResponse.getData().isPhoneNumberVerified());
 
     // Should also update the sessions
-    getSessionDataResponse =
+    getSessionInfoDataResponse =
         given()
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
             .get(String.join("/", SsoResource.PATH, "me"))
             .as(new TypeRef<>() {});
-    assertEquals(updateUserDataResponse.getData(), getSessionDataResponse.getData());
+    assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
   }
 }

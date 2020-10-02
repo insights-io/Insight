@@ -23,7 +23,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @Slf4j
-public abstract class AbstractCookieAuthDynamicFeature<U extends AuthUser>
+public abstract class AbstractCookieAuthDynamicFeature
     extends AbstractAuthDynamicFeature<CookieAuth, AbstractCookieAuthFilter> {
 
   @Override
@@ -34,7 +34,7 @@ public abstract class AbstractCookieAuthDynamicFeature<U extends AuthUser>
   @Priority(Priorities.AUTHENTICATION)
   public abstract class AbstractCookieAuthFilter implements ContainerRequestFilter {
 
-    protected abstract CompletionStage<Optional<U>> findSession(String sessionId);
+    protected abstract CompletionStage<Optional<AuthUser>> findSession(String sessionId);
 
     @Override
     @Traced(operationName = "AbstractCookieAuthFilter.filter")
@@ -58,8 +58,8 @@ public abstract class AbstractCookieAuthDynamicFeature<U extends AuthUser>
         throw Boom.status(Status.UNAUTHORIZED).exception();
       }
 
-      Optional<U> maybeUser = findSession(sessionId).toCompletableFuture().join();
-      U user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
+      Optional<AuthUser> maybeUser = findSession(sessionId).toCompletableFuture().join();
+      AuthUser user = maybeUser.orElseThrow(() -> Boom.status(Status.UNAUTHORIZED).exception());
       setUserContext(span, user);
       boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
       context.setSecurityContext(new InsightSecurityContext(user, isSecure));

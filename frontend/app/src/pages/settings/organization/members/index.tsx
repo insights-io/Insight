@@ -18,12 +18,14 @@ export const OrganizationSettingsMembers = ({
   members,
   teamInvites,
   user,
+  organization,
 }: Props) => {
   return (
     <OrganizationSettingsMembersPage
       members={members}
       teamInvites={teamInvites}
       user={user}
+      organization={organization}
     />
   );
 };
@@ -59,7 +61,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       teamInvitesPromise,
     ]);
 
-    return { props: { user: authResponse.user, members, teamInvites } };
+    return {
+      props: {
+        user: authResponse.user,
+        members,
+        teamInvites,
+        organization: authResponse.organization,
+      },
+    };
   } finally {
     requestSpan.finish();
   }

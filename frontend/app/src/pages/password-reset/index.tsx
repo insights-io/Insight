@@ -2,7 +2,7 @@ import React from 'react';
 import AuthApi from 'api/auth';
 import { GetServerSideProps } from 'next';
 import PasswordResetInvalidPage from 'modules/auth/pages/PasswordResetInvalidPage';
-import PasswordResetPage from 'modules/auth/pages/PasswordResetPage';
+import { PasswordResetPage } from 'modules/auth/pages/PasswordResetPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 
 type NonExistingPasswordResetRequest = {

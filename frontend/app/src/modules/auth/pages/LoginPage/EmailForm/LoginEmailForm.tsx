@@ -14,6 +14,7 @@ import { Button } from 'baseui/button';
 import FormError from 'shared/components/FormError';
 import { useStyletron } from 'baseui';
 import { locationAssign } from 'shared/utils/window';
+import { VERIFICATION_PAGE } from 'shared/constants/routes';
 
 type LoginEmailFormData = {
   email: string;
@@ -46,7 +47,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
           replace(relativeRedirect);
         } else {
           replace(
-            `/login/verification?redirect=${encodeURIComponent(
+            `${VERIFICATION_PAGE}?redirect=${encodeURIComponent(
               relativeRedirect
             )}`
           );

@@ -16,7 +16,7 @@ test('User should be able to navigate around the app', async (t) => {
   await t
     .click(Sidebar.banner.trigger)
     .expect(Sidebar.banner.menu.organization.cardTitle.innerText)
-    .eql('Insight', 'Mathces company name') // TODO: should be "My company"
+    .eql('My company', 'Mathces company name')
     .expect(Sidebar.banner.menu.organization.cardSubtitle.innerText)
     .eql('Marko skace', 'Mathces full name')
     .expect(Sidebar.banner.menu.account.cardTitle.innerText)

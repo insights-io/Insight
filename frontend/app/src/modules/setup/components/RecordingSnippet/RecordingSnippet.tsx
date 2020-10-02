@@ -14,7 +14,11 @@ type Props = {
   overrides?: { Root?: BlockOverrides };
 };
 
-const RecordingSnippet = ({ snipetURI, organizationId, overrides }: Props) => {
+export const RecordingSnippet = ({
+  snipetURI,
+  organizationId,
+  overrides,
+}: Props) => {
   const [css, theme] = useStyletron();
   const codeRef = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
@@ -85,5 +89,3 @@ const RecordingSnippet = ({ snipetURI, organizationId, overrides }: Props) => {
     </Block>
   );
 };
-
-export default RecordingSnippet;

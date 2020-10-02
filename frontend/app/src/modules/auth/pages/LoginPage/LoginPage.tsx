@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useStyletron } from 'baseui';
-import { Block } from 'baseui/block';
-import { Button } from 'baseui/button';
+import { Button, SIZE } from 'baseui/button';
 import { useRouter } from 'next/router';
 import Divider from 'shared/components/Divider';
 import { TRY_BASE_URL } from 'shared/config';
@@ -10,13 +9,14 @@ import AuthPageLayout from 'modules/auth/components/PageLayout';
 import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import SsoButton from 'modules/auth/components/SsoButton';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
+import { Flex, UnstyledLink } from '@insight/elements';
 
 import { createOAuth2IntegrationHrefBuilder } from './utils';
 import LoginEmailForm from './EmailForm';
 import { LoginMethod } from './types';
 import LoginSamlSsoForm from './SamlSsoForm';
 
-const LoginPage = () => {
+export const LoginPage = () => {
   const [activeMethod, setActiveMethod] = useState<LoginMethod>('email');
   const router = useRouter();
   const [_css, theme] = useStyletron();
@@ -81,23 +81,17 @@ const LoginPage = () => {
 
       <Divider />
 
-      <Block>
-        <a href={TRY_BASE_URL} style={{ textDecoration: 'none' }}>
-          <Button kind="minimal" size="compact">
+      <Flex flexWrap>
+        <UnstyledLink href={TRY_BASE_URL}>
+          <Button kind="minimal" size={SIZE.compact}>
             Create a free account
           </Button>
-        </a>
+        </UnstyledLink>
 
-        <Button
-          kind="minimal"
-          size="compact"
-          $style={{ marginLeft: theme.sizing.scale600 }}
-        >
+        <Button kind="minimal" size={SIZE.compact}>
           Join an existing team
         </Button>
-      </Block>
+      </Flex>
     </AuthPageLayout>
   );
 };
-
-export default LoginPage;

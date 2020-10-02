@@ -20,30 +20,31 @@ const AuthPageLayout = ({ children, subtitle }: Props) => {
         marginLeft="auto"
         marginRight="auto"
         padding={theme.sizing.scale600}
-        $style={{ boxSizing: 'border-box' }}
       >
-        <Block
-          marginBottom={theme.sizing.scale700}
-          $style={{ textAlign: 'center' }}
-        >
-          <H1
-            marginBottom={theme.sizing.scale400}
-            $style={{ fontWeight: 700, fontSize: '24px' }}
+        <Block height="100%">
+          <Block
+            marginBottom={theme.sizing.scale700}
+            $style={{ textAlign: 'center' }}
           >
-            Insight
-          </H1>
-
-          {subtitle && (
-            <H2
-              marginTop={theme.sizing.scale400}
-              $style={{ fontWeight: 700, fontSize: '18px' }}
+            <H1
+              marginBottom={theme.sizing.scale400}
+              $style={{ fontWeight: 700, fontSize: '24px' }}
             >
-              {subtitle}
-            </H2>
-          )}
-        </Block>
+              Insight
+            </H1>
 
-        {children}
+            {subtitle && (
+              <H2
+                marginTop={theme.sizing.scale400}
+                $style={{ fontWeight: 700, fontSize: '18px' }}
+              >
+                {subtitle}
+              </H2>
+            )}
+          </Block>
+
+          {children}
+        </Block>
       </VerticalAligned>
     </FlexColumn>
   );

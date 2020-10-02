@@ -13,8 +13,18 @@ type Props = AuthenticatedServerSideProps & {
   authTokens: AuthTokenDTO[];
 };
 
-export const AccountSettingsAuthTokens = ({ authTokens, user }: Props) => {
-  return <AccountSettingsAuthTokensPage authTokens={authTokens} user={user} />;
+export const AccountSettingsAuthTokens = ({
+  authTokens,
+  user,
+  organization,
+}: Props) => {
+  return (
+    <AccountSettingsAuthTokensPage
+      authTokens={authTokens}
+      user={user}
+      organization={organization}
+    />
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -35,7 +45,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       },
     });
 
-    return { props: { user: authResponse.user, authTokens } };
+    return {
+      props: {
+        user: authResponse.user,
+        organization: authResponse.organization,
+        authTokens,
+      },
+    };
   } finally {
     requestSpan.finish();
   }

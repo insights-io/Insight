@@ -1,16 +1,18 @@
 import React from 'react';
-import AppLayout from 'modules/app/components/AppLayout';
-import type { UserDTO } from '@insight/types';
+import { AppLayout } from 'modules/app/components/AppLayout';
+import type { OrganizationDTO, UserDTO } from '@insight/types';
 import CountByDeviceClass from 'modules/insights/components/CountByDeviceClass';
-import { Block } from 'baseui/block';
-import { CardProps } from 'baseui/card';
+import type { CardProps } from 'baseui/card';
 import LocationDistribution from 'modules/insights/components/LocationDistribution';
-import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
+import type { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 import { useStyletron } from 'baseui';
 import { useUser } from 'shared/hooks/useUser';
+import { useOrganization } from 'shared/hooks/useOrganization';
+import { Flex } from '@insight/elements';
 
 type Props = {
   user: UserDTO;
+  organization: OrganizationDTO;
   countByLocation: CountByLocation;
   countByDeviceClass: Record<string, number>;
 };
@@ -30,12 +32,15 @@ export const InsightsPage = ({
   countByLocation,
   countByDeviceClass,
   user: initialUser,
+  organization: initialOrganization,
 }: Props) => {
   const { user } = useUser(initialUser);
+  const { organization } = useOrganization(initialOrganization);
   const [_css, theme] = useStyletron();
 
   return (
     <AppLayout
+      organization={organization}
       user={user}
       overrides={{
         MainContent: {
@@ -47,12 +52,12 @@ export const InsightsPage = ({
       }}
     >
       <LocationDistribution countByLocation={countByLocation} />
-      <Block display="flex" width="100%" marginTop={theme.sizing.scale600}>
+      <Flex width="100%" marginTop={theme.sizing.scale600}>
         <CountByDeviceClass
           data={countByDeviceClass}
           overrides={countByCardOverrides}
         />
-      </Block>
+      </Flex>
     </AppLayout>
   );
 };
