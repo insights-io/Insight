@@ -37,11 +37,16 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
 public class UserResourceImplTest extends AbstractAuthApiTest {
+
+  private static final String USER_ID_PATH =
+      UserResource.PATH + "/4122c933-c30c-4948-9009-3f7ab6501bd9";
 
   private static final String PHONE_NUMBER_VERIFY_PATH =
       String.join("/", UserResource.PATH, "phone_number", "verify");
@@ -225,12 +230,13 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"phone_number\":\"Required\"}}}"));
   }
 
-  @Test
-  public void update_user__should_throw__when_invalid_content_type() {
+  @ParameterizedTest
+  @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
+  public void update_user__should_throw__when_invalid_content_type(String path) {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, SsoSession.newIdentifier())
-        .patch(UserResource.PATH)
+        .patch(path)
         .then()
         .statusCode(415)
         .body(
@@ -238,20 +244,22 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
                 "{\"error\":{\"statusCode\":415,\"reason\":\"Unsupported Media Type\",\"message\":\"Media type not supported.\"}}"));
   }
 
-  @Test
-  public void update_user__should_throw__when_unauthorized() {
-    RestAssuredUtils.ssoSessionCookieTestCases(Method.PATCH, UserResource.PATH, ContentType.JSON);
-    RestAssuredUtils.ssoBearerTokenTestCases(Method.PATCH, UserResource.PATH, ContentType.JSON);
+  @ParameterizedTest
+  @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
+  public void update_user__should_throw__when_unauthorized(String path) {
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.PATCH, path, ContentType.JSON);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.PATCH, path, ContentType.JSON);
   }
 
-  @Test
-  public void update_user__should_throw__when_no_body() {
+  @ParameterizedTest
+  @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
+  public void update_user__should_throw__when_no_body(String path) {
     String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .patch(UserResource.PATH)
+        .patch(path)
         .then()
         .statusCode(400)
         .body(
@@ -263,7 +271,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
-        .patch(UserResource.PATH)
+        .patch(path)
         .then()
         .statusCode(400)
         .body(
@@ -271,15 +279,16 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
   }
 
-  @Test
-  public void update_user__should_throw__when_empty_body() {
+  @ParameterizedTest
+  @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
+  public void update_user__should_throw__when_empty_body(String path) {
     String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body("{}")
-        .patch(UserResource.PATH)
+        .patch(path)
         .then()
         .statusCode(400)
         .body(
@@ -292,7 +301,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_JSON)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .body("{}")
-        .patch(UserResource.PATH)
+        .patch(path)
         .then()
         .statusCode(400)
         .body(
@@ -300,15 +309,17 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
   }
 
-  @Test
-  public void update_user__should_throw__when_invalid_body() throws JsonProcessingException {
+  @ParameterizedTest
+  @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
+  public void update_user__should_throw__when_invalid_body(String path)
+      throws JsonProcessingException {
     String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(Map.of("a", "b")))
-        .patch(UserResource.PATH)
+        .patch(path)
         .then()
         .statusCode(400)
         .body(
@@ -321,7 +332,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_JSON)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .body(JacksonMapper.get().writeValueAsString(Map.of("a", "b")))
-        .patch(UserResource.PATH)
+        .patch(path)
         .then()
         .statusCode(400)
         .body(

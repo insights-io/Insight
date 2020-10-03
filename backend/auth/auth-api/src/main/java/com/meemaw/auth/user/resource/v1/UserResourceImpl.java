@@ -53,6 +53,16 @@ public class UserResourceImpl implements UserResource {
 
   @Override
   public CompletionStage<Response> update(Map<String, Object> body) {
+    AuthUser user = principal.user();
+    return update(user.getId(), user, body);
+  }
+
+  @Override
+  public CompletionStage<Response> update(UUID userId, Map<String, Object> body) {
+    return update(userId, principal.user(), body);
+  }
+
+  private CompletionStage<Response> update(UUID userId, AuthUser actor, Map<String, Object> body) {
     if (body.isEmpty()) {
       return CompletableFuture.completedStage(
           Boom.badRequest()
@@ -72,8 +82,11 @@ public class UserResourceImpl implements UserResource {
       return CompletableFuture.completedStage(Boom.badRequest().errors(errors).response());
     }
 
-    AuthUser user = principal.user();
-    return userService.updateUser(user, body).thenApply(DataResponse::ok);
+    if (!userId.equals(actor.getId())) {
+      return CompletableFuture.completedStage(Boom.notFound().response());
+    }
+
+    return userService.updateUser(actor, body).thenApply(DataResponse::ok);
   }
 
   @Override
