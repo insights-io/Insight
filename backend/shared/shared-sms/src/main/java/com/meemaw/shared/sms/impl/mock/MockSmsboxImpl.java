@@ -3,6 +3,7 @@ package com.meemaw.shared.sms.impl.mock;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.shared.sms.SmsMessage;
 import com.twilio.rest.api.v2010.account.Message.Status;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
-import org.joda.time.DateTime;
 
 @ApplicationScoped
 public class MockSmsboxImpl implements MockSmsbox {
@@ -19,7 +19,7 @@ public class MockSmsboxImpl implements MockSmsbox {
   private int sentMessagesCount;
 
   public CompletionStage<SmsMessage> send(String from, String to, String body) {
-    SmsMessage message = new SmsMessage(from, to, body, new DateTime(), Status.SENT);
+    SmsMessage message = new SmsMessage(from, to, body, OffsetDateTime.now(), Status.SENT);
     List<SmsMessage> messages =
         sentMessages.computeIfAbsent(message.getTo(), k -> new LinkedList<>());
     sentMessagesCount++;
