@@ -1,8 +1,8 @@
 package com.meemaw.shared.sms;
 
 import com.twilio.rest.api.v2010.account.Message;
+import java.time.OffsetDateTime;
 import lombok.Value;
-import org.joda.time.DateTime;
 
 @Value
 public class SmsMessage {
@@ -10,6 +10,6 @@ public class SmsMessage {
   String from;
   String to;
   String body;
-  DateTime dateSent;
+  OffsetDateTime dateSent;
   Message.Status status;
 }
