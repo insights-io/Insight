@@ -1,9 +1,9 @@
 ---
 on:
+  pull_request: {}
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   openapi:
@@ -38,4 +38,7 @@ jobs:
       - run: cd backend && ./gradlew  ${{ matrix.api.name }}:quarkusDev &
       - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
       - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
-      - run: cat ${{ matrix.api.name }}-openapi.yml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: openapi-specs
+          path: ${{ matrix.api.name }}-openapi.yml
