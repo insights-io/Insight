@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  openapi:
-    name: Openapi
+  openapi:generate:
+    name: Generate OpenAPI specifications
     runs-on: ubuntu-latest
 
     strategy:
