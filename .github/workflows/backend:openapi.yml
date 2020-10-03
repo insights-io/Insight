@@ -15,7 +15,7 @@ jobs:
         api:
           [
             { name: 'auth:auth-api', port: '8080' },
-            { name: 'beacob:beacon-api', port: '8081' },
+            { name: 'beacon:beacon-api', port: '8081' },
             { name: 'session:session-api', port: '8082' },
             { name: 'billing:billing-api', port: '8083' },
           ]
@@ -36,6 +36,6 @@ jobs:
         with:
           java-version: 14
       - run: cd backend && ./gradlew  ${{ matrix.api.name }}:quarkusDev &
-      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 5; done'
+      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
       - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
       - run: cat ${{ matrix.api.name }}-openapi.yml
