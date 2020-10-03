@@ -37,7 +37,7 @@ jobs:
           java-version: 14
       - run: cd backend && ./gradlew  ${{ matrix.api.namespace }}:${{ matrix.api.name }}:quarkusDev &
       - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
-      - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml"
+      - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
       - uses: actions/upload-artifact@v2
         with:
           name: openapi-specs
