@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 public class OtherResourceTest {
 
   @Test
-  public void postPath_shouldThrowError_whenPathNotFound() {
+  public void post_path_should_throw__when_path_not_found() {
     given()
         .when()
         .post("/" + UUID.randomUUID())
@@ -27,7 +27,7 @@ public class OtherResourceTest {
   }
 
   @Test
-  public void getPath_shouldThrowError_whenUnsupportedMethod() {
+  public void get_path_should_throw__when_unsupported_method() {
     given()
         .when()
         .get(BeaconResource.PATH + "/beat")
