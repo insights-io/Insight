@@ -11,6 +11,7 @@ import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.json.JsonObject;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -26,6 +27,11 @@ public class UserService {
   @Inject UserDatasource userDatasource;
   @Inject SsoDatasource ssoDatasource;
   @Inject UserPhoneCodeService userPhoneCodeService;
+
+  @Traced
+  public CompletionStage<Optional<AuthUser>> getUser(UUID userId) {
+    return userDatasource.findUser(userId);
+  }
 
   @Traced
   public CompletionStage<AuthUser> updateUser(AuthUser user, Map<String, Object> body) {

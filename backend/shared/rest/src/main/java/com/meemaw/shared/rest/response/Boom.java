@@ -79,6 +79,10 @@ public class Boom<T> {
     return Boom.status(Status.BAD_REQUEST);
   }
 
+  public static <T> Boom<T> unauthorized() {
+    return Boom.status(Status.UNAUTHORIZED);
+  }
+
   public static <T> Boom<T> validationErrors(Map<String, ?> errors) {
     return (Boom<T>) badRequest().message("Validation Error").errors(errors);
   }

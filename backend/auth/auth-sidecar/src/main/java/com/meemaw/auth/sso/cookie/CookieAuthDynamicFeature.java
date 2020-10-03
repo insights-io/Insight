@@ -24,44 +24,37 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
   @Inject ObjectMapper objectMapper;
 
   @Override
-  public AbstractCookieAuthFilter authFilter() {
-    return new CookieAuthFilter();
-  }
+  protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
+    return userResource
+        .me(sessionId)
+        .thenApply(
+            response -> {
+              int statusCode = response.getStatus();
+              if (statusCode == Status.OK.getStatusCode()) {
+                try {
+                  // TODO: why is this needed? Open issue in Quark  us
+                  DataResponse<UserDTO> dataResponse =
+                      objectMapper.readValue(
+                          response.readEntity(String.class), new TypeReference<>() {});
 
-  private class CookieAuthFilter extends AbstractCookieAuthFilter {
-    @Override
-    protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
-      return userResource
-          .me(sessionId)
-          .thenApply(
-              response -> {
-                int statusCode = response.getStatus();
-                if (statusCode == Status.OK.getStatusCode()) {
-                  try {
-                    // TODO: why is this needed? Open issue in Quark  us
-                    DataResponse<UserDTO> dataResponse =
-                        objectMapper.readValue(
-                            response.readEntity(String.class), new TypeReference<>() {});
-
-                    return Optional.of(dataResponse.getData());
-                  } catch (JsonProcessingException ex) {
-                    log.error("[AUTH]: Failed to parse user", ex);
-                    throw Boom.serverError().exception(ex);
-                  }
+                  return Optional.of(dataResponse.getData());
+                } catch (JsonProcessingException ex) {
+                  log.error("[AUTH]: Failed to parse user", ex);
+                  throw Boom.serverError().exception(ex);
                 }
+              }
 
-                // session not found
-                if (statusCode == Status.NO_CONTENT.getStatusCode()) {
-                  log.debug("[AUTH]: Session not found sessionId={}", sessionId);
-                  return Optional.empty();
-                }
+              // session not found
+              if (statusCode == Status.NO_CONTENT.getStatusCode()) {
+                log.debug("[AUTH]: Session not found sessionId={}", sessionId);
+                return Optional.empty();
+              }
 
-                log.error(
-                    "[AUTH]: Failed to find session sessionId={} statusCode={}",
-                    sessionId,
-                    statusCode);
-                throw Boom.serverError().exception();
-              });
-    }
+              log.error(
+                  "[AUTH]: Failed to find session sessionId={} statusCode={}",
+                  sessionId,
+                  statusCode);
+              throw Boom.serverError().exception();
+            });
   }
 }
