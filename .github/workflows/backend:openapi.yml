@@ -29,10 +29,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 14
-      - uses: eskatos/gradle-command-action@v1
-        with:
-          arguments: ${{ matrix.api }}:quarkusDev &
-          build-root-directory: backend
-          wrapper-directory: backend
+      - run: ./backend/gradlew  ${{ matrix.api }}:quarkusDev &
       - run: curl http://localhost:8080/openapi --output ${{ matrix.api }}-openapi.yml
       - run: cat ${{ matrix.api }}-openapi.yml
