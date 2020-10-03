@@ -22,7 +22,7 @@ public abstract class AbstractAuthDynamicFeature<
 
   public abstract Class<T> getAnnotation();
 
-  public abstract F authFilter();
+  public abstract F authFilter(T annotation);
 
   @Override
   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
@@ -33,7 +33,7 @@ public abstract class AbstractAuthDynamicFeature<
     }
 
     if (annotation != null) {
-      context.register(authFilter());
+      context.register(authFilter(annotation));
     }
   }
 

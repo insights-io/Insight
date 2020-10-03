@@ -4,6 +4,7 @@ public final class LoggingConstants {
 
   /* SSO */
   public static final String SSO_SESSION_ID = "cookie.session.id";
+  public static final String AUTH_SCHEME = "auth.scheme";
 
   /* User */
   public static final String USER_ID = "user.id";

@@ -15,17 +15,9 @@ public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
   @Inject SsoDatasource ssoDatasource;
 
   @Override
-  public AbstractCookieAuthFilter authFilter() {
-    return new CookieAuthFilter();
-  }
-
-  private class CookieAuthFilter extends AbstractCookieAuthFilter {
-
-    @Override
-    protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
-      return ssoDatasource
-          .findSession(sessionId)
-          .thenApply(maybeSsoUser -> maybeSsoUser.map(SsoUser::dto));
-    }
+  protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
+    return ssoDatasource
+        .findSession(sessionId)
+        .thenApply(maybeSsoUser -> maybeSsoUser.map(SsoUser::dto));
   }
 }

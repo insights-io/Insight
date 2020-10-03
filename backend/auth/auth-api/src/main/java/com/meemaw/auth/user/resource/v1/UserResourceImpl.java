@@ -34,7 +34,35 @@ public class UserResourceImpl implements UserResource {
   }
 
   @Override
+  public CompletionStage<Response> get(UUID userId) {
+    AuthUser user = principal.user();
+    if (!user.getId().equals(userId)) {
+      throw Boom.notFound().exception();
+    }
+
+    return userService
+        .getUser(userId)
+        .thenApply(
+            maybeUser -> {
+              if (maybeUser.isEmpty()) {
+                throw Boom.notFound().exception();
+              }
+              return DataResponse.ok(maybeUser.get());
+            });
+  }
+
+  @Override
   public CompletionStage<Response> update(Map<String, Object> body) {
+    AuthUser user = principal.user();
+    return update(user.getId(), user, body);
+  }
+
+  @Override
+  public CompletionStage<Response> update(UUID userId, Map<String, Object> body) {
+    return update(userId, principal.user(), body);
+  }
+
+  private CompletionStage<Response> update(UUID userId, AuthUser actor, Map<String, Object> body) {
     if (body.isEmpty()) {
       return CompletableFuture.completedStage(
           Boom.badRequest()
@@ -54,8 +82,11 @@ public class UserResourceImpl implements UserResource {
       return CompletableFuture.completedStage(Boom.badRequest().errors(errors).response());
     }
 
-    AuthUser user = principal.user();
-    return userService.updateUser(user, body).thenApply(DataResponse::ok);
+    if (!userId.equals(actor.getId())) {
+      return CompletableFuture.completedStage(Boom.notFound().response());
+    }
+
+    return userService.updateUser(actor, body).thenApply(DataResponse::ok);
   }
 
   @Override
@@ -80,6 +111,7 @@ public class UserResourceImpl implements UserResource {
       log.info(
           "[AUTH]: Tried to send phone number verify code to user={} with no phone number configured",
           userId);
+
       return CompletableFuture.completedStage(
           Boom.badRequest().errors(Errors.PHONE_NUMBER_REQUIRED).response());
     }

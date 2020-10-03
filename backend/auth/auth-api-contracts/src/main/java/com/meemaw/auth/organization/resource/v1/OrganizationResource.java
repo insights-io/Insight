@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path(OrganizationResource.PATH)
@@ -21,23 +22,26 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface OrganizationResource {
 
   String PATH = "/v1/organizations";
+  String TAG = "Organization";
 
   @GET
   @Path("members")
   @CookieAuth
+  @Tag(name = TAG)
   CompletionStage<Response> members();
 
   @GET
   @CookieAuth
+  @Tag(name = TAG)
   CompletionStage<Response> organization();
 
   @GET
-  @Path("{organizationId}")
+  @Path("{id}")
   @BearerTokenAuth
+  @Tag(name = TAG)
   default CompletionStage<Response> organization(
-      @PathParam("organizationId") String organizationId,
-      @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
-    return organization(organizationId);
+      @PathParam("id") String id, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
+    return organization(id);
   }
 
   CompletionStage<Response> organization(String organizationId);

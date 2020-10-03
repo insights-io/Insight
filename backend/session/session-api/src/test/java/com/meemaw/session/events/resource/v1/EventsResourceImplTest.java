@@ -2,7 +2,7 @@ package com.meemaw.session.events.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.RestAssuredUtils.sessionCookieExpect401;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
@@ -20,6 +20,7 @@ import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.Method;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -85,11 +86,9 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void events_search_should_throw_when_unauthenticated() {
+  public void events_search__should_throw__when_unauthorized() {
     String path = String.format(SEARCH_EVENTS_PATH_TEMPLATE, UUID.randomUUID());
-    sessionCookieExpect401(path, null);
-    sessionCookieExpect401(path, "random");
-    sessionCookieExpect401(path, SsoSession.newIdentifier());
+    ssoSessionCookieTestCases(Method.GET, path);
   }
 
   @Test

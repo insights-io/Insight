@@ -1,6 +1,9 @@
 package com.meemaw.session.sessions.resource.v1;
 
+import static com.meemaw.auth.user.UserRegistry.S2S_INTERNAL_USER;
+
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.pages.service.PageService;
 import com.meemaw.session.sessions.datasource.SessionTable;
@@ -55,9 +58,15 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> getPage(UUID sessionId, UUID pageId, String organizationId) {
-    // TODO: S2S auth
-    // String organizationId = principal.user().getOrganizationId();
+  public CompletionStage<Response> getPage(
+      UUID sessionId, UUID pageId, String organizationId, String authorization) {
+    // TODO: write a clean module to handle permissions
+    AuthUser user = principal.user();
+    if (!user.getOrganizationId().equals(S2S_INTERNAL_USER.getOrganizationId())
+        && !user.getOrganizationId().equals(organizationId)) {
+      throw Boom.notFound().exception();
+    }
+
     return pageService
         .getPage(pageId, sessionId, organizationId)
         .thenApply(
