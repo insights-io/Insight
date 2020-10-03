@@ -14,10 +14,10 @@ jobs:
       matrix:
         api:
           [
-            { name: 'auth:auth-api', port: '8080' },
-            { name: 'beacon:beacon-api', port: '8081' },
-            { name: 'session:session-api', port: '8082' },
-            { name: 'billing:billing-api', port: '8083' },
+            { namespace: 'auth', name: 'auth-api', port: '8080' },
+            { namespace: 'beacon', name: 'beacon-api', port: '8081' },
+            { namespace: 'session', name: 'session-api', port: '8082' },
+            { namespace: 'billing', name: 'billing-api', port: '8083' },
           ]
 
     steps:
@@ -35,9 +35,9 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 14
-      - run: cd backend && ./gradlew  ${{ matrix.api.name }}:quarkusDev &
+      - run: cd backend && ./gradlew  ${{ matrix.api.namespace }}:${{ matrix.api.name }}:quarkusDev &
       - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
-      - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
+      - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml"
       - uses: actions/upload-artifact@v2
         with:
           name: openapi-specs
