@@ -13,11 +13,13 @@ import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.token.resource.v1.AuthTokenResource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -58,9 +60,14 @@ public class AuthApiTestProvider {
   }
 
   public String signUpAndLoginWithRandomCredentials() throws JsonProcessingException {
+    return signUpAndLoginWithRandomCredentials(null);
+  }
+
+  public String signUpAndLoginWithRandomCredentials(PhoneNumberDTO phoneNumber)
+      throws JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = password + "@gmail.com";
-    return signUpAndLogin(signUpRequestMock(email, password));
+    return signUpAndLogin(signUpRequestMock(email, password, phoneNumber));
   }
 
   public String signUpAndLogin(String email, String password, PhoneNumberDTO phoneNumberDTO)
@@ -147,5 +154,17 @@ public class AuthApiTestProvider {
         .cookie(SsoSession.COOKIE_NAME);
 
     return extractSessionCookie(response).getValue();
+  }
+
+  public String createAuthToken(String sessionId) {
+    String resourceURI = resourcePath(AuthTokenResource.PATH);
+    DataResponse<Map<String, Object>> response =
+        given()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .when()
+            .post(resourceURI)
+            .as(new TypeRef<>() {});
+
+    return (String) response.getData().get("token");
   }
 }

@@ -1,0 +1,63 @@
+---
+  on:
+    pull_request: {}
+    push:
+      branches:
+      - master
+
+jobs:
+  openapi-generate:
+    name: Generate OpenAPI specifications
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        api:
+          [
+            { namespace: 'auth', name: 'auth-api', port: '8080' },
+            { namespace: 'beacon', name: 'beacon-api', port: '8081' },
+            { namespace: 'session', name: 'session-api', port: '8082' },
+            { namespace: 'billing', name: 'billing-api', port: '8083' },
+          ]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+      - run: cd backend && ./gradlew  ${{ matrix.api.namespace }}:${{ matrix.api.name }}:quarkusDev &
+      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
+      - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: openapi-specifications
+          path: '${{ matrix.api.name }}-openapi.yml'
+
+  openapi-upload:
+    name: Upload OpenAPI Specifications
+    runs-on: ubuntu-latest
+    needs: [openapi-generate]
+
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: openapi-specifications
+      - uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: './openapi-specifications'

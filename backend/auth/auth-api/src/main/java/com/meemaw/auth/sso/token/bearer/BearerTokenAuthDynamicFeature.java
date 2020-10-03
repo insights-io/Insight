@@ -14,15 +14,7 @@ public class BearerTokenAuthDynamicFeature extends AbstractBearerTokenAuthDynami
   @Inject AuthTokenDatasource authTokenDatasource;
 
   @Override
-  public AbstractBearerTokenAuthFilter authFilter() {
-    return new BearerTokenAuthFilter();
-  }
-
-  private class BearerTokenAuthFilter extends AbstractBearerTokenAuthFilter {
-
-    @Override
-    public CompletionStage<Optional<AuthUser>> findUser(String token) {
-      return authTokenDatasource.getTokenUser(token);
-    }
+  public CompletionStage<Optional<AuthUser>> findUser(String token) {
+    return authTokenDatasource.getTokenUser(token);
   }
 }

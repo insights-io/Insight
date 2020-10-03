@@ -1,5 +1,7 @@
 package com.meemaw.session.sessions.v1;
 
+import com.meemaw.auth.sso.AuthScheme;
+import com.meemaw.auth.sso.Authenticated;
 import com.meemaw.auth.sso.cookie.CookieAuth;
 import com.meemaw.session.model.CreatePageDTO;
 import java.util.UUID;
@@ -44,9 +46,10 @@ public interface SessionResource {
 
   @GET
   @Path("{sessionId}/pages/{pageId}")
-  // TODO: beacon-api needs this endpoint so figure out S2S auth @CookieAuth
+  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   CompletionStage<Response> getPage(
       @PathParam("sessionId") UUID sessionId,
       @PathParam("pageId") UUID pageId,
-      @QueryParam("organizationId") String organizationId);
+      @QueryParam("organizationId") String organizationId,
+      @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization);
 }
