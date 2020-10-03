@@ -1,7 +1,13 @@
 ---
 on:
-  pull_request: {}
+  pull_request:
+    paths:
+      - '.github/workflows/backend:docs.yml'
+      - '**.java'
   push:
+    paths:
+      - .github/workflows/backend:docs.yml
+      - '**.java'
     branches:
       - master
 
