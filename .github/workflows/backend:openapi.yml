@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        api: [{ name: 'auth:auth-api' }]
+        api: [{ name: 'auth:auth-api', port: '8080' }]
 
     steps:
       - uses: actions/checkout@v2
@@ -30,6 +30,6 @@ jobs:
         with:
           java-version: 14
       - run: cd backend && ./gradlew  ${{ matrix.api.name }}:quarkusDev &
-      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/openapi)" != "200" ]]; do sleep 5; done'
-      - run: curl http://localhost:8080/openapi --output ${{ matrix.api.name }}-openapi.yml
+      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 5; done'
+      - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
       - run: cat ${{ matrix.api.name }}-openapi.yml
