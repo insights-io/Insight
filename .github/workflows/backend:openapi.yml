@@ -30,5 +30,6 @@ jobs:
         with:
           java-version: 14
       - run: ./backend/gradlew  ${{ matrix.api }}:quarkusDev &
+      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/openapi)" != "200" ]]; do sleep 5; done'
       - run: curl http://localhost:8080/openapi --output ${{ matrix.api }}-openapi.yml
       - run: cat ${{ matrix.api }}-openapi.yml
