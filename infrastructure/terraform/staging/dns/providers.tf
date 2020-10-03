@@ -1,5 +1,5 @@
 provider "aws" {
-  version = "3.8.0"
+  version = "3.9.0"
   region  = module.project_vars.region
 }
 
