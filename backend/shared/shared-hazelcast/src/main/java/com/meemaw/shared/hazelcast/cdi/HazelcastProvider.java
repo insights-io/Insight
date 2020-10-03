@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 @ApplicationScoped
 public class HazelcastProvider {
 
-  private HazelcastInstance instance;
+  private volatile HazelcastInstance instance;
 
-  public HazelcastInstance getInstance() {
+  public synchronized HazelcastInstance getInstance() {
     if (instance == null) {
       log.info("Initializing HazelcastInstance...");
       instance = Hazelcast.newHazelcastInstance(new XmlConfigBuilder().build());

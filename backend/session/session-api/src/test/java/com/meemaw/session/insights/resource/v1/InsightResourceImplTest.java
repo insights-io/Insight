@@ -2,7 +2,7 @@ package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.RestAssuredUtils.sessionCookieExpect401;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
 
 import com.meemaw.auth.sso.session.model.SsoSession;
@@ -15,6 +15,7 @@ import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.Method;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -42,10 +43,8 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   @Inject SqlPool sqlPool;
 
   @Test
-  public void get_session_insights_count__should_throw__on_unauthenticated() {
-    sessionCookieExpect401(COUNT_PATH, null);
-    sessionCookieExpect401(COUNT_PATH, "random");
-    sessionCookieExpect401(COUNT_PATH, SsoSession.newIdentifier());
+  public void get_session_insights_count__should_throw__on_unauthorized() {
+    ssoSessionCookieTestCases(Method.GET, COUNT_PATH);
   }
 
   @Test
@@ -138,10 +137,8 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void get_session_insights_distinct__should_throw__on_unauthenticated() {
-    sessionCookieExpect401(DISTINCT_PATH, null);
-    sessionCookieExpect401(DISTINCT_PATH, "random");
-    sessionCookieExpect401(DISTINCT_PATH, SsoSession.newIdentifier());
+  public void get_session_insights_distinct__should_throw__on_unauthorized() {
+    ssoSessionCookieTestCases(Method.GET, DISTINCT_PATH);
   }
 
   @Test
