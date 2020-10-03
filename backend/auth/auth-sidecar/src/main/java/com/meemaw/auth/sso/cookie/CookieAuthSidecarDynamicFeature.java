@@ -18,7 +18,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Provider
 @Slf4j
-public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
+public class CookieAuthSidecarDynamicFeature extends AbstractCookieAuthDynamicFeature {
 
   @Inject @RestClient UserResource userResource;
   @Inject ObjectMapper objectMapper;

@@ -1,7 +1,8 @@
 package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.RestAssuredUtils.sessionCookieExpect401;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -12,13 +13,14 @@ import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.Method;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 import javax.ws.rs.core.HttpHeaders;
-import org.junit.jupiter.api.Disabled;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +28,9 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 @QuarkusTestResource(AuthApiTestResource.class)
 public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
+
+  @ConfigProperty(name = "authorization.s2s.auth.token")
+  String s2sAuthToken;
 
   @Test
   public void post_page__should_throw_error__when_unsupported_media_type() {
@@ -121,10 +126,8 @@ public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void get_sessions__should_be_under_cookie_auth() {
-    sessionCookieExpect401(SessionResource.PATH, null);
-    sessionCookieExpect401(SessionResource.PATH, "random");
-    sessionCookieExpect401(SessionResource.PATH, SsoSession.newIdentifier());
+  public void get_sessions__should_throw__when_unauthorized() {
+    ssoSessionCookieTestCases(Method.GET, SessionResource.PATH);
   }
 
   @Test
@@ -145,16 +148,33 @@ public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  @Disabled // TODO: enable once S2S auth
-  public void get_page__should_be_under_cookie_auth() {
+  public void get_page__should_throw__when_unauthorized() {
     String path =
         String.format(
             SessionResourceImplTest.SESSION_PAGE_PATH_TEMPLATE,
             UUID.randomUUID(),
             UUID.randomUUID());
 
-    sessionCookieExpect401(path, null);
-    sessionCookieExpect401(path, "random");
-    sessionCookieExpect401(path, SsoSession.newIdentifier());
+    ssoSessionCookieTestCases(Method.GET, path);
+    ssoBearerTokenTestCases(Method.GET, path);
+  }
+
+  @Test
+  public void get_page__throw_throw__when_page_not_existing() {
+    String path =
+        String.format(
+            SessionResourceImplTest.SESSION_PAGE_PATH_TEMPLATE,
+            UUID.randomUUID(),
+            UUID.randomUUID());
+
+    given()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + s2sAuthToken)
+        .when()
+        .get(path)
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
   }
 }

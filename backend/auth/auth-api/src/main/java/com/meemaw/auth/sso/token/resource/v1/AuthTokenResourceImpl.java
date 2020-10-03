@@ -6,6 +6,7 @@ import com.meemaw.auth.sso.token.model.CreateAuthTokenParams;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -15,6 +16,11 @@ public class AuthTokenResourceImpl implements AuthTokenResource {
 
   @Inject AuthTokenDatasource authTokenDatasource;
   @Inject InsightPrincipal insightPrincipal;
+
+  @Override
+  public CompletionStage<Response> me(String bearerToken) {
+    return CompletableFuture.completedStage(DataResponse.ok(insightPrincipal.user()));
+  }
 
   @Override
   public CompletionStage<Response> list() {

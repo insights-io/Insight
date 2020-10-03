@@ -1,10 +1,8 @@
 package com.meemaw.auth.sso;
 
 import com.meemaw.auth.sso.AbstractAuthenticatedDynamicFeature.AuthenticatedFilter;
-import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
-import io.opentracing.Span;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
@@ -59,8 +57,6 @@ public abstract class AbstractAuthenticatedDynamicFeature
         AuthSchemeResolver resolver = authSchemeResolvers.get(authScheme);
         try {
           resolver.tryAuthenticate(context);
-          Span span = tracer.activeSpan();
-          span.setTag(LoggingConstants.AUTH_SCHEME, authScheme.toString());
           return;
         } catch (BoomException boomException) {
           thrownException = boomException;
