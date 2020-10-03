@@ -2,8 +2,7 @@
 on:
   push:
   pull_request:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   openapi:generate:
