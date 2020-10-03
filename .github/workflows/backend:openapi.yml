@@ -12,7 +12,13 @@ jobs:
 
     strategy:
       matrix:
-        api: [{ name: 'auth:auth-api', port: '8080' }]
+        api:
+          [
+            { name: 'auth:auth-api', port: '8080' },
+            { name: 'beacob:beacon-api', port: '8081' },
+            { name: 'session:session-api', port: '8082' },
+            { name: 'billing:billing-api', port: '8083' },
+          ]
 
     steps:
       - uses: actions/checkout@v2
