@@ -10,24 +10,28 @@ import type {
 import type { RequestOptions } from '../../core/types';
 import { getData, withCredentials } from '../../core/utils';
 
-export const organizationsApi = (authApiBaseURL: string) => {
+export const organizationsResource = (authApiBaseURL: string) => {
+  const resourceBaseURL = (apiBaseURL: string) => {
+    return `${apiBaseURL}/v1/organization`;
+  };
+
   return {
     get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/organizations`, withCredentials(rest))
+        .get(resourceBaseURL(baseURL), withCredentials(rest))
         .json<DataResponse<OrganizationDTO>>()
         .then(getData);
     },
     members: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/organizations/members`, withCredentials(rest))
+        .get(`${resourceBaseURL(baseURL)}/members`, withCredentials(rest))
         .json<DataResponse<UserDTO[]>>()
         .then(getData);
     },
     teamInvite: {
       list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
         return ky
-          .get(`${baseURL}/v1/organizations/invites`, withCredentials(rest))
+          .get(`${resourceBaseURL(baseURL)}/invites`, withCredentials(rest))
           .json<DataResponse<TeamInviteDTO[]>>()
           .then(getData);
       },
@@ -38,7 +42,7 @@ export const organizationsApi = (authApiBaseURL: string) => {
       ) => {
         return ky
           .delete(
-            `${baseURL}/v1/organizations/invites/${token}`,
+            `${resourceBaseURL(baseURL)}/invites/${token}`,
             withCredentials({ json: { email }, ...rest })
           )
           .json<DataResponse<boolean>>();
@@ -49,7 +53,7 @@ export const organizationsApi = (authApiBaseURL: string) => {
       ) => {
         return ky
           .post(
-            `${baseURL}/v1/organizations/invites`,
+            `${resourceBaseURL(baseURL)}/invites`,
             withCredentials({ json, ...rest })
           )
           .json<DataResponse<TeamInviteDTO>>()
@@ -61,7 +65,7 @@ export const organizationsApi = (authApiBaseURL: string) => {
       ) => {
         return ky
           .post(
-            `${baseURL}/v1/organizations/invites/send`,
+            `${resourceBaseURL(baseURL)}/invites/send`,
             withCredentials({ json: { email }, ...rest })
           )
           .json<DataResponse<boolean>>();

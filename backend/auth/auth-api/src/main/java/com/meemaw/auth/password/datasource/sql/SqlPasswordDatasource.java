@@ -1,5 +1,6 @@
 package com.meemaw.auth.password.datasource.sql;
 
+import static com.meemaw.auth.password.datasource.sql.PasswordTable.CREATED_AT;
 import static com.meemaw.auth.password.datasource.sql.PasswordTable.HASH;
 import static com.meemaw.auth.password.datasource.sql.PasswordTable.TABLE;
 import static com.meemaw.auth.password.datasource.sql.PasswordTable.USER_ID;
@@ -7,6 +8,9 @@ import static com.meemaw.auth.password.datasource.sql.PasswordTable.USER_ID;
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -23,27 +27,26 @@ public class SqlPasswordDatasource implements PasswordDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Boolean> storePassword(
-      UUID userId, String hashedPassword, SqlTransaction transaction) {
-    Query query =
-        sqlPool
-            .getContext()
-            .insertInto(TABLE)
-            .columns(USER_ID, HASH)
-            .values(userId, hashedPassword);
-
-    return transaction.query(query).thenApply(pgRowSet -> true);
+  public CompletionStage<OffsetDateTime> storePassword(
+      UUID userId, String hash, SqlTransaction transaction) {
+    return transaction.query(insertPasswordQuery(userId, hash)).thenApply(this::mapStoredPassword);
   }
 
   @Override
-  public CompletionStage<Boolean> storePassword(UUID userId, String hashedPassword) {
-    Query query =
-        sqlPool
-            .getContext()
-            .insertInto(TABLE)
-            .columns(USER_ID, HASH)
-            .values(userId, hashedPassword);
+  public CompletionStage<OffsetDateTime> storePassword(UUID userId, String hash) {
+    return sqlPool.execute(insertPasswordQuery(userId, hash)).thenApply(this::mapStoredPassword);
+  }
 
-    return sqlPool.execute(query).thenApply(pgRowSet -> true);
+  private OffsetDateTime mapStoredPassword(RowSet<Row> rows) {
+    return rows.iterator().next().getOffsetDateTime(CREATED_AT.getName());
+  }
+
+  private Query insertPasswordQuery(UUID userId, String hash) {
+    return sqlPool
+        .getContext()
+        .insertInto(TABLE)
+        .columns(USER_ID, HASH)
+        .values(userId, hash)
+        .returning(CREATED_AT);
   }
 }

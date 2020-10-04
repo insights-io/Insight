@@ -16,7 +16,7 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.UPDATED_AT;
 
 import com.meemaw.auth.password.datasource.sql.PasswordTable;
-import com.meemaw.auth.sso.tfa.TfaMethod;
+import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;

@@ -1,9 +1,9 @@
-import { organizationsApi } from './organization/resource';
-import { passwordApi } from './password/resource';
-import { signupApi } from './signup/resource';
-import { tfaApi } from './tfa/resource';
-import { userApi } from './user/resource';
-import { ssoSetupApi, ssoSessionApi, ssoTokenResource } from './sso';
+import { organizationsResource } from './organization/resource';
+import { passwordResource } from './password/resource';
+import { signupResource } from './signup/resource';
+import { tfaSetupResource, tfaChallengeResource } from './tfa';
+import { userResource } from './user/resource';
+import { ssoSetupResource, ssoSessionResource, ssoTokenResource } from './sso';
 
 export * from './organization';
 export * from './password';
@@ -14,15 +14,18 @@ export * from './user';
 
 export const createAuthClient = (authApiBaseURL: string) => {
   return {
-    organization: organizationsApi(authApiBaseURL),
-    password: passwordApi(authApiBaseURL),
-    signup: signupApi(authApiBaseURL),
+    organization: organizationsResource(authApiBaseURL),
+    password: passwordResource(authApiBaseURL),
+    signup: signupResource(authApiBaseURL),
     sso: {
-      session: ssoSessionApi(authApiBaseURL),
-      setup: ssoSetupApi(authApiBaseURL),
+      session: ssoSessionResource(authApiBaseURL),
+      setup: ssoSetupResource(authApiBaseURL),
       token: ssoTokenResource(authApiBaseURL),
     },
-    tfa: tfaApi(authApiBaseURL),
-    user: userApi(authApiBaseURL),
+    tfa: {
+      setup: tfaSetupResource(authApiBaseURL),
+      challenge: tfaChallengeResource(authApiBaseURL),
+    },
+    user: userResource(authApiBaseURL),
   };
 };

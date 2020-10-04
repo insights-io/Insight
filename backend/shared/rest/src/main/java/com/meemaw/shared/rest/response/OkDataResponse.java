@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public abstract class OkDataResponse<T> {
 
   protected final T data;
+
+  public static class BooleanDataResponse extends OkDataResponse<Boolean> {}
 }

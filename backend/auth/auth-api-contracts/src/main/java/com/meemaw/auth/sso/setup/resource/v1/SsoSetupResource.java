@@ -13,22 +13,31 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(SsoSetupResource.PATH)
 @Produces(MediaType.APPLICATION_JSON)
 public interface SsoSetupResource {
 
   String PATH = SsoResource.PATH + "/setup";
+  String TAG = "SSO";
 
   @POST
   @CookieAuth
-  CompletionStage<Response> setup(@NotNull(message = "Required") @Valid CreateSsoSetupDTO body);
+  @Tag(name = TAG)
+  @Operation(summary = "Create SSO setup")
+  CompletionStage<Response> create(@NotNull(message = "Required") @Valid CreateSsoSetupDTO body);
 
   @GET
   @CookieAuth
+  @Tag(name = TAG)
+  @Operation(summary = "Create SSO setup associated with authenticated user")
   CompletionStage<Response> get();
 
   @GET
   @Path("{domain}")
+  @Tag(name = TAG)
+  @Operation(summary = "Create SSO setup associated with a domain")
   CompletionStage<Response> get(@PathParam("domain") String domain);
 }

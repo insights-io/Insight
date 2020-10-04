@@ -28,7 +28,7 @@ const TimeBasedTwoFactorAuthenticationSetupModal = ({
     apiError,
   } = useCodeInput({
     submitAction: (data) => {
-      return AuthApi.tfa.setupComplete('totp', data).then(onTfaConfigured);
+      return AuthApi.tfa.setup.complete('totp', data).then(onTfaConfigured);
     },
     handleError: (error, setError) => {
       setError(error.error);
@@ -37,8 +37,8 @@ const TimeBasedTwoFactorAuthenticationSetupModal = ({
 
   useEffect(() => {
     if (!qrImage && isOpen) {
-      AuthApi.tfa.totp
-        .setupStart()
+      AuthApi.tfa.setup.totp
+        .start()
         .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
         .catch(async (error) => {
           const errorDTO: APIErrorDataResponse = await error.response.json();

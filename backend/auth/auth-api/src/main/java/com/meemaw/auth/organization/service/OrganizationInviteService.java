@@ -15,7 +15,7 @@ public interface OrganizationInviteService {
 
   CompletionStage<Boolean> acceptTeamInvite(UUID token, TeamInviteAcceptDTO invite);
 
-  CompletionStage<Void> sendTeamInvite(
+  CompletionStage<TeamInviteDTO> sendTeamInvite(
       UUID token, InsightPrincipal principal, String acceptInviteURL);
 
   CompletionStage<Boolean> deleteTeamInvite(UUID token, InsightPrincipal principal);

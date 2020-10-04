@@ -6,10 +6,10 @@ import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.PARAMS;
 import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.TABLE;
 import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.USER_ID;
 
-import com.meemaw.auth.sso.tfa.TfaMethod;
-import com.meemaw.auth.sso.tfa.setup.model.TfaSetup;
-import com.meemaw.auth.sso.tfa.sms.model.SmsTfaSetup;
-import com.meemaw.auth.sso.tfa.totp.model.TfaTotpSetup;
+import com.meemaw.auth.tfa.TfaMethod;
+import com.meemaw.auth.tfa.model.TfaSetup;
+import com.meemaw.auth.tfa.sms.model.SmsTfaSetup;
+import com.meemaw.auth.tfa.totp.model.TfaTotpSetup;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;

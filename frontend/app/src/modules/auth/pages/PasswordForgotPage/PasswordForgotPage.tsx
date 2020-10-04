@@ -37,7 +37,7 @@ export const PasswordForgotPage = () => {
 
     AuthApi.password
       .forgot(formData.email)
-      .then((response) => setCheckYourInbox(response.data))
+      .then(() => setCheckYourInbox(true))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);

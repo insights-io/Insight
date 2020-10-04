@@ -114,7 +114,7 @@ public class SsoResourceImpl implements SsoResource {
   }
 
   @Override
-  public CompletionStage<Response> mySessions(String sessionId) {
+  public CompletionStage<Response> listAssociatedSessions(String sessionId) {
     return ssoService.findSessions(sessionId).thenApply(DataResponse::ok);
   }
 }

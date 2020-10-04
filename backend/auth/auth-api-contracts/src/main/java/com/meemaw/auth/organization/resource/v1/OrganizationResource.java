@@ -1,7 +1,12 @@
 package com.meemaw.auth.organization.resource.v1;
 
-import com.meemaw.auth.sso.bearer.BearerTokenAuth;
-import com.meemaw.auth.sso.cookie.CookieAuth;
+import com.meemaw.auth.organization.model.dto.OrganizationDTO;
+import com.meemaw.auth.sso.AuthScheme;
+import com.meemaw.auth.sso.Authenticated;
+import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.shared.rest.response.ErrorDataResponse;
+import com.meemaw.shared.rest.response.OkDataResponse;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,6 +17,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -21,28 +31,121 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterRestClient(configKey = "auth-api")
 public interface OrganizationResource {
 
-  String PATH = "/v1/organizations";
+  String PATH = "/v1/organization";
   String TAG = "Organization";
 
   @GET
   @Path("members")
-  @CookieAuth
+  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
-  CompletionStage<Response> members();
+  @Operation(summary = "Retrieve organization members")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "User collection",
+            content =
+                @Content(
+                    schema = @Schema(implementation = UserCollectionDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> retrieveMembers();
 
   @GET
-  @CookieAuth
+  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
-  CompletionStage<Response> organization();
+  @Operation(summary = "Retrieve organization associated with authenticated user")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Organization object",
+            content =
+                @Content(
+                    schema = @Schema(implementation = OrganizationDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> retrieveAssociated();
 
   @GET
   @Path("{id}")
-  @BearerTokenAuth
+  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
-  default CompletionStage<Response> organization(
+  @Operation(summary = "Retrieve organization")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Organization object",
+            content =
+                @Content(
+                    schema = @Schema(implementation = OrganizationDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "404",
+            description = "User Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  default CompletionStage<Response> retrieve(
       @PathParam("id") String id, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
-    return organization(id);
+    return retrieve(id);
   }
 
-  CompletionStage<Response> organization(String organizationId);
+  CompletionStage<Response> retrieve(String organizationId);
+
+  class UserCollectionDataResponse extends OkDataResponse<List<UserDTO>> {}
+
+  class OrganizationDataResponse extends OkDataResponse<OrganizationDTO> {}
 }

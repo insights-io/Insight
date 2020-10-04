@@ -34,31 +34,35 @@ public class OrganizationInviteResourceImpl implements OrganizationInviteResourc
   }
 
   @Override
-  public CompletionStage<Response> createTeamInvite(TeamInviteCreateDTO body) {
+  public CompletionStage<Response> create(TeamInviteCreateDTO body) {
     return inviteService
         .createTeamInvite(body, principal, getAcceptInviteURL())
         .thenApply(DataResponse::created);
   }
 
   @Override
-  public CompletionStage<Response> deleteTeamInvite(UUID token) {
-    return inviteService.deleteTeamInvite(token, principal).thenApply(DataResponse::ok);
+  public CompletionStage<Response> delete(UUID token) {
+    return inviteService
+        .deleteTeamInvite(token, principal)
+        .thenApply(ignored -> DataResponse.noContent());
   }
 
   @Override
-  public CompletionStage<Response> listTeamInvites() {
+  public CompletionStage<Response> listAssociated() {
     return inviteService.listTeamInvites(principal).thenApply(DataResponse::ok);
   }
 
   @Override
-  public CompletionStage<Response> acceptTeamInvite(UUID token, TeamInviteAcceptDTO body) {
-    return inviteService.acceptTeamInvite(token, body).thenApply(DataResponse::created);
+  public CompletionStage<Response> accept(UUID token, TeamInviteAcceptDTO body) {
+    return inviteService
+        .acceptTeamInvite(token, body)
+        .thenApply((ignored) -> DataResponse.noContent());
   }
 
   @Override
-  public CompletionStage<Response> sendTeamInvite(UUID token) {
+  public CompletionStage<Response> send(UUID token) {
     return inviteService
         .sendTeamInvite(token, principal, getAcceptInviteURL())
-        .thenApply(x -> DataResponse.ok(true));
+        .thenApply(DataResponse::ok);
   }
 }

@@ -3,8 +3,8 @@ package com.meemaw.auth.user.resource.v1;
 import com.meemaw.auth.sso.AuthScheme;
 import com.meemaw.auth.sso.Authenticated;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.sms.model.dto.TfaSmsSetupStartDTO;
+import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
@@ -23,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -41,6 +42,7 @@ public interface UserResource {
   @GET
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
+  @Operation(summary = "Retrieve authenticated user")
   @APIResponses(
       value = {
         @APIResponse(
@@ -67,12 +69,14 @@ public interface UserResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> me(@CookieParam(SsoSession.COOKIE_NAME) String sessionId);
+  CompletionStage<Response> retrieveAssociated(
+      @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
 
   @GET
   @Path("{userId}")
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
+  @Operation(summary = "Retrieve user")
   @APIResponses(
       value = {
         @APIResponse(
@@ -107,12 +111,13 @@ public interface UserResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> get(@PathParam("userId") UUID userId);
+  CompletionStage<Response> retrieve(@PathParam("userId") UUID userId);
 
   @PATCH
   @Consumes(MediaType.APPLICATION_JSON)
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
+  @Operation(summary = "Update authenticated user")
   @APIResponses(
       value = {
         @APIResponse(
@@ -154,6 +159,7 @@ public interface UserResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
+  @Operation(summary = "Update user")
   @APIResponses(
       value = {
         @APIResponse(
@@ -204,6 +210,7 @@ public interface UserResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
+  @Operation(summary = "Verify phone number")
   @APIResponses(
       value = {
         @APIResponse(
@@ -245,6 +252,7 @@ public interface UserResource {
   @Path("phone_number/verify/send_code")
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
+  @Operation(summary = "Send phone number verification code")
   @APIResponses(
       value = {
         @APIResponse(
@@ -283,5 +291,5 @@ public interface UserResource {
 
   class UserDataResponse extends OkDataResponse<UserDTO> {}
 
-  class TfaSetupStartResponse extends OkDataResponse<TfaSmsSetupStartDTO> {}
+  class TfaSetupStartResponse extends OkDataResponse<TfaChallengeCodeDetailsDTO> {}
 }

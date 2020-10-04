@@ -9,13 +9,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
+import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.auth.user.model.dto.SessionInfoDTO;
+import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
+import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.http.Method;
 import io.restassured.response.Response;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,6 +32,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,25 +45,8 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
 
-  private static String sessionId;
-
-  /**
-   * Signs up and logins with a test user if necessary.
-   *
-   * @return session id of the logged in test user
-   */
-  public String getSessionId() throws JsonProcessingException {
-    if (sessionId == null) {
-      String email = "org_invite_test@gmail.com";
-      String password = "org_invite_test_password";
-      sessionId = authApi().signUpAndLogin(email, password);
-    }
-
-    return sessionId;
-  }
-
   @Test
-  public void invite_should_fail_when_invalid_contentType() {
+  public void invite__should_fail_when__invalid_content_type() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
@@ -68,24 +59,33 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void invite_should_fail_when_not_authenticated() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .post(OrganizationInviteResource.PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void invite__should_fail__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(
+        Method.POST, OrganizationInviteResource.PATH, ContentType.JSON);
+    RestAssuredUtils.ssoBearerTokenTestCases(
+        Method.POST, OrganizationInviteResource.PATH, ContentType.JSON);
   }
 
   @Test
-  public void invite_should_fail_when_no_payload() throws JsonProcessingException {
+  public void invite__should_fail__when_no_payload() {
+    String sessionId = authApi().loginWithInsightAdmin();
+
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(OrganizationInviteResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
+
+    String authToken = authApi().createAuthToken(sessionId);
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(400)
@@ -95,11 +95,25 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void invite_should_fail_when_empty_payload() throws JsonProcessingException {
+  public void invite__should_fail__when_empty_payload() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body("{}")
+        .post(OrganizationInviteResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"role\":\"Required\",\"email\":\"Required\"}}}"));
+
+    String authToken = authApi().createAuthToken(sessionId);
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .body("{}")
         .post(OrganizationInviteResource.PATH)
         .then()
@@ -114,10 +128,24 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
     String payload =
         Files.readString(Path.of(getClass().getResource("/org/invite/invalidRole.json").toURI()));
 
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(payload)
+        .post(OrganizationInviteResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"role\":\"Invalid Value\"}}}"));
+
+    String authToken = authApi().createAuthToken(sessionId);
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .body(payload)
         .post(OrganizationInviteResource.PATH)
         .then()
@@ -128,14 +156,28 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void invite_should_fail_when_invalid_email() throws IOException {
+  public void invite__should_fail__when_invalid_email() throws IOException {
     String payload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO("notEmail", UserRole.ADMIN));
 
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(payload)
+        .post(OrganizationInviteResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"email\":\"must be a well-formed email address\"}}}"));
+
+    String authToken = authApi().createAuthToken(sessionId);
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .body(payload)
         .post(OrganizationInviteResource.PATH)
         .then()
@@ -146,15 +188,16 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void invite_flow_should_succeed_on_valid_payload() throws IOException {
+  public void invite_flow__should_succeed__when_valid_payload() throws IOException {
     String payload =
         objectMapper.writeValueAsString(
             new TeamInviteCreateDTO("test-team-invitation@gmail.com", UserRole.ADMIN));
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(payload)
         .post(OrganizationInviteResource.PATH)
         .then()
@@ -164,7 +207,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(payload)
         .post(OrganizationInviteResource.PATH)
         .then()
@@ -197,26 +240,19 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
         .body(inviteAcceptPayload)
         .post(String.join("/", OrganizationInviteResource.PATH, token, "accept"))
         .then()
-        .statusCode(201)
-        .body(sameJson("{\"data\":true}"));
+        .statusCode(204);
   }
 
   @Test
-  public void list_invites_should_fail_when_not_authenticated() {
-    given()
-        .when()
-        .get(OrganizationInviteResource.PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void list_invites__should_fail__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, OrganizationInviteResource.PATH);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, OrganizationInviteResource.PATH);
   }
 
   @Test
-  public void list_invites_should_return_collection() throws IOException {
+  public void list_invites__should_return_collection__when_authorized() throws IOException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-
+    String authToken = authApi().createAuthToken(sessionId);
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -226,15 +262,33 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
         .body(sameJson("{\"data\":[]}"))
         .body("data.size()", is(0));
 
-    String payload =
-        objectMapper.writeValueAsString(
-            new TeamInviteCreateDTO("list-invites-test@gmail.com", UserRole.STANDARD));
+    given()
+        .when()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
+        .get(OrganizationInviteResource.PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[]}"))
+        .body("data.size()", is(0));
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(payload)
+        .body(
+            objectMapper.writeValueAsString(
+                new TeamInviteCreateDTO(UUID.randomUUID() + "@gmail.com", UserRole.STANDARD)))
+        .post(OrganizationInviteResource.PATH)
+        .then()
+        .statusCode(201);
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
+        .body(
+            objectMapper.writeValueAsString(
+                new TeamInviteCreateDTO(UUID.randomUUID() + "@gmail.com", UserRole.STANDARD)))
         .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(201);
@@ -244,19 +298,28 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
             .get(OrganizationInviteResource.PATH);
-    response.then().statusCode(200).body("data.size()", is(1));
+    response.then().statusCode(200).body("data.size()", is(2));
 
-    UUID token = UUID.fromString(response.body().path("data[0].token"));
+    UUID firstInviteToken = UUID.fromString(response.body().path("data[0].token"));
+    UUID secondInviteToken = UUID.fromString(response.body().path("data[1].token"));
 
-    // delete the created invite
+    // delete first created invite
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .pathParam("token", token)
+        .pathParam("token", firstInviteToken)
         .delete(OrganizationInviteResource.PATH + "/{token}")
         .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+        .statusCode(204);
+
+    // delete second created invite
+    given()
+        .when()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
+        .pathParam("token", secondInviteToken)
+        .delete(OrganizationInviteResource.PATH + "/{token}")
+        .then()
+        .statusCode(204);
 
     // should return 0 invites now
     given()
@@ -270,7 +333,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void delete_invite_should_fail_when_no_token_param() {
+  public void delete_invite__should_fail__when_no_token_param() {
     given()
         .when()
         .delete(OrganizationInviteResource.PATH)
@@ -282,24 +345,18 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void delete_invite_should_fail_when_not_authenticated() {
-    given()
-        .when()
-        .pathParam("token", UUID.randomUUID())
-        .delete(OrganizationInviteResource.PATH + "/{token}")
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void delete_invite__should_fail_when__unauthorized() {
+    String path = OrganizationInviteResource.PATH + "/" + UUID.randomUUID();
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.DELETE, path);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.DELETE, path);
   }
 
   @Test
-  public void delete_invite__should_fail__when_invalid_token_param()
-      throws JsonProcessingException {
+  public void delete_invite__should_fail__when_invalid_token_param() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .pathParam("token", "randomToken")
         .delete(OrganizationInviteResource.PATH + "/{token}")
         .then()
@@ -311,11 +368,13 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void send_invite__should_fail__when_invalid_content_type() {
+    String path =
+        String.join("/", OrganizationInviteResource.PATH, UUID.randomUUID().toString(), "send");
+
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
-        .post(
-            String.join("/", OrganizationInviteResource.PATH, UUID.randomUUID().toString(), "send"))
+        .post(path)
         .then()
         .statusCode(415)
         .body(
@@ -324,22 +383,19 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void send_invite__should_fail__when_not_authenticated() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .post(
-            String.join("/", OrganizationInviteResource.PATH, UUID.randomUUID().toString(), "send"))
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void send_invite__should_fail__when_unauthorized() {
+    String path =
+        String.join("/", OrganizationInviteResource.PATH, UUID.randomUUID().toString(), "send");
+
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.POST, path, ContentType.JSON);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.POST, path, ContentType.JSON);
   }
 
   @Test
   public void send_invite_flow__should_succeed__when_existing_invite()
       throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    SessionInfoDTO sessionInfoDTO = authApi().getSessionInfo(sessionId).get();
     String invitedUserEmail = "send-invite-flow@gmail.com";
     String invitePayload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
@@ -349,7 +405,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
         .header("referer", "https://www.insight.io")
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(invitePayload)
         .post(OrganizationInviteResource.PATH)
         .then()
@@ -372,15 +428,24 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
     assertEquals(acceptInviteUrl, "https://www.insight.io/accept-invite?token=" + token);
 
     // resend the invite email
-    given()
-        .header("referer", "https://www.insight.io")
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, getSessionId())
-        .post(String.join("/", OrganizationInviteResource.PATH, token, "send"))
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+    DataResponse<TeamInviteDTO> dataResponse =
+        given()
+            .header("referer", "https://www.insight.io")
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .post(String.join("/", OrganizationInviteResource.PATH, token, "send"))
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(new TypeRef<>() {});
+
+    assertEquals(dataResponse.getData().getRole(), UserRole.ADMIN);
+    assertEquals(dataResponse.getData().getEmail(), invitedUserEmail);
+    assertEquals(dataResponse.getData().getCreator(), sessionInfoDTO.getUser().getId());
+    assertEquals(
+        dataResponse.getData().getOrganizationId(), sessionInfoDTO.getUser().getOrganizationId());
 
     assertEquals(2, mailbox.getMessagesSentTo(invitedUserEmail).size());
     acceptInviteUrl = Jsoup.parse(sent.get(1).getHtml()).select("a").attr("href");

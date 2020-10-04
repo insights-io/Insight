@@ -1,8 +1,8 @@
 package com.meemaw.auth.user.resource.v1;
 
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.sms.model.dto.TfaSmsSetupStartDTO;
+import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
@@ -29,12 +29,12 @@ public class UserResourceImpl implements UserResource {
   @Inject UserPhoneCodeService userPhoneCodeService;
 
   @Override
-  public CompletionStage<Response> me(String sessionId) {
+  public CompletionStage<Response> retrieveAssociated(String sessionId) {
     return CompletableFuture.completedStage(DataResponse.ok(principal.user()));
   }
 
   @Override
-  public CompletionStage<Response> get(UUID userId) {
+  public CompletionStage<Response> retrieve(UUID userId) {
     AuthUser user = principal.user();
     if (!user.getId().equals(userId)) {
       throw Boom.notFound().exception();
@@ -123,7 +123,7 @@ public class UserResourceImpl implements UserResource {
 
     return userPhoneCodeService
         .sendVerificationCode(userId, phoneNumber)
-        .thenApply(TfaSmsSetupStartDTO::new)
+        .thenApply(TfaChallengeCodeDetailsDTO::new)
         .thenApply(DataResponse::ok);
   }
 }

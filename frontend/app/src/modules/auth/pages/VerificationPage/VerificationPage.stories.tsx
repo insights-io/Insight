@@ -24,7 +24,7 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa, 'challengeComplete')
+        .stub(AuthApi.tfa.challenge, 'complete')
         .resolves({} as Response),
     };
   },
@@ -47,7 +47,7 @@ WithMissingChallengeIdError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa, 'challengeComplete')
+        .stub(AuthApi.tfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,
@@ -73,7 +73,7 @@ WithExpiredChallengeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa, 'challengeComplete')
+        .stub(AuthApi.tfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,
@@ -96,7 +96,7 @@ WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa, 'challengeComplete')
+        .stub(AuthApi.tfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,

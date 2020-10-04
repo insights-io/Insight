@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
-import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
-import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
+import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.sms.MockSmsbox;
@@ -59,7 +59,7 @@ public final class AuthApiSetupUtils {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TfaResource.PATH + "/sms/setup")
+        .post(TfaSetupResource.PATH + "/sms/start")
         .then()
         .statusCode(200);
 
@@ -69,7 +69,7 @@ public final class AuthApiSetupUtils {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaSetupCode)))
-        .post(TfaResource.PATH + "/sms/setup")
+        .post(TfaSetupResource.PATH + "/sms/complete")
         .then()
         .statusCode(200);
 
@@ -82,7 +82,7 @@ public final class AuthApiSetupUtils {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TfaResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/start")
         .then()
         .statusCode(200);
 
@@ -94,7 +94,7 @@ public final class AuthApiSetupUtils {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-        .post(TfaResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);
 

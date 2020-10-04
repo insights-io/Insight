@@ -19,7 +19,7 @@ public class OAuth2MicrosoftResourceImpl
   @Inject OAuth2MicrosoftService OAuth2MicrosoftService;
 
   @Override
-  public Response signIn(URL redirect, @Nullable String email) {
+  public CompletionStage<Response> signIn(URL redirect, @Nullable String email) {
     return signIn(OAuth2MicrosoftService, redirect, email);
   }
 

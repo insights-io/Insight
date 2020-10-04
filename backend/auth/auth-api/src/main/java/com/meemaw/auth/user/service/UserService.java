@@ -1,7 +1,7 @@
 package com.meemaw.auth.user.service;
 
 import com.meemaw.auth.sso.session.datasource.SsoDatasource;
-import com.meemaw.auth.sso.tfa.challenge.service.TfaChallengeService;
+import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;

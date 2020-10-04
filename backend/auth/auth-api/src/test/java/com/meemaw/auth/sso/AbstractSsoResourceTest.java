@@ -6,7 +6,7 @@ import com.meemaw.auth.sso.oauth.github.resource.v1.OAuth2GithubResource;
 import com.meemaw.auth.sso.oauth.google.resource.v1.OAuth2GoogleResource;
 import com.meemaw.auth.sso.oauth.microsoft.resource.v1.OAuth2MicrosoftResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
-import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import io.quarkus.test.common.http.TestHTTPResource;

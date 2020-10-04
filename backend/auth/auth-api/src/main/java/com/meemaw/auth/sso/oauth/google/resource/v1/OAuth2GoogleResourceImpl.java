@@ -18,7 +18,7 @@ public class OAuth2GoogleResourceImpl
   @Inject OAuth2GoogleService oauthService;
 
   @Override
-  public Response signIn(URL redirect, @Nullable String email) {
+  public CompletionStage<Response> signIn(URL redirect, @Nullable String email) {
     return signIn(oauthService, redirect, email);
   }
 

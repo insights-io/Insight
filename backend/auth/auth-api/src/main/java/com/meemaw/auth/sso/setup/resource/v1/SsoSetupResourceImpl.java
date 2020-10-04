@@ -33,7 +33,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
   @Context HttpServerRequest request;
 
   @Override
-  public CompletionStage<Response> setup(CreateSsoSetupDTO body) {
+  public CompletionStage<Response> create(CreateSsoSetupDTO body) {
     AuthUser user = insightPrincipal.user();
     SsoMethod method = body.getMethod();
     URL configurationEndpoint = body.getConfigurationEndpoint();

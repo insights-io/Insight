@@ -23,16 +23,16 @@ TfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       listSetups: sandbox
-        .stub(AuthApi.tfa, 'listSetups')
+        .stub(AuthApi.tfa.setup, 'list')
         .resolves([{ createdAt: new Date().toUTCString(), method: 'totp' }]),
-      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa.setup.totp, 'start').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
       setupComplete: sandbox
-        .stub(AuthApi.tfa, 'setupComplete')
+        .stub(AuthApi.tfa.setup, 'complete')
         .resolves({ createdAt: new Date().toISOString(), method: 'totp' }),
       setupSendSmsCode: sandbox
-        .stub(AuthApi.tfa.sms, 'setupSendCode')
+        .stub(AuthApi.tfa.setup.sms, 'sendCode')
         .resolves({ validitySeconds: 60 }),
     };
   },

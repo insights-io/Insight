@@ -2,17 +2,13 @@ import React, { useMemo, useCallback } from 'react';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
-import type {
-  APIErrorDataResponse,
-  TfaMethod,
-  TfaSetupDTO,
-} from '@insight/types';
-import useSWR from 'swr';
+import type { TfaMethod, TfaSetupDTO } from '@insight/types';
 import { AuthApi } from 'api';
 import { isBefore } from 'date-fns';
 import { Check } from 'baseui/icon';
 import { SpacedBetween, VerticalAligned } from '@insight/elements';
 import FormError from 'shared/components/FormError';
+import useSWRQuery from 'shared/hooks/useSWRQuery';
 
 import TimeBasedTwoFactorAuthentication from './TimaBasedTwoFactorAuthentication';
 import SmsTwoFactorAuthentication from './SmsTwoFactorAuthentication';
@@ -23,11 +19,8 @@ const CACHE_KEY = `AuthApi.tfa.listSetups`;
 
 export const TwoFactorAuthentication = ({ user }: Props) => {
   const [css, theme] = useStyletron();
-  const { data, mutate, error } = useSWR(CACHE_KEY, () =>
-    AuthApi.tfa.listSetups().catch(async (errorResponse) => {
-      const errorDTO: APIErrorDataResponse = await errorResponse.response.json();
-      throw errorDTO.error;
-    })
+  const { data, mutate, error } = useSWRQuery(CACHE_KEY, () =>
+    AuthApi.tfa.setup.list()
   );
 
   const loading = useMemo(() => data === undefined, [data]);
@@ -120,7 +113,7 @@ export const TwoFactorAuthentication = ({ user }: Props) => {
         </Block>
       </Block>
 
-      {error && <FormError error={error} />}
+      {error && <FormError error={error.error} />}
     </Card>
   );
 };

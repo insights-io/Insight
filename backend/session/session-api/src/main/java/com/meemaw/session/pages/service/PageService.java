@@ -79,7 +79,7 @@ public class PageService {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
     return organizationResource
-        .organization(organizationId, AbstractBearerTokenAuthDynamicFeature.header(s2sAuthToken))
+        .retrieve(organizationId, AbstractBearerTokenAuthDynamicFeature.header(s2sAuthToken))
         .thenCompose(
             response -> {
               int status = response.getStatus();

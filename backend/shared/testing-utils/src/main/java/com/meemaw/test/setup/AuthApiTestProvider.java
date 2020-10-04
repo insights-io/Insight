@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 public class AuthApiTestProvider {
 
   public static final String INSIGHT_ADMIN_EMAIL = "admin@insight.io";
+  public static final String INSIGHT_ADMIN_FULL_NAME = "Admin Admin";
   public static final String INSIGHT_ADMIN_PASSWORD = "superDuperPassword123";
   public static final UUID INSIGHT_ADMIN_ID =
       UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b");
@@ -93,11 +94,7 @@ public class AuthApiTestProvider {
     Response response =
         given().when().get(signUpConfirmationLinkProvider.apply(signUpRequest.getEmail()));
 
-    response
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\": true}"))
-        .cookie(SsoSession.COOKIE_NAME);
+    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
 
     return extractSessionCookie(response).getValue();
   }
@@ -124,7 +121,7 @@ public class AuthApiTestProvider {
   }
 
   public Optional<SessionInfoDTO> getSessionInfo(String sessionId) {
-    String uri = resourcePath(SsoResource.PATH + "/me");
+    String uri = resourcePath(SsoResource.PATH + "/session");
 
     DataResponse<SessionInfoDTO> dataResponse =
         given().cookie(SsoSession.COOKIE_NAME, sessionId).when().get(uri).as(new TypeRef<>() {});

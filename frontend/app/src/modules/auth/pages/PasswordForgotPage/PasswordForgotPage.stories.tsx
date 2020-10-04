@@ -15,6 +15,6 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.password, 'forgot').resolves({ data: true });
+    return sandbox.stub(AuthApi.password, 'forgot').resolves();
   },
 });

@@ -37,7 +37,7 @@ const ChangePassword = ({ overrides }: Props) => {
 
     AuthApi.password
       .change(formData)
-      .then((_resp) => {
+      .then(() => {
         toaster.positive('Password changed', {});
         setFormError(undefined);
       })

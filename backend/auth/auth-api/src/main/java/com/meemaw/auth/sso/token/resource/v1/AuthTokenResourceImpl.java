@@ -43,6 +43,6 @@ public class AuthTokenResourceImpl implements AuthTokenResource {
     AuthUser user = insightPrincipal.user();
     return authTokenDatasource
         .delete(token, user.getId())
-        .thenApply(deleted -> deleted ? DataResponse.ok(true) : Boom.notFound().response());
+        .thenApply(deleted -> deleted ? DataResponse.noContent() : Boom.notFound().response());
   }
 }
