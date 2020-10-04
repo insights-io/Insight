@@ -87,5 +87,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: 'Preview documentation for ${{ matrix.api }}: \nOpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml\nPostman collection: https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json'
+          msg: |
+            Preview documentation for ${{ matrix.api }}: 
+            OpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml
+            Postman collection: https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json
           check_for_duplicate_msg: true
