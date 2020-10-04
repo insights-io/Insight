@@ -1,6 +1,10 @@
 import { mapOrganization, mapTeamInvite } from '@insight/sdk';
-import type { OrganizationDTO, TeamInviteDTO } from '@insight/types';
 import { subDays } from 'date-fns';
+import type {
+  Organization,
+  OrganizationDTO,
+  TeamInviteDTO,
+} from '@insight/types';
 
 export const INSIGHT_ORGANIZATION_DTO: OrganizationDTO = {
   id: '000000',
@@ -9,7 +13,14 @@ export const INSIGHT_ORGANIZATION_DTO: OrganizationDTO = {
   updatedAt: new Date().toUTCString(),
 };
 
-export const INSIGHT_ORGANIZATION = mapOrganization(INSIGHT_ORGANIZATION_DTO);
+export const INSIGHT_ORGANIZATION: Organization = mapOrganization(
+  INSIGHT_ORGANIZATION_DTO
+);
+
+export const NAMELESS_INSIGHT_ORGANIZATION: Organization = {
+  ...INSIGHT_ORGANIZATION,
+  name: undefined,
+};
 
 export const STANDARD_TEAM_INVITE_DTO: TeamInviteDTO = {
   email: 'standard@gmail.com',

@@ -1,9 +1,9 @@
 import React, { ComponentType } from 'react';
 import { render as renderImpl } from '@testing-library/react';
-import { NextRouter } from 'next/router';
 import { createRouter } from 'next/dist/client/router';
 import { sandbox } from '@insight/testing';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
+import type { NextRouter } from 'next/router';
 import type { StoryConfiguration } from '@insight/storybook';
 
 import type {
@@ -23,6 +23,7 @@ export const render = <Props, T, S extends StoryConfiguration<T>>(
   const push = sandbox.stub().resolves(false);
   const back = sandbox.stub();
   const reload = sandbox.stub();
+  const prefetch = sandbox.stub().resolves();
 
   const router: NextRouter = {
     basePath: pathname,
@@ -35,7 +36,7 @@ export const render = <Props, T, S extends StoryConfiguration<T>>(
     replace,
     reload,
     beforePopState: sandbox.stub(),
-    prefetch: () => Promise.resolve(),
+    prefetch,
     events: { on: sandbox.stub(), off: sandbox.stub(), emit: sandbox.stub() },
     isFallback: false,
   };
@@ -63,7 +64,7 @@ export const render = <Props, T, S extends StoryConfiguration<T>>(
     </Providers>
   );
 
-  return { ...renderResult, replace, push, back, reload };
+  return { ...renderResult, replace, push, back, reload, prefetch };
 };
 
 export const createRenderer = (Providers: AppProviders) => {

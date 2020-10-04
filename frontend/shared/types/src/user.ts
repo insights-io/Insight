@@ -13,7 +13,7 @@ export type UserDTO = {
   id: string;
   email: string;
   role: UserRole;
-  fullName: string;
+  fullName: string | undefined;
   createdAt: string;
   updatedAt: string;
   organizationId: string;

@@ -7,17 +7,17 @@ import { UnstyledLink } from '@insight/elements';
 
 import { BannerCard, Props as BannerCardProps } from './BannerCard';
 
-export type Props = {
+export type Props = Pick<User, 'email' | 'fullName'> & {
   children: 'Account' | 'Organization';
-  user: User;
-  organizationName: string;
+  organizationName: string | undefined;
   overrides?: {
     OrganizationBanner?: BannerCardProps['overrides'];
   };
 };
 
 export const MenuOptionGroupItem = ({
-  user,
+  email,
+  fullName,
   children,
   organizationName,
   overrides,
@@ -26,14 +26,19 @@ export const MenuOptionGroupItem = ({
     <Block as="li" padding="12px">
       {children === 'Organization' ? (
         <BannerCard
-          subtitle={user.fullName}
-          title={organizationName}
+          subtitle={fullName || email}
+          title={organizationName || 'My Organization'}
+          avatar={organizationName || 'O'}
           overrides={overrides?.OrganizationBanner}
         />
       ) : (
         <Link href={ACCOUNT_SETTINGS_DETAILS_PAGE}>
           <UnstyledLink>
-            <BannerCard subtitle={user.email} title={user.fullName} />
+            <BannerCard
+              subtitle={email}
+              title={fullName || 'My Account'}
+              avatar={fullName || email}
+            />
           </UnstyledLink>
         </Link>
       )}

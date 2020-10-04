@@ -1,5 +1,5 @@
-import { UserDTO, User, SsoSetupDTO, SsoSetup } from '@insight/types';
 import { mapUser } from '@insight/sdk';
+import type { UserDTO, User, SsoSetupDTO, SsoSetup } from '@insight/types';
 
 export const INSIGHT_ADMIN_DTO: UserDTO = {
   id: '7c071176-d186-40ac-aaf8-ac9779ab047b',
@@ -17,6 +17,11 @@ export const INSIGHT_ADMIN_NO_PHONE_NUMBER: User = mapUser({
   ...INSIGHT_ADMIN_DTO,
   phoneNumber: null,
   phoneNumberVerified: false,
+});
+
+export const NAMELESS_INSIGHT_ADMIN: User = mapUser({
+  ...INSIGHT_ADMIN_DTO,
+  fullName: undefined,
 });
 
 export const INSIGHT_ADMIN: User = mapUser(INSIGHT_ADMIN_DTO);
