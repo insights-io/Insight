@@ -5,9 +5,9 @@ import { sandbox } from '@insight/testing';
 
 import { Base, WithError } from './ChangePassword.stories';
 
-describe('ChangePassword', () => {
+describe('<ChangePassword />', () => {
   it('Should successfully change password', async () => {
-    Base.story.setupMocks(sandbox);
+    const changePasswordStub = Base.story.setupMocks(sandbox);
     const { getByPlaceholderText, getByText, findByText } = render(<Base />);
     await userEvent.type(
       getByPlaceholderText('Current password'),
@@ -21,6 +21,11 @@ describe('ChangePassword', () => {
 
     userEvent.click(getByText('Save new password'));
     await findByText('Password changed');
+    sandbox.assert.calledWithExactly(changePasswordStub, {
+      currentPassword: 'currentPassword123',
+      newPassword: 'password 123',
+      confirmNewPassword: 'password 123',
+    });
   });
 
   it('Should handle error', async () => {

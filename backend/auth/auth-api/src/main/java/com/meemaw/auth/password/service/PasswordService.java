@@ -5,6 +5,7 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.net.URL;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -18,7 +19,7 @@ public interface PasswordService {
 
   CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password);
 
-  CompletionStage<Boolean> changePassword(
+  CompletionStage<OffsetDateTime> changePassword(
       UUID userId,
       String email,
       String currentPassword,

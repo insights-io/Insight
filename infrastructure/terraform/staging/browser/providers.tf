@@ -1,6 +1,5 @@
 provider "aws" {
-  version = "3.9.0"
-  region  = module.project_vars.region
+  region = module.project_vars.region
 }
 
 provider "cloudflare" {

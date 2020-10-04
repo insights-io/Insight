@@ -17,9 +17,8 @@ import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.datasource.UserDatasource;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
-import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -49,22 +48,21 @@ import org.junit.jupiter.api.Test;
 public class PasswordResourceImplTest extends AbstractAuthApiTest {
 
   public static final String PASSWORD_FORGOT_PATH =
-      String.join("/", PasswordResource.PATH, "password_forgot");
+      String.join("/", PasswordResource.PATH, "forgot");
 
   public static final String PASSWORD_CHANGE_PATH =
-      String.join("/", PasswordResource.PATH, "password_change");
+      String.join("/", PasswordResource.PATH, "change");
 
   public static final String PASSWORD_RESET_PATH_TEMPLATE =
-      String.join("/", PasswordResource.PATH, "password_reset", "%s");
+      String.join("/", PasswordResource.PATH, "reset", "%s");
 
   public static final String PASSWORD_RESET_EXISTS_PATH_TEMPLATE =
-      String.join("/", PasswordResource.PATH, "password_reset", "%s", "exists");
+      String.join("/", PASSWORD_RESET_PATH_TEMPLATE, "exists");
 
-  @Inject UserDatasource userDatasource;
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @Test
-  public void password_reset_exists__should_fail__when_random_token() {
+  public void password_reset_exists__should_be_false__when_random_token() {
     given()
         .when()
         .get(String.format(PASSWORD_RESET_EXISTS_PATH_TEMPLATE, UUID.randomUUID()))
@@ -157,16 +155,15 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .body(payload)
         .post(PASSWORD_FORGOT_PATH)
         .then()
-        .statusCode(201)
-        .body(sameJson("{\"data\":true}"));
+        .statusCode(204);
   }
 
   @Test
   public void password_forgot__should_send_email__when_existing_user()
       throws JsonProcessingException {
-    String email = "test-forgot-password-flow@gmail.com";
-    String password = "superHardPassword";
-    authApi().signUpAndLogin(email, password);
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String email = authApi().getSessionInfo(sessionId).get().getUser().getEmail();
+
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
     // can trigger the forgot flow multiple times!!
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
@@ -184,17 +181,16 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
       throws JsonProcessingException {
     String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(email));
 
-    Response response =
-        given()
-            .header("referer", "https://www.insight.io")
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(payload)
-            .post(PASSWORD_FORGOT_PATH);
-
-    response.then().statusCode(201).body(sameJson("{\"data\":true}"));
-
-    return response;
+    return given()
+        .header("referer", "https://www.insight.io")
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(payload)
+        .post(PASSWORD_FORGOT_PATH)
+        .then()
+        .statusCode(204)
+        .extract()
+        .response();
   }
 
   @Test
@@ -272,20 +268,18 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void password_reset_flow__should_require_verification__if_tfa_setup()
       throws JsonProcessingException, GeneralSecurityException {
-    String email = "reset-password-flow-tfa@gmail.com";
-    String password = "superHardPassword";
-    String sessionId = authApi().signUpAndLogin(email, password);
-    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret = AuthApiSetupUtils.setupTotpTfa(userId, sessionId, tfaTotpSetupDatasource);
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
 
     // init flow
-    PasswordResourceImplTest.passwordForgot(email, objectMapper);
+    PasswordResourceImplTest.passwordForgot(user.getEmail(), objectMapper);
 
     String newPassword = "superDuperNewFancyPassword";
     String resetPasswordPayload =
         objectMapper.writeValueAsString(new PasswordResetRequestDTO(newPassword));
 
-    List<Mail> sent = mailbox.getMessagesSentTo(email);
+    List<Mail> sent = mailbox.getMessagesSentTo(user.getEmail());
     assertEquals(2, sent.size());
     Mail actual = sent.get(1);
     assertEquals("Insight Support <support@insight.com>", actual.getFrom());
@@ -315,13 +309,11 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoChallenge.COOKIE_NAME, challengeId)
         .body(
-            JacksonMapper.get()
-                .writeValueAsString(
-                    new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
+            objectMapper.writeValueAsString(
+                new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
         .post(TfaChallengeResourceImpl.PATH + "/totp/complete")
         .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":true}"))
+        .statusCode(204)
         .cookie(SsoChallenge.COOKIE_NAME, "")
         .cookie(SsoSession.COOKIE_NAME);
   }
@@ -459,7 +451,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .headers(HttpHeaders.AUTHORIZATION, authToken)
+        .headers(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .post(PASSWORD_CHANGE_PATH)
         .then()
         .statusCode(400)
@@ -492,7 +484,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
-        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()
         .statusCode(400)
@@ -511,7 +503,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
-        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()
         .statusCode(400)
@@ -531,7 +523,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
-        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()
         .statusCode(400)
@@ -554,7 +546,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()
         .statusCode(400)
@@ -577,11 +569,10 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(passwordChangeRequestDTO))
+        .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":true}"));
+        .statusCode(204);
 
     given()
         .when()

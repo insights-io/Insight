@@ -8,11 +8,13 @@ import { Base } from './PasswordForgotPage.stories';
 
 describe('<PasswordForgotPage />', () => {
   it('Should be able to start password reset flow', async () => {
-    Base.story.setupMocks(sandbox);
+    const forgotPasswordStub = Base.story.setupMocks(sandbox);
     const { getByText, findByText, getByPlaceholderText } = render(<Base />);
 
     await userEvent.type(getByPlaceholderText('Email'), 'test-user@gmail.com');
     await userEvent.click(getByText('Reset password'));
+
+    sandbox.assert.calledWithExactly(forgotPasswordStub, 'test-user@gmail.com');
 
     await findByText('Check your inbox!');
     await findByText(

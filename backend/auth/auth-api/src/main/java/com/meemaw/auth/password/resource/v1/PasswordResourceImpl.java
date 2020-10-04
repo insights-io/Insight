@@ -35,7 +35,7 @@ public class PasswordResourceImpl implements PasswordResource {
 
     return passwordService
         .forgotPassword(passwordForgotRequestDTO.getEmail(), clientBaseURL)
-        .thenApply(user -> DataResponse.created(true));
+        .thenApply(maybeUser -> DataResponse.noContent());
   }
 
   @Override
@@ -68,6 +68,6 @@ public class PasswordResourceImpl implements PasswordResource {
             body.getCurrentPassword(),
             body.getNewPassword(),
             body.getConfirmNewPassword())
-        .thenApply(DataResponse::ok);
+        .thenApply(ignored -> DataResponse.noContent());
   }
 }

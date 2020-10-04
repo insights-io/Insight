@@ -198,19 +198,18 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   @Test
   public void google_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
-    String email = "sso-login-tfa-full-flow@gmail.com";
-    String password = "sso-login-tfa-full-flow";
-    String sessionId = authApi().signUpAndLogin(email, password);
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
 
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TfaSetupResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/start")
         .then()
         .statusCode(200);
 
-    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
+    String secret =
+        tfaTotpSetupDatasource.getTotpSecret(user.getId()).toCompletableFuture().join().get();
     int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
     given()
@@ -218,11 +217,11 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-        .post(TfaSetupResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);
 
-    QuarkusMock.installMockForInstance(new MockedOAuth2GoogleClient(email), googleClient);
+    QuarkusMock.installMockForInstance(new MockedOAuth2GoogleClient(user.getEmail()), googleClient);
     String state = googleService.secureState("https://www.insight.io/my_path");
 
     given()

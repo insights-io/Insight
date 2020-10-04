@@ -15,6 +15,7 @@ import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
 import java.net.URL;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -170,7 +171,7 @@ public class PasswordServiceImpl implements PasswordService {
   @Timed(
       name = "changePassword",
       description = "A measure of how long it takes to change a password")
-  public CompletionStage<Boolean> changePassword(
+  public CompletionStage<OffsetDateTime> changePassword(
       UUID userId,
       String email,
       String currentPassword,

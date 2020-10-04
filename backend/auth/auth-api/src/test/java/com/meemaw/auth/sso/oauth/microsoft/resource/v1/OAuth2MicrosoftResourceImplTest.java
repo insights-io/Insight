@@ -20,6 +20,7 @@ import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -33,7 +34,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -191,19 +191,18 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
   @Test
   public void microsoft_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
-    String email = "sso-microsoft-login-tfa-full-flow@gmail.com";
-    String password = "sso-microsoft-login-tfa-full-flow";
-    String sessionId = authApi().signUpAndLogin(email, password);
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
 
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TfaSetupResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/start")
         .then()
         .statusCode(200);
 
-    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
+    String secret =
+        tfaTotpSetupDatasource.getTotpSecret(user.getId()).toCompletableFuture().join().get();
     int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
     given()
@@ -211,12 +210,13 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-        .post(TfaSetupResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);
 
     String Location = "https://www.insight.io/my_path";
-    QuarkusMock.installMockForInstance(new MockedOAuth2MicrosoftClient(email), microsoftClient);
+    QuarkusMock.installMockForInstance(
+        new MockedOAuth2MicrosoftClient(user.getEmail()), microsoftClient);
     String state = microsoftService.secureState(Location);
 
     given()

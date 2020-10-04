@@ -14,35 +14,29 @@ export const passwordResource = (authApiBaseURL: string) => {
       email: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .post(`${resourceBaseURL(baseURL)}/forgot`, {
-          json: { email },
-          ...rest,
-        })
-        .json<DataResponse<boolean>>();
+      return ky.post(`${resourceBaseURL(baseURL)}/forgot`, {
+        json: { email },
+        ...rest,
+      });
     },
     reset: (
       token: string,
       password: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .post(
-          `${resourceBaseURL(baseURL)}/reset/${token}`,
-          withCredentials({ json: { password }, ...rest })
-        )
-        .json<DataResponse<boolean>>();
+      return ky.post(
+        `${resourceBaseURL(baseURL)}/reset/${token}`,
+        withCredentials({ json: { password }, ...rest })
+      );
     },
     change: (
       json: ChangePasswordDTO,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .post(
-          `${resourceBaseURL(baseURL)}/change`,
-          withCredentials({ json, ...rest })
-        )
-        .json<DataResponse<boolean>>();
+      return ky.post(
+        `${resourceBaseURL(baseURL)}/change`,
+        withCredentials({ json, ...rest })
+      );
     },
     resetExists: (
       token: string,

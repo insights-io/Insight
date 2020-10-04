@@ -5,6 +5,8 @@ import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.AuthScheme;
 import com.meemaw.auth.sso.Authenticated;
+import com.meemaw.shared.rest.response.ErrorDataResponse;
+import com.meemaw.shared.rest.response.OkDataResponse.BooleanDataResponse;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
@@ -18,6 +20,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(PasswordResource.PATH)
@@ -32,6 +38,26 @@ public interface PasswordResource {
   @Path("forgot")
   @Tag(name = TAG)
   @Operation(summary = "Create password reset request")
+  @APIResponses(
+      value = {
+        @APIResponse(responseCode = "204", description = "Success"),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
   CompletionStage<Response> forgot(
       @NotNull(message = "Required") @Valid PasswordForgotRequestDTO body);
 
@@ -39,6 +65,26 @@ public interface PasswordResource {
   @Path("reset/{token}")
   @Tag(name = TAG)
   @Operation(summary = "Password reset")
+  @APIResponses(
+      value = {
+        @APIResponse(responseCode = "200", description = "Success"),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
   CompletionStage<Response> reset(
       @PathParam("token") UUID token,
       @NotNull(message = "Required") @Valid PasswordResetRequestDTO body);
@@ -47,6 +93,24 @@ public interface PasswordResource {
   @Path("reset/{token}/exists")
   @Tag(name = TAG)
   @Operation(summary = "Password reset request exists")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Boolean indicating if the request exists",
+            content =
+                @Content(
+                    schema = @Schema(implementation = BooleanDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
   CompletionStage<Response> resetRequestExists(@PathParam("token") UUID token);
 
   @POST
@@ -54,6 +118,34 @@ public interface PasswordResource {
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Change password")
+  @APIResponses(
+      value = {
+        @APIResponse(responseCode = "204", description = "Success"),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
   CompletionStage<Response> change(
       @NotNull(message = "Required") @Valid PasswordChangeRequestDTO body);
 }
