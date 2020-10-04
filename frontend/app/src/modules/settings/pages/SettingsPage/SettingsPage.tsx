@@ -40,7 +40,7 @@ export const SettingsPage = ({
           <SettingsSectionCard
             header="My account"
             headerLink={ACCOUNT_SETTINGS_DETAILS_PAGE}
-            avatar={user.fullName}
+            avatar={user.fullName || user.email}
             quickLinks={[
               {
                 text: 'Chamge my password',
