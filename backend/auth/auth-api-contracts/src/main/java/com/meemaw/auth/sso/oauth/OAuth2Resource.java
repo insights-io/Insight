@@ -52,15 +52,15 @@ public interface OAuth2Resource {
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> signIn(
-      @NotNull(message = "Required")
-          @QueryParam("redirect")
-          @Parameter(
+      @Parameter(
               schema = @Schema(implementation = String.class),
               example = "http://localhost:3000",
               description =
                   "Callback URL where user will return to after a successful authentication")
+          @NotNull(message = "Required")
+          @QueryParam("redirect")
           URL redirect,
-      @Nullable @Email @QueryParam("email") String email);
+      @Parameter(example = "user@example.com") @Nullable @Email @QueryParam("email") String email);
 
   @GET
   @Path(CALLBACK_PATH)

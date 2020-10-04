@@ -20,6 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -60,8 +61,20 @@ public interface SamlResource {
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> signIn(
-      @NotNull(message = "Required") @QueryParam("redirect") URL redirect,
-      @NotBlank(message = "Required") @Email @QueryParam("email") String email);
+      @Parameter(
+              required = true,
+              schema = @Schema(implementation = String.class),
+              example = "http://localhost:3000",
+              description =
+                  "Callback URL where user will return to after a successful authentication")
+          @NotNull(message = "Required")
+          @QueryParam("redirect")
+          URL redirect,
+      @Parameter(example = "user@example.com", required = true)
+          @NotBlank(message = "Required")
+          @Email
+          @QueryParam("email")
+          String email);
 
   @POST
   @Path(OAuth2Resource.CALLBACK_PATH)

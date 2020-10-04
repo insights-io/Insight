@@ -43,10 +43,13 @@ jobs:
       - run: cd backend && ./gradlew  ${{ matrix.api.namespace }}:${{ matrix.api.name }}:quarkusDev &
       - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
       - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
+      - run: npx openapi-to-postmanv2 -s ${{ matrix.api.name }}-openapi.yml -o ${{ matrix.api.name }}-postman.json -p
       - uses: actions/upload-artifact@v2
         with:
           name: openapi-specifications
-          path: '${{ matrix.api.name }}-openapi.yml'
+          path: |
+            '${{ matrix.api.name }}-openapi.yml'
+            '${{ matrix.api.name }}-postman.json'
 
   openapi-upload:
     name: Upload OpenAPI Specifications
@@ -86,5 +89,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: 'OpenAPI preview of ${{ matrix.api }} available at https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml 🚀'
+          msg: 'Preview documentation for ${{ matrix.api }}: \nOpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml\nPostman collection: https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json'
           check_for_duplicate_msg: true
