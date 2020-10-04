@@ -92,7 +92,7 @@ export const NavbarBanner = ({
         },
       ],
     };
-  }, []);
+  }, [replace]);
 
   return (
     <StatefulPopover
