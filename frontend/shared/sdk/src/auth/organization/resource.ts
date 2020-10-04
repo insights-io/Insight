@@ -10,7 +10,7 @@ import type {
 import type { RequestOptions } from '../../core/types';
 import { getData, withCredentials } from '../../core/utils';
 
-export const organizationsApi = (authApiBaseURL: string) => {
+export const organizationsResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
     return `${apiBaseURL}/v1/organization`;
   };

@@ -3,27 +3,31 @@ import type { DataResponse, SignUpRequestDTO } from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
 
-export const signupApi = (authApiBaseURL: string) => {
+export const signupResource = (authApiBaseURL: string) => {
+  const resourceBaseURL = (apiBaseURL: string) => {
+    return `${apiBaseURL}/v1/signup`;
+  };
+
   return {
     create: (
       json: SignUpRequestDTO,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky.post(`${baseURL}/v1/signup`, { json, ...rest }).json();
+      return ky.post(resourceBaseURL(baseURL), { json, ...rest }).json();
     },
     verify: (
       token: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(`${baseURL}/v1/signup/${token}/valid`, rest)
+        .get(`${resourceBaseURL(baseURL)}/${token}/valid`, rest)
         .json<DataResponse<boolean>>();
     },
     complete: (
       token: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky.post(`${baseURL}/v1/signup/${token}/complete`, rest);
+      return ky.post(`${resourceBaseURL(baseURL)}/${token}/complete`, rest);
     },
   };
 };

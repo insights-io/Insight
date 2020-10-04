@@ -4,14 +4,21 @@ import ky from 'ky-universal';
 import { withCredentials } from '../../core';
 import type { RequestOptions } from '../../core/types';
 
-export const passwordApi = (authApiBaseURL: string) => {
+export const passwordResource = (authApiBaseURL: string) => {
+  const resourceBaseURL = (apiBaseURL: string) => {
+    return `${apiBaseURL}/v1/password`;
+  };
+
   return {
     forgot: (
       email: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .post(`${baseURL}/v1/password_forgot`, { json: { email }, ...rest })
+        .post(`${resourceBaseURL(baseURL)}/forgot`, {
+          json: { email },
+          ...rest,
+        })
         .json<DataResponse<boolean>>();
     },
     reset: (
@@ -21,7 +28,7 @@ export const passwordApi = (authApiBaseURL: string) => {
     ) => {
       return ky
         .post(
-          `${baseURL}/v1/password_reset/${token}`,
+          `${resourceBaseURL(baseURL)}/reset/${token}`,
           withCredentials({ json: { password }, ...rest })
         )
         .json<DataResponse<boolean>>();
@@ -32,7 +39,7 @@ export const passwordApi = (authApiBaseURL: string) => {
     ) => {
       return ky
         .post(
-          `${baseURL}/v1/password_change`,
+          `${resourceBaseURL(baseURL)}/change`,
           withCredentials({ json, ...rest })
         )
         .json<DataResponse<boolean>>();
@@ -42,7 +49,7 @@ export const passwordApi = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(`${baseURL}/v1/password_reset/${token}/exists`, rest)
+        .get(`${resourceBaseURL(baseURL)}/reset/${token}/exists`, rest)
         .json<DataResponse<boolean>>();
     },
   };
