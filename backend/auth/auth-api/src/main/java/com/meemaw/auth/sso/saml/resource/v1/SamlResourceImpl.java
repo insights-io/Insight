@@ -27,7 +27,7 @@ public class SamlResourceImpl implements SamlResource {
   @Inject SsoSetupDatasource ssoSetupDatasource;
 
   @Override
-  public CompletionStage<Response> signIn(String email, URL redirect) {
+  public CompletionStage<Response> signIn(URL redirect, String email) {
     log.info("[AUTH]: SAML signIn request email={} redirect={}", email, redirect);
     String domain = EmailUtils.domainFromEmail(email);
     String cookieDomain =

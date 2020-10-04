@@ -364,7 +364,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoResource.PATH, "me"))
+            .get(String.join("/", SsoResource.PATH, "session"))
             .as(new TypeRef<>() {});
 
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
@@ -402,8 +402,9 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoResource.PATH, "me"))
+            .get(String.join("/", SsoResource.PATH, "session"))
             .as(new TypeRef<>() {});
+
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
   }
 

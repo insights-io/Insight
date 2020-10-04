@@ -9,6 +9,7 @@ import com.meemaw.shared.context.RequestUtils;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.URI;
 import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.Context;
@@ -32,7 +33,7 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
         .build();
   }
 
-  public Response signIn(
+  public CompletionStage<Response> signIn(
       AbstractOAuth2Service<T, U, E> oauthService, URL redirect, @Nullable String email) {
     String state = oauthService.secureState(redirect.toString());
     URI serverRedirectURI = getServerRedirectURI(oauthService, info, request);
@@ -40,10 +41,11 @@ public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E exten
     String cookieDomain = RequestUtils.parseCookieDomain(serverRedirectURI);
     log.info("[AUTH]: OAuth2 sign in request authorizationURI={}", authorizationURI);
 
-    return Response.status(Status.FOUND)
-        .cookie(SsoSignInSession.cookie(state, cookieDomain))
-        .header("Location", authorizationURI)
-        .build();
+    return CompletableFuture.completedStage(
+        Response.status(Status.FOUND)
+            .cookie(SsoSignInSession.cookie(state, cookieDomain))
+            .header("Location", authorizationURI)
+            .build());
   }
 
   public CompletionStage<Response> oauth2callback(

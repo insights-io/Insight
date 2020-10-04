@@ -14,6 +14,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path(AuthTokenResource.PATH)
@@ -22,22 +24,31 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface AuthTokenResource {
 
   String PATH = SsoResource.PATH + "/auth/token";
+  String TAG = "Auth Token";
 
   @GET
   @Path("user")
   @BearerTokenAuth
+  @Tag(name = TAG)
+  @Operation(summary = "Retrieve authenticated user")
   CompletionStage<Response> me(@HeaderParam(HttpHeaders.AUTHORIZATION) String bearerToken);
 
   @GET
   @CookieAuth
+  @Tag(name = TAG)
+  @Operation(summary = "List auth tokens")
   CompletionStage<Response> list();
 
   @POST
   @CookieAuth
+  @Tag(name = TAG)
+  @Operation(summary = "List auth token")
   CompletionStage<Response> create();
 
   @DELETE
   @CookieAuth
   @Path("{token}")
+  @Tag(name = TAG)
+  @Operation(summary = "Delete auth token")
   CompletionStage<Response> delete(@PathParam("token") String token);
 }

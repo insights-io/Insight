@@ -9,6 +9,10 @@ import { getData, withCredentials } from '../../../core/utils';
 import type { RequestOptions } from '../../../core/types';
 
 export const ssoSessionResource = (authApiBaseURL: string) => {
+  const resourceBaseURL = (apiBaseURL: string) => {
+    return `${apiBaseURL}/v1/sso`;
+  };
+
   return {
     login: (
       email: string,
@@ -19,33 +23,36 @@ export const ssoSessionResource = (authApiBaseURL: string) => {
       body.set('email', email);
       body.set('password', password);
       return ky
-        .post(`${baseURL}/v1/sso/login`, withCredentials({ body, ...rest }))
+        .post(
+          `${resourceBaseURL(baseURL)}/login`,
+          withCredentials({ body, ...rest })
+        )
         .json<DataResponse<LoginResponseDTO>>();
     },
     get: (
-      sessionId: string,
+      id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky.get(`${baseURL}/v1/sso/session`, {
-        searchParams: { id: sessionId },
-        ...rest,
-      });
+      return ky.get(`${resourceBaseURL(baseURL)}/session/${id}`, rest);
     },
     me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/sso/me`, withCredentials(rest))
+        .get(`${resourceBaseURL(baseURL)}/session`, withCredentials(rest))
         .json<DataResponse<SessionInfoDTO>>()
         .then(getData);
     },
     logout: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return ky.post(`${baseURL}/v1/sso/logout`, withCredentials(rest));
+      return ky.post(
+        `${resourceBaseURL(baseURL)}/logout`,
+        withCredentials(rest)
+      );
     },
     logoutFromAllDevices: ({
       baseURL = authApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
       return ky.post(
-        `${baseURL}/v1/sso/logout-from-all-devices`,
+        `${resourceBaseURL(baseURL)}/logout-from-all-devices`,
         withCredentials(rest)
       );
     },

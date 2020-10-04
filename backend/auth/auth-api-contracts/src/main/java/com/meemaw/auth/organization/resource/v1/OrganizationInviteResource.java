@@ -34,7 +34,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public interface OrganizationInviteResource {
 
   String PATH = OrganizationResource.PATH + "/invites";
-  String TAG = "Organization invite";
+  String TAG = "Organization Invite";
 
   @POST
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})

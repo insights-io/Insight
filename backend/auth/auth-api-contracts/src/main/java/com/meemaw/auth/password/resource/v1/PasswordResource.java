@@ -6,6 +6,7 @@ import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.AuthScheme;
 import com.meemaw.auth.sso.Authenticated;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
+import com.meemaw.shared.rest.response.OkDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse.BooleanDataResponse;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -67,7 +68,13 @@ public interface PasswordResource {
   @Operation(summary = "Password reset")
   @APIResponses(
       value = {
-        @APIResponse(responseCode = "200", description = "Success"),
+        @APIResponse(
+            responseCode = "200",
+            description = "Success",
+            content =
+                @Content(
+                    schema = @Schema(implementation = OkDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "400",
             description = "Bad Request",

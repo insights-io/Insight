@@ -121,7 +121,7 @@ public class AuthApiTestProvider {
   }
 
   public Optional<SessionInfoDTO> getSessionInfo(String sessionId) {
-    String uri = resourcePath(SsoResource.PATH + "/me");
+    String uri = resourcePath(SsoResource.PATH + "/session");
 
     DataResponse<SessionInfoDTO> dataResponse =
         given().cookie(SsoSession.COOKIE_NAME, sessionId).when().get(uri).as(new TypeRef<>() {});

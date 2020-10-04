@@ -25,7 +25,6 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -173,7 +172,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -241,7 +240,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -293,7 +292,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(signUpRequestDTO))
+        .body(objectMapper.writeValueAsString(signUpRequestDTO))
         .post(SignUpResource.PATH)
         .then()
         .statusCode(204);
@@ -368,9 +367,8 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .statusCode(200)
         .body(
             sameJson(
-                JacksonMapper.get()
-                    .writeValueAsString(
-                        DataResponse.data(List.of(firstSessionId, secondSessionId)))));
+                objectMapper.writeValueAsString(
+                    DataResponse.data(List.of(firstSessionId, secondSessionId)))));
 
     given()
         .when()
@@ -387,9 +385,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .then()
         .statusCode(200)
         .body(
-            sameJson(
-                JacksonMapper.get()
-                    .writeValueAsString(DataResponse.data(List.of(firstSessionId)))));
+            sameJson(objectMapper.writeValueAsString(DataResponse.data(List.of(firstSessionId)))));
 
     given()
         .when()
@@ -449,7 +445,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-            .get(SsoResource.PATH + "/me")
+            .get(SsoResource.PATH + "/session")
             .then()
             .statusCode(200)
             .extract()
@@ -461,7 +457,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-            .get(SsoResource.PATH + "/me")
+            .get(SsoResource.PATH + "/session")
             .then()
             .statusCode(200)
             .extract()
@@ -481,9 +477,8 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .statusCode(200)
         .body(
             sameJson(
-                JacksonMapper.get()
-                    .writeValueAsString(
-                        DataResponse.data(List.of(firstSessionId, secondSessionId)))));
+                objectMapper.writeValueAsString(
+                    DataResponse.data(List.of(firstSessionId, secondSessionId)))));
 
     // Logout from all sessions
     given()
@@ -508,7 +503,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-        .get(SsoResource.PATH + "/me")
+        .get(SsoResource.PATH + "/session")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -527,7 +522,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .get(SsoResource.PATH + "/me")
+        .get(SsoResource.PATH + "/session")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -549,8 +544,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void session_should_clear_session_cookie_when_missing_sessionId() {
     given()
         .when()
-        .queryParam("id", "random")
-        .get(SsoResource.PATH + "/session")
+        .get(SsoResource.PATH + "/session/random")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -560,7 +554,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void me_should_fail_when_missing_sessionId_cookie() {
     given()
         .when()
-        .get(SsoResource.PATH + "/me")
+        .get(SsoResource.PATH + "/session")
         .then()
         .statusCode(400)
         .body(
@@ -574,7 +568,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
         .queryParam("id", "random")
-        .get(SsoResource.PATH + "/me")
+        .get(SsoResource.PATH + "/session")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -597,8 +591,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     // should be able to get session by id
     given()
         .when()
-        .queryParam("id", sessionId)
-        .get(SsoResource.PATH + "/session")
+        .get(SsoResource.PATH + "/session/" + sessionId)
         .then()
         .statusCode(200)
         .body(
@@ -610,7 +603,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(SsoResource.PATH + "/me")
+        .get(SsoResource.PATH + "/session")
         .then()
         .statusCode(200)
         .body(
@@ -664,8 +657,6 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .get(SsoResource.PATH + "/sessions")
         .then()
         .statusCode(200)
-        .body(
-            sameJson(
-                JacksonMapper.get().writeValueAsString(DataResponse.data(List.of(sessionId)))));
+        .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(List.of(sessionId)))));
   }
 }
