@@ -47,9 +47,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: openapi-specifications
-          path: |
-            '${{ matrix.api.name }}-openapi.yml'
-            '${{ matrix.api.name }}-postman.json'
+          path: '${{ matrix.api.name }}-*'
 
   openapi-upload:
     name: Upload OpenAPI Specifications
