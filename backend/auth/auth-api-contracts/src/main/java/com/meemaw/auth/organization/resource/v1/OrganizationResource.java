@@ -31,7 +31,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterRestClient(configKey = "auth-api")
 public interface OrganizationResource {
 
-  String PATH = "/v1/organizations";
+  String PATH = "/v1/organization";
   String TAG = "Organization";
 
   @GET

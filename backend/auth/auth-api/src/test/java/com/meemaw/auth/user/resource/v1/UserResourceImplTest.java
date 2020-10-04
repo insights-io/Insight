@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.SessionInfoDTO;

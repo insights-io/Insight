@@ -15,10 +15,10 @@ import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
-import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.tfa.model.SsoChallenge;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -175,7 +175,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TfaResource.PATH + "/totp/setup")
+        .get(TfaSetupResource.PATH + "/totp/setup")
         .then()
         .statusCode(200);
 
@@ -188,7 +188,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-        .post(TfaResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/setup")
         .then()
         .statusCode(200);
 

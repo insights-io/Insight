@@ -12,19 +12,22 @@ import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
-import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
-import com.meemaw.auth.sso.tfa.totp.datasource.TfaTotpSetupDatasource;
-import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
+import com.meemaw.auth.tfa.model.SsoChallenge;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.AbstractAuthApiTest;
+import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.mailer.Mail;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import io.restassured.http.Method;
 import io.restassured.response.Response;
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -432,38 +436,30 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void password_change__should_fail__when_no_auth() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .post(PASSWORD_CHANGE_PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
-  }
-
-  @Test
-  public void password_change__should_fail__when_random_session_id() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, "random")
-        .post(PASSWORD_CHANGE_PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void password_change__should_fail__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.POST, PASSWORD_CHANGE_PATH, ContentType.JSON);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.POST, PASSWORD_CHANGE_PATH, ContentType.JSON);
   }
 
   @Test
   public void password_change__should_fail__when_missing_body() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
+
+    String authToken = authApi().createAuthToken(sessionId);
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(HttpHeaders.AUTHORIZATION, authToken)
         .post(PASSWORD_CHANGE_PATH)
         .then()
         .statusCode(400)

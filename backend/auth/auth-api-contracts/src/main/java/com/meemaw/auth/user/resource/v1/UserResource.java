@@ -3,8 +3,8 @@ package com.meemaw.auth.user.resource.v1;
 import com.meemaw.auth.sso.AuthScheme;
 import com.meemaw.auth.sso.Authenticated;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.sms.model.dto.TfaSmsSetupStartDTO;
+import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
@@ -117,7 +117,7 @@ public interface UserResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
-  @Operation(summary = "Update user")
+  @Operation(summary = "Update authenticated user")
   @APIResponses(
       value = {
         @APIResponse(
@@ -291,5 +291,5 @@ public interface UserResource {
 
   class UserDataResponse extends OkDataResponse<UserDTO> {}
 
-  class TfaSetupStartResponse extends OkDataResponse<TfaSmsSetupStartDTO> {}
+  class TfaSetupStartResponse extends OkDataResponse<TfaChallengeCodeDetailsDTO> {}
 }

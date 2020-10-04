@@ -28,8 +28,7 @@ public class PasswordResourceImpl implements PasswordResource {
   @Context HttpServerRequest request;
 
   @Override
-  public CompletionStage<Response> forgotPassword(
-      PasswordForgotRequestDTO passwordForgotRequestDTO) {
+  public CompletionStage<Response> forgot(PasswordForgotRequestDTO passwordForgotRequestDTO) {
     URL clientBaseURL =
         RequestUtils.parseRefererBaseURL(request)
             .orElseGet(() -> RequestUtils.getServerBaseURL(info, request));
@@ -40,7 +39,7 @@ public class PasswordResourceImpl implements PasswordResource {
   }
 
   @Override
-  public CompletionStage<Response> resetPassword(UUID token, PasswordResetRequestDTO payload) {
+  public CompletionStage<Response> reset(UUID token, PasswordResetRequestDTO payload) {
     String password = payload.getPassword();
     URL serverBaseURL = RequestUtils.getServerBaseURL(info, request);
     String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
@@ -56,12 +55,12 @@ public class PasswordResourceImpl implements PasswordResource {
   }
 
   @Override
-  public CompletionStage<Response> passwordResetRequestExists(UUID token) {
+  public CompletionStage<Response> resetRequestExists(UUID token) {
     return passwordService.passwordResetRequestExists(token).thenApply(DataResponse::ok);
   }
 
   @Override
-  public CompletionStage<Response> passwordChange(PasswordChangeRequestDTO body) {
+  public CompletionStage<Response> change(PasswordChangeRequestDTO body) {
     return passwordService
         .changePassword(
             insightPrincipal.user().getId(),

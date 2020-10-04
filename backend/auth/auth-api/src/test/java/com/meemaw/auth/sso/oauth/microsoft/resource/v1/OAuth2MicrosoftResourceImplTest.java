@@ -16,10 +16,10 @@ import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.tfa.challenge.model.SsoChallenge;
-import com.meemaw.auth.sso.tfa.challenge.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.sso.tfa.setup.resource.v1.TfaResource;
-import com.meemaw.auth.sso.tfa.totp.impl.TotpUtils;
+import com.meemaw.auth.tfa.model.SsoChallenge;
+import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
+import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -198,7 +198,7 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(TfaResource.PATH + "/totp/setup")
+        .get(TfaSetupResource.PATH + "/totp/setup")
         .then()
         .statusCode(200);
 
@@ -211,7 +211,7 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-        .post(TfaResource.PATH + "/totp/setup")
+        .post(TfaSetupResource.PATH + "/totp/setup")
         .then()
         .statusCode(200);
 

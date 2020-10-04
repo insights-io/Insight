@@ -27,7 +27,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public interface SignUpResource {
 
   String PATH = "/v1/signup";
-  String TAG = "SignUp";
+  String TAG = "Sign up";
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)

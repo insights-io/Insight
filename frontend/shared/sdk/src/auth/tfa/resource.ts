@@ -12,12 +12,23 @@ import type { RequestOptions } from '../../core/types';
 import type { TfaSetupStart, TfaTotpSetupStart } from './types';
 
 export const tfaApi = (authApiBaseURL: string) => {
+  const setupResourceBaseURL = (apiBaseURL: string) => {
+    return `${apiBaseURL}/v1/two-factor-authentication/setup`;
+  };
+
+  const challengeResourceBaseURL = (apiBaseURL: string) => {
+    return `${apiBaseURL}/v1/two-factor-authentication/challenge`;
+  };
+
   const tfaSetupStart = <T extends TfaSetupStart>(
     method: TfaMethod,
     { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
   ) => {
     return ky
-      .get(`${baseURL}/v1/sso/tfa/${method}/setup`, withCredentials(rest))
+      .post(
+        `${setupResourceBaseURL(baseURL)}/${method}/start`,
+        withCredentials(rest)
+      )
       .json<DataResponse<T>>();
   };
 
@@ -27,7 +38,10 @@ export const tfaApi = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(`${baseURL}/v1/sso/tfa/${method}`, withCredentials(rest))
+        .get(
+          `${setupResourceBaseURL(baseURL)}/${method}`,
+          withCredentials(rest)
+        )
         .json<DataResponse<TfaSetupDTO>>()
         .then(getData);
     },
@@ -36,7 +50,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       ...rest
     }: RequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/sso/tfa`, withCredentials(rest))
+        .get(setupResourceBaseURL(baseURL), withCredentials(rest))
         .json<DataResponse<TfaSetupDTO[]>>()
         .then(getData);
     },
@@ -46,7 +60,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky.post(
-        `${baseURL}/v1/sso/tfa/challenge/${method}/complete`,
+        `${challengeResourceBaseURL(baseURL)}/${method}/complete`,
         withCredentials({ json: { code }, ...rest })
       );
     },
@@ -58,7 +72,10 @@ export const tfaApi = (authApiBaseURL: string) => {
         ...rest
       }: RequestOptions = {}) => {
         return ky
-          .post(`${baseURL}/v1/sso/tfa/sms/send_code`, withCredentials(rest))
+          .post(
+            `${setupResourceBaseURL(baseURL)}/sms/send_code`,
+            withCredentials(rest)
+          )
           .json<DataResponse<CodeValidityDTO>>()
           .then(getData);
       },
@@ -68,7 +85,7 @@ export const tfaApi = (authApiBaseURL: string) => {
       }: RequestOptions = {}) => {
         return ky
           .post(
-            `${baseURL}/v1/sso/tfa/challenge/sms/send_code`,
+            `${challengeResourceBaseURL(baseURL)}/sms/send_code`,
             withCredentials(rest)
           )
           .json<DataResponse<CodeValidityDTO>>()
@@ -88,7 +105,7 @@ export const tfaApi = (authApiBaseURL: string) => {
     ) => {
       return ky
         .post(
-          `${baseURL}/v1/sso/tfa/${method}/setup`,
+          `${setupResourceBaseURL(baseURL)}/${method}/complete`,
           withCredentials({ json: { code }, ...rest })
         )
         .json<DataResponse<TfaSetupDTO>>()
@@ -98,19 +115,17 @@ export const tfaApi = (authApiBaseURL: string) => {
       method: TfaMethod,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .delete(`${baseURL}/v1/sso/tfa/${method}`, withCredentials(rest))
-        .json<DataResponse<boolean>>();
+      return ky.delete(
+        `${setupResourceBaseURL(baseURL)}/${method}`,
+        withCredentials(rest)
+      );
     },
     getChallenge: (
       id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .get(`${baseURL}/v1/sso/tfa/challenge`, {
-          searchParams: { id },
-          ...rest,
-        })
+        .get(`${challengeResourceBaseURL(baseURL)}/${id}`, rest)
         .json<DataResponse<TfaMethod[]>>()
         .then(getData);
     },
