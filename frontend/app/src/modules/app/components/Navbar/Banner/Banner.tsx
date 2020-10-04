@@ -24,7 +24,8 @@ import {
   SIGN_OUT_SECTION,
 } from 'shared/constants/copy';
 import { AuthApi } from 'api';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
+import { toaster } from 'baseui/toast';
 
 import { BannerCard } from './BannerCard';
 import {
@@ -46,8 +47,12 @@ export const NavbarBanner = ({
   expanded,
   theme,
 }: Props) => {
+  const { replace } = useRouter();
   const [isHovered, callbackRef] = useHover();
-  const borderRadius = useMemo(() => expandBorderRadius('8px'), []);
+  const borderRadius = useMemo(
+    () => expandBorderRadius(theme.sizing.scale400),
+    [theme.sizing.scale400]
+  );
   const MENU_ITEMS = useMemo(() => {
     return {
       __ungrouped: [],
@@ -78,7 +83,12 @@ export const NavbarBanner = ({
           label: SIGN_OUT_SECTION,
           link: '#',
           onClick: () =>
-            AuthApi.sso.session.logout().finally(() => Router.push(LOGIN_PAGE)),
+            AuthApi.sso.session
+              .logout()
+              .then(() => replace(LOGIN_PAGE))
+              .catch(() =>
+                toaster.negative('Something went wrong. Please try again.', {})
+              ),
         },
       ],
     };
@@ -98,13 +108,14 @@ export const NavbarBanner = ({
       content={({ close }) => (
         <StatefulMenu
           items={MENU_ITEMS}
-          onItemSelect={() => close()}
+          onItemSelect={close}
           overrides={{
             ListItem: { component: MenuOptionItem },
             OptgroupHeader: {
               component: MenuOptionGroupItem,
               props: {
-                user,
+                email: user.email,
+                fullName: user.fullName,
                 organizationName,
                 overrides: {
                   OrganizationBanner: { Avatar: { style: borderRadius } },
@@ -118,13 +129,14 @@ export const NavbarBanner = ({
     >
       <Block ref={callbackRef} className="banner">
         <BannerCard
-          title={organizationName || 'O'}
+          title={organizationName || 'My Organization'}
+          avatar={organizationName || 'O'}
           titleExtra={
             <VerticalAligned marginLeft={theme.sizing.scale200}>
               <ChevronDown />
             </VerticalAligned>
           }
-          subtitle={user.fullName}
+          subtitle={user.fullName || user.email}
           expanded={expanded}
           ref={callbackRef}
           overrides={{

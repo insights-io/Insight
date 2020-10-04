@@ -7,8 +7,9 @@ import { StyleObject } from 'styletron-react';
 
 export type Props = {
   title: string;
-  titleExtra?: JSX.Element;
   subtitle: string;
+  avatar: string;
+  titleExtra?: JSX.Element;
   expanded?: boolean;
   overrides?: {
     Avatar?: {
@@ -24,12 +25,15 @@ export type Props = {
 };
 
 export const BannerCard = forwardRef<HTMLDivElement, Props>(
-  ({ title, titleExtra, subtitle, overrides, expanded = true }, ref) => {
+  (
+    { title, subtitle, avatar, titleExtra, overrides, expanded = true },
+    ref
+  ) => {
     const [_css, theme] = useStyletron();
     return (
       <Flex $style={overrides?.Root?.style} className="banner--card" ref={ref}>
         <Avatar
-          name={title}
+          name={avatar}
           overrides={{
             Root: {
               style: {
