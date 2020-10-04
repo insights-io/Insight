@@ -28,22 +28,22 @@ public class SignUpResourceImpl implements SignUpResource {
   @Context UriInfo info;
 
   @Override
-  public CompletionStage<Response> signUp(SignUpRequestDTO payload) {
+  public CompletionStage<Response> create(SignUpRequestDTO payload) {
     URL referer = RequestUtils.parseRefererBaseURL(request).orElse(null);
     URL serverBaseURL = RequestUtils.getServerBaseURL(info, request);
 
     return signUpService
         .signUp(referer, serverBaseURL, payload)
-        .thenApply(ignored -> Response.noContent().build());
+        .thenApply(ignored -> DataResponse.noContent());
   }
 
   @Override
-  public CompletionStage<Response> signUpRequestValid(UUID token) {
+  public CompletionStage<Response> checkIfValid(UUID token) {
     return signUpService.signUpRequestValid(token).thenApply(DataResponse::ok);
   }
 
   @Override
-  public CompletionStage<Response> signUpRequestComplete(UUID token) {
+  public CompletionStage<Response> complete(UUID token) {
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return signUpService
         .completeSignUp(token)
@@ -63,6 +63,7 @@ public class SignUpResourceImpl implements SignUpResource {
     if (maybeRefererCallbackURL.isEmpty()) {
       return SsoSession.cookieResponse(sessionId, cookieDomain);
     }
+
     return Response.status(Status.FOUND)
         .header("Location", maybeRefererCallbackURL.get())
         .cookie(SsoSession.cookie(sessionId, cookieDomain))

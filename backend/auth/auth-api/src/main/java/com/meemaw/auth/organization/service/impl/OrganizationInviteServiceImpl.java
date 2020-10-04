@@ -160,7 +160,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
 
   @Override
   @Traced
-  public CompletionStage<Void> sendTeamInvite(
+  public CompletionStage<TeamInviteDTO> sendTeamInvite(
       UUID token, InsightPrincipal principal, String acceptInviteURL) {
     String creatorFullName = principal.user().getFullName();
 
@@ -174,13 +174,14 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
               TeamInviteDTO teamInvite = teamInviteOrganization.getLeft();
 
               return sendInviteEmail(
-                  token,
-                  new TeamInviteTemplateData(
-                      teamInvite.getEmail(),
-                      teamInvite.getRole(),
-                      creatorFullName,
-                      organization.getName()),
-                  acceptInviteURL);
+                      token,
+                      new TeamInviteTemplateData(
+                          teamInvite.getEmail(),
+                          teamInvite.getRole(),
+                          creatorFullName,
+                          organization.getName()),
+                      acceptInviteURL)
+                  .thenApply(ignored -> teamInvite);
             });
   }
 

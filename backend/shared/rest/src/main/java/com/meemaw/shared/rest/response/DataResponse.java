@@ -32,6 +32,10 @@ public class DataResponse<T> extends OkDataResponse<T> {
     return DataResponse.data(data).builder(201).build();
   }
 
+  public static Response noContent() {
+    return Response.noContent().build();
+  }
+
   public static <T> Response.ResponseBuilder okBuilder(T data) {
     return DataResponse.data(data).builder(200);
   }

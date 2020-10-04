@@ -26,7 +26,7 @@ public class CookieAuthSidecarDynamicFeature extends AbstractCookieAuthDynamicFe
   @Override
   protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
     return userResource
-        .me(sessionId)
+        .retrieveAssociated(sessionId)
         .thenApply(
             response -> {
               int statusCode = response.getStatus();

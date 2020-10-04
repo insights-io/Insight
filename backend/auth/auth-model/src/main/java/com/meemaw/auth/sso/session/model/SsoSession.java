@@ -1,6 +1,5 @@
 package com.meemaw.auth.sso.session.model;
 
-import com.meemaw.shared.rest.response.DataResponse;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -43,6 +42,6 @@ public class SsoSession {
   }
 
   public static ResponseBuilder cookieResponseBuilder(String value, String cookieDomain) {
-    return DataResponse.okBuilder(true).cookie(SsoSession.cookie(value, cookieDomain));
+    return Response.noContent().cookie(SsoSession.cookie(value, cookieDomain));
   }
 }

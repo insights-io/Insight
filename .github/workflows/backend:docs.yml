@@ -54,6 +54,7 @@ jobs:
     needs: [openapi-generate]
 
     steps:
+      - uses: rlespinasse/github-slug-action@v2.x
       - uses: actions/download-artifact@v2
         with:
           name: openapi-specifications
@@ -66,6 +67,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+          DEST_DIR: ${{ env.GITHUB_HEAD_REF_SLUG }}
           SOURCE_DIR: openapi-specifications
 
   openapi-preview:
@@ -78,10 +80,11 @@ jobs:
         api: [auth-api, beacon-api, session-api, billing-api]
 
     steps:
+      - uses: rlespinasse/github-slug-action@v2.x
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: 'OpenAPI preview of ${{ matrix.api }} available at https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ matrix.api }}-openapi.yml 🚀'
+          msg: 'OpenAPI preview of ${{ matrix.api }} available at https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml 🚀'
           check_for_duplicate_msg: true

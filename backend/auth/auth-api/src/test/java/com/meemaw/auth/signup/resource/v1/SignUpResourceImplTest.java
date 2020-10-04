@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
-import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.EmailTestUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -37,7 +36,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   URL signUpResourceBasePath;
 
   @Test
-  public void sign_up_not_valid_on_random_id() {
+  public void sign_up_valid__should_throw__when_random_id() {
     given()
         .when()
         .get(String.join("/", SignUpResource.PATH, UUID.randomUUID().toString(), "valid"))
@@ -47,7 +46,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void sign_up_complete_fails_on_random_id() {
+  public void sign_up_complete__should_throw__when_random_id() {
     given()
         .when()
         .get(String.join("/", SignUpResource.PATH, UUID.randomUUID().toString(), "complete"))
@@ -59,7 +58,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void signUp_should_fail_when_invalid_contentType() {
+  public void sign_up__should_fail__when_invalid_content_type() {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
@@ -72,7 +71,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void signUp_should_fail_when_no_payload() {
+  public void sign_up__should_fail__when_no_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +84,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void signUp__should_fail__when_empty_payload() {
+  public void sign_up__should_fail__when_empty_payload() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +98,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void signUp__should_fail__when_empty_invalid_payload() throws JsonProcessingException {
+  public void sign_up__should_fail__when_empty_invalid_payload() throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
         new SignUpRequestDTO(
             "email", "short", "Marko Novak", "Insight", new PhoneNumberDTO(null, null));
@@ -107,7 +106,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(signUpRequestDTO))
+        .body(objectMapper.writeValueAsString(signUpRequestDTO))
         .post(SignUpResource.PATH)
         .then()
         .statusCode(400)
@@ -117,7 +116,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void sign_up_client_redirect_full_flow_succeed_on_valid_payload()
+  public void sign_up__should_redirect_back_to_referer__when_valid_payload()
       throws JsonProcessingException {
     String referer = "http://localhost:3000";
     String signUpEmail = "marko.skace@insight.io";
@@ -128,7 +127,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .header("referer", referer)
-        .body(JacksonMapper.get().writeValueAsString(signUpRequestDTO))
+        .body(objectMapper.writeValueAsString(signUpRequestDTO))
         .post(SignUpResource.PATH)
         .then()
         .statusCode(204);
@@ -145,7 +144,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void signUp_full_flow_succeed_on_valid_payload() throws JsonProcessingException {
+  public void sign_up__should_succeeded() throws JsonProcessingException {
     String signUpEmail = "marko.novak@insight.io";
     SignUpRequestDTO signUpRequestDTO =
         new SignUpRequestDTO(signUpEmail, "not_short_123", "Marko Novak", "Insight", null);
@@ -153,7 +152,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(signUpRequestDTO))
+        .body(objectMapper.writeValueAsString(signUpRequestDTO))
         .post(SignUpResource.PATH)
         .then()
         .statusCode(204);
@@ -163,7 +162,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(signUpRequestDTO))
+        .body(objectMapper.writeValueAsString(signUpRequestDTO))
         .post(SignUpResource.PATH)
         .then()
         .statusCode(204);
@@ -192,8 +191,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
         .when()
         .get(String.join("/", SignUpResource.PATH, token, "complete"))
         .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\": true}"))
+        .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME);
 
     // verify that the SignUpRequest does not exist anymore
@@ -209,7 +207,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(signUpRequestDTO))
+        .body(objectMapper.writeValueAsString(signUpRequestDTO))
         .post(SignUpResource.PATH)
         .then()
         .statusCode(204);
