@@ -47,10 +47,8 @@ test('[AUTH-TOKENS]: As a user I want to create Auth Token, use it to make authe
   const authToken = await AccountSettingsAuthTokensPage.getToken(0);
 
   const organization = await get(
-    `http://localhost:8080/v1/organizations/${organizationId}`,
-    {
-      headers: { Authorization: `Bearer ${authToken}` },
-    }
+    `http://localhost:8080/v1/organization/${organizationId}`,
+    { headers: { Authorization: `Bearer ${authToken}` } }
   ).json<DataResponse<OrganizationDTO>>();
 
   const revokeButton = AccountSettingsAuthTokensPage.revokeButton(0);
@@ -69,7 +67,7 @@ test('[AUTH-TOKENS]: As a user I want to create Auth Token, use it to make authe
   await t.expect(tokenAccounAfterRevoke).eql(0, 'Should delete Auth Token');
 
   const dataResponse = await get(
-    `http://localhost:8080/v1/organizations/${organizationId}`,
+    `http://localhost:8080/v1/organization/${organizationId}`,
     {
       headers: { Authorization: `Bearer ${authToken}` },
       throwHttpErrors: false,
