@@ -38,7 +38,7 @@ const SmsTwoFactorAuthentication = ({
     handleSubmit,
   } = useCodeInput({
     submitAction: (paramCode) => {
-      return AuthApi.tfa.setupComplete('sms', paramCode).then((setup) => {
+      return AuthApi.tfa.setup.complete('sms', paramCode).then((setup) => {
         toaster.positive(`${LABEL} two factor authentication enabled`, {});
         onMethodEnabled(setup);
         closeModal();
@@ -50,7 +50,7 @@ const SmsTwoFactorAuthentication = ({
   });
 
   const disableSmsTwoFactorAuthentication = () => {
-    AuthApi.tfa.disable('sms').then(() => {
+    AuthApi.tfa.setup.disable('sms').then(() => {
       onMethodDisabled();
       closeModal();
       toaster.positive(`${LABEL} two factor authentication disabled`, {});
@@ -103,7 +103,7 @@ const SmsTwoFactorAuthentication = ({
                 code={code}
                 error={codeError}
                 handleChange={handleChange}
-                sendCode={AuthApi.tfa.sms.setupSendCode}
+                sendCode={AuthApi.tfa.setup.sms.sendCode}
               />
             </ModalBody>
             <ModalFooter>

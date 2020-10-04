@@ -7,6 +7,7 @@ import { VerificationPage } from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import AuthApi from 'api/auth';
 import type { APIErrorDataResponse, TfaMethod } from '@insight/types';
+import { LOGIN_PAGE } from 'shared/constants/routes';
 
 type Props = {
   methods: TfaMethod[];
@@ -24,7 +25,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     const { ChallengeId } = nextCookie(context);
     const relativeRedirect = (context.query.redirect || '/') as string;
     const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
-      const Location = `/login?redirect=${encodeURIComponent(
+      const Location = `${LOGIN_PAGE}?redirect=${encodeURIComponent(
         relativeRedirect
       )}`;
       context.res.writeHead(302, { Location, ...headers });
@@ -38,7 +39,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     }
 
     try {
-      const methods = await AuthApi.tfa.getChallenge(ChallengeId, {
+      const methods = await AuthApi.tfa.challenge.get(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });

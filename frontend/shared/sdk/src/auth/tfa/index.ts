@@ -1,2 +1,2 @@
-export * from './resource';
-export * from './types';
+export * from './challenge';
+export * from './setup';

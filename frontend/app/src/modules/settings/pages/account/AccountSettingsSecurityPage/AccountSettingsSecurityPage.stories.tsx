@@ -32,13 +32,13 @@ TfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       listSetups: sandbox
-        .stub(AuthApi.tfa, 'listSetups')
+        .stub(AuthApi.tfa.setup, 'list')
         .resolves([{ createdAt: new Date().toUTCString(), method: 'totp' }]),
 
-      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
+      setupStart: sandbox.stub(AuthApi.tfa.setup.totp, 'start').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
+      setupComplete: sandbox.stub(AuthApi.tfa.setup, 'complete').resolves({
         createdAt: new Date().toISOString(),
         method: 'totp',
       }),
@@ -59,11 +59,11 @@ export const TfaDisabled = () => {
 TfaDisabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      listSetups: sandbox.stub(AuthApi.tfa, 'listSetups').resolves([]),
-      setupStart: sandbox.stub(AuthApi.tfa.totp, 'setupStart').resolves({
+      listSetups: sandbox.stub(AuthApi.tfa.setup, 'list').resolves([]),
+      setupStart: sandbox.stub(AuthApi.tfa.setup.totp, 'start').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox.stub(AuthApi.tfa, 'setupComplete').resolves({
+      setupComplete: sandbox.stub(AuthApi.tfa.setup, 'complete').resolves({
         createdAt: new Date().toISOString(),
         method: 'totp',
       }),
@@ -84,7 +84,7 @@ export const WithError = () => {
 WithError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      listSetups: sandbox.stub(AuthApi.tfa, 'listSetups').rejects(
+      listSetups: sandbox.stub(AuthApi.tfa.setup, 'list').rejects(
         mockApiError({
           message: 'Internal Server Error',
           reason: 'Internal Server Error',

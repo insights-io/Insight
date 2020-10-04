@@ -8,7 +8,7 @@ describe('pages/login/verification', () => {
   it('Injects correct server side data', async () => {
     sandbox.stub(document, 'cookie').value('ChallengeId=123');
     const getChallengeStub = sandbox
-      .stub(AuthApi.tfa, 'getChallenge')
+      .stub(AuthApi.tfa.challenge, 'get')
       .resolves(['totp']);
 
     const { req, res, writeHead } = mockServerSideRequest();
@@ -35,7 +35,7 @@ describe('pages/login/verification', () => {
 
   it('Should redirect to login when challenge not found server side', async () => {
     sandbox.stub(document, 'cookie').value('ChallengeId=123');
-    const getChallengeStub = sandbox.stub(AuthApi.tfa, 'getChallenge').rejects(
+    const getChallengeStub = sandbox.stub(AuthApi.tfa.challenge, 'get').rejects(
       mockApiError({
         message: 'Not Found',
         reason: 'Not Found',

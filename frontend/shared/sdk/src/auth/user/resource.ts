@@ -6,7 +6,7 @@ import { getData, withCredentials } from '../../core/utils';
 
 import type { UpdateUserPayload } from './types';
 
-export const userApi = (authApiBaseURL: string) => {
+export const userResource = (authApiBaseURL: string) => {
   return {
     me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky

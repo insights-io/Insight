@@ -24,12 +24,10 @@ const TimeBasedTwoFactorAuthentication = ({
   }, []);
 
   const onTotpDisable = useCallback(() => {
-    AuthApi.tfa.disable('totp').then((dataResponse) => {
-      if (dataResponse.data) {
-        onMethodDisabled();
-        closeModal();
-        toaster.positive(`${LABEL} two factor authentication disabled`, {});
-      }
+    AuthApi.tfa.setup.disable('totp').then(() => {
+      onMethodDisabled();
+      closeModal();
+      toaster.positive(`${LABEL} two factor authentication disabled`, {});
     });
   }, [onMethodDisabled, closeModal]);
 

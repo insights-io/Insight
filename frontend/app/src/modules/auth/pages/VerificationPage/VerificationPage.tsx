@@ -43,8 +43,8 @@ export const VerificationPage = ({ methods }: Props) => {
     apiError,
   } = useCodeInput({
     submitAction: (data) => {
-      return AuthApi.tfa
-        .challengeComplete(activeMethod, data)
+      return AuthApi.tfa.challenge
+        .complete(activeMethod, data)
         .then((_) => router.replace(relativeRedirect));
     },
     handleError: (errorDTO, setError) => {
@@ -101,7 +101,7 @@ export const VerificationPage = ({ methods }: Props) => {
                       error={codeError}
                       handleChange={handleChange}
                       code={code}
-                      sendCode={AuthApi.tfa.sms.challengeSendCode}
+                      sendCode={AuthApi.tfa.challenge.sensSmsChallengeCode}
                     />
                   </Tab>
                 );

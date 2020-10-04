@@ -4,7 +4,7 @@ import type { DataResponse, SsoMethod, SsoSetupDTO } from '@insight/types';
 import { getData, withCredentials } from '../../../core';
 import type { RequestOptions } from '../../../core/types';
 
-export const ssoSetupApi = (authApiBaseURL: string) => {
+export const ssoSetupResource = (authApiBaseURL: string) => {
   return {
     get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
