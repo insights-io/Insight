@@ -49,7 +49,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
-        .delete(
+        .patch(
           `${baseURL}/v1/billing/subscriptions/${subscriptionId}/cancel`,
           withCredentials(rest)
         )
