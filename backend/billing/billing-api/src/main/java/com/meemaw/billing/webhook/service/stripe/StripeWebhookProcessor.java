@@ -11,7 +11,6 @@ import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.billing.webhook.service.WebhookProcessor;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
-import com.meemaw.shared.sql.exception.SqlException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
@@ -174,16 +173,19 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                               "[BILLING]: Successfully updated existing invoice on \"invoice.paid\" event");
                           return CompletableFuture.completedStage(null);
                         })
-                    .exceptionally(
-                        throwable -> {
-                          log.error(
-                              "[BILLING]: Something went wrong while handling \"invoice.paid\" event={}",
-                              event,
-                              throwable);
-
-                          return transaction.rollback().thenApply(ignored -> null);
-                        })
-                    .thenCompose(result -> transaction.commit().thenApply(ignored -> null)));
+                    .thenCompose(
+                        result ->
+                            transaction
+                                .commit()
+                                .exceptionally(
+                                    throwable -> {
+                                      log.error(
+                                          "Something went wrong while processing \"invoice.paid\" event={}",
+                                          event,
+                                          throwable);
+                                      return null;
+                                    })
+                                .thenApply(ignored -> null)));
   }
 
   /**
@@ -225,30 +227,14 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                                           "[BILLING] Successfully created billing invoice={}",
                                           billingInvoice);
                                       return null;
-                                    }))
-                    .exceptionally(
-                        throwable ->
-                            transaction
-                                .rollback()
-                                .thenApply(
-                                    ignored -> {
-                                      log.error(
-                                          "[BILLING]: Something went wrong while handling \"invoice.finalized\" event={}",
-                                          event,
-                                          throwable);
-                                      throw (RuntimeException) throwable;
                                     })))
         .exceptionally(
             throwable -> {
-              Throwable cause = throwable.getCause();
-              if (cause instanceof SqlException && ((SqlException) cause).hadConflict()) {
-                log.info(
-                    "[BILLING]: Conflict on \"invoice.finalized\" event invoice={}",
-                    invoice.getId());
-                return null;
-              }
-
-              throw (RuntimeException) cause;
+              log.error(
+                  "Something went wrong while processing \"invoice.finalized\" event={}",
+                  event,
+                  throwable);
+              return null;
             })
         .thenApply(ignored -> null);
   }
