@@ -23,7 +23,7 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   @Context HttpServerRequest request;
 
   @Override
-  public CompletionStage<Response> get(String subscriptionId) {
+  public CompletionStage<Response> retrieve(String subscriptionId) {
     String organizationId = insightPrincipal.user().getOrganizationId();
     return billingSubscriptionDatasource
         .get(subscriptionId, organizationId)
@@ -37,7 +37,7 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   }
 
   @Override
-  public CompletionStage<Response> createSubscription(CreateSubscriptionDTO body) {
+  public CompletionStage<Response> create(CreateSubscriptionDTO body) {
     AuthUser user = insightPrincipal.user();
     return billingService.createSubscription(body, user).thenApply(DataResponse::created);
   }
@@ -57,7 +57,7 @@ public class SubscriptionResourceImpl implements SubscriptionResource {
   }
 
   @Override
-  public CompletionStage<Response> cancelSubscription(String subscriptionId) {
+  public CompletionStage<Response> cancel(String subscriptionId) {
     String organizationId = insightPrincipal.user().getOrganizationId();
     return billingService
         .cancelSubscription(subscriptionId, organizationId)

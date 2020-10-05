@@ -62,6 +62,7 @@ public abstract class AbstractBearerTokenAuthDynamicFeature
   public void tryAuthenticate(ContainerRequestContext context) {
     Span span = tracer.activeSpan();
     String authorization = context.getHeaderString(HttpHeaders.AUTHORIZATION);
+
     if (authorization == null) {
       log.debug("[AUTH]: Missing authorization header");
       span.log("[BearerTokenAuth]: Missing authorization header");
@@ -75,6 +76,7 @@ public abstract class AbstractBearerTokenAuthDynamicFeature
       throw Boom.unauthorized().exception();
     }
     String token = matcher.group(1);
+
     AuthUser user;
     if (s2sAuthToken.equals(token)) {
       user = UserRegistry.S2S_INTERNAL_USER;

@@ -21,7 +21,6 @@ import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.meemaw.billing.subscription.model.dto.PlanDTO;
 import com.meemaw.billing.webhook.service.WebhookProcessor;
-import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.stripe.exception.StripeException;
@@ -34,7 +33,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import java.util.concurrent.CompletionException;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
@@ -101,19 +99,13 @@ public class StripeBillingServiceTest extends AbstractAuthApiTest {
     return readStripeInvoiceEvent(path, null, null);
   }
 
+  // We received the webhook which is what Stripe cares about
   @Test
-  public void process_event__should_fail__when_invoice_paid_with_that_cannot_be_associated() {
+  public void process_event__should_not_fail__when_invoice_paid_with_that_cannot_be_associated() {
     Event event = readStripeInvoiceEvent("/billing/invoice/invoicePaid.json");
 
-    CompletionException exception =
-        Assertions.assertThrows(
-            CompletionException.class,
-            () -> webhookProcessor.process(event).toCompletableFuture().join());
-
-    BoomException cause = (BoomException) exception.getCause();
-    assertEquals(400, cause.getBoom().getStatusCode());
-    assertEquals("Bad Request", cause.getBoom().getReason());
-    assertEquals("Bad Request", cause.getBoom().getMessage());
+    Assertions.assertDoesNotThrow(
+        () -> webhookProcessor.process(event).toCompletableFuture().join());
   }
 
   @Test

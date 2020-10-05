@@ -12,8 +12,8 @@ import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
+import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.stripe.exception.StripeException;
@@ -21,8 +21,11 @@ import com.stripe.model.PaymentMethod;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.http.Method;
 import java.util.List;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -37,7 +40,6 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   @Inject StripeBillingService billingService;
 
   String eventPath = SubscriptionResource.PATH + "/event";
-  String cancelSubscriptionPath = SubscriptionResource.PATH + "/{subscriptionId}/cancel";
 
   @Test
   public void event__should_fail__invalid_content_type() {
@@ -52,7 +54,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void event__should_fail__on_no_body_and_signature() {
+  public void event__should_fail__when_no_body_and_signature() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +67,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void event__should_fail__on_random_body_and_signature() {
+  public void event__should_fail__when_random_body_and_signature() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -109,16 +111,11 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void create__should_fail__when_not_authenticated() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .post(SubscriptionResource.PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void create__should_fail__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(
+        Method.POST, SubscriptionResource.PATH, ContentType.JSON);
+    RestAssuredUtils.ssoBearerTokenTestCases(
+        Method.POST, SubscriptionResource.PATH, ContentType.JSON);
   }
 
   @Test
@@ -157,9 +154,8 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body(
-            JacksonMapper.get()
-                .writeValueAsString(
-                    new CreateSubscriptionDTO("random", SubscriptionPlan.ENTERPRISE)))
+            objectMapper.writeValueAsString(
+                new CreateSubscriptionDTO("random", SubscriptionPlan.ENTERPRISE)))
         .post(SubscriptionResource.PATH)
         .then()
         .statusCode(404)
@@ -175,10 +171,9 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body(
-            JacksonMapper.get()
-                .writeValueAsString(
-                    new CreateSubscriptionDTO(
-                        "pm_1HS5TUI1ysvdCIIxoLNYYB9S", SubscriptionPlan.ENTERPRISE)))
+            objectMapper.writeValueAsString(
+                new CreateSubscriptionDTO(
+                    "pm_1HS5TUI1ysvdCIIxoLNYYB9S", SubscriptionPlan.ENTERPRISE)))
         .post(SubscriptionResource.PATH)
         .then()
         .statusCode(400)
@@ -194,10 +189,8 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .body(
-            JacksonMapper.get()
-                .writeValueAsString(
-                    new CreateSubscriptionDTO(
-                        "pm_1HS5TUI1ysvdCIIxoLNYYB9S", SubscriptionPlan.FREE)))
+            objectMapper.writeValueAsString(
+                new CreateSubscriptionDTO("pm_1HS5TUI1ysvdCIIxoLNYYB9S", SubscriptionPlan.FREE)))
         .post(SubscriptionResource.PATH)
         .then()
         .statusCode(400)
@@ -207,15 +200,10 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void get_plan__should_fail__when_not_authenticated() {
-    given()
-        .when()
-        .get(SubscriptionResource.PATH + "/plan")
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void get_plan__should_fail__when_unauthorized() {
+    String path = SubscriptionResource.PATH + "/plan";
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, path);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, path);
   }
 
   @Test
@@ -251,28 +239,33 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void cancel__should_throw_error__when_not_authenticated() {
-    given()
-        .when()
-        .pathParam("subscriptionId", "random")
-        .delete(cancelSubscriptionPath)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void cancel__should_throw_error__when_unauthorized() {
+    String path = SubscriptionResource.PATH + "/random/cancel";
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.PATCH, path);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.PATCH, path);
   }
 
   @Test
   public void cancel__should_throw_error__when_not_existing_subscription()
       throws JsonProcessingException {
-    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String path = SubscriptionResource.PATH + "/random/cancel";
 
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .when()
-        .pathParam("subscriptionId", "random")
-        .delete(cancelSubscriptionPath)
+        .patch(path)
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+
+    String authToken = authApi().createAuthToken(sessionId);
+    given()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
+        .when()
+        .patch(path)
         .then()
         .statusCode(404)
         .body(
@@ -302,12 +295,14 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
     SubscriptionDTO subscription = listDataResponse.getData().get(0);
     Assertions.assertEquals("active", subscription.getStatus());
 
+    String cancelSubscriptionPath =
+        SubscriptionResource.PATH + "/" + subscription.getId() + "/cancel";
+
     DataResponse<SubscriptionDTO> deleteDataResponse =
         given()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
             .when()
-            .pathParam("subscriptionId", subscription.getId())
-            .delete(cancelSubscriptionPath)
+            .patch(cancelSubscriptionPath)
             .as(new TypeRef<>() {});
 
     Assertions.assertEquals("canceled", deleteDataResponse.getData().getStatus());
@@ -316,8 +311,7 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .when()
-        .pathParam("subscriptionId", subscription.getId())
-        .delete(cancelSubscriptionPath)
+        .patch(cancelSubscriptionPath)
         .then()
         .statusCode(400)
         .body(
@@ -339,24 +333,26 @@ public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
   }
 
   @Test
-  public void list__should_throw_error__when_not_authenticated() {
-    given()
-        .when()
-        .get(SubscriptionResource.PATH)
-        .then()
-        .statusCode(401)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
+  public void list__should_throw_error__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, SubscriptionResource.PATH);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, SubscriptionResource.PATH);
   }
 
   @Test
   public void list__should_return_empty_collection__when_user_with_no_subscriptions()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .when()
+        .get(SubscriptionResource.PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[]}"));
+
+    String authToken = authApi().createAuthToken(sessionId);
+    given()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .when()
         .get(SubscriptionResource.PATH)
         .then()

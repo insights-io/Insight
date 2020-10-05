@@ -24,15 +24,20 @@ public class BearerTokenSidecarAuthDynamicFeature extends AbstractBearerTokenAut
   @Inject @RestClient AuthTokenResource authTokenResource;
   @Inject ObjectMapper objectMapper;
 
+  private String authorizationHeader(String token) {
+    return "Bearer " + token;
+  }
+
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String token) {
     return authTokenResource
-        .me(token)
+        .me(authorizationHeader(token))
         .thenApply(
             response -> {
               int statusCode = response.getStatus();
               if (statusCode == Status.OK.getStatusCode()) {
                 try {
+
                   // TODO: why is this needed? Open issue in Quark  us
                   DataResponse<UserDTO> dataResponse =
                       objectMapper.readValue(
