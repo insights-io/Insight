@@ -1,5 +1,6 @@
 package com.meemaw.session.sessions.resource.v1;
 
+import com.meemaw.auth.permissions.AccessManager;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.session.model.CreatePageDTO;
@@ -12,8 +13,10 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -56,8 +59,13 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> getPage(UUID sessionId, UUID pageId, String authorization) {
+  public CompletionStage<Response> getPage(
+      UUID sessionId, UUID pageId, @Nullable String organizationId, String authorization) {
     AuthUser user = principal.user();
+    String actualOrganizationId =
+        Optional.ofNullable(organizationId).orElseGet(user::getOrganizationId);
+
+    AccessManager.assertCanReadOrganization(user, actualOrganizationId);
     return pageService
         .getPage(pageId, sessionId, user.getOrganizationId())
         .thenApply(
