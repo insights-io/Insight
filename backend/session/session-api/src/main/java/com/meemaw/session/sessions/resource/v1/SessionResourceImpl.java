@@ -67,7 +67,7 @@ public class SessionResourceImpl implements SessionResource {
 
     AccessManager.assertCanReadOrganization(user, actualOrganizationId);
     return pageService
-        .getPage(pageId, sessionId, user.getOrganizationId())
+        .getPage(pageId, sessionId, actualOrganizationId)
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }
