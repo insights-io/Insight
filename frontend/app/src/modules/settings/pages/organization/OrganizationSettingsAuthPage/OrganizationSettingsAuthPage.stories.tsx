@@ -1,8 +1,9 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { configureStory, fullHeightDecorator } from '@insight/storybook';
 import type { Meta } from '@storybook/react';
-import { INSIGHT_ADMIN_DTO, SSO_SETUP_DTO } from 'test/data';
+import { INSIGHT_ADMIN_DTO, SSO_SAML_SETUP_DTO } from 'test/data';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
+import { AuthApi } from 'api';
 
 import { OrganizationSettingsAuthPage } from './OrganizationSettingsAuthPage';
 
@@ -12,22 +13,35 @@ export default {
   decorators: [fullHeightDecorator],
 } as Meta;
 
-export const Base = () => {
+const baseProps = {
+  user: INSIGHT_ADMIN_DTO,
+  organization: INSIGHT_ORGANIZATION_DTO,
+};
+
+export const WithSaml = () => {
   return (
     <OrganizationSettingsAuthPage
-      maybeSsoSetup={SSO_SETUP_DTO}
-      user={INSIGHT_ADMIN_DTO}
-      organization={INSIGHT_ORGANIZATION_DTO}
+      {...baseProps}
+      maybeSsoSetup={SSO_SAML_SETUP_DTO}
     />
   );
 };
+WithSaml.story = configureStory({
+  setupMocks: (sandbox) => {
+    return sandbox
+      .stub(AuthApi.sso.setup, 'create')
+      .callsFake((method, configurationEndpoint) => {
+        return Promise.resolve({
+          ...SSO_SAML_SETUP_DTO,
+          method,
+          configurationEndpoint,
+        });
+      });
+  },
+});
 
 export const WithNoSetup = () => {
   return (
-    <OrganizationSettingsAuthPage
-      maybeSsoSetup={undefined}
-      user={INSIGHT_ADMIN_DTO}
-      organization={INSIGHT_ORGANIZATION_DTO}
-    />
+    <OrganizationSettingsAuthPage {...baseProps} maybeSsoSetup={undefined} />
   );
 };
