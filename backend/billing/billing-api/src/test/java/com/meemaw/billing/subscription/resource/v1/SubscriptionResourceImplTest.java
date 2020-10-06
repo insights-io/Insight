@@ -7,12 +7,12 @@ import static io.restassured.RestAssured.given;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.billing.AbstractStripeTest;
 import com.meemaw.billing.service.stripe.StripeBillingService;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -35,68 +35,9 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(AuthApiTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SubscriptionResourceImplTest extends ExternalAuthApiProvidedTest {
+public class SubscriptionResourceImplTest extends AbstractStripeTest {
 
   @Inject StripeBillingService billingService;
-
-  String eventPath = SubscriptionResource.PATH + "/event";
-
-  @Test
-  public void event__should_fail__invalid_content_type() {
-    given()
-        .when()
-        .post(eventPath)
-        .then()
-        .statusCode(415)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":415,\"reason\":\"Unsupported Media Type\",\"message\":\"Media type not supported.\"}}"));
-  }
-
-  @Test
-  public void event__should_fail__when_no_body_and_signature() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .post(eventPath)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"stripeSignature\":\"Required\",\"body\":\"Required\"}}}"));
-  }
-
-  @Test
-  public void event__should_fail__when_random_body_and_signature() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Stripe-Signature", "random")
-        .body("{}")
-        .post(eventPath)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Unable to extract timestamp and signatures from header\"}}"));
-  }
-
-  @Test
-  public void event__should_fail__when_no_signature_match_found_in_payload() {
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .header(
-            "Stripe-Signature",
-            "t=1600283731,v1=f882164c89cc73d2fcebda8d9f28bae66e47f7f995950a39a2d13ee36dec5245,v0=fe8e3f054d5dbd84fc0c841bbd168c8181400b7294d4afa6337038f85043dfb8")
-        .body("{}")
-        .post(eventPath)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"No signatures found matching the expected signature for payload\"}}"));
-  }
 
   @Test
   public void create__should_fail__when_invalid_content_type() {
