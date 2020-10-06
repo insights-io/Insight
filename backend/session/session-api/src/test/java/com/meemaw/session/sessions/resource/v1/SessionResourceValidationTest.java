@@ -1,8 +1,6 @@
 package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
-import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -10,6 +8,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
+import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -127,7 +126,8 @@ public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_sessions__should_throw__when_unauthorized() {
-    ssoSessionCookieTestCases(Method.GET, SessionResource.PATH);
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, SessionResource.PATH);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, SessionResource.PATH);
   }
 
   @Test
@@ -155,12 +155,12 @@ public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
             UUID.randomUUID(),
             UUID.randomUUID());
 
-    ssoSessionCookieTestCases(Method.GET, path);
-    ssoBearerTokenTestCases(Method.GET, path);
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, path);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, path);
   }
 
   @Test
-  public void get_page__throw_throw__when_page_not_existing() {
+  public void get_page__should_throw__when_page_not_existing() {
     String path =
         String.format(
             SessionResourceImplTest.SESSION_PAGE_PATH_TEMPLATE,

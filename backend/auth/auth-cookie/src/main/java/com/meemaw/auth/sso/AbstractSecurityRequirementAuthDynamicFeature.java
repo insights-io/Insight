@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso;
 
-import com.meemaw.auth.sso.AbstractAuthenticatedDynamicFeature.AuthenticatedFilter;
+import com.meemaw.auth.sso.AbstractSecurityRequirementAuthDynamicFeature.AuthenticatedFilter;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.Map;
@@ -9,9 +9,11 @@ import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 
-public abstract class AbstractAuthenticatedDynamicFeature
-    extends AbstractAuthDynamicFeature<Authenticated, AuthenticatedFilter> {
+public abstract class AbstractSecurityRequirementAuthDynamicFeature
+    extends AbstractAuthDynamicFeature<SecurityRequirements, AuthenticatedFilter> {
 
   public abstract AuthSchemeResolver getCookieAuthSchemeResolver();
 
@@ -23,38 +25,39 @@ public abstract class AbstractAuthenticatedDynamicFeature
   public void init() {
     authSchemeResolvers =
         Map.of(
-            AuthScheme.COOKIE,
+            AuthScheme.SESSION_COOKIE,
             getCookieAuthSchemeResolver(),
             AuthScheme.BEARER_TOKEN,
             getBearerTokenAuthSchemeResolver());
   }
 
   @Override
-  public Class<Authenticated> getAnnotation() {
-    return Authenticated.class;
+  public Class<SecurityRequirements> getAnnotation() {
+    return SecurityRequirements.class;
   }
 
   @Override
-  public AuthenticatedFilter authFilter(Authenticated authenticated) {
-    return new AuthenticatedFilter(authenticated);
+  public AuthenticatedFilter authFilter(SecurityRequirements SecurityRequirements) {
+    return new AuthenticatedFilter(SecurityRequirements);
   }
 
   @Priority(Priorities.AUTHENTICATION)
   public class AuthenticatedFilter implements ContainerRequestFilter {
 
-    private final Authenticated authenticated;
+    private final SecurityRequirements requirements;
 
-    public AuthenticatedFilter(Authenticated authenticated) {
-      this.authenticated = authenticated;
+    public AuthenticatedFilter(SecurityRequirements requirements) {
+      this.requirements = requirements;
     }
 
     @Override
     public void filter(ContainerRequestContext context) {
       BoomException thrownException = Boom.unauthorized().exception();
-      AuthScheme[] authSchemes = authenticated.value();
+      SecurityRequirement[] securityRequirements = requirements.value();
 
-      for (AuthScheme authScheme : authSchemes) {
-        AuthSchemeResolver resolver = authSchemeResolvers.get(authScheme);
+      for (SecurityRequirement requirement : securityRequirements) {
+        AuthScheme scheme = AuthScheme.fromSecurityRequirement(requirement.name());
+        AuthSchemeResolver resolver = authSchemeResolvers.get(scheme);
         try {
           resolver.tryAuthenticate(context);
           return;

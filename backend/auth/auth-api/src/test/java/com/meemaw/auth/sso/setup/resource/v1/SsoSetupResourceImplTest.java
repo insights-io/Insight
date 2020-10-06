@@ -11,7 +11,6 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -172,7 +171,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
@@ -191,7 +190,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
@@ -212,7 +211,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
@@ -236,7 +235,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -260,7 +259,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -289,7 +288,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -309,7 +308,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -326,7 +325,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()

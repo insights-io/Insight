@@ -1,8 +1,7 @@
 package com.meemaw.session.sessions.v1;
 
-import com.meemaw.auth.sso.AuthScheme;
-import com.meemaw.auth.sso.Authenticated;
-import com.meemaw.auth.sso.cookie.CookieAuth;
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.session.model.CreatePageDTO;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -20,6 +19,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path(SessionResource.PATH)
@@ -36,17 +37,29 @@ public interface SessionResource {
       @NotBlank(message = "Required") @HeaderParam(HttpHeaders.USER_AGENT) String userAgent);
 
   @GET
-  @CookieAuth
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   CompletionStage<Response> getSessions();
 
   @GET
   @Path("{sessionId}")
-  @CookieAuth
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   CompletionStage<Response> getSession(@PathParam("sessionId") UUID sessionId);
 
   @GET
   @Path("{sessionId}/pages/{pageId}")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   CompletionStage<Response> getPage(
       @PathParam("sessionId") UUID sessionId,
       @PathParam("pageId") UUID pageId,

@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.cookie;
 
 import com.meemaw.auth.sso.AbstractAuthDynamicFeature;
 import com.meemaw.auth.sso.AuthSchemeResolver;
-import com.meemaw.auth.sso.cookie.AbstractCookieAuthDynamicFeature.CookieAuthFilter;
+import com.meemaw.auth.sso.cookie.AbstractSessionCookieSecurityRequirementAuthDynamicFeature.CookieAuthFilter;
 import com.meemaw.auth.sso.session.model.InsightSecurityContext;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.AuthUser;
@@ -23,18 +23,20 @@ import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @Slf4j
-public abstract class AbstractCookieAuthDynamicFeature
-    extends AbstractAuthDynamicFeature<CookieAuth, CookieAuthFilter> implements AuthSchemeResolver {
+public abstract class AbstractSessionCookieSecurityRequirementAuthDynamicFeature
+    extends AbstractAuthDynamicFeature<SessionCookieSecurityRequirement, CookieAuthFilter>
+    implements AuthSchemeResolver {
 
   protected abstract CompletionStage<Optional<AuthUser>> findSession(String sessionId);
 
   @Override
-  public Class<CookieAuth> getAnnotation() {
-    return CookieAuth.class;
+  public Class<SessionCookieSecurityRequirement> getAnnotation() {
+    return SessionCookieSecurityRequirement.class;
   }
 
   @Override
-  public CookieAuthFilter authFilter(CookieAuth cookieAuth) {
+  public CookieAuthFilter authFilter(
+      SessionCookieSecurityRequirement sessionCookieSecurityRequirement) {
     return new CookieAuthFilter();
   }
 

@@ -11,7 +11,6 @@ import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.billing.webhook.service.WebhookProcessor;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
-import com.meemaw.shared.sql.exception.SqlException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
@@ -39,7 +38,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
   String stripeWebhookSecret;
 
   @Override
-  public CompletionStage<Boolean> process(String payload, String signature) {
+  public CompletionStage<Void> process(String payload, String signature) {
     try {
       Event event = Webhook.constructEvent(payload, signature, stripeWebhookSecret);
       return process(event);
@@ -55,7 +54,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
    * @return boolean indicating if the event was processed
    */
   @Override
-  public CompletionStage<Boolean> process(Event event) {
+  public CompletionStage<Void> process(Event event) {
     switch (event.getType()) {
       case StripeWebhookEvents.INVOICE_FINALIZED:
         return handleInvoiceFinalizedEvent(event);
@@ -66,11 +65,11 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
       case StripeWebhookEvents.PAYMENT_INTENT_PAYMENT_FAILED:
         return handlePaymentIntentPaymentFailed(event);
       default:
-        return CompletableFuture.completedStage(false);
+        return CompletableFuture.completedStage(null);
     }
   }
 
-  private CompletionStage<Boolean> handlePaymentIntentPaymentFailed(Event event) {
+  private CompletionStage<Void> handlePaymentIntentPaymentFailed(Event event) {
     PaymentIntent paymentIntent = deserializeEvent(event, PaymentIntent.class);
     String invoiceId = paymentIntent.getInvoice();
 
@@ -82,21 +81,28 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                 log.error(
                     "[BILLING]: Failed to associate failed payment intent with invoice event={}",
                     event);
-                throw Boom.badRequest().exception();
+                return CompletableFuture.completedStage(null);
               }
 
               BillingInvoice billingInvoice = maybeBillingInvoice.get();
               String subscriptionId = billingInvoice.getSubscriptionId();
               if ("Subscription creation".equals(paymentIntent.getDescription())) {
                 log.info("[BILLING]: Invoice payment failed on create subscription - deleting ...");
-                return billingSubscriptionDatasource.delete(subscriptionId);
+                return billingSubscriptionDatasource
+                    .delete(subscriptionId)
+                    .thenApply(
+                        deleted -> {
+                          log.error(
+                              "[BILLING]: Failed to delete subscription after invoice payment failed ...");
+                          return null;
+                        });
               }
 
-              return CompletableFuture.completedStage(true);
+              return CompletableFuture.completedStage(null);
             });
   }
 
-  private CompletionStage<Boolean> handleSubscriptionUpdated(Event event) {
+  private CompletionStage<Void> handleSubscriptionUpdated(Event event) {
     Subscription subscription = deserializeEvent(event, Subscription.class);
     UpdateBillingSubscriptionParams params = UpdateBillingSubscriptionParams.from(subscription);
 
@@ -108,12 +114,13 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                 log.error(
                     "[BILLING]: Failed to associate updated subscription with an existing one event={}",
                     event);
-                throw Boom.badRequest().exception();
+                return null;
               }
+
               BillingSubscription billingSubscription = maybeBillingSubscription.get();
               log.info(
                   "[BILLING]: Successfully updated billing subscription={}", billingSubscription);
-              return true;
+              return null;
             });
   }
 
@@ -121,7 +128,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
    * It can happen that "invoice.paid" event comes before "invoice.finalized". In that case we try
    * to link it with an existing subscription.
    */
-  private CompletionStage<Boolean> handleInvoicePaidEvent(Event event) {
+  private CompletionStage<Void> handleInvoicePaidEvent(Event event) {
     Invoice invoice = deserializeEvent(event, Invoice.class);
     UpdateBillingInvoiceParams updateParams = UpdateBillingInvoiceParams.from(invoice);
 
@@ -143,7 +150,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                                         log.error(
                                             "[BILLING]: Failed to associate \"invoice.paid\" event with subscription event={}",
                                             event);
-                                        throw Boom.badRequest().exception();
+                                        return CompletableFuture.completedStage(null);
                                       }
 
                                       String organizationId =
@@ -157,16 +164,28 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                                               billingInvoice -> {
                                                 log.info(
                                                     "[BILLING]: Successfully created new invoice after linking \"invoice.paid\" with existing subscription");
-                                                return true;
+                                                return null;
                                               });
                                     });
                           }
 
                           log.info(
                               "[BILLING]: Successfully updated existing invoice on \"invoice.paid\" event");
-                          return CompletableFuture.completedStage(true);
+                          return CompletableFuture.completedStage(null);
                         })
-                    .thenCompose(result -> transaction.commit().thenApply(ignored -> result)));
+                    .thenCompose(
+                        result ->
+                            transaction
+                                .commit()
+                                .exceptionally(
+                                    throwable -> {
+                                      log.error(
+                                          "Something went wrong while processing \"invoice.paid\" event={}",
+                                          event,
+                                          throwable);
+                                      return null;
+                                    })
+                                .thenApply(ignored -> null)));
   }
 
   /**
@@ -174,8 +193,9 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
    * get a unique constraint violation on "invoice_pkey" which we can just catch & ignore not to
    * spam error logs.
    */
-  private CompletionStage<Boolean> handleInvoiceFinalizedEvent(Event event) {
+  private CompletionStage<Void> handleInvoiceFinalizedEvent(Event event) {
     Invoice invoice = deserializeEvent(event, Invoice.class);
+
     return billingInvoiceDatasource
         .startTransaction()
         .thenCompose(
@@ -188,7 +208,7 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                             log.error(
                                 "[BILLING]: Failed to associate invoice with customer event={}",
                                 invoice);
-                            throw Boom.badRequest().exception();
+                            return CompletableFuture.completedStage(null);
                           }
 
                           String organizationId = maybeBillingCustomer.get().getInternalId();
@@ -206,20 +226,17 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
                                       log.info(
                                           "[BILLING] Successfully created billing invoice={}",
                                           billingInvoice);
-                                      return true;
+                                      return null;
                                     })))
         .exceptionally(
             throwable -> {
-              Throwable cause = throwable.getCause();
-              if (cause instanceof SqlException && ((SqlException) cause).hadConflict()) {
-                log.info(
-                    "[BILLING]: Conflict on \"invoice.finalized\" event invoice={}",
-                    invoice.getId());
-                return true;
-              }
-
-              throw (RuntimeException) cause;
-            });
+              log.error(
+                  "Something went wrong while processing \"invoice.finalized\" event={}",
+                  event,
+                  throwable);
+              return null;
+            })
+        .thenApply(ignored -> null);
   }
 
   private <T> T deserializeEvent(Event event, Class<T> clazz) {

@@ -13,13 +13,13 @@ public class InvoiceResourceImpl implements InvoiceResource {
   @Inject InvoiceService invoiceService;
 
   @Override
-  public CompletionStage<Response> listInvoices(String subscriptionId) {
+  public CompletionStage<Response> list(String subscriptionId) {
     String organizationId = principal.user().getOrganizationId();
     return invoiceService.listInvoices(subscriptionId, organizationId).thenApply(DataResponse::ok);
   }
 
   @Override
-  public CompletionStage<Response> listInvoices() {
+  public CompletionStage<Response> list() {
     String organizationId = principal.user().getOrganizationId();
     return invoiceService.listInvoices(organizationId).thenApply(DataResponse::ok);
   }

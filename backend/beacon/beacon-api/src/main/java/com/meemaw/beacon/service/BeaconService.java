@@ -61,14 +61,15 @@ public class BeaconService {
         .getPage(sessionId, pageId, organizationId, "Bearer " + s2sAuthToken)
         .exceptionally(
             throwable -> {
+              log.error("[BEACON]: Failed to check if page exists", throwable);
               if (throwable.getCause() instanceof WebApplicationException) {
                 return ((WebApplicationException) (throwable.getCause())).getResponse();
               }
-              log.error("[BEACON]: Unexpected exception", throwable);
               throw Boom.serverError().message(throwable.getMessage()).exception();
             })
         .thenApply(
             response -> {
+              log.debug("[BEACON]: Page response status={}", response.getStatus());
               if (response.getStatus() == Status.NOT_FOUND.getStatusCode()) {
                 return false;
               }

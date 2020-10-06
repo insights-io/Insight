@@ -24,7 +24,6 @@ import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -216,7 +215,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
+        .body(objectMapper.writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
         .post(TfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);
@@ -248,7 +247,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -313,7 +312,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()
@@ -359,7 +358,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(JacksonMapper.get().writeValueAsString(body))
+        .body(objectMapper.writeValueAsString(body))
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .post(SsoSetupResource.PATH)
         .then()

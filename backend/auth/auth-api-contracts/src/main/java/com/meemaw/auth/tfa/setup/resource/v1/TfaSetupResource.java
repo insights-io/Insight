@@ -1,7 +1,7 @@
 package com.meemaw.auth.tfa.setup.resource.v1;
 
-import com.meemaw.auth.sso.AuthScheme;
-import com.meemaw.auth.sso.Authenticated;
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -27,6 +27,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(TfaSetupResource.PATH)
@@ -37,9 +39,13 @@ public interface TfaSetupResource {
   String TAG = "Two-Factor-Authentication setup";
 
   @GET
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "List Two-Factor-Authentication setups")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -70,9 +76,13 @@ public interface TfaSetupResource {
 
   @GET
   @Path("{method}")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Retrieve Two-Factor-Authentication setup")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -111,9 +121,13 @@ public interface TfaSetupResource {
 
   @DELETE
   @Path("{method}")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Delete Two-Factor-Authentication setup")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(responseCode = "204", description = "Success"),
@@ -146,9 +160,13 @@ public interface TfaSetupResource {
 
   @POST
   @Path("{method}/start")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Start Two-Factor-Authentication setup")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -191,10 +209,14 @@ public interface TfaSetupResource {
 
   @POST
   @Path("{method}/complete")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
   @Operation(summary = "Complete Two-Factor-Authentication setup")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -235,9 +257,13 @@ public interface TfaSetupResource {
 
   @POST
   @Path("sms/send_code")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Send Two-Factor-Authentication setup SMS code")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(

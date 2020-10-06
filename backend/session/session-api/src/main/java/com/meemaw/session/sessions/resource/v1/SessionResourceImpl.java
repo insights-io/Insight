@@ -13,8 +13,10 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -58,11 +60,14 @@ public class SessionResourceImpl implements SessionResource {
 
   @Override
   public CompletionStage<Response> getPage(
-      UUID sessionId, UUID pageId, String organizationId, String authorization) {
+      UUID sessionId, UUID pageId, @Nullable String organizationId, String authorization) {
     AuthUser user = principal.user();
-    AccessManager.assertCanReadOrganization(user, organizationId);
+    String actualOrganizationId =
+        Optional.ofNullable(organizationId).orElseGet(user::getOrganizationId);
+
+    AccessManager.assertCanReadOrganization(user, actualOrganizationId);
     return pageService
-        .getPage(pageId, sessionId, organizationId)
+        .getPage(pageId, sessionId, actualOrganizationId)
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }

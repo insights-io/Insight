@@ -185,7 +185,6 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
-        .queryParam("organizationId", INSIGHT_ORGANIZATION_ID) // TODO: remove when S2S auth
         .get(String.format(SESSION_PAGE_PATH_TEMPLATE, sessionId, pageId))
         .then()
         .statusCode(200)

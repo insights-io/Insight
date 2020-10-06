@@ -10,8 +10,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 
+@Slf4j
 public class AuthTokenResourceImpl implements AuthTokenResource {
 
   @Inject AuthTokenDatasource authTokenDatasource;
@@ -35,7 +37,13 @@ public class AuthTokenResourceImpl implements AuthTokenResource {
     CreateAuthTokenParams params =
         CreateAuthTokenParams.builder().token(token).userId(user.getId()).build();
 
-    return authTokenDatasource.create(params).thenApply(DataResponse::ok);
+    return authTokenDatasource
+        .create(params)
+        .thenApply(
+            authToken -> {
+              log.info("[AUTH]: Created auth token for user={}", user.getId());
+              return DataResponse.ok(authToken);
+            });
   }
 
   @Override

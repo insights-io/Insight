@@ -1,6 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
-import com.meemaw.auth.sso.cookie.CookieAuth;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.NotEmpty;
@@ -11,6 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 
 @Path(InsightsResource.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -22,12 +24,12 @@ public interface InsightsResource {
 
   @GET
   @Path("count")
-  @CookieAuth
+  @SecurityRequirements(value = {@SecurityRequirement(name = SessionCookieSecurityScheme.NAME)})
   CompletionStage<Response> count();
 
   @GET
   @Path("distinct")
-  @CookieAuth
+  @SecurityRequirements(value = {@SecurityRequirement(name = SessionCookieSecurityScheme.NAME)})
   CompletionStage<Response> distinct(
       @NotEmpty(message = "Required") @QueryParam(ON) List<String> on);
 }

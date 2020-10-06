@@ -89,6 +89,6 @@ jobs:
         with:
           msg: |
             Preview ${{ matrix.api }} documentation: 
-            - OpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml
+            - OpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml&nocors
             - Postman: https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json
           check_for_duplicate_msg: true

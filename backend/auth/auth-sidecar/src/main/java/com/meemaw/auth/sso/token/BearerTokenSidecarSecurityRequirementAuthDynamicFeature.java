@@ -1,11 +1,12 @@
-package com.meemaw.auth.sso.cookie;
+package com.meemaw.auth.sso.token;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
+import com.meemaw.auth.sso.token.resource.v1.AuthTokenResource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.dto.UserDTO;
-import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.Optional;
@@ -18,20 +19,26 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Provider
 @Slf4j
-public class CookieAuthSidecarDynamicFeature extends AbstractCookieAuthDynamicFeature {
+public class BearerTokenSidecarSecurityRequirementAuthDynamicFeature
+    extends AbstractBearerTokenSecurityRequirementAuthDynamicFeature {
 
-  @Inject @RestClient UserResource userResource;
+  @Inject @RestClient AuthTokenResource authTokenResource;
   @Inject ObjectMapper objectMapper;
 
+  private String authorizationHeader(String token) {
+    return "Bearer " + token;
+  }
+
   @Override
-  protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
-    return userResource
-        .retrieveAssociated(sessionId)
+  public CompletionStage<Optional<AuthUser>> findUser(String token) {
+    return authTokenResource
+        .me(authorizationHeader(token))
         .thenApply(
             response -> {
               int statusCode = response.getStatus();
               if (statusCode == Status.OK.getStatusCode()) {
                 try {
+
                   // TODO: why is this needed? Open issue in Quark  us
                   DataResponse<UserDTO> dataResponse =
                       objectMapper.readValue(
@@ -39,22 +46,11 @@ public class CookieAuthSidecarDynamicFeature extends AbstractCookieAuthDynamicFe
 
                   return Optional.of(dataResponse.getData());
                 } catch (JsonProcessingException ex) {
-                  log.error("[AUTH]: Failed to parse user", ex);
                   throw Boom.serverError().exception(ex);
                 }
               }
 
-              // session not found
-              if (statusCode == Status.NO_CONTENT.getStatusCode()) {
-                log.debug("[AUTH]: Session not found sessionId={}", sessionId);
-                return Optional.empty();
-              }
-
-              log.error(
-                  "[AUTH]: Failed to find session sessionId={} statusCode={}",
-                  sessionId,
-                  statusCode);
-              throw Boom.serverError().exception();
+              return Optional.empty();
             });
   }
 }

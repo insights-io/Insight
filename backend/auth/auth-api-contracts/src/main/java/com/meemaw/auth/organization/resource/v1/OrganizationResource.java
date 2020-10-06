@@ -1,8 +1,8 @@
 package com.meemaw.auth.organization.resource.v1;
 
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
-import com.meemaw.auth.sso.AuthScheme;
-import com.meemaw.auth.sso.Authenticated;
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
@@ -22,6 +22,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -36,9 +38,13 @@ public interface OrganizationResource {
 
   @GET
   @Path("members")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Retrieve organization members")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -68,9 +74,13 @@ public interface OrganizationResource {
   CompletionStage<Response> retrieveMembers();
 
   @GET
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Retrieve organization associated with authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -101,9 +111,13 @@ public interface OrganizationResource {
 
   @GET
   @Path("{id}")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Retrieve organization")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
