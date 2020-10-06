@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import {
-  Unstable_StatefulDataTable as DataTable,
+  StatefulDataTable,
   NumericalColumn,
   CategoricalColumn,
 } from 'baseui/data-table';
@@ -36,7 +36,7 @@ const CountByLocationDataTable = ({ data: countByLocation, height }: Props) => {
 
   return (
     <Block height={height}>
-      <DataTable
+      <StatefulDataTable
         columns={COLUMNS}
         rows={rows}
         $style={{ width: '100%', overflow: 'auto' }}
