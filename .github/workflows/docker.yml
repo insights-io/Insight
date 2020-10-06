@@ -62,11 +62,11 @@ jobs:
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git-committer-name: GitHub Action
+          git-committer-email: action@github.com
           git-user-signingkey: true
           git-commit-gpgsign: true
       - run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git add .
           git commit -S -m 'Release ${{ env.GITHUB_SHA_SHORT }}' || echo "Everything is up to date"
       - uses: ad-m/github-push-action@master
