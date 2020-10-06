@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.session.cookie;
 
-import com.meemaw.auth.sso.cookie.AbstractCookieAuthDynamicFeature;
+import com.meemaw.auth.sso.cookie.AbstractSessionCookieSecurityRequirementAuthDynamicFeature;
 import com.meemaw.auth.sso.session.datasource.SsoDatasource;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
@@ -10,7 +10,8 @@ import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class CookieAuthDynamicFeature extends AbstractCookieAuthDynamicFeature {
+public class SessionCookieSecurityRequirementAuthDynamicFeature
+    extends AbstractSessionCookieSecurityRequirementAuthDynamicFeature {
 
   @Inject SsoDatasource ssoDatasource;
 

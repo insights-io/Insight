@@ -1,8 +1,7 @@
 package com.meemaw.auth.sso.token.resource.v1;
 
-import com.meemaw.auth.sso.AuthScheme;
-import com.meemaw.auth.sso.Authenticated;
-import com.meemaw.auth.sso.bearer.BearerTokenAuth;
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
 import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
@@ -25,6 +24,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -38,9 +39,12 @@ public interface AuthTokenResource {
 
   @GET
   @Path("user")
-  @BearerTokenAuth
   @Tag(name = TAG)
   @Operation(summary = "Retrieve authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -70,9 +74,13 @@ public interface AuthTokenResource {
   CompletionStage<Response> me(@HeaderParam(HttpHeaders.AUTHORIZATION) String bearerToken);
 
   @GET
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "List auth tokens")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -102,9 +110,13 @@ public interface AuthTokenResource {
   CompletionStage<Response> list();
 
   @POST
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Create auth token")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -134,10 +146,14 @@ public interface AuthTokenResource {
   CompletionStage<Response> create();
 
   @DELETE
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Path("{token}")
   @Tag(name = TAG)
   @Operation(summary = "Delete auth token")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(responseCode = "204", description = "Success"),

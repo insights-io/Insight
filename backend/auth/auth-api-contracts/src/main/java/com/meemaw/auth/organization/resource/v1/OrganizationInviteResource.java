@@ -3,8 +3,8 @@ package com.meemaw.auth.organization.resource.v1;
 import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
-import com.meemaw.auth.sso.AuthScheme;
-import com.meemaw.auth.sso.Authenticated;
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
 import java.util.List;
@@ -26,6 +26,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(OrganizationInviteResource.PATH)
@@ -37,9 +39,13 @@ public interface OrganizationInviteResource {
   String TAG = "Organization Invite";
 
   @POST
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Create an organization invite")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -77,9 +83,13 @@ public interface OrganizationInviteResource {
   CompletionStage<Response> create(@NotNull(message = "Required") @Valid TeamInviteCreateDTO body);
 
   @GET
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "List organization invites associated with authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(
@@ -109,10 +119,14 @@ public interface OrganizationInviteResource {
   CompletionStage<Response> listAssociated();
 
   @DELETE
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Path("{token}")
   @Tag(name = TAG)
   @Operation(summary = "Delete a organization invite")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(responseCode = "204", description = "Success"),
@@ -180,10 +194,14 @@ public interface OrganizationInviteResource {
       @NotNull(message = "Required") @Valid TeamInviteAcceptDTO body);
 
   @POST
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Path("{token}/send")
   @Tag(name = TAG)
   @Operation(summary = "Send a team invite")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(

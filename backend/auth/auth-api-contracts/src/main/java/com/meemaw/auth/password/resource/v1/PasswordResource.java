@@ -3,8 +3,8 @@ package com.meemaw.auth.password.resource.v1;
 import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
-import com.meemaw.auth.sso.AuthScheme;
-import com.meemaw.auth.sso.Authenticated;
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse.BooleanDataResponse;
@@ -25,6 +25,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(PasswordResource.PATH)
@@ -122,9 +124,13 @@ public interface PasswordResource {
 
   @POST
   @Path("change")
-  @Authenticated({AuthScheme.BEARER_TOKEN, AuthScheme.COOKIE})
   @Tag(name = TAG)
   @Operation(summary = "Change password")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   @APIResponses(
       value = {
         @APIResponse(responseCode = "204", description = "Success"),

@@ -3,7 +3,7 @@ package com.meemaw.auth.sso.token;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.sso.bearer.AbstractBearerTokenAuthDynamicFeature;
+import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
 import com.meemaw.auth.sso.token.resource.v1.AuthTokenResource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.dto.UserDTO;
@@ -19,7 +19,8 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Provider
 @Slf4j
-public class BearerTokenSidecarAuthDynamicFeature extends AbstractBearerTokenAuthDynamicFeature {
+public class BearerTokenSidecarSecurityRequirementAuthDynamicFeature
+    extends AbstractBearerTokenSecurityRequirementAuthDynamicFeature {
 
   @Inject @RestClient AuthTokenResource authTokenResource;
   @Inject ObjectMapper objectMapper;

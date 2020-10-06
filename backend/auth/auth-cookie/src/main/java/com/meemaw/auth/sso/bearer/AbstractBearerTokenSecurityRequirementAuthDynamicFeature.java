@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.bearer;
 
 import com.meemaw.auth.sso.AbstractAuthDynamicFeature;
 import com.meemaw.auth.sso.AuthSchemeResolver;
-import com.meemaw.auth.sso.bearer.AbstractBearerTokenAuthDynamicFeature.BearerTokenAuthFilter;
+import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature.BearerTokenAuthFilter;
 import com.meemaw.auth.sso.session.model.InsightSecurityContext;
 import com.meemaw.auth.user.UserRegistry;
 import com.meemaw.auth.user.model.AuthUser;
@@ -23,8 +23,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.opentracing.Traced;
 
 @Slf4j
-public abstract class AbstractBearerTokenAuthDynamicFeature
-    extends AbstractAuthDynamicFeature<BearerTokenAuth, BearerTokenAuthFilter>
+public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
+    extends AbstractAuthDynamicFeature<BearerTokenSecurityRequirement, BearerTokenAuthFilter>
     implements AuthSchemeResolver {
 
   private static final Pattern BEARER_PATTERN = Pattern.compile("^Bearer ([^ ]+)$");
@@ -39,13 +39,14 @@ public abstract class AbstractBearerTokenAuthDynamicFeature
   }
 
   @Override
-  public BearerTokenAuthFilter authFilter(BearerTokenAuth bearerTokenAuth) {
+  public BearerTokenAuthFilter authFilter(
+      BearerTokenSecurityRequirement bearerTokenSecurityRequirement) {
     return new BearerTokenAuthFilter();
   }
 
   @Override
-  public Class<BearerTokenAuth> getAnnotation() {
-    return BearerTokenAuth.class;
+  public Class<BearerTokenSecurityRequirement> getAnnotation() {
+    return BearerTokenSecurityRequirement.class;
   }
 
   @Priority(Priorities.AUTHENTICATION)

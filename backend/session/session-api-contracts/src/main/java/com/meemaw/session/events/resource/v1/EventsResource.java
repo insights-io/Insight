@@ -1,6 +1,6 @@
 package com.meemaw.session.events.resource.v1;
 
-import com.meemaw.auth.sso.cookie.CookieAuth;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.session.sessions.v1.SessionResource;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -11,6 +11,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 
 @Path(SessionResource.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -19,6 +21,6 @@ public interface EventsResource {
 
   @GET
   @Path("{sessionId}/events/search")
-  @CookieAuth
+  @SecurityRequirements(value = {@SecurityRequirement(name = SessionCookieSecurityScheme.NAME)})
   CompletionStage<Response> search(@PathParam("sessionId") UUID sessionId);
 }

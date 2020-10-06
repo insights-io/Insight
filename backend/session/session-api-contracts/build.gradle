@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    compileOnly "io.quarkus:quarkus-smallrye-openapi"
     implementation "io.quarkus:quarkus-resteasy"
     implementation "io.quarkus:quarkus-rest-client-jackson"
     implementation project(":auth:auth-model")
