@@ -34,7 +34,7 @@
     "@insight/storybook": "0.0.0-development"
   },
   "peerDependencies": {
-    "baseui": "9.101.0",
+    "baseui": "9.102.0",
     "react-hook-form": "6.8.6"
   }
 }

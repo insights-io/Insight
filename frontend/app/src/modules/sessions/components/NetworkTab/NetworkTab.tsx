@@ -3,7 +3,7 @@ import { Block } from 'baseui/block';
 import { StyledSpinnerNext } from 'baseui/spinner';
 import { useStyletron } from 'baseui';
 import {
-  Unstable_StatefulDataTable as DataTable,
+  StatefulDataTable,
   StringColumn,
   NumericalColumn,
   CategoricalColumn,
@@ -77,7 +77,7 @@ const NetworkTab = ({ events, loading }: Props) => {
           <StyledSpinnerNext $style={{ marginTop: theme.sizing.scale500 }} />
         </Block>
       ) : (
-        <DataTable
+        <StatefulDataTable
           columns={columns}
           rows={rows}
           $style={{ width: '100%', overflow: 'auto' }}
