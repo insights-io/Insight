@@ -87,12 +87,9 @@ export const AuthenticationSetup = ({ maybeSsoSetup, setSsoSetup }: Props) => {
               <Select
                 clearable={false}
                 options={SSO_OPTIONS}
-                placeholder="Select method"
                 value={[value]}
                 error={Boolean(methodError)}
-                overrides={{ Input: { props: { placeholder: 'SSO method' } } }}
                 onChange={(params) => {
-                  console.log('ON CHANGE?');
                   onChange(params.value[0] as SsoMethodSelectValue);
                 }}
               />
