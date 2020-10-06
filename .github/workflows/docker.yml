@@ -57,9 +57,15 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: manifests
+      - uses: crazy-max/ghaction-import-gpg@v3
+        id: import_gpg
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git-user-signingkey: true
+          git-commit-gpgsign: true
+          git-push-gpgsign: true
       - run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git add .
           git commit -m 'Release ${{ env.GITHUB_SHA_SHORT }}' || echo "Everything is up to date"
       - uses: ad-m/github-push-action@master
