@@ -40,7 +40,7 @@
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
     "@insight/elements": "0.0.0-development",
-    "baseui": "9.101.0",
+    "baseui": "9.102.0",
     "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",

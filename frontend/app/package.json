@@ -45,7 +45,7 @@
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
     "@insight/elements": "0.0.0-development",
-    "baseui": "9.101.0",
+    "baseui": "9.102.0",
     "date-fns": "2.16.1",
     "jaeger-client": "3.18.1",
     "next": "9.5.3",
