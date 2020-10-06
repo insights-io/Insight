@@ -1,6 +1,5 @@
 package com.meemaw.session.sessions.resource.v1;
 
-import com.meemaw.auth.permissions.AccessManager;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.session.model.CreatePageDTO;
@@ -57,12 +56,10 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> getPage(
-      UUID sessionId, UUID pageId, String organizationId, String authorization) {
+  public CompletionStage<Response> getPage(UUID sessionId, UUID pageId, String authorization) {
     AuthUser user = principal.user();
-    AccessManager.assertCanReadOrganization(user, organizationId);
     return pageService
-        .getPage(pageId, sessionId, organizationId)
+        .getPage(pageId, sessionId, user.getOrganizationId())
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }
