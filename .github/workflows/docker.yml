@@ -67,7 +67,7 @@ jobs:
           git-push-gpgsign: true
       - run: |
           git add .
-          git commit -S -m 'Release ${{ env.GITHUB_SHA_SHORT }}' || echo "Everything is up to date"
+          git commit -m 'Release ${{ env.GITHUB_SHA_SHORT }}' || echo "Everything is up to date"
       - uses: ad-m/github-push-action@master
         with:
           branch: master
