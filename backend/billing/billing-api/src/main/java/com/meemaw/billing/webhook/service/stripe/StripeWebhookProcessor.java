@@ -17,13 +17,11 @@ import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.Invoice;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Subscription;
-import com.stripe.net.Webhook;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.MDC;
 
 @ApplicationScoped
@@ -33,14 +31,12 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
   @Inject BillingInvoiceDatasource billingInvoiceDatasource;
   @Inject BillingSubscriptionDatasource billingSubscriptionDatasource;
   @Inject BillingCustomerDatasource billingCustomerDatasource;
-
-  @ConfigProperty(name = "billing.stripe.webhook_secret")
-  String stripeWebhookSecret;
+  @Inject StripeWebhookTransformer stripeWebhookTransformer;
 
   @Override
   public CompletionStage<Void> process(String payload, String signature) {
     try {
-      Event event = Webhook.constructEvent(payload, signature, stripeWebhookSecret);
+      Event event = stripeWebhookTransformer.construct(payload, signature);
       return process(event);
     } catch (SignatureVerificationException ex) {
       throw Boom.badRequest().message(ex.getMessage()).exception(ex);
