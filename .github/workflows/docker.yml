@@ -62,10 +62,9 @@ jobs:
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          git-committer-name: GitHub Action
-          git-committer-email: action@github.com
           git-user-signingkey: true
           git-commit-gpgsign: true
+          git-push-gpgsign: true
       - run: |
           git add .
           git commit -S -m 'Release ${{ env.GITHUB_SHA_SHORT }}' || echo "Everything is up to date"
