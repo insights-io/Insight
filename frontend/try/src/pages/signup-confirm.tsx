@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
-import Topbar from 'components/Topbar';
 import config from 'shared/config';
+import { Topbar } from 'components/Topbar';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
 import { H6 } from 'baseui/typography';

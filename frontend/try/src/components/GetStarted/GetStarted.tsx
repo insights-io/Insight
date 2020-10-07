@@ -3,16 +3,17 @@ import Head from 'next/head';
 import { useStyletron } from 'baseui';
 import { H5, Paragraph3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
-import SignUpForm from 'components/SignUpForm';
+import { SignUpForm } from 'components/SignUpForm';
 import config from 'shared/config';
-import Topbar from 'components/Topbar';
 import AuthApi from 'api/auth';
+import { Topbar } from 'components/Topbar';
+import { FlexColumn } from '@insight/elements';
 
-const GetStarted = () => {
+export const GetStarted = () => {
   const [_css, theme] = useStyletron();
 
   return (
-    <Block display="flex" flexDirection="column" height="100%">
+    <FlexColumn height="100%">
       <Head>
         <title>Insight | Sign up</title>
       </Head>
@@ -46,8 +47,6 @@ const GetStarted = () => {
           <SignUpForm onSubmit={AuthApi.signup.create} />
         </Block>
       </Block>
-    </Block>
+    </FlexColumn>
   );
 };
-
-export default GetStarted;

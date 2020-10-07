@@ -3,15 +3,15 @@ import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H6 } from 'baseui/typography';
 import { Button, SHAPE } from 'baseui/button';
-import { SpacedBetween } from '@insight/elements';
+import { SpacedBetween, UnstyledLink } from '@insight/elements';
 
 type Props = {
   appBaseURL: string;
   helpBaseURL: string;
 };
 
-const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
-  const [css, theme] = useStyletron();
+export const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
+  const [_css, theme] = useStyletron();
 
   return (
     <Block
@@ -22,27 +22,22 @@ const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
       <SpacedBetween>
         <H6 margin={0}>Insight</H6>
         <Block>
-          <a
+          <UnstyledLink
             href={helpBaseURL}
-            className={css({
-              marginRight: theme.sizing.scale600,
-              textDecoration: 'none',
-            })}
+            $style={{ marginRight: theme.sizing.scale600 }}
           >
             <Button shape={SHAPE.pill} size="compact" kind="minimal">
               Help
             </Button>
-          </a>
+          </UnstyledLink>
 
-          <a href={appBaseURL} className={css({ textDecoration: 'none' })}>
+          <UnstyledLink href={appBaseURL}>
             <Button shape={SHAPE.pill} size="compact" kind="minimal">
               Log in
             </Button>
-          </a>
+          </UnstyledLink>
         </Block>
       </SpacedBetween>
     </Block>
   );
 };
-
-export default Topbar;

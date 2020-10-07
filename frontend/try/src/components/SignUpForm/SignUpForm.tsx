@@ -24,7 +24,7 @@ export type Props = {
   minPasswordLength?: number;
 };
 
-const SignUpForm = ({
+export const SignUpForm = ({
   onSubmit: onSubmitProp,
   minPasswordLength = 8,
 }: Props) => {
@@ -151,5 +151,3 @@ const SignUpForm = ({
     </form>
   );
 };
-
-export default SignUpForm;

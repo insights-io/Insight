@@ -82,7 +82,11 @@ export const LoginPage = () => {
       <Divider />
 
       <Flex flexWrap>
-        <UnstyledLink href={TRY_BASE_URL}>
+        <UnstyledLink
+          href={`${TRY_BASE_URL}?redirect=${encodeURIComponent(
+            relativeRedirect
+          )}`}
+        >
           <Button kind="minimal" size={SIZE.compact}>
             Create a free account
           </Button>
