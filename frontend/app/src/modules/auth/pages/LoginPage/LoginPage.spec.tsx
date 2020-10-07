@@ -121,6 +121,8 @@ describe('<LoginPage />', () => {
     const { getByText } = render(<Base />);
     const createFreeAccountButton = getByText('Create a free account');
     const freeAccountAnchor = createFreeAccountButton.parentElement as HTMLAnchorElement;
-    expect(freeAccountAnchor.href).toEqual('http://localhost:3002/');
+    expect(freeAccountAnchor.href).toEqual(
+      'http://localhost:3002/?redirect=%2F'
+    );
   });
 });
