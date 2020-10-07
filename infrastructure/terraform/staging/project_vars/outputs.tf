@@ -2,10 +2,6 @@ output "environment" {
   value = "staging"
 }
 
-output "region" {
-  value = "us-east-1"
-}
-
 output "public_ip" {
   value = "213.161.29.246"
 }

@@ -2,14 +2,14 @@ output "organization_name" {
   value = "insights-io"
 }
 
-output "code_repository_name" {
+output "monorepo_repository" {
   value = "Insight"
 }
 
-output "gitops_repository_name" {
+output "gitops_repository" {
   value = "ops"
 }
 
-output "aws_backend_region" {
+output "aws_region" {
   value = "us-east-1"
 }

@@ -62,9 +62,9 @@ jobs:
           path: openapi-specifications
       - uses: jakejarvis/s3-sync-action@master
         with:
-          args: --acl public-read --delete
+          args: --acl public-read --content-encoding gzip --delete
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_API_REFERENCE }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -89,6 +89,6 @@ jobs:
         with:
           msg: |
             Preview ${{ matrix.api }} documentation: 
-            - OpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml&nocors
-            - Postman: https://${{ secrets.AWS_S3_STAGING_DOCS_BUCKET }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json
+            - OpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_API_REFERENCE }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml&nocors
+            - Postman: https://${{ secrets.AWS_S3_API_REFERENCE }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json
           check_for_duplicate_msg: true

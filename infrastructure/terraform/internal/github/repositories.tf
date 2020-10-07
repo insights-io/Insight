@@ -1,5 +1,5 @@
-resource "github_repository" "insight" {
-  name           = "Insight"
+resource "github_repository" "monorepo" {
+  name           = module.global_vars.monorepo_repository
   description    = "Find insights into your frontend applications."
   default_branch = "master"
   visibility     = "public"
@@ -15,17 +15,17 @@ resource "github_repository" "insight" {
 }
 
 module "branch_protection" {
-  source     = "../modules/branch_protection"
-  repository = github_repository.insight.name
-  branch     = github_repository.insight.default_branch
+  source     = "../../modules/branch_protection"
+  repository = github_repository.monorepo.name
+  branch     = github_repository.monorepo.default_branch
 }
 
 resource "github_repository" "ops" {
-  name           = "ops"
+  name           = module.global_vars.gitops_repository
   description    = "Insight operations"
   default_branch = "master"
   visibility     = "private"
-  has_issues     = false
+  has_issues     = true
   has_wiki       = false
   has_projects   = false
 

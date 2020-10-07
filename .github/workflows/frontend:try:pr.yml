@@ -35,19 +35,22 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/app pretest
+          yarn workspace @insight/try pretest
           yarn workspace @insight/try storybook:build
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+      - uses: jakejarvis/s3-sync-action@master
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: frontend/try/storybook-static
-          TARGET_FOLDER: ${{ env.TARGET_FOLDER_PREFIX }}/${{ env.GITHUB_HEAD_REF_SLUG }}
+          args: --acl public-read --content-encoding gzip --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_TRY_STORYBOOK }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          DEST_DIR: ${{ env.GITHUB_HEAD_REF_SLUG }}
+          SOURCE_DIR: frontend/try/storybook-static
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: '🚀 Storybook preview of frontend/try available at https://insights-io.github.io/Insight/${{ env.TARGET_FOLDER_PREFIX }}/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
+          msg: '🚀 Storybook preview of frontend/try available at https://${{ secrets.AWS_S3_TRY_STORYBOOK }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
           check_for_duplicate_msg: true
