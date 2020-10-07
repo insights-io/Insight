@@ -25,3 +25,6 @@ variable "letsencrypt_api_endpoint" {
   description = "API endpoint.  default to prod.  for staging use: https://acme-staging-v02.api.letsencrypt.org/directory"
 }
 
+variable "repository" {
+  type = string
+}

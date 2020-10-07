@@ -14,6 +14,7 @@ env:
 
 jobs:
   unit_tests:
+    name: Unit tests
     runs-on: ubuntu-latest
 
     steps:

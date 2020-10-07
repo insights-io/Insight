@@ -5,7 +5,3 @@ provider "aws" {
 provider "github" {
   organization = module.global_vars.organization_name
 }
-
-provider "cloudflare" {
-  email = "blaz.snuderl@gmail.com"
-}

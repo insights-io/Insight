@@ -3,7 +3,11 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "3.9.0"
+    }
 
+    github = {
+      source  = "hashicorp/github"
+      version = "3.0.0"
     }
   }
   required_version = ">= 0.13"

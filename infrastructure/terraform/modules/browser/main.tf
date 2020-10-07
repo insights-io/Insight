@@ -1,7 +1,5 @@
 locals {
   s3_static_origin_id = "${var.bucket_name}-origin"
-  s3_allowed_methods  = ["GET", "HEAD"]
-  cf_allowed_methods  = ["GET", "HEAD", "OPTIONS"]
 }
 
 resource "aws_s3_bucket" "static" {
@@ -9,7 +7,7 @@ resource "aws_s3_bucket" "static" {
   acl    = "private"
 
   cors_rule {
-    allowed_methods = local.s3_allowed_methods
+    allowed_methods = ["GET", "HEAD"]
     allowed_origins = ["*"]
     allowed_headers = ["*"]
     max_age_seconds = 3000
@@ -19,6 +17,12 @@ resource "aws_s3_bucket" "static" {
   tags = {
     environment = var.environment
   }
+}
+
+resource "github_actions_secret" "s3_bucket_name" {
+  repository      = var.repository
+  secret_name     = "AWS_S3_STATIC_${upper(var.environment)}"
+  plaintext_value = aws_s3_bucket.static.id
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
@@ -38,8 +42,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   aliases             = [var.alias]
 
   default_cache_behavior {
-    allowed_methods  = local.cf_allowed_methods
-    cached_methods   = local.cf_allowed_methods
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = local.s3_static_origin_id
 
     forwarded_values {
@@ -78,6 +82,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   tags = {
     environment = var.environment
   }
+}
+
+resource "github_actions_secret" "cloudfront_distribution_id" {
+  repository      = var.repository
+  secret_name     = "AWS_CLOUDFRONT_STATIC_${upper(var.environment)}_DISTRIBUTION_ID"
+  plaintext_value = aws_cloudfront_distribution.s3_distribution.id
 }
 
 ## Restrict access only to Cloudfront

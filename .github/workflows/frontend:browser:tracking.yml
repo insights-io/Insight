@@ -86,12 +86,12 @@ jobs:
         with:
           args: --follow-symlinks --content-encoding gzip
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_STATIC_STAGING }}
           SOURCE_DIR: 'deployment'
       - uses: chetan/invalidate-cloudfront-action@master
         env:
           PATHS: '/s/*'
-          DISTRIBUTION: ${{ secrets.AWS_CF_DISTRIBUTION_ID }}
+          DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_STATIC_STAGING_DISTRIBUTION_ID }}
       - uses: rtCamp/action-slack-notify@master
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_WEBHOOK }}
