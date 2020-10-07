@@ -1,9 +1,9 @@
 import { getByPlaceholderText, getByText } from '@testing-library/testcafe';
 import { v4 as uuid } from 'uuid';
 
-import config from '../config';
 import { findLinkFromDockerLogs } from '../utils';
 
+import { AbstractPage } from './AbstractPage';
 import Login, { LoginCredentials } from './Login';
 
 export type SignUpProperties = {
@@ -14,7 +14,7 @@ export type SignUpProperties = {
 
 export type SignUpDetails = LoginCredentials & Partial<SignUpProperties>;
 
-class SignUp {
+class SignUp extends AbstractPage {
   /* Selectors */
   public readonly emailInput = Login.emailInput;
   public readonly passwordInput = Login.passwordInput;
@@ -51,7 +51,7 @@ class SignUp {
   };
 
   public signUpAndLogin = async (t: TestController, data: SignUpDetails) => {
-    await t.navigateTo(config.tryBaseURL);
+    await t.click(Login.createFreeAccount);
     await this.signUp(t, data);
     return this.verifyEmail(t);
   };
@@ -81,4 +81,4 @@ class SignUp {
   };
 }
 
-export default new SignUp();
+export default new SignUp('/');

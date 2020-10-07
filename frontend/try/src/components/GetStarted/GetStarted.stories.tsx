@@ -1,12 +1,14 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
 import AuthApi from 'api/auth';
+import { Meta } from '@storybook/react';
 
-import GetStarted from './GetStarted';
+import { GetStarted } from './GetStarted';
 
 export default {
   title: 'components/GetStarted',
-};
+  component: GetStarted,
+} as Meta;
 
 export const Base = () => {
   return <GetStarted />;

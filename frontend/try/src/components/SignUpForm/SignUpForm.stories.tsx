@@ -3,12 +3,14 @@ import { action } from '@storybook/addon-actions';
 import { Block } from 'baseui/block';
 import { SignUpRequestDTO } from '@insight/types';
 import { mockApiError } from '@insight/storybook';
+import type { Meta } from '@storybook/react';
 
-import SignUpForm, { Props } from './SignUpForm';
+import { SignUpForm, Props } from './SignUpForm';
 
 export default {
   title: 'components/SignUpForm',
-};
+  component: SignUpForm,
+} as Meta;
 
 type StoryProps = Pick<Props, 'onSubmit'>;
 
