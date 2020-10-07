@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Card } from 'baseui/card';
 import { FormControl } from 'baseui/form-control';
 import { Controller, useForm } from 'react-hook-form';
@@ -18,7 +18,12 @@ import type {
   SsoSetupDTO,
 } from '@insight/types';
 
-import { SsoMethodSelectValue, SSO_OPTIONS, SsoSetupFormData } from './utils';
+import {
+  SsoMethodSelectValue,
+  SSO_OPTIONS,
+  SsoSetupFormData,
+  findSsoSelectValue,
+} from './utils';
 
 type Props = {
   maybeSsoSetup: SsoSetup | undefined;
@@ -28,22 +33,19 @@ type Props = {
 export const AuthenticationSetup = ({ maybeSsoSetup, setSsoSetup }: Props) => {
   const { register, handleSubmit, errors, control, setValue, watch } = useForm<
     SsoSetupFormData
-  >({ defaultValues: { method: SSO_OPTIONS[0] } });
+  >({
+    defaultValues: maybeSsoSetup
+      ? {
+          configurationEndpoint: maybeSsoSetup.configurationEndpoint,
+          method: findSsoSelectValue(maybeSsoSetup.method),
+        }
+      : { method: SSO_OPTIONS[0] },
+  });
 
   const [_css, theme] = useStyletron();
   const inputOverrides = createInputOverrides(theme);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
-
-  useEffect(() => {
-    if (maybeSsoSetup) {
-      setValue(
-        'method',
-        SSO_OPTIONS.find((o) => o.id === maybeSsoSetup.method)
-      );
-      setValue('configurationEndpoint', maybeSsoSetup.configurationEndpoint);
-    }
-  }, [maybeSsoSetup, setValue]);
 
   const onSubmit = handleSubmit((data) => {
     if (isSubmitting) {
@@ -56,6 +58,8 @@ export const AuthenticationSetup = ({ maybeSsoSetup, setSsoSetup }: Props) => {
       .create(data.method.id, data.configurationEndpoint)
       .then((dataResponse) => {
         toaster.positive('SSO setup complete', {});
+        setValue('method', findSsoSelectValue(dataResponse.method));
+        setValue('configurationEndpoint', dataResponse.configurationEndpoint);
         setSsoSetup(dataResponse);
         setFormError(undefined);
       })
@@ -83,7 +87,6 @@ export const AuthenticationSetup = ({ maybeSsoSetup, setSsoSetup }: Props) => {
               <Select
                 clearable={false}
                 options={SSO_OPTIONS}
-                placeholder="Select method"
                 value={[value]}
                 error={Boolean(methodError)}
                 onChange={(params) => {

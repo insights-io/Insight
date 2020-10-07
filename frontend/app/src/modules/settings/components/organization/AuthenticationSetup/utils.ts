@@ -15,3 +15,7 @@ export const SSO_OPTIONS: SsoMethodSelectValue[] = [
   { label: 'Microsoft', id: 'microsoft' },
   { label: 'Github', id: 'github' },
 ];
+
+export const findSsoSelectValue = (method: SsoMethod) => {
+  return SSO_OPTIONS.find((o) => o.id === method) as SsoMethodSelectValue;
+};
