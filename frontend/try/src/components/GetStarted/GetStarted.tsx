@@ -5,8 +5,8 @@ import { H5, Paragraph3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
 import SignUpForm from 'components/SignUpForm';
 import config from 'shared/config';
-import Topbar from 'components/Topbar';
 import AuthApi from 'api/auth';
+import { Topbar } from 'components/Topbar';
 import { FlexColumn } from '@insight/elements';
 
 export const GetStarted = () => {
