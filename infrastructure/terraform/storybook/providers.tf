@@ -1,3 +1,7 @@
 provider "aws" {
-  region = "us-east-1"
+  region = module.global_vars.aws_backend_region
+}
+
+provider "github" {
+  organization = module.global_vars.organization_name
 }

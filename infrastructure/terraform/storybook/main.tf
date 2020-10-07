@@ -1,18 +1,17 @@
-resource "aws_s3_bucket" "storybook" {
-  bucket = "insight-storybook"
-  acl    = "public-read"
+module "app_storybook" {
+  source     = "../modules/storybook"
+  project    = "app"
+  repository = module.global_vars.code_repository_name
+}
 
+module "try_storbook" {
+  source     = "../modules/storybook"
+  project    = "try"
+  repository = module.global_vars.code_repository_name
+}
 
-  cors_rule {
-    allowed_headers = ["*"]
-    allowed_methods = ["GET", "HEAD"]
-    allowed_origins = ["*"]
-    expose_headers  = ["ETag"]
-    max_age_seconds = 3000
-  }
-
-  tags = {
-    name        = "Storybook"
-    environment = "Internal"
-  }
+module "elements_storybook" {
+  source     = "../modules/storybook"
+  project    = "elements"
+  repository = module.global_vars.code_repository_name
 }

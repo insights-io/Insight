@@ -68,7 +68,7 @@ jobs:
         with:
           args: --acl public-read --delete
         env:
-          AWS_S3_BUCKET: insight-storybook
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_APP_STORYBOOK }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -79,5 +79,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: '🚀 Storybook preview of frontend/app available at https://insight-storybook.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
+          msg: '🚀 Storybook preview of frontend/app available at https://${{ secrets.AWS_S3_APP_STORYBOOK }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
           check_for_duplicate_msg: true
