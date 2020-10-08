@@ -1,5 +1,5 @@
 provider "aws" {
-  region = module.project_vars.region
+  region = module.global_vars.aws_region
 }
 
 provider "cloudflare" {

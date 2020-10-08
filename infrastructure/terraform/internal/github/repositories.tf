@@ -20,6 +20,20 @@ module "branch_protection" {
   branch     = github_repository.monorepo.default_branch
 }
 
+resource "github_repository_webhook" "atlantis_webhook" {
+  repository = github_repository.monorepo.name
+
+  configuration {
+    url          = "https://atlantis.dev.snuderls.eu/events"
+    content_type = "json"
+    insecure_ssl = false
+    secret       = "********"
+  }
+
+  active = true
+  events = ["issue_comment", "pull_request", "pull_request_review", "push"]
+}
+
 resource "github_repository" "ops" {
   name           = module.global_vars.gitops_repository
   description    = "Insight operations"
