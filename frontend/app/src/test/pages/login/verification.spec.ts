@@ -12,7 +12,12 @@ describe('pages/login/verification', () => {
       .resolves(['totp']);
 
     const { req, res, writeHead } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
+    const serverSideProps = await getServerSideProps({
+      query: {},
+      req,
+      res,
+      resolvedUrl: '/',
+    });
 
     sandbox.assert.calledWithMatch(getChallengeStub, '123', {
       baseURL: undefined,
@@ -24,7 +29,12 @@ describe('pages/login/verification', () => {
 
   it('Should redirect to login when missing challengeId cookie', async () => {
     const { req, res, writeHead } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
+    const serverSideProps = await getServerSideProps({
+      query: {},
+      req,
+      res,
+      resolvedUrl: '/',
+    });
 
     sandbox.assert.calledWithExactly(writeHead, 302, {
       Location: '/login?redirect=%2F',
@@ -44,7 +54,12 @@ describe('pages/login/verification', () => {
     );
 
     const { req, res, writeHead } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
+    const serverSideProps = await getServerSideProps({
+      query: {},
+      req,
+      res,
+      resolvedUrl: '/',
+    });
 
     sandbox.assert.calledWithMatch(getChallengeStub, '123', {
       baseURL: undefined,

@@ -32,7 +32,12 @@ describe('pages/index', () => {
       .resolves(COUNT_BY_DEVICE);
 
     const { req, res } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
+    const serverSideProps = await getServerSideProps({
+      query: {},
+      req,
+      res,
+      resolvedUrl: '/',
+    });
 
     sandbox.assert.calledWithMatch(getSessionStub, '123', {
       baseURL: undefined,

@@ -14,6 +14,7 @@ describe('pages/password-reset', () => {
       req,
       res,
       query: { token: '123' },
+      resolvedUrl: '/',
     });
     expect(serverSideProps).toEqual({ props: { exists: true, token: '123' } });
     sandbox.assert.calledWithMatch(resetExistsStub, '123', {
@@ -32,6 +33,7 @@ describe('pages/password-reset', () => {
       req,
       res,
       query: { token: '123' },
+      resolvedUrl: '/',
     });
     expect(serverSideProps).toEqual({ props: { exists: false } });
     sandbox.assert.calledWithMatch(resetExistsStub, '123', {
@@ -42,7 +44,12 @@ describe('pages/password-reset', () => {
 
   it('Should handle case with no token', async () => {
     const { req, res } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ req, res, query: {} });
+    const serverSideProps = await getServerSideProps({
+      req,
+      res,
+      query: {},
+      resolvedUrl: '/',
+    });
     expect(serverSideProps).toEqual({ props: { exists: false } });
   });
 });

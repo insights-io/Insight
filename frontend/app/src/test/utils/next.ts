@@ -10,7 +10,12 @@ export function authenticatedTestCases<T>(
   return [
     it('Should redirect to login if no SessionId', async () => {
       const { req, res, writeHead, end } = mockServerSideRequest();
-      const serverSideProps = await getServerSideProps({ query: {}, req, res });
+      const serverSideProps = await getServerSideProps({
+        query: {},
+        req,
+        res,
+        resolvedUrl: '/',
+      });
       sandbox.assert.calledWithExactly(writeHead, 302, {
         Location: '/login?redirect=%2F',
       });
@@ -21,7 +26,12 @@ export function authenticatedTestCases<T>(
     it('Should redirect to verification if no SessionId but ChallengeId', async () => {
       sandbox.stub(document, 'cookie').value('ChallengeId=123');
       const { req, res, writeHead, end } = mockServerSideRequest();
-      const serverSideProps = await getServerSideProps({ query: {}, req, res });
+      const serverSideProps = await getServerSideProps({
+        query: {},
+        req,
+        res,
+        resolvedUrl: '/',
+      });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
         Location: '/login/verification?redirect=%2F',
@@ -40,7 +50,12 @@ export function authenticatedTestCases<T>(
         } as unknown) as Response);
 
       const { req, res, writeHead, end } = mockServerSideRequest();
-      const serverSideProps = await getServerSideProps({ query: {}, req, res });
+      const serverSideProps = await getServerSideProps({
+        query: {},
+        req,
+        res,
+        resolvedUrl: '/',
+      });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
         Location: '/login?redirect=%2F',
@@ -63,7 +78,12 @@ export function authenticatedTestCases<T>(
         } as unknown) as Response);
 
       const { req, res, writeHead, end } = mockServerSideRequest();
-      const serverSideProps = await getServerSideProps({ query: {}, req, res });
+      const serverSideProps = await getServerSideProps({
+        query: {},
+        req,
+        res,
+        resolvedUrl: '/',
+      });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
         Location: '/login/verification?redirect=%2F',
