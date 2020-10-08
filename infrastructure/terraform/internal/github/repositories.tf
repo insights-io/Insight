@@ -34,6 +34,12 @@ resource "github_repository_webhook" "atlantis_webhook" {
   events = ["issue_comment", "pull_request", "pull_request_review", "push"]
 }
 
+resource "github_actions_secret" "aws_region" {
+  repository      = github_repository.monorepo.name
+  secret_name     = "AWS_REGION"
+  plaintext_value = module.global_vars.aws_region
+}
+
 resource "github_repository" "ops" {
   name           = module.global_vars.gitops_repository
   description    = "Insight operations"
