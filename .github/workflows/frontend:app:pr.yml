@@ -66,7 +66,7 @@ jobs:
           yarn workspace @insight/app storybook:build
       - uses: jakejarvis/s3-sync-action@master
         with:
-          args: --folow-symlinks --delete
+          args: --follow-symlinks --delete
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_APP_STORYBOOK }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
