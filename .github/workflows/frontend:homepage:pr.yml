@@ -17,6 +17,7 @@ env:
 
 jobs:
   pr-size:
+    name: Pull request size
     runs-on: ubuntu-latest
 
     steps:
@@ -43,6 +44,7 @@ jobs:
           title: 'frontend/homepage bundle size'
 
   pr-deploy-storybook:
+    name: Deploy storybook
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -62,17 +64,20 @@ jobs:
           yarn install --frozen-lockfile
           yarn workspace @insight/homepage prebuild
           yarn workspace @insight/homepage storybook:build
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+      - uses: jakejarvis/s3-sync-action@master
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: frontend/homepage/storybook-static
-          TARGET_FOLDER: ${{ env.TARGET_FOLDER_PREFIX }}/${{ env.GITHUB_HEAD_REF_SLUG }}
+          args: --acl public-read --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_HOMEPAGE_STORYBOOK }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          DEST_DIR: ${{ env.GITHUB_HEAD_REF_SLUG }}
+          SOURCE_DIR: frontend/homepage/storybook-static
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: '🚀 Storybook preview of frontend/homepage available at https://insights-io.github.io/Insight/${{ env.TARGET_FOLDER_PREFIX }}/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
+          msg: '🚀 Storybook preview of frontend/homepage available at https://${{ secrets.AWS_S3_HOMEPAGE_STORYBOOK }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
           check_for_duplicate_msg: true

@@ -15,6 +15,9 @@ helm plugin install https://github.com/databus23/helm-diff
 
 ```sh
 helmfile --file k8/development/helmfile.yaml -e production apply
+
+# Or just a specific chart
+helmfile --file k8/development/helmfile.yaml -e production -l name=grafana apply
 ```
 
 ## Tooling

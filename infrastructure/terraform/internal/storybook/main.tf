@@ -1,5 +1,5 @@
 locals {
-  projects = ["app", "try", "elements"]
+  projects = ["app", "try", "elements", "homepage"]
 }
 
 module "storybooks" {
