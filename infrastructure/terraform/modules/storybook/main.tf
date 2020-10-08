@@ -30,13 +30,19 @@ resource "github_actions_secret" "s3_bucket_name" {
   plaintext_value = aws_s3_bucket.storybook.id
 }
 
+module "s3_restrict_access_to_cloudfront" {
+  source        = "../s3_restrict_access_to_cloudfront"
+  s3_bucket_arn = aws_s3_bucket.storybook.arn
+  s3_bucket_id  = aws_s3_bucket.storybook.id
+}
+
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name = aws_s3_bucket.storybook.bucket_regional_domain_name
     origin_id   = local.bucket_origin_id
 
     s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.bucket_origin_access_identity.cloudfront_access_identity_path
+      origin_access_identity = module.s3_restrict_access_to_cloudfront.cloudfront_access_identity_path
     }
   }
 
@@ -88,28 +94,6 @@ resource "github_actions_secret" "cloudfront_distribution_id" {
   repository      = var.repository
   secret_name     = "AWS_CLOUDFRONT_${upper(var.project)}_STORYBOOK_DISTRIBUTION_ID"
   plaintext_value = aws_cloudfront_distribution.s3_distribution.id
-}
-
-## Restrict access only to Cloudfront
-resource "aws_cloudfront_origin_access_identity" "bucket_origin_access_identity" {
-  comment = "Cloudfront origin access s3 static (Managed by Terraform)"
-}
-
-data "aws_iam_policy_document" "s3_cloudfront" {
-  statement {
-    actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.storybook.arn}/*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.bucket_origin_access_identity.iam_arn]
-    }
-  }
-}
-
-resource "aws_s3_bucket_policy" "s3_cloudfront" {
-  bucket = aws_s3_bucket.storybook.id
-  policy = data.aws_iam_policy_document.s3_cloudfront.json
 }
 
 resource "github_actions_secret" "domain_name" {

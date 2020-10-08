@@ -6,7 +6,7 @@ on:
       - '**.java'
   push:
     paths:
-      - .github/workflows/backend:api-reference.yml
+      - '.github/workflows/backend:api-reference.yml'
       - '**.java'
     branches:
       - master
@@ -89,6 +89,6 @@ jobs:
         with:
           msg: |
             Preview ${{ matrix.api }} documentation: 
-            - OpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.AWS_S3_API_REFERENCE }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml&nocors
-            - Postman: https://${{ secrets.AWS_S3_API_REFERENCE }}.s3.amazonaws.com/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json
+            - OpenAPI: https://redocly.github.io/redoc/?url=https://${{ secrets.API_REFERENCE_DOMAIN_NAME }}/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-openapi.yml&nocors
+            - Postman: https://${{ secrets.API_REFERENCE_DOMAIN_NAME }}/${{ env.GITHUB_HEAD_REF_SLUG }}/${{ matrix.api }}-postman.json
           check_for_duplicate_msg: true
