@@ -2,11 +2,15 @@
 on:
   pull_request:
     paths:
+      - 'infrastructure/terraform/internal/api-reference'
+      - 'infrastructure/terraform/modules/s3_restrict_access_to_cloudfront'
       - '.github/workflows/backend:api-reference.yml'
       - '**.java'
   push:
     paths:
-      - .github/workflows/backend:api-reference.yml
+      - 'infrastructure/terraform/internal/api-reference'
+      - 'infrastructure/terraform/modules/s3_restrict_access_to_cloudfront'
+      - '.github/workflows/backend:api-reference.yml'
       - '**.java'
     branches:
       - master
