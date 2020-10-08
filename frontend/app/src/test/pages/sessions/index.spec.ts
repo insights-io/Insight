@@ -31,7 +31,12 @@ describe('pages/sessions', () => {
       .resolves({ count: INSIGHT_SESSIONS_DTOS.length });
 
     const { req, res } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({ query: {}, req, res });
+    const serverSideProps = await getServerSideProps({
+      query: {},
+      req,
+      res,
+      resolvedUrl: '/',
+    });
 
     sandbox.assert.calledWithMatch(getSsoSessionStub, '123', {
       baseURL: undefined,
