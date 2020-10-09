@@ -29,8 +29,6 @@ spec:
           env:
             - name: JAEGER_AGENT_HOST
               value: jaeger-agent.monitoring:6831
-            - name: AUTH_API_BASE_URL
-              value: http://auth-api
             - name: STRIPE_WEBHOOK_SECRET
               valueFrom:
                 secretKeyRef:
@@ -54,7 +52,7 @@ spec:
             - name: POSTGRES_HOST
               value: postgres-postgresql
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               name: http
               protocol: TCP
           resources:
@@ -64,13 +62,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /health/live
-              port: 8080
+              port: 80
             initialDelaySeconds: 60
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: 8080
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 1

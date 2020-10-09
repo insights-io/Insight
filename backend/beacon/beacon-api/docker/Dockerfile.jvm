@@ -21,4 +21,6 @@ COPY --from=build /backend/beacon/beacon-api/build/beacon-api-1.0-runner.jar /us
 
 WORKDIR /usr/app/
 
+EXPOSE 80
+
 CMD ["java", "-jar", "service-runner.jar"]

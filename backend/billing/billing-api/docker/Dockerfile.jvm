@@ -21,4 +21,6 @@ COPY --from=build /backend/billing/billing-api/build/billing-api-1.0-runner.jar 
 
 WORKDIR /usr/app/
 
+EXPOSE 80
+
 CMD ["java", "-jar", "service-runner.jar"]
