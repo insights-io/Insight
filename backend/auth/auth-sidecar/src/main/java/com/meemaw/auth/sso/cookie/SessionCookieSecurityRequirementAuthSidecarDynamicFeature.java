@@ -2,6 +2,7 @@ package com.meemaw.auth.sso.cookie;
 
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.rebrowse.model.user.User;
 import com.rebrowse.net.RequestOptions;
@@ -34,7 +35,11 @@ public class SessionCookieSecurityRequirementAuthSidecarDynamicFeature
                         user.getOrganizationId(),
                         user.getCreatedAt(),
                         user.getUpdatedAt(),
-                        null,
+                        user.getPhoneNumber() != null
+                            ? new PhoneNumberDTO(
+                                user.getPhoneNumber().getCountryCode(),
+                                user.getPhoneNumber().getDigits())
+                            : null,
                         user.isPhoneNumberVerified())));
   }
 }

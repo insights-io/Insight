@@ -3,6 +3,7 @@ package com.meemaw.auth.sso.token;
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.rebrowse.model.auth.ApiKey;
 import com.rebrowse.net.RequestOptions;
@@ -35,7 +36,11 @@ public class BearerTokenSidecarSecurityRequirementAuthDynamicFeature
                         user.getOrganizationId(),
                         user.getCreatedAt(),
                         user.getUpdatedAt(),
-                        null,
+                        user.getPhoneNumber() != null
+                            ? new PhoneNumberDTO(
+                                user.getPhoneNumber().getCountryCode(),
+                                user.getPhoneNumber().getDigits())
+                            : null,
                         user.isPhoneNumberVerified())));
   }
 }
