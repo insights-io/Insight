@@ -1,5 +1,6 @@
 package com.rebrowse.net;
 
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
@@ -23,8 +24,9 @@ public class NetHttpClient extends RawHttpClient {
   @Override
   public CompletionStage<RebrowseResponse> request(RebrowseRequest request) {
     RequestOptions options = request.getRequestOptions();
+    URI uri = URI.create(String.format("%s%s", options.getApiBaseUrl(), request.getPath()));
     HttpRequest.Builder httpRequestBuilder =
-        HttpRequest.newBuilder(request.getUri())
+        HttpRequest.newBuilder(uri)
             .method(request.getMethod().toString(), request.getBodyPublisher())
             .timeout(options.getTimeout());
 

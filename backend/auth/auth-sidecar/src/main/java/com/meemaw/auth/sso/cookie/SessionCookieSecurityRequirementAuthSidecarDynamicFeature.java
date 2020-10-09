@@ -9,15 +9,20 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.Provider;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Provider
 @ApplicationScoped
 public class SessionCookieSecurityRequirementAuthSidecarDynamicFeature
     extends AbstractSessionCookieSecurityRequirementAuthDynamicFeature {
 
+  @ConfigProperty(name = "auth-api/mp-rest/url")
+  String authApiBaseUrl;
+
   @Override
   protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
-    return User.retrieve(new RequestOptions.Builder().sessionId(sessionId).build())
+    return User.retrieve(
+            new RequestOptions.Builder().apiBaseUrl(authApiBaseUrl).sessionId(sessionId).build())
         .thenApply(
             user ->
                 Optional.of(

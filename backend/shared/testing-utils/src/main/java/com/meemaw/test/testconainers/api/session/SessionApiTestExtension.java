@@ -37,6 +37,6 @@ public class SessionApiTestExtension implements BeforeAllCallback {
     }
     System.out.println(
         String.format("[TEST-SETUP]: Connecting to session-api on=%s", sessionApi.getBaseURI()));
-    return Map.of("session-resource/mp-rest/url", sessionApi.getBaseURI());
+    return Map.of("session-api/mp-rest/url", sessionApi.getBaseURI());
   }
 }

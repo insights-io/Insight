@@ -1,6 +1,5 @@
 package com.rebrowse.model.user;
 
-import com.rebrowse.Rebrowse;
 import com.rebrowse.net.ApiResource;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
@@ -29,8 +28,7 @@ public class User {
   }
 
   public static CompletionStage<User> retrieve(RequestOptions requestOptions) {
-    String url = String.format("%s%s", Rebrowse.apiBase(), "/v1/user");
-    return ApiResource.get(url, User.class, requestOptions);
+    return ApiResource.get("/v1/user", User.class, requestOptions);
   }
 
   public static CompletionStage<User> retrieve(UUID id) {
@@ -38,7 +36,6 @@ public class User {
   }
 
   public static CompletionStage<User> retrieve(UUID id, RequestOptions requestOptions) {
-    String url = String.format("%s%s%s", Rebrowse.apiBase(), "/v1/user/", id);
-    return ApiResource.get(url, User.class, requestOptions);
+    return ApiResource.get(String.format("/v1/user/%s", id), User.class, requestOptions);
   }
 }

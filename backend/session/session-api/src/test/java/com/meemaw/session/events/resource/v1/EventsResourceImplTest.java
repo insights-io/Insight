@@ -12,7 +12,7 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.UserEvent;
-import com.meemaw.session.resource.v1.SessionResource;
+import com.meemaw.session.sessions.resource.v1.SessionResource;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import com.meemaw.test.rest.data.EventTestData;
 import com.meemaw.test.rest.mappers.JacksonMapper;

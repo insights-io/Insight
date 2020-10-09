@@ -2,7 +2,7 @@ package com.meemaw.session.events.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
-import com.meemaw.session.resource.v1.SessionResource;
+import com.meemaw.session.sessions.resource.v1.SessionResource;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;

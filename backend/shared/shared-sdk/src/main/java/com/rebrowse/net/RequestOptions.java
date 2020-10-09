@@ -9,6 +9,7 @@ public class RequestOptions {
 
   String apiKey;
   String sessionId;
+  String apiBaseUrl;
   Duration timeout;
   int maxNetworkRetries;
 
@@ -20,13 +21,20 @@ public class RequestOptions {
 
     private String sessionId = null;
     private String apiKey;
+    private String apiBaseUrl;
     private final Duration timeout;
     private final int maxNetworkRetries;
 
     public Builder() {
       this.apiKey = Rebrowse.apiKey;
       this.timeout = Rebrowse.TIMEOUT;
+      this.apiBaseUrl = Rebrowse.API_BASE;
       this.maxNetworkRetries = Rebrowse.maxNetworkRetries();
+    }
+
+    public Builder apiBaseUrl(String apiBaseUrl) {
+      this.apiBaseUrl = apiBaseUrl;
+      return this;
     }
 
     public Builder apiKey(String apiKey) {
@@ -40,7 +48,7 @@ public class RequestOptions {
     }
 
     public RequestOptions build() {
-      return new RequestOptions(apiKey, sessionId, timeout, maxNetworkRetries);
+      return new RequestOptions(apiKey, sessionId, apiBaseUrl, timeout, maxNetworkRetries);
     }
   }
 }

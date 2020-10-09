@@ -10,15 +10,20 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.Provider;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Provider
 @ApplicationScoped
 public class BearerTokenSidecarSecurityRequirementAuthDynamicFeature
     extends AbstractBearerTokenSecurityRequirementAuthDynamicFeature {
 
+  @ConfigProperty(name = "auth-api/mp-rest/url")
+  String authApiBaseUrl;
+
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String apiKey) {
-    return ApiKey.retrieveUser(new RequestOptions.Builder().apiKey(apiKey).build())
+    return ApiKey.retrieveUser(
+            new RequestOptions.Builder().apiBaseUrl(authApiBaseUrl).apiKey(apiKey).build())
         .thenApply(
             user ->
                 Optional.of(

@@ -5,23 +5,21 @@ import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.BrowserUnloadEvent;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
-import com.meemaw.session.model.PageDTO;
-import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
-import com.meemaw.shared.rest.response.DataResponse;
+import com.rebrowse.exception.ApiException;
+import com.rebrowse.model.session.SessionPage;
+import com.rebrowse.net.RequestOptions;
 import io.smallrye.mutiny.Uni;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -30,17 +28,14 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow.Strategy;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
 public class BeaconService {
 
-  @Inject @RestClient SessionResource sessionResource;
-
-  @ConfigProperty(name = "authorization.s2s.api.key")
-  String s2sApiKey;
+  @ConfigProperty(name = "session-api/mp-rest/url")
+  String sessionApiBaseUrl;
 
   @Inject
   @Channel(EventsStream.ALL)
@@ -57,25 +52,22 @@ public class BeaconService {
       name = "pageExists",
       description = "A measure of how long it takes to check if page exists")
   CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
-    return sessionResource
-        .retrievePage(sessionId, pageId, organizationId, "Bearer " + s2sApiKey)
+    return SessionPage.retrieve(
+            pageId,
+            sessionId,
+            organizationId,
+            new RequestOptions.Builder().apiBaseUrl(sessionApiBaseUrl).build())
+        .thenApply(
+            sessionPage ->
+                sessionPage.getId().equals(pageId) && sessionPage.getSessionId().equals(sessionId))
         .exceptionally(
             throwable -> {
-              log.error("[BEACON]: Failed to check if page exists", throwable);
-              if (throwable.getCause() instanceof WebApplicationException) {
-                return ((WebApplicationException) (throwable.getCause())).getResponse();
-              }
-              throw Boom.serverError().message(throwable.getMessage()).exception();
-            })
-        .thenApply(
-            response -> {
-              log.debug("[BEACON]: Page response status={}", response.getStatus());
-              if (response.getStatus() == Status.NOT_FOUND.getStatusCode()) {
+              CompletionException completionException = (CompletionException) throwable;
+              ApiException apiException = (ApiException) completionException.getCause();
+              if (apiException.getStatusCode() == 404) {
                 return false;
               }
-              DataResponse<PageDTO> dataResponse = response.readEntity(new GenericType<>() {});
-              PageDTO page = dataResponse.getData();
-              return page.getSessionId().equals(sessionId) && page.getId().equals(pageId);
+              throw completionException;
             });
   }
 

@@ -1,6 +1,5 @@
 package com.rebrowse.model.organization;
 
-import com.rebrowse.Rebrowse;
 import com.rebrowse.net.ApiResource;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
@@ -19,12 +18,11 @@ public class Organization {
   OffsetDateTime updatedAt;
 
   public static CompletionStage<Organization> retrieve(RequestOptions requestOptions) {
-    String url = String.format("%s%s", Rebrowse.apiBase(), "/v1/organization");
-    return ApiResource.get(url, Organization.class, requestOptions);
+    return ApiResource.get("/v1/organization", Organization.class, requestOptions);
   }
 
   public static CompletionStage<Organization> retrieve(String id, RequestOptions requestOptions) {
-    String url = String.format("%s%s%s", Rebrowse.apiBase(), "/v1/organization/", id);
-    return ApiResource.get(url, Organization.class, requestOptions);
+    return ApiResource.get(
+        String.format("/v1/organization/%s", id), Organization.class, requestOptions);
   }
 }
