@@ -63,8 +63,8 @@ public class BeaconService {
         .exceptionally(
             throwable -> {
               CompletionException completionException = (CompletionException) throwable;
-              ApiException apiException = (ApiException) completionException.getCause();
-              if (apiException.getStatusCode() == 404) {
+              Throwable cause = throwable.getCause();
+              if (cause instanceof ApiException && ((ApiException) cause).getStatusCode() == 404) {
                 return false;
               }
               throw completionException;
