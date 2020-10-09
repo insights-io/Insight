@@ -28,7 +28,7 @@ public class SessionPage {
 
   public static CompletionStage<SessionPage> retrieve(
       UUID id, UUID sessionId, String organizationId) {
-    return retrieve(id, sessionId, organizationId);
+    return retrieve(id, sessionId, organizationId, null);
   }
 
   public static CompletionStage<SessionPage> retrieve(
