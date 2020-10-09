@@ -11,6 +11,7 @@ COPY auth/auth-api-contracts/ /backend/auth/auth-api-contracts/
 COPY shared/rest-api/ /backend/shared/rest-api/
 COPY shared/rest/ /backend/shared/rest/
 COPY shared/shared-sql/ /backend/shared/shared-sql/
+COPY shared/shared-sdk/ /backend/shared/shared-sdk/
 
 RUN gradle billing:billing-api:quarkusBuild --uber-jar
 

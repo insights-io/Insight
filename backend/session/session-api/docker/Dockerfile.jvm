@@ -15,6 +15,7 @@ COPY shared/rest/ /backend/shared/rest/
 COPY shared/shared-elasticsearch/ /backend/shared/shared-elasticsearch/
 COPY shared/shared-sql/ /backend/shared/shared-sql/
 COPY shared/rest-api/ /backend/shared/rest-api/
+COPY shared/shared-sdk/ /backend/shared/shared-sdk/
 
 RUN gradle session:session-api:quarkusBuild --uber-jar
 

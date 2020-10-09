@@ -11,6 +11,7 @@ COPY session/session-model/ /backend/session/session-model/
 COPY session/session-api-contracts/ /backend/session/session-api-contracts/
 COPY shared/rest/ /backend/shared/rest/
 COPY shared/rest-api/ /backend/shared/rest-api/
+COPY shared/shared-sdk/ /backend/shared/shared-sdk/
 
 RUN gradle beacon:beacon-api:quarkusBuild --uber-jar
 
