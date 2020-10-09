@@ -29,10 +29,10 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
 
   private static final Pattern BEARER_PATTERN = Pattern.compile("^Bearer ([^ ]+)$");
 
-  @ConfigProperty(name = "authorization.s2s.auth.token")
-  String s2sAuthToken;
+  @ConfigProperty(name = "authorization.s2s.api.key")
+  String s2sApiKey;
 
-  public abstract CompletionStage<Optional<AuthUser>> findUser(String token);
+  public abstract CompletionStage<Optional<AuthUser>> findUser(String apiKey);
 
   public static String header(String token) {
     return String.format("Bearer %s", token);
@@ -76,14 +76,14 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
       span.log("[BearerTokenAuth]: Malformed authorization header");
       throw Boom.unauthorized().exception();
     }
-    String token = matcher.group(1);
 
+    String apiKey = matcher.group(1);
     AuthUser user;
-    if (s2sAuthToken.equals(token)) {
+    if (s2sApiKey.equals(apiKey)) {
       user = UserRegistry.S2S_INTERNAL_USER;
       span.log("[BearerTokenAuth]: S2S Request");
     } else {
-      Optional<AuthUser> maybeUser = findUser(token).toCompletableFuture().join();
+      Optional<AuthUser> maybeUser = findUser(apiKey).toCompletableFuture().join();
       user = maybeUser.orElseThrow(() -> Boom.unauthorized().exception());
     }
 

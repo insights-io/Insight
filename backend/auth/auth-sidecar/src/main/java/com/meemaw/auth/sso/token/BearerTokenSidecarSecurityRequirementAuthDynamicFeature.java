@@ -1,56 +1,36 @@
 package com.meemaw.auth.sso.token;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
-import com.meemaw.auth.sso.token.resource.v1.AuthTokenResource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.dto.UserDTO;
-import com.meemaw.shared.rest.response.Boom;
-import com.meemaw.shared.rest.response.DataResponse;
+import com.rebrowse.model.auth.ApiKey;
+import com.rebrowse.net.RequestOptions;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import javax.inject.Inject;
-import javax.ws.rs.core.Response.Status;
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.Provider;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Provider
-@Slf4j
+@ApplicationScoped
 public class BearerTokenSidecarSecurityRequirementAuthDynamicFeature
     extends AbstractBearerTokenSecurityRequirementAuthDynamicFeature {
 
-  @Inject @RestClient AuthTokenResource authTokenResource;
-  @Inject ObjectMapper objectMapper;
-
-  private String authorizationHeader(String token) {
-    return "Bearer " + token;
-  }
-
   @Override
-  public CompletionStage<Optional<AuthUser>> findUser(String token) {
-    return authTokenResource
-        .me(authorizationHeader(token))
+  public CompletionStage<Optional<AuthUser>> findUser(String apiKey) {
+    return ApiKey.retrieveUser(new RequestOptions.Builder().apiKey(apiKey).build())
         .thenApply(
-            response -> {
-              int statusCode = response.getStatus();
-              if (statusCode == Status.OK.getStatusCode()) {
-                try {
-
-                  // TODO: why is this needed? Open issue in Quark  us
-                  DataResponse<UserDTO> dataResponse =
-                      objectMapper.readValue(
-                          response.readEntity(String.class), new TypeReference<>() {});
-
-                  return Optional.of(dataResponse.getData());
-                } catch (JsonProcessingException ex) {
-                  throw Boom.serverError().exception(ex);
-                }
-              }
-
-              return Optional.empty();
-            });
+            user ->
+                Optional.of(
+                    new UserDTO(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getFullName(),
+                        UserRole.fromString(user.getRole().getKey()),
+                        user.getOrganizationId(),
+                        user.getCreatedAt(),
+                        user.getUpdatedAt(),
+                        null,
+                        user.isPhoneNumberVerified())));
   }
 }

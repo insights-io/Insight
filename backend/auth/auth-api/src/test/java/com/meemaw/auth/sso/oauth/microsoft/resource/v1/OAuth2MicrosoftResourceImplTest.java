@@ -163,7 +163,7 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"AADSTS70000: The provided value for the 'code' parameter is not valid. The code has expired.\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"AADSTS70000: The provided value for the 'code' parameter is not valid.\"}}"));
   }
 
   @Test

@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(AuthApiTestResource.class)
 public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
 
-  @ConfigProperty(name = "authorization.s2s.auth.token")
-  String s2sAuthToken;
+  @ConfigProperty(name = "authorization.s2s.api.key")
+  String s2sApiKey;
 
   @Test
   public void post_page__should_throw_error__when_unsupported_media_type() {
@@ -168,7 +168,7 @@ public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
             UUID.randomUUID());
 
     given()
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + s2sAuthToken)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + s2sApiKey)
         .when()
         .get(path)
         .then()

@@ -9,6 +9,7 @@ COPY auth/auth-model/ /backend/auth/auth-model/
 COPY auth/auth-cookie/ /backend/auth/auth-cookie/
 COPY shared/rest-api/ /backend/shared/rest-api/
 COPY shared/rest/ /backend/shared/rest/
+COPY shared/shared-sdk/ /backend/shared/shared-sdk/
 COPY shared/shared-sql/ /backend/shared/shared-sql/
 COPY shared/shared-sms/ /backend/shared/shared-sms/
 COPY shared/shared-hazelcast/ /backend/shared/shared-hazelcast/

@@ -1,0 +1,17 @@
+plugins {
+    id "java-library"
+}
+
+dependencies {
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.11.3"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.11.3"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.3"
+
+    testImplementation "org.hamcrest:hamcrest-core:2.2"
+    testImplementation "org.skyscreamer:jsonassert:${jsonAssertVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.0"
+}
+
+test {
+    useJUnitPlatform()
+}

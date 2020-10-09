@@ -22,6 +22,7 @@
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
+    "storybook": "start-storybook",
     "storybook:build": "build-storybook"
   },
   "devDependencies": {
