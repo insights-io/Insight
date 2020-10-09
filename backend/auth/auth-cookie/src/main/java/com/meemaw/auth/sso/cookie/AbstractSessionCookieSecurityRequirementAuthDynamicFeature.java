@@ -76,8 +76,7 @@ public abstract class AbstractSessionCookieSecurityRequirementAuthDynamicFeature
     setUserContext(span, user);
     boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
     context.setSecurityContext(new InsightSecurityContext(user, isSecure));
-    principal.user(user);
-    principal.sessionId(sessionId);
+    principal.user(user).sessionId(sessionId);
     log.debug("[AUTH]: Successfully authenticated user={} sessionId={}", user.getId(), sessionId);
   }
 }

@@ -2,6 +2,7 @@ package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
 
@@ -21,17 +22,15 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @QuarkusTest
 @Tag("integration")
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTestResource(AuthApiTestResource.class)
-@TestInstance(Lifecycle.PER_CLASS)
 public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   private static OffsetDateTime createdAt;
@@ -45,13 +44,16 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   @Test
   public void get_session_insights_count__should_throw__on_unauthorized() {
     ssoSessionCookieTestCases(Method.GET, COUNT_PATH);
+    ssoBearerTokenTestCases(Method.GET, COUNT_PATH);
   }
 
   @Test
   public void get_session_insights_count__should_throw__on_unsupported_fields() {
+    String sessionId = authApi().loginWithInsightAdmin();
+
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("random", "gte:aba")
         .queryParam("aba", "gtecaba")
         .queryParam("group_by", "another")
@@ -67,9 +69,20 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_count__on_empty_request() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":{\"count\":5}}"));
+
+    String apiKey = authApi().createAuthToken(sessionId);
+    given()
+        .when()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
         .then()
@@ -79,9 +92,10 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_count__on_request_with_filters() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .queryParam("location.city", "eq:Maribor")
         .get(COUNT_PATH)
@@ -92,9 +106,10 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_counts__on_group_by_country() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("group_by", "location.countryName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
@@ -108,9 +123,10 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   @Test
   public void
       get_session_insights_count__should_return_counts__on_group_by_country_and_continent() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("group_by", "location.countryName,location.continentName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
@@ -123,9 +139,10 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_counts__on_group_by_device() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("group_by", "user_agent.deviceClass")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(COUNT_PATH)
@@ -139,13 +156,15 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   @Test
   public void get_session_insights_distinct__should_throw__on_unauthorized() {
     ssoSessionCookieTestCases(Method.GET, DISTINCT_PATH);
+    ssoBearerTokenTestCases(Method.GET, DISTINCT_PATH);
   }
 
   @Test
   public void get_session_insights_distinct__should_throw__when_no_columns() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
         .get(DISTINCT_PATH)
         .then()
         .statusCode(400)
@@ -156,9 +175,21 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_distinct__should_return_cities() {
+    String sessionId = authApi().loginWithInsightAdmin();
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam("on", "location.city")
+        .queryParam("created_at", String.format("gte:%s", createdAt))
+        .get(DISTINCT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[null,\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
+
+    String apiKey = authApi().createAuthToken(sessionId);
+    given()
+        .when()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
         .queryParam("on", "location.city")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)

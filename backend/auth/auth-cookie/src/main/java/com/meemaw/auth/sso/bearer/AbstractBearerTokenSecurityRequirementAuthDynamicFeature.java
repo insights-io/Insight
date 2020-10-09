@@ -90,8 +90,7 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
     setUserContext(span, user);
     boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
     context.setSecurityContext(new InsightSecurityContext(user, isSecure));
-    principal.user(user);
-    principal.apiKey(apiKey);
+    principal.user(user).apiKey(apiKey);
     log.debug("[AUTH]: Successfully authenticated user={}", user.getId());
   }
 }

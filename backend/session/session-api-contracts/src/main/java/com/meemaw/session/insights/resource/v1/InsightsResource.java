@@ -1,5 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -24,12 +25,20 @@ public interface InsightsResource {
 
   @GET
   @Path("count")
-  @SecurityRequirements(value = {@SecurityRequirement(name = SessionCookieSecurityScheme.NAME)})
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   CompletionStage<Response> count();
 
   @GET
   @Path("distinct")
-  @SecurityRequirements(value = {@SecurityRequirement(name = SessionCookieSecurityScheme.NAME)})
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
   CompletionStage<Response> distinct(
       @NotEmpty(message = "Required") @QueryParam(ON) List<String> on);
 }
