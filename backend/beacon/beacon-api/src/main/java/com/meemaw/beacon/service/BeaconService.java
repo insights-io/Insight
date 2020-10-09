@@ -39,8 +39,8 @@ public class BeaconService {
 
   @Inject @RestClient SessionResource sessionResource;
 
-  @ConfigProperty(name = "authorization.s2s.auth.token")
-  String s2sAuthToken;
+  @ConfigProperty(name = "authorization.s2s.api.key")
+  String s2sApiKey;
 
   @Inject
   @Channel(EventsStream.ALL)
@@ -58,7 +58,7 @@ public class BeaconService {
       description = "A measure of how long it takes to check if page exists")
   CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
     return sessionResource
-        .getPage(sessionId, pageId, organizationId, "Bearer " + s2sAuthToken)
+        .getPage(sessionId, pageId, organizationId, "Bearer " + s2sApiKey)
         .exceptionally(
             throwable -> {
               log.error("[BEACON]: Failed to check if page exists", throwable);

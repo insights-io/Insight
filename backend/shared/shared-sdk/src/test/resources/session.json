@@ -1,0 +1,21 @@
+{
+  "id": "eb19e4e6-7794-4157-a0c2-478a08887a4c",
+  "deviceId": "efda7233-a70a-4ad0-a5a3-ca406cb9fe31",
+  "organizationId": "000000",
+  "location": {
+    "ip": "52.191.11.58",
+    "countryName": "United States",
+    "regionName": "Virginia",
+    "city": "Washington",
+    "zip": "22747",
+    "continentName": "North America",
+    "latitude": 38.7130012512207,
+    "longitude": -78.15899658203125
+  },
+  "userAgent": {
+    "deviceClass": "Phone",
+    "operatingSystemName": "Android",
+    "browserName": "Chrome"
+  },
+  "createdAt": "2020-10-08T06:53:11.852757Z"
+}

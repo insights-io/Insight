@@ -1,0 +1,7 @@
+{
+  "error": {
+    "statusCode": 401,
+    "reason": "Unauthorized",
+    "message": "Unauthorized"
+  }
+}

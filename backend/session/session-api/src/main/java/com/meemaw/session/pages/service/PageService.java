@@ -42,8 +42,8 @@ public class PageService {
   @Inject SessionCountDatasource sessionCountDatasource;
   @Inject @RestClient OrganizationResource organizationResource;
 
-  @ConfigProperty(name = "authorization.s2s.auth.token")
-  String s2sAuthToken;
+  @ConfigProperty(name = "authorization.s2s.api.key")
+  String s2sApiKey;
 
   /**
    * Create a new page. This method is called as a first action of the tracking script to link
@@ -81,7 +81,7 @@ public class PageService {
     return organizationResource
         .retrieve(
             organizationId,
-            AbstractBearerTokenSecurityRequirementAuthDynamicFeature.header(s2sAuthToken))
+            AbstractBearerTokenSecurityRequirementAuthDynamicFeature.header(s2sApiKey))
         .thenCompose(
             response -> {
               int status = response.getStatus();
