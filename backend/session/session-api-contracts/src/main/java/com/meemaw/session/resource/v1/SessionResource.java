@@ -1,4 +1,4 @@
-package com.meemaw.session.sessions.v1;
+package com.meemaw.session.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
@@ -19,8 +19,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path(SessionResource.PATH)
@@ -30,11 +32,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface SessionResource {
 
   String PATH = "/v1/sessions";
-
-  @POST
-  CompletionStage<Response> createPage(
-      @NotNull(message = "Required") @Valid CreatePageDTO body,
-      @NotBlank(message = "Required") @HeaderParam(HttpHeaders.USER_AGENT) String userAgent);
+  String TAG = "Session";
 
   @GET
   @SecurityRequirements(
@@ -42,7 +40,9 @@ public interface SessionResource {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
         @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
       })
-  CompletionStage<Response> getSessions();
+  @Tag(name = TAG)
+  @Operation(summary = "List sessions")
+  CompletionStage<Response> list();
 
   @GET
   @Path("{sessionId}")
@@ -51,7 +51,15 @@ public interface SessionResource {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
         @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
       })
-  CompletionStage<Response> getSession(@PathParam("sessionId") UUID sessionId);
+  @Tag(name = TAG)
+  @Operation(summary = "Retrieve session")
+  CompletionStage<Response> retrieve(@PathParam("sessionId") UUID sessionId);
+
+  @POST
+  @Operation(summary = "Create page")
+  CompletionStage<Response> createPage(
+      @NotNull(message = "Required") @Valid CreatePageDTO body,
+      @NotBlank(message = "Required") @HeaderParam(HttpHeaders.USER_AGENT) String userAgent);
 
   @GET
   @Path("{sessionId}/pages/{pageId}")
@@ -60,7 +68,8 @@ public interface SessionResource {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
         @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
       })
-  CompletionStage<Response> getPage(
+  @Operation(summary = "Retrieve page")
+  CompletionStage<Response> retrievePage(
       @PathParam("sessionId") UUID sessionId,
       @PathParam("pageId") UUID pageId,
       @QueryParam("organizationId") String organizationId,

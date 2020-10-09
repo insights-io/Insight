@@ -6,7 +6,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.session.sessions.v1.SessionResource;
+import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;

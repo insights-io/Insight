@@ -5,10 +5,10 @@ import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.pages.service.PageService;
+import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.session.sessions.service.SessionService;
 import com.meemaw.session.sessions.service.SessionSocketService;
-import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
@@ -50,7 +50,7 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> getSession(UUID sessionId) {
+  public CompletionStage<Response> retrieve(UUID sessionId) {
     String organizationId = principal.user().getOrganizationId();
     return sessionService
         .getSession(sessionId, organizationId)
@@ -59,7 +59,7 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> getPage(
+  public CompletionStage<Response> retrievePage(
       UUID sessionId, UUID pageId, @Nullable String organizationId, String authorization) {
     AuthUser user = principal.user();
     String actualOrganizationId =
@@ -73,7 +73,7 @@ public class SessionResourceImpl implements SessionResource {
   }
 
   @Override
-  public CompletionStage<Response> getSessions() {
+  public CompletionStage<Response> list() {
     String organizationId = principal.user().getOrganizationId();
     SearchDTO searchDTO =
         SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS)

@@ -25,5 +25,3 @@ WORKDIR /usr/app/
 EXPOSE 80
 
 CMD ["java", "-jar", "service-runner.jar"]
-
-

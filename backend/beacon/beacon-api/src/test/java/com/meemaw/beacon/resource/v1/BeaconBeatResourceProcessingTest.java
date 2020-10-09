@@ -7,7 +7,7 @@ import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageIdentity;
-import com.meemaw.session.sessions.v1.SessionResource;
+import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.data.UserAgentData;

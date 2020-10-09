@@ -6,7 +6,7 @@ import com.meemaw.events.model.incoming.BrowserUnloadEvent;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.PageDTO;
-import com.meemaw.session.sessions.v1.SessionResource;
+import com.meemaw.session.resource.v1.SessionResource;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -58,7 +58,7 @@ public class BeaconService {
       description = "A measure of how long it takes to check if page exists")
   CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
     return sessionResource
-        .getPage(sessionId, pageId, organizationId, "Bearer " + s2sApiKey)
+        .retrievePage(sessionId, pageId, organizationId, "Bearer " + s2sApiKey)
         .exceptionally(
             throwable -> {
               log.error("[BEACON]: Failed to check if page exists", throwable);
