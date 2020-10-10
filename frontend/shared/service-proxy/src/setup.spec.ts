@@ -29,7 +29,7 @@ describe('setupEnv', () => {
         NEXT_PUBLIC_AUTH_API_BASE_URL: '/api/auth',
       },
       proxiedEnv: {
-        NEXT_PUBLIC_AUTH_API_BASE_URL: 'https://auth-api.snuderls.dev',
+        NEXT_PUBLIC_AUTH_API_PROXIED_BASE_URL: 'https://auth-api.snuderls.dev',
       },
     });
 

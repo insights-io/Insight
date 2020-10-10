@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import * as dotenv from 'dotenv';
 
+import { getProxiedPublicApiBaseUrlEnvKey } from './utils';
+
 const PUBLIC_API_BASE_URL_PATTERN = /^NEXT_PUBLIC_(.*)_API_BASE_URL$/;
 
 type SetupEnvironmentParams = {
@@ -30,6 +32,7 @@ export const setupEnv = ({
         const proxiedPath = `/api/${service.toLowerCase()}`;
         const originalPath = process.env[key] as string;
         const internalApiKey = `${service}_API_BASE_URL`;
+        const proxiedApiKey = getProxiedPublicApiBaseUrlEnvKey(service);
 
         console.log(
           `Setting up proxy for ${key} => ${proxiedPath} => ${originalPath}`
@@ -41,7 +44,7 @@ export const setupEnv = ({
             [key]: proxiedPath,
             [internalApiKey]: originalPath,
           },
-          proxiedEnv: { ...acc.proxiedEnv, [key]: originalPath },
+          proxiedEnv: { ...acc.proxiedEnv, [proxiedApiKey]: originalPath },
         };
       }
 
