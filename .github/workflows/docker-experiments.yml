@@ -32,7 +32,7 @@ jobs:
           path: ${{ env.ARCHIVES }}
 
   e2e_tests:
-    name: TODO
+    name: Run E2E tests
     runs-on: ubuntu-latest
     needs: [docker_build]
 
@@ -42,5 +42,6 @@ jobs:
           name: image-archives
           path: ${{ env.ARCHIVES }}
       - name: Load docker images
+        working-directory: ${{ env.ARCHIVES }}
         run: |
-          ls ${{ env.ARCHIVES }} | xargs --no-run-if-empty -L 1 docker load
+          for file in *; do docker load < $file; done
