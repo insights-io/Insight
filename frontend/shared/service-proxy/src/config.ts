@@ -15,9 +15,9 @@ type Environment = keyof typeof ENVIRONMENTS;
 
 const PROXY_CONFIGURATION: Record<Environment, Record<Api, string>> = {
   staging: {
-    auth: 'https://auth-api.snuderls.dev',
-    session: 'https://session-api.snuderls.dev',
-    billing: 'https://billing-api.snuderls.dev',
+    auth: 'https://auth-api.dev.snuderls.eu',
+    session: 'https://session-api.dev.snuderls.eu',
+    billing: 'https://billing-api.dev.snuderls.eu',
   },
 };
 

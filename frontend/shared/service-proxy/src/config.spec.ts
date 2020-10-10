@@ -5,9 +5,9 @@ describe('config', () => {
     it('Should correctly override variables', () => {
       process.env.PROXY = 'staging';
       expect(getEnvOverrides()).toEqual({
-        AUTH_API_BASE_URL: 'https://auth-api.snuderls.dev',
-        BILLING_API_BASE_URL: 'https://billing-api.snuderls.dev',
-        SESSION_API_BASE_URL: 'https://session-api.snuderls.dev',
+        AUTH_API_BASE_URL: 'https://auth-api.dev.snuderls.eu',
+        BILLING_API_BASE_URL: 'https://billing-api.dev.snuderls.eu',
+        SESSION_API_BASE_URL: 'https://session-api.dev.snuderls.eu',
         NEXT_PUBLIC_AUTH_API_BASE_URL: '/api/auth',
         NEXT_PUBLIC_BILLING_API_BASE_URL: '/api/billing',
         NEXT_PUBLIC_SESSION_API_BASE_URL: '/api/session',
@@ -18,12 +18,12 @@ describe('config', () => {
   describe('getApiProxy', () => {
     it('Should correctly proxy api', () => {
       process.env.PROXY = 'staging';
-      expect(getApiProxy('auth')).toEqual('https://auth-api.snuderls.dev');
+      expect(getApiProxy('auth')).toEqual('https://auth-api.dev.snuderls.eu');
       expect(getApiProxy('billing')).toEqual(
-        'https://billing-api.snuderls.dev'
+        'https://billing-api.dev.snuderls.eu'
       );
       expect(getApiProxy('session')).toEqual(
-        'https://session-api.snuderls.dev'
+        'https://session-api.dev.snuderls.eu'
       );
     });
   });
