@@ -7,11 +7,7 @@ import querystring from 'querystring';
 
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const NEXT_PUBLIC_SERVICE_PATTERN = /^NEXT_PUBLIC_(.*)_API_BASE_URL$/;
-
-const getServiceKey = (service: string) => {
-  return `NEXT_PUBLIC_${service.toUpperCase()}_API_BASE_URL`;
-};
+import { getEnvOverrides, getApiProxy } from './config';
 
 type ServerRequest = IncomingMessage & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -117,23 +113,15 @@ export const nextProxy = (
   originalResponse: NextApiResponse
 ) => {
   const { slug, ...queryParams } = originalRequest.query;
-  const [service, ...path] = slug as string[];
-
-  const serviceBaseURL = process.env[getServiceKey(service)];
-  if (!serviceBaseURL) {
-    throw new Error(
-      `Could not find proxy configuration for ${service} in ${getServiceKey(
-        service
-      )}`
-    );
-  }
+  const [api, ...path] = slug as string[];
+  const proxiedApiBaseUrl = getApiProxy(api);
 
   let proxiedPath = `/${path.join('/')}`;
   if (Object.keys(queryParams).length > 0) {
     proxiedPath = `${proxiedPath}?${querystring.stringify(queryParams)}`;
   }
-  const proxiedURL = `${serviceBaseURL}${proxiedPath}`;
-  console.log(`<== Proxying /api/${service}${proxiedPath} to ${proxiedURL}`);
+  const proxiedURL = `${proxiedApiBaseUrl}${proxiedPath}`;
+  console.log(`<== Proxying /api/${api}${proxiedPath} to ${proxiedURL}`);
   return proxy(originalRequest, originalResponse, proxiedURL);
 };
 
@@ -151,23 +139,7 @@ const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
       return config;
     }
 
-    const env = Object.keys(config.env).reduce((acc, key) => {
-      const match = key.match(NEXT_PUBLIC_SERVICE_PATTERN);
-      if (match) {
-        const [_, serviceMatch] = match;
-        const proxiedPath = `/api/${serviceMatch.toLowerCase()}`;
-        const proxiedServiceBaseURL = config.env[key];
-        console.log(
-          `Setting up proxy for ${key} => ${proxiedPath} => ${proxiedServiceBaseURL}`
-        );
-
-        return { ...acc, [key]: proxiedPath };
-      }
-
-      return { ...acc, [key]: config.env[key] };
-    }, {});
-
-    return { ...config, env };
+    return { ...config, env: getEnvOverrides() };
   };
 };
 
