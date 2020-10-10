@@ -7,7 +7,7 @@ env:
   ARCHIVES: /home/runner/archives
 
 jobs:
-  docker-build:
+  docker_build:
     name: Docker build
     runs-on: ubuntu-latest
     strategy:
@@ -30,3 +30,17 @@ jobs:
         with:
           name: image-archives
           path: ${{ env.ARCHIVES }}
+
+  e2e_tests:
+    name: TODO
+    runs-on: ubuntu-latest
+    needs: [docker_build]
+
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: image-archives
+          path: ${{ env.ARCHIVES }}
+      - name: Load docker images
+        run: |
+          ls ${{ env.ARCHIVES }} | xargs --no-run-if-empty -L 1 docker load
