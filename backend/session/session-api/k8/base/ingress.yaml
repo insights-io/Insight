@@ -17,4 +17,4 @@ spec:
         paths:
           - backend:
               serviceName: session-api
-              servicePort: 8080
+              servicePort: 80
