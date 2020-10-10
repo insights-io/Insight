@@ -45,4 +45,6 @@ COPY --from=build /src/frontend/shared/sdk/dist /usr/try/node_modules/@insight/s
 COPY --from=build /src/frontend/shared/elements/package.json /usr/try/node_modules/@insight/elements/package.json
 COPY --from=build /src/frontend/shared/elements/dist /usr/try/node_modules/@insight/elements/dist
 
+EXPOSE 3000
+
 CMD ["npm", "start"]
