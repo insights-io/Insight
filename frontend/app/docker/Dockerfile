@@ -2,24 +2,6 @@ FROM node:14-alpine as build
 
 WORKDIR /src
 
-ARG auth_api_client_base_url=http://localhost:8080
-ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_client_base_url
-
-ARG session_api_client_base_url=http://localhost:8082
-ENV NEXT_PUBLIC_SESSION_API_BASE_URL=$session_api_client_base_url
-
-ARG billing_api_client_base_url=http://localhost:8083
-ENV NEXT_PUBLIC_BILLING_API_BASE_URL=$billing_api_client_base_url
-
-ARG try_app_base_url=http://localhost:3002
-ENV NEXT_PUBLIC_TRY_BASE_URL=$try_app_base_url
-
-ARG bootstrap_script=https://static.dev.snuderls.eu/b/local.insight.js
-ENV BOOTSTRAP_SCRIPT=$bootstrap_script
-
-ARG jaeger_agent_host=jaeger
-ENV JAEGER_AGENT_HOST=$jaeger_agent_host
-
 COPY package.json yarn.lock tsconfig.json /src/
 COPY frontend/app/package.json /src/frontend/app/package.json
 COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json

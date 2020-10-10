@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import useSWR from 'swr';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import { mapTeamInvite } from '@insight/sdk';
 import type { TeamInviteCreateDTO, TeamInviteDTO } from '@insight/types';
 

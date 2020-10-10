@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'baseui/modal';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import { Block } from 'baseui/block';
 import { Button } from 'baseui/button';
 import { CodeInput } from '@insight/elements';

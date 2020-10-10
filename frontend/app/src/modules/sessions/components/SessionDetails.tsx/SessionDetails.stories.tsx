@@ -1,6 +1,6 @@
 import React from 'react';
 import { configureStory } from '@insight/storybook';
-import SessionApi from 'api/session';
+import { SessionApi } from 'api/session';
 import { INSIGHT_SESSION, CONSOLE_EVENTS, ERROR_EVENTS } from 'test/data';
 import type { Meta } from '@storybook/react';
 

@@ -1,4 +1,4 @@
 export * from './base';
-export { default as AuthApi } from './auth';
-export { default as SessionApi } from './session';
-export { default as BillingApi } from './billing';
+export { AuthApi } from './auth';
+export { SessionApi } from './session';
+export { BillingApi } from './billing';
