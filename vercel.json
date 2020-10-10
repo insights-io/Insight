@@ -9,7 +9,7 @@
     { "src": "frontend/try/package.json", "use": "@now/next" }
   ],
   "rewrites": [
-    { "source": "/try/:match*", "destination": "/frontend/try/:match*" },
+    { "source": "/try/(.*)", "destination": "/frontend/try/$1" },
     { "source": "/(.*)", "destination": "/frontend/app/$1" }
   ]
 }

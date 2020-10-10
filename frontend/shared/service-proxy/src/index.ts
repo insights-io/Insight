@@ -7,8 +7,7 @@ import querystring from 'querystring';
 
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { setupEnv } from './setup';
-import { getProxiedPublicApiBaseUrlEnvKey } from './utils';
+import { getEnvOverrides, getApiProxy } from './config';
 
 type ServerRequest = IncomingMessage & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -114,22 +113,15 @@ export const nextProxy = (
   originalResponse: NextApiResponse
 ) => {
   const { slug, ...queryParams } = originalRequest.query;
-  const [service, ...path] = slug as string[];
-  const proxiedApiEnvKey = getProxiedPublicApiBaseUrlEnvKey(service);
-  const serviceBaseURL = process.env[proxiedApiEnvKey];
-
-  if (!serviceBaseURL) {
-    throw new Error(
-      `Could not find proxy configuration for ${service} in ${proxiedApiEnvKey}`
-    );
-  }
+  const [api, ...path] = slug as string[];
+  const proxiedApiBaseUrl = getApiProxy(api);
 
   let proxiedPath = `/${path.join('/')}`;
   if (Object.keys(queryParams).length > 0) {
     proxiedPath = `${proxiedPath}?${querystring.stringify(queryParams)}`;
   }
-  const proxiedURL = `${serviceBaseURL}${proxiedPath}`;
-  console.log(`<== Proxying /api/${service}${proxiedPath} to ${proxiedURL}`);
+  const proxiedURL = `${proxiedApiBaseUrl}${proxiedPath}`;
+  console.log(`<== Proxying /api/${api}${proxiedPath} to ${proxiedURL}`);
   return proxy(originalRequest, originalResponse, proxiedURL);
 };
 
@@ -147,7 +139,7 @@ const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
       return config;
     }
 
-    return { ...config, env: setupEnv() };
+    return { ...config, env: getEnvOverrides() };
   };
 };
 
