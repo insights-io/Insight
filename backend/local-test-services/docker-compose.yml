@@ -20,6 +20,8 @@ services:
       - auth-api
       - session-api
       - billing-api
+    volumes:
+      - ../../frontend/app/.env.docker:/usr/app/.env.production
 
   auth-api:
     build:

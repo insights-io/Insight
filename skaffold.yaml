@@ -69,19 +69,3 @@ profiles:
     build:
       local:
         push: true
-    patches:
-      - op: add
-        path: /build/artifacts/0/docker/buildArgs
-        value:
-          jaeger_agent_host: jaeger-agent.monitoring
-          billing_api_client_base_url: https://billing-api.dev.snuderls.eu
-          session_api_client_base_url: https://session-api.dev.snuderls.eu
-          auth_api_client_base_url: https://auth-api.dev.snuderls.eu
-          try_app_base_url: https://try.dev.snuderls.eu
-          bootstrap_script: https://static.dev.snuderls.eu/b/development.insight.js
-      - op: add
-        path: /build/artifacts/1/docker/buildArgs
-        value:
-          auth_api_client_base_url: https://auth-api.dev.snuderls.eu
-          bootstrap_script: https://static.dev.snuderls.eu/b/development.insight.js
-          app_base_url: https://app.dev.snuderls.eu
