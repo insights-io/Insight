@@ -9,6 +9,8 @@ services:
       - '3002:3000'
     depends_on:
       - auth-api
+    volumes:
+      - ../../frontend/app/.env.development:/usr/app/.env.production
 
   app:
     build:

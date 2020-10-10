@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next';
 import Router from 'next/router';
-import config from 'shared/config';
+import { config } from 'shared/config';
 
 // eslint-disable-next-line lodash/prefer-constant
 const SignUpCompletedCallback = () => null;
