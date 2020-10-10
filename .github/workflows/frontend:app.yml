@@ -94,6 +94,7 @@ jobs:
           yarn workspace @insight/try next build
       - name: frontend/app | start
         run: |
+          mv frontend/app/.env.development frontend/app/.env.production
           yarn workspace @insight/app start 2>&1 | tee $ARTIFACTS_PATH/app-serve.log &
           yarn workspace @insight/try start -p 3002 2>&1 | tee $ARTIFACTS_PATH/try-serve.log &
           yarn workspace @insight/browser-tracking serve 2>&1 | tee $ARTIFACTS_PATH/browser-tracking-serve.log &
