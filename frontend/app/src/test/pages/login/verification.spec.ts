@@ -20,7 +20,7 @@ describe('pages/login/verification', () => {
     });
 
     sandbox.assert.calledWithMatch(getChallengeStub, '123', {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8080',
     });
 
     sandbox.assert.notCalled(writeHead);
@@ -62,7 +62,7 @@ describe('pages/login/verification', () => {
     });
 
     sandbox.assert.calledWithMatch(getChallengeStub, '123', {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8080',
     });
     sandbox.assert.calledWithExactly(writeHead, 302, {
       Location: '/login?redirect=%2F',

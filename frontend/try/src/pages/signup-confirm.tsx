@@ -1,6 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
-import { config } from 'shared/config';
+import { appBaseURL, helpBaseURL } from 'shared/config';
 import { Topbar } from 'components/Topbar';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
@@ -13,7 +13,7 @@ const SignupConfirm = () => {
       <Head>
         <title>Insight | Confirm your email address</title>
       </Head>
-      <Topbar appBaseURL={config.appBaseURL} helpBaseURL={config.helpBaseURL} />
+      <Topbar appBaseURL={appBaseURL} helpBaseURL={helpBaseURL} />
       <Block
         height="100%"
         padding={theme.sizing.scale600}

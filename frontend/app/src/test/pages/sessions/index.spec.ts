@@ -39,18 +39,18 @@ describe('pages/sessions', () => {
     });
 
     sandbox.assert.calledWithMatch(getSsoSessionStub, '123', {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8080',
       headers: {},
     });
 
     sandbox.assert.calledWithMatch(getSessionsStub, {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
       search: { limit: 20, sort_by: ['-created_at'] },
     });
 
     sandbox.assert.calledWithMatch(getSessionCountStub, {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
 

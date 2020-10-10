@@ -1,12 +1,12 @@
-import { GetServerSideProps } from 'next';
 import Router from 'next/router';
-import { config } from 'shared/config';
+import { appBaseURL } from 'shared/config';
+import type { GetServerSideProps } from 'next';
 
 // eslint-disable-next-line lodash/prefer-constant
 const SignUpCompletedCallback = () => null;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const Location = config.appBaseURL;
+  const Location = appBaseURL;
   if (ctx.res) {
     ctx.res.writeHead(302, { Location });
     ctx.res.end();
