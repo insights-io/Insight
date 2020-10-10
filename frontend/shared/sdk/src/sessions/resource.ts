@@ -81,7 +81,6 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
       ...rest
     }: SessionsSearchRequestOptions = {}) => {
       const searchQuery = querystring(search);
-
       return ky
         .get(`${baseURL}/v1/sessions${searchQuery}`, withCredentials(rest))
         .json<DataResponse<SessionDTO[]>>()

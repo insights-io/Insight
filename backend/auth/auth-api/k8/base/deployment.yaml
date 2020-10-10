@@ -102,7 +102,7 @@ spec:
             - name: POSTGRES_HOST
               value: postgres-postgresql
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               name: http
               protocol: TCP
           resources:
@@ -112,13 +112,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /health/live
-              port: 8080
+              port: 80
             initialDelaySeconds: 60
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: 8080
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 1

@@ -6,7 +6,7 @@ services:
       context: ../..
       dockerfile: frontend/try/docker/Dockerfile
       args:
-        auth_api_server_base_url: http://auth-api:8080
+        auth_api_server_base_url: http://auth-api
     ports:
       - '${TRY_PORT:-3002}:3000'
     depends_on:
@@ -17,9 +17,9 @@ services:
       context: ../..
       dockerfile: frontend/app/docker/Dockerfile
       args:
-        auth_api_server_base_url: http://auth-api:8080
-        session_api_server_base_url: http://session-api:8080
-        billing_api_server_base_url: http://billing-api:8080
+        auth_api_server_base_url: http://auth-api
+        session_api_server_base_url: http://session-api
+        billing_api_server_base_url: http://billing-api
     ports:
       - '${APP_PORT:-3000}:3000'
     depends_on:
@@ -32,7 +32,7 @@ services:
       context: ..
       dockerfile: auth/auth-api/docker/Dockerfile.jvm
     ports:
-      - '${AUTH_SERVICE_PORT:-8080}:8080'
+      - '8080:80'
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - POSTGRES_HOST=db
@@ -61,13 +61,12 @@ services:
       context: ..
       dockerfile: billing/billing-api/docker/Dockerfile.jvm
     ports:
-      - '${BILLING_API_PORT:-8083}:8080'
+      - '8083:80'
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-dev_secret}
-      - AUTH_API_BASE_URL=http://auth-api:8080
     depends_on:
       - auth-api
       - billing-api-postgres-migrations
@@ -89,7 +88,7 @@ services:
       context: ..
       dockerfile: beacon/beacon-api/docker/Dockerfile.jvm
     ports:
-      - '${BEACON_SERVICE_PORT:-8081}:8080'
+      - '8081:80'
     depends_on:
       - session-api
       - kafka
@@ -98,14 +97,14 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
-      - SESSION_SERVICE_BASE_URL=http://session-api:8080
+      - SESSION_SERVICE_BASE_URL=http://session-api
 
   session-api:
     build:
       context: ..
       dockerfile: session/session-api/docker/Dockerfile.jvm
     ports:
-      - '${SESSION_SERVICE_PORT:-8082}:8080'
+      - '8082:80'
     depends_on:
       - kafka
       - auth-api
@@ -116,7 +115,6 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
-      - AUTH_API_BASE_URL=http://auth-api:8080
       - ELASTICSEARCH_HOSTS=elasticsearch:9200
 
   session-api-elasticsearch-migrations:

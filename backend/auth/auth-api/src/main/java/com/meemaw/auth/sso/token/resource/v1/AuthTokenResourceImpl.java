@@ -20,7 +20,7 @@ public class AuthTokenResourceImpl implements AuthTokenResource {
   @Inject InsightPrincipal insightPrincipal;
 
   @Override
-  public CompletionStage<Response> me(String bearerToken) {
+  public CompletionStage<Response> me() {
     return CompletableFuture.completedStage(DataResponse.ok(insightPrincipal.user()));
   }
 

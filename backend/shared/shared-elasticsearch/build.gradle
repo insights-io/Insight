@@ -3,7 +3,9 @@ plugins {
 }
 
 dependencies {
-    api "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}"
+    api("org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}") {
+        force = true
+    }
     api project(":shared:rest")
 
     testImplementation project(":shared:testing-utils")

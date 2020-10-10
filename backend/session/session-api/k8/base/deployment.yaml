@@ -33,8 +33,6 @@ spec:
               value: 'true'
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: PLAINTEXT://kafka:9092
-            - name: AUTH_API_BASE_URL
-              value: http://auth-api
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -55,7 +53,7 @@ spec:
                   name: ipstack-credentials
                   key: access-key
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               name: http
               protocol: TCP
           resources:
@@ -65,13 +63,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /health/live
-              port: 8080
+              port: 80
             initialDelaySeconds: 60
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: 8080
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 1

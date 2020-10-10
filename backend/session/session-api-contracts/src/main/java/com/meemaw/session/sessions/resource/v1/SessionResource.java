@@ -1,15 +1,14 @@
-package com.meemaw.session.insights.resource.v1;
+package com.meemaw.session.sessions.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
-import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
-import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -17,35 +16,32 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path(InsightsResource.PATH)
+@Path(SessionResource.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface InsightsResource {
+public interface SessionResource {
 
-  String PATH = "/v1/sessions/insights";
-  String TAG = "Session Insights";
-  String ON = "on";
+  String PATH = "/v1/sessions";
+  String TAG = "Session";
 
   @GET
-  @Path("count")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
         @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
-  @Operation(summary = "Count")
-  CompletionStage<Response> count();
+  @Operation(summary = "List sessions")
+  CompletionStage<Response> list();
 
   @GET
-  @Path("distinct")
+  @Path("{sessionId}")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
         @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
-  @Operation(summary = "Distinct")
-  CompletionStage<Response> distinct(
-      @NotEmpty(message = "Required") @QueryParam(ON) List<String> on);
+  @Operation(summary = "Retrieve session")
+  CompletionStage<Response> retrieve(@PathParam("sessionId") UUID sessionId);
 }

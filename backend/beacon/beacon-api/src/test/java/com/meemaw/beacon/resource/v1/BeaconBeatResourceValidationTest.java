@@ -25,7 +25,7 @@ public class BeaconBeatResourceValidationTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
-  public void postBeacon_shouldThrowError_whenNoQueryParams(String contentType) {
+  public void post_beacon__should_throw__when_no_query_params(String contentType) {
     given()
         .when()
         .contentType(contentType)
@@ -39,7 +39,7 @@ public class BeaconBeatResourceValidationTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
-  public void postBeacon_shouldThrowError_whenEmptyPayload(String contentType) {
+  public void post_beacon__should_throw__when_no_body(String contentType) {
     given()
         .when()
         .contentType(contentType)
@@ -57,7 +57,7 @@ public class BeaconBeatResourceValidationTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
-  public void postBeacon_shouldThrowError_whenEmptyJson(String contentType) {
+  public void post_beacon__should_throw__when_empty_body(String contentType) {
     given()
         .when()
         .contentType(contentType)
@@ -76,7 +76,7 @@ public class BeaconBeatResourceValidationTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
-  public void postBeacon_shouldThrowError_whenNoEvents(String contentType)
+  public void post_beacon__should_throw__when_no_events(String contentType)
       throws IOException, URISyntaxException {
     String body =
         Files.readString(Path.of(getClass().getResource("/beacon/noEvents.json").toURI()));
@@ -99,7 +99,7 @@ public class BeaconBeatResourceValidationTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
-  public void postBeaconAsJson_shouldThrowError_whenUnlinkedBeacon(String contentType)
+  public void post_beacon__should_throw__when_unlinked_beacon(String contentType)
       throws IOException, URISyntaxException {
     String body = Files.readString(Path.of(getClass().getResource("/beacon/initial.json").toURI()));
 
@@ -121,7 +121,7 @@ public class BeaconBeatResourceValidationTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"application/json", "text/plain"})
-  public void postBeaconAsJson_shouldThrowError_invalid_organizationId_length(String contentType)
+  public void post_beacon__should_throw__when_invalid_organization_id_length(String contentType)
       throws IOException, URISyntaxException {
     String body = Files.readString(Path.of(getClass().getResource("/beacon/initial.json").toURI()));
 

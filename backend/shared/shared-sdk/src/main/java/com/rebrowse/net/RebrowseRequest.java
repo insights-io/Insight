@@ -1,7 +1,6 @@
 package com.rebrowse.net;
 
 import com.rebrowse.util.StringUtils;
-import java.net.URI;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.util.Collections;
@@ -14,19 +13,19 @@ import lombok.Value;
 @Value
 public class RebrowseRequest {
 
-  URI uri;
   RequestMethod method;
+  String path;
   Map<String, List<String>> headers;
   RequestOptions requestOptions;
   BodyPublisher bodyPublisher;
 
   private RebrowseRequest(
       RequestMethod method,
-      String url,
+      String path,
       RequestOptions requestOptions,
       BodyPublisher bodyPublisher) {
     this.method = method;
-    this.uri = URI.create(url);
+    this.path = path;
     this.bodyPublisher = bodyPublisher;
     this.requestOptions =
         Optional.ofNullable(requestOptions).orElseGet(RequestOptions::createDefault);
@@ -58,16 +57,16 @@ public class RebrowseRequest {
     return token != null && !token.isEmpty() && !StringUtils.containsWhitespace(token);
   }
 
-  public static RebrowseRequest get(String url, RequestOptions requestOptions) {
-    return new RebrowseRequest(RequestMethod.GET, url, requestOptions, BodyPublishers.noBody());
+  public static RebrowseRequest get(String path, RequestOptions requestOptions) {
+    return new RebrowseRequest(RequestMethod.GET, path, requestOptions, BodyPublishers.noBody());
   }
 
-  public static RebrowseRequest post(String url, String body, RequestOptions requestOptions) {
+  public static RebrowseRequest post(String path, String body, RequestOptions requestOptions) {
     return new RebrowseRequest(
-        RequestMethod.POST, url, requestOptions, BodyPublishers.ofString(body));
+        RequestMethod.POST, path, requestOptions, BodyPublishers.ofString(body));
   }
 
-  public static RebrowseRequest post(String url, RequestOptions requestOptions) {
-    return new RebrowseRequest(RequestMethod.POST, url, requestOptions, BodyPublishers.noBody());
+  public static RebrowseRequest post(String path, RequestOptions requestOptions) {
+    return new RebrowseRequest(RequestMethod.POST, path, requestOptions, BodyPublishers.noBody());
   }
 }

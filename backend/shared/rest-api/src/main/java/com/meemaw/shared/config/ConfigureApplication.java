@@ -20,9 +20,6 @@ public class ConfigureApplication {
   @ConfigProperty(name = "authorization.s2s.api.key")
   String s2sApiKey;
 
-  @ConfigProperty(name = "auth-api/mp-rest/url")
-  String authApiBaseURL;
-
   void onStart(@Observes StartupEvent ev) {
     configureHttpClient();
   }
@@ -36,7 +33,6 @@ public class ConfigureApplication {
     HttpClient httpClient =
         new RebrowseHttpClient(new NetHttpClient(builder.build()), ApiResource.OBJECT_MAPPER);
     Rebrowse.apiKey = s2sApiKey;
-    Rebrowse.apiBase(authApiBaseURL);
     ApiResource.setHttpClient(httpClient);
   }
 }

@@ -11,4 +11,6 @@ import lombok.experimental.Accessors;
 public class InsightPrincipal {
 
   private AuthUser user;
+  private String apiKey;
+  private String sessionId;
 }

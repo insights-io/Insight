@@ -22,4 +22,6 @@ COPY --from=build /backend/auth/auth-api/build/auth-api-1.0-runner.jar /usr/app/
 
 WORKDIR /usr/app/
 
+EXPOSE 80
+
 CMD ["java", "-jar", "service-runner.jar"]

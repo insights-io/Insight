@@ -7,7 +7,7 @@ import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageIdentity;
-import com.meemaw.session.sessions.v1.SessionResource;
+import com.meemaw.session.sessions.resource.v1.SessionPageResource;
 import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.data.UserAgentData;
@@ -43,7 +43,7 @@ public class BeaconBeatResourceProcessingTest {
   private static final String ORGANIZATION_ID = SharedConstants.INSIGHT_ORGANIZATION_ID;
   private static final String BEACON_RESOURCE_BEAT_PATH = BeaconResource.PATH + "/beat";
 
-  @Inject @RestClient SessionResource sessionResource;
+  @Inject @RestClient SessionPageResource sessionPageResource;
 
   private static List<UserEvent<?>> events;
   private static List<UserEvent<?>> unloadEvents;
@@ -81,8 +81,8 @@ public class BeaconBeatResourceProcessingTest {
 
     return Uni.createFrom()
         .completionStage(
-            sessionResource
-                .createPage(payload, UserAgentData.DESKTOP_MAC_CHROME)
+            sessionPageResource
+                .create(payload, UserAgentData.DESKTOP_MAC_CHROME)
                 .thenApply(
                     response -> {
                       DataResponse<PageIdentity> dataResponse =

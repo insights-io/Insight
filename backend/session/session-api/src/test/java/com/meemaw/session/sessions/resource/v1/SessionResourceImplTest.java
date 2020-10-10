@@ -18,7 +18,6 @@ import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
-import com.meemaw.session.sessions.v1.SessionResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.rest.data.UserAgentData;

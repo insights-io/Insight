@@ -25,4 +25,6 @@ COPY --from=build /backend/session/session-api/build/session-api-1.0-runner.jar 
 
 WORKDIR /usr/app/
 
+EXPOSE 80
+
 CMD ["java", "-jar", "service-runner.jar"]

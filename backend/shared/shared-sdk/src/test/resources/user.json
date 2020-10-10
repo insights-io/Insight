@@ -6,5 +6,9 @@
   "organizationId": "000000",
   "createdAt": "2020-09-29T19:37:32.371114Z",
   "updatedAt": "2020-10-04T16:04:03.664816Z",
+  "phoneNumber": {
+    "digits": "51222333",
+    "countryCode": "+1"
+  },
   "phoneNumberVerified": false
 }

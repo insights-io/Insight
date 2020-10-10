@@ -20,11 +20,11 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
 
   protected final Api api;
 
-  protected static final int PORT = 8080;
+  protected static final int EXPOSED_PORT = 80;
 
   public AbstractApiTestContainer(Api api) {
     super(imageFromDockerfile(Objects.requireNonNull(api)));
-    withExposedPorts(PORT)
+    withExposedPorts(EXPOSED_PORT)
         .withNetworkAliases(api.fullName())
         .waitingFor(Wait.forHttp("/health").forStatusCode(200))
         .withNetwork(Network.SHARED)
@@ -58,7 +58,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   }
 
   public String getDockerBaseURI() {
-    return getBaseURI(api.fullName(), 8080);
+    return getBaseURI(api.fullName(), EXPOSED_PORT);
   }
 
   public String getBaseURI() {
@@ -70,7 +70,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   }
 
   public int getPort() {
-    return getMappedPort(PORT);
+    return getMappedPort(EXPOSED_PORT);
   }
 
   // TODO: use testcontainers for this
