@@ -5,6 +5,7 @@ env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
   ARCHIVES: /home/runner/archives
+  ARTIFACTS_PATH: frontend/app/artifacts/
 
 jobs:
   docker_build:
@@ -12,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [auth-api, session-api]
+        target: [auth-api, session-api, beacon-api, billing-api, search-indexer]
 
     steps:
       - uses: actions/checkout@v2
@@ -45,3 +46,11 @@ jobs:
         working-directory: ${{ env.ARCHIVES }}
         run: |
           for file in *; do docker load < $file; done
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Start & wait for containers
+        run: |
+          mkdir -p mkdir -p $ARTIFACTS_PATH
+          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
+          npx wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health http-get://localhost:8083/health --timeout 600000
