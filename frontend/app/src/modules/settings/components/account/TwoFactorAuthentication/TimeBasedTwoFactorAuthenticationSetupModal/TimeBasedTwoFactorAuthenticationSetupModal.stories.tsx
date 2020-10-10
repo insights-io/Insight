@@ -1,7 +1,7 @@
 import React from 'react';
 import { action } from '@storybook/addon-actions';
 import { configureStory, mockApiError } from '@insight/storybook';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import { TFA_SETUP_QR_IMAGE } from 'test/data';
 import type { Meta } from '@storybook/react';
 

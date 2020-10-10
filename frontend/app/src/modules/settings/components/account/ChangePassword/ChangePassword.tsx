@@ -7,12 +7,12 @@ import { Input } from 'baseui/input';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { createInputOverrides } from 'shared/styles/input';
 import { useStyletron } from 'baseui';
-import {
+import type {
   ChangePasswordDTO,
   APIError,
   APIErrorDataResponse,
 } from '@insight/types';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { toaster } from 'baseui/toast';
 

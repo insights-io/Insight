@@ -23,3 +23,12 @@ yarn workspace @insight/browser-bootstrap serve
 yarn workspace @insight/browser-tracking serve
 BOOTSTRAP_SCRIPT=http://localhost:5001/localhost.insight.js yarn dev
 ```
+
+## Environment
+
+Environment variables are managed using `.env` files.
+Please refer to [documentation](https://nextjs.org/docs/basic-features/environment-variables) for more information.
+
+### Production
+
+In production `.env.production` is mounted as a volume with environment properly configured.

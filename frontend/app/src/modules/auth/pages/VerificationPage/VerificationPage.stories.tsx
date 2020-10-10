@@ -4,7 +4,7 @@ import {
   configureStory,
   mockApiError,
 } from '@insight/storybook';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import type { ResponsePromise } from 'ky';
 import { TFA_METHODS } from 'test/data';
 import type { Meta } from '@storybook/react';

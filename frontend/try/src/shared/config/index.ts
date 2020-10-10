@@ -1,6 +1,2 @@
-const config = {
-  appBaseURL: process.env.APP_BASE_URL || 'http://localhost:3000',
-  helpBaseURL: process.env.HELP_BASE_URL || 'http://localhost:3003',
-};
-
-export default config;
+export const appBaseURL = process.env.NEXT_PUBLIC_APP_BASE_URL as string;
+export const helpBaseURL = process.env.NEXT_PUBLIC_HELP_BASE_URL as string;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'test/utils';
-import config from 'shared/config';
+import { appBaseURL, helpBaseURL } from 'shared/config';
 
 import { Base } from './GetStarted.stories';
 
@@ -12,13 +12,9 @@ describe('<GetStarted />', () => {
     expect(getByText("You're minutes away from insights.")).toBeInTheDocument();
 
     const helpButton = getByText('Help');
-    expect(helpButton.parentElement?.getAttribute('href')).toEqual(
-      config.helpBaseURL
-    );
+    expect(helpButton.parentElement?.getAttribute('href')).toEqual(helpBaseURL);
 
     const logInButton = getByText('Log in');
-    expect(logInButton.parentElement?.getAttribute('href')).toEqual(
-      config.appBaseURL
-    );
+    expect(logInButton.parentElement?.getAttribute('href')).toEqual(appBaseURL);
   });
 });

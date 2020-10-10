@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Checkbox } from 'baseui/checkbox';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import { toaster } from 'baseui/toast';
 import { TfaSetupDTO } from '@insight/types';
 

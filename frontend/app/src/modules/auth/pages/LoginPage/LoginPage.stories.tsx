@@ -1,6 +1,6 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@insight/storybook';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import type { DataResponse } from '@insight/types';
 import type { Meta } from '@storybook/react';
 

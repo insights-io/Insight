@@ -1,4 +1,4 @@
-import SessionApi from 'api/session';
+import { SessionApi } from 'api/session';
 import {
   useMemo,
   useCallback,

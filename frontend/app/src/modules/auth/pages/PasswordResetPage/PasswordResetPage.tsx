@@ -9,7 +9,7 @@ import { Button } from 'baseui/button';
 import { createInputOverrides } from 'shared/styles/input';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@insight/types';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import AuthPageLayout from 'modules/auth/components/PageLayout';

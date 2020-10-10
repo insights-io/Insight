@@ -5,27 +5,25 @@ services:
     build:
       context: ../..
       dockerfile: frontend/try/docker/Dockerfile
-      args:
-        auth_api_server_base_url: http://auth-api
     ports:
-      - '${TRY_PORT:-3002}:3000'
+      - '3002:3000'
     depends_on:
       - auth-api
+    volumes:
+      - ../../frontend/app/.env.development:/usr/app/.env.production
 
   app:
     build:
       context: ../..
       dockerfile: frontend/app/docker/Dockerfile
-      args:
-        auth_api_server_base_url: http://auth-api
-        session_api_server_base_url: http://session-api
-        billing_api_server_base_url: http://billing-api
     ports:
-      - '${APP_PORT:-3000}:3000'
+      - '3000:3000'
     depends_on:
       - auth-api
       - session-api
       - billing-api
+    volumes:
+      - ../../frontend/app/.env.development.docker:/usr/app/.env.production
 
   auth-api:
     build:

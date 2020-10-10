@@ -63,7 +63,7 @@ export function authenticatedTestCases<T>(
       });
       sandbox.assert.calledWithExactly(end);
       sandbox.assert.calledWithMatch(getSessionStub, '123', {
-        baseURL: undefined,
+        baseURL: 'http://localhost:8080',
       });
       expect(serverSideProps).toEqual({ props: {} });
     }),
@@ -90,7 +90,7 @@ export function authenticatedTestCases<T>(
       });
       sandbox.assert.calledWithExactly(end);
       sandbox.assert.calledWithMatch(getSessionStub, '123', {
-        baseURL: undefined,
+        baseURL: 'http://localhost:8080',
       });
       expect(serverSideProps).toEqual({ props: {} });
     }),

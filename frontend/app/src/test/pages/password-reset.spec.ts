@@ -18,7 +18,7 @@ describe('pages/password-reset', () => {
     });
     expect(serverSideProps).toEqual({ props: { exists: true, token: '123' } });
     sandbox.assert.calledWithMatch(resetExistsStub, '123', {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8080',
       headers: {},
     });
   });
@@ -37,7 +37,7 @@ describe('pages/password-reset', () => {
     });
     expect(serverSideProps).toEqual({ props: { exists: false } });
     sandbox.assert.calledWithMatch(resetExistsStub, '123', {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8080',
       headers: {},
     });
   });

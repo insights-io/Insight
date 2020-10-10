@@ -7,7 +7,7 @@ import { FormControl } from 'baseui/form-control';
 import { Input } from 'baseui/input';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import { useForm } from 'react-hook-form';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import { createInputOverrides } from 'shared/styles/input';
 import Link from 'next/link';
 import Head from 'next/head';

@@ -5,7 +5,7 @@ import type { GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
 import { VerificationPage } from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import type { APIErrorDataResponse, TfaMethod } from '@insight/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 

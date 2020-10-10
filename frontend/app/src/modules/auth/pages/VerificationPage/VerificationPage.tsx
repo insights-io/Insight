@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
 import { Button } from 'baseui/button';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import { useRouter } from 'next/router';
 import FormError from 'shared/components/FormError';
 import useCodeInput from 'shared/hooks/useCodeInput';

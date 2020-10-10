@@ -48,3 +48,12 @@ spec:
             timeoutSeconds: 1
             successThreshold: 1
             failureThreshold: 10
+          volumeMounts:
+            - name: app-config
+              mountPath: /usr/app/.env.production
+              subPath: .env.production
+              readOnly: true
+      volumes:
+        - name: app-config
+          configMap:
+            name: app-config

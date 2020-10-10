@@ -40,14 +40,14 @@ describe('pages/index', () => {
     });
 
     sandbox.assert.calledWithMatch(getSessionStub, '123', {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8080',
     });
     sandbox.assert.calledWithMatch(countByLocationStub, {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
     sandbox.assert.calledWithMatch(countByDeviceStub, {
-      baseURL: undefined,
+      baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
     expect(serverSideProps).toEqual({

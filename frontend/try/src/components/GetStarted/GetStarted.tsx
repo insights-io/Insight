@@ -4,8 +4,8 @@ import { useStyletron } from 'baseui';
 import { H5, Paragraph3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
 import { SignUpForm } from 'components/SignUpForm';
-import config from 'shared/config';
-import AuthApi from 'api/auth';
+import { appBaseURL, helpBaseURL } from 'shared/config';
+import { AuthApi } from 'api/auth';
 import { Topbar } from 'components/Topbar';
 import { FlexColumn } from '@insight/elements';
 
@@ -17,7 +17,7 @@ export const GetStarted = () => {
       <Head>
         <title>Insight | Sign up</title>
       </Head>
-      <Topbar appBaseURL={config.appBaseURL} helpBaseURL={config.helpBaseURL} />
+      <Topbar appBaseURL={appBaseURL} helpBaseURL={helpBaseURL} />
       <Block height="100%" padding={theme.sizing.scale600}>
         <Block
           width="100%"

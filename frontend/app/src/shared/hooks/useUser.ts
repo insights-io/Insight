@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import AuthApi from 'api/auth';
+import { AuthApi } from 'api/auth';
 import { mapUser } from '@insight/sdk';
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
