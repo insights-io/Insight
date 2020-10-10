@@ -55,6 +55,7 @@ jobs:
         with:
           node-version: '14.x'
       - name: Start & wait for containers
+        run: |
           mkdir -p $ARTIFACTS_PATH
           docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
           npx wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health http-get://localhost:8083/health --timeout 600000
