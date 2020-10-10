@@ -7,11 +7,8 @@ import querystring from 'querystring';
 
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const NEXT_PUBLIC_SERVICE_PATTERN = /^NEXT_PUBLIC_(.*)_API_BASE_URL$/;
-
-const getServiceKey = (service: string) => {
-  return `NEXT_PUBLIC_${service.toUpperCase()}_API_BASE_URL`;
-};
+import { setupEnv } from './setup';
+import { getPublicApiBaseUrlEnvKey } from './utils';
 
 type ServerRequest = IncomingMessage & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,19 +109,20 @@ export const proxy = (
   });
 };
 
+let proxiedEnv: Record<string, string | undefined> = {};
+
 export const nextProxy = (
   originalRequest: NextApiRequest,
   originalResponse: NextApiResponse
 ) => {
   const { slug, ...queryParams } = originalRequest.query;
   const [service, ...path] = slug as string[];
+  const apiEnvKey = getPublicApiBaseUrlEnvKey(service);
+  const serviceBaseURL = proxiedEnv[apiEnvKey];
 
-  const serviceBaseURL = process.env[getServiceKey(service)];
   if (!serviceBaseURL) {
     throw new Error(
-      `Could not find proxy configuration for ${service} in ${getServiceKey(
-        service
-      )}`
+      `Could not find proxy configuration for ${service} in ${apiEnvKey}`
     );
   }
 
@@ -150,24 +148,9 @@ const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
     if (!enabled) {
       return config;
     }
-
-    const env = Object.keys(config.env).reduce((acc, key) => {
-      const match = key.match(NEXT_PUBLIC_SERVICE_PATTERN);
-      if (match) {
-        const [_, serviceMatch] = match;
-        const proxiedPath = `/api/${serviceMatch.toLowerCase()}`;
-        const proxiedServiceBaseURL = config.env[key];
-        console.log(
-          `Setting up proxy for ${key} => ${proxiedPath} => ${proxiedServiceBaseURL}`
-        );
-
-        return { ...acc, [key]: proxiedPath };
-      }
-
-      return { ...acc, [key]: config.env[key] };
-    }, {});
-
-    return { ...config, env };
+    const setup = setupEnv();
+    proxiedEnv = setup.proxiedEnv;
+    return { ...config, env: setup.overrideEnv };
   };
 };
 
