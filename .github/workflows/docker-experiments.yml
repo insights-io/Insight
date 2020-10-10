@@ -47,17 +47,16 @@ jobs:
         with:
           name: image-archives
           path: ${{ env.ARCHIVES }}
-      - name: Load docker images & run containers
+      - name: Load docker images
         working-directory: ${{ env.ARCHIVES }}
         run: |
           for file in *; do docker load < $file; done
-          mkdir -p $ARTIFACTS_PATH
-          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - name: Wait for containers & run tests
-        run: |
+      - name: Start & wait for containers
+          mkdir -p $ARTIFACTS_PATH
+          docker-compose -f backend/local-test-services/docker-compose.yml up auth-api session-api beacon-api billing-api search-indexer 2>&1 | tee $ARTIFACTS_PATH/docker.log &
           npx wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health http-get://localhost:8083/health --timeout 600000
       - uses: actions/upload-artifact@v2
         if: always()
