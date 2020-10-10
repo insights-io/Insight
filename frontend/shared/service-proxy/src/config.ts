@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const APIS = {
   auth: 'auth',
   session: 'session',
