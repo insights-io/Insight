@@ -146,11 +146,8 @@ const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
     if (!enabled) {
       return config;
     }
-    const { overrideEnv, proxiedEnv } = setupEnv();
-    Object.keys(proxiedEnv).forEach((proxiedKey) => {
-      process.env[proxiedKey] = proxiedEnv[proxiedKey];
-    });
-    return { ...config, env: overrideEnv };
+
+    return { ...config, env: setupEnv() };
   };
 };
 

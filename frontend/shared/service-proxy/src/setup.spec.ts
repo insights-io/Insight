@@ -6,10 +6,7 @@ describe('setupEnv', () => {
   it('Should not proxy anything when empty config', () => {
     const readConfig = sandbox.stub().returns({ parsed: {} });
 
-    expect(setupEnv({ readConfig })).toEqual({
-      overrideEnv: {},
-      proxiedEnv: {},
-    });
+    expect(setupEnv({ readConfig })).toEqual({});
 
     sandbox.assert.calledWithExactly(readConfig, { path: '.env.test' });
   });
@@ -24,13 +21,9 @@ describe('setupEnv', () => {
     });
 
     expect(setupEnv({ readConfig })).toEqual({
-      overrideEnv: {
-        AUTH_API_BASE_URL: 'https://auth-api.snuderls.dev',
-        NEXT_PUBLIC_AUTH_API_BASE_URL: '/api/auth',
-      },
-      proxiedEnv: {
-        NEXT_PUBLIC_AUTH_API_PROXIED_BASE_URL: 'https://auth-api.snuderls.dev',
-      },
+      AUTH_API_BASE_URL: 'https://auth-api.snuderls.dev',
+      NEXT_PUBLIC_AUTH_API_BASE_URL: '/api/auth',
+      NEXT_PUBLIC_AUTH_API_PROXIED_BASE_URL: 'https://auth-api.snuderls.dev',
     });
 
     sandbox.assert.calledWithExactly(readConfig, { path: '.env.test' });

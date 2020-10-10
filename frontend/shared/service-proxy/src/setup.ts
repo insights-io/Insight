@@ -24,35 +24,27 @@ export const setupEnv = ({
     throw new Error(`Failed to parse dotenv.config({ path: ${path} })`);
   }
 
-  return Object.keys(parsed).reduce(
-    (acc, key) => {
-      const match = key.match(PUBLIC_API_BASE_URL_PATTERN);
-      if (match) {
-        const [_, service] = match;
-        const proxiedPath = `/api/${service.toLowerCase()}`;
-        const originalPath = process.env[key] as string;
-        const internalApiKey = `${service}_API_BASE_URL`;
-        const proxiedApiKey = getProxiedPublicApiBaseUrlEnvKey(service);
+  return Object.keys(parsed).reduce((acc, key) => {
+    const match = key.match(PUBLIC_API_BASE_URL_PATTERN);
+    if (match) {
+      const [_, service] = match;
+      const proxiedPath = `/api/${service.toLowerCase()}`;
+      const originalPath = process.env[key] as string;
+      const internalApiKey = `${service}_API_BASE_URL`;
+      const proxiedApiKey = getProxiedPublicApiBaseUrlEnvKey(service);
 
-        console.log(
-          `Setting up proxy for ${key} => ${proxiedPath} => ${originalPath}`
-        );
+      console.log(
+        `Setting up proxy for ${key} => ${proxiedPath} => ${originalPath}`
+      );
 
-        return {
-          overrideEnv: {
-            ...acc.overrideEnv,
-            [key]: proxiedPath,
-            [internalApiKey]: originalPath,
-          },
-          proxiedEnv: { ...acc.proxiedEnv, [proxiedApiKey]: originalPath },
-        };
-      }
-
-      return acc;
-    },
-    {
-      overrideEnv: {} as Record<string, string>,
-      proxiedEnv: {} as Record<string, string>,
+      return {
+        ...acc,
+        [key]: proxiedPath,
+        [internalApiKey]: originalPath,
+        [proxiedApiKey]: originalPath,
+      };
     }
-  );
+
+    return acc;
+  }, {});
 };
