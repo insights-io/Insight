@@ -1,0 +1,23 @@
+---
+on: [push]
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [auth-api]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+      - run: docker-compose -f backend/local-test-services/docker-compose.yml build ${{ matrix.target }}
+      - run: docker inspect local-test-services_${{ matrix.target }}
