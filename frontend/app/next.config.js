@@ -10,11 +10,11 @@ const withServiceProxy = require('@insight/service-proxy').default({
 
 const {
   NEXT_PUBLIC_TRY_BASE_URL = 'http://localhost:3002',
-  AUTH_API_BASE_URL = 'http://localhost:8080',
+  AUTH_API_BASE_URL = 'http://auth-api',
   NEXT_PUBLIC_AUTH_API_BASE_URL = 'http://localhost:8080',
-  SESSION_API_BASE_URL = 'http://localhost:8082',
+  SESSION_API_BASE_URL = 'http://session-api',
   NEXT_PUBLIC_SESSION_API_BASE_URL = 'http://localhost:8082',
-  BILLING_API_BASE_URL = 'http://localhost:8083',
+  BILLING_API_BASE_URL = 'http://billing-api',
   NEXT_PUBLIC_BILLING_API_BASE_URL = 'http://localhost:8083',
   BOOTSTRAP_SCRIPT = 'https://static.dev.snuderls.eu/b/local.insight.js',
   JAEGER_AGENT_HOST = 'localhost',

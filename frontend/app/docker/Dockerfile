@@ -5,17 +5,8 @@ WORKDIR /src
 ARG auth_api_client_base_url=http://localhost:8080
 ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_client_base_url
 
-ARG auth_api_server_base_url=http://localhost:8080
-ENV AUTH_API_BASE_URL=$auth_api_server_base_url
-
-ARG session_api_server_base_url=http://localhost:8082
-ENV SESSION_API_BASE_URL=$session_api_server_base_url
-
 ARG session_api_client_base_url=http://localhost:8082
 ENV NEXT_PUBLIC_SESSION_API_BASE_URL=$session_api_client_base_url
-
-ARG billing_api_server_base_url=http://localhost:8083
-ENV BILLING_API_BASE_URL=$billing_api_server_base_url
 
 ARG billing_api_client_base_url=http://localhost:8083
 ENV NEXT_PUBLIC_BILLING_API_BASE_URL=$billing_api_client_base_url
