@@ -74,10 +74,6 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
       - uses: actions/download-artifact@v2
         with:
-          name: node_modules
-          path: node_modules
-      - uses: actions/download-artifact@v2
-        with:
           name: image-archives
           path: ${{ env.ARCHIVES }}
       - name: Load docker images
