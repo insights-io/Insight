@@ -22,6 +22,22 @@ env:
   MAILER_MOCK: true
 
 jobs:
+  frontend_build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+      - run: yarn install --frozen-lockfile
+      - uses: actions/upload-artifact@v2
+        with:
+          name: node_modules
+          path: node_modules
+
   docker_build:
     name: Docker build
     runs-on: ubuntu-latest
@@ -64,7 +80,7 @@ jobs:
   e2e_tests:
     name: Run E2E tests
     runs-on: ubuntu-latest
-    needs: [docker_build]
+    needs: [docker_build, frontend_build]
 
     steps:
       - uses: actions/checkout@v2
@@ -72,6 +88,10 @@ jobs:
           fetch-depth: 2
       - run: git checkout HEAD^2
         if: ${{ github.event_name == 'pull_request' }}
+      - uses: actions/download-artifact@v2
+        with:
+          name: node_modules
+          path: node_modules
       - uses: actions/download-artifact@v2
         with:
           name: image-archives
@@ -88,7 +108,6 @@ jobs:
           mkdir -p $ARTIFACTS_PATH
           export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="${{ secrets.STRIPE_TEST_API_KEY }}")
           docker-compose -f backend/local-test-services/docker-compose.yml up app try browser-bootstrap browser-tracking search-indexer beacon-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
-          yarn install --frozen-lockfile
           yarn workspace @insight/types build
           node_modules/wait-on/bin/wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health http-get://localhost:8083/health http-get://localhost:3000 http-get://localhost:3002 http-get://localhost:5000 http-get://localhost:5001 --timeout 600000
           docker run --network="host" --rm stripe/stripe-cli:latest listen --forward-to localhost:8083/v1/billing/subscriptions/event --skip-verify --api-key="${{ secrets.STRIPE_TEST_API_KEY }}" 2>&1 | tee $ARTIFACTS_PATH/webhook.log &

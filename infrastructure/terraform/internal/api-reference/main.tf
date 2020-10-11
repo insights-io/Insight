@@ -7,7 +7,7 @@ locals {
 
 resource "aws_s3_bucket" "api_reference" {
   bucket = "insight-api-reference"
-  acl    = "public-read"
+  acl    = "private"
 
   cors_rule {
     allowed_methods = ["GET", "HEAD"]
@@ -77,6 +77,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       restriction_type = "none"
     }
   }
+
+  aliases = local.aliases
 
   viewer_certificate {
     acm_certificate_arn      = module.certificate.arn
