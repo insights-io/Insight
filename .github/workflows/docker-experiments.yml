@@ -1,5 +1,16 @@
 ---
-on: [push]
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/docker-experiments.yml'
+      - 'backend/**'
+      - 'frontend/app/**'
+      - 'frontend/shared/**'
+      - 'jest.config.js'
+      - 'lerna.json'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'yarn.lock'
 
 env:
   DOCKER_BUILDKIT: 1
