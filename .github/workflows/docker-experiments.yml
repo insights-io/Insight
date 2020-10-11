@@ -37,6 +37,8 @@ jobs:
           fetch-depth: 2
       - run: git checkout HEAD^2
         if: ${{ github.event_name == 'pull_request' }}
+      - uses: satackey/action-docker-layer-caching@v0.0.8
+        continue-on-error: true
       - name: Build docker image
         run: docker-compose -f backend/local-test-services/docker-compose.yml build ${{ matrix.target }}
       - name: Create image artifact
