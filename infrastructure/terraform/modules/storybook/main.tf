@@ -82,10 +82,13 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
 
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
+  aliases = local.aliases
 
+  viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate.certificate.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2019"
+  }
 
   tags = local.tags
 }
@@ -99,5 +102,5 @@ resource "github_actions_secret" "cloudfront_distribution_id" {
 resource "github_actions_secret" "domain_name" {
   repository      = var.repository
   secret_name     = "${upper(var.project)}_STORYBOOK_DOMAIN_NAME"
-  plaintext_value = aws_cloudfront_distribution.s3_distribution.domain_name
+  plaintext_value = local.domain
 }

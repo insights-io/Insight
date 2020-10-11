@@ -1,5 +1,5 @@
 import { get } from 'ky-universal';
-import {
+import type {
   DataResponse,
   OrganizationDTO,
   APIErrorDataResponse,
