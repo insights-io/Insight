@@ -7,7 +7,6 @@ locals {
   }
 }
 
-
 resource "aws_s3_bucket" "storybook" {
   bucket = local.bucket_name
   acl    = "private"
@@ -85,7 +84,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   aliases = local.aliases
 
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.certificate.arn
+    acm_certificate_arn      = module.certificate.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2019"
   }
@@ -97,10 +96,4 @@ resource "github_actions_secret" "cloudfront_distribution_id" {
   repository      = var.repository
   secret_name     = "AWS_CLOUDFRONT_${upper(var.project)}_STORYBOOK_DISTRIBUTION_ID"
   plaintext_value = aws_cloudfront_distribution.s3_distribution.id
-}
-
-resource "github_actions_secret" "domain_name" {
-  repository      = var.repository
-  secret_name     = "${upper(var.project)}_STORYBOOK_DOMAIN_NAME"
-  plaintext_value = local.domain
 }
