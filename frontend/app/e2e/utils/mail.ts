@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { join } from 'path';
 import { readFileSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
@@ -33,29 +32,14 @@ const getDockerComposeFilePath = () => {
 };
 
 export const getDockerLogs = (): string[] => {
-  let logged = false;
+  const dockerLogPath = getDockerLogPath();
+  if (existsSync(dockerLogPath)) {
+    return String(readFileSync(dockerLogPath)).split('\n');
+  }
 
-  return (() => {
-    const dockerLogPath = getDockerLogPath();
-    if (existsSync(dockerLogPath)) {
-      if (!logged) {
-        logged = true;
-        console.log(
-          `[TEST-SETUP]: Reading docker logs from file path=${dockerLogPath}`
-        );
-      }
-      return String(readFileSync(dockerLogPath)).split('\n');
-    }
+  const dockerComposeFilePath = getDockerComposeFilePath();
 
-    const dockerComposeFilePath = getDockerComposeFilePath();
-    if (!logged) {
-      logged = true;
-      console.log(
-        `[TEST-SETUP]: Unable to find docker log file path=${dockerLogPath}... Reading logs through docker-compose path=${dockerComposeFilePath}`
-      );
-    }
-    return readLinesFromDockerComposeLogs(dockerComposeFilePath);
-  })();
+  return readLinesFromDockerComposeLogs(dockerComposeFilePath);
 };
 
 export const findPatternInDockerLogs = (pattern: RegExp) => {
