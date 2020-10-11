@@ -33,19 +33,29 @@ const getDockerComposeFilePath = () => {
 };
 
 export const getDockerLogs = (): string[] => {
-  const dockerLogPath = getDockerLogPath();
-  if (existsSync(dockerLogPath)) {
-    console.log(
-      `[TEST-SETUP]: Reading docker logs from file path=${dockerLogPath}`
-    );
-    return String(readFileSync(dockerLogPath)).split('\n');
-  }
+  let logged = false;
 
-  const dockerComposeFilePath = getDockerComposeFilePath();
-  console.log(
-    `[TEST-SETUP]: Unable to find docker log file path=${dockerLogPath}... Reading logs through docker-compose path=${dockerComposeFilePath}`
-  );
-  return readLinesFromDockerComposeLogs(dockerComposeFilePath);
+  return (() => {
+    const dockerLogPath = getDockerLogPath();
+    if (existsSync(dockerLogPath)) {
+      if (!logged) {
+        logged = true;
+        console.log(
+          `[TEST-SETUP]: Reading docker logs from file path=${dockerLogPath}`
+        );
+      }
+      return String(readFileSync(dockerLogPath)).split('\n');
+    }
+
+    const dockerComposeFilePath = getDockerComposeFilePath();
+    if (!logged) {
+      logged = true;
+      console.log(
+        `[TEST-SETUP]: Unable to find docker log file path=${dockerLogPath}... Reading logs through docker-compose path=${dockerComposeFilePath}`
+      );
+    }
+    return readLinesFromDockerComposeLogs(dockerComposeFilePath);
+  })();
 };
 
 export const findPatternInDockerLogs = (pattern: RegExp) => {
