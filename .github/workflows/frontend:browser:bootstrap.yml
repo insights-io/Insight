@@ -65,7 +65,7 @@ jobs:
         with:
           name: b
           path: deployment/b
-      - uses: jakejarvis/s3-sync-action@master
+      - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --content-encoding gzip
         env:

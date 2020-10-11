@@ -4,8 +4,12 @@ import { execSync } from 'child_process';
 
 const linkPattern = /.*href="(http:\/\/.*)".*$/;
 
+const projectRootPath = () => {
+  return join(process.cwd(), '..', '..');
+};
+
 const getDockerLogPath = (): string => {
-  let basePath = join(process.cwd(), '..', '..');
+  let basePath = projectRootPath();
 
   if (process.env.ARTIFACTS_PATH) {
     basePath = join(basePath, process.env.ARTIFACTS_PATH);
@@ -14,34 +18,28 @@ const getDockerLogPath = (): string => {
   return join(basePath, 'docker.log');
 };
 
-const dockerLogFileExists = (): boolean => {
-  return existsSync(getDockerLogPath());
-};
-
-const readLinesFromDockerLogFile = (): string[] => {
-  return String(readFileSync(getDockerLogPath())).split('\n');
-};
-
-const readLinesFromDockerComposeLogs = (): string[] => {
-  const localTestServicesPath = join(
-    process.cwd(),
-    '..',
-    '..',
-    'backend',
-    'local-test-services'
-  );
-
+const readLinesFromDockerComposeLogs = (yamlPath: string): string[] => {
   return String(
-    execSync(`cd ${localTestServicesPath} && docker-compose logs`, {
+    execSync(`docker-compose -f ${yamlPath} logs`, {
       maxBuffer: 500 * 1024 * 1024,
     })
   ).split('\n');
 };
 
+const getDockerComposeFilePath = () => {
+  const basePath = projectRootPath();
+  return join(basePath, 'backend', 'local-test-services', 'docker-compose.yml');
+};
+
 export const getDockerLogs = (): string[] => {
-  return dockerLogFileExists()
-    ? readLinesFromDockerLogFile()
-    : readLinesFromDockerComposeLogs();
+  const dockerLogPath = getDockerLogPath();
+  if (existsSync(dockerLogPath)) {
+    return String(readFileSync(dockerLogPath)).split('\n');
+  }
+
+  const dockerComposeFilePath = getDockerComposeFilePath();
+
+  return readLinesFromDockerComposeLogs(dockerComposeFilePath);
 };
 
 export const findPatternInDockerLogs = (pattern: RegExp) => {

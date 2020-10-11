@@ -7,4 +7,5 @@ module "storybooks" {
   for_each   = toset(local.projects)
   project    = each.key
   repository = module.global_vars.monorepo_repository
+  domain     = module.project_vars.domain
 }

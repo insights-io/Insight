@@ -6,3 +6,15 @@ resource "cloudflare_record" "wildcard" {
   type    = "A"
   ttl     = 1
 }
+
+resource "aws_route53_zone" "staging" {
+  name = module.project_vars.staging_domain
+}
+
+output "zone_id" {
+  value = aws_route53_zone.staging.zone_id
+}
+
+output "domain" {
+  value = module.project_vars.staging_domain
+}

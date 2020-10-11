@@ -5,10 +5,9 @@ locals {
   }
 }
 
-
 resource "aws_s3_bucket" "api_reference" {
   bucket = "insight-api-reference"
-  acl    = "public-read"
+  acl    = "private"
 
   cors_rule {
     allowed_methods = ["GET", "HEAD"]
@@ -79,8 +78,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
 
+  aliases = local.aliases
+
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = module.certificate.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2019"
   }
 
   tags = local.tags
@@ -90,10 +93,4 @@ resource "github_actions_secret" "cloudfront_distribution_id" {
   repository      = module.global_vars.monorepo_repository
   secret_name     = "AWS_CLOUDFRONT_API_REFERENCE_DISTRIBUTION_ID"
   plaintext_value = aws_cloudfront_distribution.s3_distribution.id
-}
-
-resource "github_actions_secret" "domain_name" {
-  repository      = module.global_vars.monorepo_repository
-  secret_name     = "API_REFERENCE_DOMAIN_NAME"
-  plaintext_value = aws_cloudfront_distribution.s3_distribution.domain_name
 }

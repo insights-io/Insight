@@ -5,3 +5,7 @@ variable "project" {
 variable "repository" {
   type = string
 }
+
+variable "domain" {
+  type = string
+}

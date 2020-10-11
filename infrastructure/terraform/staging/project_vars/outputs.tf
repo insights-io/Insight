@@ -13,3 +13,7 @@ output "cloudflare_zone_id" {
 output "domain" {
   value = "snuderls.eu"
 }
+
+output "staging_domain" {
+  value = "rebrowse.dev"
+}
