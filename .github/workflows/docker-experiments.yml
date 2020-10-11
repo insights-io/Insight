@@ -13,7 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [auth-api, session-api, beacon-api, billing-api, search-indexer]
+        target:
+          [
+            auth-api,
+            auth-api-postgres-migrations,
+            session-api,
+            session-api-postgres-migrations,
+            session-api-elasticsearch-migrations,
+            beacon-api,
+            billing-api,
+            search-indexer,
+          ]
 
     steps:
       - uses: actions/checkout@v2
