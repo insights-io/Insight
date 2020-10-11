@@ -22,7 +22,9 @@ jobs:
             session-api-elasticsearch-migrations,
             beacon-api,
             billing-api,
+            billing-api-postgres-migrations,
             search-indexer,
+            browser-tracking,
           ]
 
     steps:

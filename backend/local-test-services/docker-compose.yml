@@ -218,4 +218,4 @@ services:
       context: ../../
       dockerfile: frontend/browser/tracking/docker/Dockerfile
     ports:
-      - '5000:5000'
+      - '5000:80'
