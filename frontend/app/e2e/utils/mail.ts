@@ -35,14 +35,14 @@ const getDockerComposeFilePath = () => {
 export const getDockerLogs = (): string[] => {
   const dockerLogPath = getDockerLogPath();
   if (existsSync(dockerLogPath)) {
-    console.debug(
+    console.log(
       `[TEST-SETUP]: Reading docker logs from file path=${dockerLogPath}`
     );
     return String(readFileSync(dockerLogPath)).split('\n');
   }
 
   const dockerComposeFilePath = getDockerComposeFilePath();
-  console.debug(
+  console.log(
     `[TEST-SETUP]: Unable to find docker log file path=${dockerLogPath}... Reading logs through docker-compose path=${dockerComposeFilePath}`
   );
   return readLinesFromDockerComposeLogs(dockerComposeFilePath);
