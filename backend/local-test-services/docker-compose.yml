@@ -212,7 +212,14 @@ services:
       - 16686:16686
       - 14268:14268
 
-  # Frontend
+  # Browser
+  browser-bootstrap:
+    build:
+      context: ../../
+      dockerfile: frontend/browser/bootstrap/docker/Dockerfile
+    ports:
+      - '5001:80'
+
   browser-tracking:
     build:
       context: ../../
