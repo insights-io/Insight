@@ -7,5 +7,6 @@ variable "zone_id" {
 }
 
 variable "subject_alternative_names" {
-  type = list(string)
+  type    = list(string)
+  default = []
 }

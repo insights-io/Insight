@@ -27,13 +27,15 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - name: Intsall NPM dependencies
+      - name: Intsall NPM dependencies & build dependencies
         run: |
           yarn install --frozen-lockfile
+          yarn workspace @insight/app prebuild
       - name: Prepare environment file
         working-directory: frontend/app
         run: |
-          echo "NEXT_PUBLIC_TRY_BASE_URL=https://try.dev.snuderls.eu/
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo "NEXT_PUBLIC_TRY_BASE_URL=https://pr-$PR_NUMBER.try.rebrowse.dev
           AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
           NEXT_PUBLIC_AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
           SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu
@@ -51,6 +53,9 @@ jobs:
           PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
           echo "app:
             component: '@sls-next/serverless-component@1.18.0-alpha.5'
+            inputs:
+              certificateArn: $AWS_APP_PREVIEW_CERTIFICATE_ARN
+              domain: ['$PR_NUMBER-1001.app', 'rebrowse.dev']
           " > serverless.yml
           npm install -g serverless
           serverless
