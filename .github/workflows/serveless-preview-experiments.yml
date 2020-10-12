@@ -1,0 +1,57 @@
+---
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/serverless-preview-experiments.yml'
+      - 'frontend/app/**'
+      - 'frontend/shared/**'
+      - 'jest.config.js'
+      - 'lerna.json'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'yarn.lock'
+
+env:
+  CI: true
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  preview:
+    name: Deploy preview
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Intsall NPM dependencies
+        run: |
+          yarn install --frozen-lockfile
+      - name: Prepare environment file
+        working-directory: frontend/app
+        run: |
+          echo "NEXT_PUBLIC_TRY_BASE_URL=https://try.dev.snuderls.eu/
+          AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
+          NEXT_PUBLIC_AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
+          SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu
+          NEXT_PUBLIC_SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu
+          BILLING_API_BASE_URL=https://billing-api.dev.snuderls.eu
+          NEXT_PUBLIC_BILLING_API_BASE_URL=https://billing-api.dev.snuderls.eu
+          BOOTSTRAP_SCRIPT=https://static.dev.snuderls.eu/b/development.insight.js
+          JAEGER_AGENT_HOST=localhost
+          JAEGER_AGENT_PORT=6832
+          " > env.production
+      - name: Serverless Deploy
+        working-directory: frontend/app
+        run: |
+          rm -rf src/pages/api
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo "app:
+            component: '@sls-next/serverless-component@1.18.0-alpha.5'
+          " > serverless.yml
+          npm install -g serverless
+          serverless
+          DISTRIBUTION_ID=$(cat .serverless/Template.app.CloudFront.json | jq -r '.id')
