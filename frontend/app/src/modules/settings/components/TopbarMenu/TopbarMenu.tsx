@@ -8,6 +8,7 @@ import {
   VerticalAligned,
   SpacedBetween,
   UnstyledLink,
+  expandBorderRadius,
 } from '@insight/elements';
 import { FaLink } from 'react-icons/fa';
 import { joinSegments } from 'modules/settings/utils';
@@ -66,6 +67,7 @@ export const TopbarMenu = ({ path, searchOptions }: Props) => {
             valueKey="label"
             getOptionLabel={getOptionLabel}
             overrides={{
+              ControlContainer: { style: expandBorderRadius('8px') },
               DropdownContainer: {
                 style: {
                   marginTop: '10px',

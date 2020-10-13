@@ -1,6 +1,8 @@
 import React, { forwardRef } from 'react';
 import { Select, SelectProps, STATE_CHANGE_TYPE } from 'baseui/select';
 
+import { inputBorderRadius } from '../Input';
+
 export type Props = Omit<
   SelectProps,
   'onInputChange' | 'onChange' | 'value' | 'valueKey' | 'options'
@@ -29,6 +31,7 @@ export const AutocompleteInput = forwardRef<Select, Props>(
         onInputChange={(event) => onChange(event.currentTarget.value)}
         value={value === '' ? [] : [{ label: value }]}
         options={options.map((label) => ({ label }))}
+        overrides={{ ControlContainer: { style: inputBorderRadius } }}
         {...rest}
       />
     );

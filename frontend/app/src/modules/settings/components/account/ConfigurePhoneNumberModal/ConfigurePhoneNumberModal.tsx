@@ -1,5 +1,5 @@
-import { Modal, SIZE } from 'baseui/modal';
 import React, { useCallback, useState } from 'react';
+import { Modal, SIZE } from 'baseui/modal';
 import { ProgressSteps, Step } from 'baseui/progress-steps';
 import { PhoneNumber, UserDTO } from '@insight/types';
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';

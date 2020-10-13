@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api';
 import { APIError, APIErrorDataResponse } from '@insight/types';
-import { SpacedBetween } from '@insight/elements';
-import { createInputOverrides } from 'shared/styles/input';
+import { Input, SpacedBetween, Button } from '@insight/elements';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import Link from 'next/link';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
-import { Button } from 'baseui/button';
 import FormError from 'shared/components/FormError';
 import { useStyletron } from 'baseui';
 import { locationAssign } from 'shared/utils/window';
@@ -32,7 +29,6 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register, handleSubmit, errors } = useForm<LoginEmailFormData>();
-  const inputOverrides = createInputOverrides(theme);
 
   const onSubmit = handleSubmit((formData) => {
     if (isSubmitting) {
@@ -72,7 +68,6 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
       <Block>
         <FormControl label="Email" error={errors.email?.message}>
           <Input
-            overrides={inputOverrides}
             id="email"
             name="email"
             type="email"
@@ -96,7 +91,6 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
           error={errors.password?.message}
         >
           <Input
-            overrides={inputOverrides}
             id="password"
             name="password"
             type="password"

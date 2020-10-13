@@ -6,6 +6,7 @@ import com.meemaw.auth.organization.service.OrganizationService;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.logging.LoggingConstants;
+import com.meemaw.shared.rest.query.UpdateDTO;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -26,7 +27,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Traced
   public CompletionStage<Collection<AuthUser>> members(String organizationId) {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
-    log.debug("[AUTH]: Get members for organizationId: {}", organizationId);
+    log.debug("[AUTH]: Get members for organization id={}", organizationId);
     return userDatasource.findOrganizationMembers(organizationId);
   }
 
@@ -34,7 +35,14 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Traced
   public CompletionStage<Optional<Organization>> getOrganization(String organizationId) {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
-    log.debug("[AUTH]: Get organization: {}", organizationId);
+    log.debug("[AUTH]: Get organization id={}", organizationId);
     return organizationDatasource.findOrganization(organizationId);
+  }
+
+  @Override
+  public CompletionStage<Optional<Organization>> updateOrganization(
+      String organizationId, UpdateDTO update) {
+    log.debug("[AUTH]: update organization id={}", organizationId);
+    return organizationDatasource.updateOrganization(organizationId, update);
   }
 }

@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
-import { Button, SIZE } from 'baseui/button';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalButton,
-} from 'baseui/modal';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'baseui/modal';
 import { useForm, Controller } from 'react-hook-form';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { useStyletron } from 'baseui';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import { createInputOverrides } from 'shared/styles/input';
@@ -24,6 +16,7 @@ import type {
   UserRole,
   TeamInviteDTO,
 } from '@insight/types';
+import { Input, Button } from '@insight/elements';
 
 type Props = {
   createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
@@ -71,9 +64,7 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
 
   return (
     <>
-      <Button onClick={open} size={SIZE.mini}>
-        Invite new member
-      </Button>
+      <Button onClick={open}>Invite new member</Button>
       <Modal onClose={close} isOpen={isOpen}>
         <form onSubmit={onSubmit} noValidate>
           <ModalHeader>Invite new member</ModalHeader>
@@ -105,16 +96,12 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <ModalButton kind="tertiary" onClick={close}>
+            <Button kind="tertiary" onClick={close}>
               Cancel
-            </ModalButton>
-            <ModalButton
-              type="submit"
-              isLoading={isSubmitting}
-              $style={{ width: '100%' }}
-            >
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
               Invite
-            </ModalButton>
+            </Button>
             {formError && <FormError error={formError} />}
           </ModalFooter>
         </form>

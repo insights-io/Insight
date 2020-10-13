@@ -2,6 +2,7 @@ package com.meemaw.auth.organization.datasource.sql;
 
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.CREATED_AT;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELD_MAPPINGS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.INSERT_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.NAME;
@@ -12,8 +13,10 @@ import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.CreateOrganizationParams;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
+import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
@@ -22,6 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
+import org.jooq.UpdateSetFirstStep;
 
 @ApplicationScoped
 @Slf4j
@@ -35,6 +39,19 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
     return transaction
         .query(createOrganizationQuery(params))
         .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
+  }
+
+  @Override
+  public CompletionStage<Optional<Organization>> updateOrganization(
+      String organizationId, UpdateDTO update) {
+    UpdateSetFirstStep<?> updateStep = sqlPool.getContext().update(TABLE);
+    Query query =
+        SQLUpdateDTO.of(update)
+            .apply(updateStep, FIELD_MAPPINGS)
+            .where(ID.eq(organizationId))
+            .returning(FIELDS);
+
+    return sqlPool.execute(query).thenApply(this::mapOrganizationIfPresent);
   }
 
   @Override

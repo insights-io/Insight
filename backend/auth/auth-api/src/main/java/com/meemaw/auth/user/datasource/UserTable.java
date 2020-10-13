@@ -23,6 +23,7 @@ public final class UserTable {
 
     public static final Map<String, String> PHONE_NUMBER_REQUIRED =
         Map.of(PHONE_NUMBER, "Required");
+
     public static final Map<String, String> PHONE_NUMBER_VERIFICATION_REQUIRED =
         Map.of(UserTable.PHONE_NUMBER, "Please verify phone number");
   }

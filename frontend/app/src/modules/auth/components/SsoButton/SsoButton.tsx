@@ -1,7 +1,6 @@
 import React from 'react';
-import { Button } from 'baseui/button';
 import { Theme } from 'baseui/theme';
-import { UnstyledLink } from '@insight/elements';
+import { UnstyledLink, Button } from '@insight/elements';
 
 type Props = {
   href: string;
@@ -10,7 +9,7 @@ type Props = {
   theme: Theme;
 };
 
-const SsoButton = ({ href, children, icon, theme }: Props) => {
+export const SsoButton = ({ href, children, icon, theme }: Props) => {
   return (
     <UnstyledLink href={href}>
       <Button
@@ -23,5 +22,3 @@ const SsoButton = ({ href, children, icon, theme }: Props) => {
     </UnstyledLink>
   );
 };
-
-export default SsoButton;

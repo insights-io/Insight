@@ -16,6 +16,15 @@ export const organizationsResource = (authApiBaseURL: string) => {
   };
 
   return {
+    update: (
+      json: Pick<OrganizationDTO, 'name'>,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .patch(resourceBaseURL(baseURL), { json, ...withCredentials(rest) })
+        .json<DataResponse<OrganizationDTO>>()
+        .then(getData);
+    },
     get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
         .get(resourceBaseURL(baseURL), withCredentials(rest))

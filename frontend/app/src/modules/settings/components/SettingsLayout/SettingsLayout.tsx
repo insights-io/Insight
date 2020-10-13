@@ -1,6 +1,6 @@
 import { Block } from 'baseui/block';
 import React from 'react';
-import { Flex } from '@insight/elements';
+import { Flex, FlexColumn } from '@insight/elements';
 import { SidebarMenu } from 'modules/settings/components/SidebarMenu';
 import { TopbarMenu } from 'modules/settings/components/TopbarMenu';
 import { H1 } from 'baseui/typography';
@@ -32,7 +32,7 @@ export const SettingsLayout = ({
   const border = '1px solid rgb(231, 225, 236)';
 
   return (
-    <Flex height="100%" flexDirection="column" className="settings">
+    <FlexColumn height="100%" className="settings">
       <Block $style={{ borderBottom: border }}>
         <TopbarMenu path={path} searchOptions={searchOptions} />
       </Block>
@@ -66,6 +66,6 @@ export const SettingsLayout = ({
           {children}
         </Block>
       </Flex>
-    </Flex>
+    </FlexColumn>
   );
 };

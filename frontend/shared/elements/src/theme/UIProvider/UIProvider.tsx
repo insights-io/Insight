@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToasterContainer, PLACEMENT } from 'baseui/toast';
-import { LightTheme, BaseProvider } from 'baseui';
+import { createLightTheme, BaseProvider } from 'baseui';
 import {
   Provider as StyletronProvider,
   StandardEngine,
@@ -12,6 +12,10 @@ type Props = {
   engine: StandardEngine;
 };
 
+const theme = createLightTheme({
+  primaryFontFamily: 'Rubik,Avenir Next,Helvetica Neue,sans-serif',
+});
+
 const debug =
   process.env.NODE_ENV === 'production' ? undefined : new DebugEngine();
 
@@ -19,10 +23,14 @@ export const UIProvider = ({ children, engine }: Props) => {
   return (
     <StyletronProvider value={engine} debug={debug} debugAfterHydration>
       <BaseProvider
-        theme={LightTheme}
+        theme={theme}
         overrides={{
           AppContainer: {
-            style: { height: '100%', display: 'flex', flexDirection: 'column' },
+            style: {
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            },
           },
         }}
       >

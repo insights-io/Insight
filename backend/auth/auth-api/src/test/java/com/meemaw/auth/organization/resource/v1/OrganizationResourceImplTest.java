@@ -22,8 +22,10 @@ import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.core.HttpHeaders;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -37,7 +39,99 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
       String.join("/", OrganizationResource.PATH, "members");
 
   @Test
-  public void get_associated_organization__should_fail__when_unauthorized() {
+  public void patch_associated_organization__should_throw__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(
+        Method.PATCH, OrganizationResource.PATH, ContentType.JSON);
+    RestAssuredUtils.ssoBearerTokenTestCases(
+        Method.PATCH, OrganizationResource.PATH, ContentType.JSON);
+  }
+
+  @Test
+  public void patch_associated_organization__should_throw__when_empty_body() {
+    String sessionId = authApi().loginWithInsightAdmin();
+    given()
+        .when()
+        .contentType(ContentType.JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body("{}")
+        .patch(OrganizationResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Empty update\"}}"));
+  }
+
+  @Test
+  public void patch_associated_organization__should_throw__when_no_body() {
+    String sessionId = authApi().loginWithInsightAdmin();
+    given()
+        .when()
+        .contentType(ContentType.JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .patch(OrganizationResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void patch_associated_organization__should_throw__when_invalid_body()
+      throws JsonProcessingException {
+    String sessionId = authApi().loginWithInsightAdmin();
+    given()
+        .when()
+        .contentType(ContentType.JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(objectMapper.writeValueAsString(Map.of("field1", "value1")))
+        .patch(OrganizationResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"field1\":\"Unexpected field\"}}}"));
+  }
+
+  @Test
+  public void patch_associated_organization__should_work__when_valid_body()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    DataResponse<OrganizationDTO> organizationDataResponse =
+        given()
+            .when()
+            .contentType(ContentType.JSON)
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .body(objectMapper.writeValueAsString(Map.of("name", "My new name")))
+            .patch(OrganizationResource.PATH)
+            .then()
+            .statusCode(200)
+            .extract()
+            .response()
+            .as(new TypeRef<>() {});
+
+    assertEquals("My new name", organizationDataResponse.getData().getName());
+
+    String apiKey = authApi().createAuthToken(sessionId);
+    organizationDataResponse =
+        given()
+            .when()
+            .contentType(ContentType.JSON)
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+            .body(objectMapper.writeValueAsString(Map.of("name", "My new name 2")))
+            .patch(OrganizationResource.PATH)
+            .then()
+            .statusCode(200)
+            .extract()
+            .response()
+            .as(new TypeRef<>() {});
+
+    assertEquals("My new name 2", organizationDataResponse.getData().getName());
+  }
+
+  @Test
+  public void get_associated_organization__should_throw__when_unauthorized() {
     RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, OrganizationResource.PATH);
     RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, OrganizationResource.PATH);
   }

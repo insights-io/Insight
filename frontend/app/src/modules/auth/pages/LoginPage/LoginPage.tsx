@@ -7,7 +7,7 @@ import Divider from 'shared/components/Divider';
 import { TRY_BASE_URL } from 'shared/config';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
 import { FaGithub, FaMicrosoft } from 'react-icons/fa';
-import SsoButton from 'modules/auth/components/SsoButton';
+import { SsoButton } from 'modules/auth/components/SsoButton';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { Flex, UnstyledLink } from '@insight/elements';
 

@@ -9,6 +9,8 @@ import {
   Country,
 } from 'baseui/phone-input';
 
+import { Input, inputBorderRadius } from '../Input';
+
 export type Values = {
   phoneNumber: string | undefined;
 };
@@ -20,12 +22,12 @@ export type Props<V> = {
   control: Control<V>;
 };
 
-export function PhoneNumberInput<TFieldValues extends Values = Values>({
+export const PhoneNumberInput = <TFieldValues extends Values = Values>({
   country,
   setCountry,
   error,
   control,
-}: Props<TFieldValues>) {
+}: Props<TFieldValues>) => {
   const [_css, theme] = useStyletron();
   return (
     <Block>
@@ -58,10 +60,12 @@ export function PhoneNumberInput<TFieldValues extends Values = Values>({
               onCountryChange={({ option }) => setCountry(option as Country)}
               error={Boolean(error)}
               overrides={{
+                Input: { component: Input },
                 CountrySelect: {
                   props: {
                     overrides: {
                       Dropdown: { component: CountrySelectDropdown },
+                      ControlContainer: { style: inputBorderRadius },
                     },
                   },
                 },
@@ -72,4 +76,4 @@ export function PhoneNumberInput<TFieldValues extends Values = Values>({
       </FormControl>
     </Block>
   );
-}
+};
