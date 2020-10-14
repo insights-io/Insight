@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@insight/types": "0.0.0-development",
-    "playwright": "1.4.2",
+    "playwright": "1.5.0",
     "rollup": "2.30.0",
     "@rollup/plugin-typescript": "6.0.0",
     "rollup-plugin-gzip": "2.5.0"
