@@ -27,7 +27,7 @@
   "dependencies": {},
   "peerDependencies": {
     "@insight/storybook": "0.0.0-development",
-    "@testing-library/react": "11.0.4",
+    "@testing-library/react": "11.1.0",
     "next": "9.5.5"
   }
 }
