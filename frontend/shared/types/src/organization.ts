@@ -1,8 +1,22 @@
 import { UserRole } from './user';
 
+export type AvatarDTO =
+  | {
+      type: 'initials';
+    }
+  | {
+      type: 'avatar';
+      image: string;
+    };
+
+export type AvatarType = AvatarDTO['type'];
+
 export type OrganizationDTO = {
   id: string;
   name: string | undefined;
+  openMembership: boolean;
+  avatar?: AvatarDTO;
+  defaultRole: UserRole;
   createdAt: string;
   updatedAt: string;
 };

@@ -1,5 +1,6 @@
 package com.meemaw.auth.organization.resource.v1;
 
+import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
@@ -9,8 +10,10 @@ import com.meemaw.shared.rest.response.OkDataResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PATCH;
@@ -38,6 +41,16 @@ public interface OrganizationResource {
 
   String PATH = "/v1/organization";
   String TAG = "Organization";
+
+  @DELETE
+  @Tag(name = TAG)
+  @Operation(summary = "Delete organization associated with authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  CompletionStage<Response> delete();
 
   @GET
   @Path("members")
@@ -212,6 +225,18 @@ public interface OrganizationResource {
       @PathParam("id") String id, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
     return retrieve(id);
   }
+
+  @PATCH
+  @Path("avatar")
+  @Tag(name = TAG)
+  @Operation(summary = "Setup avatar for the organization associated with authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  CompletionStage<Response> associatedAvatarSetup(
+      @NotNull(message = "Required") @Valid AvatarSetupDTO body);
 
   CompletionStage<Response> retrieve(String organizationId);
 

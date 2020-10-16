@@ -277,7 +277,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(
             objectMapper.writeValueAsString(
-                new TeamInviteCreateDTO(UUID.randomUUID() + "@gmail.com", UserRole.STANDARD)))
+                new TeamInviteCreateDTO(UUID.randomUUID() + "@gmail.com", UserRole.MEMBER)))
         .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(201);
@@ -288,7 +288,7 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .body(
             objectMapper.writeValueAsString(
-                new TeamInviteCreateDTO(UUID.randomUUID() + "@gmail.com", UserRole.STANDARD)))
+                new TeamInviteCreateDTO(UUID.randomUUID() + "@gmail.com", UserRole.MEMBER)))
         .post(OrganizationInviteResource.PATH)
         .then()
         .statusCode(201);
@@ -364,22 +364,6 @@ public class OrganizationInviteResourceImplTest extends AbstractAuthApiTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Resource Not Found\"}}"));
-  }
-
-  @Test
-  public void send_invite__should_fail__when_invalid_content_type() {
-    String path =
-        String.join("/", OrganizationInviteResource.PATH, UUID.randomUUID().toString(), "send");
-
-    given()
-        .when()
-        .contentType(MediaType.TEXT_PLAIN)
-        .post(path)
-        .then()
-        .statusCode(415)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":415,\"reason\":\"Unsupported Media Type\",\"message\":\"Media type not supported.\"}}"));
   }
 
   @Test

@@ -64,6 +64,7 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
 
               return ssoService
                   .socialLogin(email, fullName, getLoginMethod(), redirect, serverBase)
+                  .exceptionally(throwable -> handleSsoException(throwable, redirect))
                   .thenApply(
                       loginResult -> {
                         log.info(

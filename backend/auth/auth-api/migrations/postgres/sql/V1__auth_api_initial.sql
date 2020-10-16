@@ -15,15 +15,18 @@ CREATE TABLE auth.user_role
 );
 
 INSERT INTO auth.user_role
-VALUES ('standard'),
+VALUES ('member'),
        ('admin');
 
 CREATE TABLE auth.organization
 (
-    id         TEXT PRIMARY KEY,
-    name       TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    id              TEXT PRIMARY KEY,
+    name            TEXT,
+    open_membership BOOL                                                    DEFAULT FALSE,
+    default_role    TEXT REFERENCES auth.user_role (name) ON UPDATE CASCADE DEFAULT 'member',
+    avatar          JSONB,
+    created_at      TIMESTAMPTZ NOT NULL                                    DEFAULT now(),
+    updated_at      TIMESTAMPTZ NOT NULL                                    DEFAULT now(),
 
     CONSTRAINT id_length CHECK (length(auth.organization.id) = 6)
 );

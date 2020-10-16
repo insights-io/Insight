@@ -4,9 +4,9 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
+import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -21,7 +21,7 @@ public interface UserDatasource {
       PhoneNumber phoneNumber,
       SqlTransaction transaction);
 
-  CompletionStage<AuthUser> updateUser(UUID userId, Map<String, ?> update);
+  CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update);
 
   CompletionStage<Optional<AuthUser>> findUser(UUID userId);
 

@@ -247,8 +247,10 @@ public class SamlService extends AbstractIdpService {
               validateSignature(samlDataResponse.getSignature(), samlMetadata);
               URL redirect = RequestUtils.sneakyURL(secureStateData(relayState));
               String cookieDomain = RequestUtils.parseCookieDomain(redirect);
+
               return ssoService
                   .ssoLogin(email, samlDataResponse.getFullName(), organizationId, redirect)
+                  .exceptionally(throwable -> handleSsoException(throwable, redirect))
                   .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
   }

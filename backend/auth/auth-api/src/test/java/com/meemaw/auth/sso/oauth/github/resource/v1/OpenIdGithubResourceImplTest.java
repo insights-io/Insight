@@ -14,6 +14,7 @@ import com.meemaw.auth.sso.oauth.github.OAuth2GithubClient;
 import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -60,6 +61,12 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   @Override
   public AbstractIdpService service() {
     return oauthService;
+  }
+
+  @Override
+  public AbstractOAuth2Client<?, ?, ?> installMockForClient(String email) {
+    QuarkusMock.installMockForInstance(new MockedOAuth2GithubClient(email), oauthClient);
+    return oauthClient;
   }
 
   @Test

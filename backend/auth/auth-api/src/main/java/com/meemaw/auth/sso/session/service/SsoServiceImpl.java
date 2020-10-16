@@ -4,7 +4,7 @@ import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
 import com.meemaw.auth.sso.IdpServiceRegistry;
-import com.meemaw.auth.sso.session.datasource.SsoDatasource;
+import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.sso.session.model.DirectLoginResult;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.LoginResult;
@@ -43,7 +43,7 @@ import org.slf4j.MDC;
 @Slf4j
 public class SsoServiceImpl implements SsoService {
 
-  @Inject SsoDatasource ssoDatasource;
+  @Inject SsoSessionDatasource ssoSessionDatasource;
   @Inject PasswordService passwordService;
   @Inject UserDatasource userDatasource;
   @Inject SignUpService signUpService;
@@ -60,8 +60,8 @@ public class SsoServiceImpl implements SsoService {
     MDC.put(LoggingConstants.USER_ID, user.getId().toString());
     MDC.put(LoggingConstants.USER_EMAIL, user.getEmail());
     MDC.put(LoggingConstants.ORGANIZATION_ID, user.getOrganizationId());
-    return ssoDatasource
-        .createSession(user)
+    return ssoSessionDatasource
+        .create(user)
         .thenApply(
             sessionId -> {
               log.info(
@@ -95,8 +95,8 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
     MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
     log.info("[AUTH]: Find session: {}", sessionId);
-    return ssoDatasource
-        .findSession(sessionId)
+    return ssoSessionDatasource
+        .retrieve(sessionId)
         .thenApply(maybeSsoUser -> maybeSsoUser.map(SsoUser::dto));
   }
 
@@ -106,11 +106,11 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Set<String>> findSessions(String sessionId) {
     MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
     log.info("[AUTH]: Find all sessions related to session: {}", sessionId);
-    return ssoDatasource
-        .findSession(sessionId)
+    return ssoSessionDatasource
+        .retrieve(sessionId)
         .thenCompose(
             ssoUser ->
-                ssoDatasource.getAllSessionsForUser(
+                ssoSessionDatasource.listAllForUser(
                     ssoUser.orElseThrow(() -> Boom.notFound().exception()).getId()));
   }
 
@@ -120,7 +120,7 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Optional<SsoUser>> logout(String sessionId) {
     MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
     log.info("[AUTH]: Logout attempt for session: {}", sessionId);
-    return ssoDatasource.deleteSession(sessionId);
+    return ssoSessionDatasource.delete(sessionId);
   }
 
   @Override
@@ -131,8 +131,8 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Set<String>> logoutUserFromAllDevices(UUID userId) {
     MDC.put(LoggingConstants.USER_ID, userId.toString());
     log.info("[AUTH]: Logout from all devices userId: {}", userId);
-    return ssoDatasource
-        .deleteAllSessionsForUser(userId)
+    return ssoSessionDatasource
+        .deleteAllForUser(userId)
         .thenApply(
             deletedSessions -> {
               if (!deletedSessions.isEmpty()) {

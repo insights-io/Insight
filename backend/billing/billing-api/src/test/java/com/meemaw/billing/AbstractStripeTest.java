@@ -26,7 +26,7 @@ public abstract class AbstractStripeTest extends ExternalAuthApiProvidedTest {
         UUID.randomUUID(),
         UUID.randomUUID().toString() + "@gmail.com",
         "Marko Novak",
-        UserRole.STANDARD,
+        UserRole.MEMBER,
         Organization.identifier(),
         OffsetDateTime.now(),
         OffsetDateTime.now(),

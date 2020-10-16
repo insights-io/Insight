@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.session.datasource.hazelcast;
 
 import com.hazelcast.map.IMap;
-import com.meemaw.auth.sso.session.datasource.SsoDatasource;
+import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
@@ -9,12 +9,15 @@ import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import com.meemaw.shared.hazelcast.processors.SetValueEntryProcessor;
 import io.smallrye.mutiny.Uni;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -24,7 +27,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
-public class HazelcastSsoDatasource implements SsoDatasource {
+public class HazelcastSsoSessionDatasource implements SsoSessionDatasource {
 
   private IMap<String, SsoUser> sessionToUserMap;
   private IMap<UUID, Set<String>> userToSessionsMap;
@@ -50,7 +53,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
 
   @Override
   @Traced
-  public CompletionStage<String> createSession(AuthUser user) {
+  public CompletionStage<String> create(AuthUser user) {
     String sessionId = SsoSession.newIdentifier();
 
     CompletionStage<Void> sessionToUserLookup =
@@ -76,13 +79,13 @@ public class HazelcastSsoDatasource implements SsoDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Optional<SsoUser>> findSession(String sessionId) {
+  public CompletionStage<Optional<SsoUser>> retrieve(String sessionId) {
     return sessionToUserMap.getAsync(sessionId).thenApply(Optional::ofNullable);
   }
 
   @Override
   @Traced
-  public CompletionStage<Optional<SsoUser>> deleteSession(String sessionId) {
+  public CompletionStage<Optional<SsoUser>> delete(String sessionId) {
     SsoUser maybeSsoUser = sessionToUserMap.remove(sessionId);
     if (maybeSsoUser == null) {
       return CompletableFuture.completedStage(Optional.empty());
@@ -95,7 +98,7 @@ public class HazelcastSsoDatasource implements SsoDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Set<String>> getAllSessionsForUser(UUID userId) {
+  public CompletionStage<Set<String>> listAllForUser(UUID userId) {
     return userToSessionsMap
         .getAsync(userId)
         .thenApply(
@@ -104,22 +107,45 @@ public class HazelcastSsoDatasource implements SsoDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Set<String>> deleteAllSessionsForUser(UUID userId) {
+  public CompletionStage<Set<String>> deleteAllForUser(UUID userId) {
     return setValueOnAllSessionsForUser(userId, null);
   }
 
   @Override
   @Traced
-  public CompletionStage<Set<String>> updateUserSessions(UUID userId, AuthUser user) {
+  public CompletionStage<Set<String>> updateAllForUser(UUID userId, AuthUser user) {
     return setValueOnAllSessionsForUser(userId, SsoUser.as(user));
   }
 
+  @Override
+  public CompletionStage<Void> deleteAllForOrganization(String organizationId) {
+    Set<Entry<String, SsoUser>> users =
+        sessionToUserMap.entrySet(
+            data -> data.getValue().getOrganizationId().equals(organizationId));
+
+    Set<String> sessionIds = users.stream().map(Entry::getKey).collect(Collectors.toSet());
+    Set<UUID> userIds =
+        users.stream().map(Entry::getValue).map(SsoUser::getId).collect(Collectors.toSet());
+
+    return CompletableFuture.allOf(
+        deleteSessionsToUser(sessionIds).toCompletableFuture(),
+        deleteUsersToSessions(userIds).toCompletableFuture());
+  }
+
   private CompletionStage<Set<String>> setValueOnAllSessionsForUser(UUID userId, SsoUser value) {
-    return getAllSessionsForUser(userId)
+    return listAllForUser(userId)
         .thenCompose(
             sessions ->
                 sessionToUserMap
                     .submitToKeys(sessions, new SetValueEntryProcessor<>(value))
                     .thenApply(ignored -> sessions));
+  }
+
+  private CompletionStage<Map<String, SsoUser>> deleteSessionsToUser(Set<String> sessions) {
+    return sessionToUserMap.submitToKeys(sessions, new SetValueEntryProcessor<>(null));
+  }
+
+  private CompletionStage<Map<UUID, Set<String>>> deleteUsersToSessions(Set<UUID> users) {
+    return userToSessionsMap.submitToKeys(users, new SetValueEntryProcessor<>(null));
   }
 }

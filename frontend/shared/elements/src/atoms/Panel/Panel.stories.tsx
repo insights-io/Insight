@@ -2,10 +2,9 @@ import React from 'react';
 import type { Meta } from '@storybook/react';
 import { Block } from 'baseui/block';
 import { VerticalAligned } from 'atoms/VerticalAligned';
-import { ParagraphXSmall } from 'baseui/typography';
-import { Label } from 'atoms/Label';
 import { Input } from 'inputs/Input';
 import { Toggle } from 'inputs/Toggle';
+import { ExplainedLabel } from 'atoms/ExplainedLabel';
 
 import { Panel } from './Panel';
 
@@ -20,34 +19,30 @@ export const Base = () => {
       <Panel backgroundColor="white">
         <Panel.Header>General</Panel.Header>
         <Panel.Item display="flex" justifyContent="space-between">
-          <VerticalAligned as="label">
-            <Label as="div" required>
-              Display Name
-            </Label>
-            <ParagraphXSmall margin={0}>
-              A human-friendly name for the organization
-            </ParagraphXSmall>
-          </VerticalAligned>
+          <ExplainedLabel
+            for="name"
+            explanation="A human-friendly name for the organization"
+          >
+            Display Name
+          </ExplainedLabel>
           <VerticalAligned width="50%">
-            <Input value="todo" />
+            <Input value="todo" id="name" />
           </VerticalAligned>
         </Panel.Item>
         <Panel.Item display="flex" justifyContent="space-between">
-          <VerticalAligned as="label">
-            <Label as="div" required>
-              Open Membership
-            </Label>
-            <ParagraphXSmall margin={0}>
-              Allow organization members to freely join or leave any team
-            </ParagraphXSmall>
-          </VerticalAligned>
+          <ExplainedLabel
+            for="openMembership"
+            explanation="Allow organization members to freely join or leave any team"
+          >
+            Open Membership
+          </ExplainedLabel>
+
           <VerticalAligned width="50%">
             <Block width="fit-content">
-              <Toggle />
+              <Toggle id="openMembership" name="openMembership" />
             </Block>
           </VerticalAligned>
         </Panel.Item>
-        <Panel.Item>Todo 3</Panel.Item>
       </Panel>
     </Block>
   );

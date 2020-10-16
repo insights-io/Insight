@@ -31,7 +31,6 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(OrganizationInviteResource.PATH)
-@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public interface OrganizationInviteResource {
 
@@ -39,6 +38,7 @@ public interface OrganizationInviteResource {
   String TAG = "Organization Invite";
 
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
   @Operation(summary = "Create an organization invite")
   @SecurityRequirements(
@@ -158,6 +158,7 @@ public interface OrganizationInviteResource {
   CompletionStage<Response> delete(@PathParam("token") UUID token);
 
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   @Path("{token}/accept")
   @Tag(name = TAG)
   @Operation(summary = "Accept a organization invite")

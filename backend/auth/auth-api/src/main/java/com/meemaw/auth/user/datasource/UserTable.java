@@ -15,7 +15,7 @@ public final class UserTable {
   public static final String CREATED_AT = "created_at";
   public static final String UPDATED_AT = "updated_at";
 
-  public static final Set<String> UPDATABLE_FIELDS = Set.of(FULL_NAME, PHONE_NUMBER);
+  public static final Set<String> UPDATABLE_FIELDS = Set.of(FULL_NAME, PHONE_NUMBER, ROLE);
 
   private UserTable() {}
 

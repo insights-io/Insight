@@ -14,7 +14,8 @@ export function authenticatedTestCases<T>(
         query: {},
         req,
         res,
-        resolvedUrl: '/',
+        resolvedUrl:
+          '/?oauthError=io.vertx.pgclient.PgException%3A+column+%22open_membership%22+does+not+exist',
       });
       sandbox.assert.calledWithExactly(writeHead, 302, {
         Location: '/login?redirect=%2F',
@@ -30,7 +31,8 @@ export function authenticatedTestCases<T>(
         query: {},
         req,
         res,
-        resolvedUrl: '/',
+        resolvedUrl:
+          '/?oauthError=io.vertx.pgclient.PgException%3A+column+%22open_membership%22+does+not+exist',
       });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
@@ -54,7 +56,8 @@ export function authenticatedTestCases<T>(
         query: {},
         req,
         res,
-        resolvedUrl: '/',
+        resolvedUrl:
+          '/?oauthError=io.vertx.pgclient.PgException%3A+column+%22open_membership%22+does+not+exist',
       });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {
@@ -82,7 +85,8 @@ export function authenticatedTestCases<T>(
         query: {},
         req,
         res,
-        resolvedUrl: '/',
+        resolvedUrl:
+          '/?oauthError=io.vertx.pgclient.PgException%3A+column+%22open_membership%22+does+not+exist',
       });
 
       sandbox.assert.calledWithExactly(writeHead, 302, {

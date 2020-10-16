@@ -223,7 +223,7 @@ public class SignUpServiceImpl implements SignUpService {
   private CompletionStage<AuthUser> ssoSignUp(
       String email,
       String fullName,
-      UserRole userRole,
+      Function<Organization, UserRole> userRoleProvider,
       Function<SqlTransaction, CompletionStage<Organization>> organizationProvider) {
     return sqlPool
         .beginTransaction()
@@ -238,7 +238,7 @@ public class SignUpServiceImpl implements SignUpService {
                                     email,
                                     fullName,
                                     organization.getId(),
-                                    userRole,
+                                    userRoleProvider.apply(organization),
                                     null,
                                     transaction)
                                 .thenCompose(
@@ -255,11 +255,10 @@ public class SignUpServiceImpl implements SignUpService {
   @Timed(name = "socialSignUp", description = "A measure of how long it takes to do social sign up")
   public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
     log.info("[AUTH]: Social sign up attempt email={}", email);
-
     return ssoSignUp(
         email,
         fullName,
-        UserRole.ADMIN,
+        (organization) -> UserRole.ADMIN,
         (transaction) ->
             organizationDatasource.createOrganization(
                 new CreateOrganizationParams(Organization.identifier(), null), transaction));
@@ -277,7 +276,7 @@ public class SignUpServiceImpl implements SignUpService {
     return ssoSignUp(
         email,
         fullName,
-        UserRole.STANDARD,
+        Organization::getDefaultRole,
         transaction ->
             organizationDatasource
                 .findOrganization(organizationId, transaction)
@@ -286,7 +285,15 @@ public class SignUpServiceImpl implements SignUpService {
                       if (maybeOrganization.isEmpty()) {
                         throw Boom.badRequest().exception();
                       }
-                      return maybeOrganization.get();
+                      Organization organization = maybeOrganization.get();
+                      if (!organization.isOpenMembership()) {
+                        throw Boom.badRequest()
+                            .message(
+                                "Organization does not support open membership. Please contact your Administrator")
+                            .exception();
+                      }
+
+                      return organization;
                     }));
   }
 }

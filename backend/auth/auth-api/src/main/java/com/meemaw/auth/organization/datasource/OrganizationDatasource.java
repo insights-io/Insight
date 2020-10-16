@@ -21,4 +21,8 @@ public interface OrganizationDatasource {
 
   CompletionStage<Optional<Organization>> findOrganization(
       String organizationId, SqlTransaction transaction);
+
+  CompletionStage<Boolean> delete(String id, SqlTransaction transaction);
+
+  CompletionStage<SqlTransaction> transaction();
 }

@@ -16,10 +16,10 @@ public class TeamInviteDTOCreateSerializationTest {
   public void jackson___should_correctly_serialize_team_invite_create_dto()
       throws JsonProcessingException {
     TeamInviteCreateDTO teamInviteCreate =
-        new TeamInviteCreateDTO("test@gmail.com", UserRole.STANDARD);
+        new TeamInviteCreateDTO("test@gmail.com", UserRole.MEMBER);
     String payload = JacksonMapper.get().writeValueAsString(teamInviteCreate);
 
-    assertThat(payload, sameJson("{\"email\":\"test@gmail.com\",\"role\":\"standard\"}"));
+    assertThat(payload, sameJson("{\"email\":\"test@gmail.com\",\"role\":\"member\"}"));
 
     TeamInviteCreateDTO deserialized =
         JacksonMapper.get().readValue(payload, TeamInviteCreateDTO.class);

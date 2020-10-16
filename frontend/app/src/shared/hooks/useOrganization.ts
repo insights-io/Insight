@@ -28,5 +28,5 @@ export const useOrganization = (initialData: OrganizationDTO) => {
     data,
   ]);
 
-  return { organization, error, updateOrganization };
+  return { organization, error, updateOrganization, setOrganization: mutate };
 };

@@ -10,6 +10,7 @@ import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import { SsoButton } from 'modules/auth/components/SsoButton';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { Flex, UnstyledLink } from '@insight/elements';
+import FormError from 'shared/components/FormError';
 
 import { createOAuth2IntegrationHrefBuilder } from './utils';
 import LoginEmailForm from './EmailForm';
@@ -18,9 +19,11 @@ import LoginSamlSsoForm from './SamlSsoForm';
 
 export const LoginPage = () => {
   const [activeMethod, setActiveMethod] = useState<LoginMethod>('email');
-  const router = useRouter();
+  const { query, replace } = useRouter();
   const [_css, theme] = useStyletron();
-  const relativeRedirect = (router.query.redirect || '/') as string;
+
+  const maybeOAuthError = query.oauthError;
+  const relativeRedirect = (query.redirect || '/') as string;
   const absoluteRedirect = `${window.location.origin}${relativeRedirect}`;
   const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder({
     absoluteRedirect,
@@ -71,13 +74,23 @@ export const LoginPage = () => {
         <Tab title="Email" key="email">
           <LoginEmailForm
             relativeRedirect={relativeRedirect}
-            replace={router.replace}
+            replace={replace}
           />
         </Tab>
         <Tab title="SSO" key="sso">
           <LoginSamlSsoForm absoluteRedirect={absoluteRedirect} />
         </Tab>
       </Tabs>
+
+      {maybeOAuthError && (
+        <FormError
+          error={
+            Array.isArray(maybeOAuthError)
+              ? { message: maybeOAuthError[0] }
+              : { message: maybeOAuthError }
+          }
+        />
+      )}
 
       <Divider />
 

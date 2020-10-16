@@ -5,6 +5,7 @@ import static com.meemaw.auth.password.datasource.sql.PasswordTable.TABLE_ALIAS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.CREATED_AT;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.EMAIL;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.FIELDS;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.FIELD_MAPPINGS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.FULL_NAME;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ID;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.INSERT_FIELDS;
@@ -13,7 +14,9 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.PHONE_NUMBER;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.PHONE_NUMBER_VERIFIED;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.ROLE;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE_FIELDS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.UPDATED_AT;
+import static com.meemaw.auth.user.datasource.sql.SqlUserTable.USER_TABLE_ID;
 
 import com.meemaw.auth.password.datasource.sql.PasswordTable;
 import com.meemaw.auth.tfa.TfaMethod;
@@ -24,16 +27,16 @@ import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -45,7 +48,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.UpdateFromStep;
 import org.jooq.UpdateSetFirstStep;
 
 @ApplicationScoped
@@ -54,7 +56,7 @@ public class SqlUserDatasource implements UserDatasource {
 
   private static final List<Field<?>> USER_WITH_LOGIN_INFORMATION_FIELDS =
       Stream.concat(
-              SqlUserTable.TABLE_FIELDS.stream(),
+              TABLE_FIELDS.stream(),
               Stream.of(
                   PasswordTable.tableAliasField(HASH),
                   SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.PARAMS),
@@ -84,15 +86,15 @@ public class SqlUserDatasource implements UserDatasource {
     return transaction.query(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public CompletionStage<AuthUser> updateUser(UUID userId, Map<String, ?> update) {
+  public CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update) {
     UpdateSetFirstStep<?> updateStep = sqlPool.getContext().update(TABLE);
-    for (Entry<String, ?> entry : update.entrySet()) {
-      Field field = SqlUserTable.FIELD_MAPPINGS.get(entry.getKey());
-      updateStep.set(field, entry.getValue());
-    }
-    Query query = ((UpdateFromStep<?>) updateStep).where(ID.eq(userId)).returning(FIELDS);
+    Query query =
+        SQLUpdateDTO.of(update)
+            .apply(updateStep, FIELD_MAPPINGS)
+            .where(ID.eq(userId))
+            .returning(FIELDS);
+
     return sqlPool.execute(query).thenApply(rows -> mapUser(rows.iterator().next()));
   }
 
@@ -154,12 +156,12 @@ public class SqlUserDatasource implements UserDatasource {
             .getContext()
             .select(USER_WITH_LOGIN_INFORMATION_FIELDS)
             .from(
-                SqlUserTable.TABLE
+                TABLE
                     .leftJoin(TABLE_ALIAS)
-                    .on(SqlUserTable.USER_TABLE_ID.eq(PasswordTable.TABLE_ALIAS_USER_ID))
+                    .on(USER_TABLE_ID.eq(PasswordTable.TABLE_ALIAS_USER_ID))
                     .leftJoin(SqlTfaSetupTable.TABLE_ALIAS)
-                    .on(SqlUserTable.USER_TABLE_ID.eq(SqlTfaSetupTable.TABLE_ALIAS_USER_ID)))
-            .where(SqlUserTable.EMAIL.eq(email))
+                    .on(USER_TABLE_ID.eq(SqlTfaSetupTable.TABLE_ALIAS_USER_ID)))
+            .where(EMAIL.eq(email))
             .orderBy(PasswordTable.TABLE_ALIAS_CREATED_AT.desc())
             .limit(2);
 

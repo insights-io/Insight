@@ -3,7 +3,7 @@ import { PLACEMENT, StatefulPopover } from 'baseui/popover';
 import { Theme } from 'baseui/theme';
 import React, { useMemo } from 'react';
 import useHover from 'shared/hooks/useHover';
-import type { User } from '@insight/types';
+import type { AvatarDTO, User } from '@insight/types';
 import { Block } from 'baseui/block';
 import { VerticalAligned, expandBorderRadius } from '@insight/elements';
 import { ChevronDown } from 'baseui/icon';
@@ -27,6 +27,8 @@ import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { toaster } from 'baseui/toast';
 
+import { OrganizationAvatar } from '../../OrganizationAvatar';
+
 import { BannerCard } from './BannerCard';
 import {
   MenuOptionGroupItem,
@@ -37,6 +39,7 @@ import { MenuOptionItem } from './MenuOptionItem';
 type Props = {
   theme: Theme;
   organizationName: string | undefined;
+  organizationAvatar: AvatarDTO | undefined;
   user: User;
   expanded: boolean;
 };
@@ -44,6 +47,7 @@ type Props = {
 export const NavbarBanner = ({
   user,
   organizationName,
+  organizationAvatar,
   expanded,
   theme,
 }: Props) => {
@@ -117,9 +121,7 @@ export const NavbarBanner = ({
                 email: user.email,
                 fullName: user.fullName,
                 organizationName,
-                overrides: {
-                  OrganizationBanner: { Avatar: { style: borderRadius } },
-                },
+                organizationAvatar,
               } as MenuOptionGroupItemProps,
             },
             List: { style: { width: '250px', ...borderRadius } },
@@ -130,7 +132,12 @@ export const NavbarBanner = ({
       <Block ref={callbackRef} className="banner">
         <BannerCard
           title={organizationName || 'My Organization'}
-          avatar={organizationName || 'O'}
+          avatar={
+            <OrganizationAvatar
+              name={organizationName}
+              avatar={organizationAvatar}
+            />
+          }
           titleExtra={
             <VerticalAligned marginLeft={theme.sizing.scale200}>
               <ChevronDown />

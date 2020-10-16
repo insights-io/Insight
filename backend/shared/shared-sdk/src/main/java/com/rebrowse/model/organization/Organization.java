@@ -1,5 +1,6 @@
 package com.rebrowse.model.organization;
 
+import com.rebrowse.model.user.UserRole;
 import com.rebrowse.net.ApiResource;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
@@ -14,6 +15,9 @@ public class Organization {
 
   String id;
   String name;
+  boolean openMembership;
+  UserRole defaultRole;
+  AvatarType avatar;
   OffsetDateTime createdAt;
   OffsetDateTime updatedAt;
 

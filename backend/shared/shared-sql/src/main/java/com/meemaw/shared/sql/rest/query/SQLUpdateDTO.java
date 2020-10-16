@@ -1,5 +1,6 @@
 package com.meemaw.shared.sql.rest.query;
 
+import com.google.common.base.CaseFormat;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,7 +17,8 @@ public class SQLUpdateDTO {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public UpdateFromStep<?> apply(UpdateSetFirstStep<?> updateStep, Map<String, Field<?>> mappings) {
     for (Entry<String, ?> entry : update.getParams().entrySet()) {
-      Field field = mappings.get(entry.getKey());
+      String sqlField = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, entry.getKey());
+      Field field = mappings.get(sqlField);
       updateStep.set(field, entry.getValue());
     }
     return (UpdateFromStep<?>) updateStep;
