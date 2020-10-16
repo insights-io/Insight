@@ -19,9 +19,9 @@ fixture('/settings/organization').page(OrganizationGeneralSettingsPage.path);
 test('[TEAM INVITE]: User should be able to invite new members to an organization', async (t) => {
   await LoginPage.loginWithInsightUser(t);
   await t
-    .expect(OrganizationGeneralSettingsPage.id.innerText)
+    .expect(OrganizationGeneralSettingsPage.idInput.value)
     .eql('000000', 'Should display Insight organization id')
-    .expect(OrganizationGeneralSettingsPage.name.innerText)
+    .expect(OrganizationGeneralSettingsPage.nameInput.value)
     .eql('Insight', 'Should display Insight organization name');
 
   await t

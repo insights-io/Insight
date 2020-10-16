@@ -10,10 +10,10 @@ import { ChevronDown } from 'baseui/icon';
 import {
   ACCOUNT_SETTINGS_AUTH_TOKENS_PAGE,
   ACCOUNT_SETTINGS_DETAILS_PAGE,
-  ORGANIZATION_SETTINGS_AUTH_PAGE,
   ORGANIZATION_SETTINGS_BILLING_USAGE_AND_PAYMENTS_PAGE,
   ORGANIZATION_SETTINGS_MEMBERS_PAGE,
   LOGIN_PAGE,
+  ORGANIZATION_SETTINGS_GENERAL_PAGE,
 } from 'shared/constants/routes';
 import {
   ACCOUNT_SETTINGS_SECTION,
@@ -63,7 +63,7 @@ export const NavbarBanner = ({
       Organization: [
         {
           label: ORGANIZATION_SETTINGS_SECTION,
-          link: ORGANIZATION_SETTINGS_AUTH_PAGE,
+          link: ORGANIZATION_SETTINGS_GENERAL_PAGE,
         },
         {
           label: MEMBERS_SECTION,

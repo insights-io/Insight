@@ -280,6 +280,8 @@ export const OrganizationSettingsGeneralPage = ({
 
             <VerticalAligned width="50%">
               <Toggle
+                id="openMembership"
+                name="openMembership"
                 checked={openMembership}
                 disabled={updatingOpenMembership}
                 onChange={() => updateMembership(!openMembership)}
