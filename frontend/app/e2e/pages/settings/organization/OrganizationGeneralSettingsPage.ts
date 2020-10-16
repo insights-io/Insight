@@ -7,7 +7,9 @@ import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettings
 export class OrganizationGeneralSettingsPage extends AbstractOrganizationSettingsPage {
   public readonly header = this.withinContainer.queryByText('General');
 
-  public readonly idInput = this.withinContainer.queryByText('Organization ID');
+  public readonly idInput = this.withinContainer.queryByPlaceholderText(
+    'Organization ID'
+  );
   public readonly nameInput = this.withinContainer.queryByPlaceholderText(
     'Display name'
   );
