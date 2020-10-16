@@ -1,5 +1,6 @@
 package com.meemaw.auth.organization.resource.v1;
 
+import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
@@ -7,10 +8,15 @@ import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -35,6 +41,16 @@ public interface OrganizationResource {
 
   String PATH = "/v1/organization";
   String TAG = "Organization";
+
+  @DELETE
+  @Tag(name = TAG)
+  @Operation(summary = "Delete organization associated with authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  CompletionStage<Response> delete();
 
   @GET
   @Path("members")
@@ -72,6 +88,59 @@ public interface OrganizationResource {
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> retrieveMembers();
+
+  @PATCH
+  @Tag(name = TAG)
+  @Operation(summary = "Update organization associated with authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Updated organization",
+            content =
+                @Content(
+                    schema = @Schema(implementation = OrganizationDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> updateAssociated(
+      @NotNull(message = "Required") Map<String, Object> body);
 
   @GET
   @Tag(name = TAG)
@@ -156,6 +225,18 @@ public interface OrganizationResource {
       @PathParam("id") String id, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
     return retrieve(id);
   }
+
+  @PATCH
+  @Path("avatar")
+  @Tag(name = TAG)
+  @Operation(summary = "Setup avatar for the organization associated with authenticated user")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  CompletionStage<Response> associatedAvatarSetup(
+      @NotNull(message = "Required") @Valid AvatarSetupDTO body);
 
   CompletionStage<Response> retrieve(String organizationId);
 

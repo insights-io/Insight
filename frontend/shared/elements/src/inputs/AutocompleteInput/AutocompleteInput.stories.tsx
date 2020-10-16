@@ -13,11 +13,24 @@ const useAutocompleteInput = () => {
   return { value, onChange };
 };
 
-export const Base = () => {
+export const WithStringOptions = () => {
   return (
     <AutocompleteInput
       {...useAutocompleteInput()}
       options={['Maribor', 'Ljubljana']}
+      placeholder="Type something"
+    />
+  );
+};
+
+export const WithObjectOptions = () => {
+  return (
+    <AutocompleteInput
+      {...useAutocompleteInput()}
+      options={[
+        { label: 'Maribor', value: 'maribor' },
+        { label: 'Ljubljana', value: 'ljubljana' },
+      ]}
       placeholder="Type something"
     />
   );

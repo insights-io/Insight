@@ -13,11 +13,14 @@ import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
+import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.sso.token.resource.v1.AuthTokenResource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.Map;
 import java.util.Optional;
@@ -62,6 +65,17 @@ public class AuthApiTestProvider {
 
   public String signUpAndLoginWithRandomCredentials() throws JsonProcessingException {
     return signUpAndLoginWithRandomCredentials(null);
+  }
+
+  public String signUpAndLoginWithRandomBusinessCredentials() throws JsonProcessingException {
+    return signUpAndLoginWithRandomBusinessCredentials(null);
+  }
+
+  public String signUpAndLoginWithRandomBusinessCredentials(PhoneNumberDTO phoneNumber)
+      throws JsonProcessingException {
+    String password = UUID.randomUUID().toString();
+    String email = String.format("%s@%s.com", password, UUID.randomUUID());
+    return signUpAndLogin(signUpRequestMock(email, password, phoneNumber));
   }
 
   public String signUpAndLoginWithRandomCredentials(PhoneNumberDTO phoneNumber)
@@ -163,5 +177,33 @@ public class AuthApiTestProvider {
             .as(new TypeRef<>() {});
 
     return (String) response.getData().get("token");
+  }
+
+  public Response setupSso(String sessionId, CreateSsoSetupDTO createSsoSetup)
+      throws JsonProcessingException {
+    return given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(objectMapper.writeValueAsString(createSsoSetup))
+        .post(resourcePath(SsoSetupResource.PATH))
+        .then()
+        .statusCode(201)
+        .extract()
+        .response();
+  }
+
+  public Response updateOrganization(String sessionId, Map<String, Object> update)
+      throws JsonProcessingException {
+    return given()
+        .when()
+        .contentType(ContentType.JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(objectMapper.writeValueAsString(update))
+        .patch(resourcePath(OrganizationResource.PATH))
+        .then()
+        .statusCode(200)
+        .extract()
+        .response();
   }
 }

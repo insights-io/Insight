@@ -7,7 +7,7 @@ public class BoomException extends RuntimeException {
   private final Boom<?> boom;
 
   public BoomException(Boom<?> boom) {
-    super();
+    super(boom.getMessage());
     this.boom = boom;
   }
 

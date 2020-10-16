@@ -14,6 +14,7 @@ import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftClient;
 import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftService;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.tfa.model.SsoChallenge;
@@ -62,6 +63,12 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
   @Override
   public AbstractIdpService service() {
     return microsoftService;
+  }
+
+  @Override
+  public AbstractOAuth2Client<?, ?, ?> installMockForClient(String email) {
+    QuarkusMock.installMockForInstance(new MockedOAuth2MicrosoftClient(email), microsoftClient);
+    return microsoftClient;
   }
 
   @Test

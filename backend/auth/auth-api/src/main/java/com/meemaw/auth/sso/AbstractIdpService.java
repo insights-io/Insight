@@ -2,10 +2,16 @@ package com.meemaw.auth.sso;
 
 import com.meemaw.auth.sso.oauth.OAuth2Resource;
 import com.meemaw.auth.sso.session.model.LoginMethod;
+import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.shared.rest.response.Boom;
+import java.net.URI;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public abstract class AbstractIdpService {
@@ -17,6 +23,18 @@ public abstract class AbstractIdpService {
 
   public abstract String basePath();
 
+  public ResponseLoginResult handleSsoException(Throwable throwable, URL redirect) {
+    String message = throwable.getCause().getMessage();
+    String location =
+        UriBuilder.fromUri(URI.create(redirect.toString()))
+            .queryParam("oauthError", message)
+            .build()
+            .toString();
+
+    return new ResponseLoginResult(
+        (ignored) -> Response.status(Status.FOUND).header("Location", location).build());
+  }
+
   public String callbackPath() {
     return String.join("/", basePath(), OAuth2Resource.CALLBACK_PATH);
   }
@@ -25,11 +43,11 @@ public abstract class AbstractIdpService {
     return String.join("/", basePath(), OAuth2Resource.SIGNIN_PATH);
   }
 
-  public String secureState(String data) {
+  public static String secureState(String data) {
     return secureState() + data;
   }
 
-  public String secureState() {
+  public static String secureState() {
     return RandomStringUtils.random(SECURE_STATE_PREFIX_LENGTH, 0, 0, true, true, null, random);
   }
 
@@ -39,7 +57,7 @@ public abstract class AbstractIdpService {
    * @param secureState from authorization flow
    * @return data that was encoded in the state
    */
-  public String secureStateData(String secureState) {
+  public static String secureStateData(String secureState) {
     try {
       return URLDecoder.decode(
           secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);

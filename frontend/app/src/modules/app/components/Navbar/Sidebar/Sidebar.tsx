@@ -54,6 +54,7 @@ export const Sidebar = forwardRef<HTMLDivElement, Props>(
             <NavbarBanner
               expanded={expanded}
               organizationName={organization.name}
+              organizationAvatar={organization.avatar}
               user={user}
               theme={theme}
             />

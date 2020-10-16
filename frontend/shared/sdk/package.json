@@ -21,7 +21,8 @@
     "build": "tsdx build --tsconfig tsconfig.build.json",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
-    "prettier": "prettier -l 'src/**/*'"
+    "prettier": "prettier -l 'src/**/*'",
+    "prettier:fix": "prettier -l 'src/**/*' --write"
   },
   "devDependencies": {
     "@insight/types": "0.0.0-development"

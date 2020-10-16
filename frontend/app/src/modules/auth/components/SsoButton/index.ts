@@ -1,1 +1,1 @@
-export { default } from './SsoButton';
+export { SsoButton } from './SsoButton';

@@ -7,7 +7,9 @@ const withServiceProxy = require('@insight/service-proxy').default({
 });
 
 const nextConfig = {
-  experimental: { optionalCatchAll: true },
+  experimental: {
+    optionalCatchAll: true,
+  },
 };
 
 module.exports = withServiceProxy(withBundleAnalyzer(nextConfig));

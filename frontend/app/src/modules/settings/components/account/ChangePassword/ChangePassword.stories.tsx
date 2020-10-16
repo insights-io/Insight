@@ -3,7 +3,7 @@ import { configureStory, mockApiError } from '@insight/storybook';
 import { AuthApi } from 'api/auth';
 import type { Meta } from '@storybook/react';
 
-import ChangePassword from './ChangePassword';
+import { ChangePassword } from './ChangePassword';
 
 export default {
   title: 'settings/components/ChangePassword',

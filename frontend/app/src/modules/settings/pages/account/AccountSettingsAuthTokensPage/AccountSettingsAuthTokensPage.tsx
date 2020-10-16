@@ -10,6 +10,7 @@ import { AuthTokenDTO, OrganizationDTO, UserDTO } from '@insight/types';
 import { useAuthTokens } from 'modules/settings/hooks/useAuthTokens';
 import { Block } from 'baseui/block';
 import { Delete, Plus } from 'baseui/icon';
+import { Button } from '@insight/elements';
 import {
   StyledTable,
   StyledHead,
@@ -18,12 +19,12 @@ import {
   StyledRow,
   StyledCell,
 } from 'baseui/table';
-import { Button, SHAPE, SIZE } from 'baseui/button';
 import { StatefulTooltip } from 'baseui/tooltip';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { AuthApi } from 'api';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
+import { SIZE } from 'baseui/button';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -88,10 +89,9 @@ export const AccountSettingsAuthTokensPage = ({
       header="Auth Tokens"
     >
       <Button
-        size={SIZE.compact}
-        shape={SHAPE.pill}
         isLoading={creatingAuthToken}
         onClick={createAuthToken}
+        size={SIZE.compact}
       >
         <Plus />
         Create new
@@ -118,7 +118,6 @@ export const AccountSettingsAuthTokensPage = ({
                     >
                       <Button
                         size="mini"
-                        shape={SHAPE.pill}
                         onClick={() => setSelectedAuthToken(token)}
                       >
                         <Delete />
@@ -144,17 +143,12 @@ export const AccountSettingsAuthTokensPage = ({
 
         <ModalFooter>
           <Button
-            shape={SHAPE.pill}
             kind="tertiary"
             onClick={() => setSelectedAuthToken(undefined)}
           >
             Cancel
           </Button>
-          <Button
-            shape={SHAPE.pill}
-            onClick={deleteAuthToken}
-            isLoading={deletingAuthToken}
-          >
+          <Button onClick={deleteAuthToken} isLoading={deletingAuthToken}>
             Yes
           </Button>
         </ModalFooter>

@@ -32,12 +32,19 @@ class Login extends AbstractPage {
     invalidCredentials: queryByText('Invalid email or password'),
   };
 
-  /* Utils */
-  public login = (t: TestController, { email, password }: LoginCredentials) => {
+  public loginActions = (
+    t: TestController,
+    { email, password }: LoginCredentials
+  ) => {
     return t
       .typeText(this.emailInput, email)
       .typeText(this.passwordInput, password)
-      .click(this.signInButton)
+      .click(this.signInButton);
+  };
+
+  /* Utils */
+  public login = (t: TestController, credentials: LoginCredentials) => {
+    return this.loginActions(t, credentials)
       .expect(this.signInButton.exists)
       .notOk('Sign in button is not visible anymore');
   };

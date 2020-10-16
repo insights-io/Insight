@@ -206,8 +206,12 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .header("referer", "http://localhost:3000")
-            .get(URLDecoder.decode(signInRedirect, StandardCharsets.UTF_8));
-    response.then().statusCode(302).cookie(SsoSignInSession.COOKIE_NAME);
+            .get(URLDecoder.decode(signInRedirect, StandardCharsets.UTF_8))
+            .then()
+            .statusCode(302)
+            .cookie(SsoSignInSession.COOKIE_NAME)
+            .extract()
+            .response();
 
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="

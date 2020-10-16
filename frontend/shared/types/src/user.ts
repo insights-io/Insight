@@ -7,7 +7,7 @@ export type PhoneNumber = {
   digits: string;
 };
 
-export type UserRole = 'admin' | 'standard';
+export type UserRole = 'admin' | 'member';
 
 export type UserDTO = {
   id: string;

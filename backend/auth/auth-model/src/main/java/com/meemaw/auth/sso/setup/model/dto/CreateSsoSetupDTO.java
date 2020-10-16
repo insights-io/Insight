@@ -17,4 +17,8 @@ public class CreateSsoSetupDTO {
   SsoMethod method;
 
   URL configurationEndpoint;
+
+  public static CreateSsoSetupDTO google() {
+    return new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
+  }
 }
