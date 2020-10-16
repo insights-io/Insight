@@ -1,6 +1,8 @@
 {
   "id": "000000",
   "name": "Insight",
+  "openMembership": true,
+  "defaultRole": "member",
   "createdAt": "2020-09-29T19:36:33.783838Z",
   "updatedAt": "2020-09-29T19:36:33.783838Z"
 }

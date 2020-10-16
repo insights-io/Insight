@@ -9,6 +9,8 @@ import type {
 export const INSIGHT_ORGANIZATION_DTO: OrganizationDTO = {
   id: '000000',
   name: 'Insight',
+  defaultRole: 'member',
+  openMembership: false,
   createdAt: new Date().toUTCString(),
   updatedAt: new Date().toUTCString(),
 };
@@ -24,7 +26,7 @@ export const NAMELESS_INSIGHT_ORGANIZATION: Organization = {
 
 export const STANDARD_TEAM_INVITE_DTO: TeamInviteDTO = {
   email: 'standard@gmail.com',
-  role: 'standard',
+  role: 'member',
   createdAt: new Date().toUTCString(),
   creator: '123',
   org: '000000',
@@ -46,7 +48,7 @@ export const ADMIN_TEAM_INVITE = mapTeamInvite(ADMIN_TEAM_INVITE_DTO);
 
 export const EXPIRED_TEAM_INVITE_DTO: TeamInviteDTO = {
   email: 'expired@gmail.com',
-  role: 'standard',
+  role: 'member',
   createdAt: subDays(new Date(), 1).toUTCString(),
   creator: '123',
   org: '000000',
