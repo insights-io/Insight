@@ -14,7 +14,7 @@ class InviteNewMemberModal {
 
   public readonly role = {
     admin: queryByText('Admin'),
-    standard: queryByText('Standard'),
+    member: queryByText('Member'),
   };
 }
 

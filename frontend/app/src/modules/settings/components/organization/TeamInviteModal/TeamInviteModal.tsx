@@ -23,7 +23,7 @@ type Props = {
 };
 
 const ADMIN: UserRole = 'admin';
-const STANDARD: UserRole = 'standard';
+const MEMBER: UserRole = 'member';
 
 const TeamInviteModal = ({ createTeamInvite }: Props) => {
   const [_css, theme] = useStyletron();
@@ -89,7 +89,7 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
                 as={
                   <RadioGroup>
                     <Radio value={ADMIN}>Admin</Radio>
-                    <Radio value={STANDARD}>Regular</Radio>
+                    <Radio value={MEMBER}>Member</Radio>
                   </RadioGroup>
                 }
               />

@@ -6,9 +6,9 @@ import fs from 'fs';
 
 import { CreatePageResponse } from '@insight/types';
 import { chromium, Response, Page } from 'playwright';
-import type { InsightWindow } from 'types';
 import Identity from 'identity';
-import { EventData } from 'event';
+import type { InsightWindow } from 'types';
+import type { EventData } from 'event';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
