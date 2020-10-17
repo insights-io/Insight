@@ -104,8 +104,6 @@ export const SetupAvatar = ({
         return;
       }
 
-      console.log({ image });
-
       avatarSetup = { type: 'avatar', image };
     } else {
       avatarSetup = { type: 'initials' };
