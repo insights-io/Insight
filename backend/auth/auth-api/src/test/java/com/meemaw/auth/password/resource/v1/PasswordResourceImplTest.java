@@ -11,7 +11,7 @@ import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -332,7 +332,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", signUpEmail)
         .param("password", oldPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\": true}"));
@@ -382,7 +382,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", signUpEmail)
         .param("password", oldPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -396,7 +396,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", signUpEmail)
         .param("password", newPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\": true}"))
@@ -580,7 +580,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", email)
         .param("password", oldPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(

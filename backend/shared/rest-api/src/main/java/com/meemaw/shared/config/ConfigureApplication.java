@@ -2,7 +2,6 @@ package com.meemaw.shared.config;
 
 import com.rebrowse.Rebrowse;
 import com.rebrowse.net.ApiResource;
-import com.rebrowse.net.HttpClient;
 import com.rebrowse.net.NetHttpClient;
 import com.rebrowse.net.RebrowseHttpClient;
 import io.quarkus.runtime.StartupEvent;
@@ -30,9 +29,9 @@ public class ConfigureApplication {
       builder.executor(managedExecutor);
     }
 
-    HttpClient httpClient =
-        new RebrowseHttpClient(new NetHttpClient(builder.build()), ApiResource.OBJECT_MAPPER);
     Rebrowse.apiKey = s2sApiKey;
-    ApiResource.setHttpClient(httpClient);
+    Rebrowse.maxNetworkRetries(2);
+    ApiResource.setHttpClient(
+        new RebrowseHttpClient(new NetHttpClient(builder.build()), ApiResource.OBJECT_MAPPER));
   }
 }

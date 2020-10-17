@@ -25,7 +25,7 @@ import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SsoResourceImpl implements SsoResource {
+public class SsoSessionResourceImpl implements SsoSessionResource {
 
   @Inject SsoService ssoService;
   @Inject OrganizationService organizationService;
@@ -82,7 +82,7 @@ public class SsoResourceImpl implements SsoResource {
   }
 
   @Override
-  public CompletionStage<Response> getSession(String sessionId) {
+  public CompletionStage<Response> retrieveSession(String sessionId) {
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .findSession(sessionId)

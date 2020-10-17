@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.setup.datasource;
 
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 

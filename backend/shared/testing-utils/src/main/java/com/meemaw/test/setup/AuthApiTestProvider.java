@@ -12,7 +12,7 @@ import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.sso.token.resource.v1.AuthTokenResource;
@@ -135,7 +135,7 @@ public class AuthApiTestProvider {
   }
 
   public Optional<SessionInfoDTO> getSessionInfo(String sessionId) {
-    String uri = resourcePath(SsoResource.PATH + "/session");
+    String uri = resourcePath(SsoSessionResource.PATH + "/session");
 
     DataResponse<SessionInfoDTO> dataResponse =
         given().cookie(SsoSession.COOKIE_NAME, sessionId).when().get(uri).as(new TypeRef<>() {});
@@ -148,7 +148,7 @@ public class AuthApiTestProvider {
   }
 
   public String login(String email, String password) {
-    String loginURI = resourcePath(String.join("/", SsoResource.PATH, "login"));
+    String loginURI = resourcePath(String.join("/", SsoSessionResource.PATH, "login"));
     Response response =
         given()
             .when()

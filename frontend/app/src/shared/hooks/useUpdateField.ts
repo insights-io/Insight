@@ -71,12 +71,13 @@ export const useUpdateField = <
           {}
         );
       })
-      .catch(() =>
+      .catch(() => {
+        setValue(currentValue);
         toaster.negative(
           `Something went wrong while trying to update ${resource}`,
           {}
-        )
-      )
+        );
+      })
       .finally(() => setUpdating(false));
   };
 

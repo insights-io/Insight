@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import {
   SETTINGS_PATH_PART,
   ORGANIZATION_SETTINGS_PAGE_PART,
@@ -11,50 +11,25 @@ import {
   Panel,
   VerticalAligned,
   Input,
-  Button,
   SpacedBetween,
-  expandBorderRadius,
-  Flex,
   AutocompleteInput,
   ExplainedLabel,
   Toggle,
 } from '@insight/elements';
 import { useUpdateField } from 'shared/hooks/useUpdateField';
 import type { Path } from 'modules/settings/types';
-import type {
-  AvatarDTO,
-  AvatarType,
-  OrganizationDTO,
-  UserDTO,
-  UserRole,
-} from '@insight/types';
-import Divider from 'shared/components/Divider';
-import { Radio, RadioGroup } from 'baseui/radio';
-import { Avatar } from 'baseui/avatar';
+import type { OrganizationDTO, UserDTO, UserRole } from '@insight/types';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
-import { FileUploader } from 'baseui/file-uploader';
-import dynamic from 'next/dynamic';
-import {
-  fileToBase64,
-  getCroppedImageAsDataUrl,
-  ImageCrop,
-} from 'shared/utils/image';
-import type { Crop } from 'react-image-crop';
-import { AuthApi } from 'api';
-import { toaster } from 'baseui/toast';
 
 import { DeleteOrganization } from './DeleteOrganization';
+import { SetupAvatar } from './SetupAvatar';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
   ORGANIZATION_SETTINGS_PAGE_PART,
   ORGANIZATION_SETTINGS_GENERAL_PAGE_PART,
 ];
-
-const LazyImageCrop = dynamic(
-  () => import('modules/settings/components/ImageCrop')
-);
 
 type Props = {
   organization: OrganizationDTO;
@@ -65,22 +40,12 @@ export const OrganizationSettingsGeneralPage = ({
   organization: initialOrganization,
   user: initialUser,
 }: Props) => {
-  const imageRef = useRef<HTMLImageElement>(null);
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
   const { organization, updateOrganization, setOrganization } = useOrganization(
     initialOrganization
   );
-  const [isSavingAvatar, setIsSavingAvatar] = useState(false);
-  const [avatar, setAvatar] = useState(
-    organization?.avatar?.type === 'avatar'
-      ? organization.avatar.image
-      : undefined
-  );
-  const [crop, setCrop] = useState<Crop>();
-  const [avatarType, setAvatarType] = useState<AvatarType>(
-    organization.avatar?.type || 'initials'
-  );
+
   const {
     value: name,
     setValue: setName,
@@ -115,37 +80,6 @@ export const OrganizationSettingsGeneralPage = ({
     resource: 'organization',
     update: updateOrganization,
   });
-
-  const onSaveAvatar = async () => {
-    let avatarSetup: AvatarDTO | undefined;
-    if (avatarType === 'avatar') {
-      if (imageRef.current && crop && crop.height && crop.width) {
-        const image = await getCroppedImageAsDataUrl(
-          imageRef.current,
-          crop as ImageCrop
-        );
-        avatarSetup = { type: 'avatar', image };
-      } else {
-        avatarSetup = { type: 'avatar', image: avatar as string };
-      }
-    } else {
-      avatarSetup = { type: 'initials' };
-    }
-
-    if (JSON.stringify(avatarSetup) === JSON.stringify(organization.avatar)) {
-      return;
-    }
-
-    setIsSavingAvatar(true);
-
-    AuthApi.organization
-      .setupAvatar(avatarSetup)
-      .then((updatedOrganization) => {
-        setOrganization(updatedOrganization);
-        toaster.positive('Successfuly saved avatar preferences', {});
-      })
-      .finally(() => setIsSavingAvatar(false));
-  };
 
   return (
     <OrganizationSettingsPageLayout
@@ -260,7 +194,7 @@ export const OrganizationSettingsGeneralPage = ({
                 ]}
                 value={defaultRole}
                 onChange={(value) => setDefaultRole(value as UserRole)}
-                onBlur={maybeUpdateDefaultRole}
+                onBlur={() => maybeUpdateDefaultRole()}
                 isLoading={updatingDefaultRole}
                 disabled={updatingDefaultRole}
               />
@@ -279,13 +213,15 @@ export const OrganizationSettingsGeneralPage = ({
             </ExplainedLabel>
 
             <VerticalAligned width="50%">
-              <Toggle
-                id="openMembership"
-                name="openMembership"
-                checked={openMembership}
-                disabled={updatingOpenMembership}
-                onChange={() => updateMembership(!openMembership)}
-              />
+              <Block width="fit-content">
+                <Toggle
+                  id="openMembership"
+                  name="openMembership"
+                  checked={openMembership}
+                  disabled={updatingOpenMembership}
+                  onChange={() => updateMembership(!openMembership)}
+                />
+              </Block>
             </VerticalAligned>
           </SpacedBetween>
         </Panel.Item>
@@ -294,76 +230,10 @@ export const OrganizationSettingsGeneralPage = ({
       <Panel marginTop={theme.sizing.scale800}>
         <Panel.Header>Avatar</Panel.Header>
         <Panel.Item>
-          <SpacedBetween>
-            <RadioGroup
-              value={avatarType}
-              onChange={(event) =>
-                setAvatarType(event.target.value as 'initials' | 'avatar')
-              }
-            >
-              <Radio value="initials">Use initials</Radio>
-              <Radio value="avatar">Upload avatar</Radio>
-            </RadioGroup>
-
-            <Block>
-              {avatarType === 'initials' ? (
-                <Avatar
-                  name={organization.name || 'O'}
-                  size="70px"
-                  overrides={{
-                    Root: {
-                      style: {
-                        ...expandBorderRadius('8px'),
-                        backgroundColor: theme.colors.accent600,
-                      },
-                    },
-                  }}
-                />
-              ) : (
-                <FileUploader
-                  accept={['image/png', 'image/png', 'image/jpeg']}
-                  multiple={false}
-                  name="avatar"
-                  onDrop={([acceptedFile]) => {
-                    if (acceptedFile) {
-                      fileToBase64(acceptedFile).then(setAvatar);
-                    }
-                  }}
-                />
-              )}
-            </Block>
-          </SpacedBetween>
-
-          {avatarType === 'avatar' && avatar && (
-            <Flex
-              width="100%"
-              height="auto"
-              marginTop="32px"
-              justifyContent="center"
-              $style={{
-                backgroundSize: '20px 20px',
-                backgroundPosition: '0px 0px, 0px 10px, 10px -10px, -10px 0px',
-                backgroundImage:
-                  'linear-gradient(45deg, rgb(238, 238, 238) 25%, rgba(0, 0, 0, 0) 25%), linear-gradient(-45deg, rgb(238, 238, 238) 25%, rgba(0, 0, 0, 0) 25%), linear-gradient(45deg, rgba(0, 0, 0, 0) 75%, rgb(238, 238, 238) 75%), linear-gradient(-45deg, rgba(0, 0, 0, 0) 75%, rgb(238, 238, 238) 75%)',
-              }}
-            >
-              <LazyImageCrop
-                src={avatar}
-                style={{ maxWidth: '100%', maxHeight: '100%' }}
-                crop={crop}
-                onChange={(c) => setCrop(c)}
-                forwardedRef={imageRef}
-              />
-            </Flex>
-          )}
-
-          <Divider />
-          <SpacedBetween>
-            <div />
-            <Button onClick={onSaveAvatar} isLoading={isSavingAvatar}>
-              Save Avatar
-            </Button>
-          </SpacedBetween>
+          <SetupAvatar
+            organization={organization}
+            setOrganization={setOrganization}
+          />
         </Panel.Item>
       </Panel>
 

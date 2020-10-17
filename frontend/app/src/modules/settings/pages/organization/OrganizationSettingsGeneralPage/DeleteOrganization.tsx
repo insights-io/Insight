@@ -33,7 +33,7 @@ export const DeleteOrganization = () => {
   return (
     <>
       <Button
-        $style={{ background: theme.colors.negative400 }}
+        $style={{ backgroundColor: theme.colors.negative400 }}
         onClick={() => setIsModalOpen(true)}
       >
         Delete Organization

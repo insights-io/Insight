@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -138,7 +138,7 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -150,7 +150,7 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
             .param("email", email)
             .param("password", password)
             .header("referer", "http://localhost:3000")
-            .post(SsoResource.PATH + "/login");
+            .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
     assertTrue(userTfaDatasource.delete(userId, TfaMethod.TOTP).toCompletableFuture().join());

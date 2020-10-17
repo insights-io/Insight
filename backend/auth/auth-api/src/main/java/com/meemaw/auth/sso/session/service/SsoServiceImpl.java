@@ -13,7 +13,7 @@ import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
 import com.meemaw.auth.tfa.ChallengeLoginResult;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;

@@ -50,6 +50,34 @@ public interface OrganizationResource {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
         @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
       })
+  @APIResponses(
+      value = {
+        @APIResponse(responseCode = "204", description = "Success"),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.FORBIDDEN_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
   CompletionStage<Response> delete();
 
   @GET
@@ -234,6 +262,40 @@ public interface OrganizationResource {
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
         @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Updated organization",
+            content =
+                @Content(
+                    schema = @Schema(implementation = OrganizationDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> associatedAvatarSetup(
       @NotNull(message = "Required") @Valid AvatarSetupDTO body);

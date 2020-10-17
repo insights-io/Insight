@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.oauth;
 
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
@@ -25,7 +25,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 public interface OAuth2Resource {
 
-  String PATH = SsoResource.PATH + "/oauth2";
+  String PATH = SsoSessionResource.PATH + "/oauth2";
   String CALLBACK_PATH = "callback";
   String TAG = "OAuth";
   String SIGNIN_PATH = "signin";
@@ -38,7 +38,7 @@ public interface OAuth2Resource {
       value = {
         @APIResponse(
             responseCode = "302",
-            description = "Success",
+            description = "Redirect to identity provider",
             headers = {
               @Header(name = "Set-Cookie", description = "Set anti-forgery state cookie")
             }),
@@ -66,6 +66,24 @@ public interface OAuth2Resource {
   @Path(CALLBACK_PATH)
   @Tag(name = TAG)
   @Operation(summary = "OAuth callback")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "302",
+            description =
+                "Redirect user back to the application. If error occurred, it will be injected into the \"oauthError\" query parameter of the URL",
+            headers = {
+              @Header(name = "Set-Cookie", description = "Set SessionId cookie if success")
+            }),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
   CompletionStage<Response> oauth2callback(
       @NotBlank(message = "Required") @QueryParam("code") String code,
       @NotBlank(message = "Required") @QueryParam("state") String state,
