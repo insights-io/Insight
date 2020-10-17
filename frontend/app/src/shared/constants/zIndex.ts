@@ -1,0 +1,3 @@
+export const SIDEBAR = 3;
+export const SETTINGS_LAYOUT_SIDEBAR = SIDEBAR - 1;
+export const CONTENT_MASK = SETTINGS_LAYOUT_SIDEBAR - 1;

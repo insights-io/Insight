@@ -8,6 +8,7 @@ import { StyleObject } from 'styletron-react';
 import { FlexColumn } from '@insight/elements';
 import { INDEX_PAGE, SESSIONS_PAGE } from 'shared/constants/routes';
 import type { Organization, User } from '@insight/types';
+import * as zIndex from 'shared/constants/zIndex';
 
 import { NavbarBanner } from '../Banner';
 
@@ -47,7 +48,7 @@ export const Sidebar = forwardRef<HTMLDivElement, Props>(
         width={width}
         color={theme.colors.white}
         backgroundColor={theme.colors.black}
-        $style={{ zIndex: 1, ...style }}
+        $style={{ zIndex: zIndex.SIDEBAR, ...style }}
       >
         <Block as="ul" $style={{ listStyle: 'none' }} margin={0} padding={0}>
           <Block margin="12px" as="li">

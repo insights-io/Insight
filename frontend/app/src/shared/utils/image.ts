@@ -1,5 +1,12 @@
 import ky from 'ky-universal';
 
+export type ImageSize = {
+  width: number;
+  height: number;
+};
+
+export type ImageCrop = { width: number; height: number; x: number; y: number };
+
 export const arrayBufferToBase64 = (
   buffer: ArrayBuffer,
   type = 'image/jpeg'
@@ -19,11 +26,23 @@ export const arrayBufferToBase64 = (
   });
 };
 
+export const getImageDimensions = (base64image: string) => {
+  return new Promise<ImageSize>((resolve) => {
+    const image = document.createElement('img');
+    image.src = base64image;
+
+    image.onload = () => {
+      resolve({
+        width: image.naturalWidth || image.width,
+        height: image.naturalHeight || image.height,
+      });
+    };
+  });
+};
+
 export const fileToBase64 = (file: File) => {
   return file.arrayBuffer().then(arrayBufferToBase64);
 };
-
-export type ImageCrop = { width: number; height: number; x: number; y: number };
 
 export const cropImage = (image: HTMLImageElement, crop: ImageCrop) => {
   const canvas = document.createElement('canvas');
@@ -33,7 +52,7 @@ export const cropImage = (image: HTMLImageElement, crop: ImageCrop) => {
   canvas.height = crop.height;
   const ctx = canvas.getContext('2d');
   if (!ctx) {
-    throw new Error('');
+    throw new Error('Failed to get CanvasRenderingContext2D');
   }
 
   ctx.drawImage(
