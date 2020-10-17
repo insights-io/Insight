@@ -18,7 +18,9 @@ import { useStyletron } from 'baseui';
 import {
   fileToBase64,
   getCroppedImageAsDataUrl,
+  getImageDimensions,
   ImageCrop,
+  ImageSize,
 } from 'shared/utils/image';
 import { FileUploader } from 'baseui/file-uploader';
 import dynamic from 'next/dynamic';
@@ -43,13 +45,20 @@ type SetupAvatarFormValues = {
 type Props = {
   organization: Organization;
   setOrganization: (organization: OrganizationDTO) => void;
+  minSize?: number;
+  maxSize?: number;
 };
 
-export const SetupAvatar = ({ organization, setOrganization }: Props) => {
+export const SetupAvatar = ({
+  organization,
+  setOrganization,
+  minSize = 258,
+  maxSize = 2048,
+}: Props) => {
   const imageRef = useRef<HTMLImageElement>(null);
   const [_css, theme] = useStyletron();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { control, watch, handleSubmit, errors } = useForm<
+  const { control, watch, handleSubmit, errors, setError } = useForm<
     SetupAvatarFormValues
   >({
     defaultValues: {
@@ -68,15 +77,36 @@ export const SetupAvatar = ({ organization, setOrganization }: Props) => {
         return;
       }
 
+      let image: string;
+      let dimensions: ImageSize;
       if (crop && crop.height && crop.width) {
-        const image = await getCroppedImageAsDataUrl(
+        dimensions = crop as ImageCrop;
+        image = await getCroppedImageAsDataUrl(
           imageRef.current,
           crop as ImageCrop
         );
-        avatarSetup = { type: 'avatar', image };
       } else {
-        avatarSetup = { type: 'avatar', image: avatar as string };
+        image = avatar as string;
+        dimensions = await getImageDimensions(image);
       }
+
+      if (dimensions.height < minSize || dimensions.width < minSize) {
+        setError('avatar', {
+          message: `Please upload an image larger or equal than ${minSize}px by ${minSize}px`,
+        });
+        return;
+      }
+
+      if (dimensions.height > maxSize || dimensions.width > maxSize) {
+        setError('avatar', {
+          message: `Please upload an image smaller or equal than ${maxSize}px by ${maxSize}px`,
+        });
+        return;
+      }
+
+      console.log({ image });
+
+      avatarSetup = { type: 'avatar', image };
     } else {
       avatarSetup = { type: 'initials' };
     }

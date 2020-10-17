@@ -26,6 +26,7 @@ import {
 import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { toaster } from 'baseui/toast';
+import * as zIndex from 'shared/constants/zIndex';
 
 import { OrganizationAvatar } from '../../OrganizationAvatar';
 
@@ -105,7 +106,7 @@ export const NavbarBanner = ({
       overrides={{
         Inner: { style: borderRadius },
         Body: {
-          style: { zIndex: 2, ...borderRadius },
+          style: { zIndex: zIndex.SIDEBAR, ...borderRadius },
           props: { className: 'banner--menu' },
         },
       }}
