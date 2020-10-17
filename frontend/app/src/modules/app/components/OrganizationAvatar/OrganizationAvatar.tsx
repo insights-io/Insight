@@ -17,7 +17,10 @@ export const OrganizationAvatar = ({ name, avatar, ...rest }: Props) => {
       name={name || 'O'}
       src={src}
       overrides={{
-        Avatar: { style: borderRadius },
+        Avatar: {
+          style: borderRadius,
+          props: { alt: 'Avatar' },
+        },
         Root: {
           style: {
             backgroundColor: src ? undefined : theme.colors.accent600,

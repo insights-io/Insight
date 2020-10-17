@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.zxing.NotFoundException;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResource;
 import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
 import com.meemaw.auth.tfa.model.SsoChallenge;
@@ -348,7 +348,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -360,7 +360,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
             .param("email", email)
             .param("password", password)
             .header("referer", "http://localhost:3000")
-            .post(SsoResource.PATH + "/login");
+            .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
     response
@@ -430,7 +430,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
             .param("email", email)
             .param("password", password)
             .header("referer", "http://localhost:3000")
-            .post(SsoResource.PATH + "/login");
+            .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
     response
@@ -517,7 +517,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
             .param("email", email)
             .param("password", password)
             .header("referer", "http://localhost:3000")
-            .post(SsoResource.PATH + "/login");
+            .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
     response
@@ -566,7 +566,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
             .param("email", email)
             .param("password", password)
             .header("referer", "http://localhost:3000")
-            .post(SsoResource.PATH + "/login");
+            .post(SsoSessionResource.PATH + "/login");
 
     challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
     given()

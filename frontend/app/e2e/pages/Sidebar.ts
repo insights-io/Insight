@@ -16,6 +16,10 @@ class Sidebar {
   private readonly topList = this.container.find('ul').nth(0);
   private readonly bottomList = this.container.find('ul').nth(1);
 
+  public readonly avatarRoot = this.container.find(
+    'div[data-baseweb="avatar"]'
+  );
+
   public readonly homeItem = this.topList
     .find('a')
     .withAttribute('href', '/')

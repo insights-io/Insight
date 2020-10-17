@@ -54,7 +54,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class SsoResourceImplTest extends AbstractAuthApiTest {
+public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
 
   @Inject UserDatasource userDatasource;
   @Inject AppConfig appConfig;
@@ -79,7 +79,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.TEXT_PLAIN)
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(415)
         .body(
@@ -92,7 +92,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -107,7 +107,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", "random")
         .param("password", "random")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -123,7 +123,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .param("email", "test@gmail.com")
         .param("password", "superFancyPassword")
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -138,7 +138,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", "test@gmail.com")
         .param("password", "superFancyPassword")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -154,7 +154,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .param("email", "test@gmail.com")
         .param("password", "superFancyPassword")
         .header("referer", "random")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -185,7 +185,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
             .param("email", email)
             .param("password", password)
             .header("referer", "http://localhost:3000/login?redirect=%2Faccount%2Fsettings")
-            .post(SsoResource.PATH + "/login")
+            .post(SsoSessionResource.PATH + "/login")
             .as(new TypeRef<>() {});
 
     Boom<?> error = dataResponse.getError();
@@ -257,7 +257,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
             .param("email", email)
             .param("password", password)
             .header("referer", "http://localhost:3000/login?redirect=/account/settings")
-            .post(SsoResource.PATH + "/login")
+            .post(SsoSessionResource.PATH + "/login")
             .as(new TypeRef<>() {});
 
     Boom<?> error = dataResponse.getError();
@@ -307,7 +307,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .param("email", signUpRequestDTO.getEmail())
         .param("password", "superFancyPassword")
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -319,7 +319,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void logout__should_fail__when_no_cookie() {
     given()
         .when()
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(400)
         .body(
@@ -332,7 +332,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(404)
         .body(
@@ -348,7 +348,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -366,7 +366,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(200)
         .body(
@@ -377,7 +377,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -385,7 +385,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(200)
         .body(
@@ -394,7 +394,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -402,7 +402,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(404)
         .body(
@@ -414,7 +414,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void logout_from_all_devices__should_fail__when_no_cookie() {
     given()
         .when()
-        .post(SsoResource.PATH + "/logout-from-all-devices")
+        .post(SsoSessionResource.PATH + "/logout-from-all-devices")
         .then()
         .statusCode(400)
         .body(
@@ -427,7 +427,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
-        .post(SsoResource.PATH + "/logout-from-all-devices")
+        .post(SsoSessionResource.PATH + "/logout-from-all-devices")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -449,7 +449,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-            .get(SsoResource.PATH + "/session")
+            .get(SsoSessionResource.PATH + "/session")
             .then()
             .statusCode(200)
             .extract()
@@ -461,7 +461,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-            .get(SsoResource.PATH + "/session")
+            .get(SsoSessionResource.PATH + "/session")
             .then()
             .statusCode(200)
             .extract()
@@ -476,7 +476,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(200)
         .body(
@@ -488,7 +488,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .post(SsoResource.PATH + "/logout-from-all-devices")
+        .post(SsoSessionResource.PATH + "/logout-from-all-devices")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -497,7 +497,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(404)
         .body(
@@ -507,7 +507,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-        .get(SsoResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -516,7 +516,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(404)
         .body(
@@ -526,7 +526,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .get(SsoResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -536,7 +536,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void session_should_fail_when_no_sessionId() {
     given()
         .when()
-        .get(SsoResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session")
         .then()
         .statusCode(400)
         .body(
@@ -548,7 +548,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void session_should_clear_session_cookie_when_missing_sessionId() {
     given()
         .when()
-        .get(SsoResource.PATH + "/session/random")
+        .get(SsoSessionResource.PATH + "/session/random")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -558,7 +558,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void me_should_fail_when_missing_sessionId_cookie() {
     given()
         .when()
-        .get(SsoResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session")
         .then()
         .statusCode(400)
         .body(
@@ -572,7 +572,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
         .queryParam("id", "random")
-        .get(SsoResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -595,7 +595,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     // should be able to get session by id
     given()
         .when()
-        .get(SsoResource.PATH + "/session/" + sessionId)
+        .get(SsoSessionResource.PATH + "/session/" + sessionId)
         .then()
         .statusCode(200)
         .body(
@@ -607,7 +607,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(SsoResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session")
         .then()
         .statusCode(200)
         .body(
@@ -619,7 +619,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .post(SsoResource.PATH + "/logout")
+        .post(SsoSessionResource.PATH + "/logout")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -629,7 +629,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
   public void sessions__should_fail__when_missing_session_id_cookie() {
     given()
         .when()
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(400)
         .body(
@@ -642,7 +642,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(404)
         .body(
@@ -658,7 +658,7 @@ public class SsoResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(SsoResource.PATH + "/sessions")
+        .get(SsoSessionResource.PATH + "/sessions")
         .then()
         .statusCode(200)
         .body(sameJson(objectMapper.writeValueAsString(DataResponse.data(List.of(sessionId)))));

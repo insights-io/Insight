@@ -12,6 +12,15 @@ public class ErrorDataResponse<T extends Boom<?>> {
 
   T boom;
 
+  public static final String FORBIDDEN_EXAMPLE =
+      "{\n"
+          + "  \"error\": {\n"
+          + "    \"statusCode\": 403,\n"
+          + "    \"reason\": \"Forbidden\",\n"
+          + "    \"message\": \"Forbidden\"\n"
+          + "  }\n"
+          + "}";
+
   public static final String NOT_FOUND_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"

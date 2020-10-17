@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
@@ -364,7 +364,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoResource.PATH, "session"))
+            .get(String.join("/", SsoSessionResource.PATH, "session"))
             .as(new TypeRef<>() {});
 
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
@@ -402,7 +402,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoResource.PATH, "session"))
+            .get(String.join("/", SsoSessionResource.PATH, "session"))
             .as(new TypeRef<>() {});
 
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());

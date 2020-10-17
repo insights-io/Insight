@@ -35,6 +35,26 @@ export class OrganizationGeneralSettingsPage extends AbstractOrganizationSetting
   public readonly organizationDeletedToast = queryByText(
     'Organization deleted'
   );
+
+  public readonly membershipSelect = {
+    admin: queryByText('Admin'),
+    member: queryByText('Member'),
+  };
+
+  public readonly avatarRadio = {
+    useInitials: this.withinContainer.queryByText('Use initials'),
+    uploadAvatar: this.withinContainer.queryByText('Upload avatar'),
+  };
+
+  public readonly uploadAvatarInput = this.container.find(
+    'input[name="avatar"]'
+  );
+  public readonly uploadAvatarInputText = this.withinContainer.queryByText(
+    'Browse files'
+  );
+  public readonly saveAvatarButton = this.withinContainer.queryByText(
+    'Save Avatar'
+  );
 }
 
 export default new OrganizationGeneralSettingsPage(

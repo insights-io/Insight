@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.token.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
@@ -32,7 +32,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterRestClient(configKey = "auth-api")
 public interface AuthTokenResource {
 
-  String PATH = SsoResource.PATH + "/auth/token";
+  String PATH = SsoSessionResource.PATH + "/auth/token";
   String TAG = "Auth Token";
 
   @GET

@@ -2,7 +2,7 @@ package com.meemaw.auth.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +19,7 @@ public class CorsTest {
         .header("Origin", "http://localhost:3000")
         .header("Access-Control-Request-Method", method)
         .when()
-        .options(SsoResource.PATH + "/login")
+        .options(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(200)
         .header("access-control-allow-origin", "http://localhost:3000")

@@ -12,7 +12,7 @@ import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.TABLE;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.sql.client.SqlPool;
 import io.vertx.mutiny.sqlclient.Row;
