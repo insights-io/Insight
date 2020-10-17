@@ -8,12 +8,21 @@ import javax.ws.rs.core.HttpHeaders;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.info.Contact;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.servers.Server;
 
 @OpenAPIDefinition(
-    info = @Info(title = App.TITLE, version = App.VERSION),
+    info =
+        @Info(
+            title = App.TITLE,
+            version = App.VERSION,
+            contact =
+                @Contact(
+                    name = "Support",
+                    url = "mailto:support@rebrowse.io",
+                    email = "support@rebrowse.io")),
     servers = @Server(url = App.SERVER))
 @SecurityScheme(
     securitySchemeName = BearerTokenSecurityScheme.NAME,
