@@ -6,7 +6,8 @@ import java.util.Objects;
 
 public enum UserRole {
   ADMIN("admin"),
-  MEMBER("member");
+  MEMBER("member"),
+  OWNER("owner");
 
   private final String key;
 

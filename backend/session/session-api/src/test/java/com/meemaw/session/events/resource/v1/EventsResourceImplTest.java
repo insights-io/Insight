@@ -137,7 +137,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(200)
         .body("data.size()", is(loadIncomingEvents().size()));
 
-    String apiKey = authApi().createAuthToken(sessionId);
+    String apiKey = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)

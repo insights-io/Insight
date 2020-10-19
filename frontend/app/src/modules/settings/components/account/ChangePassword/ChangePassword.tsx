@@ -18,7 +18,7 @@ type Props = {
 };
 
 export const ChangePassword = ({ overrides }: Props) => {
-  const { register, handleSubmit, errors, watch } = useForm<
+  const { register, handleSubmit, errors, watch, setError } = useForm<
     ChangePasswordDTO
   >();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,8 +37,18 @@ export const ChangePassword = ({ overrides }: Props) => {
         setFormError(undefined);
       })
       .catch(async (error) => {
-        const errorDTO: APIErrorDataResponse = await error.response.json();
-        setFormError(errorDTO.error);
+        const errorResponse: APIErrorDataResponse = await error.response.json();
+        const { errors: apiErrors } = errorResponse.error;
+
+        if (apiErrors) {
+          Object.keys(apiErrors).forEach((field) => {
+            setError(field as keyof ChangePasswordDTO, {
+              message: apiErrors[field],
+            });
+          });
+        } else {
+          setFormError(errorResponse.error);
+        }
       })
       .finally(() => setIsSubmitting(false));
   });

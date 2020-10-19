@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
@@ -25,6 +24,7 @@ import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
+import com.rebrowse.model.organization.Organization;
 import io.quarkus.test.Mock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -109,7 +109,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
   public void post_page__should_throw__when_free_quota_exceeded()
       throws IOException, URISyntaxException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    Organization organization = authApi().getOrganization(sessionId).get();
+    Organization organization = authApi().getOrganization(sessionId);
     CreatePageDTO withFreePlanOrganization =
         withUpdateOrganizationId(readSimplePage(), organization.getId());
     String body = objectMapper.writeValueAsString(withFreePlanOrganization);
@@ -141,7 +141,8 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
   public void post_page__should_throw__when_missing_organization()
       throws IOException, URISyntaxException {
     CreatePageDTO withRandomOrganization =
-        withUpdateOrganizationId(readSimplePage(), Organization.identifier());
+        withUpdateOrganizationId(
+            readSimplePage(), com.meemaw.auth.organization.model.Organization.identifier());
 
     given()
         .when()

@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.oauth.github.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meemaw.auth.sso.oauth.model.OAuthError;
+import com.meemaw.auth.sso.oauth.OAuthError;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

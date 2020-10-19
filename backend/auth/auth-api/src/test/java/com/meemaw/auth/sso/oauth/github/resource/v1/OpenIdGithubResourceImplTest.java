@@ -6,23 +6,23 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.auth.sso.AbstractIdpService;
-import com.meemaw.auth.sso.AbstractSsoOAuth2ResourceTest;
+import com.meemaw.auth.sso.AbstractIdentityProvider;
+import com.meemaw.auth.sso.AbstractSsoOAuthResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
-import com.meemaw.auth.sso.oauth.github.OAuth2GithubClient;
-import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
+import com.meemaw.auth.sso.oauth.AbstractOAuthClient;
+import com.meemaw.auth.sso.oauth.OAuthResource;
+import com.meemaw.auth.sso.oauth.github.GithubIdentityProvider;
+import com.meemaw.auth.sso.oauth.github.GithubOAuthClient;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -43,10 +43,10 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest {
+public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
 
-  @Inject OAuth2GithubClient oauthClient;
-  @Inject OAuth2GithubService oauthService;
+  @Inject GithubOAuthClient oauthClient;
+  @Inject GithubIdentityProvider oauthService;
 
   @Override
   public URI signInUri() {
@@ -59,13 +59,13 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   }
 
   @Override
-  public AbstractIdpService service() {
+  public AbstractIdentityProvider service() {
     return oauthService;
   }
 
   @Override
-  public AbstractOAuth2Client<?, ?, ?> installMockForClient(String email) {
-    QuarkusMock.installMockForInstance(new MockedOAuth2GithubClient(email), oauthClient);
+  public AbstractOAuthClient<?, ?, ?> installMockForClient(String email) {
+    QuarkusMock.installMockForInstance(new MockedGithubOAuthClient(email), oauthClient);
     return oauthClient;
   }
 
@@ -77,9 +77,9 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         forwardedProto
             + "://"
             + forwardedHost
-            + OAuth2GithubResource.PATH
+            + GithubOAuthResource.PATH
             + "/"
-            + OAuth2Resource.CALLBACK_PATH;
+            + OAuthResource.CALLBACK_PATH;
 
     Response response =
         given()
@@ -104,7 +104,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination = oauthService.secureStateData(state);
+    String destination = AbstractIdentityProvider.secureStateData(state);
     assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, StandardCharsets.UTF_8));
   }
 
@@ -131,14 +131,15 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination = oauthService.secureStateData(state);
+    String destination = AbstractIdentityProvider.secureStateData(state);
     assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, StandardCharsets.UTF_8));
   }
 
   @Test
   public void github_oauth2callback__should_fail__on_random_code() {
     String state =
-        oauthService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
@@ -156,7 +157,8 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   @Test
   public void github_oauth2callback__should_fail__on_expired_code() {
     String state =
-        oauthService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
@@ -175,7 +177,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   public void github_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
 
     given()
         .when()
@@ -198,8 +200,8 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .statusCode(200);
 
     String Location = "https://www.insight.io/my_path";
-    QuarkusMock.installMockForInstance(new MockedOAuth2GithubClient(user.getEmail()), oauthClient);
-    String state = oauthService.secureState(Location);
+    QuarkusMock.installMockForInstance(new MockedGithubOAuthClient(user.getEmail()), oauthClient);
+    String state = AbstractIdentityProvider.secureState(Location);
 
     given()
         .when()
@@ -214,11 +216,11 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .cookie(SsoChallenge.COOKIE_NAME);
   }
 
-  private static class MockedOAuth2GithubClient extends OAuth2GithubClient {
+  private static class MockedGithubOAuthClient extends GithubOAuthClient {
 
     private final String email;
 
-    public MockedOAuth2GithubClient(String email) {
+    public MockedGithubOAuthClient(String email) {
       this.email = Objects.requireNonNull(email);
     }
 

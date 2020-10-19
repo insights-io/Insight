@@ -51,6 +51,15 @@ public class ErrorDataResponse<T extends Boom<?>> {
           + "  }\n"
           + "}";
 
+  public static final String CONFLICT_EXAMPLE =
+      "{\n"
+          + "  \"error\": {\n"
+          + "    \"statusCode\": 409,\n"
+          + "    \"reason\": \"Conflict\",\n"
+          + "    \"message\": \"Conflict\"\n"
+          + "  }\n"
+          + "}";
+
   public static final String SERVER_ERROR_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"

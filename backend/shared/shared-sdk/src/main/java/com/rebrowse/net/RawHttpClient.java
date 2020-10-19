@@ -1,6 +1,8 @@
 package com.rebrowse.net;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rebrowse.Rebrowse;
+import com.rebrowse.exception.JsonException;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpTimeoutException;
 import java.time.Duration;
@@ -11,7 +13,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.SneakyThrows;
 
 public abstract class RawHttpClient {
 
@@ -67,6 +68,11 @@ public abstract class RawHttpClient {
         return true;
       }
     } else {
+      int statusCode = response.getStatusCode();
+      if (statusCode >= 200 && statusCode < 400) {
+        return false;
+      }
+
       HttpHeaders headers = response.getHeaders();
       String value = headers.firstValue("Rebrwose-Should-Retry").orElse(null);
 
@@ -77,8 +83,6 @@ public abstract class RawHttpClient {
       if ("false".equals(value)) {
         return false;
       }
-
-      int statusCode = response.getStatusCode();
 
       // Retry on rate limit error
       if (statusCode == 429) {
@@ -147,7 +151,6 @@ public abstract class RawHttpClient {
     return String.format("Rebrowse/v1 JavaBindings/%s", Rebrowse.VERSION);
   }
 
-  @SneakyThrows
   public static String clientUserAgentString() {
     String[] propertyNames = {
       "os.name",
@@ -166,6 +169,10 @@ public abstract class RawHttpClient {
     propertyMap.put("lang", "Java");
     propertyMap.put("publisher", "Rebrowse");
 
-    return ApiResource.OBJECT_MAPPER.writeValueAsString(propertyMap);
+    try {
+      return ApiResource.OBJECT_MAPPER.writeValueAsString(propertyMap);
+    } catch (JsonProcessingException exception) {
+      throw new JsonException(exception);
+    }
   }
 }

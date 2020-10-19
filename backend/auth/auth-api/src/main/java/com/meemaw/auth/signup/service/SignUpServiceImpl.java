@@ -58,7 +58,6 @@ public class SignUpServiceImpl implements SignUpService {
       URL referer, URL serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
     MDC.put(LoggingConstants.USER_EMAIL, signUpRequestDTO.getEmail());
     log.info("[AUTH]: Sign up request for user: {}", signUpRequestDTO.getEmail());
-
     String hashedPassword = passwordService.hashPassword(signUpRequestDTO.getPassword());
     SignUpRequest signUpRequest =
         SignUpRequest.builder()

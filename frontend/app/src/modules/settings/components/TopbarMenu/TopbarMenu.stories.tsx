@@ -21,7 +21,7 @@ export const SettingsSearchOptions = () => {
       path={[
         { segment: 'settings', text: 'Settings' },
         { segment: 'organization', text: 'Organization' },
-        { segment: 'security-and-privacy', text: 'Security & Privacy' },
+        { segment: 'security', text: 'Security' },
       ]}
       searchOptions={SETTINGS_SEARCH_OPTIONS}
     />

@@ -6,6 +6,9 @@ import type {
   TeamInviteDTO,
   UserDTO,
   AvatarDTO,
+  OrganizationPasswordPolicyDTO,
+  PasswordPolicyCreateParams,
+  PasswordPolicyUpdateParams,
 } from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
@@ -52,6 +55,45 @@ export const organizationsResource = (authApiBaseURL: string) => {
         .get(`${resourceBaseURL(baseURL)}/members`, withCredentials(rest))
         .json<DataResponse<UserDTO[]>>()
         .then(getData);
+    },
+
+    passwordPolicy: {
+      retrieve: ({
+        baseURL = authApiBaseURL,
+        ...rest
+      }: RequestOptions = {}) => {
+        return ky
+          .get(
+            `${resourceBaseURL(baseURL)}/password/policy`,
+            withCredentials(rest)
+          )
+          .json<DataResponse<OrganizationPasswordPolicyDTO>>()
+          .then(getData);
+      },
+      create: (
+        json: PasswordPolicyCreateParams,
+        { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      ) => {
+        return ky
+          .post(`${resourceBaseURL(baseURL)}/password/policy`, {
+            json,
+            ...withCredentials(rest),
+          })
+          .json<DataResponse<OrganizationPasswordPolicyDTO>>()
+          .then(getData);
+      },
+      update: (
+        json: PasswordPolicyUpdateParams,
+        { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      ) => {
+        return ky
+          .patch(`${resourceBaseURL(baseURL)}/password/policy`, {
+            json,
+            ...withCredentials(rest),
+          })
+          .json<DataResponse<OrganizationPasswordPolicyDTO>>()
+          .then(getData);
+      },
     },
     teamInvite: {
       list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {

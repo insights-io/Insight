@@ -15,7 +15,7 @@ import lombok.Value;
 public class ApiKey {
 
   UUID userId;
-  String value;
+  String token;
   OffsetDateTime createdAt;
 
   public static CompletionStage<User> retrieveUser() {

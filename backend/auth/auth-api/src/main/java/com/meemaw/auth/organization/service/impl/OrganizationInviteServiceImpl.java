@@ -3,12 +3,15 @@ package com.meemaw.auth.organization.service.impl;
 import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.datasource.OrganizationInviteDatasource;
+import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.organization.service.OrganizationInviteService;
+import com.meemaw.auth.password.model.PasswordPolicyValidator;
+import com.meemaw.auth.password.model.PasswordValidationException;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
@@ -21,6 +24,7 @@ import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -39,16 +43,17 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   @Inject UserDatasource userDatasource;
   @Inject OrganizationDatasource datasource;
   @Inject OrganizationInviteDatasource inviteDatasource;
+  @Inject OrganizationPasswordPolicyDatasource organizationPasswordPolicyDatasource;
 
   @ResourcePath("organization/team_invite")
   Template teamInviteTemplate;
 
+  // TODO: should check if email is already taken by a user
   @Override
   @Traced
   public CompletionStage<TeamInviteDTO> createTeamInvite(
-      TeamInviteCreateDTO invite, InsightPrincipal principal, String acceptInviteURL) {
-    AuthUser authUser = principal.user();
-    String organizationId = principal.user().getOrganizationId();
+      TeamInviteCreateDTO invite, AuthUser creator, String acceptInviteURL) {
+    String organizationId = creator.getOrganizationId();
     log.info(
         "[AUTH]: Creating team invite for user: {} organizationId: {}",
         invite.getEmail(),
@@ -69,12 +74,12 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                               new TeamInviteTemplateData(
                                   invite.getEmail(),
                                   invite.getRole(),
-                                  authUser.getFullName(),
+                                  creator.getFullName(),
                                   organization.getName());
 
                           return createTeamInvite(
                               organizationId,
-                              authUser.getId(),
+                              creator.getId(),
                               teamInviteTemplateData,
                               acceptInviteURL,
                               transaction);
@@ -142,16 +147,35 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
               return teamInvite;
             })
         .thenCompose(
-            teamInvite -> {
-              UserRole role = teamInvite.getRole();
-              return userDatasource.createUser(
-                  teamInvite.getEmail(),
-                  inviteAccept.getFullName(),
-                  teamInvite.getOrganizationId(),
-                  role,
-                  null,
-                  transaction);
-            })
+            teamInvite ->
+                organizationPasswordPolicyDatasource
+                    .retrieve(teamInvite.getOrganizationId())
+                    .thenAccept(
+                        maybePolicy -> {
+                          try {
+                            PasswordPolicyValidator.validateFirstPassword(
+                                maybePolicy.orElse(null), inviteAccept.getPassword());
+                          } catch (PasswordValidationException ex) {
+                            log.debug(
+                                "[AUTH]: Failed to accept team invite due to password policy violation",
+                                ex);
+
+                            throw Boom.badRequest()
+                                .errors(Map.of("password", ex.getMessage()))
+                                .exception(ex);
+                          }
+                        })
+                    .thenCompose(
+                        ignored -> {
+                          UserRole role = teamInvite.getRole();
+                          return userDatasource.createUser(
+                              teamInvite.getEmail(),
+                              inviteAccept.getFullName(),
+                              teamInvite.getOrganizationId(),
+                              role,
+                              null,
+                              transaction);
+                        }))
         .thenCompose(
             user ->
                 inviteDatasource.deleteAll(user.getEmail(), user.getOrganizationId(), transaction))

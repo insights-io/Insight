@@ -1,9 +1,9 @@
 package com.meemaw.auth.password.datasource.sql;
 
-import static com.meemaw.auth.password.datasource.sql.PasswordTable.CREATED_AT;
-import static com.meemaw.auth.password.datasource.sql.PasswordTable.HASH;
-import static com.meemaw.auth.password.datasource.sql.PasswordTable.TABLE;
-import static com.meemaw.auth.password.datasource.sql.PasswordTable.USER_ID;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.CREATED_AT;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.HASH;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.TABLE;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.USER_ID;
 
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
@@ -29,7 +29,9 @@ public class SqlPasswordDatasource implements PasswordDatasource {
   @Traced
   public CompletionStage<OffsetDateTime> storePassword(
       UUID userId, String hash, SqlTransaction transaction) {
-    return transaction.query(insertPasswordQuery(userId, hash)).thenApply(this::mapStoredPassword);
+    return transaction
+        .execute(insertPasswordQuery(userId, hash))
+        .thenApply(this::mapStoredPassword);
   }
 
   @Override

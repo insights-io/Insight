@@ -29,4 +29,18 @@ public class Organization {
     return ApiResource.get(
         String.format("/v1/organization/%s", id), Organization.class, requestOptions);
   }
+
+  public static CompletionStage<Organization> update(
+      OrganizationUpdateParams params, RequestOptions requestOptions) {
+    return ApiResource.patch("/v1/organization", params, Organization.class, requestOptions);
+  }
+
+  public CompletionStage<AvatarSetup> updateAvatar(AvatarSetupUpdateParams params) {
+    return updateAvatar(params, null);
+  }
+
+  public CompletionStage<AvatarSetup> updateAvatar(
+      AvatarSetupUpdateParams params, RequestOptions options) {
+    return ApiResource.patch("/v1/organization/avatar", params, AvatarSetup.class, options);
+  }
 }

@@ -16,7 +16,8 @@ CREATE TABLE auth.user_role
 
 INSERT INTO auth.user_role
 VALUES ('member'),
-       ('admin');
+       ('admin'),
+       ('owner');
 
 CREATE TABLE auth.organization
 (
@@ -127,6 +128,25 @@ CREATE TABLE auth.organization_sso_setup
 
     PRIMARY KEY (organization_id, domain)
 );
+
+CREATE TABLE auth.organization_password_policy
+(
+    organization_id                    TEXT REFERENCES auth.organization (id) ON DELETE CASCADE UNIQUE,
+    min_characters                     SMALLINT    NOT NULL DEFAULT 8,
+    prevent_password_reuse             BOOL        NOT NULL DEFAULT TRUE,
+    require_uppercase_character        BOOL        NOT NULL DEFAULT FALSE,
+    require_lowercase_character        BOOL        NOT NULL DEFAULT FALSE,
+    require_number                     BOOl        NOT NULL DEFAULT FALSE,
+    require_non_alphanumeric_character BOOL        NOT NULL DEFAULT FALSE,
+    created_at                         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at                         TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER organization_password_policy_updated_at_now
+    BEFORE UPDATE
+    ON auth.organization_password_policy
+    FOR EACH ROW
+EXECUTE PROCEDURE updated_at_now();
 
 CREATE TABLE auth.token
 (

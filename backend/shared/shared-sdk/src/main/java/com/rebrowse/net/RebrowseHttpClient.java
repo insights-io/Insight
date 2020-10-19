@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rebrowse.exception.ApiException;
 import com.rebrowse.exception.RebrowseException;
+import com.rebrowse.model.ApiRequestParams;
 import com.rebrowse.model.RebrowseOkDataResponse;
 import com.rebrowse.model.error.RebrowseError;
 import com.rebrowse.model.error.RebrowseErrorDataResponse;
@@ -33,8 +34,23 @@ public class RebrowseHttpClient implements HttpClient {
   }
 
   @Override
+  public <P extends ApiRequestParams, T> CompletionStage<T> post(
+      String url, P params, Class<T> clazz, RequestOptions requestOptions) {
+    RebrowseRequest request = RebrowseRequest.post(url, params, requestOptions);
+    return request(request, clazz);
+  }
+
+  @Override
+  public <P extends ApiRequestParams, T> CompletionStage<T> patch(
+      String url, P params, Class<T> clazz, RequestOptions requestOptions) {
+    RebrowseRequest request = RebrowseRequest.patch(url, params, requestOptions);
+    return request(request, clazz);
+  }
+
+  @Override
   public <T> CompletionStage<T> post(String url, Class<T> clazz, RequestOptions requestOptions) {
-    return request(RebrowseRequest.post(url, requestOptions), clazz);
+    RebrowseRequest request = RebrowseRequest.post(url, requestOptions);
+    return request(request, clazz);
   }
 
   private <T> CompletionStage<T> request(RebrowseRequest request, Class<T> clazz) {

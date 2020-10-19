@@ -9,6 +9,5 @@ import lombok.Value;
 public class AvatarSetup {
 
   AvatarType type;
-
   String image;
 }

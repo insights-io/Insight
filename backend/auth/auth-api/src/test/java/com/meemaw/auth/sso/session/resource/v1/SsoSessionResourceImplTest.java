@@ -13,8 +13,8 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
-import com.meemaw.auth.sso.oauth.google.resource.v1.OAuth2GoogleResource;
+import com.meemaw.auth.sso.oauth.OAuthResource;
+import com.meemaw.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
@@ -60,13 +60,13 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
   @Inject AppConfig appConfig;
   @Inject OrganizationDatasource organizationDatasource;
 
-  @TestHTTPResource(SamlResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
+  @TestHTTPResource(SamlResource.PATH + "/" + OAuthResource.SIGNIN_PATH)
   URI samlSignInUri;
 
-  @TestHTTPResource(OAuth2GoogleResource.PATH + "/" + OAuth2GoogleResource.SIGNIN_PATH)
+  @TestHTTPResource(GoogleOAuthResource.PATH + "/" + GoogleOAuthResource.SIGNIN_PATH)
   URI googleSignInUri;
 
-  @TestHTTPResource(OAuth2GoogleResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
+  @TestHTTPResource(GoogleOAuthResource.PATH + "/" + OAuthResource.CALLBACK_PATH)
   URI oauth2CallbackUri;
 
   @BeforeEach
