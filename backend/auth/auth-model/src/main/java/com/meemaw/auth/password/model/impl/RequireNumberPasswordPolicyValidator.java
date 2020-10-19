@@ -5,7 +5,7 @@ import com.meemaw.auth.password.model.PasswordValidationException;
 
 public class RequireNumberPasswordPolicyValidator implements PasswordPolicyValidator {
 
-  public static PasswordPolicyValidator INSTANCE = new RequireNumberPasswordPolicyValidator();
+  public static final PasswordPolicyValidator INSTANCE = new RequireNumberPasswordPolicyValidator();
 
   @Override
   public void validate(String password) throws PasswordValidationException {

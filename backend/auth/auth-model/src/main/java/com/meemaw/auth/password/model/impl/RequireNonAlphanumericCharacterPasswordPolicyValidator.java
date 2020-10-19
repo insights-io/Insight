@@ -6,7 +6,7 @@ import com.meemaw.auth.password.model.PasswordValidationException;
 public class RequireNonAlphanumericCharacterPasswordPolicyValidator
     implements PasswordPolicyValidator {
 
-  public static PasswordPolicyValidator INSTANCE =
+  public static final PasswordPolicyValidator INSTANCE =
       new RequireNonAlphanumericCharacterPasswordPolicyValidator();
 
   @Override

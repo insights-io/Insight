@@ -5,7 +5,7 @@ import com.meemaw.auth.password.model.PasswordValidationException;
 
 public class RequireUppercaseCharacterPasswordPolicyValidator implements PasswordPolicyValidator {
 
-  public static PasswordPolicyValidator INSTANCE =
+  public static final PasswordPolicyValidator INSTANCE =
       new RequireUppercaseCharacterPasswordPolicyValidator();
 
   @Override

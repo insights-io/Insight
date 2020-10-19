@@ -10,8 +10,6 @@ public interface PasswordPolicyValidator {
   List<PasswordPolicyValidator> DEFAULT_VALIDATORS =
       List.of(new MinCharactersPasswordPolicyValidator(8));
 
-  void validate(String newPassword) throws PasswordValidationException;
-
   static void validateFirstPassword(@Nullable PasswordPolicy policy, String newPassword)
       throws PasswordValidationException {
     validate(policy, null, newPassword);
@@ -29,4 +27,6 @@ public interface PasswordPolicyValidator {
       validator.validate(newPassword);
     }
   }
+
+  void validate(String newPassword) throws PasswordValidationException;
 }

@@ -147,7 +147,11 @@ public class AuthApiTestProvider {
         .getToken();
   }
 
-  /** @return SDK request options builder connected with the auth-api instance */
+  /**
+   * Helper method for SDK {@link com.rebrowse.net.RequestOptions.Builder} creation.
+   *
+   * @return SDK request options builder connected with the auth-api instance in context
+   */
   public RequestOptions.Builder sdkRequest() {
     return new RequestOptions.Builder().apiBaseUrl(this.baseUrl);
   }
