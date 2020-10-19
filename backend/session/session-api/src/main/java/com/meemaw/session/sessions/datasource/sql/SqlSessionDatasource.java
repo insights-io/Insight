@@ -143,7 +143,7 @@ public class SqlSessionDatasource implements SessionDatasource {
                 JsonObject.mapFrom(userAgent))
             .returning(FIELDS);
 
-    return transaction.query(query).thenApply(rowSet -> mapSession(rowSet.iterator().next()));
+    return transaction.execute(query).thenApply(rowSet -> mapSession(rowSet.iterator().next()));
   }
 
   @Override

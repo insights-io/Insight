@@ -43,7 +43,7 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
   public CompletionStage<Organization> createOrganization(
       CreateOrganizationParams params, SqlTransaction transaction) {
     return transaction
-        .query(createOrganizationQuery(params))
+        .execute(createOrganizationQuery(params))
         .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
   }
 
@@ -86,13 +86,13 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
   public CompletionStage<Optional<Organization>> findOrganization(
       String id, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
-    return transaction.query(query).thenApply(this::mapOrganizationIfPresent);
+    return transaction.execute(query).thenApply(this::mapOrganizationIfPresent);
   }
 
   @Override
   public CompletionStage<Boolean> delete(String id, SqlTransaction transaction) {
     Query query = sqlPool.getContext().deleteFrom(TABLE).where(ID.eq(id)).returning(ID);
-    return transaction.query(query).thenApply(rows -> rows.iterator().hasNext());
+    return transaction.execute(query).thenApply(rows -> rows.iterator().hasNext());
   }
 
   @Override

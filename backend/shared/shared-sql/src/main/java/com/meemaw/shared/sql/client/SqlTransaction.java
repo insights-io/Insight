@@ -21,7 +21,7 @@ public class SqlTransaction {
     this.sqlPool = Objects.requireNonNull(sqlPool);
   }
 
-  public CompletionStage<RowSet<Row>> query(Query query) {
+  public CompletionStage<RowSet<Row>> execute(Query query) {
     return sqlPool.execute(transaction, query);
   }
 

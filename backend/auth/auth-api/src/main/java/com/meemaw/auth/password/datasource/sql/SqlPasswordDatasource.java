@@ -29,7 +29,9 @@ public class SqlPasswordDatasource implements PasswordDatasource {
   @Traced
   public CompletionStage<OffsetDateTime> storePassword(
       UUID userId, String hash, SqlTransaction transaction) {
-    return transaction.query(insertPasswordQuery(userId, hash)).thenApply(this::mapStoredPassword);
+    return transaction
+        .execute(insertPasswordQuery(userId, hash))
+        .thenApply(this::mapStoredPassword);
   }
 
   @Override

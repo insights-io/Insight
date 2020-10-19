@@ -27,11 +27,11 @@ public class OrganizationTeamInviteResourceImpl implements OrganizationTeamInvit
   @Context HttpServerRequest request;
 
   private String getAcceptInviteURL() {
-    URL clientBaseURL =
+    URL clientBaseUrl =
         RequestUtils.parseRefererBaseURL(request)
             .orElseGet(() -> RequestUtils.getServerBaseURL(info, request));
 
-    return UriBuilder.fromUri(clientBaseURL.toString()).path("accept-invite").build().toString();
+    return UriBuilder.fromUri(clientBaseUrl.toString()).path("accept-invite").build().toString();
   }
 
   @Override

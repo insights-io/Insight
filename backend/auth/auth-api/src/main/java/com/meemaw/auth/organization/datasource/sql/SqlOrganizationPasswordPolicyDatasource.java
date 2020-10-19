@@ -32,7 +32,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jooq.Query;
 import org.jooq.UpdateSetFirstStep;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 public class SqlOrganizationPasswordPolicyDatasource
@@ -52,7 +51,7 @@ public class SqlOrganizationPasswordPolicyDatasource
   @Override
   public CompletionStage<Optional<PasswordPolicyDTO>> retrieve(
       String organizationId, SqlTransaction transaction) {
-    return transaction.query(retrieveQuery(organizationId)).thenApply(this::onRetrieve);
+    return transaction.execute(retrieveQuery(organizationId)).thenApply(this::onRetrieve);
   }
 
   @Override
@@ -67,9 +66,6 @@ public class SqlOrganizationPasswordPolicyDatasource
     List<Object> values = new ArrayList<>(params.values());
     values.add(organizationId);
 
-    System.out.println(columns);
-    System.out.println(values);
-
     Query query =
         sqlPool
             .getContext()
@@ -77,8 +73,6 @@ public class SqlOrganizationPasswordPolicyDatasource
             .columns(columns.stream().map(FIELD_MAPPINGS::get).collect(Collectors.toList()))
             .values(values)
             .returning(FIELDS);
-
-    System.out.println(query.getSQL(ParamType.INLINED));
 
     return sqlPool.execute(query).thenApply(rows -> mapPasswordPolicy(rows.iterator().next()));
   }

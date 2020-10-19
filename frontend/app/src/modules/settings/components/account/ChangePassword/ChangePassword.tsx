@@ -40,8 +40,6 @@ export const ChangePassword = ({ overrides }: Props) => {
         const errorResponse: APIErrorDataResponse = await error.response.json();
         const { errors: apiErrors } = errorResponse.error;
 
-        console.log({ apiErrors });
-
         if (apiErrors) {
           Object.keys(apiErrors).forEach((field) => {
             setError(field as keyof ChangePasswordDTO, {

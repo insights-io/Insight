@@ -83,7 +83,7 @@ public class SqlUserDatasource implements UserDatasource {
             .values(email, fullName, organizationId, role.getKey(), JsonObject.mapFrom(phoneNumber))
             .returning(FIELDS);
 
-    return transaction.query(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
+    return transaction.execute(query).thenApply(pgRowSet -> mapUser(pgRowSet.iterator().next()));
   }
 
   @Override

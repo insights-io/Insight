@@ -56,7 +56,7 @@ public class SqlSignUpDatasource implements SignUpDatasource {
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
-        .query(query)
+        .execute(query)
         .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID(TOKEN.getName()));
   }
 
@@ -73,14 +73,14 @@ public class SqlSignUpDatasource implements SignUpDatasource {
   public CompletionStage<Optional<SignUpRequest>> findSignUpRequest(
       UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
-    return transaction.query(query).thenApply(SqlSignUpDatasource::maybeMapSignUpRequest);
+    return transaction.execute(query).thenApply(SqlSignUpDatasource::maybeMapSignUpRequest);
   }
 
   @Override
   @Traced
   public CompletionStage<Boolean> deleteSignUpRequest(UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token)).returning(TOKEN);
-    return transaction.query(query).thenApply(rows -> rows.iterator().hasNext());
+    return transaction.execute(query).thenApply(rows -> rows.iterator().hasNext());
   }
 
   @Override
@@ -97,7 +97,7 @@ public class SqlSignUpDatasource implements SignUpDatasource {
             .where(userEmail.eq(email).or(signUpRequestEmail.eq(email)));
 
     return transaction
-        .query(query)
+        .execute(query)
         .thenApply(pgRowSet -> pgRowSet.iterator().next().getInteger("count") > 0);
   }
 

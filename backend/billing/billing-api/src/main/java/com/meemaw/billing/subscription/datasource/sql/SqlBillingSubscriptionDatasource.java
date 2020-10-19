@@ -53,7 +53,7 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   public CompletionStage<Optional<BillingSubscription>> get(
       String subscriptionId, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(subscriptionId));
-    return transaction.query(query).thenApply(this::onGetBillingSubscription);
+    return transaction.execute(query).thenApply(this::onGetBillingSubscription);
   }
 
   private CompletionStage<Optional<BillingSubscription>> get(Condition condition) {

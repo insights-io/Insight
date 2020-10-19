@@ -27,9 +27,6 @@ export const getTracer = (): Tracer => {
     };
 
     _tracer = initTracer(config, {});
-
-    // eslint-disable-next-line no-console
-    console.log('[TRACING]: init', config);
   }
   return _tracer;
 };

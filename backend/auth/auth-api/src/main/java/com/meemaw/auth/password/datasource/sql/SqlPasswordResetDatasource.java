@@ -36,7 +36,7 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
   public CompletionStage<Boolean> deletePasswordResetRequest(
       UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().delete(TABLE).where(TOKEN.eq(token));
-    return transaction.query(query).thenApply(pgRowSet -> true);
+    return transaction.execute(query).thenApply(pgRowSet -> true);
   }
 
   @Override
@@ -59,7 +59,7 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
-        .query(query)
+        .execute(query)
         .thenApply(
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();

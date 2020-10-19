@@ -44,7 +44,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
   @Traced
   public CompletionStage<Optional<TeamInviteDTO>> get(UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
-    return transaction.query(query).thenApply(this::mapTeamInviteIfPresent);
+    return transaction.execute(query).thenApply(this::mapTeamInviteIfPresent);
   }
 
   @Override
@@ -100,7 +100,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
             .where(EMAIL.eq(email))
             .and(ORGANIZATION_ID.eq(organizationId));
 
-    return transaction.query(query).thenApply(pgRowSet -> true);
+    return transaction.execute(query).thenApply(pgRowSet -> true);
   }
 
   @Override
@@ -122,7 +122,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
-        .query(query)
+        .execute(query)
         .thenApply(
             rows -> {
               Row row = rows.iterator().next();
