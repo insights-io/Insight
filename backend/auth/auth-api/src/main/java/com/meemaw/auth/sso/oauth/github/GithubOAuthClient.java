@@ -4,7 +4,7 @@ import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthClient;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import java.net.URI;
@@ -17,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
 @Slf4j
-public class OAuth2GithubClient
-    extends AbstractOAuth2Client<GithubTokenResponse, GithubUserInfoResponse, GithubErrorResponse> {
+public class GithubOAuthClient
+    extends AbstractOAuthClient<GithubTokenResponse, GithubUserInfoResponse, GithubErrorResponse> {
 
   private static final String TOKEN_SERVER_URL = "https://github.com/login/oauth/access_token";
   private static final String TOKEN_INFO_SERVER_URL = "https://api.github.com/user";

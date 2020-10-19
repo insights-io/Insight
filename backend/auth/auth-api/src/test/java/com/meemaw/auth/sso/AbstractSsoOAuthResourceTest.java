@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthClient;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.rebrowse.model.auth.SessionInfo;
@@ -22,15 +22,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceTest {
+public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTest {
 
   public abstract URI signInUri();
 
   public abstract URI callbackUri();
 
-  public abstract AbstractIdpService service();
+  public abstract AbstractIdentityProvider service();
 
-  public abstract AbstractOAuth2Client<?, ?, ?> installMockForClient(String email);
+  public abstract AbstractOAuthClient<?, ?, ?> installMockForClient(String email);
 
   @Test
   public void sign_in__should_fail__when_missing_redirect() {
@@ -102,7 +102,8 @@ public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceT
   @Test
   public void oauth2callback__should_fail__on_state_cookie_miss_match() {
     String state =
-        AbstractIdpService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
@@ -133,7 +134,7 @@ public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceT
 
     String newUserEmail = String.format("%s@%s", UUID.randomUUID(), domain);
     String Location = "https://www.insight.io/my_path";
-    String state = AbstractIdpService.secureState(Location);
+    String state = AbstractIdentityProvider.secureState(Location);
 
     installMockForClient(newUserEmail);
 
@@ -179,7 +180,7 @@ public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceT
 
       String newUserEmail = String.format("%s@%s", UUID.randomUUID(), domain);
       String Location = "https://www.insight.io/my_path";
-      String state = AbstractIdpService.secureState(Location);
+      String state = AbstractIdentityProvider.secureState(Location);
 
       installMockForClient(newUserEmail);
 

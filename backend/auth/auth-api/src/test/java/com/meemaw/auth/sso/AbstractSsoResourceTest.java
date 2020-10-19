@@ -1,10 +1,10 @@
 package com.meemaw.auth.sso;
 
 import com.meemaw.auth.core.config.model.AppConfig;
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
-import com.meemaw.auth.sso.oauth.github.resource.v1.OAuth2GithubResource;
-import com.meemaw.auth.sso.oauth.google.resource.v1.OAuth2GoogleResource;
-import com.meemaw.auth.sso.oauth.microsoft.resource.v1.OAuth2MicrosoftResource;
+import com.meemaw.auth.sso.oauth.OAuthResource;
+import com.meemaw.auth.sso.oauth.github.resource.v1.GithubOAuthResource;
+import com.meemaw.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
+import com.meemaw.auth.sso.oauth.microsoft.resource.v1.MicrosoftOAuthResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
@@ -21,27 +21,27 @@ public abstract class AbstractSsoResourceTest extends AbstractAuthApiTest {
   @Inject protected UserDatasource userDatasource;
   @Inject protected TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
-  @TestHTTPResource(OAuth2MicrosoftResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
+  @TestHTTPResource(MicrosoftOAuthResource.PATH + "/" + OAuthResource.SIGNIN_PATH)
   protected URI microsoftSignInURI;
 
-  @TestHTTPResource(OAuth2MicrosoftResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
+  @TestHTTPResource(MicrosoftOAuthResource.PATH + "/" + OAuthResource.CALLBACK_PATH)
   protected URI microsoftCallbackURI;
 
-  @TestHTTPResource(OAuth2GoogleResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
+  @TestHTTPResource(GoogleOAuthResource.PATH + "/" + OAuthResource.SIGNIN_PATH)
   protected URI googleSignInURI;
 
-  @TestHTTPResource(OAuth2GoogleResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
+  @TestHTTPResource(GoogleOAuthResource.PATH + "/" + OAuthResource.CALLBACK_PATH)
   protected URI googleCallbackURI;
 
-  @TestHTTPResource(SamlResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
+  @TestHTTPResource(SamlResource.PATH + "/" + OAuthResource.SIGNIN_PATH)
   protected URI samlSignInURI;
 
-  @TestHTTPResource(SamlResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
+  @TestHTTPResource(SamlResource.PATH + "/" + OAuthResource.CALLBACK_PATH)
   protected URI samlCallbackURI;
 
-  @TestHTTPResource(OAuth2GithubResource.PATH + "/" + OAuth2Resource.SIGNIN_PATH)
+  @TestHTTPResource(GithubOAuthResource.PATH + "/" + OAuthResource.SIGNIN_PATH)
   protected URI githubSignInURI;
 
-  @TestHTTPResource(OAuth2GithubResource.PATH + "/" + OAuth2Resource.CALLBACK_PATH)
+  @TestHTTPResource(GithubOAuthResource.PATH + "/" + OAuthResource.CALLBACK_PATH)
   protected URI githubCallbackURI;
 }

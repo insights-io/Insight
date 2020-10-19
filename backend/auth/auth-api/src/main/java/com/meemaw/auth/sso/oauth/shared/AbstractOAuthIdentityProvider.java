@@ -1,7 +1,8 @@
 package com.meemaw.auth.sso.oauth.shared;
 
-import com.meemaw.auth.sso.AbstractIdpService;
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
+import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.auth.sso.AbstractIdentityProvider;
+import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
@@ -21,30 +22,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
 @Slf4j
-public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extends OAuthError>
-    extends AbstractIdpService {
+public abstract class AbstractOAuthIdentityProvider<
+        T, U extends OAuthUserInfo, E extends OAuthError>
+    extends AbstractIdentityProvider {
 
+  @Inject protected AppConfig appConfig;
   @Inject SsoService ssoService;
 
-  public abstract URI buildAuthorizationURL(
-      String state, URI serverRedirect, @Nullable String email);
+  public abstract URI buildAuthorizationUri(
+      String state, URI serverRedirectUri, @Nullable String email);
 
-  public abstract CompletionStage<SsoLoginResult<?>> oauth2callback(
+  public abstract CompletionStage<SsoLoginResult<?>> oauthCallback(
       String state, String sessionState, String code, URI serverBase);
 
   @Override
   public String basePath() {
-    return String.join("/", OAuth2Resource.PATH, getLoginMethod().getKey());
+    return String.join("/", OAuthResource.PATH, getLoginMethod().getKey());
   }
 
-  public CompletionStage<SsoLoginResult<?>> oauth2callback(
-      AbstractOAuth2Client<T, U, E> oauthClient,
+  public CompletionStage<SsoLoginResult<?>> oauthCallback(
+      AbstractOAuthClient<T, U, E> oauthClient,
       String state,
       String sessionState,
       String code,
       URI serverBase) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {
-      log.warn("[AUTH]: OAuth2 state miss-match, session: {}, query: {}", sessionState, state);
+      log.warn("[AUTH]: OAuth state miss-match, session: {}, query: {}", sessionState, state);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 
@@ -60,7 +63,7 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
               String email = userInfo.getEmail();
               String cookieDomain = RequestUtils.parseCookieDomain(redirect);
               MDC.put(LoggingConstants.USER_EMAIL, email);
-              log.info("[AUTH]: OAuth2 successfully retrieved user info email={}", email);
+              log.info("[AUTH]: OAuth successfully retrieved user info email={}", email);
 
               return ssoService
                   .socialLogin(email, fullName, getLoginMethod(), redirect, serverBase)
@@ -68,7 +71,7 @@ public abstract class AbstractOAuth2Service<T, U extends OAuthUserInfo, E extend
                   .thenApply(
                       loginResult -> {
                         log.info(
-                            "[AUTH]: OAuth2 flow successful email={} redirect={}", email, redirect);
+                            "[AUTH]: OAuth flow successful email={} redirect={}", email, redirect);
                         return new SsoLoginResult<>(loginResult, cookieDomain);
                       });
             });

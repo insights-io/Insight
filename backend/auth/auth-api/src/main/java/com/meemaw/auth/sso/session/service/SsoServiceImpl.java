@@ -3,7 +3,7 @@ package com.meemaw.auth.sso.session.service;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
-import com.meemaw.auth.sso.IdpServiceRegistry;
+import com.meemaw.auth.sso.IdentityProviderRegistry;
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.sso.session.model.DirectLoginResult;
 import com.meemaw.auth.sso.session.model.LoginMethod;
@@ -49,7 +49,7 @@ public class SsoServiceImpl implements SsoService {
   @Inject SignUpService signUpService;
   @Inject TfaChallengeService tfaChallengeService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
-  @Inject IdpServiceRegistry idpServiceRegistry;
+  @Inject IdentityProviderRegistry identityProviderRegistry;
 
   @Override
   @Traced
@@ -167,7 +167,7 @@ public class SsoServiceImpl implements SsoService {
     Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetup ->
             passwordLoginSsoAlternative(
-                idpServiceRegistry.ssoSignInLocation(
+                identityProviderRegistry.ssoSignInLocation(
                     ssoSetup.getMethod(), email, serverBaseURI, redirect));
 
     return login(email, LoginMethod.PASSWORD, alternativeLoginProvider, passwordLoginSupplier);
@@ -307,7 +307,8 @@ public class SsoServiceImpl implements SsoService {
               redirect);
           return CompletableFuture.completedStage(
               new ResponseLoginResult(
-                  idpServiceRegistry.ssoSignInRedirect(ssoMethod, email, serverBaseURI, redirect)));
+                  identityProviderRegistry.ssoSignInRedirect(
+                      ssoMethod, email, serverBaseURI, redirect)));
         };
 
     return login(email, method, alternativeLoginProvider, socialLoginProvider);

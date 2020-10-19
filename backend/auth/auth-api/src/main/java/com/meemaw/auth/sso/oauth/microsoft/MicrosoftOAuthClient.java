@@ -4,7 +4,7 @@ import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftErrorResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthClient;
 import io.vertx.mutiny.core.MultiMap;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
@@ -15,8 +15,8 @@ import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 
 @ApplicationScoped
-public class OAuth2MicrosoftClient
-    extends AbstractOAuth2Client<
+public class MicrosoftOAuthClient
+    extends AbstractOAuthClient<
         MicrosoftTokenResponse, MicrosoftUserInfoResponse, MicrosoftErrorResponse> {
 
   private static final String TOKEN_SERVER_URL =

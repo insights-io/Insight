@@ -1,7 +1,8 @@
 package com.meemaw.auth.sso.oauth.shared;
 
+import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
+import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.oauth.model.OAuthError;
 import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
@@ -20,39 +21,44 @@ import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractOAuth2Resource<T, U extends OAuthUserInfo, E extends OAuthError>
-    implements OAuth2Resource {
+public abstract class AbstractOAuthResource<T, U extends OAuthUserInfo, E extends OAuthError>
+    implements OAuthResource {
 
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
-  public URI getServerRedirectURI(
-      AbstractOAuth2Service<T, U, E> oauthService, UriInfo info, HttpServerRequest request) {
+  public URI getServerRedirectUri(
+      AbstractOAuthIdentityProvider<T, U, E> oauthService,
+      UriInfo info,
+      HttpServerRequest request) {
     return UriBuilder.fromUri(RequestUtils.getServerBaseURI(info, request))
         .path(oauthService.callbackPath())
         .build();
   }
 
   public CompletionStage<Response> signIn(
-      AbstractOAuth2Service<T, U, E> oauthService, URL redirect, @Nullable String email) {
-    String state = oauthService.secureState(redirect.toString());
-    URI serverRedirectURI = getServerRedirectURI(oauthService, info, request);
-    URI authorizationURI = oauthService.buildAuthorizationURL(state, serverRedirectURI, email);
-    String cookieDomain = RequestUtils.parseCookieDomain(serverRedirectURI);
-    log.info("[AUTH]: OAuth2 sign in request authorizationURI={}", authorizationURI);
+      AbstractOAuthIdentityProvider<T, U, E> oauthService, URL redirect, @Nullable String email) {
+    String state = AbstractIdentityProvider.secureState(redirect.toString());
+    URI serverRedirectUri = getServerRedirectUri(oauthService, info, request);
+    URI authorizationUri = oauthService.buildAuthorizationUri(state, serverRedirectUri, email);
+    String cookieDomain = RequestUtils.parseCookieDomain(serverRedirectUri);
+    log.info("[AUTH]: OAuth2 sign in request authorizationUri={}", authorizationUri);
 
     return CompletableFuture.completedStage(
         Response.status(Status.FOUND)
             .cookie(SsoSignInSession.cookie(state, cookieDomain))
-            .header("Location", authorizationURI)
+            .header("Location", authorizationUri)
             .build());
   }
 
-  public CompletionStage<Response> oauth2callback(
-      AbstractOAuth2Service<T, U, E> oauthService, String code, String state, String sessionState) {
+  public CompletionStage<Response> oauthCallback(
+      AbstractOAuthIdentityProvider<T, U, E> identityProvider,
+      String code,
+      String state,
+      String sessionState) {
     URI serverBase = RequestUtils.getServerBaseURI(info, request);
-    return oauthService
-        .oauth2callback(state, sessionState, code, serverBase)
+    return identityProvider
+        .oauthCallback(state, sessionState, code, serverBase)
         .thenApply(SsoLoginResult::response);
   }
 }

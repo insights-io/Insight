@@ -1,8 +1,8 @@
 package com.meemaw.auth.sso;
 
-import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
-import com.meemaw.auth.sso.oauth.google.OAuth2GoogleService;
-import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftService;
+import com.meemaw.auth.sso.oauth.github.GithubIdentityProvider;
+import com.meemaw.auth.sso.oauth.google.GoogleIdentityProvider;
+import com.meemaw.auth.sso.oauth.microsoft.MicrosoftIdentityProvider;
 import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import io.quarkus.runtime.StartupEvent;
@@ -19,14 +19,14 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 @ApplicationScoped
-public class IdpServiceRegistry {
+public class IdentityProviderRegistry {
 
-  @Inject OAuth2MicrosoftService microsoftService;
-  @Inject OAuth2GoogleService googleService;
-  @Inject OAuth2GithubService githubService;
+  @Inject MicrosoftIdentityProvider microsoftService;
+  @Inject GoogleIdentityProvider googleService;
+  @Inject GithubIdentityProvider githubService;
   @Inject SamlService samlService;
 
-  private Map<SsoMethod, AbstractIdpService> services;
+  private Map<SsoMethod, AbstractIdentityProvider> services;
 
   public void init(@Observes StartupEvent event) {
     services = new HashMap<>();
@@ -36,12 +36,12 @@ public class IdpServiceRegistry {
     services.put(SsoMethod.SAML, samlService);
   }
 
-  public AbstractIdpService getService(SsoMethod ssoMethod) {
+  public AbstractIdentityProvider getService(SsoMethod ssoMethod) {
     return services.get(ssoMethod);
   }
 
   private UriBuilder ssoSignInLocationBaseBuilder(SsoMethod method, URI serverBaseURI) {
-    AbstractIdpService idpService = getService(method);
+    AbstractIdentityProvider idpService = getService(method);
     return UriBuilder.fromUri(serverBaseURI).path(idpService.signInPath());
   }
 

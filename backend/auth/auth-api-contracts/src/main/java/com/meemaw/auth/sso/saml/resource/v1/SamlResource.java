@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.saml.resource.v1;
 
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
+import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import java.net.URL;
@@ -32,7 +32,7 @@ public interface SamlResource {
   String TAG = "SAML SSO";
 
   @GET
-  @Path(OAuth2Resource.SIGNIN_PATH)
+  @Path(OAuthResource.SIGNIN_PATH)
   @Tag(name = TAG)
   @Operation(summary = "SAML sign in")
   @APIResponses(
@@ -77,7 +77,7 @@ public interface SamlResource {
           String email);
 
   @POST
-  @Path(OAuth2Resource.CALLBACK_PATH)
+  @Path(OAuthResource.CALLBACK_PATH)
   @Tag(name = TAG)
   @Operation(summary = "SAML callback")
   @APIResponses(

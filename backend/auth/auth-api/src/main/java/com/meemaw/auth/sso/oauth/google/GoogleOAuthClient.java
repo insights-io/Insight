@@ -4,7 +4,7 @@ import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.oauth.google.model.GoogleErrorResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthClient;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import java.net.URI;
@@ -13,8 +13,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class OAuth2GoogleClient
-    extends AbstractOAuth2Client<GoogleTokenResponse, GoogleUserInfoResponse, GoogleErrorResponse> {
+public class GoogleOAuthClient
+    extends AbstractOAuthClient<GoogleTokenResponse, GoogleUserInfoResponse, GoogleErrorResponse> {
 
   private static final String TOKEN_SERVER_URL = "https://oauth2.googleapis.com/token";
   private static final String TOKEN_INFO_SERVER_URL = "https://oauth2.googleapis.com/tokeninfo";

@@ -6,16 +6,16 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.auth.sso.AbstractIdpService;
-import com.meemaw.auth.sso.AbstractSsoOAuth2ResourceTest;
+import com.meemaw.auth.sso.AbstractIdentityProvider;
+import com.meemaw.auth.sso.AbstractSsoOAuthResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
-import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftClient;
-import com.meemaw.auth.sso.oauth.microsoft.OAuth2MicrosoftService;
+import com.meemaw.auth.sso.oauth.OAuthResource;
+import com.meemaw.auth.sso.oauth.microsoft.MicrosoftIdentityProvider;
+import com.meemaw.auth.sso.oauth.microsoft.MicrosoftOAuthClient;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthClient;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -45,10 +45,10 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTest {
+public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest {
 
-  @Inject OAuth2MicrosoftClient microsoftClient;
-  @Inject OAuth2MicrosoftService microsoftService;
+  @Inject MicrosoftOAuthClient microsoftClient;
+  @Inject MicrosoftIdentityProvider microsoftService;
 
   @Override
   public URI signInUri() {
@@ -61,13 +61,13 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
   }
 
   @Override
-  public AbstractIdpService service() {
+  public AbstractIdentityProvider service() {
     return microsoftService;
   }
 
   @Override
-  public AbstractOAuth2Client<?, ?, ?> installMockForClient(String email) {
-    QuarkusMock.installMockForInstance(new MockedOAuth2MicrosoftClient(email), microsoftClient);
+  public AbstractOAuthClient<?, ?, ?> installMockForClient(String email) {
+    QuarkusMock.installMockForInstance(new MockedMicrosoftOAuthClient(email), microsoftClient);
     return microsoftClient;
   }
 
@@ -79,9 +79,9 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
         forwardedProto
             + "://"
             + forwardedHost
-            + OAuth2MicrosoftResource.PATH
+            + MicrosoftOAuthResource.PATH
             + "/"
-            + OAuth2Resource.CALLBACK_PATH;
+            + OAuthResource.CALLBACK_PATH;
 
     String expectedLocationBase =
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="
@@ -106,7 +106,8 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
         .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String actualRedirect = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);
+    String actualRedirect =
+        state.substring(AbstractOAuthIdentityProvider.SECURE_STATE_PREFIX_LENGTH);
     assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, StandardCharsets.UTF_8));
   }
 
@@ -133,7 +134,8 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
         .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String actualRedirect = state.substring(AbstractOAuth2Service.SECURE_STATE_PREFIX_LENGTH);
+    String actualRedirect =
+        state.substring(AbstractOAuthIdentityProvider.SECURE_STATE_PREFIX_LENGTH);
     assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, StandardCharsets.UTF_8));
   }
 
@@ -223,7 +225,7 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
 
     String Location = "https://www.insight.io/my_path";
     QuarkusMock.installMockForInstance(
-        new MockedOAuth2MicrosoftClient(user.getEmail()), microsoftClient);
+        new MockedMicrosoftOAuthClient(user.getEmail()), microsoftClient);
     String state = microsoftService.secureState(Location);
 
     given()
@@ -239,11 +241,11 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
         .cookie(SsoChallenge.COOKIE_NAME);
   }
 
-  private static class MockedOAuth2MicrosoftClient extends OAuth2MicrosoftClient {
+  private static class MockedMicrosoftOAuthClient extends MicrosoftOAuthClient {
 
     private final String email;
 
-    public MockedOAuth2MicrosoftClient(String email) {
+    public MockedMicrosoftOAuthClient(String email) {
       this.email = Objects.requireNonNull(email);
     }
 

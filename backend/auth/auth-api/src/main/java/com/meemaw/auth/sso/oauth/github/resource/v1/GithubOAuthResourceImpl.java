@@ -1,29 +1,29 @@
 package com.meemaw.auth.sso.oauth.github.resource.v1;
 
-import com.meemaw.auth.sso.oauth.github.OAuth2GithubService;
+import com.meemaw.auth.sso.oauth.github.GithubIdentityProvider;
 import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Resource;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthResource;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-public class OAuth2GithubResourceImpl
-    extends AbstractOAuth2Resource<GithubTokenResponse, GithubUserInfoResponse, GithubErrorResponse>
-    implements OAuth2GithubResource {
+public class GithubOAuthResourceImpl
+    extends AbstractOAuthResource<GithubTokenResponse, GithubUserInfoResponse, GithubErrorResponse>
+    implements GithubOAuthResource {
 
-  @Inject OAuth2GithubService oauthService;
+  @Inject GithubIdentityProvider identityProvider;
 
   @Override
   public CompletionStage<Response> signIn(URL redirect, @Nullable String email) {
-    return signIn(oauthService, redirect, email);
+    return signIn(identityProvider, redirect, email);
   }
 
   @Override
   public CompletionStage<Response> oauth2callback(String code, String state, String sessionState) {
-    return oauth2callback(oauthService, code, state, sessionState);
+    return oauthCallback(identityProvider, code, state, sessionState);
   }
 }

@@ -1,10 +1,9 @@
 package com.meemaw.auth.sso.oauth.google;
 
-import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.oauth.google.model.GoogleErrorResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
@@ -21,8 +20,8 @@ import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
-public class OAuth2GoogleService
-    extends AbstractOAuth2Service<
+public class GoogleIdentityProvider
+    extends AbstractOAuthIdentityProvider<
         GoogleTokenResponse, GoogleUserInfoResponse, GoogleErrorResponse> {
 
   private static final Collection<String> SCOPE_LIST = List.of("openid", "email", "profile");
@@ -30,8 +29,7 @@ public class OAuth2GoogleService
   private static final String AUTHORIZATION_SERVER_URL =
       "https://accounts.google.com/o/oauth2/auth";
 
-  @Inject AppConfig appConfig;
-  @Inject OAuth2GoogleClient OAuth2GoogleClient;
+  @Inject GoogleOAuthClient client;
 
   @Override
   public LoginMethod getLoginMethod() {
@@ -39,7 +37,7 @@ public class OAuth2GoogleService
   }
 
   @Override
-  public URI buildAuthorizationURL(String state, URI redirect, @Nullable String email) {
+  public URI buildAuthorizationUri(String state, URI redirect, @Nullable String email) {
     UriBuilder builder =
         UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
             .queryParam("client_id", appConfig.getGoogleOpenIdClientId())
@@ -59,8 +57,8 @@ public class OAuth2GoogleService
   @Timed(
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Google oauth2callback")
-  public CompletionStage<SsoLoginResult<?>> oauth2callback(
+  public CompletionStage<SsoLoginResult<?>> oauthCallback(
       String state, String sessionState, String code, URI serverBase) {
-    return oauth2callback(OAuth2GoogleClient, state, sessionState, code, serverBase);
+    return oauthCallback(client, state, sessionState, code, serverBase);
   }
 }

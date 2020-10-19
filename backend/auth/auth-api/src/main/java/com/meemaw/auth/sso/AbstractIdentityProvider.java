@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso;
 
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
+import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.shared.rest.response.Boom;
@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.RandomStringUtils;
 
-public abstract class AbstractIdpService {
+public abstract class AbstractIdentityProvider {
 
   public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final SecureRandom random = new SecureRandom();
@@ -36,11 +36,11 @@ public abstract class AbstractIdpService {
   }
 
   public String callbackPath() {
-    return String.join("/", basePath(), OAuth2Resource.CALLBACK_PATH);
+    return String.join("/", basePath(), OAuthResource.CALLBACK_PATH);
   }
 
   public String signInPath() {
-    return String.join("/", basePath(), OAuth2Resource.SIGNIN_PATH);
+    return String.join("/", basePath(), OAuthResource.SIGNIN_PATH);
   }
 
   public static String secureState(String data) {

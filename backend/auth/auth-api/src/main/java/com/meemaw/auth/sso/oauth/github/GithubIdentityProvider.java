@@ -1,10 +1,9 @@
 package com.meemaw.auth.sso.oauth.github;
 
-import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
@@ -21,12 +20,11 @@ import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
-public class OAuth2GithubService
-    extends AbstractOAuth2Service<
+public class GithubIdentityProvider
+    extends AbstractOAuthIdentityProvider<
         GithubTokenResponse, GithubUserInfoResponse, GithubErrorResponse> {
 
-  @Inject AppConfig appConfig;
-  @Inject OAuth2GithubClient OAuth2GithubClient;
+  @Inject GithubOAuthClient client;
 
   private static final String AUTHORIZATION_SERVER_URL = "https://github.com/login/oauth/authorize";
   private static final Collection<String> SCOPE_LIST = List.of("read:user", "user:email");
@@ -38,7 +36,7 @@ public class OAuth2GithubService
   }
 
   @Override
-  public URI buildAuthorizationURL(String state, URI serverRedirectURI, @Nullable String email) {
+  public URI buildAuthorizationUri(String state, URI serverRedirectURI, @Nullable String email) {
     UriBuilder builder =
         UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
             .queryParam("client_id", appConfig.getGithubOpenIdClientId())
@@ -58,8 +56,8 @@ public class OAuth2GithubService
   @Timed(
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Github oauth2callback")
-  public CompletionStage<SsoLoginResult<?>> oauth2callback(
+  public CompletionStage<SsoLoginResult<?>> oauthCallback(
       String state, String sessionState, String code, URI serverBaseURI) {
-    return oauth2callback(OAuth2GithubClient, state, sessionState, code, serverBaseURI);
+    return oauthCallback(client, state, sessionState, code, serverBaseURI);
   }
 }

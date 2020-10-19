@@ -23,7 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-public interface OAuth2Resource {
+public interface OAuthResource {
 
   String PATH = SsoSessionResource.PATH + "/oauth2";
   String CALLBACK_PATH = "callback";

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 
 @Slf4j
-public abstract class AbstractOAuth2Client<T, U extends OAuthUserInfo, E extends OAuthError> {
+public abstract class AbstractOAuthClient<T, U extends OAuthUserInfo, E extends OAuthError> {
 
   @Inject Vertx vertx;
   @Inject ObjectMapper objectMapper;
@@ -43,14 +43,14 @@ public abstract class AbstractOAuth2Client<T, U extends OAuthUserInfo, E extends
 
   @Traced
   public CompletionStage<U> userInfo(T token) {
-    log.info("[AUTH]: OAuth2 userInfo request token={}", token);
+    log.info("[AUTH]: OAuth userInfo request token={}", token);
     return requestUserInfo(token)
         .thenApply(response -> parseResponse(response, getUserInfoClazz(), getErrorClazz()));
   }
 
   @Traced
   public CompletionStage<T> codeExchange(String code, URI redirect) {
-    log.info("[AUTH]: OAuth2 code exchange request code={} redirect={}", code, redirect);
+    log.info("[AUTH]: OAuth code exchange request code={} redirect={}", code, redirect);
     return requestCodeExchange(code, redirect)
         .thenApply(response -> parseResponse(response, getTokenClazz(), getErrorClazz()));
   }
@@ -65,11 +65,11 @@ public abstract class AbstractOAuth2Client<T, U extends OAuthUserInfo, E extends
         return objectMapper.readValue(jsonPayload, clazz);
       }
 
-      log.error("[AUTH]: OAuth2 request failed status={} response={}", statusCode, jsonPayload);
+      log.error("[AUTH]: OAuth request failed status={} response={}", statusCode, jsonPayload);
       E errorResponse = objectMapper.readValue(jsonPayload, errorClazz);
       throw Boom.status(statusCode).message(errorResponse.getMessage()).exception();
     } catch (JsonProcessingException ex) {
-      log.error("[AUTH]: Failed to parse OAuth2 client response", ex);
+      log.error("[AUTH]: OAuth failed to parse OAuth2 client response", ex);
       throw Boom.serverError().message(ex.getMessage()).exception(ex);
     }
   }

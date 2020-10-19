@@ -1,10 +1,9 @@
 package com.meemaw.auth.sso.oauth.microsoft;
 
-import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftErrorResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Service;
+import com.meemaw.auth.sso.oauth.shared.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
@@ -21,8 +20,8 @@ import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j
-public class OAuth2MicrosoftService
-    extends AbstractOAuth2Service<
+public class MicrosoftIdentityProvider
+    extends AbstractOAuthIdentityProvider<
         MicrosoftTokenResponse, MicrosoftUserInfoResponse, MicrosoftErrorResponse> {
 
   private static final Collection<String> SCOPE_LIST = List.of("openid", "email", "profile");
@@ -30,8 +29,7 @@ public class OAuth2MicrosoftService
   private static final String AUTHORIZATION_SERVER_URL =
       "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
 
-  @Inject AppConfig appConfig;
-  @Inject OAuth2MicrosoftClient OAuth2MicrosoftClient;
+  @Inject MicrosoftOAuthClient client;
 
   @Override
   public LoginMethod getLoginMethod() {
@@ -56,7 +54,7 @@ public class OAuth2MicrosoftService
    * @return constructed URI
    */
   @Override
-  public URI buildAuthorizationURL(String state, URI serverRedirect, @Nullable String loginHint) {
+  public URI buildAuthorizationUri(String state, URI serverRedirect, @Nullable String loginHint) {
     UriBuilder builder =
         UriBuilder.fromUri(AUTHORIZATION_SERVER_URL)
             .queryParam("client_id", appConfig.getMicrosoftOpenIdClientId())
@@ -77,9 +75,9 @@ public class OAuth2MicrosoftService
   @Timed(
       name = "oauth2callback",
       description = "A measure of how long it takes to do execute Microsoft oauth2callback")
-  public CompletionStage<SsoLoginResult<?>> oauth2callback(
+  public CompletionStage<SsoLoginResult<?>> oauthCallback(
       String state, String sessionState, String code, URI serverBaseURI) {
     log.info("[AUTH]: OAuth2 callback request code={} serverBaseURI={}", code, serverBaseURI);
-    return oauth2callback(OAuth2MicrosoftClient, state, sessionState, code, serverBaseURI);
+    return oauthCallback(client, state, sessionState, code, serverBaseURI);
   }
 }
