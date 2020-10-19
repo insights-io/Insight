@@ -1,10 +1,10 @@
 package com.meemaw.auth.sso.oauth.google.resource.v1;
 
+import com.meemaw.auth.sso.oauth.AbstractOAuthResource;
 import com.meemaw.auth.sso.oauth.google.GoogleIdentityProvider;
 import com.meemaw.auth.sso.oauth.google.model.GoogleErrorResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuthResource;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;

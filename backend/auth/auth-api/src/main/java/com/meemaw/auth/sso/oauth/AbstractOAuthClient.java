@@ -1,9 +1,7 @@
-package com.meemaw.auth.sso.oauth.shared;
+package com.meemaw.auth.sso.oauth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.sso.oauth.model.OAuthError;
-import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;

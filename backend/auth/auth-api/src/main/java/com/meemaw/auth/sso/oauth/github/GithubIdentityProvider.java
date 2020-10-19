@@ -1,9 +1,9 @@
 package com.meemaw.auth.sso.oauth.github;
 
+import com.meemaw.auth.sso.oauth.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;

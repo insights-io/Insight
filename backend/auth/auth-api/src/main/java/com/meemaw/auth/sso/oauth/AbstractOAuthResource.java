@@ -1,10 +1,7 @@
-package com.meemaw.auth.sso.oauth.shared;
+package com.meemaw.auth.sso.oauth;
 
 import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.oauth.OAuthResource;
-import com.meemaw.auth.sso.oauth.model.OAuthError;
-import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.shared.context.RequestUtils;
 import io.vertx.core.http.HttpServerRequest;

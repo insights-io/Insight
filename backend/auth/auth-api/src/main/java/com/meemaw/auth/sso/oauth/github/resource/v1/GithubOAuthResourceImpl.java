@@ -1,10 +1,10 @@
 package com.meemaw.auth.sso.oauth.github.resource.v1;
 
+import com.meemaw.auth.sso.oauth.AbstractOAuthResource;
 import com.meemaw.auth.sso.oauth.github.GithubIdentityProvider;
 import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuthResource;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;

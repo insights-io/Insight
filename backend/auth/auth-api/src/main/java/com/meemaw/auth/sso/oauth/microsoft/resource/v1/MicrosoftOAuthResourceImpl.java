@@ -1,10 +1,10 @@
 package com.meemaw.auth.sso.oauth.microsoft.resource.v1;
 
+import com.meemaw.auth.sso.oauth.AbstractOAuthResource;
 import com.meemaw.auth.sso.oauth.microsoft.MicrosoftIdentityProvider;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftErrorResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuthResource;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;

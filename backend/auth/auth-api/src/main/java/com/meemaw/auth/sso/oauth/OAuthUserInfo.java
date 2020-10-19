@@ -1,4 +1,4 @@
-package com.meemaw.auth.sso.oauth.model;
+package com.meemaw.auth.sso.oauth;
 
 public interface OAuthUserInfo {
 

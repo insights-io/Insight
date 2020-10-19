@@ -1,10 +1,7 @@
-package com.meemaw.auth.sso.oauth.shared;
+package com.meemaw.auth.sso.oauth;
 
 import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.AbstractIdentityProvider;
-import com.meemaw.auth.sso.oauth.OAuthResource;
-import com.meemaw.auth.sso.oauth.model.OAuthError;
-import com.meemaw.auth.sso.oauth.model.OAuthUserInfo;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
@@ -27,36 +24,36 @@ public abstract class AbstractOAuthIdentityProvider<
     extends AbstractIdentityProvider {
 
   @Inject protected AppConfig appConfig;
-  @Inject SsoService ssoService;
+  @Inject protected SsoService ssoService;
 
   public abstract URI buildAuthorizationUri(
       String state, URI serverRedirectUri, @Nullable String email);
-
-  public abstract CompletionStage<SsoLoginResult<?>> oauthCallback(
-      String state, String sessionState, String code, URI serverBase);
 
   @Override
   public String basePath() {
     return String.join("/", OAuthResource.PATH, getLoginMethod().getKey());
   }
 
+  public abstract CompletionStage<SsoLoginResult<?>> oauthCallback(
+      String state, String sessionState, String code, URI serverBaseUri);
+
   public CompletionStage<SsoLoginResult<?>> oauthCallback(
-      AbstractOAuthClient<T, U, E> oauthClient,
+      AbstractOAuthClient<T, U, E> client,
       String state,
       String sessionState,
       String code,
-      URI serverBase) {
+      URI serverBaseUri) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {
       log.warn("[AUTH]: OAuth state miss-match, session: {}, query: {}", sessionState, state);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 
     URL redirect = RequestUtils.sneakyURL(secureStateData(sessionState));
-    URI serverRedirect = UriBuilder.fromUri(serverBase).path(callbackPath()).build();
+    URI serverRedirect = UriBuilder.fromUri(serverBaseUri).path(callbackPath()).build();
 
-    return oauthClient
+    return client
         .codeExchange(code, serverRedirect)
-        .thenCompose(oauthClient::userInfo)
+        .thenCompose(client::userInfo)
         .thenCompose(
             userInfo -> {
               String fullName = userInfo.getFullName();
@@ -66,7 +63,7 @@ public abstract class AbstractOAuthIdentityProvider<
               log.info("[AUTH]: OAuth successfully retrieved user info email={}", email);
 
               return ssoService
-                  .socialLogin(email, fullName, getLoginMethod(), redirect, serverBase)
+                  .socialLogin(email, fullName, getLoginMethod(), redirect, serverBaseUri)
                   .exceptionally(throwable -> handleSsoException(throwable, redirect))
                   .thenApply(
                       loginResult -> {

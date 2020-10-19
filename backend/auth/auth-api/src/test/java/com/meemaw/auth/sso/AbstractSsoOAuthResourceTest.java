@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.oauth.shared.AbstractOAuthClient;
+import com.meemaw.auth.sso.oauth.AbstractOAuthClient;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.rebrowse.model.auth.SessionInfo;
