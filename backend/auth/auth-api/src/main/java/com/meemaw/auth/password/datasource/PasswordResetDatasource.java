@@ -13,5 +13,5 @@ public interface PasswordResetDatasource {
   CompletionStage<Optional<PasswordResetRequest>> findPasswordResetRequest(UUID token);
 
   CompletionStage<PasswordResetRequest> createPasswordResetRequest(
-      String email, UUID userId, String organizationId, SqlTransaction transaction);
+      String email, UUID userId, SqlTransaction transaction);
 }

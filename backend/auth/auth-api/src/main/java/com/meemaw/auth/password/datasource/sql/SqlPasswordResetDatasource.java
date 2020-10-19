@@ -4,7 +4,6 @@ import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTab
 import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.CREATED_AT;
 import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.EMAIL;
 import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.ORGANIZATION_ID;
 import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.TABLE;
 import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.TOKEN;
 import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.USER_ID;
@@ -49,13 +48,13 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
   @Override
   @Traced
   public CompletionStage<PasswordResetRequest> createPasswordResetRequest(
-      String email, UUID userId, String organizationId, SqlTransaction transaction) {
+      String email, UUID userId, SqlTransaction transaction) {
     Query query =
         sqlPool
             .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(email, userId, organizationId)
+            .values(email, userId)
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
@@ -65,7 +64,7 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
               Row row = pgRowSet.iterator().next();
               UUID token = row.getUUID(TOKEN.getName());
               OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
-              return new PasswordResetRequest(token, userId, organizationId, email, createdAt);
+              return new PasswordResetRequest(token, userId, email, createdAt);
             });
   }
 
@@ -80,7 +79,6 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
     return new PasswordResetRequest(
         row.getUUID(TOKEN.getName()),
         row.getUUID(USER_ID.getName()),
-        row.getString(ORGANIZATION_ID.getName()),
         row.getString(EMAIL.getName()),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }

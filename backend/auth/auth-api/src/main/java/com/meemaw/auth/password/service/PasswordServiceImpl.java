@@ -117,7 +117,7 @@ public class PasswordServiceImpl implements PasswordService {
     UUID userId = authUser.getId();
 
     return passwordResetDatasource
-        .createPasswordResetRequest(email, userId, authUser.getOrganizationId(), transaction)
+        .createPasswordResetRequest(email, userId, transaction)
         .thenApply(
             passwordResetRequest ->
                 sendPasswordResetEmail(passwordResetRequest, passwordResetURL)

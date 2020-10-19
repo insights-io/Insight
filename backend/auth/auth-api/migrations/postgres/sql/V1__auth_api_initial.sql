@@ -16,7 +16,8 @@ CREATE TABLE auth.user_role
 
 INSERT INTO auth.user_role
 VALUES ('member'),
-       ('admin');
+       ('admin'),
+       ('owner');
 
 CREATE TABLE auth.organization
 (
@@ -83,11 +84,10 @@ CREATE TABLE auth.password
 
 CREATE TABLE auth.password_reset_request
 (
-    token           UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
-    email           TEXT REFERENCES auth.user (email) ON DELETE CASCADE,
-    organization_id TEXT REFERENCES auth.organization (id) ON DELETE CASCADE,
-    user_id         UUID REFERENCES auth.user (id) ON DELETE CASCADE,
-    created_at      TIMESTAMPTZ NOT NULL        DEFAULT now(),
+    token      UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+    email      TEXT REFERENCES auth.user (email) ON DELETE CASCADE,
+    user_id    UUID REFERENCES auth.user (id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL        DEFAULT now(),
 
     PRIMARY KEY (token, email, created_at),
     CONSTRAINT email_length CHECK (length(auth.password_reset_request.email) < 255)
