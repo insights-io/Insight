@@ -41,3 +41,29 @@ export type TeamInviteDTO = TeamInviteCreateDTO & {
 export type TeamInvite = Omit<TeamInviteDTO, 'createdAt'> & {
   createdAt: Date;
 };
+
+export type PasswordPolicy = {
+  minCharacters: number;
+  preventPasswordReuse: boolean;
+  requireUppercaseCharacter: boolean;
+  requireLowercaseCharacter: boolean;
+  requireNumber: boolean;
+  requireNonAlphanumericCharacter: boolean;
+};
+
+export type PasswordPolicyCreateParams = PasswordPolicy;
+export type PasswordPolicyUpdateParams = Partial<PasswordPolicy>;
+
+export type OrganizationPasswordPolicyDTO = PasswordPolicy & {
+  organizationId: string;
+  updatedAt: string;
+  createdAt: string;
+};
+
+export type OrganizationPasswordPolicy = Omit<
+  OrganizationPasswordPolicyDTO,
+  'updatedAt' | 'createdAt'
+> & {
+  updatedAt: Date;
+  createdAt: Date;
+};

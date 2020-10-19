@@ -1,8 +1,10 @@
 package com.rebrowse.net;
 
+import com.rebrowse.model.ApiRequestParams;
 import com.rebrowse.util.StringUtils;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +31,11 @@ public class RebrowseRequest {
     this.bodyPublisher = bodyPublisher;
     this.requestOptions =
         Optional.ofNullable(requestOptions).orElseGet(RequestOptions::createDefault);
-    this.headers = buildHeaders(this.requestOptions);
+    this.headers = buildHeaders(this.requestOptions, bodyPublisher);
   }
 
-  private static Map<String, List<String>> buildHeaders(RequestOptions options) {
+  private static Map<String, List<String>> buildHeaders(
+      RequestOptions options, BodyPublisher bodyPublisher) {
     Map<String, List<String>> headers = new HashMap<>();
 
     // Accept
@@ -40,6 +43,11 @@ public class RebrowseRequest {
 
     // Accept-Charset
     headers.put("Accept-Charset", Collections.singletonList(ApiResource.CHARSET.name()));
+
+    // Content-Type
+    if (bodyPublisher.contentLength() > 0) {
+      headers.put("Content-Type", Collections.singletonList("application/json"));
+    }
 
     String sessionId = options.getSessionId();
     String apiKey = options.getApiKey();
@@ -57,16 +65,37 @@ public class RebrowseRequest {
     return token != null && !token.isEmpty() && !StringUtils.containsWhitespace(token);
   }
 
-  public static RebrowseRequest get(String path, RequestOptions requestOptions) {
-    return new RebrowseRequest(RequestMethod.GET, path, requestOptions, BodyPublishers.noBody());
+  public static RebrowseRequest get(String path, RequestOptions options) {
+    return noBody(RequestMethod.GET, path, options);
   }
 
-  public static RebrowseRequest post(String path, String body, RequestOptions requestOptions) {
-    return new RebrowseRequest(
-        RequestMethod.POST, path, requestOptions, BodyPublishers.ofString(body));
+  public static RebrowseRequest post(String path, RequestOptions options) {
+    return noBody(RequestMethod.POST, path, options);
   }
 
-  public static RebrowseRequest post(String path, RequestOptions requestOptions) {
-    return new RebrowseRequest(RequestMethod.POST, path, requestOptions, BodyPublishers.noBody());
+  public static <P extends ApiRequestParams> RebrowseRequest post(
+      String path, P params, RequestOptions options) {
+    return ofString(RequestMethod.POST, path, params, options);
+  }
+
+  public static RebrowseRequest patch(String path, RequestOptions options) {
+    return noBody(RequestMethod.PATCH, path, options);
+  }
+
+  public static <P extends ApiRequestParams> RebrowseRequest patch(
+      String path, P params, RequestOptions options) {
+    return ofString(RequestMethod.PATCH, path, params, options);
+  }
+
+  private static RebrowseRequest noBody(
+      RequestMethod method, String path, RequestOptions requestOptions) {
+    return new RebrowseRequest(method, path, requestOptions, BodyPublishers.noBody());
+  }
+
+  private static <P extends ApiRequestParams> RebrowseRequest ofString(
+      RequestMethod method, String path, P params, RequestOptions options) {
+    BodyPublisher bodyPublisher =
+        BodyPublishers.ofString(params.writeValueAsString(), StandardCharsets.UTF_8);
+    return new RebrowseRequest(method, path, options, bodyPublisher);
   }
 }

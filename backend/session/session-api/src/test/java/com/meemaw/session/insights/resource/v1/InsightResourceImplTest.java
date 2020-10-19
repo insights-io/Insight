@@ -79,7 +79,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(200)
         .body(sameJson("{\"data\":{\"count\":5}}"));
 
-    String apiKey = authApi().createAuthToken(sessionId);
+    String apiKey = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
@@ -186,7 +186,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(200)
         .body(sameJson("{\"data\":[null,\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
 
-    String apiKey = authApi().createAuthToken(sessionId);
+    String apiKey = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)

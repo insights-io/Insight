@@ -1,7 +1,7 @@
 package com.meemaw.auth.user.datasource.sql;
 
-import static com.meemaw.auth.password.datasource.sql.PasswordTable.HASH;
-import static com.meemaw.auth.password.datasource.sql.PasswordTable.TABLE_ALIAS;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.HASH;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.TABLE_ALIAS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.CREATED_AT;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.EMAIL;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.FIELDS;
@@ -18,7 +18,7 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE_FIELDS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.UPDATED_AT;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.USER_TABLE_ID;
 
-import com.meemaw.auth.password.datasource.sql.PasswordTable;
+import com.meemaw.auth.password.datasource.sql.SqlPasswordTable;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
@@ -58,7 +58,7 @@ public class SqlUserDatasource implements UserDatasource {
       Stream.concat(
               TABLE_FIELDS.stream(),
               Stream.of(
-                  PasswordTable.tableAliasField(HASH),
+                  SqlPasswordTable.tableAliasField(HASH),
                   SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.PARAMS),
                   SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.METHOD),
                   SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.CREATED_AT)))
@@ -158,11 +158,11 @@ public class SqlUserDatasource implements UserDatasource {
             .from(
                 TABLE
                     .leftJoin(TABLE_ALIAS)
-                    .on(USER_TABLE_ID.eq(PasswordTable.TABLE_ALIAS_USER_ID))
+                    .on(USER_TABLE_ID.eq(SqlPasswordTable.TABLE_ALIAS_USER_ID))
                     .leftJoin(SqlTfaSetupTable.TABLE_ALIAS)
                     .on(USER_TABLE_ID.eq(SqlTfaSetupTable.TABLE_ALIAS_USER_ID)))
             .where(EMAIL.eq(email))
-            .orderBy(PasswordTable.TABLE_ALIAS_CREATED_AT.desc())
+            .orderBy(SqlPasswordTable.TABLE_ALIAS_CREATED_AT.desc())
             .limit(2);
 
     return sqlPool.execute(query).thenApply(this::userWithLoginInformationFromRowSet);

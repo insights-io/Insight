@@ -4,6 +4,7 @@ import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.service.OrganizationInviteService;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
@@ -18,7 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class OrganizationInviteResourceImpl implements OrganizationInviteResource {
+public class OrganizationTeamInviteResourceImpl implements OrganizationTeamInviteResource {
 
   @Inject InsightPrincipal principal;
   @Inject OrganizationInviteService inviteService;
@@ -35,8 +36,9 @@ public class OrganizationInviteResourceImpl implements OrganizationInviteResourc
 
   @Override
   public CompletionStage<Response> create(TeamInviteCreateDTO body) {
+    AuthUser user = principal.user();
     return inviteService
-        .createTeamInvite(body, principal, getAcceptInviteURL())
+        .createTeamInvite(body, user, getAcceptInviteURL())
         .thenApply(DataResponse::created);
   }
 

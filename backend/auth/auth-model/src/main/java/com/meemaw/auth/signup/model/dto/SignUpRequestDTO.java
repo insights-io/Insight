@@ -19,6 +19,10 @@ public class SignUpRequestDTO {
   @Email
   String email;
 
+  /**
+   * We use the @Password validator here as this is the sign up flow that created a new organization
+   * and password policy cannot be applied yet.
+   */
   @Password String password;
 
   @NotBlank(message = "Required")

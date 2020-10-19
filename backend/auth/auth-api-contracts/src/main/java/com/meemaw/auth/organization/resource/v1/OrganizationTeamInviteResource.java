@@ -30,9 +30,9 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path(OrganizationInviteResource.PATH)
+@Path(OrganizationTeamInviteResource.PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public interface OrganizationInviteResource {
+public interface OrganizationTeamInviteResource {
 
   String PATH = OrganizationResource.PATH + "/invites";
   String TAG = "Organization Invite";

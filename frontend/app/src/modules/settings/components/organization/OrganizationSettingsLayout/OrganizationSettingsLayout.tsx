@@ -5,7 +5,7 @@ import {
   ORGANIZATION_SETTINGS_BILLING_USAGE_AND_PAYMENTS_PAGE,
   ORGANIZATION_SETTINGS_GENERAL_PAGE,
   ORGANIZATION_SETTINGS_MEMBERS_PAGE,
-  ORGANIZATION_SETTINGS_SECURITY_AND_PRIVACY_PAGE,
+  ORGANIZATION_SETTINGS_SECURITY_PAGE,
 } from 'shared/constants/routes';
 import { SettingsLayout } from 'modules/settings/components/SettingsLayout';
 import { SETTINGS_SEARCH_OPTIONS } from 'modules/settings/constants';
@@ -24,8 +24,8 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
         link: ORGANIZATION_SETTINGS_GENERAL_PAGE,
       },
       {
-        text: 'Security & Privacy',
-        link: ORGANIZATION_SETTINGS_SECURITY_AND_PRIVACY_PAGE,
+        text: 'Security',
+        link: ORGANIZATION_SETTINGS_SECURITY_PAGE,
       },
       {
         text: MEMBERS_SECTION,

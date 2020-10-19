@@ -1,14 +1,14 @@
 import React from 'react';
 import { ParagraphXSmall } from 'baseui/typography';
+import type { BlockProps } from 'baseui/block';
 
-import { VerticalAligned } from '../VerticalAligned';
+import { FlexColumn } from '../FlexColumn';
 import { Label } from '../Label';
 
-type Props = {
+type Props = BlockProps & {
   children: React.ReactNode;
   explanation: string;
   for?: string;
-  width?: string;
 };
 
 export const ExplainedLabel = ({
@@ -18,13 +18,13 @@ export const ExplainedLabel = ({
   ...rest
 }: Props) => {
   return (
-    <VerticalAligned
+    <FlexColumn
       as="label"
       overrides={{ Block: { props: { for: labelFor } } }}
       {...rest}
     >
       <Label as="div">{children}</Label>
       <ParagraphXSmall margin={0}>{explanation}</ParagraphXSmall>
-    </VerticalAligned>
+    </FlexColumn>
   );
 };

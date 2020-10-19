@@ -6,27 +6,18 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.auth.organization.model.Organization;
-import com.meemaw.auth.organization.model.dto.OrganizationDTO;
-import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
-import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
-import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
-import com.meemaw.auth.sso.token.resource.v1.AuthTokenResource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
-import com.meemaw.auth.user.model.dto.SessionInfoDTO;
-import com.meemaw.shared.rest.response.DataResponse;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
+import com.rebrowse.model.auth.ApiKey;
+import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.organization.Organization;
+import com.rebrowse.net.RequestOptions;
 import io.restassured.response.Response;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 import javax.ws.rs.core.MediaType;
 
 public class AuthApiTestProvider {
@@ -37,21 +28,21 @@ public class AuthApiTestProvider {
   public static final UUID INSIGHT_ADMIN_ID =
       UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b");
 
-  private final String baseURI;
+  private final String baseUrl;
   private final ObjectMapper objectMapper;
   private final Function<String, String> signUpConfirmationLinkProvider;
 
   public AuthApiTestProvider(
-      @Nullable String baseURI,
+      String baseUrl,
       ObjectMapper objectMapper,
       Function<String, String> signUpConfirmationLinkProvider) {
-    this.baseURI = baseURI;
+    this.baseUrl = baseUrl;
     this.objectMapper = objectMapper;
     this.signUpConfirmationLinkProvider = signUpConfirmationLinkProvider;
   }
 
   private String resourcePath(String path) {
-    return Optional.ofNullable(baseURI).orElse("") + path;
+    return baseUrl + path;
   }
 
   public SignUpRequestDTO signUpRequestMock(String email, String password) {
@@ -117,34 +108,16 @@ public class AuthApiTestProvider {
     return login(INSIGHT_ADMIN_EMAIL, INSIGHT_ADMIN_PASSWORD);
   }
 
-  public Optional<Organization> getOrganization(String sessionId) {
-    String organizationURI = resourcePath(OrganizationResource.PATH);
-
-    DataResponse<OrganizationDTO> dataResponse =
-        given()
-            .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .when()
-            .get(organizationURI)
-            .as(new TypeRef<>() {});
-
-    if (dataResponse.getError() != null) {
-      return Optional.empty();
-    }
-
-    return Optional.of(dataResponse.getData());
+  public Organization getOrganization(String sessionId) {
+    return Organization.retrieve(sdkRequest().sessionId(sessionId).build())
+        .toCompletableFuture()
+        .join();
   }
 
-  public Optional<SessionInfoDTO> getSessionInfo(String sessionId) {
-    String uri = resourcePath(SsoSessionResource.PATH + "/session");
-
-    DataResponse<SessionInfoDTO> dataResponse =
-        given().cookie(SsoSession.COOKIE_NAME, sessionId).when().get(uri).as(new TypeRef<>() {});
-
-    if (dataResponse.getError() != null) {
-      return Optional.empty();
-    }
-
-    return Optional.of(dataResponse.getData());
+  public SessionInfo getSessionInfo(String sessionId) {
+    return SessionInfo.retrieve(sdkRequest().sessionId(sessionId).build())
+        .toCompletableFuture()
+        .join();
   }
 
   public String login(String email, String password) {
@@ -167,43 +140,15 @@ public class AuthApiTestProvider {
     return extractSessionCookie(response).getValue();
   }
 
-  public String createAuthToken(String sessionId) {
-    String resourceURI = resourcePath(AuthTokenResource.PATH);
-    DataResponse<Map<String, Object>> response =
-        given()
-            .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .when()
-            .post(resourceURI)
-            .as(new TypeRef<>() {});
-
-    return (String) response.getData().get("token");
+  public String createApiKey(String sessionId) {
+    return ApiKey.create(sdkRequest().sessionId(sessionId).build())
+        .toCompletableFuture()
+        .join()
+        .getToken();
   }
 
-  public Response setupSso(String sessionId, CreateSsoSetupDTO createSsoSetup)
-      throws JsonProcessingException {
-    return given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(objectMapper.writeValueAsString(createSsoSetup))
-        .post(resourcePath(SsoSetupResource.PATH))
-        .then()
-        .statusCode(201)
-        .extract()
-        .response();
-  }
-
-  public Response updateOrganization(String sessionId, Map<String, Object> update)
-      throws JsonProcessingException {
-    return given()
-        .when()
-        .contentType(ContentType.JSON)
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(objectMapper.writeValueAsString(update))
-        .patch(resourcePath(OrganizationResource.PATH))
-        .then()
-        .statusCode(200)
-        .extract()
-        .response();
+  /** @return SDK request options builder connected with the auth-api instance */
+  public RequestOptions.Builder sdkRequest() {
+    return new RequestOptions.Builder().apiBaseUrl(this.baseUrl);
   }
 }

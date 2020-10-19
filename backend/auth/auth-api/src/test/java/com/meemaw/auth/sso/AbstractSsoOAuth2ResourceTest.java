@@ -6,23 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.organization.model.Organization;
-import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.auth.sso.oauth.shared.AbstractOAuth2Client;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
-import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
-import com.meemaw.auth.user.model.UserRole;
-import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.test.setup.RestAssuredUtils;
-import io.restassured.http.ContentType;
+import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.auth.SsoMethod;
+import com.rebrowse.model.auth.SsoSetup;
+import com.rebrowse.model.auth.SsoSetupCreateParams;
+import com.rebrowse.model.organization.Organization;
+import com.rebrowse.model.organization.OrganizationUpdateParams;
+import com.rebrowse.model.user.UserRole;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.UUID;
-import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceTest {
@@ -124,19 +121,15 @@ public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceT
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomBusinessCredentials();
     String domain =
-        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).get().getUser().getEmail());
+        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).getUser().getEmail());
 
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            objectMapper.writeValueAsString(
-                new CreateSsoSetupDTO(
-                    SsoMethod.fromString(service().getLoginMethod().getKey()), null)))
-        .post(SsoSetupResource.PATH)
-        .then()
-        .statusCode(201);
+    SsoSetup.create(
+            SsoSetupCreateParams.builder()
+                .method(SsoMethod.fromString(service().getLoginMethod().getKey()))
+                .build(),
+            authApi().sdkRequest().sessionId(sessionId).build())
+        .toCompletableFuture()
+        .join();
 
     String newUserEmail = String.format("%s@%s", UUID.randomUUID(), domain);
     String Location = "https://www.insight.io/my_path";
@@ -163,33 +156,26 @@ public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceT
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomBusinessCredentials();
     String domain =
-        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).get().getUser().getEmail());
+        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).getUser().getEmail());
 
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            objectMapper.writeValueAsString(
-                new CreateSsoSetupDTO(
-                    SsoMethod.fromString(service().getLoginMethod().getKey()), null)))
-        .post(SsoSetupResource.PATH)
-        .then()
-        .statusCode(201);
+    SsoSetup.create(
+            SsoSetupCreateParams.builder()
+                .method(SsoMethod.fromString(service().getLoginMethod().getKey()))
+                .build(),
+            authApi().sdkRequest().sessionId(sessionId).build())
+        .toCompletableFuture()
+        .join();
 
     for (UserRole userRole : UserRole.values()) {
-      given()
-          .when()
-          .contentType(ContentType.JSON)
-          .cookie(SsoSession.COOKIE_NAME, sessionId)
-          .body(
-              objectMapper.writeValueAsString(
-                  Map.of("defaultRole", userRole.getKey(), "openMembership", true)))
-          .patch(OrganizationResource.PATH)
-          .then()
-          .statusCode(200);
-
-      Organization organization = authApi().getOrganization(sessionId).get();
+      Organization organization =
+          Organization.update(
+                  OrganizationUpdateParams.builder()
+                      .defaultRole(userRole)
+                      .openMembership(true)
+                      .build(),
+                  authApi().sdkRequest().sessionId(sessionId).build())
+              .toCompletableFuture()
+              .join();
 
       String newUserEmail = String.format("%s@%s", UUID.randomUUID(), domain);
       String Location = "https://www.insight.io/my_path";
@@ -213,7 +199,7 @@ public abstract class AbstractSsoOAuth2ResourceTest extends AbstractSsoResourceT
               .detailedCookie(SsoSession.COOKIE_NAME)
               .getValue();
 
-      SessionInfoDTO sessionInfo = authApi().getSessionInfo(createdUserSessionId).get();
+      SessionInfo sessionInfo = authApi().getSessionInfo(createdUserSessionId);
 
       assertEquals(domain, EmailUtils.domainFromEmail(sessionInfo.getUser().getEmail()));
       assertEquals(sessionInfo.getOrganization(), organization);

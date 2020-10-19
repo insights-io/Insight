@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.jooq.Field;
 import org.jooq.Table;
 
-public final class PasswordTable {
+public final class SqlPasswordTable {
 
   public static final Table<?> TABLE = table("auth.password");
   public static final Table<?> TABLE_ALIAS = table("auth.password").as("password");
@@ -29,5 +29,5 @@ public final class PasswordTable {
     return (Field<T>) field(String.join(".", TABLE_ALIAS.getName(), field.getName()));
   }
 
-  private PasswordTable() {}
+  private SqlPasswordTable() {}
 }

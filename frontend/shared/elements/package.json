@@ -7,6 +7,7 @@
   "module": "dist/elements.esm.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
+  "sideEffects": false,
   "author": "Insight Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",

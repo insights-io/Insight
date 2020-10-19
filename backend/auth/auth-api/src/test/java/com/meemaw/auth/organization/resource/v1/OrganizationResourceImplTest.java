@@ -13,16 +13,15 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.user.datasource.UserTable;
-import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
-import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
-import com.meemaw.auth.user.service.UserService;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.user.User;
+import com.rebrowse.model.user.UserUpdateParams;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -30,7 +29,6 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -40,8 +38,6 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 public class OrganizationResourceImplTest extends AbstractAuthApiTest {
-
-  @Inject UserService userService;
 
   private static final String GET_ORGANIZATION_MEMBERS_PATH =
       String.join("/", OrganizationResource.PATH, "members");
@@ -59,9 +55,9 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   public void delete__should_throw__when_performed_by_non_admin_user()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
-    userService
-        .updateUser(user, Map.of(UserTable.ROLE, UserRole.MEMBER.getKey()))
+    User.update(
+            UserUpdateParams.builder().role(com.rebrowse.model.user.UserRole.MEMBER).build(),
+            authApi().sdkRequest().sessionId(sessionId).build())
         .toCompletableFuture()
         .join();
 
@@ -81,7 +77,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   public void delete__should_delete_all_users_and_clear_caches__when_valid()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    String apiKey = authApi().createAuthToken(sessionId);
+    String apiKey = authApi().createApiKey(sessionId);
 
     given()
         .when()
@@ -207,7 +203,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     AvatarSetupDTO avatarSetup = new AvatarSetupDTO(AvatarType.AVATAR, "image");
 
-    String apiKey = authApi().createAuthToken(sessionId);
+    String apiKey = authApi().createApiKey(sessionId);
     DataResponse<OrganizationDTO> dataResponse =
         given()
             .when()
@@ -321,7 +317,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     assertEquals("My new name", organizationDataResponse.getData().getName());
     assertEquals(UserRole.ADMIN, organizationDataResponse.getData().getDefaultRole());
 
-    String apiKey = authApi().createAuthToken(sessionId);
+    String apiKey = authApi().createApiKey(sessionId);
     organizationDataResponse =
         given()
             .when()
@@ -365,7 +361,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     assertEquals(INSIGHT_ORGANIZATION_ID, firstResponse.getData().getId());
     assertEquals("Insight", firstResponse.getData().getName());
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     DataResponse<OrganizationDTO> secondResponse =
         given()
             .when()
@@ -405,7 +401,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     assertEquals(INSIGHT_ADMIN_FULL_NAME, firstResponse.getData().get(0).getFullName());
     assertEquals(UserRole.ADMIN, firstResponse.getData().get(0).getRole());
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     DataResponse<List<UserDTO>> secondResponse =
         given()
             .when()
@@ -430,8 +426,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void get_organization__should_work__when_authenticated() throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    SessionInfoDTO sessionInfo = authApi().getSessionInfo(sessionId).get();
-    AuthUser user = sessionInfo.getUser();
+    SessionInfo sessionInfo = authApi().getSessionInfo(sessionId);
+    User user = sessionInfo.getUser();
 
     DataResponse<OrganizationDTO> firstResponse =
         given()
@@ -446,7 +442,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
     assertEquals(user.getOrganizationId(), firstResponse.getData().getId());
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     DataResponse<OrganizationDTO> secondResponse =
         given()
             .when()
@@ -476,7 +472,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)

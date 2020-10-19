@@ -10,6 +10,7 @@ public class PasswordResetRequest implements CanExpire {
 
   UUID token;
   UUID userId;
+  String organizationId;
   String email;
   OffsetDateTime createdAt;
 }

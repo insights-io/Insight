@@ -202,7 +202,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .when()
@@ -291,7 +291,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
         .statusCode(200)
         .body(sameJson("{\"data\":[]}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .when()

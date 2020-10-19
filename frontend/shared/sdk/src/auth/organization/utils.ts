@@ -1,6 +1,8 @@
 import type {
   Organization,
   OrganizationDTO,
+  OrganizationPasswordPolicy,
+  OrganizationPasswordPolicyDTO,
   TeamInvite,
   TeamInviteDTO,
 } from '@insight/types';
@@ -19,4 +21,14 @@ export const mapTeamInvite = (
   teamInvite: TeamInvite | TeamInviteDTO
 ): TeamInvite => {
   return { ...teamInvite, createdAt: new Date(teamInvite.createdAt) };
+};
+
+export const mapPasswordPolicy = (
+  policy: OrganizationPasswordPolicy | OrganizationPasswordPolicyDTO
+): OrganizationPasswordPolicy => {
+  return {
+    ...policy,
+    createdAt: new Date(policy.createdAt),
+    updatedAt: new Date(policy.updatedAt),
+  };
 };

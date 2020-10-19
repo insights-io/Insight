@@ -20,11 +20,7 @@ public interface PasswordService {
   CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password);
 
   CompletionStage<OffsetDateTime> changePassword(
-      UUID userId,
-      String email,
-      String currentPassword,
-      String newPassword,
-      String confirmNewPassword);
+      UUID userId, String email, String organizationId, String currentPassword, String newPassword);
 
   CompletionStage<Boolean> createPassword(
       UUID userId, String email, String password, SqlTransaction transaction);

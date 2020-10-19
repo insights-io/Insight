@@ -1,6 +1,6 @@
 package com.meemaw.auth.password.model.dto;
 
-import com.meemaw.shared.validation.Password;
+import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -11,5 +11,6 @@ import lombok.Value;
 @AllArgsConstructor
 public class PasswordResetRequestDTO {
 
-  @Password String password;
+  @NotBlank(message = "Required")
+  String password;
 }

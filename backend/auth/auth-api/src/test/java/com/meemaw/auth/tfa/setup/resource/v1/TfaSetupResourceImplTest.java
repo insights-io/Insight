@@ -18,7 +18,6 @@ import com.meemaw.auth.tfa.model.dto.TfaSetupDTO;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.tfa.totp.model.dto.TfaTotpSetupStartDTO;
-import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -26,6 +25,7 @@ import com.meemaw.shared.sms.impl.mock.MockSmsboxImpl;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -156,7 +156,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
         .statusCode(200)
         .body(sameJson("{\"data\":[]}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
@@ -222,7 +222,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
   public void delete_totp_tfa__should_succeed__when_user_with_tfa()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
 
     given()
         .when()
@@ -278,7 +278,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     String password = UUID.randomUUID().toString();
     String email = password + "@gmail.com";
     String sessionId = authApi().signUpAndLogin(email, password);
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
 
     DataResponse<TfaTotpSetupStartDTO> dataResponse =
         given()
@@ -496,7 +496,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     String password = "tfa-sms-and-top-full-flow";
     PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222334");
     String sessionId = authApi().signUpAndLogin(email, password, phoneNumber);
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
 
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);
     String tfaSecret =

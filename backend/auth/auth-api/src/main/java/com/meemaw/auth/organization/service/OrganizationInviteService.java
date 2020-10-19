@@ -4,6 +4,7 @@ import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.user.model.AuthUser;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -11,7 +12,7 @@ import java.util.concurrent.CompletionStage;
 public interface OrganizationInviteService {
 
   CompletionStage<TeamInviteDTO> createTeamInvite(
-      TeamInviteCreateDTO invite, InsightPrincipal principal, String acceptInviteURL);
+      TeamInviteCreateDTO invite, AuthUser creator, String acceptInviteURL);
 
   CompletionStage<Boolean> acceptTeamInvite(UUID token, TeamInviteAcceptDTO invite);
 

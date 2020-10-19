@@ -21,10 +21,10 @@ import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -199,7 +199,7 @@ public class OAuth2MicrosoftResourceImplTest extends AbstractSsoOAuth2ResourceTe
   public void microsoft_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
 
     given()
         .when()
