@@ -20,8 +20,12 @@ import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.organization.TeamInvite;
+import com.rebrowse.model.organization.TeamInviteAcceptParams;
+import com.rebrowse.model.organization.TeamInviteCreateParams;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserUpdateParams;
+import com.rebrowse.net.RequestOptions;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -29,6 +33,7 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.ws.rs.core.HttpHeaders;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -72,35 +77,66 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
                 "{\"error\":{\"statusCode\":403,\"reason\":\"Forbidden\",\"message\":\"Forbidden\"}}"));
   }
 
-  // TODO: test with multiple members in organization
   @Test
   public void delete__should_delete_all_users_and_clear_caches__when_valid()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     String apiKey = authApi().createApiKey(sessionId);
+    String newUserPassword = UUID.randomUUID().toString();
+    String newUserEmail = String.format("%s@gmail.com", newUserPassword);
+    RequestOptions options = authApi().sdkRequest().sessionId(sessionId).build();
+
+    TeamInvite teamInvite =
+        TeamInvite.create(
+                TeamInviteCreateParams.builder()
+                    .role(com.rebrowse.model.user.UserRole.ADMIN)
+                    .email(newUserEmail)
+                    .build(),
+                options)
+            .toCompletableFuture()
+            .join();
+
+    teamInvite
+        .accept(
+            TeamInviteAcceptParams.builder()
+                .fullName("Marko Skace")
+                .password(newUserPassword)
+                .build(),
+            options)
+        .toCompletableFuture()
+        .join();
+
+    String secondUserSessionId = authApi().login(newUserEmail, newUserPassword);
+    String secondUserApiKey = authApi().createApiKey(secondUserSessionId);
 
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + secondUserApiKey)
         .delete(OrganizationResource.PATH)
         .then()
         .statusCode(204);
 
     // Should purge session cache
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(OrganizationResource.PATH)
-        .then()
-        .statusCode(401);
+    List.of(sessionId, secondUserSessionId)
+        .forEach(
+            session ->
+                given()
+                    .when()
+                    .cookie(SsoSession.COOKIE_NAME, session)
+                    .get(OrganizationResource.PATH)
+                    .then()
+                    .statusCode(401));
 
     // Should delete auth token
-    given()
-        .when()
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-        .get(OrganizationResource.PATH)
-        .then()
-        .statusCode(401);
+    List.of(apiKey, secondUserApiKey)
+        .forEach(
+            token ->
+                given()
+                    .when()
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .get(OrganizationResource.PATH)
+                    .then()
+                    .statusCode(401));
   }
 
   @Test

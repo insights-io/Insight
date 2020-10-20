@@ -66,15 +66,19 @@ public class RebrowseHttpClient implements HttpClient {
                 throw handleError(body, statusCode, requestId);
               }
 
+              if (statusCode == 204) {
+                return null;
+              }
+
               try {
-                RebrowseOkDataResponse<T> okDataResponse =
+                RebrowseOkDataResponse<T> dataResponse =
                     objectMapper.readValue(
                         body,
                         objectMapper
                             .getTypeFactory()
                             .constructParametricType(RebrowseOkDataResponse.class, clazz));
 
-                return okDataResponse.getData();
+                return dataResponse.getData();
               } catch (JsonProcessingException ex) {
                 throw malformedJsonError(body, statusCode, requestId, ex);
               }

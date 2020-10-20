@@ -14,7 +14,7 @@ public interface OrganizationInviteService {
   CompletionStage<TeamInviteDTO> createTeamInvite(
       TeamInviteCreateDTO invite, AuthUser creator, String acceptInviteURL);
 
-  CompletionStage<Boolean> acceptTeamInvite(UUID token, TeamInviteAcceptDTO invite);
+  CompletionStage<AuthUser> acceptTeamInvite(UUID token, TeamInviteAcceptDTO invite);
 
   CompletionStage<TeamInviteDTO> sendTeamInvite(
       UUID token, InsightPrincipal principal, String acceptInviteURL);
