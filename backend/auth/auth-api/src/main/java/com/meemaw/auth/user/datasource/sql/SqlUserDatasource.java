@@ -99,10 +99,17 @@ public class SqlUserDatasource implements UserDatasource {
   }
 
   @Override
-  @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(EMAIL.eq(email));
-    return sqlPool.execute(query).thenApply(this::onFindUser);
+    return sqlPool.execute(findUserByEmail(email)).thenApply(this::onFindUser);
+  }
+
+  @Override
+  public CompletionStage<Optional<AuthUser>> findUser(String email, SqlTransaction transaction) {
+    return transaction.execute(findUserByEmail(email)).thenApply(this::onFindUser);
+  }
+
+  private Query findUserByEmail(String email) {
+    return sqlPool.getContext().selectFrom(TABLE).where(EMAIL.eq(email));
   }
 
   @Override

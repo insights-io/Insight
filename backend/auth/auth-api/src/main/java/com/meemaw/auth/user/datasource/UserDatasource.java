@@ -27,6 +27,8 @@ public interface UserDatasource {
 
   CompletionStage<Optional<AuthUser>> findUser(String email);
 
+  CompletionStage<Optional<AuthUser>> findUser(String email, SqlTransaction transaction);
+
   CompletionStage<Optional<UserWithLoginInformation>> findUserWithLoginInformation(String email);
 
   CompletionStage<Collection<AuthUser>> findOrganizationMembers(String organizationId);

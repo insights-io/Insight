@@ -10,18 +10,17 @@ import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import org.apache.commons.lang3.tuple.Pair;
 
-public interface OrganizationInviteDatasource {
+public interface OrganizationTeamInviteDatasource {
 
-  CompletionStage<Optional<TeamInviteDTO>> get(UUID token, SqlTransaction transaction);
+  CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token, SqlTransaction transaction);
 
-  CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> getWithOrganization(UUID token);
+  CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> retrieveWithOrganization(UUID token);
 
-  CompletionStage<List<TeamInviteDTO>> find(String organizationId);
+  CompletionStage<List<TeamInviteDTO>> list(String organizationId);
 
   CompletionStage<Boolean> delete(UUID token);
 
-  CompletionStage<Boolean> deleteAll(
-      String email, String organizationId, SqlTransaction transaction);
+  CompletionStage<Boolean> delete(String email, String organizationId, SqlTransaction transaction);
 
   CompletionStage<TeamInviteDTO> create(
       String organizationId,

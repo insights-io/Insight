@@ -39,7 +39,7 @@ public class TeamInvite {
   }
 
   public static CompletionStage<Void> accept(UUID token, TeamInviteAcceptParams params) {
-    return accept(token, params);
+    return accept(token, params, null);
   }
 
   public static CompletionStage<Void> accept(

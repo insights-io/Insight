@@ -192,6 +192,26 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
   }
 
   @Test
+  public void invite__should_fail__when_user_already_in_organization()
+      throws JsonProcessingException {
+    String password = UUID.randomUUID().toString();
+    String email = String.format("%s@gmail.com", password);
+    String sessionId = authApi().signUpAndLogin(email, password);
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(objectMapper.writeValueAsString(new TeamInviteCreateDTO(email, UserRole.ADMIN)))
+        .post(OrganizationTeamInviteResource.PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"email\":\"User with provided email is already in your organization\"}}}"));
+  }
+
+  @Test
   public void invite_flow__should_succeed__when_valid_payload() throws IOException {
     String payload =
         objectMapper.writeValueAsString(
