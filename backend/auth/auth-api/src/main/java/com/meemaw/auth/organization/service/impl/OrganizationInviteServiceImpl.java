@@ -10,12 +10,14 @@ import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.organization.service.OrganizationInviteService;
+import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.auth.password.model.PasswordPolicyValidator;
 import com.meemaw.auth.password.model.PasswordValidationException;
+import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -33,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.microprofile.opentracing.Traced;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
@@ -44,6 +47,8 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
   @Inject OrganizationDatasource datasource;
   @Inject OrganizationInviteDatasource inviteDatasource;
   @Inject OrganizationPasswordPolicyDatasource organizationPasswordPolicyDatasource;
+  @Inject PasswordDatasource passwordDatasource;
+  @Inject PasswordService passwordService;
 
   @ResourcePath("organization/team_invite")
   Template teamInviteTemplate;
@@ -114,15 +119,17 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
 
   @Override
   @Traced
-  public CompletionStage<Boolean> acceptTeamInvite(UUID token, TeamInviteAcceptDTO inviteAccept) {
+  public CompletionStage<AuthUser> acceptTeamInvite(UUID token, TeamInviteAcceptDTO inviteAccept) {
     log.info("[AUTH]: Accepting team invite attempt for token: {}", token);
     return sqlPool
         .beginTransaction()
         .thenCompose(transaction -> acceptTeamInvite(token, inviteAccept, transaction));
   }
 
-  private CompletionStage<Boolean> acceptTeamInvite(
+  private CompletionStage<AuthUser> acceptTeamInvite(
       UUID token, TeamInviteAcceptDTO inviteAccept, SqlTransaction transaction) {
+    String password = inviteAccept.getPassword();
+    String fullName = inviteAccept.getFullName();
 
     return inviteDatasource
         .get(token, transaction)
@@ -132,18 +139,22 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                   maybeTeamInvite.orElseThrow(
                       () -> Boom.badRequest().message("Team invite does not exist.").exception());
 
-              log.info(
-                  "[AUTH]: Accepting team invite attempt for user: {} organizationId: {}",
-                  teamInvite.getEmail(),
-                  teamInvite.getOrganizationId());
+              MDC.put(LoggingConstants.USER_EMAIL, teamInvite.getEmail());
+              MDC.put(LoggingConstants.ORGANIZATION_ID, teamInvite.getOrganizationId());
 
               if (teamInvite.hasExpired()) {
                 log.info(
-                    "[AUTH]: Team invite has expired for user: {} organizationId: {}",
+                    "[AUTH]: Team invite has expired for user={} organizationId={}",
                     teamInvite.getEmail(),
                     teamInvite.getOrganizationId());
                 throw Boom.badRequest().message("Team invite expired").exception();
               }
+
+              log.info(
+                  "[AUTH]: Accepting team invite attempt for user={} organizationId={}",
+                  teamInvite.getEmail(),
+                  teamInvite.getOrganizationId());
+
               return teamInvite;
             })
         .thenCompose(
@@ -154,7 +165,7 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                         maybePolicy -> {
                           try {
                             PasswordPolicyValidator.validateFirstPassword(
-                                maybePolicy.orElse(null), inviteAccept.getPassword());
+                                maybePolicy.orElse(null), password);
                           } catch (PasswordValidationException ex) {
                             log.debug(
                                 "[AUTH]: Failed to accept team invite due to password policy violation",
@@ -166,20 +177,36 @@ public class OrganizationInviteServiceImpl implements OrganizationInviteService 
                           }
                         })
                     .thenCompose(
-                        ignored -> {
-                          UserRole role = teamInvite.getRole();
-                          return userDatasource.createUser(
-                              teamInvite.getEmail(),
-                              inviteAccept.getFullName(),
-                              teamInvite.getOrganizationId(),
-                              role,
-                              null,
-                              transaction);
-                        }))
+                        ignored ->
+                            userDatasource.createUser(
+                                teamInvite.getEmail(),
+                                fullName,
+                                teamInvite.getOrganizationId(),
+                                teamInvite.getRole(),
+                                null,
+                                transaction)))
         .thenCompose(
             user ->
-                inviteDatasource.deleteAll(user.getEmail(), user.getOrganizationId(), transaction))
-        .thenCompose(deleted -> transaction.commit().thenApply(x -> deleted));
+                passwordDatasource
+                    .storePassword(
+                        user.getId(), passwordService.hashPassword(password), transaction)
+                    .thenApply(ignored -> user))
+        .thenCompose(
+            user ->
+                inviteDatasource
+                    .deleteAll(user.getEmail(), user.getOrganizationId(), transaction)
+                    .thenCompose(
+                        deleted ->
+                            transaction
+                                .commit()
+                                .thenApply(
+                                    x -> {
+                                      log.info(
+                                          "[AUTH]: User={} successfully accepted team invite and joined organization={}",
+                                          user.getEmail(),
+                                          user.getOrganizationId());
+                                      return user;
+                                    })));
   }
 
   @Override

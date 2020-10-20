@@ -29,4 +29,22 @@ public class TeamInvite {
       TeamInviteCreateParams params, RequestOptions options) {
     return ApiResource.post("/v1/organization/invites", params, TeamInvite.class, options);
   }
+
+  public CompletionStage<Void> accept(TeamInviteAcceptParams params) {
+    return accept(token, params);
+  }
+
+  public CompletionStage<Void> accept(TeamInviteAcceptParams params, RequestOptions options) {
+    return accept(token, params, options);
+  }
+
+  public static CompletionStage<Void> accept(UUID token, TeamInviteAcceptParams params) {
+    return accept(token, params);
+  }
+
+  public static CompletionStage<Void> accept(
+      UUID token, TeamInviteAcceptParams params, RequestOptions options) {
+    String url = String.format("/v1/organization/invites/%s/accept", token);
+    return ApiResource.post(url, params, Void.class, options);
+  }
 }
