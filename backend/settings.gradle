@@ -9,7 +9,7 @@ pluginManagement {
         id 'io.quarkus' version "${quarkusPluginVersion}"
         id 'io.freefair.lombok' version '5.2.1'
         id 'com.github.spotbugs' version '4.5.1'
-        id "com.diffplug.spotless" version "5.6.1"
+        id "com.diffplug.spotless" version "5.7.0"
     }
 }
 
