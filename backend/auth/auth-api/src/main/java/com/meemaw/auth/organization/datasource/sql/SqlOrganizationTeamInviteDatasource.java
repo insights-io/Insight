@@ -1,16 +1,16 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.CREATED_AT;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.CREATOR_ID;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.EMAIL;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.INSERT_FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.ORGANIZATION_ID;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.ROLE;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.TABLE;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationInviteTable.TOKEN;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.CREATOR_ID;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.EMAIL;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ORGANIZATION_ID;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ROLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.TOKEN;
 
-import com.meemaw.auth.organization.datasource.OrganizationInviteDatasource;
+import com.meemaw.auth.organization.datasource.OrganizationTeamInviteDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
@@ -36,20 +36,20 @@ import org.jooq.Table;
 
 @ApplicationScoped
 @Slf4j
-public class SqlOrganizationInviteDatasource implements OrganizationInviteDatasource {
+public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInviteDatasource {
 
   @Inject SqlPool sqlPool;
 
   @Override
   @Traced
-  public CompletionStage<Optional<TeamInviteDTO>> get(UUID token, SqlTransaction transaction) {
+  public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
     return transaction.execute(query).thenApply(this::mapTeamInviteIfPresent);
   }
 
   @Override
   @Traced
-  public CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> getWithOrganization(
+  public CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> retrieveWithOrganization(
       UUID token) {
     Table<?> joined =
         TABLE.leftJoin(SqlOrganizationTable.TABLE).on(SqlOrganizationTable.ID.eq(ORGANIZATION_ID));
@@ -71,14 +71,14 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
 
   @Override
   @Traced
-  public CompletionStage<List<TeamInviteDTO>> find(String organizationId) {
+  public CompletionStage<List<TeamInviteDTO>> list(String organizationId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
     return sqlPool
         .execute(query)
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
-                    .map(SqlOrganizationInviteDatasource::mapTeamInvite)
+                    .map(SqlOrganizationTeamInviteDatasource::mapTeamInvite)
                     .collect(Collectors.toList()));
   }
 
@@ -91,7 +91,7 @@ public class SqlOrganizationInviteDatasource implements OrganizationInviteDataso
 
   @Override
   @Traced
-  public CompletionStage<Boolean> deleteAll(
+  public CompletionStage<Boolean> delete(
       String email, String organizationId, SqlTransaction transaction) {
     Query query =
         sqlPool
