@@ -22,7 +22,7 @@
     "build:deps:l2": "concurrently \"yarn workspace @insight/service-proxy build\" \"yarn workspace @insight/storybook build\" \"yarn workspace @insight/testing build\" \"yarn workspace @insight/sdk build\" \"yarn workspace @insight/elements build\"",
     "build:deps:l3": "concurrently \"yarn workspace @insight/next-testing build\" \"yarn workspace @insight/next-storybook build\"",
     "start": "next start",
-    "test": "jest --env=jest-environment-jsdom-sixteen",
+    "test": "jest",
     "test:e2e": "testcafe chrome e2e/specs",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*' 'e2e/**/*'",

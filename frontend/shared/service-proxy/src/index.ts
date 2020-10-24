@@ -5,7 +5,7 @@ import http, { IncomingMessage, ServerResponse } from 'http';
 import https from 'https';
 import querystring from 'querystring';
 
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { getEnvOverrides, getApiProxy } from './config';
 
