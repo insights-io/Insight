@@ -29,13 +29,14 @@
     "storybook:build": "build-storybook",
     "pretest": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/testing build\" \"yarn workspace @insight/storybook build\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "baseui": "9.102.0",
+    "react-hook-form": "6.9.4",
+    "styletron-react": "5.2.7"
+  },
   "devDependencies": {
     "@insight/testing": "0.0.0-development",
     "@insight/storybook": "0.0.0-development"
   },
-  "peerDependencies": {
-    "baseui": "9.102.0",
-    "react-hook-form": "6.9.4"
-  }
+  "peerDependencies": {}
 }
