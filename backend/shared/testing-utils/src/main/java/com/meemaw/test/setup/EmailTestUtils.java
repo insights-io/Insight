@@ -18,7 +18,11 @@ public final class EmailTestUtils {
   }
 
   public static String parseConfirmationToken(Mail mail) {
-    Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(parseLink(mail));
+    return parseConfirmationToken(parseLink(mail));
+  }
+
+  public static String parseConfirmationToken(String link) {
+    Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(link);
     tokenMatcher.matches();
     return tokenMatcher.group(1);
   }

@@ -15,7 +15,7 @@ import { AuthApi } from 'api';
 
 type Props = AuthenticatedServerSideProps & {
   organization: OrganizationDTO;
-  passwordPolicy: OrganizationPasswordPolicyDTO | undefined;
+  passwordPolicy?: OrganizationPasswordPolicyDTO;
 };
 
 export const OrganizationSettingsSecurityAndPrivacy = ({
@@ -58,13 +58,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         throw error;
       });
 
-    return {
-      props: {
-        passwordPolicy,
-        user: authResponse.user,
-        organization: authResponse.organization,
-      },
+    const props: Props = {
+      user: authResponse.user,
+      organization: authResponse.organization,
     };
+    if (passwordPolicy) {
+      props.passwordPolicy = passwordPolicy;
+    }
+
+    return { props };
   } finally {
     requestSpan.finish();
   }

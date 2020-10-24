@@ -12,6 +12,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public interface OrganizationTeamInviteDatasource {
 
+  CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token);
+
   CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token, SqlTransaction transaction);
 
   CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> retrieveWithOrganization(UUID token);

@@ -33,13 +33,21 @@ export type TeamInviteCreateDTO = {
 
 export type TeamInviteDTO = TeamInviteCreateDTO & {
   token: string;
-  org: string;
+  organizationId: string;
   creator: string;
   createdAt: string;
+  expiresAt: string;
+  valid: boolean;
 };
 
-export type TeamInvite = Omit<TeamInviteDTO, 'createdAt'> & {
+export type TeamInvite = Omit<TeamInviteDTO, 'createdAt' | 'expiresAt'> & {
   createdAt: Date;
+  expiresAt: Date;
+};
+
+export type AcceptTeamInviteDTO = {
+  fullName: string;
+  password: string;
 };
 
 export type PasswordPolicy = {

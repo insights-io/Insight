@@ -15,6 +15,7 @@ import {
   startRequestSpan,
   prepareCrossServiceHeaders,
 } from 'modules/tracing';
+import { LOGIN_PAGE, VERIFICATION_PAGE } from 'shared/constants/routes';
 
 export type Authenticated = {
   organization: OrganizationDTO;
@@ -50,11 +51,11 @@ export const authenticated = async (
   };
 
   const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
-    return redirect('/login', headers);
+    return redirect(LOGIN_PAGE, headers);
   };
 
   const redirectToVerification = (headers?: OutgoingHttpHeaders) => {
-    return redirect('/login/verification', headers);
+    return redirect(VERIFICATION_PAGE, headers);
   };
 
   if (!SessionId) {

@@ -6,4 +6,5 @@ export { default as PasswordForgotPage } from './PasswordForgot';
 export { default as PasswordResetPage } from './PasswordReset';
 export { default as SessionsPage } from './Sessions';
 export { default as SessionPage } from './Session';
+export { default as AcceptTeamInvitePage } from './AcceptTeamInvitePage';
 export * from './settings';

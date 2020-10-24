@@ -17,6 +17,7 @@ import type {
   TeamInviteDTO,
 } from '@insight/types';
 import { Input, Button } from '@insight/elements';
+import { applyApiFormErrors } from 'shared/utils/form';
 
 type Props = {
   createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
@@ -30,7 +31,7 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
-  const { register, handleSubmit, errors, control } = useForm<
+  const { register, handleSubmit, errors, control, setError } = useForm<
     TeamInviteCreateDTO
   >();
   const inputOverrides = createInputOverrides(theme);
@@ -58,6 +59,7 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
+        applyApiFormErrors(setError, errorDTO.error.errors);
       })
       .finally(() => setIsSubmitting(false));
   });
@@ -99,7 +101,11 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
             <Button kind="tertiary" onClick={close}>
               Cancel
             </Button>
-            <Button type="submit" isLoading={isSubmitting}>
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              $style={{ marginLeft: theme.sizing.scale400 }}
+            >
               Invite
             </Button>
             {formError && <FormError error={formError} />}

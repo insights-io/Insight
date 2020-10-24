@@ -68,14 +68,20 @@ public class OrganizationService {
                         organizationDeleted ->
                             ssoSessionDatasource
                                 .deleteAllForOrganization(organizationId)
-                                .exceptionally(
-                                    throwable -> {
-                                      transaction.rollback();
-                                      throw (RuntimeException) throwable;
-                                    })
                                 .thenCompose(
                                     i1 ->
-                                        transaction.commit().thenApply(i2 -> organizationDeleted))))
+                                        transaction
+                                            .commit()
+                                            .thenApply(i2 -> organizationDeleted)
+                                            .exceptionally(
+                                                throwable -> {
+                                                  log.error(
+                                                      "[AUTH]: Failed to delete organization={}",
+                                                      organizationId,
+                                                      throwable);
+                                                  transaction.rollback();
+                                                  throw (RuntimeException) throwable;
+                                                }))))
         .thenApply(
             deleted -> {
               log.info(

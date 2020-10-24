@@ -27,6 +27,7 @@ import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -40,7 +41,7 @@ import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
-public class OrganizationInviteService {
+public class OrganizationTeamInviteService {
 
   @Inject ReactiveMailer mailer;
   @Inject SqlPool sqlPool;
@@ -53,6 +54,11 @@ public class OrganizationInviteService {
 
   @ResourcePath("organization/team_invite")
   Template teamInviteTemplate;
+
+  @Traced
+  public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token) {
+    return teamInviteDatasource.retrieve(token);
+  }
 
   @Traced
   public CompletionStage<TeamInviteDTO> createTeamInvite(
@@ -116,17 +122,17 @@ public class OrganizationInviteService {
                                                   teamInvite.getEmail(),
                                                   teamInvite.getOrganizationId());
                                               return teamInvite;
-                                            }))
-                            .exceptionally(
-                                throwable -> {
-                                  log.error(
-                                      "[AUTH]: Failed to accept team invite={} creator={}",
-                                      invite,
-                                      creator,
-                                      throwable);
-                                  transaction.rollback();
-                                  throw (CompletionException) throwable;
-                                });
+                                            })
+                                        .exceptionally(
+                                            throwable -> {
+                                              log.error(
+                                                  "[AUTH]: Failed to accept team invite={} creator={}",
+                                                  invite,
+                                                  creator,
+                                                  throwable);
+                                              transaction.rollback();
+                                              throw (CompletionException) throwable;
+                                            }));
                       });
             });
   }

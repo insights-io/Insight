@@ -1,5 +1,5 @@
 import { mapOrganization, mapTeamInvite } from '@insight/sdk';
-import { subDays } from 'date-fns';
+import { addDays, subDays } from 'date-fns';
 import type {
   Organization,
   OrganizationDTO,
@@ -28,9 +28,11 @@ export const STANDARD_TEAM_INVITE_DTO: TeamInviteDTO = {
   email: 'standard@gmail.com',
   role: 'member',
   createdAt: new Date().toUTCString(),
+  expiresAt: addDays(new Date(), 1).toUTCString(),
   creator: '123',
-  org: '000000',
+  organizationId: '000000',
   token: '1',
+  valid: true,
 };
 
 export const STANDARD_TEAM_INVITE = mapTeamInvite(STANDARD_TEAM_INVITE_DTO);
@@ -39,9 +41,11 @@ export const ADMIN_TEAM_INVITE_DTO: TeamInviteDTO = {
   email: 'admin@gmail.com',
   role: 'admin',
   createdAt: new Date().toUTCString(),
+  expiresAt: addDays(new Date(), 1).toUTCString(),
   creator: '123',
-  org: '000000',
+  organizationId: '000000',
   token: '2',
+  valid: true,
 };
 
 export const ADMIN_TEAM_INVITE = mapTeamInvite(ADMIN_TEAM_INVITE_DTO);
@@ -49,8 +53,10 @@ export const ADMIN_TEAM_INVITE = mapTeamInvite(ADMIN_TEAM_INVITE_DTO);
 export const EXPIRED_TEAM_INVITE_DTO: TeamInviteDTO = {
   email: 'expired@gmail.com',
   role: 'member',
-  createdAt: subDays(new Date(), 1).toUTCString(),
+  createdAt: subDays(new Date(), 2).toUTCString(),
+  expiresAt: subDays(new Date(), 1).toUTCString(),
   creator: '123',
-  org: '000000',
+  organizationId: '000000',
   token: '3',
+  valid: false,
 };

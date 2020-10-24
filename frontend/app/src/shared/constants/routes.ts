@@ -12,6 +12,7 @@ export const LOGIN_PAGE = '/login';
 export const VERIFICATION_PAGE = `${LOGIN_PAGE}/verification`;
 export const PASSWORD_FORGOT_PAGE = '/password-forgot';
 export const PASSWORD_RESET_PAGE = '/password-reset';
+export const ACCEPT_INVITE_PAGE = '/accept-invite';
 
 /* Settings */
 export const SETTINGS_PATH_PART: PathPart = {
