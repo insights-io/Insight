@@ -9,6 +9,7 @@ import type {
   OrganizationPasswordPolicyDTO,
   PasswordPolicyCreateParams,
   PasswordPolicyUpdateParams,
+  AcceptTeamInviteDTO,
 } from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
@@ -96,6 +97,15 @@ export const organizationsResource = (authApiBaseURL: string) => {
       },
     },
     teamInvite: {
+      retrieve: (
+        token: string,
+        { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      ) => {
+        return ky
+          .get(`${resourceBaseURL(baseURL)}/invites/${token}`, rest)
+          .json<DataResponse<TeamInviteDTO>>()
+          .then(getData);
+      },
       list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
         return ky
           .get(`${resourceBaseURL(baseURL)}/invites`, withCredentials(rest))
@@ -125,6 +135,16 @@ export const organizationsResource = (authApiBaseURL: string) => {
           )
           .json<DataResponse<TeamInviteDTO>>()
           .then(getData);
+      },
+      accept: (
+        token: string,
+        json: AcceptTeamInviteDTO,
+        { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      ) => {
+        return ky.post(
+          `${resourceBaseURL(baseURL)}/invites/${token}/accept`,
+          withCredentials({ json, ...rest })
+        );
       },
       resend: (
         email: string,

@@ -24,6 +24,7 @@ import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -149,7 +150,7 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "login", description = "A measure of how long it takes to do a password login")
   public CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, URL redirect, URI serverBaseURI) {
+      String email, String password, String ipAddress, URL redirect, URI serverBaseUri) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
 
     Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> passwordLoginSupplier =
@@ -168,7 +169,7 @@ public class SsoServiceImpl implements SsoService {
         ssoSetup ->
             passwordLoginSsoAlternative(
                 identityProviderRegistry.ssoSignInLocation(
-                    ssoSetup.getMethod(), email, serverBaseURI, redirect));
+                    ssoSetup.getMethod(), email, serverBaseUri, redirect));
 
     return login(email, LoginMethod.PASSWORD, alternativeLoginProvider, passwordLoginSupplier);
   }
@@ -231,18 +232,36 @@ public class SsoServiceImpl implements SsoService {
             });
   }
 
-  private CompletionStage<LoginResult<?>> authenticate(AuthUser user, List<TfaMethod> tfaMethods) {
-    return authenticate(user, tfaMethods, null);
+  /**
+   * Authenticate a user with no TFA methods set. This method can be used on the end of user
+   * creation flows (e.g. team invite accept).
+   *
+   * <p>If organization has TFA enforced, user will not be directly authenticated but will have to
+   * configure TFA method using challenge session.
+   *
+   * @param user to be authenticated
+   * @return login result
+   */
+  @Override
+  public CompletionStage<LoginResult<?>> authenticate(AuthUser user) {
+    return authenticate(user, Collections.emptyList());
   }
 
   private CompletionStage<LoginResult<?>> authenticate(
-      AuthUser user, List<TfaMethod> tfaMethods, URL redirect) {
+      AuthUser user, List<TfaMethod> userTfaMethods) {
+    return authenticate(user, userTfaMethods, null);
+  }
+
+  private CompletionStage<LoginResult<?>> authenticate(
+      AuthUser user, List<TfaMethod> userTfaMethods, URL redirect) {
     UUID userId = user.getId();
     String organizationId = user.getOrganizationId();
     MDC.put(LoggingConstants.USER_ID, userId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
-    if (tfaMethods.isEmpty()) {
+    if (userTfaMethods.isEmpty()) {
+      // TODO: check if organization has it enforced
+
       return this.createSession(user)
           .thenApply(
               sessionId -> {
@@ -260,7 +279,7 @@ public class SsoServiceImpl implements SsoService {
         .thenApply(
             challengeId -> {
               log.info("[AUTH]: TFA challenge={} for user={}", challengeId, userId);
-              return new ChallengeLoginResult(challengeId, tfaMethods, redirect);
+              return new ChallengeLoginResult(challengeId, userTfaMethods, redirect);
             });
   }
 

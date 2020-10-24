@@ -20,6 +20,8 @@ public class TeamInvite {
   UserRole role;
   UUID creator;
   OffsetDateTime createdAt;
+  OffsetDateTime expiresAt;
+  boolean valid;
 
   public static CompletionStage<TeamInvite> create(TeamInviteCreateParams params) {
     return create(params, null);
@@ -46,5 +48,14 @@ public class TeamInvite {
       UUID token, TeamInviteAcceptParams params, RequestOptions options) {
     String url = String.format("/v1/organization/invites/%s/accept", token);
     return ApiResource.post(url, params, Void.class, options);
+  }
+
+  public static CompletionStage<TeamInvite> retrieve(UUID token) {
+    return retrieve(token, null);
+  }
+
+  public static CompletionStage<TeamInvite> retrieve(UUID token, RequestOptions options) {
+    String url = String.format("/v1/organization/invites/%s", token);
+    return ApiResource.get(url, TeamInvite.class, options);
   }
 }

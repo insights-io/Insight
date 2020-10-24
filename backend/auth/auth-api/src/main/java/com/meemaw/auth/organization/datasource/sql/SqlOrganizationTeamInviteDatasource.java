@@ -1,9 +1,9 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.AUTO_GENERATED_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.CREATED_AT;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.CREATOR_ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.EMAIL;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.INSERT_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ORGANIZATION_ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ROLE;
@@ -15,12 +15,14 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.exception.SqlException;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
-import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -41,10 +43,17 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
   @Inject SqlPool sqlPool;
 
   @Override
-  @Traced
+  public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token) {
+    return sqlPool.execute(retrieveQuery(token)).thenApply(this::mapTeamInviteIfPresent);
+  }
+
+  @Override
   public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token, SqlTransaction transaction) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
-    return transaction.execute(query).thenApply(this::mapTeamInviteIfPresent);
+    return transaction.execute(retrieveQuery(token)).thenApply(this::mapTeamInviteIfPresent);
+  }
+
+  private Query retrieveQuery(UUID token) {
+    return sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
   }
 
   @Override
@@ -119,16 +128,23 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
             .values(creatorId, email, organizationId, role.getKey())
-            .returning(AUTO_GENERATED_FIELDS);
+            .returning(FIELDS);
 
     return transaction
         .execute(query)
-        .thenApply(
-            rows -> {
-              Row row = rows.iterator().next();
-              UUID token = row.getUUID(TOKEN.getName());
-              OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
-              return new TeamInviteDTO(token, email, organizationId, role, creatorId, createdAt);
+        .thenApply(rows -> mapTeamInvite(rows.iterator().next()))
+        .exceptionally(
+            throwable -> {
+              SqlException exception = (SqlException) throwable.getCause();
+              // TODO: instead of conflict we should be checking if team invite is actually active
+              // TODO: (24h) for the email
+              if (exception.hadConflict()) {
+                throw Boom.conflict()
+                    .errors(Map.of(EMAIL.getName(), "User with this email is already invited"))
+                    .exception();
+              }
+
+              throw exception;
             });
   }
 

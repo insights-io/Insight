@@ -84,6 +84,38 @@ public interface OrganizationTeamInviteResource {
 
   @GET
   @Tag(name = TAG)
+  @Path("{token}")
+  @Operation(summary = "Retrieve a team invite")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Success",
+            content =
+                @Content(
+                    schema = @Schema(implementation = TeamInviteDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> retrieve(@PathParam("token") UUID token);
+
+  @GET
+  @Tag(name = TAG)
   @Operation(summary = "List organization invites associated with authenticated user")
   @SecurityRequirements(
       value = {

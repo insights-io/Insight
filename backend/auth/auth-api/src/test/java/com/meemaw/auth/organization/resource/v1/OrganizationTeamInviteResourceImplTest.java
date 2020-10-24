@@ -14,6 +14,7 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
+import com.meemaw.test.setup.EmailTestUtils;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.auth.SessionInfo;
@@ -34,13 +35,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +45,30 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest {
+
+  @Test
+  public void get__should_throw__when_non_uuid_id() {
+    given()
+        .when()
+        .get(OrganizationTeamInviteResource.PATH + "/random")
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Resource Not Found\"}}"));
+  }
+
+  @Test
+  public void get__should_throw__when_random_id() {
+    given()
+        .when()
+        .get(OrganizationTeamInviteResource.PATH + "/" + UUID.randomUUID())
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
 
   @Test
   public void invite__should_fail_when__invalid_content_type() {
@@ -213,10 +234,14 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
   @Test
   public void invite_flow__should_succeed__when_valid_payload() throws IOException {
+    String email = String.format("%s@gmail.com", UUID.randomUUID());
     String payload =
-        objectMapper.writeValueAsString(
-            new TeamInviteCreateDTO("test-team-invitation@gmail.com", UserRole.ADMIN));
+        objectMapper.writeValueAsString(new TeamInviteCreateDTO(email, UserRole.ADMIN));
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    SessionInfo sessionInfo =
+        SessionInfo.retrieve(authApi().sdkRequest().sessionId(sessionId).build())
+            .toCompletableFuture()
+            .join();
 
     given()
         .when()
@@ -238,33 +263,47 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
         .statusCode(409)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":409,\"reason\":\"Conflict\",\"message\":\"Conflict\"}}"));
+                "{\"error\":{\"statusCode\":409,\"reason\":\"Conflict\",\"message\":\"Conflict\",\"errors\":{\"email\":\"User with this email is already invited\"}}}"));
 
     // accept the invite
-    List<Mail> sent = mailbox.getMessagesSentTo("test-team-invitation@gmail.com");
+    List<Mail> sent = mailbox.getMessagesSentTo(email);
     assertEquals(1, sent.size());
     Mail actual = sent.get(0);
     assertEquals("Insight Support <support@insight.com>", actual.getFrom());
 
-    Document doc = Jsoup.parse(actual.getHtml());
-    Elements link = doc.select("a");
-    String acceptInviteUrl = link.attr("href");
+    UUID token = UUID.fromString(EmailTestUtils.parseConfirmationToken(actual));
 
-    Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(acceptInviteUrl);
-    tokenMatcher.matches();
-    String token = tokenMatcher.group(1);
+    TeamInvite invite =
+        TeamInvite.retrieve(token, authApi().sdkRequest().build()).toCompletableFuture().join();
+
+    assertEquals(email, invite.getEmail());
+    assertEquals(sessionInfo.getOrganization().getId(), invite.getOrganizationId());
+    assertEquals(sessionInfo.getUser().getId(), invite.getCreator());
 
     String inviteAcceptPayload =
         objectMapper.writeValueAsString(
             new TeamInviteAcceptDTO("Marko Novak", "superDuperPassword123"));
 
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(inviteAcceptPayload)
-        .post(String.join("/", OrganizationTeamInviteResource.PATH, token, "accept"))
-        .then()
-        .statusCode(204);
+    String acceptedUserSessionId =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(inviteAcceptPayload)
+            .post(String.format("%s/%s/accept", OrganizationTeamInviteResource.PATH, token))
+            .then()
+            .statusCode(200)
+            .cookie(SsoSession.COOKIE_NAME)
+            .extract()
+            .detailedCookie(SsoSession.COOKIE_NAME)
+            .getValue();
+
+    assertEquals(
+        "Marko Novak",
+        SessionInfo.retrieve(authApi().sdkRequest().sessionId(acceptedUserSessionId).build())
+            .toCompletableFuture()
+            .join()
+            .getUser()
+            .getFullName());
   }
 
   @Test
@@ -424,14 +463,8 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     Mail teamInviteEmail = sent.get(0);
     assertEquals(MailingConstants.FROM_SUPPORT, teamInviteEmail.getFrom());
 
-    Document doc = Jsoup.parse(teamInviteEmail.getHtml());
-    Elements link = doc.select("a");
-    String acceptInviteUrl = link.attr("href");
-
-    // extract the token
-    Matcher tokenMatcher = Pattern.compile("^.*token=(.*)$").matcher(acceptInviteUrl);
-    tokenMatcher.matches();
-    String token = tokenMatcher.group(1);
+    String acceptInviteUrl = EmailTestUtils.parseLink(teamInviteEmail);
+    String token = EmailTestUtils.parseConfirmationToken(acceptInviteUrl);
 
     assertEquals(acceptInviteUrl, "https://www.insight.io/accept-invite?token=" + token);
 
@@ -511,13 +544,27 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"password\":\"Password should contain at least one non-alphanumeric character\"}}}"));
 
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            objectMapper.writeValueAsString(new TeamInviteAcceptDTO("Matej", "password123456789!")))
-        .post(acceptPath)
-        .then()
-        .statusCode(204);
+    String acceptedUserSessionId =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                objectMapper.writeValueAsString(
+                    new TeamInviteAcceptDTO("Bruce Lee", "password123456789!")))
+            .post(acceptPath)
+            .then()
+            .statusCode(200)
+            .cookie(SsoSession.COOKIE_NAME)
+            .extract()
+            .detailedCookie(SsoSession.COOKIE_NAME)
+            .getValue();
+
+    assertEquals(
+        "Bruce Lee",
+        SessionInfo.retrieve(authApi().sdkRequest().sessionId(acceptedUserSessionId).build())
+            .toCompletableFuture()
+            .join()
+            .getUser()
+            .getFullName());
   }
 }
