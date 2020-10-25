@@ -75,66 +75,88 @@ public class OrganizationTeamInviteService {
     log.info(
         "[AUTH]: Creating team invite for user={} organizationId={}", invitedEmail, organizationId);
 
-    return userDatasource
-        .findUser(invitedEmail, transaction)
+    return teamInviteDatasource
+        .retrieveValidInviteForUser(invitedEmail, transaction)
         .thenCompose(
-            maybeUser -> {
-              // If user is not in organization we should not leak that it is already registered
-              if (maybeUser.map(AuthUser::getOrganizationId).orElse("").equals(organizationId)) {
-                throw teamInviteCreateUserExistsException(invitedEmail, organizationId);
+            maybeValidInvite -> {
+              if (maybeValidInvite.isPresent()) {
+                throw teamInviteCreateConflictException(invitedEmail);
               }
 
-              return organizationDatasource
-                  .findOrganization(organizationId, transaction)
+              return userDatasource
+                  .findUser(invitedEmail, transaction)
                   .thenCompose(
-                      maybeOrganization -> {
-                        Organization organization =
-                            maybeOrganization.orElseThrow(() -> Boom.notFound().exception());
+                      maybeUser -> {
+                        // If user is not in organization we should not leak that it is already
+                        // registered
+                        if (maybeUser
+                            .map(AuthUser::getOrganizationId)
+                            .orElse("")
+                            .equals(organizationId)) {
+                          throw teamInviteCreateUserExistsException(invitedEmail, organizationId);
+                        }
 
-                        TeamInviteTemplateData teamInviteTemplateData =
-                            new TeamInviteTemplateData(
-                                invitedEmail,
-                                invite.getRole(),
-                                creator.getFullName(),
-                                organization.getName());
+                        return organizationDatasource
+                            .findOrganization(organizationId, transaction)
+                            .thenCompose(
+                                maybeOrganization -> {
+                                  Organization organization =
+                                      maybeOrganization.orElseThrow(
+                                          () -> Boom.notFound().exception());
 
-                        return teamInviteDatasource
-                            .create(
-                                organizationId,
-                                creator.getId(),
-                                teamInviteTemplateData,
-                                transaction)
-                            .thenCompose(
-                                teamInvite ->
-                                    sendInviteEmail(
-                                            teamInvite.getToken(),
-                                            teamInviteTemplateData,
-                                            acceptLink)
-                                        .thenApply(ignored -> teamInvite))
-                            .thenCompose(
-                                teamInvite ->
-                                    transaction
-                                        .commit()
-                                        .thenApply(
-                                            ignored -> {
-                                              log.info(
-                                                  "[AUTH]: User={} accepted team invite organizationId={}",
-                                                  teamInvite.getEmail(),
-                                                  teamInvite.getOrganizationId());
-                                              return teamInvite;
-                                            })
-                                        .exceptionally(
-                                            throwable -> {
-                                              log.error(
-                                                  "[AUTH]: Failed to accept team invite={} creator={}",
-                                                  invite,
-                                                  creator,
-                                                  throwable);
-                                              transaction.rollback();
-                                              throw (CompletionException) throwable;
-                                            }));
+                                  TeamInviteTemplateData teamInviteTemplateData =
+                                      new TeamInviteTemplateData(
+                                          invitedEmail,
+                                          invite.getRole(),
+                                          creator.getFullName(),
+                                          organization.getName());
+
+                                  return teamInviteDatasource
+                                      .create(
+                                          organizationId,
+                                          creator.getId(),
+                                          teamInviteTemplateData,
+                                          transaction)
+                                      .thenCompose(
+                                          teamInvite ->
+                                              sendInviteEmail(
+                                                      teamInvite.getToken(),
+                                                      teamInviteTemplateData,
+                                                      acceptLink)
+                                                  .thenApply(ignored -> teamInvite))
+                                      .thenCompose(
+                                          teamInvite ->
+                                              transaction
+                                                  .commit()
+                                                  .thenApply(
+                                                      ignored -> {
+                                                        log.info(
+                                                            "[AUTH]: User={} accepted team invite organizationId={}",
+                                                            teamInvite.getEmail(),
+                                                            teamInvite.getOrganizationId());
+                                                        return teamInvite;
+                                                      })
+                                                  .exceptionally(
+                                                      throwable -> {
+                                                        log.error(
+                                                            "[AUTH]: Failed to accept team invite={} creator={}",
+                                                            invite,
+                                                            creator,
+                                                            throwable);
+                                                        transaction.rollback();
+                                                        throw (CompletionException) throwable;
+                                                      }));
+                                });
                       });
             });
+  }
+
+  private BoomException teamInviteCreateConflictException(String email) {
+    log.info("[AUTH]: Trying to invite user={} with an active outstanding invite", email);
+
+    return Boom.conflict()
+        .errors(Map.of("email", "User with provided email has an active outstanding invite"))
+        .exception();
   }
 
   private BoomException teamInviteCreateUserExistsException(String email, String organizationId) {
