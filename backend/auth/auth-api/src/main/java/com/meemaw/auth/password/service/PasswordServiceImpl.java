@@ -263,4 +263,10 @@ public class PasswordServiceImpl implements PasswordService {
     log.info("[AUTH]: Password reset request exists for token: {}", token);
     return passwordResetDatasource.findPasswordResetRequest(token).thenApply(Optional::isPresent);
   }
+
+  @Override
+  public String hashPassword(String password) {
+    // TODO: pass gensalt through config to speedup tests
+    return BCrypt.hashpw(password, BCrypt.gensalt(13));
+  }
 }

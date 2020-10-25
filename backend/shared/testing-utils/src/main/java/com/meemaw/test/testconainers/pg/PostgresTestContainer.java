@@ -12,10 +12,8 @@ import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.PoolOptions;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
@@ -100,43 +98,6 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     new PostgresFlywayTestContainer<>(moduleSqlMigrationsPath).start();
     if (moduleSqlMigrationsPath.toAbsolutePath().toString().contains(Api.AUTH.fullName())) {
       createTestUserPassword();
-    }
-  }
-
-  public void applyMigrationsManually(Path moduleSqlMigrationsPath) {
-    Path migrationsSqlPath = Paths.get(moduleSqlMigrationsPath.toString(), "sql");
-    Path absolutePath = migrationsSqlPath.toAbsolutePath();
-
-    if (!Files.exists(migrationsSqlPath)) {
-      System.out.println(
-          String.format("[TEST-SETUP]: Skipping applyMigrations from=%s", absolutePath));
-      return;
-    }
-
-    System.out.println(String.format("[TEST-SETUP]: Applying migrations from=%s", absolutePath));
-    try {
-      Files.walk(migrationsSqlPath)
-          .filter(path -> !Files.isDirectory(path))
-          .forEach(
-              path -> {
-                System.out.println(String.format("[TEST-SETUP]: Applying migration %s", path));
-                try {
-                  client().query(Files.readString(path)).executeAndAwait();
-                  if ("V1__auth_api_initial.sql".equals(path.getFileName().toString())) {
-                    createTestUserPassword();
-                  }
-                } catch (IOException ex) {
-                  System.out.println(
-                      String.format("[TEST-SETUP] Failed to apply migration %s", path));
-                  throw new RuntimeException(ex);
-                }
-              });
-    } catch (IOException ex) {
-      System.out.println(
-          String.format(
-              "[TEST-SETUP]: Something went wrong while applying migrations from %s",
-              absolutePath));
-      throw new RuntimeException(ex);
     }
   }
 

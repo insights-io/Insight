@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
@@ -11,18 +11,22 @@ import type { TeamInviteDTO, UserDTO } from '@insight/types';
 
 type Props = AuthenticatedServerSideProps & {
   members: UserDTO[];
+  memberCount: number;
   teamInvites: TeamInviteDTO[];
 };
 
 export const OrganizationSettingsMembers = ({
   members,
+  memberCount,
   teamInvites,
   user,
   organization,
 }: Props) => {
   return (
     <OrganizationSettingsMembersPage
+      pageTab="Members"
       members={members}
+      memberCount={memberCount}
       teamInvites={teamInvites}
       user={user}
       organization={organization}
@@ -48,6 +52,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       },
     });
 
+    const memberCountPromise = AuthApi.organization.memberCount({
+      baseURL: process.env.AUTH_API_BASE_URL,
+      headers: {
+        ...prepareCrossServiceHeaders(requestSpan),
+        cookie: `SessionId=${authResponse.SessionId}`,
+      },
+    });
+
     const teamInvitesPromise = AuthApi.organization.teamInvite.list({
       baseURL: process.env.AUTH_API_BASE_URL,
       headers: {
@@ -56,14 +68,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       },
     });
 
-    const [members, teamInvites] = await Promise.all([
+    const [members, memberCount, teamInvites] = await Promise.all([
       membersPromise,
+      memberCountPromise,
       teamInvitesPromise,
     ]);
 
     return {
       props: {
         user: authResponse.user,
+        memberCount,
         members,
         teamInvites,
         organization: authResponse.organization,

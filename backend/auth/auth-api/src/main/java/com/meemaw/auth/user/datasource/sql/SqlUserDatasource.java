@@ -27,9 +27,11 @@ import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
@@ -48,7 +50,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Field;
 import org.jooq.Query;
+import org.jooq.SelectConditionStep;
 import org.jooq.UpdateSetFirstStep;
+import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
@@ -121,9 +125,41 @@ public class SqlUserDatasource implements UserDatasource {
 
   @Override
   @Traced
-  public CompletionStage<Collection<AuthUser>> findOrganizationMembers(String organizationId) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
+  public CompletionStage<Collection<AuthUser>> searchOrganizationMembers(
+      String organizationId, SearchDTO search) {
+    SelectConditionStep<?> searchQuery =
+        searchQuery(
+            sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
+            search);
+
+    Query query = SQLSearchDTO.of(search).apply(searchQuery, FIELD_MAPPINGS);
     return sqlPool.execute(query).thenApply(this::onUsersFound);
+  }
+
+  @Override
+  public CompletionStage<Integer> count(String organizationId, SearchDTO search) {
+    SelectConditionStep<?> searchQuery =
+        searchQuery(
+            sqlPool
+                .getContext()
+                .select(DSL.count())
+                .from(TABLE)
+                .where(ORGANIZATION_ID.eq(organizationId)),
+            search);
+
+    Query query = SQLSearchDTO.of(search).apply(searchQuery, FIELD_MAPPINGS);
+    return sqlPool.execute(query).thenApply(rows -> rows.iterator().next().getInteger(0));
+  }
+
+  private SelectConditionStep<?> searchQuery(SelectConditionStep<?> baseQuery, SearchDTO search) {
+    if (search.getQuery() != null) {
+      return baseQuery.and(
+          EMAIL
+              .containsIgnoreCase(search.getQuery())
+              .or(FULL_NAME.containsIgnoreCase(search.getQuery())));
+    }
+
+    return baseQuery;
   }
 
   private Optional<AuthUser> onFindUser(RowSet<Row> pgRowSet) {

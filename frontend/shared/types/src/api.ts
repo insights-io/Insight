@@ -14,6 +14,7 @@ export type APIError = {
 };
 
 export type SearchBean = {
+  query?: string;
   limit?: number;
   // eslint-disable-next-line camelcase
   sort_by?: string[];

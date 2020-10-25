@@ -7,6 +7,7 @@ import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import io.vertx.core.json.JsonObject;
 import java.util.Collection;
@@ -27,9 +28,13 @@ public class OrganizationService {
   @Inject OrganizationDatasource organizationDatasource;
   @Inject SsoSessionDatasource ssoSessionDatasource;
 
+  public CompletionStage<Integer> memberCount(String organizationId, SearchDTO search) {
+    return userDatasource.count(organizationId, search);
+  }
+
   @Traced
-  public CompletionStage<Collection<AuthUser>> members(String organizationId) {
-    return userDatasource.findOrganizationMembers(organizationId);
+  public CompletionStage<Collection<AuthUser>> members(String organizationId, SearchDTO search) {
+    return userDatasource.searchOrganizationMembers(organizationId, search);
   }
 
   @Traced

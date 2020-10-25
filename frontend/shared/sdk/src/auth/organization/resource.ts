@@ -13,7 +13,9 @@ import type {
 } from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
-import { getData, withCredentials } from '../../core/utils';
+import { getData, querystring, withCredentials } from '../../core/utils';
+
+import type { MembersSearchOptions } from './types';
 
 export const organizationsResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -51,10 +53,32 @@ export const organizationsResource = (authApiBaseURL: string) => {
         .json<DataResponse<OrganizationDTO>>()
         .then(getData);
     },
-    members: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+    members: ({
+      baseURL = authApiBaseURL,
+      search,
+      ...rest
+    }: MembersSearchOptions = {}) => {
+      const searchQuery = querystring(search);
       return ky
-        .get(`${resourceBaseURL(baseURL)}/members`, withCredentials(rest))
+        .get(
+          `${resourceBaseURL(baseURL)}/members${searchQuery}`,
+          withCredentials(rest)
+        )
         .json<DataResponse<UserDTO[]>>()
+        .then(getData);
+    },
+    memberCount: ({
+      baseURL = authApiBaseURL,
+      search,
+      ...rest
+    }: MembersSearchOptions = {}) => {
+      const searchQuery = querystring(search);
+      return ky
+        .get(
+          `${resourceBaseURL(baseURL)}/members/count${searchQuery}`,
+          withCredentials(rest)
+        )
+        .json<DataResponse<number>>()
         .then(getData);
     },
 

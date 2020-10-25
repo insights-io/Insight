@@ -122,6 +122,7 @@ test('[/settings/organization/security]: As a user I should be able to accept a 
   const { email: newMemberEmail } = SignUpPage.generateRandomCredentials();
   await t
     .click(OrganizationSecuritySettingsPage.sidebar.members)
+    .click(OrganizationMembersSettingsPage.tabs.teamInvites)
     .click(OrganizationMembersSettingsPage.inviteNewTeamMemberButton)
     .typeText(
       OrganizationMembersSettingsPage.inviteNewMemberModal.emailInput,

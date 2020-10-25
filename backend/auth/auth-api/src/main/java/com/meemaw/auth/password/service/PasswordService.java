@@ -9,7 +9,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
-import org.mindrot.jbcrypt.BCrypt;
 
 public interface PasswordService {
 
@@ -27,7 +26,5 @@ public interface PasswordService {
 
   CompletionStage<Boolean> passwordResetRequestExists(UUID token);
 
-  default String hashPassword(String password) {
-    return BCrypt.hashpw(password, BCrypt.gensalt(13));
-  }
+  String hashPassword(String password);
 }

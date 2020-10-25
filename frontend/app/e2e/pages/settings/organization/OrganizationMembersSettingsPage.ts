@@ -1,5 +1,9 @@
 /* eslint-disable max-classes-per-file */
-import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
+import {
+  queryByPlaceholderText,
+  queryByText,
+  within,
+} from '@testing-library/testcafe';
 
 import { ORGANIZATION_SETTINGS_MEMBERS_PAGE } from '../../../../src/shared/constants/routes';
 
@@ -20,6 +24,15 @@ class InviteNewMemberModal {
 
 export class OrganizationMembersSettingsPage extends AbstractOrganizationSettingsPage {
   public readonly header = this.withinContainer.queryByText('Members');
+
+  private readonly tablist = within(
+    this.withinContainer.queryByRole('tablist')
+  );
+
+  public readonly tabs = {
+    members: this.tablist.queryByText('Members'),
+    teamInvites: this.tablist.queryByText('Team invites'),
+  };
 
   public readonly inviteNewTeamMemberButton = this.withinContainer.queryByText(
     'Invite new member'

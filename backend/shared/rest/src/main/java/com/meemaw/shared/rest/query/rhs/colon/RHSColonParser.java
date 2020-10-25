@@ -32,7 +32,9 @@ public final class RHSColonParser extends AbstractQueryParser {
   public void process(Entry<String, List<String>> entry) {
     String fieldName = entry.getKey();
 
-    if (LIMIT_PARAM.equals(fieldName)) {
+    if (QUERY_PARAM.equals(fieldName)) {
+      query = entry.getValue().get(0);
+    } else if (LIMIT_PARAM.equals(fieldName)) {
       try {
         limit = Integer.parseInt(entry.getValue().get(0));
       } catch (NumberFormatException ex) {
