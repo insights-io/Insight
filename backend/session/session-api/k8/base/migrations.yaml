@@ -5,11 +5,13 @@ metadata:
   name: session-api-postgres-migrations
   annotations:
     argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   ttlSecondsAfterFinished: 3600
   template:
     spec:
+      ttlSecondsAfterFinished: 600
+      imagePullSecrets:
+        - name: regcred2
       containers:
         - image: insightio/session-api-postgres-migrations
           name: session-api-postgres-migrations
