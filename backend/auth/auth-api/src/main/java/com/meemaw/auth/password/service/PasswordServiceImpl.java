@@ -28,6 +28,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.mindrot.jbcrypt.BCrypt;
@@ -45,6 +46,9 @@ public class PasswordServiceImpl implements PasswordService {
 
   @ResourcePath("password/password_reset")
   Template passwordResetTemplate;
+
+  @ConfigProperty(name = "bcrypt.log_rounds")
+  Integer logRounds;
 
   @Override
   @Traced
@@ -266,7 +270,6 @@ public class PasswordServiceImpl implements PasswordService {
 
   @Override
   public String hashPassword(String password) {
-    // TODO: pass gensalt through config to speedup tests
-    return BCrypt.hashpw(password, BCrypt.gensalt(13));
+    return BCrypt.hashpw(password, BCrypt.gensalt(logRounds));
   }
 }

@@ -2,6 +2,7 @@ package com.meemaw.test.testconainers.pg;
 
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_ID;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_PASSWORD;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -17,6 +18,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
+import org.mindrot.jbcrypt.BCrypt;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -114,8 +116,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
         SQLContext.POSTGRES
             .insertInto(table("auth.password"))
             .columns(field("user_id", UUID.class), field("hash", String.class))
-            .values(
-                INSIGHT_ADMIN_ID, "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
+            .values(INSIGHT_ADMIN_ID, BCrypt.hashpw(INSIGHT_ADMIN_PASSWORD, BCrypt.gensalt(4)));
 
     client()
         .preparedQuery(query.getSQL(ParamType.NAMED))
