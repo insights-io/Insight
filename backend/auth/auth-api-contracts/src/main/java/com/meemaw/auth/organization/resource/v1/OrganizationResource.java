@@ -83,7 +83,7 @@ public interface OrganizationResource {
   @GET
   @Path("members")
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve organization members")
+  @Operation(summary = "List organization members")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -96,7 +96,7 @@ public interface OrganizationResource {
             description = "User collection",
             content =
                 @Content(
-                    schema = @Schema(implementation = UserCollectionDataResponse.class),
+                    schema = @Schema(implementation = MemberListDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "401",
@@ -115,7 +115,44 @@ public interface OrganizationResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> retrieveMembers();
+  CompletionStage<Response> listMembers();
+
+  @GET
+  @Path("members/count")
+  @Tag(name = TAG)
+  @Operation(summary = "Retrieve organization member count")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "User collection",
+            content =
+                @Content(
+                    schema = @Schema(implementation = MemberCountDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> memberCount();
 
   @PATCH
   @Tag(name = TAG)
@@ -302,7 +339,9 @@ public interface OrganizationResource {
 
   CompletionStage<Response> retrieve(String organizationId);
 
-  class UserCollectionDataResponse extends OkDataResponse<List<UserDTO>> {}
+  class MemberCountDataResponse extends OkDataResponse<Integer> {}
+
+  class MemberListDataResponse extends OkDataResponse<List<UserDTO>> {}
 
   class OrganizationDataResponse extends OkDataResponse<OrganizationDTO> {}
 }

@@ -28,4 +28,9 @@ public class SignUpRequest implements CanExpire {
     return Optional.ofNullable(referer)
         .map(r -> String.join("/", r.toString(), "signup-completed-callback"));
   }
+
+  @Override
+  public int getDaysValidity() {
+    return 1;
+  }
 }

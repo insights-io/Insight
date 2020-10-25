@@ -35,6 +35,7 @@ test('[TEAM INVITE]: User should be able to invite new members to an organizatio
   }`;
 
   await t
+    .click(OrganizationMembersSettingsPage.tabs.teamInvites)
     .click(OrganizationMembersSettingsPage.inviteNewTeamMemberButton)
     .typeText(
       OrganizationMembersSettingsPage.inviteNewMemberModal.emailInput,

@@ -263,7 +263,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
         .statusCode(409)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":409,\"reason\":\"Conflict\",\"message\":\"Conflict\",\"errors\":{\"email\":\"User with this email is already invited\"}}}"));
+                "{\"error\":{\"statusCode\":409,\"reason\":\"Conflict\",\"message\":\"Conflict\",\"errors\":{\"email\":\"User with provided email has an active outstanding invite\"}}}"));
 
     // accept the invite
     List<Mail> sent = mailbox.getMessagesSentTo(email);

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class AbstractQueryParser {
 
+  protected static final String QUERY_PARAM = "query";
   protected static final String LIMIT_PARAM = "limit";
   protected static final String SORT_BY_PARAM = "sort_by";
   protected static final String SORT_BY_PARAM_ERROR =
@@ -30,6 +31,7 @@ public abstract class AbstractQueryParser {
   protected List<Pair<String, SortDirection>> sorts;
   protected List<String> groupBy;
   protected int limit = 0;
+  protected String query;
 
   public AbstractQueryParser(Set<String> allowedFields) {
     expressions = new ArrayList<>();
@@ -50,6 +52,6 @@ public abstract class AbstractQueryParser {
         new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
 
     return new SearchDTO(
-        rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit);
+        rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit, query);
   }
 }

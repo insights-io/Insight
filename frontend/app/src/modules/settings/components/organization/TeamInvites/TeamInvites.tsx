@@ -1,71 +1,92 @@
-import React from 'react';
-import { useStyletron } from 'baseui';
+import React, { useMemo, useState } from 'react';
 import { Block } from 'baseui/block';
-import TeamInviteModal from 'modules/settings/components/organization/TeamInviteModal';
-import { H3 } from 'baseui/typography';
-import { Table } from 'baseui/table';
-import { StatefulTooltip } from 'baseui/tooltip';
-import { SpacedBetween, VerticalAligned } from '@insight/elements';
-import { Alert } from 'baseui/icon';
-import { differenceInSeconds } from 'date-fns';
 import type {
   TeamInvite,
   TeamInviteCreateDTO,
   TeamInviteDTO,
 } from '@insight/types';
+import {
+  Button,
+  Flex,
+  SpacedBetween,
+  VerticalAligned,
+  Table,
+} from '@insight/elements';
+import { Avatar } from 'baseui/avatar';
+import { capitalize } from 'modules/billing/utils';
+import { SIZE } from 'baseui/button';
+import { Delete, Plus } from 'baseui/icon';
+import { useStyletron } from 'baseui';
+
+import TeamInviteModal from '../TeamInviteModal';
 
 type Props = {
   invites: TeamInvite[];
   createTeamInvite: (data: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
 };
 
-const SECONDS_IN_DAY = 86400;
-
 export const TeamInvites = ({ invites, createTeamInvite }: Props) => {
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState('');
   const [_css, theme] = useStyletron();
-
-  const dataColumn = (invite: TeamInvite) => {
-    const isTeamInviteValid =
-      differenceInSeconds(new Date(), invite.createdAt) < SECONDS_IN_DAY;
-
-    return [
-      invite.email,
-      invite.role,
-      invite.createdAt.toLocaleDateString(),
-      <>
-        {String(isTeamInviteValid)}
-        {!isTeamInviteValid && (
-          <StatefulTooltip
-            showArrow
-            placement="top"
-            content={() => <Block>Team invite is valid only for 1 day</Block>}
-          >
-            <VerticalAligned $style={{ marginLeft: theme.sizing.scale400 }}>
-              <Alert />
-            </VerticalAligned>
-          </StatefulTooltip>
-        )}
-      </>,
-    ];
-  };
+  const numPages = useMemo(() => Math.ceil(invites.length / 20), [invites]);
 
   return (
-    <Block
-      overrides={{ Block: { props: { className: 'invites' } } }}
-      marginTop={theme.sizing.scale800}
-    >
-      <SpacedBetween marginBottom="12px">
-        <H3 margin="0" $style={{ fontSize: '18px', lineHeight: '18px' }}>
-          Team invites
-        </H3>
-        <TeamInviteModal createTeamInvite={createTeamInvite} />
-      </SpacedBetween>
-      <Block width="100%" height="fit-content">
-        <Table
-          columns={['Email', 'Role', 'Invited on', 'Valid']}
-          data={invites.map(dataColumn)}
-        />
-      </Block>
+    <Block width="100%">
+      <Table.Header
+        theme={theme}
+        placeholder="Search invites"
+        value={query}
+        onChange={(event) => setQuery(event.currentTarget.value)}
+        clearable
+      >
+        <TeamInviteModal createTeamInvite={createTeamInvite}>
+          {(open) => (
+            <Block marginLeft="16px" width="240px">
+              <Button onClick={open} $style={{ width: '100%' }}>
+                <Plus /> Invite member
+              </Button>
+            </Block>
+          )}
+        </TeamInviteModal>
+      </Table.Header>
+
+      <Table.Body
+        header="Team invites"
+        items={invites}
+        itemKey={(invite) => invite.token}
+      >
+        {({ token, email: name, role }) => {
+          return (
+            <SpacedBetween key={token}>
+              <Flex>
+                <Avatar name={name} />
+                <VerticalAligned marginLeft="16px">
+                  <span>{name}</span>
+                </VerticalAligned>
+              </Flex>
+              <VerticalAligned>
+                <span>{capitalize(role)}</span>
+              </VerticalAligned>
+              <VerticalAligned>
+                <Button size={SIZE.compact} disabled>
+                  <Delete /> Revoke
+                </Button>
+              </VerticalAligned>
+            </SpacedBetween>
+          );
+        }}
+      </Table.Body>
+
+      <Table.Footer
+        numPages={numPages}
+        currentPage={page}
+        size={SIZE.compact}
+        onPageChange={({ nextPage }) => {
+          setPage(Math.min(Math.max(nextPage, 1), numPages));
+        }}
+        theme={theme}
+      />
     </Block>
   );
 };

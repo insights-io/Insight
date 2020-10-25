@@ -16,6 +16,9 @@ public interface OrganizationTeamInviteDatasource {
 
   CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token, SqlTransaction transaction);
 
+  CompletionStage<Optional<TeamInviteDTO>> retrieveValidInviteForUser(
+      String email, SqlTransaction transaction);
+
   CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> retrieveWithOrganization(UUID token);
 
   CompletionStage<List<TeamInviteDTO>> list(String organizationId);

@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS auth.organization_team_invite
     organization_id TEXT REFERENCES auth.organization (id) ON DELETE CASCADE,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-    CONSTRAINT no_duplicates UNIQUE (organization_id, email),
     CONSTRAINT email_length CHECK (length(auth.organization_team_invite.email) < 255)
 );
 

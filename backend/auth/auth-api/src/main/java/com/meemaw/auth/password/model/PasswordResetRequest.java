@@ -12,4 +12,9 @@ public class PasswordResetRequest implements CanExpire {
   UUID userId;
   String email;
   OffsetDateTime createdAt;
+
+  @Override
+  public int getDaysValidity() {
+    return 1;
+  }
 }

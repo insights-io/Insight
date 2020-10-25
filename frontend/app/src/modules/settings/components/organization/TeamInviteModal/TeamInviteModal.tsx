@@ -21,12 +21,13 @@ import { applyApiFormErrors } from 'shared/utils/form';
 
 type Props = {
   createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
+  children: (open: () => void) => void;
 };
 
 const ADMIN: UserRole = 'admin';
 const MEMBER: UserRole = 'member';
 
-const TeamInviteModal = ({ createTeamInvite }: Props) => {
+const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
   const [_css, theme] = useStyletron();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,7 +67,7 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
 
   return (
     <>
-      <Button onClick={open}>Invite new member</Button>
+      {children(open)}
       <Modal onClose={close} isOpen={isOpen}>
         <form onSubmit={onSubmit} noValidate>
           <ModalHeader>Invite new member</ModalHeader>

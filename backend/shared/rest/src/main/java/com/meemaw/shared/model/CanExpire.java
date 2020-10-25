@@ -8,10 +8,7 @@ public interface CanExpire {
 
   OffsetDateTime getCreatedAt();
 
-  @JsonIgnore
-  default int getDaysValidity() {
-    return 1;
-  }
+  int getDaysValidity();
 
   default OffsetDateTime getExpiresAt() {
     return getCreatedAt().plusDays(getDaysValidity());

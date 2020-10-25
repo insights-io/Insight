@@ -1,6 +1,6 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { INSIGHT_ADMIN_DTO, NAMELESS_INSIGHT_ADMIN_DTO } from 'test/data';
 import {
   ADMIN_TEAM_INVITE_DTO,
   EXPIRED_TEAM_INVITE_DTO,
@@ -20,8 +20,10 @@ export default {
 export const Base = () => {
   return (
     <OrganizationSettingsMembersPage
+      memberCount={2}
+      pageTab="Members"
       organization={INSIGHT_ORGANIZATION_DTO}
-      members={[INSIGHT_ADMIN_DTO]}
+      members={[INSIGHT_ADMIN_DTO, NAMELESS_INSIGHT_ADMIN_DTO]}
       user={INSIGHT_ADMIN_DTO}
       teamInvites={[
         STANDARD_TEAM_INVITE_DTO,
