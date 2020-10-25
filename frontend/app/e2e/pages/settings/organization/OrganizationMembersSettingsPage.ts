@@ -1,24 +1,28 @@
 /* eslint-disable max-classes-per-file */
-import {
-  queryByPlaceholderText,
-  queryByText,
-  within,
-} from '@testing-library/testcafe';
+import { queryByText, within } from '@testing-library/testcafe';
 
 import { ORGANIZATION_SETTINGS_MEMBERS_PAGE } from '../../../../src/shared/constants/routes';
 
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';
 
 class InviteNewMemberModal {
-  public readonly header = queryByText('Invite new member');
-  public readonly emailInput = queryByPlaceholderText('Email');
-  public readonly inviteButton = queryByText('Invite');
-  public readonly cancelButton = queryByText('Cancel');
+  private readonly container = queryByText('Invite new member').parent().nth(0);
+  private readonly withinContainer = within(this.container);
+
+  public readonly header = this.withinContainer.queryByText(
+    'Invite new member'
+  );
+  public readonly emailInput = this.withinContainer.queryByPlaceholderText(
+    'Email'
+  );
+  public readonly inviteButton = this.withinContainer.queryByText('Invite');
+  public readonly cancelButton = this.withinContainer.queryByText('Cancel');
+
   public readonly invitedMessage = queryByText('Member invited');
 
   public readonly role = {
-    admin: queryByText('Admin'),
-    member: queryByText('Member'),
+    admin: this.withinContainer.queryByText('Admin'),
+    member: this.withinContainer.queryByText('Member'),
   };
 }
 
@@ -35,7 +39,7 @@ export class OrganizationMembersSettingsPage extends AbstractOrganizationSetting
   };
 
   public readonly inviteNewTeamMemberButton = this.withinContainer.queryByText(
-    'Invite new member'
+    'Invite member'
   );
 
   public readonly inviteNewMemberModal = new InviteNewMemberModal();
