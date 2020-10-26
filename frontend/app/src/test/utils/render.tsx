@@ -1,4 +1,8 @@
+import React from 'react';
 import { createRenderer } from '@insight/next-testing';
-import AppProviders from 'shared/containers/AppProviders';
+import { AppProviders, Props } from 'shared/containers/AppProviders';
+import { createQueryCache } from 'shared/utils/cache';
 
-export default createRenderer(AppProviders);
+export default createRenderer((props: Pick<Props, 'children' | 'engine'>) => {
+  return <AppProviders queryCache={createQueryCache()} {...props} />;
+});
