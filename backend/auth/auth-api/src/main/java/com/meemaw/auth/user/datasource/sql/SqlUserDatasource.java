@@ -147,7 +147,7 @@ public class SqlUserDatasource implements UserDatasource {
                 .where(ORGANIZATION_ID.eq(organizationId)),
             search);
 
-    Query query = SQLSearchDTO.of(search).apply(searchQuery, FIELD_MAPPINGS);
+    Query query = SQLSearchDTO.of(search).applyFilter(searchQuery, FIELD_MAPPINGS);
     return sqlPool.execute(query).thenApply(rows -> rows.iterator().next().getInteger(0));
   }
 

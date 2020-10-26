@@ -17,7 +17,7 @@ public final class UserTable {
 
   public static final Set<String> UPDATABLE_FIELDS = Set.of(FULL_NAME, PHONE_NUMBER, ROLE);
 
-  public static final Set<String> QUERYABLE_FIELDS = Set.of(EMAIL, FULL_NAME, ROLE);
+  public static final Set<String> QUERYABLE_FIELDS = Set.of(EMAIL, FULL_NAME, ROLE, CREATED_AT);
 
   private UserTable() {}
 

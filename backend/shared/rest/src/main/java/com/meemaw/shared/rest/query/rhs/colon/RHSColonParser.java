@@ -99,16 +99,22 @@ public final class RHSColonParser extends AbstractQueryParser {
     List<Pair<String, SortDirection>> sorts = new ArrayList<>(fields.length);
     Map<String, String> errors = new HashMap<>();
 
-    for (String fieldWithDirection : fields) {
+    for (String fieldWithDirectionOrNot : fields) {
       SortDirection sortDirection = SortDirection.ASC;
-      if (fieldWithDirection.charAt(0) == SortDirection.DESC.getSymbol()) {
+      char maybeDirection = fieldWithDirectionOrNot.charAt(0);
+
+      String field = fieldWithDirectionOrNot;
+      if (maybeDirection == SortDirection.DESC.getSymbol()) {
         sortDirection = SortDirection.DESC;
+        field = fieldWithDirectionOrNot.substring(1);
+      } else if (maybeDirection == SortDirection.ASC.getSymbol()) {
+        field = fieldWithDirectionOrNot.substring(1);
       }
-      String fieldName = fieldWithDirection.substring(1);
-      if (!allowedFields.contains(fieldName)) {
-        errors.put(fieldName, SORT_BY_PARAM_ERROR);
+
+      if (!allowedFields.contains(field)) {
+        errors.put(field, SORT_BY_PARAM_ERROR);
       } else {
-        sorts.add(Pair.of(fieldName, sortDirection));
+        sorts.add(Pair.of(field, sortDirection));
       }
     }
 

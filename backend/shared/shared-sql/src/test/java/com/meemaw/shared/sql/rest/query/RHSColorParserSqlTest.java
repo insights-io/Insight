@@ -68,4 +68,39 @@ public class RHSColorParserSqlTest {
             .apply(select().from(table("session.session")), Collections.emptyMap());
     assertEquals("select * from session.session", query.getSQL(ParamType.INLINED));
   }
+
+  @Test
+  public void parse__should_handle_sort_directions__when_with_or_without_symbol()
+      throws MalformedURLException {
+    Set<String> allowedFields = Set.of("created_at");
+    Map<String, Field<?>> mappings =
+        allowedFields.stream().collect(Collectors.toMap(v -> v, v -> DSL.field(v, String.class)));
+
+    assertEquals(
+        "select * from session.session order by created_at asc",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=+created_at")),
+                    allowedFields))
+            .apply(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
+
+    assertEquals(
+        "select * from session.session order by created_at asc",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=created_at")),
+                    allowedFields))
+            .apply(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
+
+    assertEquals(
+        "select * from session.session order by created_at desc",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=-created_at")),
+                    allowedFields))
+            .apply(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
+  }
 }

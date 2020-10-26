@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Block } from 'baseui/block';
-import type { User, UserDTO } from '@insight/types';
 import {
   Button,
   Flex,
@@ -13,9 +12,12 @@ import { capitalize } from 'modules/billing/utils';
 import { SIZE } from 'baseui/button';
 import { Delete } from 'baseui/icon';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import { mapUser } from '@insight/sdk';
+import { mapUser, MemberSearchBean, SortDirection } from '@insight/sdk';
 import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
+import { usePaginatedSearch, OnSearch } from 'shared/hooks/usePaginatedSearch';
+import { Spinner } from 'baseui/spinner';
+import type { User, UserDTO } from '@insight/types';
 
 type Props = {
   members: UserDTO[];
@@ -25,27 +27,66 @@ type Props = {
 
 const NUM_ITEMS_PER_PAGE = 20;
 
+const searchFilter = ({ query, page, items, direction }: OnSearch<UserDTO>) => {
+  const search: MemberSearchBean = {};
+  if (query) {
+    search.query = query;
+  }
+
+  if (page > 1) {
+    if (direction === SortDirection.ASC) {
+      const lastItem = items[items.length - 1];
+      search.created_at = `gt:${lastItem.createdAt}`;
+    } else {
+      const firstItem = items[0];
+      search.created_at = `lt:${firstItem.createdAt}`;
+    }
+  }
+
+  return search;
+};
+
 export const OrganizationMembers = ({
   user: _user,
   members: initialMembers,
   memberCount: initialMemberCount,
 }: Props) => {
   const [_css, theme] = useStyletron();
-  const [members, setMembers] = useState(() => initialMembers.map(mapUser));
-  const [memberCount] = useState(initialMemberCount);
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState('');
 
-  const numPages = useMemo(() => Math.ceil(memberCount / NUM_ITEMS_PER_PAGE), [
-    memberCount,
-  ]);
+  const search = useCallback(async (params: OnSearch<UserDTO>) => {
+    const sortDirection =
+      params.page === 1 ? SortDirection.ASC : params.direction;
 
-  // TODO: extract hook with debounce to fetch count/members
-  useEffect(() => {
-    AuthApi.organization
-      .members({ search: query ? { query } : undefined })
-      .then((newMembers) => setMembers(newMembers.map(mapUser)));
-  }, [query]);
+    const search = {
+      ...searchFilter(params),
+      sort_by: [`${sortDirection}created_at`],
+      limit: NUM_ITEMS_PER_PAGE,
+    };
+
+    return AuthApi.organization.members({ search });
+  }, []);
+
+  const getCount = async (data: OnSearch<UserDTO>) => {
+    const search = searchFilter(data);
+    return AuthApi.organization.memberCount({ search });
+  };
+
+  const {
+    page,
+    onPageChange,
+    query,
+    setQuery,
+    numPages,
+    items,
+    isSearching,
+  } = usePaginatedSearch({
+    initialData: { count: initialMemberCount, items: initialMembers },
+    search,
+    getCount,
+    numItemsPerPage: NUM_ITEMS_PER_PAGE,
+  });
+
+  const members = useMemo(() => items.map(mapUser), [items]);
 
   return (
     <Block>
@@ -55,6 +96,7 @@ export const OrganizationMembers = ({
         onChange={(event) => setQuery(event.currentTarget.value)}
         clearable
         theme={theme}
+        endEnhancer={isSearching ? <Spinner size={16} /> : undefined}
       />
 
       <Table.Body
@@ -66,27 +108,31 @@ export const OrganizationMembers = ({
           const name = fullName || email;
           return (
             <SpacedBetween>
-              <Flex>
+              <Flex width="100%" maxWidth="400px">
                 <Avatar name={name} />
                 <VerticalAligned marginLeft="16px">
                   <span>{name}</span>
                   <span>{email}</span>
                 </VerticalAligned>
               </Flex>
-              <VerticalAligned>
-                <span>{capitalize(role)}</span>
-              </VerticalAligned>
-              <StatefulTooltip
-                content="You cannot leave this organization as you are the only organization owner"
-                placement={PLACEMENT.top}
-                showArrow
-              >
+
+              <SpacedBetween flex={1}>
                 <VerticalAligned>
-                  <Button size={SIZE.compact} disabled>
-                    <Delete /> Leave
-                  </Button>
+                  <span>{capitalize(role)}</span>
                 </VerticalAligned>
-              </StatefulTooltip>
+
+                <StatefulTooltip
+                  content="You cannot leave this organization as you are the only organization owner"
+                  placement={PLACEMENT.top}
+                  showArrow
+                >
+                  <VerticalAligned>
+                    <Button size={SIZE.compact} disabled>
+                      <Delete /> Leave
+                    </Button>
+                  </VerticalAligned>
+                </StatefulTooltip>
+              </SpacedBetween>
             </SpacedBetween>
           );
         }}
@@ -96,10 +142,9 @@ export const OrganizationMembers = ({
         numPages={numPages}
         currentPage={page}
         size={SIZE.compact}
-        onPageChange={({ nextPage }) => {
-          setPage(Math.min(Math.max(nextPage, 1), numPages));
-        }}
+        onPageChange={({ nextPage }) => onPageChange(nextPage)}
         theme={theme}
+        overrides={{ Select: { props: { disabled: true } } }}
       />
     </Block>
   );

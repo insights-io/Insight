@@ -1,13 +1,8 @@
 import { UserRole } from './user';
 
 export type AvatarDTO =
-  | {
-      type: 'initials';
-    }
-  | {
-      type: 'avatar';
-      image: string;
-    };
+  | { type: 'initials' }
+  | { type: 'avatar'; image: string };
 
 export type AvatarType = AvatarDTO['type'];
 

@@ -59,6 +59,7 @@ public class OrganizationResourceImpl implements OrganizationResource {
     SearchDTO search =
         SearchDTO.withAllowedFields(UserTable.QUERYABLE_FIELDS)
             .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
+
     AuthUser user = insightPrincipal.user();
 
     return organizationService

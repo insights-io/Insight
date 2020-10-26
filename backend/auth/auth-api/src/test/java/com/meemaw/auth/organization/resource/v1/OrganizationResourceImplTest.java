@@ -1,6 +1,8 @@
 package com.meemaw.auth.organization.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.QUERY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_FULL_NAME;
@@ -450,7 +452,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("query", "random")
+        .queryParam(QUERY_PARAM, "random")
+        .queryParam(SORT_BY_PARAM, "-created_at")
         .get(GET_ORGANIZATION_MEMBERS_PATH)
         .then()
         .statusCode(200)
@@ -459,7 +462,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("query", "random")
+        .queryParam(QUERY_PARAM, "random")
         .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
         .then()
         .statusCode(200)
@@ -469,7 +472,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .queryParam("query", INSIGHT_ADMIN_FULL_NAME)
+            .queryParam(QUERY_PARAM, INSIGHT_ADMIN_FULL_NAME)
+            .queryParam(SORT_BY_PARAM, "created_at")
             .get(GET_ORGANIZATION_MEMBERS_PATH)
             .then()
             .statusCode(200)
@@ -480,7 +484,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("query", INSIGHT_ADMIN_FULL_NAME)
+        .queryParam(QUERY_PARAM, INSIGHT_ADMIN_FULL_NAME)
         .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
         .then()
         .statusCode(200)

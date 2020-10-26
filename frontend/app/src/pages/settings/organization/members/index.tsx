@@ -46,6 +46,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
     const membersPromise = AuthApi.organization.members({
       baseURL: process.env.AUTH_API_BASE_URL,
+      search: { limit: 20, sort_by: ['+created_at'] },
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
         cookie: `SessionId=${authResponse.SessionId}`,
