@@ -46,4 +46,4 @@ resources:
   limits: null
 
 image:
-  tag: v0.15.0
+  tag: v0.15.1
