@@ -2,12 +2,6 @@ FROM node:14-alpine as build
 
 WORKDIR /src
 
-ARG auth_api_base_url=http://localhost:8080	
-ENV NEXT_PUBLIC_AUTH_API_BASE_URL=$auth_api_base_url	
-
-ARG app_base_url=http://localhost:3000	
-ENV APP_BASE_URL=$app_base_url
-
 COPY package.json yarn.lock tsconfig.json /src/
 COPY frontend/try/package.json /src/frontend/try/package.json
 COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json
