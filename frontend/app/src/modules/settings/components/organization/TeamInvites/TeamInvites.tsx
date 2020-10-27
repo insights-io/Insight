@@ -20,7 +20,7 @@ import { AuthApi } from 'api';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { mapTeamInvite } from '@insight/sdk';
 import { useStyletron } from 'baseui';
-import { Spinner } from 'baseui/spinner';
+import { StyledSpinnerNext } from 'baseui/spinner';
 
 import TeamInviteModal from '../TeamInviteModal';
 
@@ -55,6 +55,7 @@ export const TeamInvites = ({
     isSearching,
     revalidate,
   } = useResourceSearch({
+    resource: 'invites',
     field: 'createdAt',
     initialData: { count: initialInviteCount, items: initialInvites },
     search,
@@ -79,7 +80,7 @@ export const TeamInvites = ({
         value={query}
         onChange={(event) => setQuery(event.currentTarget.value)}
         clearable
-        endEnhancer={isSearching ? <Spinner size={16} /> : undefined}
+        endEnhancer={isSearching ? <StyledSpinnerNext size={16} /> : undefined}
       >
         <TeamInviteModal createTeamInvite={createTeamInvite}>
           {(open) => (

@@ -16,7 +16,7 @@ import { mapUser } from '@insight/sdk';
 import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
-import { Spinner } from 'baseui/spinner';
+import { StyledSpinnerNext } from 'baseui/spinner';
 import type { SearchBean, User, UserDTO } from '@insight/types';
 
 type Props = {
@@ -51,6 +51,7 @@ export const OrganizationMembers = ({
     items,
     isSearching,
   } = useResourceSearch({
+    resource: 'members',
     field: 'createdAt',
     initialData: { count: initialMemberCount, items: initialMembers },
     search,
@@ -68,7 +69,7 @@ export const OrganizationMembers = ({
         onChange={(event) => setQuery(event.currentTarget.value)}
         clearable
         theme={theme}
-        endEnhancer={isSearching ? <Spinner size={16} /> : undefined}
+        endEnhancer={isSearching ? <StyledSpinnerNext size={16} /> : undefined}
       />
 
       <Table.Body
