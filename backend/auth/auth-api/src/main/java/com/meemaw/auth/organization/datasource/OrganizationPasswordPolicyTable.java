@@ -1,6 +1,5 @@
 package com.meemaw.auth.organization.datasource;
 
-import com.meemaw.shared.rest.query.UpdateDTO;
 import java.util.Set;
 
 public final class OrganizationPasswordPolicyTable {
@@ -17,14 +16,13 @@ public final class OrganizationPasswordPolicyTable {
   public static final String UPDATED_AT = "updated_at";
 
   public static final Set<String> UPDATABLE_FIELDS =
-      UpdateDTO.withCamelCase(
-          Set.of(
-              MIN_CHARACTERS,
-              PREVENT_PASSWORD_REUSE,
-              REQUIRE_UPPERCASE_CHARACTER,
-              REQUIRE_LOWERCASE_CHARACTER,
-              REQUIRE_NUMBER,
-              REQUIRE_NON_ALPHANUMERIC_CHARACTER));
+      Set.of(
+          MIN_CHARACTERS,
+          PREVENT_PASSWORD_REUSE,
+          REQUIRE_UPPERCASE_CHARACTER,
+          REQUIRE_LOWERCASE_CHARACTER,
+          REQUIRE_NUMBER,
+          REQUIRE_NON_ALPHANUMERIC_CHARACTER);
 
   private OrganizationPasswordPolicyTable() {}
 }

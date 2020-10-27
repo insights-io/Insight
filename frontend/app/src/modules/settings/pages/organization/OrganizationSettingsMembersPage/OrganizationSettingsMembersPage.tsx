@@ -6,7 +6,6 @@ import {
 } from 'shared/constants/routes';
 import { OrganizationSettingsPageLayout } from 'modules/settings/components/organization/OrganizationSettingsPageLayout';
 import { OrganizationMembers } from 'modules/settings/components/organization/OrganizationMembers';
-import useTeamInvites from 'modules/settings/hooks/useTeamInvites';
 import { TeamInvites } from 'modules/settings/components/organization/TeamInvites';
 import type { Path } from 'modules/settings/types';
 import type { OrganizationDTO, TeamInviteDTO, UserDTO } from '@insight/types';
@@ -26,6 +25,7 @@ type Props = {
   members: UserDTO[];
   memberCount: number;
   teamInvites: TeamInviteDTO[];
+  inviteCount: number;
   user: UserDTO;
   organization: OrganizationDTO;
   pageTab: PageTab;
@@ -35,13 +35,13 @@ export const OrganizationSettingsMembersPage = ({
   members: initialMembers,
   memberCount: initialMemberCount,
   teamInvites: initialTeamInvites,
+  inviteCount: initialInviteCount,
   user: initialUser,
   organization: initialOrganization,
   pageTab,
 }: Props) => {
   const { organization } = useOrganization(initialOrganization);
   const { user } = useUser(initialUser);
-  const { invites, createTeamInvite } = useTeamInvites(initialTeamInvites);
   const [activeKey, setActiveKey] = useState(pageTab);
 
   return (
@@ -64,7 +64,10 @@ export const OrganizationSettingsMembersPage = ({
           />
         </Tab>
         <Tab title="Team invites" key="Team invites">
-          <TeamInvites invites={invites} createTeamInvite={createTeamInvite} />
+          <TeamInvites
+            invites={initialTeamInvites}
+            inviteCount={initialInviteCount}
+          />
         </Tab>
       </Tabs>
     </OrganizationSettingsPageLayout>

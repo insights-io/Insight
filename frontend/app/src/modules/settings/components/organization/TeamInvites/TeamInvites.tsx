@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Block } from 'baseui/block';
 import type {
-  TeamInvite,
+  SearchBean,
   TeamInviteCreateDTO,
   TeamInviteDTO,
 } from '@insight/types';
@@ -16,20 +16,60 @@ import { Avatar } from 'baseui/avatar';
 import { capitalize } from 'modules/billing/utils';
 import { SIZE } from 'baseui/button';
 import { Delete, Plus } from 'baseui/icon';
+import { AuthApi } from 'api';
+import { useResourceSearch } from 'shared/hooks/useResourceSearch';
+import { mapTeamInvite } from '@insight/sdk';
 import { useStyletron } from 'baseui';
+import { Spinner } from 'baseui/spinner';
 
 import TeamInviteModal from '../TeamInviteModal';
 
 type Props = {
-  invites: TeamInvite[];
-  createTeamInvite: (data: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
+  invites: TeamInviteDTO[];
+  inviteCount: number;
 };
 
-export const TeamInvites = ({ invites, createTeamInvite }: Props) => {
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState('');
+const NUM_ITEMS_PER_PAGE = 20;
+
+export const TeamInvites = ({
+  invites: initialInvites,
+  inviteCount: initialInviteCount,
+}: Props) => {
   const [_css, theme] = useStyletron();
-  const numPages = useMemo(() => Math.ceil(invites.length / 20), [invites]);
+
+  const search = useCallback(async (search: SearchBean) => {
+    return AuthApi.organization.teamInvite.list({ search });
+  }, []);
+
+  const searchCount = useCallback(async (search: SearchBean) => {
+    return AuthApi.organization.teamInvite.count({ search });
+  }, []);
+
+  const {
+    page,
+    onPageChange,
+    query,
+    setQuery,
+    numPages,
+    items,
+    isSearching,
+    revalidate,
+  } = useResourceSearch({
+    field: 'createdAt',
+    initialData: { count: initialInviteCount, items: initialInvites },
+    search,
+    searchCount,
+    numItemsPerPage: NUM_ITEMS_PER_PAGE,
+  });
+
+  const createTeamInvite = (data: TeamInviteCreateDTO) => {
+    return AuthApi.organization.teamInvite.create(data).then((teamInvite) => {
+      revalidate();
+      return teamInvite;
+    });
+  };
+
+  const invites = useMemo(() => items.map(mapTeamInvite), [items]);
 
   return (
     <Block width="100%">
@@ -39,6 +79,7 @@ export const TeamInvites = ({ invites, createTeamInvite }: Props) => {
         value={query}
         onChange={(event) => setQuery(event.currentTarget.value)}
         clearable
+        endEnhancer={isSearching ? <Spinner size={16} /> : undefined}
       >
         <TeamInviteModal createTeamInvite={createTeamInvite}>
           {(open) => (
@@ -82,9 +123,7 @@ export const TeamInvites = ({ invites, createTeamInvite }: Props) => {
         numPages={numPages}
         currentPage={page}
         size={SIZE.compact}
-        onPageChange={({ nextPage }) => {
-          setPage(Math.min(Math.max(nextPage, 1), numPages));
-        }}
+        onPageChange={({ nextPage }) => onPageChange(nextPage)}
         theme={theme}
       />
     </Block>

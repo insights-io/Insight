@@ -18,6 +18,7 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -301,10 +302,18 @@ public class OrganizationTeamInviteService {
   }
 
   @Traced
-  public CompletionStage<List<TeamInviteDTO>> listTeamInvites(InsightPrincipal principal) {
+  public CompletionStage<List<TeamInviteDTO>> listTeamInvites(
+      InsightPrincipal principal, SearchDTO search) {
     AuthUser user = principal.user();
     log.debug("[AUTH]: List team invites for organizationId={}", user.getOrganizationId());
-    return teamInviteDatasource.list(user.getOrganizationId());
+    return teamInviteDatasource.list(user.getOrganizationId(), search);
+  }
+
+  @Traced
+  public CompletionStage<Integer> count(InsightPrincipal principal, SearchDTO search) {
+    AuthUser user = principal.user();
+    log.debug("[AUTH]: Count team invites for organizationId={}", user.getOrganizationId());
+    return teamInviteDatasource.count(user.getOrganizationId(), search);
   }
 
   private CompletionStage<Void> sendInviteEmail(

@@ -9,3 +9,12 @@ export type MemberSearchBean = SearchBean & {
 export type MembersSearchOptions = Omit<RequestOptions, 'searchParams'> & {
   search?: MemberSearchBean;
 };
+
+export type TeamInviteSearchBean = SearchBean & {
+  // eslint-disable-next-line camelcase
+  created_at?: QueryParam;
+};
+
+export type TeamInviteSearchOptions = Omit<RequestOptions, 'searchParams'> & {
+  search?: TeamInviteSearchBean;
+};

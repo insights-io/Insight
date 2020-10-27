@@ -12,12 +12,12 @@ import { capitalize } from 'modules/billing/utils';
 import { SIZE } from 'baseui/button';
 import { Delete } from 'baseui/icon';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import { mapUser, MemberSearchBean, SortDirection } from '@insight/sdk';
+import { mapUser } from '@insight/sdk';
 import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
-import { usePaginatedSearch, OnSearch } from 'shared/hooks/usePaginatedSearch';
+import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { Spinner } from 'baseui/spinner';
-import type { User, UserDTO } from '@insight/types';
+import type { SearchBean, User, UserDTO } from '@insight/types';
 
 type Props = {
   members: UserDTO[];
@@ -27,25 +27,6 @@ type Props = {
 
 const NUM_ITEMS_PER_PAGE = 20;
 
-const searchFilter = ({ query, page, items, direction }: OnSearch<UserDTO>) => {
-  const search: MemberSearchBean = {};
-  if (query) {
-    search.query = query;
-  }
-
-  if (page > 1) {
-    if (direction === SortDirection.ASC) {
-      const lastItem = items[items.length - 1];
-      search.created_at = `gt:${lastItem.createdAt}`;
-    } else {
-      const firstItem = items[0];
-      search.created_at = `lt:${firstItem.createdAt}`;
-    }
-  }
-
-  return search;
-};
-
 export const OrganizationMembers = ({
   user: _user,
   members: initialMembers,
@@ -53,23 +34,13 @@ export const OrganizationMembers = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
 
-  const search = useCallback(async (params: OnSearch<UserDTO>) => {
-    const sortDirection =
-      params.page === 1 ? SortDirection.ASC : params.direction;
-
-    const search = {
-      ...searchFilter(params),
-      sort_by: [`${sortDirection}created_at`],
-      limit: NUM_ITEMS_PER_PAGE,
-    };
-
+  const search = useCallback(async (search: SearchBean) => {
     return AuthApi.organization.members({ search });
   }, []);
 
-  const getCount = async (data: OnSearch<UserDTO>) => {
-    const search = searchFilter(data);
+  const searchCount = useCallback(async (search: SearchBean) => {
     return AuthApi.organization.memberCount({ search });
-  };
+  }, []);
 
   const {
     page,
@@ -79,10 +50,11 @@ export const OrganizationMembers = ({
     numPages,
     items,
     isSearching,
-  } = usePaginatedSearch({
+  } = useResourceSearch({
+    field: 'createdAt',
     initialData: { count: initialMemberCount, items: initialMembers },
     search,
-    getCount,
+    searchCount,
     numItemsPerPage: NUM_ITEMS_PER_PAGE,
   });
 

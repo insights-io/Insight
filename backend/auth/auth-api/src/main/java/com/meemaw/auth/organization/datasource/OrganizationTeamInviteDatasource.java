@@ -3,6 +3,7 @@ package com.meemaw.auth.organization.datasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,9 @@ public interface OrganizationTeamInviteDatasource {
 
   CompletionStage<Optional<Pair<TeamInviteDTO, Organization>>> retrieveWithOrganization(UUID token);
 
-  CompletionStage<List<TeamInviteDTO>> list(String organizationId);
+  CompletionStage<List<TeamInviteDTO>> list(String organizationId, SearchDTO search);
+
+  CompletionStage<Integer> count(String organizationId, SearchDTO search);
 
   CompletionStage<Boolean> delete(UUID token);
 

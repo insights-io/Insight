@@ -4,6 +4,7 @@ import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInv
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.CREATOR_ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.EMAIL;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.FIELD_MAPPINGS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.INSERT_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ORGANIZATION_ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ROLE;
@@ -15,8 +16,10 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.time.OffsetDateTime;
@@ -32,7 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Query;
+import org.jooq.SelectConditionStep;
 import org.jooq.Table;
+import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
@@ -95,15 +100,43 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
 
   @Override
   @Traced
-  public CompletionStage<List<TeamInviteDTO>> list(String organizationId) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
+  public CompletionStage<List<TeamInviteDTO>> list(String organizationId, SearchDTO search) {
+    SelectConditionStep<?> baseQuery =
+        searchQuery(
+            sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
+            search);
+
     return sqlPool
-        .execute(query)
+        .execute(SQLSearchDTO.of(search).apply(baseQuery, FIELD_MAPPINGS))
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
                     .map(SqlOrganizationTeamInviteDatasource::mapTeamInvite)
                     .collect(Collectors.toList()));
+  }
+
+  @Override
+  public CompletionStage<Integer> count(String organizationId, SearchDTO search) {
+    SelectConditionStep<?> baseQuery =
+        searchQuery(
+            sqlPool
+                .getContext()
+                .select(DSL.count())
+                .from(TABLE)
+                .where(ORGANIZATION_ID.eq(organizationId)),
+            search);
+
+    return sqlPool
+        .execute(SQLSearchDTO.of(search).applyFilter(baseQuery, FIELD_MAPPINGS))
+        .thenApply(rows -> rows.iterator().next().getInteger(0));
+  }
+
+  private SelectConditionStep<?> searchQuery(SelectConditionStep<?> baseQuery, SearchDTO search) {
+    if (search.getQuery() != null) {
+      return baseQuery.and(EMAIL.containsIgnoreCase(search.getQuery()));
+    }
+
+    return baseQuery;
   }
 
   @Override

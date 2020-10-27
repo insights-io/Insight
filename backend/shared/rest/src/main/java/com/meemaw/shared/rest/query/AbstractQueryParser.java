@@ -1,5 +1,6 @@
 package com.meemaw.shared.rest.query;
 
+import com.google.common.base.CaseFormat;
 import com.meemaw.shared.rest.exception.SearchParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,5 +54,9 @@ public abstract class AbstractQueryParser {
 
     return new SearchDTO(
         rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit, query);
+  }
+
+  protected static String snakeCase(String field) {
+    return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field);
   }
 }

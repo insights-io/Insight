@@ -30,7 +30,7 @@ public final class RHSColonParser extends AbstractQueryParser {
 
   @Override
   public void process(Entry<String, List<String>> entry) {
-    String fieldName = entry.getKey();
+    String fieldName = snakeCase(entry.getKey());
 
     if (QUERY_PARAM.equals(fieldName)) {
       query = entry.getValue().get(0);
@@ -93,8 +93,8 @@ public final class RHSColonParser extends AbstractQueryParser {
     return groupBy;
   }
 
-  private static List<Pair<String, SortDirection>> parseSorts(
-      String text, Set<String> allowedFields) throws SortBySearchParseException {
+  private List<Pair<String, SortDirection>> parseSorts(String text, Set<String> allowedFields)
+      throws SortBySearchParseException {
     String[] fields = text.split(",");
     List<Pair<String, SortDirection>> sorts = new ArrayList<>(fields.length);
     Map<String, String> errors = new HashMap<>();
@@ -103,12 +103,14 @@ public final class RHSColonParser extends AbstractQueryParser {
       SortDirection sortDirection = SortDirection.ASC;
       char maybeDirection = fieldWithDirectionOrNot.charAt(0);
 
-      String field = fieldWithDirectionOrNot;
+      String field;
       if (maybeDirection == SortDirection.DESC.getSymbol()) {
         sortDirection = SortDirection.DESC;
-        field = fieldWithDirectionOrNot.substring(1);
+        field = snakeCase(fieldWithDirectionOrNot.substring(1));
       } else if (maybeDirection == SortDirection.ASC.getSymbol()) {
-        field = fieldWithDirectionOrNot.substring(1);
+        field = snakeCase(fieldWithDirectionOrNot.substring(1));
+      } else {
+        field = snakeCase(fieldWithDirectionOrNot);
       }
 
       if (!allowedFields.contains(field)) {

@@ -1,12 +1,9 @@
 package com.meemaw.shared.rest.query;
 
-import com.google.common.base.CaseFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Value;
 
 @Value
@@ -21,20 +18,11 @@ public class UpdateDTO {
   public Map<String, String> validate(Set<String> updatableFields) {
     Map<String, String> errors = new HashMap<>();
     for (Entry<String, ?> entry : params.entrySet()) {
-      if (!updatableFields.contains(entry.getKey())) {
-        errors.put(entry.getKey(), "Unexpected field");
+      String field = AbstractQueryParser.snakeCase(entry.getKey());
+      if (!updatableFields.contains(field)) {
+        errors.put(field, "Unexpected field");
       }
     }
     return errors;
-  }
-
-  public static Set<String> withCamelCase(Set<String> snakeCaseFields) {
-    return Stream.concat(
-            snakeCaseFields.stream()
-                .map(
-                    snakeCaseField ->
-                        CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, snakeCaseField)),
-            snakeCaseFields.stream())
-        .collect(Collectors.toSet());
   }
 }

@@ -13,12 +13,14 @@ type Props = AuthenticatedServerSideProps & {
   members: UserDTO[];
   memberCount: number;
   teamInvites: TeamInviteDTO[];
+  inviteCount: number;
 };
 
 export const OrganizationSettingsMembers = ({
   members,
   memberCount,
   teamInvites,
+  inviteCount,
   user,
   organization,
 }: Props) => {
@@ -28,6 +30,7 @@ export const OrganizationSettingsMembers = ({
       members={members}
       memberCount={memberCount}
       teamInvites={teamInvites}
+      inviteCount={inviteCount}
       user={user}
       organization={organization}
     />
@@ -63,16 +66,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
     const teamInvitesPromise = AuthApi.organization.teamInvite.list({
       baseURL: process.env.AUTH_API_BASE_URL,
+      search: { limit: 20, sort_by: ['+created_at'] },
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
         cookie: `SessionId=${authResponse.SessionId}`,
       },
     });
 
-    const [members, memberCount, teamInvites] = await Promise.all([
+    const inviteCountPromise = AuthApi.organization.teamInvite.count({
+      baseURL: process.env.AUTH_API_BASE_URL,
+      headers: {
+        ...prepareCrossServiceHeaders(requestSpan),
+        cookie: `SessionId=${authResponse.SessionId}`,
+      },
+    });
+
+    const [members, memberCount, teamInvites, inviteCount] = await Promise.all([
       membersPromise,
       memberCountPromise,
       teamInvitesPromise,
+      inviteCountPromise,
     ]);
 
     return {
@@ -81,6 +94,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         memberCount,
         members,
         teamInvites,
+        inviteCount,
         organization: authResponse.organization,
       },
     };
