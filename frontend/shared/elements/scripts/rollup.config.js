@@ -10,7 +10,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
-import pkg from './package.json';
+import pkg from '../package.json';
 
 const safePackageName = (name) =>
   name

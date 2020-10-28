@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "concurrently \"rollup -c rollup.config.js\" \"tsc --p tsconfig.build.json --declaration --outDir dist --emitDeclarationOnly\" \"node ./writeCjsEntry.js\"",
+    "build": "concurrently \"rollup -c scripts/rollup.config.js\" \"tsc --p tsconfig.build.json --declaration --outDir dist --emitDeclarationOnly\" \"node scripts/writeCjsEntry.js\"",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",

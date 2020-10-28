@@ -3,7 +3,7 @@ const path = require('path');
 
 const fs = require('fs-extra');
 
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 const writeCjsEntryFile = (name = pkg.main, formatName = 'cjs') => {
   const split = name.split('/');
