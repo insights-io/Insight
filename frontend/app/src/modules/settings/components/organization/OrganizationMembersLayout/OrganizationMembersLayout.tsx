@@ -1,0 +1,89 @@
+import React from 'react';
+import {
+  SETTINGS_PATH_PART,
+  ORGANIZATION_SETTINGS_PAGE_PART,
+  ORGANIZATION_SETTINGS_MEMBERS_PAGE_PART,
+  ORGANIZATION_SETTINGS_MEMBER_INVITES_PAGE,
+  ORGANIZATION_SETTINGS_MEMBERS_PAGE,
+} from 'shared/constants/routes';
+import { OrganizationSettingsPageLayout } from 'modules/settings/components/organization/OrganizationSettingsPageLayout';
+import type { Path } from 'modules/settings/types';
+import type {
+  Organization,
+  OrganizationDTO,
+  User,
+  UserDTO,
+} from '@insight/types';
+import { useUser } from 'shared/hooks/useUser';
+import { useOrganization } from 'shared/hooks/useOrganization';
+import { Tabs, Tab } from 'baseui/tabs-motion';
+import Link from 'next/link';
+import { UnstyledLink } from '@insight/elements';
+
+const PATH: Path = [
+  SETTINGS_PATH_PART,
+  ORGANIZATION_SETTINGS_PAGE_PART,
+  ORGANIZATION_SETTINGS_MEMBERS_PAGE_PART,
+];
+
+const TABS = [
+  { path: ORGANIZATION_SETTINGS_MEMBERS_PAGE, label: 'Members' },
+  { path: ORGANIZATION_SETTINGS_MEMBER_INVITES_PAGE, label: 'Team invites' },
+] as const;
+
+type PageTab = typeof TABS[number]['label'];
+
+type Props = {
+  user: UserDTO;
+  organization: OrganizationDTO;
+  pageTab: PageTab;
+  renderTab: (user: User, organization: Organization) => React.ReactNode;
+};
+
+export const OrganizationMembersLayout = ({
+  user: initialUser,
+  organization: initialOrganization,
+  pageTab,
+  renderTab,
+}: Props) => {
+  const { organization } = useOrganization(initialOrganization);
+  const { user } = useUser(initialUser);
+
+  return (
+    <OrganizationSettingsPageLayout
+      header="Members"
+      path={PATH}
+      user={user}
+      organization={organization}
+    >
+      <Tabs activeKey={pageTab} activateOnFocus>
+        {TABS.map(({ path, label }) => {
+          return (
+            <Tab
+              overrides={{
+                Tab: {
+                  style: {
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                  },
+                },
+              }}
+              key={label}
+              title={
+                <Link href={path}>
+                  <UnstyledLink height="100%" padding="16px">
+                    {label}
+                  </UnstyledLink>
+                </Link>
+              }
+            >
+              {renderTab(user, organization)}
+            </Tab>
+          );
+        })}
+      </Tabs>
+    </OrganizationSettingsPageLayout>
+  );
+};

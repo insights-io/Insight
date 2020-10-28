@@ -8,7 +8,6 @@ import { OrganizationSettingsMembersPage } from 'modules/settings/pages/organiza
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
 import type { UserDTO } from '@insight/types';
-import { OrganizationMembers } from 'modules/settings/components/organization/OrganizationMembers';
 
 type Props = AuthenticatedServerSideProps & {
   members: UserDTO[];
@@ -23,16 +22,10 @@ export const OrganizationSettingsMembers = ({
 }: Props) => {
   return (
     <OrganizationSettingsMembersPage
-      pageTab="Members"
       user={user}
       organization={organization}
-      renderTab={(user) => (
-        <OrganizationMembers
-          user={user}
-          members={members}
-          memberCount={memberCount}
-        />
-      )}
+      memberCount={memberCount}
+      members={members}
     />
   );
 };

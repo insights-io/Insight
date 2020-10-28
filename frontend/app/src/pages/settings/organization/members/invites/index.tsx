@@ -4,11 +4,10 @@ import {
   authenticated,
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
-import { OrganizationSettingsMembersPage } from 'modules/settings/pages/organization/OrganizationSettingsMembersPage';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
 import type { TeamInviteDTO } from '@insight/types';
-import { TeamInvites } from 'modules/settings/components/organization/TeamInvites';
+import { OrganizationSettingsMemberInvitesPage } from 'modules/settings/pages/organization/OrganizationSettingsMemberInvitesPage';
 
 type Props = AuthenticatedServerSideProps & {
   teamInvites: TeamInviteDTO[];
@@ -22,13 +21,11 @@ export const OrganizationSettingsMembers = ({
   organization,
 }: Props) => {
   return (
-    <OrganizationSettingsMembersPage
-      pageTab="Team invites"
+    <OrganizationSettingsMemberInvitesPage
       user={user}
       organization={organization}
-      renderTab={() => (
-        <TeamInvites invites={teamInvites} inviteCount={inviteCount} />
-      )}
+      invites={teamInvites}
+      inviteCount={inviteCount}
     />
   );
 };
@@ -43,6 +40,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
+    const { user, organization } = authResponse;
     const teamInvitesPromise = AuthApi.organization.teamInvite.list({
       baseURL: process.env.AUTH_API_BASE_URL,
       search: { limit: 20, sort_by: ['+created_at'] },
@@ -65,14 +63,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       inviteCountPromise,
     ]);
 
-    return {
-      props: {
-        user: authResponse.user,
-        teamInvites,
-        inviteCount,
-        organization: authResponse.organization,
-      },
-    };
+    return { props: { user, teamInvites, inviteCount, organization } };
   } finally {
     requestSpan.finish();
   }

@@ -38,6 +38,14 @@ export class OrganizationMembersSettingsPage extends AbstractOrganizationSetting
     teamInvites: this.tablist.queryByText('Team invites'),
   };
 
+  private readonly tabpanel = this.withinContainer.queryByRole('tabpanel');
+  private readonly withinTabpanel = within(this.tabpanel);
+
+  public readonly teamInviteList = this.tabpanel.find('ul');
+  public readonly teamInviteSearchInput = this.withinTabpanel.queryByPlaceholderText(
+    'Search invites'
+  );
+
   public readonly inviteNewTeamMemberButton = this.withinContainer.queryByText(
     'Invite member'
   );
