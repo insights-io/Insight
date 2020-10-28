@@ -5,6 +5,6 @@ require('ts-node').register({
   },
 });
 
-const config = require('../rollup/rollup.config.ts').default;
+const { bundle } = require('../rollup/builder');
 
-module.exports = config;
+module.exports = bundle();

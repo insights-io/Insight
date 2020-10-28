@@ -4,10 +4,8 @@ import path from 'path';
 
 import fs from 'fs-extra';
 
-const pkg = require(path.join(process.cwd(), 'package.json'));
-
-const writeCjsEntryFile = (name = pkg.main, formatName = 'cjs') => {
-  const split = name.split('/');
+export const writeCjsEntryFile = (main: string, formatName = 'cjs') => {
+  const split = main.split('/');
   const filename = split[split.length - 1];
   const basename = filename.split('.')[0];
 
@@ -22,7 +20,5 @@ const writeCjsEntryFile = (name = pkg.main, formatName = 'cjs') => {
   }
   `;
 
-  return fs.outputFile(path.join(name), contents);
+  return fs.outputFile(path.join(main), contents);
 };
-
-writeCjsEntryFile();

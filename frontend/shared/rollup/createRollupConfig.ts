@@ -1,9 +1,5 @@
-/* eslint-disable import/no-dynamic-require */
-/* eslint-disable @typescript-eslint/no-var-requires */
 import path from 'path';
 
-import isFunction from 'lodash/isFunction';
-import isNil from 'lodash/isNil';
 import external from 'rollup-plugin-peer-deps-external';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
@@ -13,41 +9,11 @@ import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 import type { ModuleFormat } from 'rollup';
 
-const pkg = require(path.join(process.cwd(), 'package.json'));
+import { safePackageName } from './safePackageName';
+import { pascalcase } from './pascalcase';
 
-const safePackageName = (name: string) =>
-  name
-    .toLowerCase()
-    .replace(/(^@.*\/)|((^[^a-zA-Z]+)|[^\w.-])|([^a-zA-Z0-9]+$)/g, '');
-
-const titlecase = (input: string) =>
-  input[0].toLocaleUpperCase() + input.slice(1);
-
-export const pascalcase = (value: string) => {
-  if (isNil(value)) {
-    return '';
-  }
-  if (!isFunction(value.toString)) {
-    return '';
-  }
-
-  const input = value.toString().trim();
-  if (input === '') {
-    return '';
-  }
-  if (input.length === 1) {
-    return input.toLocaleUpperCase();
-  }
-
-  const match = input.match(/[a-zA-Z0-9]+/g);
-  if (match) {
-    return match.map((m) => titlecase(m)).join('');
-  }
-
-  return input;
-};
-
-type Options = {
+export type Options = {
+  packageName: string;
   input: string;
   format: ModuleFormat;
   name?: string;
@@ -57,9 +23,11 @@ type Options = {
   tsconfig?: string;
 };
 
-const createRollupConfig = (options: Options) => {
-  const name = options.name || safePackageName(pkg.name);
-  const umdName = options.umdName || pascalcase(safePackageName(pkg.name));
+export const createRollupConfig = (options: Options) => {
+  const name = options.name || safePackageName(options.packageName);
+  const umdName =
+    options.umdName || pascalcase(safePackageName(options.packageName));
+
   const shouldMinify = options.minify || options.env === 'production';
   const tsconfigPath = options.tsconfig || 'tsconfig.json';
 
@@ -117,26 +85,3 @@ const createRollupConfig = (options: Options) => {
     plugins,
   };
 };
-
-const options = [
-  {
-    format: 'cjs',
-    env: 'development',
-  },
-  {
-    format: 'cjs',
-    env: 'production',
-  },
-  { format: 'esm' },
-  { format: 'umd', env: 'development' },
-  { format: 'umd', env: 'production' },
-] as const;
-
-export default options.map((option) =>
-  createRollupConfig({
-    ...option,
-    input: pkg.source,
-    name: 'index',
-    tsconfig: 'tsconfig.build.json',
-  })
-);
