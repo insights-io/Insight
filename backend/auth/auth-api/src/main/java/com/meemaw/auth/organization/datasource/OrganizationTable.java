@@ -1,6 +1,5 @@
 package com.meemaw.auth.organization.datasource;
 
-import com.meemaw.shared.rest.query.UpdateDTO;
 import java.util.Set;
 
 public final class OrganizationTable {
@@ -13,8 +12,7 @@ public final class OrganizationTable {
   public static final String CREATED_AT = "created_at";
   public static final String UPDATED_AT = "updated_at";
 
-  public static final Set<String> UPDATABLE_FIELDS =
-      UpdateDTO.withCamelCase(Set.of(NAME, DEFAULT_ROLE, OPEN_MEMBERSHIP));
+  public static final Set<String> UPDATABLE_FIELDS = Set.of(NAME, DEFAULT_ROLE, OPEN_MEMBERSHIP);
 
   private OrganizationTable() {}
 }

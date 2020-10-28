@@ -15,7 +15,7 @@ import type {
 import type { RequestOptions } from '../../core/types';
 import { getData, querystring, withCredentials } from '../../core/utils';
 
-import type { MembersSearchOptions } from './types';
+import type { MembersSearchOptions, TeamInviteSearchOptions } from './types';
 
 export const organizationsResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -130,10 +130,32 @@ export const organizationsResource = (authApiBaseURL: string) => {
           .json<DataResponse<TeamInviteDTO>>()
           .then(getData);
       },
-      list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+      list: ({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: TeamInviteSearchOptions = {}) => {
+        const searchQuery = querystring(search);
         return ky
-          .get(`${resourceBaseURL(baseURL)}/invites`, withCredentials(rest))
+          .get(
+            `${resourceBaseURL(baseURL)}/invites${searchQuery}`,
+            withCredentials(rest)
+          )
           .json<DataResponse<TeamInviteDTO[]>>()
+          .then(getData);
+      },
+      count: ({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: TeamInviteSearchOptions = {}) => {
+        const searchQuery = querystring(search);
+        return ky
+          .get(
+            `${resourceBaseURL(baseURL)}/invites/count${searchQuery}`,
+            withCredentials(rest)
+          )
+          .json<DataResponse<number>>()
           .then(getData);
       },
       delete: (

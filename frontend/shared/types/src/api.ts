@@ -13,15 +13,6 @@ export type APIError = {
   errors?: Record<string, string>;
 };
 
-export type SearchBean = {
-  query?: string;
-  limit?: number;
-  // eslint-disable-next-line camelcase
-  sort_by?: string[];
-  // eslint-disable-next-line camelcase
-  group_by?: string[];
-};
-
 export type QueryParam =
   | string
   | number
@@ -30,3 +21,12 @@ export type QueryParam =
   | number[]
   | boolean[]
   | null;
+
+export type SearchBean = {
+  query?: string;
+  limit?: number;
+  // eslint-disable-next-line camelcase
+  sort_by?: string[];
+  // eslint-disable-next-line camelcase
+  group_by?: string[];
+} & Record<string, QueryParam>;

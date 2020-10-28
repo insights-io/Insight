@@ -32,27 +32,28 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
-  const { register, handleSubmit, errors, control, setError } = useForm<
+  const { register, handleSubmit, errors, control, setError, reset } = useForm<
     TeamInviteCreateDTO
   >();
   const inputOverrides = createInputOverrides(theme);
 
   const close = () => {
     setIsOpen(false);
+    reset({ email: undefined, role: undefined });
   };
 
   const open = () => {
     setIsOpen(true);
   };
 
-  const onSubmit = handleSubmit((formData) => {
+  const onSubmit = handleSubmit((data) => {
     if (isSubmitting) {
       return;
     }
     setIsSubmitting(true);
 
-    createTeamInvite(formData)
-      .then((_resp) => {
+    createTeamInvite(data)
+      .then(() => {
         toaster.positive('Member invited', {});
         setFormError(undefined);
         close();

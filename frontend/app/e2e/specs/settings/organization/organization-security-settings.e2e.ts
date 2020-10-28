@@ -167,11 +167,13 @@ test('[/settings/organization/security]: As a user I should be able to accept a 
     .ok('Inviting same user again should fail with nice error')
     .click(OrganizationMembersSettingsPage.inviteNewMemberModal.cancelButton);
 
+  const newUserFullName = 'Bruce Lee';
+
   await t
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut)
     .navigateTo(acceptInviteLink)
-    .typeText(AcceptTeamInvitePage.fullNameInput, 'Bruce Lee')
+    .typeText(AcceptTeamInvitePage.fullNameInput, newUserFullName)
     .typeText(AcceptTeamInvitePage.passwordInput, 'shortpassword')
     .click(AcceptTeamInvitePage.submitButton)
     .expect(
@@ -182,5 +184,10 @@ test('[/settings/organization/security]: As a user I should be able to accept a 
     .click(AcceptTeamInvitePage.submitButton)
     .click(Sidebar.banner.trigger)
     .expect(queryByText(newMemberEmail).visible)
-    .ok('Newly created user is logged in');
+    .ok('Newly created user is logged in')
+    .click(Sidebar.banner.menu.organization.members)
+    .expect(queryByText(newMemberEmail).visible)
+    .ok('In member list')
+    .expect(queryByText(newUserFullName).visible)
+    .ok('In member list');
 });

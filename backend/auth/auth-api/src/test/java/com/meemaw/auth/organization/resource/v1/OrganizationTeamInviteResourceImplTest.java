@@ -46,6 +46,14 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest {
 
+  private static final String COUNT_PATH = OrganizationTeamInviteResource.PATH + "/count";
+
+  @Test
+  public void count__should_throw__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, COUNT_PATH);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, COUNT_PATH);
+  }
+
   @Test
   public void get__should_throw__when_non_uuid_id() {
     given()
@@ -336,6 +344,14 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
     given()
         .when()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":0}"));
+
+    given()
+        .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .body(
@@ -360,8 +376,12 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(OrganizationTeamInviteResource.PATH);
-    response.then().statusCode(200).body("data.size()", is(2));
+            .get(OrganizationTeamInviteResource.PATH)
+            .then()
+            .statusCode(200)
+            .body("data.size()", is(2))
+            .extract()
+            .response();
 
     UUID firstInviteToken = UUID.fromString(response.body().path("data[0].token"));
     UUID secondInviteToken = UUID.fromString(response.body().path("data[1].token"));

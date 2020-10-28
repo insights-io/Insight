@@ -4,15 +4,15 @@ import useSWR, { keyInterface, ConfigInterface } from 'swr';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Fetcher<Data> = (...args: any) => Promise<Data>;
 
-const useSWRQuery = <Data, Error = APIErrorDataResponse>(
+export const useSWRQuery = <Data, Error = APIErrorDataResponse>(
   key: keyInterface,
   fn: Fetcher<Data>,
   config?: ConfigInterface<Data, Error>
 ) => {
   const response = useSWR(
     key,
-    () =>
-      fn().catch(async (apiError) => {
+    (...args) =>
+      fn(args).catch(async (apiError) => {
         const errorDTO: APIErrorDataResponse = await apiError.response.json();
         throw errorDTO;
       }),

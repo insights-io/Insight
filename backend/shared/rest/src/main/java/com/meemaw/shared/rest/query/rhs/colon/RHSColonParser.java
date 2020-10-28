@@ -30,7 +30,7 @@ public final class RHSColonParser extends AbstractQueryParser {
 
   @Override
   public void process(Entry<String, List<String>> entry) {
-    String fieldName = entry.getKey();
+    String fieldName = snakeCase(entry.getKey());
 
     if (QUERY_PARAM.equals(fieldName)) {
       query = entry.getValue().get(0);
@@ -93,22 +93,30 @@ public final class RHSColonParser extends AbstractQueryParser {
     return groupBy;
   }
 
-  private static List<Pair<String, SortDirection>> parseSorts(
-      String text, Set<String> allowedFields) throws SortBySearchParseException {
+  private List<Pair<String, SortDirection>> parseSorts(String text, Set<String> allowedFields)
+      throws SortBySearchParseException {
     String[] fields = text.split(",");
     List<Pair<String, SortDirection>> sorts = new ArrayList<>(fields.length);
     Map<String, String> errors = new HashMap<>();
 
-    for (String fieldWithDirection : fields) {
+    for (String fieldWithDirectionOrNot : fields) {
       SortDirection sortDirection = SortDirection.ASC;
-      if (fieldWithDirection.charAt(0) == SortDirection.DESC.getSymbol()) {
+      char maybeDirection = fieldWithDirectionOrNot.charAt(0);
+
+      String field;
+      if (maybeDirection == SortDirection.DESC.getSymbol()) {
         sortDirection = SortDirection.DESC;
-      }
-      String fieldName = fieldWithDirection.substring(1);
-      if (!allowedFields.contains(fieldName)) {
-        errors.put(fieldName, SORT_BY_PARAM_ERROR);
+        field = snakeCase(fieldWithDirectionOrNot.substring(1));
+      } else if (maybeDirection == SortDirection.ASC.getSymbol()) {
+        field = snakeCase(fieldWithDirectionOrNot.substring(1));
       } else {
-        sorts.add(Pair.of(fieldName, sortDirection));
+        field = snakeCase(fieldWithDirectionOrNot);
+      }
+
+      if (!allowedFields.contains(field)) {
+        errors.put(field, SORT_BY_PARAM_ERROR);
+      } else {
+        sorts.add(Pair.of(field, sortDirection));
       }
     }
 

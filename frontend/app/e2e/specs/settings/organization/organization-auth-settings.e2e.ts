@@ -2,57 +2,21 @@ import { queryByTestId, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
-import config from '../../../config';
 import {
   LoginPage,
   Sidebar,
   SignUpPage,
-  OrganizationMembersSettingsPage,
   OrganizationGeneralSettingsPage,
   OrganizationSubscriptionSettingsPage,
   OrganizationAuthSettingsPage,
 } from '../../../pages';
 import { getLocation } from '../../../utils';
 
-fixture('/settings/organization').page(OrganizationGeneralSettingsPage.path);
+fixture('/settings/organization/auth').page(
+  OrganizationGeneralSettingsPage.path
+);
 
-test('[TEAM INVITE]: User should be able to invite new members to an organization', async (t) => {
-  await LoginPage.loginWithInsightUser(t);
-  await t
-    .expect(OrganizationGeneralSettingsPage.idInput.value)
-    .eql('000000', 'Should display Insight organization id')
-    .expect(OrganizationGeneralSettingsPage.nameInput.value)
-    .eql('Insight', 'Should display Insight organization name');
-
-  await t
-    .click(OrganizationGeneralSettingsPage.sidebar.members)
-    .expect(queryByText(config.insightUserEmail).visible)
-    .ok('Should display user email in the members table');
-
-  const insightUserEmailSplit = config.insightUserEmail.split('@');
-  const newMemberEmail = `${insightUserEmailSplit[0]}+${uuid()}@${
-    insightUserEmailSplit[1]
-  }`;
-
-  await t
-    .click(OrganizationMembersSettingsPage.tabs.teamInvites)
-    .click(OrganizationMembersSettingsPage.inviteNewTeamMemberButton)
-    .typeText(
-      OrganizationMembersSettingsPage.inviteNewMemberModal.emailInput,
-      newMemberEmail
-    )
-    .click(OrganizationMembersSettingsPage.inviteNewMemberModal.role.admin)
-    .click(OrganizationMembersSettingsPage.inviteNewMemberModal.inviteButton)
-    .expect(
-      OrganizationMembersSettingsPage.inviteNewMemberModal.invitedMessage
-        .visible
-    )
-    .ok('Should display notification')
-    .expect(queryByText(newMemberEmail).visible)
-    .ok('Should display new member email in the team invites list');
-});
-
-test('[SSO  SAML]: User with non-business email address should not be able to setup SAML SSO', async (t) => {
+test('As a user with non-business email I should not be able to setup SAML SSO', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
@@ -122,7 +86,7 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
     );
 });
 
-test('[SSO Google]: User with business email should be able to setup Google SSO', async (t) => {
+test('As a user with business email should be able to setup Google SSO', async (t) => {
   const {
     email,
     password,
@@ -186,7 +150,7 @@ test('[SSO Google]: User with business email should be able to setup Google SSO'
     );
 });
 
-test('[SSO Microsoft]: User with business email should be able to setup Microsoft SSO', async (t) => {
+test('As a user with business email, I should be able to setup Microsoft SSO', async (t) => {
   const {
     email,
     password,
@@ -249,7 +213,7 @@ test('[SSO Microsoft]: User with business email should be able to setup Microsof
     .eql(otherUser, 'Should prefill user');
 });
 
-test('[SSO Github]: User with business email should be able to setup Github SSO', async (t) => {
+test('As a user with business email, I should be able to setup Github SSO', async (t) => {
   const {
     email,
     password,
@@ -312,7 +276,7 @@ test('[SSO Github]: User with business email should be able to setup Github SSO'
     .eql(otherUser, 'Should prefill user');
 });
 
-test('[BILLING]: Should not be able to upgrade plan on enterprise', async (t) => {
+test('As a user, I should not be able to upgrade plan when already on Enterprise plan', async (t) => {
   await LoginPage.loginWithInsightUser(t)
     .click(OrganizationGeneralSettingsPage.sidebar.subscription)
     .expect(queryByText('Insight Enterprise').visible)
@@ -321,7 +285,7 @@ test('[BILLING]: Should not be able to upgrade plan on enterprise', async (t) =>
     .notOk('Upgrade button is not visible');
 });
 
-test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then cancel my subscription', async (t) => {
+test('As a user, I can subscribe using VISA card and then cancel my subscription', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
@@ -384,7 +348,7 @@ test('[BILLING](VISA+CANCEL): As a user I can subscribe using VISA card and then
     .ok('Should be back on Free plan');
 });
 
-test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment method and then cancel my subscription', async (t) => {
+test('As a user, I can subscribe using a 3DS payment method and then cancel my subscription', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
@@ -453,7 +417,7 @@ test('[BILLING](3DS+CANCEL): As I user I can subscripe using a 3DS payment metho
     .ok('Should be back on Free plan');
 });
 
-test('[BILLING](3DS-FAILURE+RECOVER): As a user I can recover and subscribe after failing to authenticate 3DS payment method', async (t) => {
+test('As a user, I can recover and subscribe after failing to authenticate 3DS payment method', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, { email, password });
 
