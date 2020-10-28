@@ -134,7 +134,7 @@ describe('<SessionsPage />', () => {
       push,
       '/sessions/[id]',
       `/sessions/${INSIGHT_SESSION.id}`,
-      { shallow: undefined }
+      { shallow: undefined, locale: undefined }
     );
   });
 });
