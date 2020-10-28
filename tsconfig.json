@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "allowJs": false,
     "baseUrl": "src",
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "resolveJsonModule": true
   }
 }

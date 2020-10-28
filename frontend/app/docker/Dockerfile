@@ -2,21 +2,9 @@ FROM node:14-alpine as build
 
 WORKDIR /src
 
-COPY package.json yarn.lock tsconfig.json /src/
-COPY frontend/app/package.json /src/frontend/app/package.json
-COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json
-COPY frontend/shared/sdk/package.json /src/frontend/shared/sdk/package.json
-COPY frontend/shared/service-proxy/package.json /src/frontend/shared/service-proxy/package.json
-COPY frontend/shared/testing/package.json /src/frontend/shared/testing/package.json
-COPY frontend/shared/next-testing/package.json /src/frontend/shared/next-testing/package.json
-COPY frontend/shared/next-storybook/package.json /src/frontend/shared/next-storybook/package.json
-COPY frontend/shared/storybook/package.json /src/frontend/shared/storybook/package.json
-COPY frontend/shared/elements/package.json /src/frontend/shared/elements/package.json
+COPY . /src
+
 RUN yarn install --frozen-lockfile
-
-COPY frontend/app/ /src/frontend/app/
-COPY frontend/shared/ /src/frontend/shared/
-
 RUN yarn frontend:app:build
 RUN yarn install --frozen-lockfile --production --ignore-scripts --prefer-offline
 

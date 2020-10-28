@@ -1,3 +1,5 @@
+/* eslint-disable import/no-dynamic-require */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import path from 'path';
 
 import isFunction from 'lodash/isFunction';
@@ -9,17 +11,19 @@ import typescript from '@rollup/plugin-typescript';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
+import type { ModuleFormat } from 'rollup';
 
-import pkg from '../package.json';
+const pkg = require(path.join(process.cwd(), 'package.json'));
 
-const safePackageName = (name) =>
+const safePackageName = (name: string) =>
   name
     .toLowerCase()
     .replace(/(^@.*\/)|((^[^a-zA-Z]+)|[^\w.-])|([^a-zA-Z0-9]+$)/g, '');
 
-const titlecase = (input) => input[0].toLocaleUpperCase() + input.slice(1);
+const titlecase = (input: string) =>
+  input[0].toLocaleUpperCase() + input.slice(1);
 
-export const pascalcase = (value) => {
+export const pascalcase = (value: string) => {
   if (isNil(value)) {
     return '';
   }
@@ -43,7 +47,17 @@ export const pascalcase = (value) => {
   return input;
 };
 
-const createRollupConfig = (options) => {
+type Options = {
+  input: string;
+  format: ModuleFormat;
+  name?: string;
+  umdName?: string;
+  minify?: boolean;
+  env?: string;
+  tsconfig?: string;
+};
+
+const createRollupConfig = (options: Options) => {
   const name = options.name || safePackageName(pkg.name);
   const umdName = options.umdName || pascalcase(safePackageName(pkg.name));
   const shouldMinify = options.minify || options.env === 'production';
@@ -51,7 +65,7 @@ const createRollupConfig = (options) => {
 
   const outputName = [
     path.join('dist', name),
-    options.formatName || options.format,
+    options.format,
     options.env,
     shouldMinify ? 'min' : '',
     'js',
@@ -80,7 +94,9 @@ const createRollupConfig = (options) => {
   if (shouldMinify) {
     plugins.push(
       terser({
-        output: { comments: false },
+        output: {
+          comments: false,
+        },
         compress: {
           drop_console: true,
         },
@@ -114,7 +130,7 @@ const options = [
   { format: 'esm' },
   { format: 'umd', env: 'development' },
   { format: 'umd', env: 'production' },
-];
+] as const;
 
 export default options.map((option) =>
   createRollupConfig({

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
+/* eslint-disable import/no-dynamic-require */
+import path from 'path';
 
-const fs = require('fs-extra');
+import fs from 'fs-extra';
 
-const pkg = require('../package.json');
+const pkg = require(path.join(process.cwd(), 'package.json'));
 
 const writeCjsEntryFile = (name = pkg.main, formatName = 'cjs') => {
   const split = name.split('/');
