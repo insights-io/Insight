@@ -4,7 +4,7 @@
 import path from 'path';
 
 import { createRollupConfig, Options } from './createRollupConfig';
-import { writeCjsEntryFile } from './writeCjsEntry';
+import { writeCjsEntryFile, getNameFromMain } from './writeCjsEntry';
 
 type Format = 'cjs' | 'esm' | 'umd';
 
@@ -18,12 +18,13 @@ const OPTIONS: Record<Format, BaseOption[]> = {
 };
 
 type Config = {
+  name: string;
   packageName: string;
   source: string;
   formats: Format[];
 };
 
-const prepare = ({ formats, source, packageName }: Config) => {
+const prepare = ({ name, formats, source, packageName }: Config) => {
   const uniqueFormats = [...new Set(formats)];
   const rollupOptions = uniqueFormats.reduce((acc: FormatOption[], format) => {
     const formatOptions = OPTIONS[format].map((o) => ({ ...o, format }));
@@ -34,15 +35,27 @@ const prepare = ({ formats, source, packageName }: Config) => {
     createRollupConfig({
       ...option,
       input: source,
-      name: 'index',
+      name,
       tsconfig: 'tsconfig.build.json',
       packageName,
     })
   );
 };
 
-export const bundle = (formats: Format[] = ['cjs', 'esm']) => {
+export const bundle = () => {
   const pkg = require(path.join(process.cwd(), 'package.json'));
+  const formats: Format[] = ['cjs'];
+  const name = getNameFromMain(pkg.main);
+
+  if (pkg.module || pkg['jsnext:main']) {
+    formats.push('esm');
+  }
+
+  if (pkg['umd:main']) {
+    formats.push('umd');
+  }
+
   writeCjsEntryFile(pkg.main);
-  return prepare({ formats, source: pkg.source, packageName: pkg.name });
+
+  return prepare({ name, formats, source: pkg.source, packageName: pkg.name });
 };
