@@ -34,6 +34,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   const requestSpan = startRequestSpan(context.req);
+
   try {
     const authResponse = await authenticated(context, requestSpan);
     if (!authResponse) {
@@ -67,7 +68,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         user: authResponse.user,
         memberCount,
         members,
-
         organization: authResponse.organization,
       },
     };
