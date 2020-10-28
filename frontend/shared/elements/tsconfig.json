@@ -1,10 +1,10 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "es2015",
+    "target": "es2017",
     "skipLibCheck": true,
     "moduleResolution": "node",
     "baseUrl": "src",
-    "outDir": "./dist"
   }
 }

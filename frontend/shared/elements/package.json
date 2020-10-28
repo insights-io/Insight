@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "build": "concurrently \"rollup -c rollup.config.js\" \"tsc --p tsconfig.build.json --declarationDir dist --declaration\"",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
@@ -29,14 +29,15 @@
     "storybook:build": "build-storybook",
     "pretest": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/testing build\" \"yarn workspace @insight/storybook build\""
   },
-  "dependencies": {
-    "baseui": "9.102.0",
-    "react-hook-form": "6.9.4",
-    "styletron-react": "5.2.7"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@insight/testing": "0.0.0-development",
     "@insight/storybook": "0.0.0-development"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "baseui": "9.102.0",
+    "react-hook-form": "6.9.4",
+    "styletron-react": "5.2.7",
+    "react": "16.13.1"
+  }
 }
