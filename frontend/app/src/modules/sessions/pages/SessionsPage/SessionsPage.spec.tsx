@@ -132,9 +132,12 @@ describe('<SessionsPage />', () => {
 
     sandbox.assert.calledWithExactly(
       push,
-      '/sessions/[id]',
       `/sessions/${INSIGHT_SESSION.id}`,
-      { shallow: undefined }
+      `/sessions/${INSIGHT_SESSION.id}`,
+      {
+        shallow: undefined,
+        locale: undefined,
+      }
     );
   });
 });

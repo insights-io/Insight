@@ -43,7 +43,7 @@ const SessionListItem = ({ session, style }: Props) => {
     USER_AGENT_DEVICE_ICON_LOOKUP[userAgent.deviceClass] || FaDesktop;
 
   return (
-    <Link href="/sessions/[id]" as={`sessions/${id}`} key={id}>
+    <Link href={`sessions/${id}`} key={id}>
       <a className={css({ color: 'inherit' })}>
         <ListItem
           artwork={artwork}
