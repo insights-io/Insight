@@ -4,9 +4,9 @@
   "private": true,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/storybook.esm.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "typings": "dist/index.d.ts",
   "author": "Insight Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",
@@ -18,7 +18,9 @@
     "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
-    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "build": "concurrently \"yarn build:rollup\" \"yarn build:types\"",
+    "build:rollup": "rollup -c rollup.config.js",
+    "build:types": "tsc --p tsconfig.build.json --declaration --outDir dist --emitDeclarationOnly",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
@@ -29,10 +31,15 @@
     "@insight/types": "0.0.0-development"
   },
   "dependencies": {
+    "@storybook/addons": "6.0.26",
     "@storybook/addon-actions": "6.0.26",
     "@storybook/addon-essentials": "6.0.26",
     "@storybook/addon-links": "6.0.26",
     "@storybook/react": "6.0.26",
     "@storybook/addon-controls": "6.0.26"
+  },
+  "peerDependencies": {
+    "react": "16.13.1",
+    "sinon": "9.2.0"
   }
 }
