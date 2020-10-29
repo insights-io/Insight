@@ -16,7 +16,8 @@
     "frontend:browser:boostrap:build": "yarn workspace @insight/browser-bootstrap build",
     "frontend:browser:tracking:build": "yarn workspace @insight/browser-tracking build:with-deps",
     "frontend:homepage:build": "yarn workspace @insight/homepage build",
-    "frontend:app:build": "yarn workspace @insight/app build"
+    "frontend:app:build": "yarn workspace @insight/app build",
+    "frontend:try:build": "yarn workspace @insight/try build"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "1.0.20",
@@ -57,7 +58,19 @@
     "ts-jest": "26.4.3",
     "tsdx": "0.13.3",
     "typescript": "4.0.5",
-    "wait-on": "5.2.0"
+    "wait-on": "5.2.0",
+    "rollup-plugin-peer-deps-external": "2.2.4",
+    "@rollup/plugin-typescript": "6.1.0",
+    "@types/rollup-plugin-sourcemaps": "0.4.2",
+    "@types/rollup-plugin-peer-deps-external": "2.2.0",
+    "ts-node": "9.0.0",
+    "@types/fs-extra": "9.0.2",
+    "rollup": "2.32.1",
+    "@rollup/plugin-node-resolve": "10.0.0",
+    "@rollup/plugin-commonjs": "16.0.0",
+    "@rollup/plugin-replace": "2.3.4",
+    "rollup-plugin-terser": "7.0.2",
+    "rollup-plugin-sourcemaps": "0.6.3"
   },
   "husky": {
     "hooks": {

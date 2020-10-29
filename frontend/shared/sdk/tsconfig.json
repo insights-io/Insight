@@ -1,8 +1,9 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "src",
-    "outDir": "./dist",
-    "target": "ES2019"
+    "module": "es2015",
+    "target": "es2017",
+    "moduleResolution": "node",
+    "baseUrl": "src"
   }
 }
