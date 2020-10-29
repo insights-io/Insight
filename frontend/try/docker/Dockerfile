@@ -29,7 +29,7 @@ RUN yarn frontend:try:build
 ### RUNNER ###
 FROM base
 
-WORKDIR /app
+WORKDIR /usr/app
 
 # Copy runtime dependencies
 COPY --from=builder /tmp/node_modules/ ./node_modules/

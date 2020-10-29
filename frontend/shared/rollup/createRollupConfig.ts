@@ -44,7 +44,7 @@ export const createRollupConfig = (options: Options) => {
   const plugins = [
     external(),
     typescript({ tsconfig: tsconfigPath }),
-    resolve(),
+    resolve({ mainFields: ['browser', 'jsnext:main', 'module', 'main'] }),
   ];
 
   if (options.format === 'umd') {
@@ -62,12 +62,8 @@ export const createRollupConfig = (options: Options) => {
   if (shouldMinify) {
     plugins.push(
       terser({
-        format: {
-          comments: false,
-        },
-        compress: {
-          drop_console: true,
-        },
+        format: { comments: false },
+        compress: { drop_console: true },
       })
     );
   }
@@ -79,9 +75,10 @@ export const createRollupConfig = (options: Options) => {
       format: options.format,
       name: umdName,
       sourcemap: true,
-      globals: { react: 'React' },
+      globals: { react: 'React', querystring: 'querystring' },
       exports: 'named',
     },
+    external: ['querystring'],
     plugins,
   };
 };
