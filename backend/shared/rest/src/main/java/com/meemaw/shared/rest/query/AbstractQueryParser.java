@@ -17,9 +17,10 @@ public abstract class AbstractQueryParser {
   public static final String QUERY_PARAM = "query";
   public static final String LIMIT_PARAM = "limit";
   public static final String SORT_BY_PARAM = "sort_by";
+  public static final String GROUP_BY_PARAM = "group_by";
+
   protected static final String SORT_BY_PARAM_ERROR =
       String.format("Unexpected field in %s query", SORT_BY_PARAM);
-  protected static final String GROUP_BY_PARAM = "group_by";
   protected static final String GROUP_BY_PARAM_ERROR =
       String.format("Unexpected field in %s query", GROUP_BY_PARAM);
 

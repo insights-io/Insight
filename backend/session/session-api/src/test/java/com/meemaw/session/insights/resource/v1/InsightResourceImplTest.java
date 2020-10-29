@@ -1,6 +1,9 @@
 package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
@@ -56,9 +59,9 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("random", "gte:aba")
         .queryParam("aba", "gtecaba")
-        .queryParam("group_by", "another")
-        .queryParam("sort_by", "hehe")
-        .queryParam("limit", "not_string")
+        .queryParam(GROUP_BY_PARAM, "another")
+        .queryParam(SORT_BY_PARAM, "hehe")
+        .queryParam(LIMIT_PARAM, "not_string")
         .get(COUNT_PATH)
         .then()
         .statusCode(400)
