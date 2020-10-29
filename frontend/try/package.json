@@ -40,10 +40,10 @@
     "@insight/service-proxy": "0.0.0-development",
     "@insight/sdk": "0.0.0-development",
     "@insight/elements": "0.0.0-development",
-    "baseui": "9.102.0",
+    "baseui": "9.103.0",
     "next": "10.0.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
     "react-hook-form": "6.9.4",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7"

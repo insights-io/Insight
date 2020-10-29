@@ -75,7 +75,11 @@ export const createRollupConfig = (options: Options) => {
       format: options.format,
       name: umdName,
       sourcemap: true,
-      globals: { react: 'React', querystring: 'querystring' },
+      globals: {
+        react: 'React',
+        'react-dom': 'ReactDOM',
+        querystring: 'querystring',
+      },
       exports: 'named',
     },
     external: ['querystring'],
