@@ -37,12 +37,12 @@
     "@insight/testing": "0.0.0-development",
     "@insight/storybook": "0.0.0-development",
     "baseui": "9.103.0",
-    "react-hook-form": "6.9.4",
+    "react-hook-form": "6.9.6",
     "styletron-react": "5.2.7"
   },
   "peerDependencies": {
     "baseui": "9.103.0",
-    "react-hook-form": "6.9.4",
+    "react-hook-form": "6.9.6",
     "styletron-react": "5.2.7",
     "react": "17.0.1"
   }
