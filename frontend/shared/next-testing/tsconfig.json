@@ -4,7 +4,6 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "baseUrl": "src",
-    "outDir": "./dist",
     "moduleResolution": "node"
   }
 }

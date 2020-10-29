@@ -4,9 +4,9 @@
   "private": true,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/next-testing.esm.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "typings": "dist/index.d.ts",
   "author": "Insight Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",
@@ -18,7 +18,9 @@
     "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
-    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "build": "concurrently \"yarn build:rollup\" \"yarn build:types\"",
+    "build:rollup": "rollup -c rollup.config.js",
+    "build:types": "tsc --p tsconfig.build.json --declaration --outDir dist --emitDeclarationOnly",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
@@ -30,6 +32,7 @@
     "@insight/testing": "0.0.0-development",
     "@insight/storybook": "0.0.0-development",
     "@testing-library/react": "11.1.0",
-    "next": "10.0.0"
+    "next": "10.0.0",
+    "react": "17.0.1"
   }
 }
