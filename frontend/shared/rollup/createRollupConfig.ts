@@ -62,7 +62,7 @@ export const createRollupConfig = (options: Options) => {
   if (shouldMinify) {
     plugins.push(
       terser({
-        output: {
+        format: {
           comments: false,
         },
         compress: {
