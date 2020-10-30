@@ -82,7 +82,8 @@ public class SignUpServiceImpl implements SignUpService {
         .thenCompose(
             emailTaken -> {
               if (emailTaken) {
-                log.info("[AUTH]: Sign up request email taken");
+                log.info("[AUTH]: Sign up request email={} already taken", email);
+                transaction.rollback();
                 return CompletableFuture.completedStage(Optional.empty());
               }
 
@@ -153,10 +154,16 @@ public class SignUpServiceImpl implements SignUpService {
                 signUpDatasource
                     .findSignUpRequest(token, transaction)
                     .thenCompose(
-                        maybeSignUpRequest ->
-                            completeSignUpRequest(
-                                maybeSignUpRequest.orElseThrow(() -> Boom.notFound().exception()),
-                                transaction)));
+                        maybeSignUpRequest -> {
+                          SignUpRequest signUpRequest =
+                              maybeSignUpRequest.orElseThrow(
+                                  () -> {
+                                    transaction.rollback();
+                                    return Boom.notFound().exception();
+                                  });
+
+                          return completeSignUpRequest(signUpRequest, transaction);
+                        }));
   }
 
   private CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUpRequest(
@@ -164,7 +171,9 @@ public class SignUpServiceImpl implements SignUpService {
     String email = signUpRequest.getEmail();
     UUID token = signUpRequest.getToken();
     MDC.put(LoggingConstants.USER_EMAIL, email);
+
     if (signUpRequest.hasExpired()) {
+      transaction.rollback();
       log.info("[AUTH]: Sign up request expired for user: {} token: {}", email, token);
       throw Boom.badRequest().message("Sign up request has expired").exception();
     }
@@ -282,10 +291,13 @@ public class SignUpServiceImpl implements SignUpService {
                 .thenApply(
                     maybeOrganization -> {
                       if (maybeOrganization.isEmpty()) {
+                        transaction.rollback();
                         throw Boom.badRequest().exception();
                       }
+
                       Organization organization = maybeOrganization.get();
                       if (!organization.isOpenMembership()) {
+                        transaction.rollback();
                         throw Boom.badRequest()
                             .message(
                                 "Organization does not support open membership. Please contact your Administrator")

@@ -40,7 +40,7 @@ import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
-public class OrganizationInviteService {
+public class OrganizationTeamInviteService {
 
   @Inject ReactiveMailer mailer;
   @Inject SqlPool sqlPool;
@@ -75,6 +75,7 @@ public class OrganizationInviteService {
             maybeUser -> {
               // If user is not in organization we should not leak that it is already registered
               if (maybeUser.map(AuthUser::getOrganizationId).orElse("").equals(organizationId)) {
+                transaction.rollback();
                 throw teamInviteCreateUserExistsException(invitedEmail, organizationId);
               }
 
@@ -160,12 +161,16 @@ public class OrganizationInviteService {
             maybeTeamInvite -> {
               TeamInviteDTO teamInvite =
                   maybeTeamInvite.orElseThrow(
-                      () -> Boom.badRequest().message("Team invite does not exist.").exception());
+                      () -> {
+                        transaction.rollback();
+                        return Boom.badRequest().message("Team invite does not exist.").exception();
+                      });
 
               MDC.put(LoggingConstants.USER_EMAIL, teamInvite.getEmail());
               MDC.put(LoggingConstants.ORGANIZATION_ID, teamInvite.getOrganizationId());
 
               if (teamInvite.hasExpired()) {
+                transaction.rollback();
                 log.info(
                     "[AUTH]: Team invite has expired for user={} organizationId={}",
                     teamInvite.getEmail(),
@@ -190,6 +195,7 @@ public class OrganizationInviteService {
                             PasswordPolicyValidator.validateFirstPassword(
                                 maybePolicy.orElse(null), password);
                           } catch (PasswordValidationException ex) {
+                            transaction.rollback();
                             log.debug(
                                 "[AUTH]: Failed to accept team invite due to password policy violation",
                                 ex);

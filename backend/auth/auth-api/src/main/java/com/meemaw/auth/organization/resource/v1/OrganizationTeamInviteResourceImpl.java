@@ -2,7 +2,7 @@ package com.meemaw.auth.organization.resource.v1;
 
 import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
-import com.meemaw.auth.organization.service.OrganizationInviteService;
+import com.meemaw.auth.organization.service.OrganizationTeamInviteService;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrganizationTeamInviteResourceImpl implements OrganizationTeamInviteResource {
 
   @Inject InsightPrincipal principal;
-  @Inject OrganizationInviteService inviteService;
+  @Inject OrganizationTeamInviteService inviteService;
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
