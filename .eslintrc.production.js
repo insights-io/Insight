@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   parser: '@typescript-eslint/parser',
   plugins: [
     'react',
@@ -34,6 +35,8 @@ module.exports = {
     'react/jsx-props-no-spreading': ['off'],
     'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
     'react/require-default-props': ['off'],
+    'no-use-before-define': ['off'],
+    'no-shadow': ['off'],
 
     'import/no-unresolved': ['off'],
     'import/no-extraneous-dependencies': ['off'],

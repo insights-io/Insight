@@ -7,6 +7,7 @@ import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import io.vertx.core.json.JsonObject;
 import java.util.Collection;
@@ -27,9 +28,13 @@ public class OrganizationService {
   @Inject OrganizationDatasource organizationDatasource;
   @Inject SsoSessionDatasource ssoSessionDatasource;
 
+  public CompletionStage<Integer> memberCount(String organizationId, SearchDTO search) {
+    return userDatasource.count(organizationId, search);
+  }
+
   @Traced
-  public CompletionStage<Collection<AuthUser>> members(String organizationId) {
-    return userDatasource.findOrganizationMembers(organizationId);
+  public CompletionStage<Collection<AuthUser>> members(String organizationId, SearchDTO search) {
+    return userDatasource.searchOrganizationMembers(organizationId, search);
   }
 
   @Traced
@@ -68,14 +73,20 @@ public class OrganizationService {
                         organizationDeleted ->
                             ssoSessionDatasource
                                 .deleteAllForOrganization(organizationId)
-                                .exceptionally(
-                                    throwable -> {
-                                      transaction.rollback();
-                                      throw (RuntimeException) throwable;
-                                    })
                                 .thenCompose(
                                     i1 ->
-                                        transaction.commit().thenApply(i2 -> organizationDeleted))))
+                                        transaction
+                                            .commit()
+                                            .thenApply(i2 -> organizationDeleted)
+                                            .exceptionally(
+                                                throwable -> {
+                                                  log.error(
+                                                      "[AUTH]: Failed to delete organization={}",
+                                                      organizationId,
+                                                      throwable);
+                                                  transaction.rollback();
+                                                  throw (RuntimeException) throwable;
+                                                }))))
         .thenApply(
             deleted -> {
               log.info(

@@ -1,9 +1,10 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.AUTO_GENERATED_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.CREATED_AT;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.CREATOR_ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.EMAIL;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.FIELD_MAPPINGS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.INSERT_FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ORGANIZATION_ID;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.ROLE;
@@ -15,8 +16,10 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.time.OffsetDateTime;
@@ -32,7 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Query;
+import org.jooq.SelectConditionStep;
 import org.jooq.Table;
+import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
@@ -41,10 +46,34 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
   @Inject SqlPool sqlPool;
 
   @Override
-  @Traced
+  public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token) {
+    return sqlPool.execute(retrieveQuery(token)).thenApply(this::mapTeamInviteIfPresent);
+  }
+
+  @Override
   public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token, SqlTransaction transaction) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
+    return transaction.execute(retrieveQuery(token)).thenApply(this::mapTeamInviteIfPresent);
+  }
+
+  @Override
+  public CompletionStage<Optional<TeamInviteDTO>> retrieveValidInviteForUser(
+      String email, SqlTransaction transaction) {
+    Query query =
+        sqlPool
+            .getContext()
+            .selectFrom(TABLE)
+            .where(
+                EMAIL
+                    .eq(email)
+                    .and(
+                        CREATED_AT.gt(
+                            OffsetDateTime.now().minusDays(TeamInviteDTO.DAYS_VALIDITY))));
+
     return transaction.execute(query).thenApply(this::mapTeamInviteIfPresent);
+  }
+
+  private Query retrieveQuery(UUID token) {
+    return sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
   }
 
   @Override
@@ -71,15 +100,43 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
 
   @Override
   @Traced
-  public CompletionStage<List<TeamInviteDTO>> list(String organizationId) {
-    Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
+  public CompletionStage<List<TeamInviteDTO>> list(String organizationId, SearchDTO search) {
+    SelectConditionStep<?> baseQuery =
+        searchQuery(
+            sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
+            search);
+
     return sqlPool
-        .execute(query)
+        .execute(SQLSearchDTO.of(search).apply(baseQuery, FIELD_MAPPINGS))
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
                     .map(SqlOrganizationTeamInviteDatasource::mapTeamInvite)
                     .collect(Collectors.toList()));
+  }
+
+  @Override
+  public CompletionStage<Integer> count(String organizationId, SearchDTO search) {
+    SelectConditionStep<?> baseQuery =
+        searchQuery(
+            sqlPool
+                .getContext()
+                .select(DSL.count())
+                .from(TABLE)
+                .where(ORGANIZATION_ID.eq(organizationId)),
+            search);
+
+    return sqlPool
+        .execute(SQLSearchDTO.of(search).applyFilter(baseQuery, FIELD_MAPPINGS))
+        .thenApply(rows -> rows.iterator().next().getInteger(0));
+  }
+
+  private SelectConditionStep<?> searchQuery(SelectConditionStep<?> baseQuery, SearchDTO search) {
+    if (search.getQuery() != null) {
+      return baseQuery.and(EMAIL.containsIgnoreCase(search.getQuery()));
+    }
+
+    return baseQuery;
   }
 
   @Override
@@ -119,17 +176,9 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
             .values(creatorId, email, organizationId, role.getKey())
-            .returning(AUTO_GENERATED_FIELDS);
+            .returning(FIELDS);
 
-    return transaction
-        .execute(query)
-        .thenApply(
-            rows -> {
-              Row row = rows.iterator().next();
-              UUID token = row.getUUID(TOKEN.getName());
-              OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
-              return new TeamInviteDTO(token, email, organizationId, role, creatorId, createdAt);
-            });
+    return transaction.execute(query).thenApply(rows -> mapTeamInvite(rows.iterator().next()));
   }
 
   private Optional<TeamInviteDTO> mapTeamInviteIfPresent(RowSet<Row> rows) {

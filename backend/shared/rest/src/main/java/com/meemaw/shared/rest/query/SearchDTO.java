@@ -14,6 +14,7 @@ public class SearchDTO {
   GroupByQuery groupBy;
   SortQuery sort;
   int limit;
+  String query;
 
   public static SearchBuilder withAllowedFields(Set<String> allowedFields) {
     return new SearchBuilder(allowedFields);

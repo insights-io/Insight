@@ -30,8 +30,8 @@ class InsightDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
-    const bootstrapScript = await ky(bootstrapScriptURI).text();
+    const bootstrapScriptUri = process.env.BOOTSTRAP_SCRIPT as string;
+    const bootstrapScript = await ky(bootstrapScriptUri).text();
 
     return {
       ...page,

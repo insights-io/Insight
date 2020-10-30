@@ -26,11 +26,11 @@ public class InsightsResourceImpl implements InsightsResource {
   @Override
   public CompletionStage<Response> count() {
     String organizationId = insightPrincipal.user().getOrganizationId();
-    SearchDTO searchDTO =
+    SearchDTO search =
         SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS)
             .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
 
-    return sessionDatasource.count(organizationId, searchDTO).thenApply(DataResponse::ok);
+    return sessionDatasource.count(organizationId, search).thenApply(DataResponse::ok);
   }
 
   @Override
@@ -49,9 +49,7 @@ public class InsightsResourceImpl implements InsightsResource {
     String organizationId = insightPrincipal.user().getOrganizationId();
     Map<String, List<String>> params = RequestUtils.map(uriInfo.getQueryParameters());
     params.remove(ON);
-    SearchDTO searchDTO =
-        SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS).rhsColon(params);
-
-    return sessionDatasource.distinct(on, organizationId, searchDTO).thenApply(DataResponse::ok);
+    SearchDTO search = SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS).rhsColon(params);
+    return sessionDatasource.distinct(on, organizationId, search).thenApply(DataResponse::ok);
   }
 }

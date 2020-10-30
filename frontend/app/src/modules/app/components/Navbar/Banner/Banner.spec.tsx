@@ -25,7 +25,7 @@ describe('<NavbarBanner />', () => {
         push,
         ORGANIZATION_SETTINGS_MEMBERS_PAGE,
         ORGANIZATION_SETTINGS_MEMBERS_PAGE,
-        { shallow: undefined }
+        { shallow: undefined, locale: undefined }
       );
     });
   });

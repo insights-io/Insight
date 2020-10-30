@@ -84,7 +84,39 @@ public interface OrganizationTeamInviteResource {
 
   @GET
   @Tag(name = TAG)
-  @Operation(summary = "List organization invites associated with authenticated user")
+  @Path("{token}")
+  @Operation(summary = "Retrieve a team invite")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Success",
+            content =
+                @Content(
+                    schema = @Schema(implementation = TeamInviteDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> retrieve(@PathParam("token") UUID token);
+
+  @GET
+  @Tag(name = TAG)
+  @Operation(summary = "List team invites")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -117,6 +149,43 @@ public interface OrganizationTeamInviteResource {
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> listAssociated();
+
+  @GET
+  @Path("count")
+  @Tag(name = TAG)
+  @Operation(summary = "Count team invites")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Success",
+            content =
+                @Content(
+                    schema = @Schema(implementation = CountDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> count();
 
   @DELETE
   @Path("{token}")
@@ -238,6 +307,8 @@ public interface OrganizationTeamInviteResource {
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> send(@PathParam("token") UUID token);
+
+  class CountDataResponse extends OkDataResponse<Integer> {}
 
   class TeamInviteDataResponse extends OkDataResponse<TeamInviteDTO> {}
 

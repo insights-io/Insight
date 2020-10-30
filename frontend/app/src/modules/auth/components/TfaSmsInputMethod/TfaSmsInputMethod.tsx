@@ -12,9 +12,7 @@ type Props = TfaInputMethodProps & {
 
 const TfaSmsInputMethod = ({ code, handleChange, error, sendCode }: Props) => {
   const [validitySeconds, setValiditySeconds] = useState(0);
-  const countdownInterval = useRef(
-    null
-  ) as MutableRefObject<NodeJS.Timeout | null>;
+  const countdownInterval = useRef(null) as MutableRefObject<number | null>;
 
   useEffect(() => {
     if (countdownInterval.current !== null && validitySeconds === 0) {
@@ -36,7 +34,7 @@ const TfaSmsInputMethod = ({ code, handleChange, error, sendCode }: Props) => {
     toaster.positive('Success', {});
     setValiditySeconds(response.validitySeconds);
 
-    countdownInterval.current = setInterval(() => {
+    countdownInterval.current = window.setInterval(() => {
       setValiditySeconds((v) => v - 1);
     }, 1000);
   };

@@ -15,14 +15,18 @@ export const INSIGHT_ADMIN_DTO: UserDTO = {
 
 export const INSIGHT_ADMIN_NO_PHONE_NUMBER: User = mapUser({
   ...INSIGHT_ADMIN_DTO,
+  id: '7c071176-d186-40ac-aaf8-ac9779ab047c',
   phoneNumber: null,
   phoneNumberVerified: false,
 });
 
-export const NAMELESS_INSIGHT_ADMIN: User = mapUser({
+export const NAMELESS_INSIGHT_ADMIN_DTO: UserDTO = {
   ...INSIGHT_ADMIN_DTO,
+  id: '7c071176-d186-40ac-aaf8-ac9779ab047d',
   fullName: undefined,
-});
+};
+
+export const NAMELESS_INSIGHT_ADMIN: User = mapUser(NAMELESS_INSIGHT_ADMIN_DTO);
 
 export const INSIGHT_ADMIN: User = mapUser(INSIGHT_ADMIN_DTO);
 

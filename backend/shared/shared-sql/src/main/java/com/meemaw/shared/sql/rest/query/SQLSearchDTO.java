@@ -18,10 +18,14 @@ public class SQLSearchDTO {
     return apply((SelectConditionStep) query, mappings);
   }
 
+  public SelectForUpdateStep<?> applyFilter(
+      SelectConditionStep<?> query, Map<String, Field<?>> mappings) {
+    return SQLFilterExpression.of(searchDTO.getFilter()).sql(query, mappings);
+  }
+
   public SelectForUpdateStep<?> apply(
       SelectConditionStep<?> query, Map<String, Field<?>> mappings) {
-    SelectForUpdateStep<?> select =
-        SQLFilterExpression.of(searchDTO.getFilter()).sql(query, mappings);
+    SelectForUpdateStep<?> select = applyFilter(query, mappings);
 
     if (!searchDTO.getGroupBy().getFields().isEmpty()) {
       select =

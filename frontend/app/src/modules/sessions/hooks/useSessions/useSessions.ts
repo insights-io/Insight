@@ -77,7 +77,7 @@ const stateReducer: Reducer<State, StateAction> = (state, action) => {
   }
 };
 
-const getSearchQuery = ({ dateRange, filters }: Filter): SessionSearchBean => {
+const getSearchQuery = ({ dateRange, filters }: Filter) => {
   const searchBean: SessionSearchBean = {};
   const createdAt = [];
   if (dateRange?.from) {
@@ -129,9 +129,13 @@ export const useSessions = (
         const countPromise = SessionApi.count({
           search: getSearchQuery(paramFilter),
         }).then((resp) => resp.count);
-        const sessionsPromise = SessionApi.getSessions({
-          search: { ...search, sort_by: ['-created_at'], limit: 20 },
-        }).then((s) => s.map(mapSession));
+
+        search.limit = 20;
+        search.sort_by = ['-created_at'];
+
+        const sessionsPromise = SessionApi.getSessions({ search }).then((s) =>
+          s.map(mapSession)
+        );
 
         Promise.all([countPromise, sessionsPromise]).then(
           ([nextCount, nextSessions]) => {
@@ -166,11 +170,9 @@ export const useSessions = (
         index: startIndex,
       });
 
-      const search = {
-        ...getSearchQuery(filter),
-        sort_by: ['-created_at'],
-        limit: endIndex - startIndex + 1,
-      };
+      const search = getSearchQuery(filter);
+      search.sort_by = ['-created_at'];
+      search.limit = endIndex - startIndex + 1;
 
       if (sessions.length > 0) {
         const lastSessionCreatedAt = `lte:${sessions[

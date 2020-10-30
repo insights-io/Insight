@@ -29,6 +29,7 @@ describe('<PasswordForgotPage />', () => {
     await waitFor(() => {
       sandbox.assert.calledWithExactly(push, '/login', '/login', {
         shallow: undefined,
+        locale: undefined,
       });
     });
   });

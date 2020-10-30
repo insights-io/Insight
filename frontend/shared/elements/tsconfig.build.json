@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "declaration": true
+    "jsx": "react"
   },
-  "exclude": ["**/*.spec.ts", "dist"]
+  "exclude": ["**/*.spec.*", "dist", "src/test"]
 }

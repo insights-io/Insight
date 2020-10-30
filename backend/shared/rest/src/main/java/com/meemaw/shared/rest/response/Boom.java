@@ -79,6 +79,10 @@ public class Boom<T> {
     return Boom.status(Status.BAD_REQUEST);
   }
 
+  public static <T> Boom<T> conflict() {
+    return Boom.status(Status.CONFLICT);
+  }
+
   public static <T> Boom<T> unauthorized() {
     return Boom.status(Status.UNAUTHORIZED);
   }

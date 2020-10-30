@@ -1,0 +1,1 @@
+export { useResourceSearch } from './useResourceSearch';

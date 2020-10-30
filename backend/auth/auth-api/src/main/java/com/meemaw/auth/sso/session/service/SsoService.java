@@ -44,4 +44,6 @@ public interface SsoService {
 
   CompletionStage<LoginResult<?>> ssoLogin(
       String email, String fullName, String organizationId, URL redirect);
+
+  CompletionStage<LoginResult<?>> authenticate(AuthUser user);
 }

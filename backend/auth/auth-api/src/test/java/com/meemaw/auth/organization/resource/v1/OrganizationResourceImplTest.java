@@ -1,6 +1,8 @@
 package com.meemaw.auth.organization.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.QUERY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_FULL_NAME;
@@ -47,8 +49,17 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   private static final String GET_ORGANIZATION_MEMBERS_PATH =
       String.join("/", OrganizationResource.PATH, "members");
 
+  private static final String GET_ORGANIZATION_MEMBER_COUNT_PATH =
+      String.join("/", GET_ORGANIZATION_MEMBERS_PATH, "count");
+
   private static final String SETUP_AVATAR_PATH =
       String.join("/", OrganizationResource.PATH, "avatar");
+
+  @Test
+  public void count_members__should_throw__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, GET_ORGANIZATION_MEMBER_COUNT_PATH);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, GET_ORGANIZATION_MEMBER_COUNT_PATH);
+  }
 
   @Test
   public void delete__should_throw__when_unauthorized() {
@@ -419,7 +430,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void get_organization_members__should_return__when_exiting_user() {
+  public void get_organization_members__should_return__when_existing_user() {
     String sessionId = authApi().loginWithInsightAdmin();
 
     DataResponse<List<UserDTO>> firstResponse =
@@ -436,6 +447,74 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     assertEquals(INSIGHT_ADMIN_EMAIL, firstResponse.getData().get(0).getEmail());
     assertEquals(INSIGHT_ADMIN_FULL_NAME, firstResponse.getData().get(0).getFullName());
     assertEquals(UserRole.ADMIN, firstResponse.getData().get(0).getRole());
+
+    // Search by query
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(QUERY_PARAM, "random")
+        .queryParam(SORT_BY_PARAM, "-created_at")
+        .get(GET_ORGANIZATION_MEMBERS_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[]}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(QUERY_PARAM, "random")
+        .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":0}"));
+
+    DataResponse<List<UserDTO>> fullNameResponse =
+        given()
+            .when()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .queryParam(QUERY_PARAM, INSIGHT_ADMIN_FULL_NAME)
+            .queryParam(SORT_BY_PARAM, "created_at")
+            .get(GET_ORGANIZATION_MEMBERS_PATH)
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(new TypeRef<>() {});
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(QUERY_PARAM, INSIGHT_ADMIN_FULL_NAME)
+        .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":1}"));
+
+    assertEquals(firstResponse, fullNameResponse);
+
+    // Search by role
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam("role", "eq:member")
+        .get(GET_ORGANIZATION_MEMBERS_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":[]}"));
+
+    DataResponse<List<UserDTO>> roleResponse =
+        given()
+            .when()
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .queryParam("role", "eq:admin")
+            .get(GET_ORGANIZATION_MEMBERS_PATH)
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(new TypeRef<>() {});
+
+    assertEquals(firstResponse, roleResponse);
 
     String authToken = authApi().createApiKey(sessionId);
     DataResponse<List<UserDTO>> secondResponse =

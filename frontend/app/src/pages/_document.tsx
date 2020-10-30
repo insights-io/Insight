@@ -33,14 +33,13 @@ export const getInitialProps = async (
   renderPage: DocumentContext['renderPage'],
   serverStyletron: Server
 ): Promise<Props> => {
-  const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
-  const tags = { bootstrapScriptURI };
-
+  const bootstrapScriptUri = process.env.BOOTSTRAP_SCRIPT as string;
   let span: Span | undefined;
 
   // Request will be undefined if we are prerendering page
   if (req) {
     const incomingTracedMessage = req as IncomingTracedMessage;
+    const tags = { bootstrapScriptUri };
     span = incomingTracedMessage.span
       ? startSpan('_document.getInitialProps', {
           childOf: incomingTracedMessage.span,
@@ -49,7 +48,7 @@ export const getInitialProps = async (
       : startRequestSpan(incomingTracedMessage, tags);
   }
 
-  const fetchBootstrapScriptPromise = getBoostrapScript(bootstrapScriptURI);
+  const bootstrapScriptPromise = getBoostrapScript(bootstrapScriptUri);
   const renderPagePromise = renderPage({
     enhanceApp: (App) => (props) => (
       <StyletronProvider value={styletron}>
@@ -63,7 +62,7 @@ export const getInitialProps = async (
   try {
     const [page, bootstrapScript] = await Promise.all([
       renderPagePromise,
-      fetchBootstrapScriptPromise,
+      bootstrapScriptPromise,
     ]);
 
     return {

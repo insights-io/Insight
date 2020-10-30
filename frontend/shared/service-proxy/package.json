@@ -23,6 +23,8 @@
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "next": "10.0.0"
+  },
   "dependencies": {}
 }

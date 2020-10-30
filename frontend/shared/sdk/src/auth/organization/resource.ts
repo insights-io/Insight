@@ -9,10 +9,13 @@ import type {
   OrganizationPasswordPolicyDTO,
   PasswordPolicyCreateParams,
   PasswordPolicyUpdateParams,
+  AcceptTeamInviteDTO,
 } from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
-import { getData, withCredentials } from '../../core/utils';
+import { getData, querystring, withCredentials } from '../../core/utils';
+
+import type { MembersSearchOptions, TeamInviteSearchOptions } from './types';
 
 export const organizationsResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -50,10 +53,32 @@ export const organizationsResource = (authApiBaseURL: string) => {
         .json<DataResponse<OrganizationDTO>>()
         .then(getData);
     },
-    members: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+    members: ({
+      baseURL = authApiBaseURL,
+      search,
+      ...rest
+    }: MembersSearchOptions = {}) => {
+      const searchQuery = querystring(search);
       return ky
-        .get(`${resourceBaseURL(baseURL)}/members`, withCredentials(rest))
+        .get(
+          `${resourceBaseURL(baseURL)}/members${searchQuery}`,
+          withCredentials(rest)
+        )
         .json<DataResponse<UserDTO[]>>()
+        .then(getData);
+    },
+    memberCount: ({
+      baseURL = authApiBaseURL,
+      search,
+      ...rest
+    }: MembersSearchOptions = {}) => {
+      const searchQuery = querystring(search);
+      return ky
+        .get(
+          `${resourceBaseURL(baseURL)}/members/count${searchQuery}`,
+          withCredentials(rest)
+        )
+        .json<DataResponse<number>>()
         .then(getData);
     },
 
@@ -96,10 +121,41 @@ export const organizationsResource = (authApiBaseURL: string) => {
       },
     },
     teamInvite: {
-      list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+      retrieve: (
+        token: string,
+        { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      ) => {
         return ky
-          .get(`${resourceBaseURL(baseURL)}/invites`, withCredentials(rest))
+          .get(`${resourceBaseURL(baseURL)}/invites/${token}`, rest)
+          .json<DataResponse<TeamInviteDTO>>()
+          .then(getData);
+      },
+      list: ({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: TeamInviteSearchOptions = {}) => {
+        const searchQuery = querystring(search);
+        return ky
+          .get(
+            `${resourceBaseURL(baseURL)}/invites${searchQuery}`,
+            withCredentials(rest)
+          )
           .json<DataResponse<TeamInviteDTO[]>>()
+          .then(getData);
+      },
+      count: ({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: TeamInviteSearchOptions = {}) => {
+        const searchQuery = querystring(search);
+        return ky
+          .get(
+            `${resourceBaseURL(baseURL)}/invites/count${searchQuery}`,
+            withCredentials(rest)
+          )
+          .json<DataResponse<number>>()
           .then(getData);
       },
       delete: (
@@ -125,6 +181,16 @@ export const organizationsResource = (authApiBaseURL: string) => {
           )
           .json<DataResponse<TeamInviteDTO>>()
           .then(getData);
+      },
+      accept: (
+        token: string,
+        json: AcceptTeamInviteDTO,
+        { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      ) => {
+        return ky.post(
+          `${resourceBaseURL(baseURL)}/invites/${token}/accept`,
+          withCredentials({ json, ...rest })
+        );
       },
       resend: (
         email: string,

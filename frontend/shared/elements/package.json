@@ -4,9 +4,10 @@
   "private": true,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/elements.esm.js",
+  "module": "dist/index.esm.js",
+  "umd:main": "dist/index.umd.production.min.js",
+  "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "typings": "dist/index.d.ts",
   "sideEffects": false,
   "author": "Insight Engineering",
   "license": "MIT",
@@ -20,7 +21,9 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsdx build --tsconfig tsconfig.build.json",
+    "build": "concurrently \"yarn build:rollup\" \"yarn build:types\"",
+    "build:rollup": "rollup -c rollup.config.js",
+    "build:types": "tsc --p tsconfig.build.json --declaration --outDir dist --emitDeclarationOnly",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
@@ -32,10 +35,15 @@
   "dependencies": {},
   "devDependencies": {
     "@insight/testing": "0.0.0-development",
-    "@insight/storybook": "0.0.0-development"
+    "@insight/storybook": "0.0.0-development",
+    "baseui": "9.103.0",
+    "react-hook-form": "6.9.6",
+    "styletron-react": "5.2.7"
   },
   "peerDependencies": {
-    "baseui": "9.102.0",
-    "react-hook-form": "6.9.4"
+    "baseui": "9.103.0",
+    "react-hook-form": "6.9.6",
+    "styletron-react": "5.2.7",
+    "react": "17.0.1"
   }
 }

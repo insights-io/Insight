@@ -28,6 +28,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.mindrot.jbcrypt.BCrypt;
@@ -45,6 +46,9 @@ public class PasswordServiceImpl implements PasswordService {
 
   @ResourcePath("password/password_reset")
   Template passwordResetTemplate;
+
+  @ConfigProperty(name = "bcrypt.log_rounds")
+  Integer logRounds;
 
   @Override
   @Traced
@@ -262,5 +266,10 @@ public class PasswordServiceImpl implements PasswordService {
   public CompletionStage<Boolean> passwordResetRequestExists(UUID token) {
     log.info("[AUTH]: Password reset request exists for token: {}", token);
     return passwordResetDatasource.findPasswordResetRequest(token).thenApply(Optional::isPresent);
+  }
+
+  @Override
+  public String hashPassword(String password) {
+    return BCrypt.hashpw(password, BCrypt.gensalt(logRounds));
   }
 }

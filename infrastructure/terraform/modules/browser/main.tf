@@ -93,7 +93,7 @@ resource "github_actions_secret" "cloudfront_distribution_id" {
 ## Restrict access only to Cloudfront
 
 resource "aws_cloudfront_origin_access_identity" "static_origin_access_identity" {
-  comment = "Cloudfront origin access s3 static"
+  comment = "Cloudfront origin access s3 static (Managed by Terraform)"
 }
 
 data "aws_iam_policy_document" "s3_cloudfront_static" {

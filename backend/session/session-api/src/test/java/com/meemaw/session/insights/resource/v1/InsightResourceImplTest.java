@@ -1,6 +1,9 @@
 package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
@@ -56,15 +59,15 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("random", "gte:aba")
         .queryParam("aba", "gtecaba")
-        .queryParam("group_by", "another")
-        .queryParam("sort_by", "hehe")
-        .queryParam("limit", "not_string")
+        .queryParam(GROUP_BY_PARAM, "another")
+        .queryParam(SORT_BY_PARAM, "hehe")
+        .queryParam(LIMIT_PARAM, "not_string")
         .get(COUNT_PATH)
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"ehe\":\"Unexpected field in sort_by query\"}}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"hehe\":\"Unexpected field in sort_by query\"}}}}"));
   }
 
   @Test

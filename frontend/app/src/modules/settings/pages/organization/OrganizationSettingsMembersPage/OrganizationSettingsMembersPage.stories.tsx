@@ -1,12 +1,7 @@
 import React from 'react';
 import { fullHeightDecorator } from '@insight/storybook';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
-import {
-  ADMIN_TEAM_INVITE_DTO,
-  EXPIRED_TEAM_INVITE_DTO,
-  INSIGHT_ORGANIZATION_DTO,
-  STANDARD_TEAM_INVITE_DTO,
-} from 'test/data/organization';
+import { INSIGHT_ADMIN_DTO, NAMELESS_INSIGHT_ADMIN_DTO } from 'test/data';
+import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 import type { Meta } from '@storybook/react';
 
 import { OrganizationSettingsMembersPage } from './OrganizationSettingsMembersPage';
@@ -21,13 +16,9 @@ export const Base = () => {
   return (
     <OrganizationSettingsMembersPage
       organization={INSIGHT_ORGANIZATION_DTO}
-      members={[INSIGHT_ADMIN_DTO]}
       user={INSIGHT_ADMIN_DTO}
-      teamInvites={[
-        STANDARD_TEAM_INVITE_DTO,
-        ADMIN_TEAM_INVITE_DTO,
-        EXPIRED_TEAM_INVITE_DTO,
-      ]}
+      members={[INSIGHT_ADMIN_DTO, NAMELESS_INSIGHT_ADMIN_DTO]}
+      memberCount={2}
     />
   );
 };

@@ -4,8 +4,7 @@ kind: Job
 metadata:
   name: billing-api-postgres-migrations
   annotations:
-    argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   ttlSecondsAfterFinished: 3600
   template:
@@ -16,8 +15,6 @@ spec:
         - image: insightio/billing-api-postgres-migrations
           name: billing-api-postgres-migrations
           env:
-            - name: LOG_JSON
-              value: 'true'
             - name: POSTGRES_HOST
               value: postgres-postgresql
             - name: POSTGRES_USER

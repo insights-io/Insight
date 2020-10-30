@@ -2,6 +2,7 @@ package com.meemaw.test.testconainers.pg;
 
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
 import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_ID;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_PASSWORD;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -12,13 +13,12 @@ import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.PoolOptions;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
+import org.mindrot.jbcrypt.BCrypt;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -103,43 +103,6 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     }
   }
 
-  public void applyMigrationsManually(Path moduleSqlMigrationsPath) {
-    Path migrationsSqlPath = Paths.get(moduleSqlMigrationsPath.toString(), "sql");
-    Path absolutePath = migrationsSqlPath.toAbsolutePath();
-
-    if (!Files.exists(migrationsSqlPath)) {
-      System.out.println(
-          String.format("[TEST-SETUP]: Skipping applyMigrations from=%s", absolutePath));
-      return;
-    }
-
-    System.out.println(String.format("[TEST-SETUP]: Applying migrations from=%s", absolutePath));
-    try {
-      Files.walk(migrationsSqlPath)
-          .filter(path -> !Files.isDirectory(path))
-          .forEach(
-              path -> {
-                System.out.println(String.format("[TEST-SETUP]: Applying migration %s", path));
-                try {
-                  client().query(Files.readString(path)).executeAndAwait();
-                  if ("V1__auth_api_initial.sql".equals(path.getFileName().toString())) {
-                    createTestUserPassword();
-                  }
-                } catch (IOException ex) {
-                  System.out.println(
-                      String.format("[TEST-SETUP] Failed to apply migration %s", path));
-                  throw new RuntimeException(ex);
-                }
-              });
-    } catch (IOException ex) {
-      System.out.println(
-          String.format(
-              "[TEST-SETUP]: Something went wrong while applying migrations from %s",
-              absolutePath));
-      throw new RuntimeException(ex);
-    }
-  }
-
   /**
    * Create test user password so we can use it in our tests. We can't include this into migrations
    * as that would create user in production and expose password to everyone. Insert statement can
@@ -153,8 +116,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
         SQLContext.POSTGRES
             .insertInto(table("auth.password"))
             .columns(field("user_id", UUID.class), field("hash", String.class))
-            .values(
-                INSIGHT_ADMIN_ID, "$2a$13$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS");
+            .values(INSIGHT_ADMIN_ID, BCrypt.hashpw(INSIGHT_ADMIN_PASSWORD, BCrypt.gensalt(4)));
 
     client()
         .preparedQuery(query.getSQL(ParamType.NAMED))
