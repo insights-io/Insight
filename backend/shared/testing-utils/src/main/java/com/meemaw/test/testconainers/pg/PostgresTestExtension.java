@@ -47,6 +47,6 @@ public class PostgresTestExtension implements BeforeAllCallback {
     System.out.println(
         String.format(
             "[TEST-SETUP]: Connecting to postgres datasource.url=%s", postgres.getDatasourceURL()));
-    return Collections.singletonMap("quarkus.datasource.url", postgres.getDatasourceURL());
+    return Collections.singletonMap("quarkus.datasource.reactive.url", postgres.getDatasourceURL());
   }
 }

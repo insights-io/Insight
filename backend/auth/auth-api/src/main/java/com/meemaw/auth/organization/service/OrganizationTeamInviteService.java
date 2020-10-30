@@ -81,6 +81,7 @@ public class OrganizationTeamInviteService {
         .thenCompose(
             maybeValidInvite -> {
               if (maybeValidInvite.isPresent()) {
+                transaction.rollback();
                 throw teamInviteCreateConflictException(invitedEmail);
               }
 
@@ -94,6 +95,7 @@ public class OrganizationTeamInviteService {
                             .map(AuthUser::getOrganizationId)
                             .orElse("")
                             .equals(organizationId)) {
+                          transaction.rollback();
                           throw teamInviteCreateUserExistsException(invitedEmail, organizationId);
                         }
 
@@ -189,12 +191,16 @@ public class OrganizationTeamInviteService {
             maybeTeamInvite -> {
               TeamInviteDTO teamInvite =
                   maybeTeamInvite.orElseThrow(
-                      () -> Boom.badRequest().message("Team invite does not exist.").exception());
+                      () -> {
+                        transaction.rollback();
+                        return Boom.badRequest().message("Team invite does not exist.").exception();
+                      });
 
               MDC.put(LoggingConstants.USER_EMAIL, teamInvite.getEmail());
               MDC.put(LoggingConstants.ORGANIZATION_ID, teamInvite.getOrganizationId());
 
               if (teamInvite.hasExpired()) {
+                transaction.rollback();
                 log.info(
                     "[AUTH]: Team invite has expired for user={} organizationId={}",
                     teamInvite.getEmail(),
@@ -219,6 +225,7 @@ public class OrganizationTeamInviteService {
                             PasswordPolicyValidator.validateFirstPassword(
                                 maybePolicy.orElse(null), password);
                           } catch (PasswordValidationException ex) {
+                            transaction.rollback();
                             log.debug(
                                 "[AUTH]: Failed to accept team invite due to password policy violation",
                                 ex);

@@ -48,8 +48,6 @@ import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
-import org.eclipse.microprofile.context.ManagedExecutor;
-import org.eclipse.microprofile.context.ThreadContext;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
 import org.junit.jupiter.api.Tag;
@@ -80,8 +78,6 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
   private static final UserAgentDTO MOCKED_USER_AGENT =
       new UserAgentDTO("Desktop", "Mac OS X", "Chrome");
 
-  @Inject ThreadContext threadContext;
-  @Inject ManagedExecutor managedExecutor;
   @Inject PgPool pgPool;
 
   private CreatePageDTO withUpdateOrganizationId(
