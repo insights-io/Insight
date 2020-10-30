@@ -20,7 +20,7 @@ env:
   ARTIFACTS_PATH: frontend/app/artifacts/
   BOOTSTRAP_SCRIPT: http://browser-bootstrap/localhost.insight.js
   MAILER_MOCK: true
-  STRIPE_TEST_API_KEY: ${{ secrets.STRIPE_TEST_API_KEY }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_API_KEY }}
 
 jobs:
   docker_build:
@@ -87,12 +87,12 @@ jobs:
       - name: Setup & wait for containers
         run: |
           mkdir -p $ARTIFACTS_PATH
-          export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="$STRIPE_TEST_API_KEY")
+          export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="$STRIPE_SECRET_KEY")
           docker-compose -f backend/local-test-services/docker-compose.yml up app try browser-bootstrap browser-tracking search-indexer beacon-api auth-api session-api billing-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
           yarn install --frozen-lockfile
           yarn workspace @insight/types build
           node_modules/wait-on/bin/wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health http-get://localhost:8083/health http-get://localhost:3000 http-get://localhost:3002 http-get://localhost:5000 http-get://localhost:5001 --timeout 600000
-          docker run --network="host" --rm stripe/stripe-cli:latest listen --forward-to localhost:8083/v1/billing/subscriptions/event --skip-verify --api-key="$STRIPE_TEST_API_KEY" 2>&1 | tee $ARTIFACTS_PATH/webhook.log &
+          docker-compose -f backend/local-test-services/docker-compose.yml up stripe_listen 2>&1 | tee $ARTIFACTS_PATH/webhook.log &
           docker-compose -f backend/local-test-services/docker-compose.yml exec -T db psql -U postgres -c "INSERT INTO auth.password (user_id, hash) VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', '\$2a\$13\$Wr6F0kX3AJQej92nUm.rxuU8S/4.bvQZHeDIcU6X8YxPLT1nNwslS')"
       - name: Run E2E tests
         run: |
