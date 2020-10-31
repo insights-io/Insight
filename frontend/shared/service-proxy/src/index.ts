@@ -26,17 +26,10 @@ export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
     }
     const proxiedUrl = `${proxiedApiBaseUrl}${proxiedPath}`;
 
-    const options = url.parse(proxiedUrl);
-    const host = options.host as string;
-    const protocol = options.protocol as string;
     const originalHost = req.headers.host as string;
 
     proxy.web(req, res, {
       target: proxiedUrl,
-      headers: {
-        'X-Forwarded-Host': host,
-        'X-Forwarded-Proto': protocol.substring(0, protocol.length - 1),
-      },
       ignorePath: true,
       secure: false,
       changeOrigin: true,
