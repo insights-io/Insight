@@ -3,9 +3,11 @@
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "typings": "./dist/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "umd:main": "dist/index.umd.production.min.js",
+  "jsnext:main": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
   "author": "Insight Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",
@@ -17,7 +19,9 @@
     "url": "https://github.com/insights-io/insight/issues"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "concurrently \"yarn build:rollup\" \"yarn build:types\"",
+    "build:rollup": "rollup -c rollup.config.js",
+    "build:types": "tsc --p tsconfig.build.json --declaration --outDir dist --emitDeclarationOnly",
     "test": "jest",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
@@ -25,9 +29,10 @@
   },
   "devDependencies": {
     "next": "10.0.0",
-    "@types/http-proxy": "1.17.4"
+    "@types/http-proxy": "1.17.4",
+    "http-proxy": "1.18.1"
   },
-  "dependencies": {
+  "peerDependencies": {
     "http-proxy": "1.18.1"
   }
 }

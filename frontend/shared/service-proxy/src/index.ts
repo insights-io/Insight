@@ -1,13 +1,14 @@
-/* eslint-disable no-console */
 import querystring from 'querystring';
 import url from 'url';
 
-import { createProxy } from 'http-proxy';
+import httpProxy from 'http-proxy';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { getEnvOverrides, getApiProxy } from './config';
 
 export type ProxyConfiguration = Record<string, string | undefined>;
+
+const { createProxy } = httpProxy;
 
 let proxy: ReturnType<typeof createProxy>;
 
