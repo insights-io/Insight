@@ -39,8 +39,7 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           yarn workspace @insight/app prebuild
-          sed -i '' '180i\
-res.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
+          sed -i '180ires.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
           cat node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
       - name: Serverless Deploy
         working-directory: frontend/app
