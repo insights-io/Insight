@@ -40,7 +40,6 @@ export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
       ignorePath: true,
       secure: false,
       changeOrigin: true,
-      xfwd: false,
       cookieDomainRewrite: originalHost.includes('localhost')
         ? ''
         : originalHost,
