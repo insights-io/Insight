@@ -29,6 +29,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
+      - name: Set environment variables
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          PR_PREFIX="pr-$PR_NUMBER"
+          echo "PR_PREFIX=$PR_PREFIX" >> $GITHUB_ENV
       - name: Install NPM dependencies & build dependencies
         run: |
           yarn install --frozen-lockfile
@@ -36,8 +41,7 @@ jobs:
       - name: Prepare environment file
         working-directory: frontend/app
         run: |
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          echo "NEXT_PUBLIC_TRY_BASE_URL=https://pr-$PR_NUMBER.try.rebrowse.dev
+          echo "NEXT_PUBLIC_TRY_BASE_URL=https://$PR_PREFIX.try.rebrowse.dev
           AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
           NEXT_PUBLIC_AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
           SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu
@@ -48,11 +52,6 @@ jobs:
           JAEGER_AGENT_HOST=localhost
           JAEGER_AGENT_PORT=6832
           " > env.production
-      - name: Set environment variables
-        run: |
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          PR_PREFIX="pr-$PR_NUMBER"
-          echo "PR_PREFIX=$PR_PREFIX" >> $GITHUB_ENV
       - name: Serverless Deploy
         working-directory: frontend/app
         run: |
@@ -63,13 +62,12 @@ jobs:
             inputs:
               cloudfront:
                 aliases: ['$PR_PREFIX.app.rebrowse.dev']
-                comment: 'Preview distribution (managed by @sls-next/serverless-component)'
+                comment: '$PR_PREFIX (Managed by @sls-next/serverless-component)'
                 certificate:
                   cloudFrontDefaultCertificate: false
                   acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
           " > serverless.yml
           npx serverless --debug
-          DISTRIBUTION_ID=$(cat .serverless/Template.app.CloudFront.json | jq -r '.id')
           aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless --delete
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
@@ -77,5 +75,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           msg: |
-            Preview available at: https://pr-$PR_NUMBER.app.rebrowse.dev
+            Preview available at: https://${{ env.PR_PREFIX }}.app.rebrowse.dev
           check_for_duplicate_msg: true
