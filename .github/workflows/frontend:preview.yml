@@ -18,6 +18,7 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_APP_PREVIEW_CERTIFICATE_ARN: ${{ secrets.AWS_APP_PREVIEW_CERTIFICATE_ARN }}
   AWS_S3_APP_PREVIEW_BUCKET_NAME: ${{ secrets.AWS_S3_APP_PREVIEW_BUCKET_NAME }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   preview:
@@ -38,20 +39,6 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           yarn workspace @insight/app prebuild
-      - name: Prepare environment file
-        working-directory: frontend/app
-        run: |
-          echo "NEXT_PUBLIC_TRY_BASE_URL=https://$PR_PREFIX.try.rebrowse.dev
-          AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
-          NEXT_PUBLIC_AUTH_API_BASE_URL=https://auth-api.dev.snuderls.eu
-          SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu
-          NEXT_PUBLIC_SESSION_API_BASE_URL=https://session-api.dev.snuderls.eu
-          BILLING_API_BASE_URL=https://billing-api.dev.snuderls.eu
-          NEXT_PUBLIC_BILLING_API_BASE_URL=https://billing-api.dev.snuderls.eu
-          BOOTSTRAP_SCRIPT=https://static.dev.snuderls.eu/b/development.insight.js
-          JAEGER_AGENT_HOST=localhost
-          JAEGER_AGENT_PORT=6832
-          " > env.production
       - name: Serverless Deploy
         working-directory: frontend/app
         run: |
@@ -66,12 +53,11 @@ jobs:
                   cloudFrontDefaultCertificate: false
                   acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
           " > serverless.yml
+          echo "PROXY=staging" >> env.production
           npx serverless --debug
           aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless --delete
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           msg: |
             App preview available at: https://${{ env.PR_PREFIX }}.app.rebrowse.dev
