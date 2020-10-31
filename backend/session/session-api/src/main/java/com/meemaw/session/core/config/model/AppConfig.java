@@ -15,7 +15,7 @@ public class AppConfig extends AppConfigBase {
 
   HttpHost[] elasticsearchHttpHost = ElasticsearchUtils.httpHosts();
 
-  @ConfigProperty(name = "quarkus.datasource.url")
+  @ConfigProperty(name = "quarkus.datasource.reactive.url")
   String datasourceURL;
 
   @ConfigProperty(name = "kafka.bootstrap.servers")

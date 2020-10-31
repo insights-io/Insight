@@ -1,6 +1,6 @@
 import React from 'react';
 import { Block } from 'baseui/block';
-import ChangePassword from 'modules/settings/components/account/ChangePassword';
+import { ChangePassword } from 'modules/settings/components/account/ChangePassword';
 import { TwoFactorAuthentication } from 'modules/settings/components/account/TwoFactorAuthentication';
 import { AccountSettingsPageLayout } from 'modules/settings/components/account/AccountSettingsPageLayout';
 import {

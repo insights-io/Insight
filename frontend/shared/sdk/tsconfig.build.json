@@ -1,8 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "declaration": true,
-    "module": "ESNext"
-  },
-  "exclude": ["**/*.spec.ts", "dist"]
+  "compilerOptions": {},
+  "exclude": ["**/*.spec.*", "dist"]
 }

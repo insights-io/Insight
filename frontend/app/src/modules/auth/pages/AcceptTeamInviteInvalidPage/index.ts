@@ -1,0 +1,1 @@
+export { AcceptTeamInviteInvalidPage } from './AcceptTeamInviteInvalidPage';

@@ -7,12 +7,13 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.auth.sso.AbstractIdpService;
-import com.meemaw.auth.sso.AbstractSsoOAuth2ResourceTest;
+import com.meemaw.auth.sso.AbstractIdentityProvider;
+import com.meemaw.auth.sso.AbstractSsoOAuthResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
-import com.meemaw.auth.sso.oauth.OAuth2Resource;
-import com.meemaw.auth.sso.oauth.google.OAuth2GoogleClient;
-import com.meemaw.auth.sso.oauth.google.OAuth2GoogleService;
+import com.meemaw.auth.sso.oauth.AbstractOAuthClient;
+import com.meemaw.auth.sso.oauth.OAuthResource;
+import com.meemaw.auth.sso.oauth.google.GoogleIdentityProvider;
+import com.meemaw.auth.sso.oauth.google.GoogleOAuthClient;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.session.model.SsoSession;
@@ -23,9 +24,9 @@ import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -51,10 +52,10 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
 @Tag("integration")
-public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest {
+public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
 
-  @Inject OAuth2GoogleClient googleClient;
-  @Inject OAuth2GoogleService googleService;
+  @Inject GoogleOAuthClient googleClient;
+  @Inject GoogleIdentityProvider googleService;
 
   @Override
   public URI signInUri() {
@@ -67,8 +68,14 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   }
 
   @Override
-  public AbstractIdpService service() {
+  public AbstractIdentityProvider service() {
     return googleService;
+  }
+
+  @Override
+  public AbstractOAuthClient<?, ?, ?> installMockForClient(String email) {
+    QuarkusMock.installMockForInstance(new MockedGoogleOAuthClient(email), googleClient);
+    return googleClient;
   }
 
   @Test
@@ -79,9 +86,9 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         forwardedProto
             + "://"
             + forwardedHost
-            + OAuth2GoogleResource.PATH
+            + GoogleOAuthResource.PATH
             + "/"
-            + OAuth2Resource.CALLBACK_PATH;
+            + OAuthResource.CALLBACK_PATH;
 
     String expectedLocationBase =
         "https://accounts.google.com/o/oauth2/auth?client_id="
@@ -97,7 +104,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .queryParam("redirect", SIMPLE_REDIRECT)
-            .get(OAuth2GoogleResource.PATH + "/signin");
+            .get(GoogleOAuthResource.PATH + "/signin");
 
     response
         .then()
@@ -124,7 +131,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .queryParam("redirect", SIMPLE_REDIRECT)
-            .get(OAuth2GoogleResource.PATH + "/signin");
+            .get(GoogleOAuthResource.PATH + "/signin");
 
     response
         .then()
@@ -133,14 +140,15 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .cookie(SsoSignInSession.COOKIE_NAME);
 
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String destination = googleService.secureStateData(state);
+    String destination = AbstractIdentityProvider.secureStateData(state);
     assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, StandardCharsets.UTF_8));
   }
 
   @Test
   public void google_oauth2callback__should_fail__on_random_code() {
     String state =
-        googleService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
@@ -158,7 +166,8 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   @Test
   public void google_oauth2callback__should_fail__on_expired_code() {
     String state =
-        googleService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
@@ -178,8 +187,8 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   @Test
   public void google_oauth2callback__should_set_session_id___when_succeed_with_fresh_sign_up() {
     QuarkusMock.installMockForInstance(
-        new MockedOAuth2GoogleClient("marko.novak+social@gmail.com"), googleClient);
-    String state = googleService.secureState("https://www.insight.io/my_path");
+        new MockedGoogleOAuthClient("marko.novak+social@gmail.com"), googleClient);
+    String state = AbstractIdentityProvider.secureState("https://www.insight.io/my_path");
 
     given()
         .when()
@@ -198,7 +207,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
   public void google_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
 
     given()
         .when()
@@ -220,7 +229,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .then()
         .statusCode(200);
 
-    QuarkusMock.installMockForInstance(new MockedOAuth2GoogleClient(user.getEmail()), googleClient);
+    QuarkusMock.installMockForInstance(new MockedGoogleOAuthClient(user.getEmail()), googleClient);
     String state = googleService.secureState("https://www.insight.io/my_path");
 
     given()
@@ -254,7 +263,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .statusCode(201);
 
     String otherUserEmail = UUID.randomUUID() + "@company.io";
-    QuarkusMock.installMockForInstance(new MockedOAuth2GoogleClient(otherUserEmail), googleClient);
+    QuarkusMock.installMockForInstance(new MockedGoogleOAuthClient(otherUserEmail), googleClient);
 
     String expectedLocationBase =
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="
@@ -295,51 +304,8 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
             .get(URLDecoder.decode(location, StandardCharsets.UTF_8));
     response.then().statusCode(302).cookie(SsoSignInSession.COOKIE_NAME);
     String state = response.header("Location").replace(expectedLocationBase, "");
-    String actualClientDestination = googleService.secureStateData(state);
+    String actualClientDestination = AbstractIdentityProvider.secureStateData(state);
     assertEquals(redirect, URLDecoder.decode(actualClientDestination, StandardCharsets.UTF_8));
-  }
-
-  @Test
-  public void
-      google_oauth2callback__should_add_user_to_organization__when_organization_google_sso_setup()
-          throws JsonProcessingException {
-    String password = UUID.randomUUID().toString();
-    String domain = "company.io100";
-    String email = String.join("@", password, domain);
-    String sessionId = authApi().signUpAndLogin(email, password);
-    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
-
-    given()
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(objectMapper.writeValueAsString(body))
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .post(SsoSetupResource.PATH)
-        .then()
-        .statusCode(201);
-
-    String otherUserEmail = String.join("@", UUID.randomUUID().toString(), domain);
-    QuarkusMock.installMockForInstance(new MockedOAuth2GoogleClient(otherUserEmail), googleClient);
-
-    String expectedClientDestination = "https://www.insight.io/my_path";
-    String paramState = googleService.secureState(expectedClientDestination);
-
-    given()
-        .when()
-        .config(RestAssuredUtils.dontFollowRedirects())
-        .queryParam("code", "any")
-        .queryParam("state", paramState)
-        .cookie("state", paramState)
-        .get(googleCallbackURI)
-        .then()
-        .statusCode(302)
-        .cookie(SsoSession.COOKIE_NAME);
-
-    AuthUser firstUser = userDatasource.findUser(email).toCompletableFuture().join().get();
-    AuthUser secondUser =
-        userDatasource.findUser(otherUserEmail).toCompletableFuture().join().get();
-
-    assertEquals(firstUser.getOrganizationId(), secondUser.getOrganizationId());
   }
 
   @Test
@@ -365,10 +331,10 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
         .statusCode(201);
 
     String otherUserEmail = UUID.randomUUID() + "@" + domain;
-    QuarkusMock.installMockForInstance(new MockedOAuth2GoogleClient(otherUserEmail), googleClient);
+    QuarkusMock.installMockForInstance(new MockedGoogleOAuthClient(otherUserEmail), googleClient);
 
     String redirect = "https://www.insight.io/my_path";
-    String paramState = googleService.secureState(redirect);
+    String paramState = AbstractIdentityProvider.secureState(redirect);
     Response response =
         given()
             .config(RestAssuredUtils.dontFollowRedirects())
@@ -403,11 +369,11 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuth2ResourceTest 
             "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)https%3A%2F%2Fwww\\.insight\\.io%2Fmy_path$"));
   }
 
-  private static class MockedOAuth2GoogleClient extends OAuth2GoogleClient {
+  private static class MockedGoogleOAuthClient extends GoogleOAuthClient {
 
     private final String email;
 
-    public MockedOAuth2GoogleClient(String email) {
+    public MockedGoogleOAuthClient(String email) {
       this.email = Objects.requireNonNull(email);
     }
 

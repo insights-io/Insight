@@ -6,7 +6,9 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.billing.AbstractStripeTest;
 import com.meemaw.billing.service.stripe.StripeBillingService;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
@@ -16,6 +18,7 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.user.User;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -164,7 +167,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
   public void get_plan__should_return_free_plan__when_no_subscription()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    String organizationId = authApi().getOrganization(sessionId).get().getId();
+    String organizationId = authApi().getOrganization(sessionId).getId();
 
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -202,7 +205,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .when()
@@ -218,11 +221,26 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
   public void cancel__should_return_free_plan__when_successfully_canceled()
       throws JsonProcessingException, StripeException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
 
     PaymentMethod visaTestPaymentMethod = createVisaTestPaymentMethod();
     billingService
-        .createSubscription(user, SubscriptionPlan.ENTERPRISE, visaTestPaymentMethod)
+        .createSubscription(
+            new UserDTO(
+                user.getId(),
+                user.getEmail(),
+                user.getFullName(),
+                UserRole.fromString(user.getRole().getKey()),
+                user.getOrganizationId(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.getPhoneNumber() != null
+                    ? new PhoneNumberDTO(
+                        user.getPhoneNumber().getCountryCode(), user.getPhoneNumber().getDigits())
+                    : null,
+                user.isPhoneNumberVerified()),
+            SubscriptionPlan.ENTERPRISE,
+            visaTestPaymentMethod)
         .toCompletableFuture()
         .join();
 
@@ -291,7 +309,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
         .statusCode(200)
         .body(sameJson("{\"data\":[]}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
         .when()

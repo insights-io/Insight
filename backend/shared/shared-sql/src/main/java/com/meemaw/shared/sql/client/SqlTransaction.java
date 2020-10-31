@@ -11,23 +11,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
 
 @Slf4j
-public class SqlTransaction {
+public class SqlTransaction implements SqlClient {
 
   private final Transaction transaction;
-  private final SqlPool sqlPool;
+  private final SqlPool pool;
 
-  public SqlTransaction(Transaction transaction, SqlPool sqlPool) {
+  public SqlTransaction(Transaction transaction, SqlPool pool) {
     this.transaction = Objects.requireNonNull(transaction);
-    this.sqlPool = Objects.requireNonNull(sqlPool);
+    this.pool = Objects.requireNonNull(pool);
   }
 
-  public CompletionStage<RowSet<Row>> query(Query query) {
-    return sqlPool.execute(transaction, query);
+  public CompletionStage<RowSet<Row>> execute(Query query) {
+    return pool.execute(transaction, query);
   }
 
   public CompletionStage<Void> rollback() {
     log.debug("[SQL]: Rolling back transaction");
-
     return transaction
         .rollback()
         .subscribeAsCompletionStage()
@@ -40,7 +39,6 @@ public class SqlTransaction {
 
   public CompletionStage<Void> commit() {
     log.debug("[SQL]: Committing transaction");
-
     return transaction
         .commit()
         .subscribeAsCompletionStage()

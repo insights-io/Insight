@@ -2,6 +2,8 @@ import React, { forwardRef } from 'react';
 import { FormControl } from 'baseui/form-control';
 import { PinCode } from 'baseui/pin-code';
 
+import { inputBorderRadius } from '../Input';
+
 export type Props = {
   code: string[];
   handleChange: (code: string[]) => void;
@@ -25,6 +27,15 @@ export const CodeInput = forwardRef<HTMLInputElement, Props>(
           error={error !== undefined}
           onChange={(data) => handleChange(data.values)}
           values={code}
+          overrides={{
+            Input: {
+              props: {
+                overrides: {
+                  Root: { style: inputBorderRadius },
+                },
+              },
+            },
+          }}
         />
       </FormControl>
     );

@@ -1,26 +1,19 @@
 import { Flex, FlexColumn, VerticalAligned } from '@insight/elements';
 import { useStyletron } from 'baseui';
-import { Avatar } from 'baseui/avatar';
 import { Block } from 'baseui/block';
 import React, { forwardRef } from 'react';
 import { StyleObject } from 'styletron-react';
 
 export type Props = {
-  title: string;
-  subtitle: string;
-  avatar: string;
+  title: React.ReactNode;
+  subtitle: React.ReactNode;
+  avatar: React.ReactNode;
   titleExtra?: JSX.Element;
   expanded?: boolean;
   overrides?: {
-    Avatar?: {
-      style: StyleObject;
-    };
-    Root: {
-      style?: StyleObject;
-    };
-    Subtitle?: {
-      style?: StyleObject;
-    };
+    Avatar?: { style: StyleObject };
+    Root: { style?: StyleObject };
+    Subtitle?: { style?: StyleObject };
   };
 };
 
@@ -32,17 +25,7 @@ export const BannerCard = forwardRef<HTMLDivElement, Props>(
     const [_css, theme] = useStyletron();
     return (
       <Flex $style={overrides?.Root?.style} className="banner--card" ref={ref}>
-        <Avatar
-          name={avatar}
-          overrides={{
-            Root: {
-              style: {
-                ...overrides?.Avatar?.style,
-                backgroundColor: theme.colors.accent600,
-              },
-            },
-          }}
-        />
+        {avatar}
         {expanded && (
           <VerticalAligned marginLeft={theme.sizing.scale400}>
             <FlexColumn>

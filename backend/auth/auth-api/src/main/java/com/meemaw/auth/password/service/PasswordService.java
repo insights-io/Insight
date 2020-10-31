@@ -9,7 +9,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
-import org.mindrot.jbcrypt.BCrypt;
 
 public interface PasswordService {
 
@@ -20,18 +19,12 @@ public interface PasswordService {
   CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password);
 
   CompletionStage<OffsetDateTime> changePassword(
-      UUID userId,
-      String email,
-      String currentPassword,
-      String newPassword,
-      String confirmNewPassword);
+      UUID userId, String email, String organizationId, String currentPassword, String newPassword);
 
   CompletionStage<Boolean> createPassword(
       UUID userId, String email, String password, SqlTransaction transaction);
 
   CompletionStage<Boolean> passwordResetRequestExists(UUID token);
 
-  default String hashPassword(String password) {
-    return BCrypt.hashpw(password, BCrypt.gensalt(13));
-  }
+  String hashPassword(String password);
 }

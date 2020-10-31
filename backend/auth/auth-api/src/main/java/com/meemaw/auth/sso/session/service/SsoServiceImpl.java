@@ -3,8 +3,8 @@ package com.meemaw.auth.sso.session.service;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
-import com.meemaw.auth.sso.IdpServiceRegistry;
-import com.meemaw.auth.sso.session.datasource.SsoDatasource;
+import com.meemaw.auth.sso.IdentityProviderRegistry;
+import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.sso.session.model.DirectLoginResult;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.LoginResult;
@@ -13,7 +13,7 @@ import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
 import com.meemaw.auth.tfa.ChallengeLoginResult;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
@@ -24,6 +24,7 @@ import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,13 +44,13 @@ import org.slf4j.MDC;
 @Slf4j
 public class SsoServiceImpl implements SsoService {
 
-  @Inject SsoDatasource ssoDatasource;
+  @Inject SsoSessionDatasource ssoSessionDatasource;
   @Inject PasswordService passwordService;
   @Inject UserDatasource userDatasource;
   @Inject SignUpService signUpService;
   @Inject TfaChallengeService tfaChallengeService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
-  @Inject IdpServiceRegistry idpServiceRegistry;
+  @Inject IdentityProviderRegistry identityProviderRegistry;
 
   @Override
   @Traced
@@ -60,8 +61,8 @@ public class SsoServiceImpl implements SsoService {
     MDC.put(LoggingConstants.USER_ID, user.getId().toString());
     MDC.put(LoggingConstants.USER_EMAIL, user.getEmail());
     MDC.put(LoggingConstants.ORGANIZATION_ID, user.getOrganizationId());
-    return ssoDatasource
-        .createSession(user)
+    return ssoSessionDatasource
+        .create(user)
         .thenApply(
             sessionId -> {
               log.info(
@@ -95,8 +96,8 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
     MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
     log.info("[AUTH]: Find session: {}", sessionId);
-    return ssoDatasource
-        .findSession(sessionId)
+    return ssoSessionDatasource
+        .retrieve(sessionId)
         .thenApply(maybeSsoUser -> maybeSsoUser.map(SsoUser::dto));
   }
 
@@ -106,11 +107,11 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Set<String>> findSessions(String sessionId) {
     MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
     log.info("[AUTH]: Find all sessions related to session: {}", sessionId);
-    return ssoDatasource
-        .findSession(sessionId)
+    return ssoSessionDatasource
+        .retrieve(sessionId)
         .thenCompose(
             ssoUser ->
-                ssoDatasource.getAllSessionsForUser(
+                ssoSessionDatasource.listAllForUser(
                     ssoUser.orElseThrow(() -> Boom.notFound().exception()).getId()));
   }
 
@@ -120,7 +121,7 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Optional<SsoUser>> logout(String sessionId) {
     MDC.put(LoggingConstants.SSO_SESSION_ID, sessionId);
     log.info("[AUTH]: Logout attempt for session: {}", sessionId);
-    return ssoDatasource.deleteSession(sessionId);
+    return ssoSessionDatasource.delete(sessionId);
   }
 
   @Override
@@ -131,8 +132,8 @@ public class SsoServiceImpl implements SsoService {
   public CompletionStage<Set<String>> logoutUserFromAllDevices(UUID userId) {
     MDC.put(LoggingConstants.USER_ID, userId.toString());
     log.info("[AUTH]: Logout from all devices userId: {}", userId);
-    return ssoDatasource
-        .deleteAllSessionsForUser(userId)
+    return ssoSessionDatasource
+        .deleteAllForUser(userId)
         .thenApply(
             deletedSessions -> {
               if (!deletedSessions.isEmpty()) {
@@ -149,7 +150,7 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "login", description = "A measure of how long it takes to do a password login")
   public CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, URL redirect, URI serverBaseURI) {
+      String email, String password, String ipAddress, URL redirect, URI serverBaseUri) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
 
     Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> passwordLoginSupplier =
@@ -167,8 +168,8 @@ public class SsoServiceImpl implements SsoService {
     Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetup ->
             passwordLoginSsoAlternative(
-                idpServiceRegistry.ssoSignInLocation(
-                    ssoSetup.getMethod(), email, serverBaseURI, redirect));
+                identityProviderRegistry.ssoSignInLocation(
+                    ssoSetup.getMethod(), email, serverBaseUri, redirect));
 
     return login(email, LoginMethod.PASSWORD, alternativeLoginProvider, passwordLoginSupplier);
   }
@@ -231,18 +232,36 @@ public class SsoServiceImpl implements SsoService {
             });
   }
 
-  private CompletionStage<LoginResult<?>> authenticate(AuthUser user, List<TfaMethod> tfaMethods) {
-    return authenticate(user, tfaMethods, null);
+  /**
+   * Authenticate a user with no TFA methods set. This method can be used on the end of user
+   * creation flows (e.g. team invite accept).
+   *
+   * <p>If organization has TFA enforced, user will not be directly authenticated but will have to
+   * configure TFA method using challenge session.
+   *
+   * @param user to be authenticated
+   * @return login result
+   */
+  @Override
+  public CompletionStage<LoginResult<?>> authenticate(AuthUser user) {
+    return authenticate(user, Collections.emptyList());
   }
 
   private CompletionStage<LoginResult<?>> authenticate(
-      AuthUser user, List<TfaMethod> tfaMethods, URL redirect) {
+      AuthUser user, List<TfaMethod> userTfaMethods) {
+    return authenticate(user, userTfaMethods, null);
+  }
+
+  private CompletionStage<LoginResult<?>> authenticate(
+      AuthUser user, List<TfaMethod> userTfaMethods, URL redirect) {
     UUID userId = user.getId();
     String organizationId = user.getOrganizationId();
     MDC.put(LoggingConstants.USER_ID, userId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
-    if (tfaMethods.isEmpty()) {
+    if (userTfaMethods.isEmpty()) {
+      // TODO: check if organization has it enforced
+
       return this.createSession(user)
           .thenApply(
               sessionId -> {
@@ -260,7 +279,7 @@ public class SsoServiceImpl implements SsoService {
         .thenApply(
             challengeId -> {
               log.info("[AUTH]: TFA challenge={} for user={}", challengeId, userId);
-              return new ChallengeLoginResult(challengeId, tfaMethods, redirect);
+              return new ChallengeLoginResult(challengeId, userTfaMethods, redirect);
             });
   }
 
@@ -307,7 +326,8 @@ public class SsoServiceImpl implements SsoService {
               redirect);
           return CompletableFuture.completedStage(
               new ResponseLoginResult(
-                  idpServiceRegistry.ssoSignInRedirect(ssoMethod, email, serverBaseURI, redirect)));
+                  identityProviderRegistry.ssoSignInRedirect(
+                      ssoMethod, email, serverBaseURI, redirect)));
         };
 
     return login(email, method, alternativeLoginProvider, socialLoginProvider);

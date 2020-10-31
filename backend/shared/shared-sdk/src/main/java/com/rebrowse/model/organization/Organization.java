@@ -1,5 +1,6 @@
 package com.rebrowse.model.organization;
 
+import com.rebrowse.model.user.UserRole;
 import com.rebrowse.net.ApiResource;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
@@ -14,6 +15,9 @@ public class Organization {
 
   String id;
   String name;
+  boolean openMembership;
+  UserRole defaultRole;
+  AvatarType avatar;
   OffsetDateTime createdAt;
   OffsetDateTime updatedAt;
 
@@ -24,5 +28,19 @@ public class Organization {
   public static CompletionStage<Organization> retrieve(String id, RequestOptions requestOptions) {
     return ApiResource.get(
         String.format("/v1/organization/%s", id), Organization.class, requestOptions);
+  }
+
+  public static CompletionStage<Organization> update(
+      OrganizationUpdateParams params, RequestOptions requestOptions) {
+    return ApiResource.patch("/v1/organization", params, Organization.class, requestOptions);
+  }
+
+  public CompletionStage<AvatarSetup> updateAvatar(AvatarSetupUpdateParams params) {
+    return updateAvatar(params, null);
+  }
+
+  public CompletionStage<AvatarSetup> updateAvatar(
+      AvatarSetupUpdateParams params, RequestOptions options) {
+    return ApiResource.patch("/v1/organization/avatar", params, AvatarSetup.class, options);
   }
 }

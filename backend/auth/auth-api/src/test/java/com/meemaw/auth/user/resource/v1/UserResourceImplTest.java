@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
@@ -76,7 +76,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"phone_number\":\"Required\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
@@ -124,7 +124,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -153,7 +153,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"code\":\"Required\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -185,7 +185,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -216,7 +216,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"phone_number\":\"Required\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -266,7 +266,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -295,7 +295,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -326,7 +326,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"a\":\"Unexpected field\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -364,7 +364,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoResource.PATH, "session"))
+            .get(String.join("/", SsoSessionResource.PATH, "session"))
             .as(new TypeRef<>() {});
 
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
@@ -402,7 +402,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoResource.PATH, "session"))
+            .get(String.join("/", SsoSessionResource.PATH, "session"))
             .as(new TypeRef<>() {});
 
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
@@ -431,7 +431,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
     assertEquals(INSIGHT_ADMIN_EMAIL, dataResponse.getData().getEmail());
     assertEquals(INSIGHT_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     dataResponse =
         given()
             .when()
@@ -470,7 +470,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)

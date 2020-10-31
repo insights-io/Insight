@@ -13,6 +13,7 @@ import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
+import { INDEX_PAGE } from 'shared/constants/routes';
 
 type Props = {
   token: string;
@@ -38,7 +39,7 @@ export const PasswordResetPage = ({ token }: Props) => {
 
     AuthApi.password
       .reset(token, formData.password)
-      .then(() => router.replace('/'))
+      .then(() => router.replace(INDEX_PAGE))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);

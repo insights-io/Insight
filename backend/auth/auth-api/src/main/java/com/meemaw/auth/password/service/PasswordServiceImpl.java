@@ -1,9 +1,12 @@
 package com.meemaw.auth.password.service;
 
 import com.meemaw.auth.core.MailingConstants;
+import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyDatasource;
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.auth.password.datasource.PasswordResetDatasource;
+import com.meemaw.auth.password.model.PasswordPolicyValidator;
 import com.meemaw.auth.password.model.PasswordResetRequest;
+import com.meemaw.auth.password.model.PasswordValidationException;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
@@ -16,6 +19,7 @@ import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -24,6 +28,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.mindrot.jbcrypt.BCrypt;
@@ -37,9 +42,13 @@ public class PasswordServiceImpl implements PasswordService {
   @Inject UserDatasource userDatasource;
   @Inject ReactiveMailer mailer;
   @Inject SqlPool sqlPool;
+  @Inject OrganizationPasswordPolicyDatasource organizationPasswordPolicyDatasource;
 
   @ResourcePath("password/password_reset")
   Template passwordResetTemplate;
+
+  @ConfigProperty(name = "bcrypt.log_rounds")
+  Integer logRounds;
 
   @Override
   @Traced
@@ -174,19 +183,9 @@ public class PasswordServiceImpl implements PasswordService {
   public CompletionStage<OffsetDateTime> changePassword(
       UUID userId,
       String email,
+      String organizationId,
       String currentPassword,
-      String newPassword,
-      String confirmNewPassword) {
-    if (currentPassword.equals(newPassword)) {
-      throw Boom.badRequest()
-          .message("New password cannot be the same as the previous one!")
-          .exception();
-    }
-
-    if (!confirmNewPassword.equals(newPassword)) {
-      throw Boom.badRequest().message("Passwords must match!").exception();
-    }
-
+      String newPassword) {
     return userDatasource
         .findUserWithLoginInformation(email)
         .thenCompose(
@@ -205,7 +204,20 @@ public class PasswordServiceImpl implements PasswordService {
                 throw Boom.badRequest().message("Current password miss match").exception();
               }
 
-              return passwordDatasource.storePassword(userId, hashPassword(newPassword));
+              return organizationPasswordPolicyDatasource
+                  .retrieve(organizationId)
+                  .thenCompose(
+                      maybePolicy -> {
+                        try {
+                          PasswordPolicyValidator.validate(
+                              maybePolicy.orElse(null), hashedPassword, newPassword);
+                        } catch (PasswordValidationException ex) {
+                          throw Boom.badRequest()
+                              .errors(Map.of("newPassword", ex.getMessage()))
+                              .exception();
+                        }
+                        return passwordDatasource.storePassword(userId, hashPassword(newPassword));
+                      });
             });
   }
 
@@ -243,7 +255,7 @@ public class PasswordServiceImpl implements PasswordService {
     log.info("[AUTH]: Create password request for user {}", email);
     return passwordDatasource
         .storePassword(userId, hashPassword(password), transaction)
-        .thenApply(x -> true);
+        .thenApply(ignored -> true);
   }
 
   @Override
@@ -254,5 +266,10 @@ public class PasswordServiceImpl implements PasswordService {
   public CompletionStage<Boolean> passwordResetRequestExists(UUID token) {
     log.info("[AUTH]: Password reset request exists for token: {}", token);
     return passwordResetDatasource.findPasswordResetRequest(token).thenApply(Optional::isPresent);
+  }
+
+  @Override
+  public String hashPassword(String password) {
+    return BCrypt.hashpw(password, BCrypt.gensalt(logRounds));
   }
 }

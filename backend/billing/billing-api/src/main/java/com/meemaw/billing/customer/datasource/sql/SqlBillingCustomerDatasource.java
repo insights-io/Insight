@@ -34,7 +34,7 @@ public class SqlBillingCustomerDatasource implements BillingCustomerDatasource {
   public CompletionStage<Optional<BillingCustomer>> getByExternalId(
       String externalId, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(EXTERNAL_ID.eq(externalId));
-    return transaction.query(query).thenApply(this::onFindBillingCustomer);
+    return transaction.execute(query).thenApply(this::onFindBillingCustomer);
   }
 
   @Override

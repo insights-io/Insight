@@ -45,7 +45,7 @@ public class InvoiceResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(200)
         .body(sameJson("{\"data\":[]}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)

@@ -1,5 +1,6 @@
 package com.meemaw.shared.sql.rest.query;
 
+import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.select;
 import static org.jooq.impl.DSL.table;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
-import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 
 public class RHSColorParserSqlTest {
@@ -27,7 +27,7 @@ public class RHSColorParserSqlTest {
 
     Set<String> allowedFields = Set.of("field1", "field2", "location.city");
     Map<String, Field<?>> mappings =
-        allowedFields.stream().collect(Collectors.toMap(v -> v, v -> DSL.field(v, String.class)));
+        allowedFields.stream().collect(Collectors.toMap(v -> v, v -> field(v, String.class)));
 
     SearchDTO searchDTO =
         RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)), allowedFields);
@@ -45,7 +45,7 @@ public class RHSColorParserSqlTest {
 
     Set<String> allowedFields = Set.of("field1", "field2", "age");
     Map<String, Field<?>> mappings =
-        allowedFields.stream().collect(Collectors.toMap(v -> v, v -> DSL.field(v, String.class)));
+        allowedFields.stream().collect(Collectors.toMap(v -> v, v -> field(v, String.class)));
 
     SearchDTO searchDTO =
         RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)), allowedFields);
@@ -67,5 +67,40 @@ public class RHSColorParserSqlTest {
         SQLSearchDTO.of(searchDTO)
             .apply(select().from(table("session.session")), Collections.emptyMap());
     assertEquals("select * from session.session", query.getSQL(ParamType.INLINED));
+  }
+
+  @Test
+  public void parse__should_handle_sort_directions__when_with_or_without_symbol()
+      throws MalformedURLException {
+    Set<String> allowedFields = Set.of("created_at");
+    Map<String, Field<?>> mappings =
+        allowedFields.stream().collect(Collectors.toMap(v -> v, v -> field(v, String.class)));
+
+    assertEquals(
+        "select * from session.session order by created_at asc",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=+created_at")),
+                    allowedFields))
+            .apply(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
+
+    assertEquals(
+        "select * from session.session order by created_at asc",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=createdAt")),
+                    allowedFields))
+            .apply(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
+
+    assertEquals(
+        "select * from session.session order by created_at desc",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=-created_at")),
+                    allowedFields))
+            .apply(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
   }
 }

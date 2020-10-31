@@ -15,7 +15,9 @@ public final class UserTable {
   public static final String CREATED_AT = "created_at";
   public static final String UPDATED_AT = "updated_at";
 
-  public static final Set<String> UPDATABLE_FIELDS = Set.of(FULL_NAME, PHONE_NUMBER);
+  public static final Set<String> UPDATABLE_FIELDS = Set.of(FULL_NAME, PHONE_NUMBER, ROLE);
+
+  public static final Set<String> QUERYABLE_FIELDS = Set.of(EMAIL, FULL_NAME, ROLE, CREATED_AT);
 
   private UserTable() {}
 
@@ -23,6 +25,7 @@ public final class UserTable {
 
     public static final Map<String, String> PHONE_NUMBER_REQUIRED =
         Map.of(PHONE_NUMBER, "Required");
+
     public static final Map<String, String> PHONE_NUMBER_VERIFICATION_REQUIRED =
         Map.of(UserTable.PHONE_NUMBER, "Please verify phone number");
   }

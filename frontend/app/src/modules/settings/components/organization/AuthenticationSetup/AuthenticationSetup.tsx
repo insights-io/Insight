@@ -3,8 +3,6 @@ import { Card } from 'baseui/card';
 import { FormControl } from 'baseui/form-control';
 import { Controller, useForm } from 'react-hook-form';
 import { Select } from 'baseui/select';
-import { Input } from 'baseui/input';
-import { Button, SHAPE } from 'baseui/button';
 import FormError from 'shared/components/FormError';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
 import { useStyletron } from 'baseui';
@@ -17,6 +15,7 @@ import type {
   SsoSetup,
   SsoSetupDTO,
 } from '@insight/types';
+import { Input, Button, expandBorderRadius } from '@insight/elements';
 
 import {
   SsoMethodSelectValue,
@@ -92,6 +91,9 @@ export const AuthenticationSetup = ({ maybeSsoSetup, setSsoSetup }: Props) => {
                 onChange={(params) => {
                   onChange(params.value[0] as SsoMethodSelectValue);
                 }}
+                overrides={{
+                  ControlContainer: { style: expandBorderRadius('8px') },
+                }}
               />
             )}
           />
@@ -117,7 +119,6 @@ export const AuthenticationSetup = ({ maybeSsoSetup, setSsoSetup }: Props) => {
         <Button
           type="submit"
           isLoading={isSubmitting}
-          shape={SHAPE.pill}
           $style={{ width: '100%' }}
         >
           Setup

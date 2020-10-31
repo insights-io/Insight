@@ -1,42 +1,51 @@
-FROM node:14-alpine as build
+### BASE ###
+FROM node:14-alpine as base
 
 WORKDIR /src
 
-COPY package.json yarn.lock tsconfig.json /src/
-COPY frontend/app/package.json /src/frontend/app/package.json
-COPY frontend/shared/types/package.json /src/frontend/shared/types/package.json
-COPY frontend/shared/sdk/package.json /src/frontend/shared/sdk/package.json
-COPY frontend/shared/service-proxy/package.json /src/frontend/shared/service-proxy/package.json
-COPY frontend/shared/testing/package.json /src/frontend/shared/testing/package.json
-COPY frontend/shared/next-testing/package.json /src/frontend/shared/next-testing/package.json
-COPY frontend/shared/next-storybook/package.json /src/frontend/shared/next-storybook/package.json
-COPY frontend/shared/storybook/package.json /src/frontend/shared/storybook/package.json
-COPY frontend/shared/elements/package.json /src/frontend/shared/elements/package.json
-RUN yarn install --frozen-lockfile
+### BUILDER ###
+FROM base AS builder
 
-COPY frontend/app/ /src/frontend/app/
-COPY frontend/shared/ /src/frontend/shared/
+# Install production dependencies
+COPY package.json yarn.lock tsconfig.json lerna.json ./
+COPY frontend/shared/sdk/package.json ./frontend/shared/sdk/package.json
+COPY frontend/shared/service-proxy/package.json ./frontend/shared/service-proxy/package.json
+COPY frontend/shared/elements/package.json ./frontend/shared/elements/package.json
+COPY frontend/app/package.json ./frontend/app/package.json
 
+RUN yarn install --production --frozen-lockfile --prefer-offline
+RUN cp -RL ./node_modules/ /tmp/node_modules/
+
+# Copy source files
+COPY frontend/app/ ./frontend/app/
+COPY frontend/shared/ ./frontend/shared/
+
+# Install all dependencies
+RUN yarn install --frozen-lockfile --prefer-offline
+
+# Build
 RUN yarn frontend:app:build
-RUN yarn install --frozen-lockfile --production --ignore-scripts --prefer-offline
 
-FROM node:14-alpine
+### RUNNER ###
+FROM base
 
 WORKDIR /usr/app
 
+# Copy runtime dependencies
+COPY --from=builder /tmp/node_modules/ ./node_modules/
+
+COPY --from=builder /src/frontend/app/.next ./.next
+COPY --from=builder /src/frontend/app/public ./public
+
+COPY --from=builder /src/frontend/shared/sdk/package.json ./node_modules/@insight/sdk/package.json
+COPY --from=builder /src/frontend/shared/sdk/dist ./node_modules/@insight/sdk/dist
+
+COPY --from=builder /src/frontend/shared/elements/package.json ./node_modules/@insight/elements/package.json
+COPY --from=builder /src/frontend/shared/elements/dist ./node_modules/@insight/elements/dist
+
+USER node
 ENV NODE_ENV production
-
-COPY --from=build /src/node_modules /usr/app/node_modules
-
-COPY --from=build /src/frontend/app/package.json /usr/app/package.json
-COPY --from=build /src/frontend/app/.next /usr/app/.next
-COPY --from=build /src/frontend/app/public /usr/app/public
-
-COPY --from=build /src/frontend/shared/sdk/package.json /usr/app/node_modules/@insight/sdk/package.json
-COPY --from=build /src/frontend/shared/sdk/dist /usr/app/node_modules/@insight/sdk/dist
-COPY --from=build /src/frontend/shared/elements/package.json /usr/app/node_modules/@insight/elements/package.json
-COPY --from=build /src/frontend/shared/elements/dist /usr/app/node_modules/@insight/elements/dist
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "node_modules/next/dist/bin/next", "start"]

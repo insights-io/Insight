@@ -12,7 +12,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @EqualsAndHashCode(callSuper = true)
 public class AppConfig extends AppConfigBase {
 
-  @ConfigProperty(name = "quarkus.datasource.url")
+  @ConfigProperty(name = "quarkus.datasource.reactive.url")
   String datasourceURL;
 
   @ConfigProperty(name = "google.oauth.client.id")

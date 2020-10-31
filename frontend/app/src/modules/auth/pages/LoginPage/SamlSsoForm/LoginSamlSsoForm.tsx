@@ -1,15 +1,12 @@
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import { AuthApi } from 'api';
-import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
-import { Button } from 'baseui/button';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import React, { useState, useMemo } from 'react';
 import FormError from 'shared/components/FormError';
-import { createInputOverrides } from 'shared/styles/input';
 import { locationAssign } from 'shared/utils/window';
+import { Input, Button } from '@insight/elements';
 
 import { ssoIntegrationHrefBuilder } from '../utils';
 
@@ -18,10 +15,8 @@ type Props = {
 };
 
 const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
-  const [_css, theme] = useStyletron();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputOverrides = createInputOverrides(theme);
   const [formError, setFormError] = useState<APIError | undefined>();
   const [setupExists, setSetupExists] = useState<boolean | undefined>(
     undefined
@@ -76,7 +71,6 @@ const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
       <Block>
         <FormControl label="Work Email" error={validationError}>
           <Input
-            overrides={inputOverrides}
             id="email"
             name="email"
             type="email"

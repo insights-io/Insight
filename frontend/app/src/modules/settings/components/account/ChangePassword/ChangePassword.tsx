@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { Card, CardOverrides } from 'baseui/card';
-import { Button } from 'baseui/button';
 import { useForm } from 'react-hook-form';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
-import { createInputOverrides } from 'shared/styles/input';
-import { useStyletron } from 'baseui';
 import type {
   ChangePasswordDTO,
   APIError,
@@ -15,18 +11,17 @@ import type {
 import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { toaster } from 'baseui/toast';
+import { Input, Button } from '@insight/elements';
 
 type Props = {
   overrides?: CardOverrides;
 };
 
-const ChangePassword = ({ overrides }: Props) => {
-  const [_css, theme] = useStyletron();
-  const { register, handleSubmit, errors, watch } = useForm<
+export const ChangePassword = ({ overrides }: Props) => {
+  const { register, handleSubmit, errors, watch, setError } = useForm<
     ChangePasswordDTO
   >();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputOverrides = createInputOverrides(theme);
   const [formError, setFormError] = useState<APIError | undefined>();
 
   const onSubmit = handleSubmit((formData) => {
@@ -42,8 +37,18 @@ const ChangePassword = ({ overrides }: Props) => {
         setFormError(undefined);
       })
       .catch(async (error) => {
-        const errorDTO: APIErrorDataResponse = await error.response.json();
-        setFormError(errorDTO.error);
+        const errorResponse: APIErrorDataResponse = await error.response.json();
+        const { errors: apiErrors } = errorResponse.error;
+
+        if (apiErrors) {
+          Object.keys(apiErrors).forEach((field) => {
+            setError(field as keyof ChangePasswordDTO, {
+              message: apiErrors[field],
+            });
+          });
+        } else {
+          setFormError(errorResponse.error);
+        }
       })
       .finally(() => setIsSubmitting(false));
   });
@@ -53,7 +58,6 @@ const ChangePassword = ({ overrides }: Props) => {
       <form onSubmit={onSubmit} noValidate>
         <FormControl error={errors.currentPassword?.message}>
           <Input
-            overrides={inputOverrides}
             placeholder="Current password"
             name="currentPassword"
             type="password"
@@ -66,7 +70,6 @@ const ChangePassword = ({ overrides }: Props) => {
 
         <FormControl error={errors.newPassword?.message}>
           <Input
-            overrides={inputOverrides}
             placeholder="New password"
             name="newPassword"
             type="password"
@@ -86,7 +89,6 @@ const ChangePassword = ({ overrides }: Props) => {
 
         <FormControl error={errors.confirmNewPassword?.message}>
           <Input
-            overrides={inputOverrides}
             placeholder="Confirm new password"
             name="confirmNewPassword"
             type="password"
@@ -116,5 +118,3 @@ const ChangePassword = ({ overrides }: Props) => {
     </Card>
   );
 };
-
-export default ChangePassword;

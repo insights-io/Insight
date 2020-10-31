@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'baseui/modal';
 import { AuthApi } from 'api/auth';
 import { Block } from 'baseui/block';
-import { Button } from 'baseui/button';
-import { CodeInput } from '@insight/elements';
+import { CodeInput, Button, Flex } from '@insight/elements';
 import useCodeInput from 'shared/hooks/useCodeInput';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import FormError from 'shared/components/FormError';
@@ -60,7 +59,7 @@ const TimeBasedTwoFactorAuthenticationSetupModal = ({
           <ModalHeader>Setup two factor authentication</ModalHeader>
         </Block>
         <ModalBody>
-          <Block display="flex" justifyContent="center" marginBottom="24px">
+          <Flex justifyContent="center" marginBottom="24px">
             {qrImage ? (
               <img
                 src={`data:image/jpeg;base64,${qrImage}`}
@@ -69,8 +68,8 @@ const TimeBasedTwoFactorAuthenticationSetupModal = ({
             ) : (
               <Skeleton width="200px" height="200px" />
             )}
-          </Block>
-          <Block display="flex" justifyContent="center">
+          </Flex>
+          <Flex justifyContent="center">
             <Block>
               <CodeInput
                 label="Google verification code"
@@ -80,7 +79,7 @@ const TimeBasedTwoFactorAuthenticationSetupModal = ({
                 error={codeError}
               />
             </Block>
-          </Block>
+          </Flex>
         </ModalBody>
         <ModalFooter>
           <Button

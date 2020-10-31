@@ -27,15 +27,19 @@ public class User {
     return retrieve((RequestOptions) null);
   }
 
-  public static CompletionStage<User> retrieve(RequestOptions requestOptions) {
-    return ApiResource.get("/v1/user", User.class, requestOptions);
+  public static CompletionStage<User> retrieve(RequestOptions options) {
+    return ApiResource.get("/v1/user", User.class, options);
+  }
+
+  public static CompletionStage<User> update(UserUpdateParams params, RequestOptions options) {
+    return ApiResource.patch("/v1/user", params, User.class, options);
   }
 
   public static CompletionStage<User> retrieve(UUID id) {
     return retrieve(id, null);
   }
 
-  public static CompletionStage<User> retrieve(UUID id, RequestOptions requestOptions) {
-    return ApiResource.get(String.format("/v1/user/%s", id), User.class, requestOptions);
+  public static CompletionStage<User> retrieve(UUID id, RequestOptions options) {
+    return ApiResource.get(String.format("/v1/user/%s", id), User.class, options);
   }
 }

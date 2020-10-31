@@ -7,9 +7,10 @@ import java.util.List;
 
 public class InternalAuthApiTestProvider extends AuthApiTestProvider {
 
-  public InternalAuthApiTestProvider(ObjectMapper objectMapper, MockMailbox mailbox) {
+  public InternalAuthApiTestProvider(
+      String baseUrl, ObjectMapper objectMapper, MockMailbox mailbox) {
     super(
-        null,
+        baseUrl,
         objectMapper,
         (email) -> {
           List<Mail> messages = mailbox.getMessagesSentTo(email);

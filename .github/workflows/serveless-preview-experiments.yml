@@ -52,10 +52,13 @@ jobs:
           rm -rf src/pages/api
           PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
           echo "app:
-            component: '@sls-next/serverless-component@1.18.0-alpha.5'
+            component: '@sls-next/serverless-component@1.18.0-alpha.27'
             inputs:
-              certificateArn: $AWS_APP_PREVIEW_CERTIFICATE_ARN
-              domain: ['$PR_NUMBER-1001.app', 'rebrowse.dev']
+              cloudfront:
+                aliases: ['pr-$PR_NUMBER.app.rebrowse.dev']
+                certificate:
+                  cloudFrontDefaultCertificate: false
+                  acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
           " > serverless.yml
           npm install -g serverless
           serverless

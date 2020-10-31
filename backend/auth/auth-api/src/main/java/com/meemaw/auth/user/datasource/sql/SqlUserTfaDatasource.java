@@ -77,7 +77,7 @@ public class SqlUserTfaDatasource implements UserTfaDatasource {
             .returning(CREATED_AT);
 
     return transaction
-        .query(query)
+        .execute(query)
         .thenApply(rows -> rows.iterator().next())
         .thenApply(
             row -> {

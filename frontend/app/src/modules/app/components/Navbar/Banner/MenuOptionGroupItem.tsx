@@ -1,18 +1,19 @@
 import React from 'react';
 import { Block } from 'baseui/block';
-import type { User } from '@insight/types';
+import type { AvatarDTO, User } from '@insight/types';
 import Link from 'next/link';
 import { ACCOUNT_SETTINGS_DETAILS_PAGE } from 'shared/constants/routes';
 import { UnstyledLink } from '@insight/elements';
 
-import { BannerCard, Props as BannerCardProps } from './BannerCard';
+import { OrganizationAvatar } from '../../OrganizationAvatar';
+import { UserAvatar } from '../../OrganizationAvatar/OrganizationAvatar';
+
+import { BannerCard } from './BannerCard';
 
 export type Props = Pick<User, 'email' | 'fullName'> & {
   children: 'Account' | 'Organization';
   organizationName: string | undefined;
-  overrides?: {
-    OrganizationBanner?: BannerCardProps['overrides'];
-  };
+  organizationAvatar: AvatarDTO | undefined;
 };
 
 export const MenuOptionGroupItem = ({
@@ -20,16 +21,20 @@ export const MenuOptionGroupItem = ({
   fullName,
   children,
   organizationName,
-  overrides,
+  organizationAvatar,
 }: Props) => {
   return (
     <Block as="li" padding="12px">
       {children === 'Organization' ? (
         <BannerCard
           subtitle={fullName || email}
+          avatar={
+            <OrganizationAvatar
+              name={organizationName}
+              avatar={organizationAvatar}
+            />
+          }
           title={organizationName || 'My Organization'}
-          avatar={organizationName || 'O'}
-          overrides={overrides?.OrganizationBanner}
         />
       ) : (
         <Link href={ACCOUNT_SETTINGS_DETAILS_PAGE}>
@@ -37,7 +42,7 @@ export const MenuOptionGroupItem = ({
             <BannerCard
               subtitle={email}
               title={fullName || 'My Account'}
-              avatar={fullName || email}
+              avatar={<UserAvatar fullName={fullName} email={email} />}
             />
           </UnstyledLink>
         </Link>

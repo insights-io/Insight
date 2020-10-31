@@ -8,13 +8,18 @@ public interface CanExpire {
 
   OffsetDateTime getCreatedAt();
 
-  @JsonIgnore
-  default int getDaysValidity() {
-    return 1;
+  int getDaysValidity();
+
+  default OffsetDateTime getExpiresAt() {
+    return getCreatedAt().plusDays(getDaysValidity());
   }
 
+  default boolean isValid() {
+    return !hasExpired();
+  }
+
+  @JsonIgnore
   default boolean hasExpired() {
-    Instant lastActive = getCreatedAt().plusDays(getDaysValidity()).toInstant();
-    return Instant.now().isAfter(lastActive);
+    return Instant.now().isAfter(getExpiresAt().toInstant());
   }
 }

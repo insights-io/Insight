@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.saml.service;
 
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.AbstractIdpService;
+import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.saml.model.SamlDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataResponse;
@@ -58,7 +58,7 @@ import org.w3c.dom.NodeList;
 
 @ApplicationScoped
 @Slf4j
-public class SamlService extends AbstractIdpService {
+public class SamlService extends AbstractIdentityProvider {
 
   private CertificateFactory certificateFactory;
   private BasicParserPool parsePool;
@@ -247,8 +247,10 @@ public class SamlService extends AbstractIdpService {
               validateSignature(samlDataResponse.getSignature(), samlMetadata);
               URL redirect = RequestUtils.sneakyURL(secureStateData(relayState));
               String cookieDomain = RequestUtils.parseCookieDomain(redirect);
+
               return ssoService
                   .ssoLogin(email, samlDataResponse.getFullName(), organizationId, redirect)
+                  .exceptionally(throwable -> handleSsoException(throwable, redirect))
                   .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
   }

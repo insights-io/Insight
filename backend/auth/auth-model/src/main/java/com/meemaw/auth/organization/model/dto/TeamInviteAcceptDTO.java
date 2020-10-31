@@ -1,6 +1,5 @@
 package com.meemaw.auth.organization.model.dto;
 
-import com.meemaw.shared.validation.Password;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,5 +14,6 @@ public class TeamInviteAcceptDTO {
   @NotBlank(message = "Required")
   String fullName;
 
-  @Password String password;
+  @NotBlank(message = "Required")
+  String password;
 }

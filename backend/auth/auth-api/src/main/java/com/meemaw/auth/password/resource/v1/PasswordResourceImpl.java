@@ -6,6 +6,7 @@ import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.sso.session.service.SsoService;
+import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
@@ -61,13 +62,15 @@ public class PasswordResourceImpl implements PasswordResource {
 
   @Override
   public CompletionStage<Response> change(PasswordChangeRequestDTO body) {
+    body.validate();
+    AuthUser user = insightPrincipal.user();
     return passwordService
         .changePassword(
-            insightPrincipal.user().getId(),
-            insightPrincipal.user().getEmail(),
+            user.getId(),
+            user.getEmail(),
+            user.getOrganizationId(),
             body.getCurrentPassword(),
-            body.getNewPassword(),
-            body.getConfirmNewPassword())
+            body.getNewPassword())
         .thenApply(ignored -> DataResponse.noContent());
   }
 }

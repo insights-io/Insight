@@ -1,71 +1,132 @@
-import React from 'react';
-import { useStyletron } from 'baseui';
+import React, { useCallback, useMemo } from 'react';
 import { Block } from 'baseui/block';
-import TeamInviteModal from 'modules/settings/components/organization/TeamInviteModal';
-import { H3 } from 'baseui/typography';
-import { Table } from 'baseui/table';
-import { StatefulTooltip } from 'baseui/tooltip';
-import { SpacedBetween, VerticalAligned } from '@insight/elements';
-import { Alert } from 'baseui/icon';
-import { differenceInSeconds } from 'date-fns';
 import type {
-  TeamInvite,
+  SearchBean,
   TeamInviteCreateDTO,
   TeamInviteDTO,
 } from '@insight/types';
+import {
+  Button,
+  Flex,
+  SpacedBetween,
+  VerticalAligned,
+  Table,
+} from '@insight/elements';
+import { Avatar } from 'baseui/avatar';
+import { capitalize } from 'modules/billing/utils';
+import { SIZE } from 'baseui/button';
+import { Delete, Plus } from 'baseui/icon';
+import { AuthApi } from 'api';
+import { useResourceSearch } from 'shared/hooks/useResourceSearch';
+import { mapTeamInvite } from '@insight/sdk';
+import { useStyletron } from 'baseui';
+import { StyledSpinnerNext } from 'baseui/spinner';
+
+import TeamInviteModal from '../TeamInviteModal';
 
 type Props = {
-  invites: TeamInvite[];
-  createTeamInvite: (data: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
+  invites: TeamInviteDTO[];
+  inviteCount: number;
 };
 
-const SECONDS_IN_DAY = 86400;
+const NUM_ITEMS_PER_PAGE = 20;
 
-export const TeamInvites = ({ invites, createTeamInvite }: Props) => {
+export const TeamInvites = ({
+  invites: initialInvites,
+  inviteCount: initialInviteCount,
+}: Props) => {
   const [_css, theme] = useStyletron();
 
-  const dataColumn = (invite: TeamInvite) => {
-    const isTeamInviteValid =
-      differenceInSeconds(new Date(), invite.createdAt) < SECONDS_IN_DAY;
+  const search = useCallback(async (search: SearchBean) => {
+    return AuthApi.organization.teamInvite.list({ search });
+  }, []);
 
-    return [
-      invite.email,
-      invite.role,
-      invite.createdAt.toLocaleDateString(),
-      <>
-        {String(isTeamInviteValid)}
-        {!isTeamInviteValid && (
-          <StatefulTooltip
-            showArrow
-            placement="top"
-            content={() => <Block>Team invite is valid only for 1 day</Block>}
-          >
-            <VerticalAligned $style={{ marginLeft: theme.sizing.scale400 }}>
-              <Alert />
-            </VerticalAligned>
-          </StatefulTooltip>
-        )}
-      </>,
-    ];
+  const searchCount = useCallback(async (search: SearchBean) => {
+    return AuthApi.organization.teamInvite.count({ search });
+  }, []);
+
+  const {
+    page,
+    onPageChange,
+    query,
+    setQuery,
+    numPages,
+    items,
+    isSearching,
+    revalidate,
+  } = useResourceSearch({
+    resource: 'invites',
+    field: 'createdAt',
+    initialData: { count: initialInviteCount, items: initialInvites },
+    search,
+    searchCount,
+    numItemsPerPage: NUM_ITEMS_PER_PAGE,
+  });
+
+  const createTeamInvite = (data: TeamInviteCreateDTO) => {
+    return AuthApi.organization.teamInvite.create(data).then((teamInvite) => {
+      revalidate();
+      return teamInvite;
+    });
   };
 
+  const invites = useMemo(() => items.map(mapTeamInvite), [items]);
+
   return (
-    <Block
-      overrides={{ Block: { props: { className: 'invites' } } }}
-      marginTop={theme.sizing.scale800}
-    >
-      <SpacedBetween marginBottom="12px">
-        <H3 margin="0" $style={{ fontSize: '18px', lineHeight: '18px' }}>
-          Team invites
-        </H3>
-        <TeamInviteModal createTeamInvite={createTeamInvite} />
-      </SpacedBetween>
-      <Block width="100%" height="fit-content">
-        <Table
-          columns={['Email', 'Role', 'Invited on', 'Valid']}
-          data={invites.map(dataColumn)}
-        />
-      </Block>
+    <Block width="100%">
+      <Table.Header
+        theme={theme}
+        placeholder="Search invites"
+        value={query}
+        onChange={(event) => setQuery(event.currentTarget.value)}
+        clearable
+        endEnhancer={isSearching ? <StyledSpinnerNext size={16} /> : undefined}
+      >
+        <TeamInviteModal createTeamInvite={createTeamInvite}>
+          {(open) => (
+            <Block marginLeft="16px" width="240px">
+              <Button onClick={open} $style={{ width: '100%' }}>
+                <Plus /> Invite member
+              </Button>
+            </Block>
+          )}
+        </TeamInviteModal>
+      </Table.Header>
+
+      <Table.Body
+        header="Team invites"
+        items={invites}
+        itemKey={(invite) => invite.token}
+      >
+        {({ token, email: name, role }) => {
+          return (
+            <SpacedBetween key={token}>
+              <Flex>
+                <Avatar name={name} />
+                <VerticalAligned marginLeft="16px">
+                  <span>{name}</span>
+                </VerticalAligned>
+              </Flex>
+              <VerticalAligned>
+                <span>{capitalize(role)}</span>
+              </VerticalAligned>
+              <VerticalAligned>
+                <Button size={SIZE.compact} disabled>
+                  <Delete /> Revoke
+                </Button>
+              </VerticalAligned>
+            </SpacedBetween>
+          );
+        }}
+      </Table.Body>
+
+      <Table.Footer
+        numPages={numPages}
+        currentPage={page}
+        size={SIZE.compact}
+        onPageChange={({ nextPage }) => onPageChange(nextPage)}
+        theme={theme}
+      />
     </Block>
   );
 };

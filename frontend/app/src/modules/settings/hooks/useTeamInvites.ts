@@ -32,11 +32,11 @@ const useTeamInvites = (initialData: TeamInviteDTO[]) => {
   const createTeamInvite = useCallback(
     (formData: TeamInviteCreateDTO) => {
       return AuthApi.organization.teamInvite.create(formData).then((resp) => {
-        mutate((prev) => [...prev, resp]);
+        mutate((prev) => [...(prev || data), resp]);
         return resp;
       });
     },
-    [mutate]
+    [data, mutate]
   );
 
   return { invites, deleteTeamInvite, createTeamInvite };

@@ -9,6 +9,7 @@ dependencies {
     implementation "io.quarkus:quarkus-resteasy-jackson"
     implementation "org.apache.commons:commons-text:1.9"
     api project(":shared:rest")
+    api "org.mindrot:jbcrypt:0.4"
 
     testImplementation project(":shared:testing-utils")
 }

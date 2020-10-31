@@ -77,7 +77,7 @@ describe('pages/_document', () => {
     sandbox.assert.calledWithExactly(tracer.startSpan, 'GET /', {
       childOf: undefined,
       tags: {
-        bootstrapScriptURI: 'fromEnv',
+        bootstrapScriptUri: 'fromEnv',
         'http.method': 'GET',
         'http.url': '/',
         'span.kind': 'server',
@@ -109,10 +109,7 @@ describe('pages/_document', () => {
     sandbox.assert.calledWithExactly(
       tracer.startSpan,
       '_document.getInitialProps',
-      {
-        childOf: tracedRequest.span,
-        tags: { bootstrapScriptURI: 'fromEnv' },
-      }
+      { childOf: tracedRequest.span, tags: { bootstrapScriptUri: 'fromEnv' } }
     );
 
     expect(props).toEqual({

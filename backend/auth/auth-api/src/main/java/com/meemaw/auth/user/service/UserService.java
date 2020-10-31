@@ -1,6 +1,6 @@
 package com.meemaw.auth.user.service;
 
-import com.meemaw.auth.sso.session.datasource.SsoDatasource;
+import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTable;
@@ -8,6 +8,7 @@ import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
+import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import io.vertx.core.json.JsonObject;
 import java.util.Map;
@@ -25,7 +26,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 public class UserService {
 
   @Inject UserDatasource userDatasource;
-  @Inject SsoDatasource ssoDatasource;
+  @Inject SsoSessionDatasource ssoSessionDatasource;
   @Inject UserPhoneCodeService userPhoneCodeService;
 
   @Traced
@@ -34,30 +35,31 @@ public class UserService {
   }
 
   @Traced
-  public CompletionStage<AuthUser> updateUser(AuthUser user, Map<String, Object> body) {
+  public CompletionStage<AuthUser> updateUser(AuthUser user, Map<String, Object> params) {
     UUID userId = user.getId();
-    log.info("[AUTH]: Update user={} request body={}", userId, body);
 
-    if (body.containsKey(UserTable.PHONE_NUMBER)) {
-      JsonObject phoneNumber = JsonObject.mapFrom(body.get(UserTable.PHONE_NUMBER));
+    if (params.containsKey(UserTable.PHONE_NUMBER)) {
+      JsonObject phoneNumber = JsonObject.mapFrom(params.get(UserTable.PHONE_NUMBER));
       if (!phoneNumber.mapTo(PhoneNumberDTO.class).equals(user.getPhoneNumber())) {
         // TODO: this should probably be done using a DB trigger
-        body.put(UserTable.PHONE_NUMBER_VERIFIED, false);
-        body.put(UserTable.PHONE_NUMBER, phoneNumber);
+        params.put(UserTable.PHONE_NUMBER_VERIFIED, false);
+        params.put(UserTable.PHONE_NUMBER, phoneNumber);
         log.info(
             "[AUTH]: Phone number change for user={} -- set phone_number_verified=false", userId);
       }
     }
 
-    return updateUser(userId, body);
+    return updateUser(userId, UpdateDTO.from(params));
   }
 
-  private CompletionStage<AuthUser> updateUser(UUID userId, Map<String, Object> body) {
+  private CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO params) {
     return userDatasource
-        .updateUser(userId, body)
+        .updateUser(userId, params)
         .thenCompose(
             updatedUser ->
-                ssoDatasource.updateUserSessions(userId, updatedUser).thenApply(i1 -> updatedUser));
+                ssoSessionDatasource
+                    .updateAllForUser(userId, updatedUser)
+                    .thenApply(i1 -> updatedUser));
   }
 
   @Traced
@@ -86,7 +88,8 @@ public class UserService {
                 throw Boom.badRequest().errors(TfaChallengeService.INVALID_CODE_ERRORS).exception();
               }
 
-              return updateUser(userId, Map.of(UserTable.PHONE_NUMBER_VERIFIED, true));
+              return updateUser(
+                  userId, UpdateDTO.from(Map.of(UserTable.PHONE_NUMBER_VERIFIED, true)));
             });
   }
 }

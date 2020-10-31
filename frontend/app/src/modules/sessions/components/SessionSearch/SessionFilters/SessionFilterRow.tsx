@@ -2,15 +2,16 @@ import React from 'react';
 import { Theme } from 'baseui/theme';
 import { OptionListProps, OptionList, StatefulMenu, ItemsT } from 'baseui/menu';
 import { Block } from 'baseui/block';
-import { createBorderRadius } from 'shared/styles/input';
 import { StatefulPopover, PLACEMENT } from 'baseui/popover';
-import { Button, KIND, SIZE, SHAPE } from 'baseui/button';
 import {
   AutocompleteInput,
   SpacedBetween,
   VerticalAligned,
+  Button,
+  expandBorderRadius,
 } from '@insight/elements';
 import { Plus, Delete } from 'baseui/icon';
+import { SIZE, KIND } from 'baseui/button';
 
 import useAutocomplete from './useAutocomplete';
 import {
@@ -65,7 +66,7 @@ const SessionFilterRow = ({
       as="li"
       $style={{
         padding: theme.sizing.scale200,
-        ...createBorderRadius(theme),
+        ...expandBorderRadius(theme.sizing.scale400),
         ':hover': { background: theme.colors.mono400 },
       }}
     >
@@ -89,7 +90,7 @@ const SessionFilterRow = ({
             />
           )}
         >
-          <Button kind={KIND.secondary} size={SIZE.mini} shape={SHAPE.pill}>
+          <Button kind={KIND.secondary} size={SIZE.mini}>
             {!option ? (
               'Filter event by...'
             ) : (
@@ -113,9 +114,6 @@ const SessionFilterRow = ({
             onChange={(newValue) =>
               onUpdateFilter({ key, id, value: newValue })
             }
-            overrides={{
-              ControlContainer: { style: createBorderRadius(theme, '38px') },
-            }}
             options={autocompleteOptions}
           />
         </VerticalAligned>
@@ -123,18 +121,12 @@ const SessionFilterRow = ({
 
       <VerticalAligned marginLeft={theme.sizing.scale400}>
         <Block display="flex" justifyContent="flex-end">
-          <Button
-            size={SIZE.mini}
-            kind={KIND.tertiary}
-            shape={SHAPE.pill}
-            onClick={onPlus}
-          >
+          <Button size={SIZE.mini} kind={KIND.tertiary} onClick={onPlus}>
             <Plus />
           </Button>
           <Button
             size={SIZE.mini}
             kind={KIND.tertiary}
-            shape={SHAPE.pill}
             onClick={(event) => onDelete(id, event)}
           >
             <Delete />

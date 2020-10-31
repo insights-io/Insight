@@ -1,12 +1,12 @@
 package com.meemaw.auth.password.datasource.sql;
 
-import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.CREATED_AT;
-import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.EMAIL;
-import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.TABLE;
-import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.TOKEN;
-import static com.meemaw.auth.password.datasource.sql.PasswordResetRequestTable.USER_ID;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.CREATED_AT;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.EMAIL;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.TABLE;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.TOKEN;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.USER_ID;
 
 import com.meemaw.auth.password.datasource.PasswordResetDatasource;
 import com.meemaw.auth.password.model.PasswordResetRequest;
@@ -35,7 +35,7 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
   public CompletionStage<Boolean> deletePasswordResetRequest(
       UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().delete(TABLE).where(TOKEN.eq(token));
-    return transaction.query(query).thenApply(pgRowSet -> true);
+    return transaction.execute(query).thenApply(pgRowSet -> true);
   }
 
   @Override
@@ -58,7 +58,7 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
-        .query(query)
+        .execute(query)
         .thenApply(
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();

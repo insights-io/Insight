@@ -1,5 +1,6 @@
 package com.meemaw.shared.rest.query;
 
+import com.google.common.base.CaseFormat;
 import com.meemaw.shared.rest.exception.SearchParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,11 +14,13 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class AbstractQueryParser {
 
-  protected static final String LIMIT_PARAM = "limit";
-  protected static final String SORT_BY_PARAM = "sort_by";
+  public static final String QUERY_PARAM = "query";
+  public static final String LIMIT_PARAM = "limit";
+  public static final String SORT_BY_PARAM = "sort_by";
+  public static final String GROUP_BY_PARAM = "group_by";
+
   protected static final String SORT_BY_PARAM_ERROR =
       String.format("Unexpected field in %s query", SORT_BY_PARAM);
-  protected static final String GROUP_BY_PARAM = "group_by";
   protected static final String GROUP_BY_PARAM_ERROR =
       String.format("Unexpected field in %s query", GROUP_BY_PARAM);
 
@@ -30,6 +33,7 @@ public abstract class AbstractQueryParser {
   protected List<Pair<String, SortDirection>> sorts;
   protected List<String> groupBy;
   protected int limit = 0;
+  protected String query;
 
   public AbstractQueryParser(Set<String> allowedFields) {
     expressions = new ArrayList<>();
@@ -50,6 +54,10 @@ public abstract class AbstractQueryParser {
         new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
 
     return new SearchDTO(
-        rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit);
+        rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit, query);
+  }
+
+  protected static String snakeCase(String field) {
+    return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field);
   }
 }

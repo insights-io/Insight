@@ -12,6 +12,7 @@ export const LOGIN_PAGE = '/login';
 export const VERIFICATION_PAGE = `${LOGIN_PAGE}/verification`;
 export const PASSWORD_FORGOT_PAGE = '/password-forgot';
 export const PASSWORD_RESET_PAGE = '/password-reset';
+export const ACCEPT_INVITE_PAGE = '/accept-invite';
 
 /* Settings */
 export const SETTINGS_PATH_PART: PathPart = {
@@ -33,11 +34,11 @@ export const ORGANIZATION_SETTINGS_GENERAL_PAGE_PART: PathPart = {
 };
 export const ORGANIZATION_SETTINGS_GENERAL_PAGE = `${ORGANIZATION_SETTINGS_PAGE}/${ORGANIZATION_SETTINGS_GENERAL_PAGE_PART.segment}`;
 
-export const ORGANIZATION_SETTINGS_SECURITY_AND_PRIVACY_PAGE_PART: PathPart = {
-  segment: 'security-and-privacy',
-  text: 'Security & Privacy',
+export const ORGANIZATION_SETTINGS_SECURITY_PAGE_PART: PathPart = {
+  segment: 'security',
+  text: 'Security',
 };
-export const ORGANIZATION_SETTINGS_SECURITY_AND_PRIVACY_PAGE = `${ORGANIZATION_SETTINGS_PAGE}/${ORGANIZATION_SETTINGS_SECURITY_AND_PRIVACY_PAGE_PART.segment}`;
+export const ORGANIZATION_SETTINGS_SECURITY_PAGE = `${ORGANIZATION_SETTINGS_PAGE}/${ORGANIZATION_SETTINGS_SECURITY_PAGE_PART.segment}`;
 export const ORGANIZATION_SETTINGS_AUTH_PAGE_PART: PathPart = {
   segment: 'auth',
   text: 'Auth',
@@ -48,6 +49,8 @@ export const ORGANIZATION_SETTINGS_MEMBERS_PAGE_PART: PathPart = {
   text: MEMBERS_SECTION,
 };
 export const ORGANIZATION_SETTINGS_MEMBERS_PAGE = `${ORGANIZATION_SETTINGS_PAGE}/${ORGANIZATION_SETTINGS_MEMBERS_PAGE_PART.segment}`;
+
+export const ORGANIZATION_SETTINGS_MEMBER_INVITES_PAGE = `${ORGANIZATION_SETTINGS_PAGE}/${ORGANIZATION_SETTINGS_MEMBERS_PAGE_PART.segment}/invites`;
 
 export const ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE_PART: PathPart = {
   segment: 'subscription',

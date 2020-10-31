@@ -8,14 +8,22 @@ import {
   VerticalAligned,
   SpacedBetween,
   UnstyledLink,
+  expandBorderRadius,
+  Button,
+  Flex,
 } from '@insight/elements';
 import { FaLink } from 'react-icons/fa';
 import { joinSegments } from 'modules/settings/utils';
+import { Menu, Delete } from 'baseui/icon';
 import type { Path, SearchOption } from 'modules/settings/types';
+import * as zIndex from 'shared/constants/zIndex';
 
 type Props = {
   path: Path;
   searchOptions: SearchOption[];
+  isSidebarOverlay: boolean;
+  overlaySidebarOpen: boolean;
+  setOverlaySidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
@@ -37,27 +45,48 @@ const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
   );
 };
 
-export const TopbarMenu = ({ path, searchOptions }: Props) => {
+export const TopbarMenu = ({
+  path,
+  searchOptions,
+  isSidebarOverlay,
+  overlaySidebarOpen,
+  setOverlaySidebarOpen,
+}: Props) => {
   return (
     <SpacedBetween as="nav" padding="20px 30px" className="topbar menu">
-      <VerticalAligned>
-        <Breadcrumbs>
-          {path.map((pathPart, index) => {
-            const link = joinSegments(
-              path.slice(0, index + 1).map((p) => p.segment)
-            );
+      <Flex>
+        <VerticalAligned
+          marginRight="8px"
+          $style={isSidebarOverlay ? undefined : { display: 'none' }}
+        >
+          <Button
+            size={SIZE.mini}
+            kind="tertiary"
+            onClick={() => setOverlaySidebarOpen((prev) => !prev)}
+          >
+            {overlaySidebarOpen ? <Delete /> : <Menu />}
+          </Button>
+        </VerticalAligned>
 
-            return (
-              <Link key={link} href={link}>
-                <UnstyledLink href={link}>{pathPart.text}</UnstyledLink>
-              </Link>
-            );
-          })}
-        </Breadcrumbs>
-      </VerticalAligned>
+        <VerticalAligned>
+          <Breadcrumbs>
+            {path.map((pathPart, index) => {
+              const link = joinSegments(
+                path.slice(0, index + 1).map((p) => p.segment)
+              );
+
+              return (
+                <Link key={link} href={link}>
+                  <UnstyledLink href={link}>{pathPart.text}</UnstyledLink>
+                </Link>
+              );
+            })}
+          </Breadcrumbs>
+        </VerticalAligned>
+      </Flex>
 
       {searchOptions.length > 0 && (
-        <Block maxWidth="300px" width="100%">
+        <VerticalAligned maxWidth="300px" width="100%">
           <Select
             options={searchOptions}
             placeholder="Search"
@@ -66,6 +95,12 @@ export const TopbarMenu = ({ path, searchOptions }: Props) => {
             valueKey="label"
             getOptionLabel={getOptionLabel}
             overrides={{
+              ControlContainer: { style: expandBorderRadius('8px') },
+              Popover: {
+                props: {
+                  overrides: { Body: { style: { zIndex: zIndex.SIDEBAR } } },
+                },
+              },
               DropdownContainer: {
                 style: {
                   marginTop: '10px',
@@ -84,7 +119,7 @@ export const TopbarMenu = ({ path, searchOptions }: Props) => {
               },
             }}
           />
-        </Block>
+        </VerticalAligned>
       )}
     </SpacedBetween>
   );

@@ -46,6 +46,7 @@ describe('<AppLayout />', () => {
       userEvent.click(sessionsItem);
       sandbox.assert.calledWithExactly(push, '/sessions', '/sessions', {
         shallow: undefined,
+        locale: undefined,
       });
 
       // Sidebar collapses on outside click
@@ -89,6 +90,7 @@ describe('<AppLayout />', () => {
       userEvent.click(sessionsItem);
       sandbox.assert.calledWithExactly(push, '/sessions', '/sessions', {
         shallow: undefined,
+        locale: undefined,
       });
 
       // Sidebar collapses on outside click

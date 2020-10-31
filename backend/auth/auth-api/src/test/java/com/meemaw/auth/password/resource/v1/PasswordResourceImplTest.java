@@ -11,17 +11,19 @@ import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.sso.session.resource.v1.SsoResource;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.organization.PasswordPolicy;
+import com.rebrowse.model.organization.PasswordPolicyCreateParams;
+import com.rebrowse.model.user.User;
 import io.quarkus.mailer.Mail;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -162,7 +164,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   public void password_forgot__should_send_email__when_existing_user()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    String email = authApi().getSessionInfo(sessionId).get().getUser().getEmail();
+    String email = authApi().getSessionInfo(sessionId).getUser().getEmail();
 
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
     // can trigger the forgot flow multiple times!!
@@ -235,7 +237,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void password_reset__should_fail__when_invalid_payload() throws JsonProcessingException {
-    String payload = objectMapper.writeValueAsString(new PasswordResetRequestDTO("pass"));
+    String payload = objectMapper.writeValueAsString(new PasswordResetRequestDTO(""));
 
     given()
         .when()
@@ -246,7 +248,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Password must be at least 8 characters long\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"password\":\"Required\"}}}"));
   }
 
   @Test
@@ -269,7 +271,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   public void password_reset_flow__should_require_verification__if_tfa_setup()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    AuthUser user = authApi().getSessionInfo(sessionId).get().getUser();
+    User user = authApi().getSessionInfo(sessionId).getUser();
     String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
 
     // init flow
@@ -332,7 +334,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", signUpEmail)
         .param("password", oldPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\": true}"));
@@ -382,7 +384,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", signUpEmail)
         .param("password", oldPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -396,7 +398,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", signUpEmail)
         .param("password", newPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\": true}"))
@@ -447,7 +449,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"body\":\"Required\"}}}"));
 
-    String authToken = authApi().createAuthToken(sessionId);
+    String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -477,8 +479,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void password_change__should_fail__when_invalid_body() throws JsonProcessingException {
-    PasswordChangeRequestDTO passwordChangeRequestDTO =
-        new PasswordChangeRequestDTO("haba", "aba", "caba");
+    PasswordChangeRequestDTO passwordChangeRequestDTO = new PasswordChangeRequestDTO("", "", "");
 
     given()
         .when()
@@ -490,7 +491,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"confirmNewPassword\":\"Password must be at least 8 characters long\",\"newPassword\":\"Password must be at least 8 characters long\",\"currentPassword\":\"Password must be at least 8 characters long\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"confirmNewPassword\":\"Required\",\"newPassword\":\"Required\",\"currentPassword\":\"Required\"}}}"));
   }
 
   @Test
@@ -529,7 +530,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"New password cannot be the same as the previous one!\"}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"newPassword\":\"New password cannot be the same as the previous one!\"}}}"));
   }
 
   @Test
@@ -580,7 +581,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .param("email", email)
         .param("password", oldPassword)
         .header("referer", "http://localhost:3000")
-        .post(SsoResource.PATH + "/login")
+        .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
         .body(
@@ -589,5 +590,76 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
 
     String newSessionId = authApi().login(email, newPassword);
     assertNotEquals(newSessionId, sessionId);
+  }
+
+  @Test
+  public void change_password__should_fail__when_organization_password_policy_violated()
+      throws JsonProcessingException {
+    String password = UUID.randomUUID().toString();
+    String email = password + "@gmail.com";
+    String sessionId = authApi().signUpAndLogin(email, password);
+
+    PasswordPolicy.create(
+            PasswordPolicyCreateParams.builder()
+                .minCharacters((short) 15)
+                .preventPasswordReuse(true)
+                .requireNonAlphanumericCharacter(true)
+                .build(),
+            authApi().sdkRequest().sessionId(sessionId).build())
+        .toCompletableFuture()
+        .join();
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(
+            objectMapper.writeValueAsString(
+                new PasswordChangeRequestDTO(password, password, password)))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"newPassword\":\"New password cannot be the same as the previous one!\"}}}"));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(
+            objectMapper.writeValueAsString(
+                new PasswordChangeRequestDTO(password, "password123", "password123")))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"newPassword\":\"Password should contain at least 15 characters\"}}}"));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(
+            objectMapper.writeValueAsString(
+                new PasswordChangeRequestDTO(password, "password123456789", "password123456789")))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"newPassword\":\"Password should contain at least one non-alphanumeric character\"}}}"));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(
+            objectMapper.writeValueAsString(
+                new PasswordChangeRequestDTO(password, "password123456789!", "password123456789!")))
+        .post(PASSWORD_CHANGE_PATH)
+        .then()
+        .statusCode(204);
   }
 }

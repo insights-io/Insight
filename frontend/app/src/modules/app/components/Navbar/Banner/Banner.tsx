@@ -3,17 +3,17 @@ import { PLACEMENT, StatefulPopover } from 'baseui/popover';
 import { Theme } from 'baseui/theme';
 import React, { useMemo } from 'react';
 import useHover from 'shared/hooks/useHover';
-import type { User } from '@insight/types';
+import type { AvatarDTO, User } from '@insight/types';
 import { Block } from 'baseui/block';
 import { VerticalAligned, expandBorderRadius } from '@insight/elements';
 import { ChevronDown } from 'baseui/icon';
 import {
   ACCOUNT_SETTINGS_AUTH_TOKENS_PAGE,
   ACCOUNT_SETTINGS_DETAILS_PAGE,
-  ORGANIZATION_SETTINGS_AUTH_PAGE,
   ORGANIZATION_SETTINGS_BILLING_USAGE_AND_PAYMENTS_PAGE,
   ORGANIZATION_SETTINGS_MEMBERS_PAGE,
   LOGIN_PAGE,
+  ORGANIZATION_SETTINGS_GENERAL_PAGE,
 } from 'shared/constants/routes';
 import {
   ACCOUNT_SETTINGS_SECTION,
@@ -26,6 +26,9 @@ import {
 import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { toaster } from 'baseui/toast';
+import * as zIndex from 'shared/constants/zIndex';
+
+import { OrganizationAvatar } from '../../OrganizationAvatar';
 
 import { BannerCard } from './BannerCard';
 import {
@@ -37,6 +40,7 @@ import { MenuOptionItem } from './MenuOptionItem';
 type Props = {
   theme: Theme;
   organizationName: string | undefined;
+  organizationAvatar: AvatarDTO | undefined;
   user: User;
   expanded: boolean;
 };
@@ -44,6 +48,7 @@ type Props = {
 export const NavbarBanner = ({
   user,
   organizationName,
+  organizationAvatar,
   expanded,
   theme,
 }: Props) => {
@@ -59,7 +64,7 @@ export const NavbarBanner = ({
       Organization: [
         {
           label: ORGANIZATION_SETTINGS_SECTION,
-          link: ORGANIZATION_SETTINGS_AUTH_PAGE,
+          link: ORGANIZATION_SETTINGS_GENERAL_PAGE,
         },
         {
           label: MEMBERS_SECTION,
@@ -101,7 +106,7 @@ export const NavbarBanner = ({
       overrides={{
         Inner: { style: borderRadius },
         Body: {
-          style: { zIndex: 2, ...borderRadius },
+          style: { zIndex: zIndex.SIDEBAR, ...borderRadius },
           props: { className: 'banner--menu' },
         },
       }}
@@ -117,9 +122,7 @@ export const NavbarBanner = ({
                 email: user.email,
                 fullName: user.fullName,
                 organizationName,
-                overrides: {
-                  OrganizationBanner: { Avatar: { style: borderRadius } },
-                },
+                organizationAvatar,
               } as MenuOptionGroupItemProps,
             },
             List: { style: { width: '250px', ...borderRadius } },
@@ -130,7 +133,12 @@ export const NavbarBanner = ({
       <Block ref={callbackRef} className="banner">
         <BannerCard
           title={organizationName || 'My Organization'}
-          avatar={organizationName || 'O'}
+          avatar={
+            <OrganizationAvatar
+              name={organizationName}
+              avatar={organizationAvatar}
+            />
+          }
           titleExtra={
             <VerticalAligned marginLeft={theme.sizing.scale200}>
               <ChevronDown />

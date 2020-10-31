@@ -30,8 +30,8 @@ class InsightDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
-    const bootstrapScript = await ky(bootstrapScriptURI).text();
+    const bootstrapScriptUri = process.env.BOOTSTRAP_SCRIPT as string;
+    const bootstrapScript = await ky(bootstrapScriptUri).text();
 
     return {
       ...page,
@@ -61,7 +61,7 @@ class InsightDocument extends Document<Props> {
           />
           <meta name="theme-color" content="#000000" />
 
-          <link rel="shortcut icon" href="/static/favicon.ico" />
+          <link rel="shortcut icon" href="/assets/favicon.ico" />
 
           {this.props.stylesheets.map((sheet, i) => (
             <style

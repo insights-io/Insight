@@ -99,3 +99,8 @@ cli
 /Godeps/
 
 # End of https://www.toptal.com/developers/gitignore/api/go
+
+
+# Serverless framework
+.serverless
+.serverless_nextjs

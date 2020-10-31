@@ -63,7 +63,7 @@ public class TracedPgPool implements SqlPool {
     Tags.DB_STATEMENT.set(span, statement);
 
     List<Object> values = query.getBindValues();
-    log.debug("[SQL]: Executing SQL statement: {} values: {}", statement, values);
+    log.debug("[SQL]: Executing SQL statement={} values={}", statement, values);
 
     return client
         .preparedQuery(statement)
@@ -77,7 +77,11 @@ public class TracedPgPool implements SqlPool {
         .exceptionally(
             throwable -> {
               TracingUtils.finishExceptionally(span, throwable);
-              log.error("[SQL]: Failed to execute SQL statement: {}", statement, throwable);
+              log.error(
+                  "[SQL]: Failed to execute SQL statement={} values={}",
+                  statement,
+                  values,
+                  throwable);
               throw new SqlQueryException((PgException) throwable.getCause(), statement, values);
             });
   }

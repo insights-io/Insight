@@ -41,6 +41,7 @@ export const Base = () => {
       <NavbarBanner
         expanded
         organizationName={INSIGHT_ORGANIZATION.name}
+        organizationAvatar={undefined}
         user={INSIGHT_ADMIN}
         theme={theme}
       />
@@ -60,6 +61,7 @@ export const NamelessUserAndOrganization = () => {
       <NavbarBanner
         expanded
         organizationName={undefined}
+        organizationAvatar={undefined}
         user={NAMELESS_INSIGHT_ADMIN}
         theme={theme}
       />

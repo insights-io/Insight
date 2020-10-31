@@ -15,6 +15,7 @@ import {
   startRequestSpan,
   prepareCrossServiceHeaders,
 } from 'modules/tracing';
+import { LOGIN_PAGE, VERIFICATION_PAGE } from 'shared/constants/routes';
 
 export type Authenticated = {
   organization: OrganizationDTO;
@@ -27,17 +28,22 @@ export const authenticated = async (
   requestSpan: Span
 ): Promise<Authenticated | undefined> => {
   const { SessionId, ChallengeId } = nextCookie(context);
-  const pathname = context.req.url;
+  const { url } = context.req;
 
   const span = startSpan('authMiddleware.authenticated', {
     childOf: requestSpan,
-    tags: { SessionId, ChallengeId, pathname },
+    tags: { SessionId, ChallengeId, url },
   });
 
   const redirect = (location: string, headers?: OutgoingHttpHeaders) => {
     let Location = location;
-    if (pathname) {
+    if (url) {
+      const [pathname, rest] = url.split('?');
       Location += `?redirect=${encodeURIComponent(pathname)}`;
+      if (rest) {
+        Location += `&${rest}`;
+      }
+      span.log({ message: `Redirecting to ${Location}` });
     }
     context.res.writeHead(302, { Location, ...headers });
     context.res.end();
@@ -45,11 +51,11 @@ export const authenticated = async (
   };
 
   const redirectToLogin = (headers?: OutgoingHttpHeaders) => {
-    return redirect('/login', headers);
+    return redirect(LOGIN_PAGE, headers);
   };
 
   const redirectToVerification = (headers?: OutgoingHttpHeaders) => {
-    return redirect('/login/verification', headers);
+    return redirect(VERIFICATION_PAGE, headers);
   };
 
   if (!SessionId) {

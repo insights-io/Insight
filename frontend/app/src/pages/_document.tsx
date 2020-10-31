@@ -33,14 +33,13 @@ export const getInitialProps = async (
   renderPage: DocumentContext['renderPage'],
   serverStyletron: Server
 ): Promise<Props> => {
-  const bootstrapScriptURI = process.env.BOOTSTRAP_SCRIPT as string;
-  const tags = { bootstrapScriptURI };
-
+  const bootstrapScriptUri = process.env.BOOTSTRAP_SCRIPT as string;
   let span: Span | undefined;
 
   // Request will be undefined if we are prerendering page
   if (req) {
     const incomingTracedMessage = req as IncomingTracedMessage;
+    const tags = { bootstrapScriptUri };
     span = incomingTracedMessage.span
       ? startSpan('_document.getInitialProps', {
           childOf: incomingTracedMessage.span,
@@ -49,7 +48,7 @@ export const getInitialProps = async (
       : startRequestSpan(incomingTracedMessage, tags);
   }
 
-  const fetchBootstrapScriptPromise = getBoostrapScript(bootstrapScriptURI);
+  const bootstrapScriptPromise = getBoostrapScript(bootstrapScriptUri);
   const renderPagePromise = renderPage({
     enhanceApp: (App) => (props) => (
       <StyletronProvider value={styletron}>
@@ -63,7 +62,7 @@ export const getInitialProps = async (
   try {
     const [page, bootstrapScript] = await Promise.all([
       renderPagePromise,
-      fetchBootstrapScriptPromise,
+      bootstrapScriptPromise,
     ]);
 
     return {
@@ -104,8 +103,8 @@ class InsightDocument extends Document<Props> {
             content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover"
           />
 
-          <link rel="shortcut icon" href="/static/favicon.ico" />
-          <link rel="manifest" href="/static/manifest.json" />
+          <link rel="shortcut icon" href="/assets/favicon.ico" />
+          <link rel="manifest" href="/assets/manifest.json" />
 
           <style>
             {`

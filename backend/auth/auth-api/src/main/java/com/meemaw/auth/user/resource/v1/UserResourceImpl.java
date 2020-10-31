@@ -9,11 +9,10 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.auth.user.service.UserService;
+import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -62,8 +61,9 @@ public class UserResourceImpl implements UserResource {
     return update(userId, principal.user(), body);
   }
 
-  private CompletionStage<Response> update(UUID userId, AuthUser actor, Map<String, Object> body) {
-    if (body.isEmpty()) {
+  private CompletionStage<Response> update(
+      UUID userId, AuthUser actor, Map<String, Object> params) {
+    if (params.isEmpty()) {
       return CompletableFuture.completedStage(
           Boom.badRequest()
               .message("Validation Error")
@@ -71,13 +71,7 @@ public class UserResourceImpl implements UserResource {
               .response());
     }
 
-    Map<String, String> errors = new HashMap<>();
-    for (Entry<String, ?> entry : body.entrySet()) {
-      if (!UserTable.UPDATABLE_FIELDS.contains(entry.getKey())) {
-        errors.put(entry.getKey(), "Unexpected field");
-      }
-    }
-
+    Map<String, String> errors = UpdateDTO.from(params).validate(UserTable.UPDATABLE_FIELDS);
     if (!errors.isEmpty()) {
       return CompletableFuture.completedStage(Boom.badRequest().errors(errors).response());
     }
@@ -86,7 +80,7 @@ public class UserResourceImpl implements UserResource {
       return CompletableFuture.completedStage(Boom.notFound().response());
     }
 
-    return userService.updateUser(actor, body).thenApply(DataResponse::ok);
+    return userService.updateUser(actor, params).thenApply(DataResponse::ok);
   }
 
   @Override

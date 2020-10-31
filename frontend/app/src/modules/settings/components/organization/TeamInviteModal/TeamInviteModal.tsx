@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
-import { Button, SIZE } from 'baseui/button';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalButton,
-} from 'baseui/modal';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'baseui/modal';
 import { useForm, Controller } from 'react-hook-form';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { useStyletron } from 'baseui';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import { createInputOverrides } from 'shared/styles/input';
@@ -24,40 +16,44 @@ import type {
   UserRole,
   TeamInviteDTO,
 } from '@insight/types';
+import { Input, Button } from '@insight/elements';
+import { applyApiFormErrors } from 'shared/utils/form';
 
 type Props = {
   createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
+  children: (open: () => void) => void;
 };
 
 const ADMIN: UserRole = 'admin';
-const STANDARD: UserRole = 'standard';
+const MEMBER: UserRole = 'member';
 
-const TeamInviteModal = ({ createTeamInvite }: Props) => {
+const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
   const [_css, theme] = useStyletron();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
-  const { register, handleSubmit, errors, control } = useForm<
+  const { register, handleSubmit, errors, control, setError, reset } = useForm<
     TeamInviteCreateDTO
   >();
   const inputOverrides = createInputOverrides(theme);
 
   const close = () => {
     setIsOpen(false);
+    reset({ email: undefined, role: undefined });
   };
 
   const open = () => {
     setIsOpen(true);
   };
 
-  const onSubmit = handleSubmit((formData) => {
+  const onSubmit = handleSubmit((data) => {
     if (isSubmitting) {
       return;
     }
     setIsSubmitting(true);
 
-    createTeamInvite(formData)
-      .then((_resp) => {
+    createTeamInvite(data)
+      .then(() => {
         toaster.positive('Member invited', {});
         setFormError(undefined);
         close();
@@ -65,15 +61,14 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
+        applyApiFormErrors(setError, errorDTO.error.errors);
       })
       .finally(() => setIsSubmitting(false));
   });
 
   return (
     <>
-      <Button onClick={open} size={SIZE.mini}>
-        Invite new member
-      </Button>
+      {children(open)}
       <Modal onClose={close} isOpen={isOpen}>
         <form onSubmit={onSubmit} noValidate>
           <ModalHeader>Invite new member</ModalHeader>
@@ -98,23 +93,23 @@ const TeamInviteModal = ({ createTeamInvite }: Props) => {
                 as={
                   <RadioGroup>
                     <Radio value={ADMIN}>Admin</Radio>
-                    <Radio value={STANDARD}>Regular</Radio>
+                    <Radio value={MEMBER}>Member</Radio>
                   </RadioGroup>
                 }
               />
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <ModalButton kind="tertiary" onClick={close}>
+            <Button kind="tertiary" onClick={close}>
               Cancel
-            </ModalButton>
-            <ModalButton
+            </Button>
+            <Button
               type="submit"
               isLoading={isSubmitting}
-              $style={{ width: '100%' }}
+              $style={{ marginLeft: theme.sizing.scale400 }}
             >
               Invite
-            </ModalButton>
+            </Button>
             {formError && <FormError error={formError} />}
           </ModalFooter>
         </form>

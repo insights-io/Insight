@@ -79,7 +79,7 @@ public class SqlPageDatasource implements PageDatasource {
       UUID id, UUID sessionId, UUID deviceId, CreatePageDTO page, SqlTransaction transaction) {
     Query query = insertPageQuery(id, sessionId, page);
     return transaction
-        .query(query)
+        .execute(query)
         .thenApply(
             rowSet ->
                 PageIdentity.builder().pageId(id).sessionId(sessionId).deviceId(deviceId).build());

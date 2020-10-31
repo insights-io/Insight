@@ -101,6 +101,8 @@ spec:
                   key: password
             - name: POSTGRES_HOST
               value: postgres-postgresql
+            - name: BCRYPT_LOG_ROUNDS
+              value: '13'
           ports:
             - containerPort: 80
               name: http

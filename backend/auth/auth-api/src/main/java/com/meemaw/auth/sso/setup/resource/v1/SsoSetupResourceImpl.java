@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.setup.resource.v1;
 
 import com.meemaw.auth.core.EmailUtils;
-import com.meemaw.auth.sso.IdpServiceRegistry;
+import com.meemaw.auth.sso.IdentityProviderRegistry;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
@@ -28,7 +28,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
   @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject SsoSetupService ssoSetupService;
   @Inject InsightPrincipal insightPrincipal;
-  @Inject IdpServiceRegistry idpServiceRegistry;
+  @Inject IdentityProviderRegistry identityProviderRegistry;
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
@@ -88,7 +88,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
               }
 
               return DataResponse.ok(
-                  idpServiceRegistry.ssoSignInLocationBase(
+                  identityProviderRegistry.ssoSignInLocationBase(
                       maybeSsoSetup.get().getMethod(), serverBaseURI));
             });
   }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.rebrowse.model.ApiRequestParams;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletionStage;
@@ -30,13 +31,23 @@ public final class ApiResource {
     return mapper;
   }
 
-  public static <T> CompletionStage<T> get(
-      String url, Class<T> clazz, RequestOptions requestOptions) {
+  public static <R> CompletionStage<R> get(
+      String url, Class<R> clazz, RequestOptions requestOptions) {
     return httpClient.get(url, clazz, requestOptions);
   }
 
-  public static <T> CompletionStage<T> post(
-      String url, Class<T> clazz, RequestOptions requestOptions) {
+  public static <R> CompletionStage<R> post(
+      String url, Class<R> clazz, RequestOptions requestOptions) {
     return httpClient.post(url, clazz, requestOptions);
+  }
+
+  public static <P extends ApiRequestParams, R> CompletionStage<R> post(
+      String url, P params, Class<R> clazz, RequestOptions requestOptions) {
+    return httpClient.post(url, params, clazz, requestOptions);
+  }
+
+  public static <P extends ApiRequestParams, R> CompletionStage<R> patch(
+      String url, P params, Class<R> clazz, RequestOptions requestOptions) {
+    return httpClient.patch(url, params, clazz, requestOptions);
   }
 }

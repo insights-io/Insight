@@ -10,6 +10,6 @@ module.exports = {
   name: pack.name,
   testEnvironment: 'jest-environment-jsdom-sixteen',
   globals: {
-    'ts-jest': { tsConfig: 'tsconfig.jest.json' },
+    'ts-jest': { tsconfig: 'tsconfig.jest.json' },
   },
 };

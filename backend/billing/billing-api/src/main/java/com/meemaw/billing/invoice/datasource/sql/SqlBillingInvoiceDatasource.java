@@ -46,7 +46,7 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
   public CompletionStage<BillingInvoice> create(
       CreateBillingInvoiceParams params, SqlTransaction transaction) {
     Query query = buildCreateBillingInvoiceQuery(params);
-    return transaction.query(query).thenApply(rows -> mapBillingInvoice(rows.iterator().next()));
+    return transaction.execute(query).thenApply(rows -> mapBillingInvoice(rows.iterator().next()));
   }
 
   private Query buildCreateBillingInvoiceQuery(CreateBillingInvoiceParams params) {
@@ -79,7 +79,7 @@ public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {
   public CompletionStage<Optional<BillingInvoice>> update(
       String invoiceId, UpdateBillingInvoiceParams params, SqlTransaction transaction) {
     Query query = buildUpdateBillingInvoiceQuery(invoiceId, params);
-    return transaction.query(query).thenApply(this::onGetBillingInvoice);
+    return transaction.execute(query).thenApply(this::onGetBillingInvoice);
   }
 
   private Query buildUpdateBillingInvoiceQuery(

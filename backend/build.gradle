@@ -29,8 +29,9 @@ subprojects {
     apply plugin: "com.diffplug.spotless"
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_14
-        targetCompatibility = JavaVersion.VERSION_14
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(14)
+        }
     }
 
     compileJava {

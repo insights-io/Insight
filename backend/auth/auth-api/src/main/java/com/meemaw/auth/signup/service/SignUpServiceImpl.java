@@ -58,7 +58,6 @@ public class SignUpServiceImpl implements SignUpService {
       URL referer, URL serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
     MDC.put(LoggingConstants.USER_EMAIL, signUpRequestDTO.getEmail());
     log.info("[AUTH]: Sign up request for user: {}", signUpRequestDTO.getEmail());
-
     String hashedPassword = passwordService.hashPassword(signUpRequestDTO.getPassword());
     SignUpRequest signUpRequest =
         SignUpRequest.builder()
@@ -83,7 +82,8 @@ public class SignUpServiceImpl implements SignUpService {
         .thenCompose(
             emailTaken -> {
               if (emailTaken) {
-                log.info("[AUTH]: Sign up request email taken");
+                log.info("[AUTH]: Sign up request email={} already taken", email);
+                transaction.rollback();
                 return CompletableFuture.completedStage(Optional.empty());
               }
 
@@ -154,10 +154,16 @@ public class SignUpServiceImpl implements SignUpService {
                 signUpDatasource
                     .findSignUpRequest(token, transaction)
                     .thenCompose(
-                        maybeSignUpRequest ->
-                            completeSignUpRequest(
-                                maybeSignUpRequest.orElseThrow(() -> Boom.notFound().exception()),
-                                transaction)));
+                        maybeSignUpRequest -> {
+                          SignUpRequest signUpRequest =
+                              maybeSignUpRequest.orElseThrow(
+                                  () -> {
+                                    transaction.rollback();
+                                    return Boom.notFound().exception();
+                                  });
+
+                          return completeSignUpRequest(signUpRequest, transaction);
+                        }));
   }
 
   private CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUpRequest(
@@ -165,7 +171,9 @@ public class SignUpServiceImpl implements SignUpService {
     String email = signUpRequest.getEmail();
     UUID token = signUpRequest.getToken();
     MDC.put(LoggingConstants.USER_EMAIL, email);
+
     if (signUpRequest.hasExpired()) {
+      transaction.rollback();
       log.info("[AUTH]: Sign up request expired for user: {} token: {}", email, token);
       throw Boom.badRequest().message("Sign up request has expired").exception();
     }
@@ -223,7 +231,7 @@ public class SignUpServiceImpl implements SignUpService {
   private CompletionStage<AuthUser> ssoSignUp(
       String email,
       String fullName,
-      UserRole userRole,
+      Function<Organization, UserRole> userRoleProvider,
       Function<SqlTransaction, CompletionStage<Organization>> organizationProvider) {
     return sqlPool
         .beginTransaction()
@@ -238,7 +246,7 @@ public class SignUpServiceImpl implements SignUpService {
                                     email,
                                     fullName,
                                     organization.getId(),
-                                    userRole,
+                                    userRoleProvider.apply(organization),
                                     null,
                                     transaction)
                                 .thenCompose(
@@ -255,11 +263,10 @@ public class SignUpServiceImpl implements SignUpService {
   @Timed(name = "socialSignUp", description = "A measure of how long it takes to do social sign up")
   public CompletionStage<AuthUser> socialSignUp(String email, String fullName) {
     log.info("[AUTH]: Social sign up attempt email={}", email);
-
     return ssoSignUp(
         email,
         fullName,
-        UserRole.ADMIN,
+        (organization) -> UserRole.ADMIN,
         (transaction) ->
             organizationDatasource.createOrganization(
                 new CreateOrganizationParams(Organization.identifier(), null), transaction));
@@ -277,16 +284,27 @@ public class SignUpServiceImpl implements SignUpService {
     return ssoSignUp(
         email,
         fullName,
-        UserRole.STANDARD,
+        Organization::getDefaultRole,
         transaction ->
             organizationDatasource
                 .findOrganization(organizationId, transaction)
                 .thenApply(
                     maybeOrganization -> {
                       if (maybeOrganization.isEmpty()) {
+                        transaction.rollback();
                         throw Boom.badRequest().exception();
                       }
-                      return maybeOrganization.get();
+
+                      Organization organization = maybeOrganization.get();
+                      if (!organization.isOpenMembership()) {
+                        transaction.rollback();
+                        throw Boom.badRequest()
+                            .message(
+                                "Organization does not support open membership. Please contact your Administrator")
+                            .exception();
+                      }
+
+                      return organization;
                     }));
   }
 }
