@@ -50,6 +50,9 @@ jobs:
               cloudfront:
                 aliases: ['$PR_PREFIX.app.rebrowse.dev']
                 comment: '$PR_PREFIX (Managed by @sls-next/serverless-component)'
+                api/*:
+                  forward:
+                    headers: [Host]
                 certificate:
                   cloudFrontDefaultCertificate: false
                   acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
