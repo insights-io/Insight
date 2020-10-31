@@ -61,6 +61,13 @@ jobs:
                   cloudFrontDefaultCertificate: false
                   acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
           " > serverless.yml
-          npm install -g serverless
-          serverless
+          npx serverless --debug
           DISTRIBUTION_ID=$(cat .serverless/Template.app.CloudFront.json | jq -r '.id')
+      - name: Comment PR 💬
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: |
+            Preview available at: https://pr-$PR_NUMBER.app.rebrowse.dev
+          check_for_duplicate_msg: true

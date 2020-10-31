@@ -5,7 +5,8 @@
   "packageRules": [
     {
       "managers": ["gradle"],
-      "excludePackagePatterns": ["^io.quarkus"]
+      "packagePatterns": ["^io.quarkus"],
+      "enabled": false
     }
   ]
 }
