@@ -1,5 +1,5 @@
+/* eslint-disable no-console */
 import querystring from 'querystring';
-import url from 'url';
 
 import { createProxy } from 'http-proxy';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -13,6 +13,17 @@ let proxy: ReturnType<typeof createProxy>;
 export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
   if (!proxy) {
     proxy = createProxy();
+    proxy.on('proxyReq', (req, res) => {
+      req.removeHeader('connection');
+      delete res.headers.connection;
+      delete res.headers.Connection;
+
+      console.log(req.headersSent);
+      console.log(req.getHeaderNames());
+      console.log(req.removeHeader);
+
+      console.log(res.rawHeaders);
+    });
   }
 
   return new Promise((resolve) => {
