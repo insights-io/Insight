@@ -46,6 +46,7 @@ jobs:
           echo "app:
             component: '@sls-next/serverless-component@1.18.0-alpha.27'
             inputs:
+              bucketRegion: '$AWS_REGION'
               cloudfront:
                 aliases: ['$PR_PREFIX.app.rebrowse.dev']
                 comment: '$PR_PREFIX (Managed by @sls-next/serverless-component)'
