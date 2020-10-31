@@ -1,18 +1,20 @@
 import querystring from 'querystring';
 import url from 'url';
 
-import httpProxy from 'http-proxy';
+import { createProxy } from 'http-proxy';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { getEnvOverrides, getApiProxy } from './config';
 
 export type ProxyConfiguration = Record<string, string | undefined>;
 
-const { createProxy } = httpProxy;
-
 let proxy: ReturnType<typeof createProxy>;
 
 export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
+  if (!proxy) {
+    proxy = createProxy();
+  }
+
   return new Promise((resolve) => {
     const { slug, ...queryParams } = req.query;
     const [api, ...path] = slug as string[];
@@ -60,8 +62,6 @@ const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
     if (!enabled) {
       return config;
     }
-
-    proxy = createProxy();
 
     return { ...config, env: getEnvOverrides() };
   };
