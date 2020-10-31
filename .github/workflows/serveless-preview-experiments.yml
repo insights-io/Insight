@@ -17,6 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_APP_PREVIEW_CERTIFICATE_ARN: ${{ secrets.AWS_APP_PREVIEW_CERTIFICATE_ARN }}
+  AWS_S3_APP_PREVIEW_BUCKET_NAME: ${{ secrets.AWS_S3_APP_PREVIEW_BUCKET_NAME }}
 
 jobs:
   preview:
@@ -47,6 +48,10 @@ jobs:
           JAEGER_AGENT_HOST=localhost
           JAEGER_AGENT_PORT=6832
           " > env.production
+      - name: Sync Serverless data from S3
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/pr-$PR_NUMBER/.serverless .serverless --delete
       - name: Serverless Deploy
         working-directory: frontend/app
         run: |
@@ -57,12 +62,17 @@ jobs:
             inputs:
               cloudfront:
                 aliases: ['pr-$PR_NUMBER.app.rebrowse.dev']
+                comment: 'Preview distribution (managed by @sls-next/serverless-component)'
                 certificate:
                   cloudFrontDefaultCertificate: false
                   acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
           " > serverless.yml
           npx serverless --debug
           DISTRIBUTION_ID=$(cat .serverless/Template.app.CloudFront.json | jq -r '.id')
+      - name: Sync Serverless data back to S3
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/.serverless --delete
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
