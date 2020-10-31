@@ -48,20 +48,21 @@ jobs:
           JAEGER_AGENT_HOST=localhost
           JAEGER_AGENT_PORT=6832
           " > env.production
-      - name: Sync Serverless data from S3
+      - name: Set environment variables
         run: |
           PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/pr-$PR_NUMBER/.serverless .serverless --delete
+          PR_PREFIX="pr-$PR_NUMBER"
+          echo "PR_PREFIX=$PR_PREFIX" >> $GITHUB_ENV
       - name: Serverless Deploy
         working-directory: frontend/app
         run: |
+          aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless .serverless --delete
           rm -rf src/pages/api
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
           echo "app:
             component: '@sls-next/serverless-component@1.18.0-alpha.27'
             inputs:
               cloudfront:
-                aliases: ['pr-$PR_NUMBER.app.rebrowse.dev']
+                aliases: ['$PR_PREFIX.app.rebrowse.dev']
                 comment: 'Preview distribution (managed by @sls-next/serverless-component)'
                 certificate:
                   cloudFrontDefaultCertificate: false
@@ -69,10 +70,7 @@ jobs:
           " > serverless.yml
           npx serverless --debug
           DISTRIBUTION_ID=$(cat .serverless/Template.app.CloudFront.json | jq -r '.id')
-      - name: Sync Serverless data back to S3
-        run: |
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/.serverless --delete
+          aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless --delete
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
