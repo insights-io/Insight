@@ -44,9 +44,12 @@ export const createRollupConfig = (options: Options) => {
   const plugins = [
     external(),
     typescript({ tsconfig: tsconfigPath }),
-    commonjs({ include: /\/node_modules\// }),
     resolve({ mainFields: ['browser', 'jsnext:main', 'module', 'main'] }),
   ];
+
+  if (options.format === 'umd') {
+    plugins.push(commonjs({ include: /\/node_modules\// }));
+  }
 
   if (options.env !== undefined) {
     plugins.push(
@@ -75,8 +78,6 @@ export const createRollupConfig = (options: Options) => {
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',
-        querystring: 'querystring',
-        url: 'url',
       },
       exports: 'named',
     },
