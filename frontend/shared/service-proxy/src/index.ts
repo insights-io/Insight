@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
 import querystring from 'querystring';
 
@@ -13,16 +15,10 @@ let proxy: ReturnType<typeof createProxy>;
 export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
   if (!proxy) {
     proxy = createProxy();
-    proxy.on('proxyReq', (req, res) => {
-      req.removeHeader('connection');
-      delete res.headers.connection;
-      delete res.headers.Connection;
-
-      console.log(req.headersSent);
-      console.log(req.getHeaderNames());
-      console.log(req.removeHeader);
-
-      console.log(res.rawHeaders);
+    proxy.on('proxyRes', (proxyRes, _req, res) => {
+      // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
+      delete proxyRes.headers.connection;
+      res.writeHead(proxyRes.statusCode!, proxyRes.headers);
     });
   }
 
