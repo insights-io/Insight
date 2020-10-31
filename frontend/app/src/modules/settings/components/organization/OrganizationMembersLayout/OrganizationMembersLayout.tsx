@@ -19,6 +19,7 @@ import { useOrganization } from 'shared/hooks/useOrganization';
 import { Tabs, Tab } from 'baseui/tabs-motion';
 import Link from 'next/link';
 import { UnstyledLink } from '@insight/elements';
+import { useTabRoute } from 'shared/hooks/useTabRoute';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -40,6 +41,8 @@ type Props = {
   renderTab: (user: User, organization: Organization) => React.ReactNode;
 };
 
+let previousTab: PageTab | undefined;
+
 export const OrganizationMembersLayout = ({
   user: initialUser,
   organization: initialOrganization,
@@ -48,6 +51,13 @@ export const OrganizationMembersLayout = ({
 }: Props) => {
   const { organization } = useOrganization(initialOrganization);
   const { user } = useUser(initialUser);
+  const activeTab = useTabRoute({
+    previous: previousTab,
+    current: pageTab,
+    setPrevious: (current) => {
+      previousTab = current;
+    },
+  });
 
   return (
     <OrganizationSettingsPageLayout
@@ -56,7 +66,7 @@ export const OrganizationMembersLayout = ({
       user={user}
       organization={organization}
     >
-      <Tabs activeKey={pageTab} activateOnFocus>
+      <Tabs activeKey={activeTab} activateOnFocus>
         {TABS.map(({ path, label }) => {
           return (
             <Tab
