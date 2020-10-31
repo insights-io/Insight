@@ -15,11 +15,6 @@ let proxy: ReturnType<typeof createProxy>;
 export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
   if (!proxy) {
     proxy = createProxy();
-    proxy.on('proxyRes', (_proxyRes, _req, res) => {
-      // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
-      res.setHeader('connection', '');
-      res.setHeader('Connection', '');
-    });
   }
 
   return new Promise((resolve) => {
@@ -46,8 +41,8 @@ export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     res.on('finish', () => {
-      console.log('HELLO WORLD');
-      console.log(res.getHeaders());
+      // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
+      res.removeHeader('connection');
       resolve();
     });
   });
