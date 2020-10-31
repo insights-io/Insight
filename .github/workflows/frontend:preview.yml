@@ -53,7 +53,7 @@ jobs:
                   cloudFrontDefaultCertificate: false
                   acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
           " > serverless.yml
-          echo "PROXY=staging" >> env.production
+          echo "PROXY=staging" >> .env.production
           npx serverless --debug
           aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless --delete
       - name: Comment PR 💬
