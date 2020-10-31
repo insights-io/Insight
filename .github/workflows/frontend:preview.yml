@@ -2,7 +2,7 @@
 on:
   pull_request:
     paths:
-      - '.github/workflows/serverless-preview-experiments.yml'
+      - '.github/workflows/frontend:preview.yml'
       - 'frontend/app/**'
       - 'frontend/shared/**'
       - 'jest.config.js'
@@ -75,5 +75,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           msg: |
-            Preview available at: https://${{ env.PR_PREFIX }}.app.rebrowse.dev
+            App preview available at: https://${{ env.PR_PREFIX }}.app.rebrowse.dev
           check_for_duplicate_msg: true

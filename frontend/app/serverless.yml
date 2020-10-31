@@ -1,6 +1,0 @@
-app:
-  component: '@sls-next/serverless-component@1.18.0-alpha.11'
-  inputs:
-    certificateArn: 'arn:aws:acm:us-east-1:712861137634:certificate/3fa8c523-49fc-43bf-a5d0-79c5280cf1a5'
-    cloudfront:
-      aliases: ['pr-1001.app.rebrowse.dev']
