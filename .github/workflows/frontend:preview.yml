@@ -56,7 +56,6 @@ jobs:
         working-directory: frontend/app
         run: |
           aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless .serverless --delete
-          rm -rf src/pages/api
           echo "app:
             component: '@sls-next/serverless-component@1.18.0-alpha.27'
             inputs:
