@@ -40,7 +40,6 @@ jobs:
           yarn install --frozen-lockfile
           yarn workspace @insight/app prebuild
           sed -i '180ires.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
-          cat node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
       - name: Serverless Deploy
         working-directory: frontend/app
         run: |
@@ -54,7 +53,7 @@ jobs:
                 comment: '$PR_PREFIX (Managed by @sls-next/serverless-component)'
                 api/*:
                   forward:
-                    headers: [Host]
+                    headers: [Host,Referer]
                 certificate:
                   cloudFrontDefaultCertificate: false
                   acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
