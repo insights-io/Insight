@@ -16,6 +16,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_APP_PREVIEW_CERTIFICATE_ARN: ${{ secrets.AWS_APP_PREVIEW_CERTIFICATE_ARN }}
 
 jobs:
   preview:
@@ -27,7 +28,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - name: Intsall NPM dependencies & build dependencies
+      - name: Install NPM dependencies & build dependencies
         run: |
           yarn install --frozen-lockfile
           yarn workspace @insight/app prebuild
