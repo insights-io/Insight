@@ -71,7 +71,7 @@ jobs:
           echo "DISTRIBUTION_DOMAIN=$DISTRIBUTION_DOMAIN" >> $GITHUB_ENV
           echo "DISTRIBUTION_URL=$DISTRIBUTION_URL" >> $GITHUB_ENV
           aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/.serverless --delete
-          aws s3 sync serverless.yml s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/serverless.yml --delete
+          aws s3 cp serverless.yml s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/serverless.yml
       - name: Create DNS records
         run: |
           aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch '{
