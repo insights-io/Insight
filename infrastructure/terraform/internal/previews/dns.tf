@@ -13,3 +13,15 @@ resource "github_actions_secret" "certificate_arn" {
   secret_name     = "AWS_APP_PREVIEW_CERTIFICATE_ARN"
   plaintext_value = module.certificate.arn
 }
+
+resource "github_actions_secret" "hosted_zone_id" {
+  repository      = module.global_vars.monorepo_repository
+  secret_name     = "AWS_DEV_HOSTED_ZONE_ID"
+  plaintext_value = data.aws_route53_zone.zone.id
+}
+
+resource "github_actions_secret" "dev_domain" {
+  repository      = module.global_vars.monorepo_repository
+  secret_name     = "DEV_DOMAIN_NAME"
+  plaintext_value = module.project_vars.domain
+}
