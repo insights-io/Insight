@@ -1,7 +1,8 @@
+/* eslint-disable global-require */
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-underscore-dangle */
 import { IncomingMessage } from 'http';
 
-import { initTracer, TracingConfig } from 'jaeger-client';
 import {
   Tracer,
   Span,
@@ -10,6 +11,9 @@ import {
   SpanContext,
   SpanOptions,
 } from 'opentracing';
+import type { TracingConfig } from 'jaeger-client';
+
+import { initTracer } from './init';
 
 let _tracer: Tracer | undefined;
 
@@ -26,7 +30,7 @@ export const getTracer = (): Tracer => {
       },
     };
 
-    _tracer = initTracer(config, {});
+    _tracer = initTracer(config);
   }
   return _tracer;
 };

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Block, BlockProps } from 'baseui/block';
-import { $StyleProp } from 'styletron-react';
+import type { $StyleProp } from 'styletron-react';
 import useWindowSize from 'shared/hooks/useWindowSize';
 import { useStyletron } from 'baseui';
 import {
@@ -55,9 +55,14 @@ export const AppLayout = ({
 
   const sidebarRef = useOnClickOutside<HTMLDivElement>(handleOnClickOutside);
 
-  const onSidebarMenuClick = useCallback(() => {
-    setSidebarVisible((prev) => !prev);
-  }, []);
+  const onSidebarMenuClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setSidebarVisible((prev) => !prev);
+    },
+    []
+  );
 
   const topbar = renderTopbar ? (
     <NavbarTopbar

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
 import querystring from 'querystring';
-import url from 'url';
 
 import { createProxy } from 'http-proxy';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -12,6 +13,10 @@ export type ProxyConfiguration = Record<string, string | undefined>;
 let proxy: ReturnType<typeof createProxy>;
 
 export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
+  if (!proxy) {
+    proxy = createProxy();
+  }
+
   return new Promise((resolve) => {
     const { slug, ...queryParams } = req.query;
     const [api, ...path] = slug as string[];
@@ -23,17 +28,10 @@ export const nextProxy = (req: NextApiRequest, res: NextApiResponse) => {
     }
     const proxiedUrl = `${proxiedApiBaseUrl}${proxiedPath}`;
 
-    const options = url.parse(proxiedUrl);
-    const host = options.host as string;
-    const protocol = options.protocol as string;
     const originalHost = req.headers.host as string;
 
     proxy.web(req, res, {
       target: proxiedUrl,
-      headers: {
-        'X-Forwarded-Host': host,
-        'X-Forwarded-Proto': protocol.substring(0, protocol.length - 1),
-      },
       ignorePath: true,
       secure: false,
       changeOrigin: true,
@@ -59,8 +57,6 @@ const withServiceProxy = ({ enabled }: WithServiceProxyConfiguration) => {
     if (!enabled) {
       return config;
     }
-
-    proxy = createProxy();
 
     return { ...config, env: getEnvOverrides() };
   };

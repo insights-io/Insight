@@ -78,11 +78,10 @@ export const createRollupConfig = (options: Options) => {
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',
-        querystring: 'querystring',
       },
       exports: 'named',
     },
-    external: ['querystring'],
+    external: ['querystring', 'url'],
     plugins,
   };
 };

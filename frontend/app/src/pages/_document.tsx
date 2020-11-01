@@ -103,8 +103,8 @@ class InsightDocument extends Document<Props> {
             content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover"
           />
 
-          <link rel="shortcut icon" href="/static/favicon.ico" />
-          <link rel="manifest" href="/static/manifest.json" />
+          <link rel="shortcut icon" href="/assets/favicon.ico" />
+          <link rel="manifest" href="/assets/manifest.json" />
 
           <style>
             {`

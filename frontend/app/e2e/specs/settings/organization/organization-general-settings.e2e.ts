@@ -69,7 +69,7 @@ test('[ORGANIZATION_GENERAL_SETTINGS]: User should be able to change general org
     .expect(queryByText('Required').visible)
     .ok('Should upload the avatar before saving')
     .setFilesToUpload(OrganizationGeneralSettingsPage.uploadAvatarInput, [
-      '../../../../public/static/icons/icon-72x72.png',
+      '../../../../public/assets/icons/icon-72x72.png',
     ])
     .expect(Selector(`img[src="${smallLogoBase64}"]`).visible)
     .ok('Logo visible')
@@ -80,7 +80,7 @@ test('[ORGANIZATION_GENERAL_SETTINGS]: User should be able to change general org
     )
     .ok('Avatar should be large enough')
     .setFilesToUpload(OrganizationGeneralSettingsPage.uploadAvatarInput, [
-      '../../../../public/static/icons/icon-512x512.png',
+      '../../../../public/assets/icons/icon-512x512.png',
     ])
     .expect(Selector(`img[src="${largeLogoBase64}"]`).visible)
     .ok('Logo visible')

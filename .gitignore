@@ -103,3 +103,4 @@ cli
 
 # Serverless framework
 .serverless
+.serverless_nextjs

@@ -61,7 +61,7 @@ class InsightDocument extends Document<Props> {
           />
           <meta name="theme-color" content="#000000" />
 
-          <link rel="shortcut icon" href="/static/favicon.ico" />
+          <link rel="shortcut icon" href="/assets/favicon.ico" />
 
           {this.props.stylesheets.map((sheet, i) => (
             <style
