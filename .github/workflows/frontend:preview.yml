@@ -20,7 +20,7 @@ env:
   AWS_S3_APP_PREVIEW_BUCKET_NAME: ${{ secrets.AWS_S3_APP_PREVIEW_BUCKET_NAME }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   AWS_DEV_HOSTED_ZONE_ID: ${{ secrets.AWS_DEV_HOSTED_ZONE_ID }}
-  DEV_DOMAIN_NAME: ${{ secreds.DEV_DOMAIN_NAME }}
+  DEV_DOMAIN_NAME: ${{ secrets.DEV_DOMAIN_NAME }}
 
 jobs:
   preview:
