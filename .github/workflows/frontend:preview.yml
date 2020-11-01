@@ -41,7 +41,8 @@ jobs:
       - name: Serverless remove
         working-directory: frontend/app
         run: |
-          aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME . --delete
+          aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/.serverless .serverless --delete
+          aws s3 cp s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/serverless.yml .serverless.yml
           DISTRIBUTION_URL=$(cat .serverless/Template.app.CloudFront.json | jq -r '.url')
           DISTRIBUTION_DOMAIN=$(echo "$DISTRIBUTION_URL" | awk -F/ '{print $3}')
           echo "DISTRIBUTION_DOMAIN=$DISTRIBUTION_DOMAIN" >> $GITHUB_ENV
