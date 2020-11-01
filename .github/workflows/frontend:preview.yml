@@ -36,7 +36,9 @@ jobs:
         run: |
           PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
           PR_PREFIX="pr-$PR_NUMBER"
+          PR_DEPLOYMENT_DOMAIN="$PR_PREFIX.app.$DEV_DOMAIN_NAME"
           echo "PR_PREFIX=$PR_PREFIX" >> $GITHUB_ENV
+          echo "PR_DEPLOYMENT_DOMAIN=$PR_DEPLOYMENT_DOMAIN" >> $GITHUB_ENV
       - name: Install NPM dependencies & build dependencies
         run: |
           yarn install --frozen-lockfile
@@ -56,8 +58,8 @@ jobs:
                 defaultLambda: 1024
                 apiLambda: 1024
               cloudfront:
-                aliases: ['$PR_PREFIX.app.$DEV_DOMAIN_NAME']
-                comment: '$PR_PREFIX (Managed by @sls-next/serverless-component)'
+                aliases: ['$PR_DEPLOYMENT_DOMAIN']
+                comment: '$PR_DEPLOYMENT_DOMAIN (Managed by @sls-next/serverless-component)'
                 api/*:
                   forward:
                     headers: [Host,Referer]
@@ -79,7 +81,7 @@ jobs:
             "Changes": [{
                       "Action": "UPSERT",
                       "ResourceRecordSet": {
-                                  "Name": "${{ env.PR_PREFIX }}.app.${{ env.DEV_DOMAIN_NAME }}",
+                                  "Name": "${{ env.PR_DEPLOYMENT_DOMAIN }}",
                                   "Type": "A",
                                   "AliasTarget":{
                                           "HostedZoneId": "Z2FDTNDATAQYW2",
@@ -91,6 +93,6 @@ jobs:
         uses: unsplash/comment-on-pr@master
         with:
           msg: |
-            App preview available at: https://${{ env.PR_PREFIX }}.app.${{ env.DEV_DOMAIN_NAME }}
+            App preview available at: https://${{ env.PR_DEPLOYMENT_DOMAIN }}
             You might need to wait a few minutes for the DNS changes to propagate. In the meantime you can access the deployment at: ${{ env.DISTRIBUTION_URL }}
           check_for_duplicate_msg: true
