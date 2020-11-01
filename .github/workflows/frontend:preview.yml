@@ -76,7 +76,7 @@ jobs:
           aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless --delete
       - name: Create DNS records
         run: |
-          aws route53 change-resource-record-sets --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch '{
+          aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch '{
             "Comment": "Creating Alias resource record sets in Route 53",
             "Changes": [{
                       "Action": "UPSERT",
