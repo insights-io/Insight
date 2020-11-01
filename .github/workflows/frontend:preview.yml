@@ -1,6 +1,7 @@
 ---
 on:
   pull_request:
+    types: [opened, reopened, synchronize, closed]
     paths:
       - '.github/workflows/frontend:preview.yml'
       - 'frontend/app/**'
@@ -26,6 +27,7 @@ jobs:
   preview:
     name: Deploy preview
     runs-on: ubuntu-latest
+    if: github.event.action != 'closed'
 
     steps:
       - uses: actions/checkout@v2
@@ -77,7 +79,7 @@ jobs:
       - name: Create DNS records
         run: |
           aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch '{
-            "Comment": "Creating Alias resource record sets in Route 53",
+            "Comment": "Creating alias resource record sets in Route 53",
             "Changes": [{
                       "Action": "UPSERT",
                       "ResourceRecordSet": {
@@ -95,3 +97,48 @@ jobs:
           msg: |
             App preview available at: https://${{ env.PR_DEPLOYMENT_DOMAIN }} 🚀
           check_for_duplicate_msg: true
+
+  cleanup:
+    name: Cleanup preview
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Set environment variables
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          PR_PREFIX="pr-$PR_NUMBER"
+          PR_DEPLOYMENT_DOMAIN="$PR_PREFIX.app.$DEV_DOMAIN_NAME"
+          echo "PR_PREFIX=$PR_PREFIX" >> $GITHUB_ENV
+          echo "PR_DEPLOYMENT_DOMAIN=$PR_DEPLOYMENT_DOMAIN" >> $GITHUB_ENV
+      - name: Install NPM dependencies
+        run: |
+          yarn install --frozen-lockfile
+        - name: Remove DNS records
+          run: |
+            aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch '{
+              "Comment": "Delete alias resource record sets in Route 53",
+              "Changes": [{
+                        "Action": "DELETE",
+                        "ResourceRecordSet": {
+                                    "Name": "${{ env.PR_DEPLOYMENT_DOMAIN }}",
+                                    "Type": "A",
+                                    "AliasTarget":{
+                                            "HostedZoneId": "Z2FDTNDATAQYW2",
+                                            "DNSName": "${{ env.DISTRIBUTION_DOMAIN }}",
+                                            "EvaluateTargetHealth": false
+                                      }}
+                                  }]}'
+        - name: Serverless remove
+          working-directory: frontend/app
+          run: |
+            aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX/.serverless .serverless --delete
+            echo "app:
+              component: '@sls-next/serverless-component@1.18.0-alpha.27'
+            " > serverless.yml
+            npx serverless remove --debug
+            aws s3 rm s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_PREFIX --recursive
