@@ -51,7 +51,6 @@ jobs:
             component: '@sls-next/serverless-component@1.18.0-alpha.27'
             inputs:
               bucketRegion: '$AWS_REGION'
-              name: '$PR_DEPLOYMENT_DOMAIN'
               memory:
                 defaultLambda: 1024
                 apiLambda: 1024
