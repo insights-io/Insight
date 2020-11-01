@@ -36,8 +36,7 @@ jobs:
           node-version: '14.x'
       - name: Set environment variables
         run: |
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          PR_PREFIX="pr-$PR_NUMBER"
+          PR_PREFIX="pr-${{ github.event.number }}"
           PR_DEPLOYMENT_DOMAIN="$PR_PREFIX.app.$DEV_DOMAIN_NAME"
           echo "PR_PREFIX=$PR_PREFIX" >> $GITHUB_ENV
           echo "PR_DEPLOYMENT_DOMAIN=$PR_DEPLOYMENT_DOMAIN" >> $GITHUB_ENV
@@ -110,8 +109,7 @@ jobs:
           node-version: '14.x'
       - name: Set environment variables
         run: |
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          PR_PREFIX="pr-$PR_NUMBER"
+          PR_PREFIX="pr-${{ github.event.number }}"
           PR_DEPLOYMENT_DOMAIN="$PR_PREFIX.app.$DEV_DOMAIN_NAME"
           echo "PR_PREFIX=$PR_PREFIX" >> $GITHUB_ENV
           echo "PR_DEPLOYMENT_DOMAIN=$PR_DEPLOYMENT_DOMAIN" >> $GITHUB_ENV
