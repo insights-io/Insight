@@ -93,6 +93,5 @@ jobs:
         uses: unsplash/comment-on-pr@master
         with:
           msg: |
-            App preview available at: https://${{ env.PR_DEPLOYMENT_DOMAIN }}
-            You might need to wait a few minutes for the DNS changes to propagate. In the meantime you can access the deployment at: ${{ env.DISTRIBUTION_URL }}
+            App preview available at: https://${{ env.PR_DEPLOYMENT_DOMAIN }} 🚀
           check_for_duplicate_msg: true
