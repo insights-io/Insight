@@ -52,6 +52,9 @@ jobs:
             component: '@sls-next/serverless-component@1.18.0-alpha.27'
             inputs:
               bucketRegion: '$AWS_REGION'
+              memory:
+                defaultLambda: 1024
+                apiLambda: 1024
               cloudfront:
                 aliases: ['$PR_PREFIX.app.$DEV_DOMAIN_NAME']
                 comment: '$PR_PREFIX (Managed by @sls-next/serverless-component)'
@@ -76,11 +79,11 @@ jobs:
             "Changes": [{
                       "Action": "UPSERT",
                       "ResourceRecordSet": {
-                                  "Name": "$PR_PREFIX.app.$DEV_DOMAIN_NAME",
+                                  "Name": "${{ env.PR_PREFIX }}.app.${{ env.DEV_DOMAIN_NAME }}",
                                   "Type": "A",
                                   "AliasTarget":{
                                           "HostedZoneId": "Z2FDTNDATAQYW2",
-                                          "DNSName": "$DISTRIBUTION_DOMAIN",
+                                          "DNSName": "${{ env.DISTRIBUTION_DOMAIN }}",
                                           "EvaluateTargetHealth": false
                                     }}
                                 }]}'
