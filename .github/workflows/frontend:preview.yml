@@ -43,6 +43,7 @@ jobs:
         run: |
           aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/.serverless .serverless --delete
           aws s3 cp s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/serverless.yml serverless.yml
+          mkdir -p /home/runner/.serverless/components/registry/npm/@sls-next/serverless-component@1.18.0-alpha.27
           npx serverless remove --debug
           aws s3 rm s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME --recursive
           DISTRIBUTION_URL=$(cat .serverless/Template.app.CloudFront.json | jq -r '.url')
