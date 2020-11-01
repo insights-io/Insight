@@ -71,7 +71,6 @@ jobs:
           echo "DISTRIBUTION_DOMAIN=$DISTRIBUTION_DOMAIN" >> $GITHUB_ENV
           echo "DISTRIBUTION_URL=$DISTRIBUTION_URL" >> $GITHUB_ENV
           aws s3 sync .serverless s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/.serverless --delete
-          aws s3 sync $HOME/.serverless/components/registry/npm/@sls-next s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/@sls-next --delete
           aws s3 cp serverless.yml s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/serverless.yml
       - name: Create DNS records
         run: |
@@ -111,9 +110,9 @@ jobs:
       - name: Serverless remove
         working-directory: frontend/app
         run: |
-          aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/@sls-next $HOME/.serverless/components/registry/npm/@sls-next --delete
           aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/.serverless .serverless --delete
           aws s3 cp s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/serverless.yml serverless.yml
+          npx serverless --debug
           npx serverless remove --debug
           aws s3 rm s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME --recursive
           DISTRIBUTION_URL=$(cat .serverless/Template.app.CloudFront.json | jq -r '.url')
