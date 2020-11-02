@@ -47,8 +47,10 @@ jobs:
       # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
       # http-proxy lib is not configurable enough to allow nice removal of 'connection' header. We should extract what we need at some point.
       - name: Serverless Deploy
-        working-directory: frontend/${{ matrix.name }}
+        working-directory: frontend/${{ matrix.target }}
         run: |
+          CERTIFICATE_ARN_LOOKUP="AWS_$(echo $matrix.target | tr a-z A-Z)_PREVIEW_CERTIFICATE_ARN"
+          CERTIFICATE_ARN=${{ secrets[CERTIFICATE_ARN_LOOKUP] }}
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
@@ -63,7 +65,6 @@ jobs:
           aws s3 cp serverless.yml s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/serverless.yml
         env:
           NAME: ${{ matrix.target }}
-          CERTIFICATE_ARN: ${{ secrets["AWS_$(echo $matrix.target | tr a-z A-Z)_PREVIEW_CERTIFICATE_ARN"] }}
           PR_DEPLOYMENT_DOMAIN: pr-${{ github.event.number }}.${{ matrix.target }}.${{ secrets.DEV_DOMAIN_NAME }}
       - name: Create DNS records
         run: |
