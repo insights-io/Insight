@@ -34,7 +34,7 @@ public class TfaTotpProvider extends AbstractTfaProvider<TfaTotpSetupStartDTO> {
   String issuer;
 
   @Override
-  public CompletionStage<Boolean> validate(int code, TfaSetup tfaSetup)
+  public CompletionStage<Boolean> completeChallenge(String challengeId, int code, TfaSetup tfaSetup)
       throws TfaChallengeValidatationException {
     String base32secret = ((TfaTotpSetup) tfaSetup).getSecret();
     try {

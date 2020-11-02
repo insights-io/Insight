@@ -39,6 +39,7 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
       TfaMethod method, String challengeId, TfaChallengeCompleteDTO body) {
     log.info("[AUTH] {} TFA complete request for challengeId={}", method, challengeId);
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
+
     return tfaChallengeService
         .complete(method, body.getCode(), challengeId)
         .thenApply(
@@ -107,8 +108,9 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
                               .exception();
                         }
 
+                        String codeKey = TfaSmsProvider.challengeCodeKey(challengeId);
                         return tfaSmsProvider
-                            .prepareChallenge(userId, user.getPhoneNumber())
+                            .sendVerificationCode(codeKey, user.getPhoneNumber())
                             .thenApply(DataResponse::ok);
                       });
             });

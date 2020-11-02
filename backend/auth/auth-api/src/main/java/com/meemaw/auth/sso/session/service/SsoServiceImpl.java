@@ -262,7 +262,7 @@ public class SsoServiceImpl implements SsoService {
     if (userTfaMethods.isEmpty()) {
       // TODO: check if organization has it enforced
 
-      return this.createSession(user)
+      return createSession(user)
           .thenApply(
               sessionId -> {
                 if (redirect != null) {

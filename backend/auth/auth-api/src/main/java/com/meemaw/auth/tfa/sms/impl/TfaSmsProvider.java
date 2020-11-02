@@ -32,16 +32,33 @@ public class TfaSmsProvider extends AbstractTfaProvider<TfaChallengeCodeDetailsD
   @Inject UserPhoneCodeService userPhoneCodeService;
 
   @Override
-  public CompletionStage<Boolean> validate(int actualCode, TfaSetup tfaSetup) {
-    return userPhoneCodeService.validate(actualCode, tfaSetup.getUserId());
+  public TfaMethod getMethod() {
+    return TfaMethod.SMS;
+  }
+
+  @Override
+  public CompletionStage<Boolean> completeChallenge(
+      String challengeId, int code, TfaSetup tfaSetup) {
+    String codeKey = challengeCodeKey(challengeId);
+    return userPhoneCodeService
+        .validate(code, codeKey)
+        .thenApply(
+            isValid -> {
+              if (isValid) {
+                userPhoneCodeDatasource.deleteCode(codeKey);
+              }
+              return isValid;
+            });
   }
 
   @Override
   @Traced
   public CompletionStage<TfaSetup> setupComplete(UUID userId, int actualCode) {
     log.info("[AUTH]: Complete TFA SMS setup request for user={}", userId);
+
+    String codeKey = setupCodeKey(userId);
     return userPhoneCodeService
-        .validate(actualCode, userId)
+        .validate(actualCode, codeKey)
         .thenCompose(
             isValid -> {
               if (!isValid) {
@@ -56,10 +73,14 @@ public class TfaSmsProvider extends AbstractTfaProvider<TfaChallengeCodeDetailsD
                           userTfaDatasource
                               .storeSmsTfa(userId, transaction)
                               .thenCompose(
-                                  tfaSetup -> {
-                                    userPhoneCodeDatasource.deleteCode(userId);
-                                    return transaction.commit().thenApply(k -> tfaSetup);
-                                  }))
+                                  tfaSetup ->
+                                      transaction
+                                          .commit()
+                                          .thenApply(
+                                              ignored -> {
+                                                userPhoneCodeDatasource.deleteCode(codeKey);
+                                                return tfaSetup;
+                                              })))
                   .thenApply(
                       tfaSetup -> {
                         log.info("[AUTH]: TFA SMS setup complete successful for user={}", userId);
@@ -87,22 +108,30 @@ public class TfaSmsProvider extends AbstractTfaProvider<TfaChallengeCodeDetailsD
               }
 
               return assertCanSetupTfa(userId)
-                  .thenCompose(i1 -> prepareChallenge(userId, user.getPhoneNumber()));
+                  .thenCompose(
+                      i1 -> sendVerificationCode(setupCodeKey(userId), user.getPhoneNumber()));
             });
   }
 
-  // TODO: check if setup actually exists
-  @Traced
-  public CompletionStage<TfaChallengeCodeDetailsDTO> prepareChallenge(
-      UUID userId, PhoneNumber phoneNumber) {
-    log.info("[AUTH]: Preparing TFA SMS challenge for user={} phoneNumber={}", userId, phoneNumber);
+  public CompletionStage<TfaChallengeCodeDetailsDTO> sendVerificationCode(
+      String key, PhoneNumber phoneNumber) {
     return userPhoneCodeService
-        .sendVerificationCode(userId, phoneNumber)
+        .sendVerificationCode(key, phoneNumber)
         .thenApply(TfaChallengeCodeDetailsDTO::new);
   }
 
-  @Override
-  public TfaMethod getMethod() {
-    return TfaMethod.SMS;
+  // TODO: should be 3 separate caches
+  // TODO: should be tied to sessionId
+  public static String verifyCodeKey(UUID userId) {
+    return String.format("%s-verify", userId);
+  }
+
+  // TODO: should be tied to sessionId
+  public static String setupCodeKey(UUID userId) {
+    return String.format("%s-setup", userId);
+  }
+
+  public static String challengeCodeKey(String challengeId) {
+    return String.format("%s-challenge", challengeId);
   }
 }

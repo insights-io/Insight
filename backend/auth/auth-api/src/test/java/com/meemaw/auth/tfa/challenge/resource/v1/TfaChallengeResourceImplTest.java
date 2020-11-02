@@ -2,6 +2,7 @@ package com.meemaw.auth.tfa.challenge.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,18 +10,31 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.model.SsoChallenge;
+import com.meemaw.auth.tfa.model.dto.ChallengeResponseDTO;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.model.dto.TfaSetupDTO;
+import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
+import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
+import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
+import com.meemaw.shared.rest.response.DataResponse;
+import com.meemaw.test.matchers.SameJSON;
+import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -37,6 +51,7 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
   @Inject UserDatasource userDatasource;
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
   @Inject UserTfaDatasource userTfaDatasource;
+  @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
 
   @Test
   public void get_tfa_challenge__should_throw__when_random_challenge_id() {
@@ -195,5 +210,126 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
+
+  @Test
+  public void complete_sms_tfa__should_cleanup_code__when_success() throws JsonProcessingException {
+    String password = UUID.randomUUID().toString();
+    String email = String.format("%s@gmail.com", password);
+    String sessionId =
+        authApi().signUpAndLogin(email, password, new PhoneNumberDTO("+1", "223344"));
+
+    User user = authApi().getSessionInfo(sessionId).getUser();
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(String.format("%s/phone_number/verify/send_code", UserResource.PATH))
+        .then()
+        .statusCode(200)
+        .body(SameJSON.sameJson("{\"data\":{\"validitySeconds\":60}}"));
+
+    String verifyCodeKey = TfaSmsProvider.verifyCodeKey(user.getId());
+    int verifyCode =
+        userPhoneCodeDatasource.getCode(verifyCodeKey).toCompletableFuture().join().get();
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(verifyCode)))
+        .patch(String.format("%s/phone_number/verify", UserResource.PATH));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(TfaSetupResource.PATH + "/sms/start")
+        .then()
+        .statusCode(200);
+
+    String setupCodeKey = TfaSmsProvider.setupCodeKey(user.getId());
+    int setupCode =
+        userPhoneCodeDatasource.getCode(setupCodeKey).toCompletableFuture().join().get();
+
+    DataResponse<TfaSetupDTO> dataResponse =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .body(objectMapper.writeValueAsString(new TfaChallengeCompleteDTO(setupCode)))
+            .post(TfaSetupResource.PATH + "/sms/complete")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(new TypeRef<>() {});
+
+    assertEquals(TfaMethod.SMS, dataResponse.getData().getMethod());
+
+    // We are on login page!
+    Response loginResponse =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("email", user.getEmail())
+            .param("password", password)
+            .header("referer", "http://localhost:3000")
+            .post(SsoSessionResource.PATH + "/login")
+            .then()
+            .statusCode(200)
+            .cookie(SsoChallenge.COOKIE_NAME)
+            .extract()
+            .response();
+
+    String challengeId = loginResponse.getDetailedCookie(SsoChallenge.COOKIE_NAME).getValue();
+    DataResponse<ChallengeResponseDTO> loginDataResponse =
+        loginResponse.body().as(new TypeRef<>() {});
+
+    assertEquals(challengeId, loginDataResponse.getData().getChallengeId());
+    assertEquals(
+        Collections.singletonList(TfaMethod.SMS), loginDataResponse.getData().getMethods());
+
+    // We are on challenge page now!
+    given()
+        .when()
+        .cookie(SsoChallenge.COOKIE_NAME, challengeId)
+        .post(TfaChallengeResource.PATH + "/sms/send_code")
+        .then()
+        .statusCode(200)
+        .extract()
+        .body()
+        .as(new TypeRef<>() {});
+
+    String challengeCodeKey = TfaSmsProvider.challengeCodeKey(challengeId);
+    int challengeCode =
+        userPhoneCodeDatasource.getCode(challengeCodeKey).toCompletableFuture().join().get();
+
+    String newSessionId =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(SsoChallenge.COOKIE_NAME, challengeId)
+            .body(objectMapper.writeValueAsString(new TfaChallengeCompleteDTO(challengeCode)))
+            .post(TfaChallengeResource.PATH + "/sms/complete")
+            .then()
+            .statusCode(204)
+            .cookie(SsoChallenge.COOKIE_NAME, "")
+            .extract()
+            .detailedCookie(SsoSession.COOKIE_NAME)
+            .getValue();
+
+    assertEquals(authApi().getSessionInfo(sessionId), authApi().getSessionInfo(newSessionId));
+
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoChallenge.COOKIE_NAME, challengeId)
+        .body(objectMapper.writeValueAsString(new TfaChallengeCompleteDTO(challengeCode)))
+        .post(TfaChallengeResource.PATH + "/sms/complete")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"TFA challenge session expired\"}}"));
   }
 }

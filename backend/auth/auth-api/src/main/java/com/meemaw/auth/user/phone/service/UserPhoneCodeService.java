@@ -5,7 +5,6 @@ import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.shared.sms.SmsMessage;
 import com.meemaw.shared.sms.SmsService;
 import java.security.SecureRandom;
-import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,23 +21,24 @@ public class UserPhoneCodeService {
   @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
   @Inject SmsService smsService;
 
-  public CompletionStage<Boolean> validate(int actualCode, UUID userId) {
+  public CompletionStage<Boolean> validate(int actualCode, String key) {
     return userPhoneCodeDatasource
-        .getCode(userId)
+        .getCode(key)
         .thenApply(
             maybeCode -> {
               if (maybeCode.isEmpty()) {
                 return false;
               }
+
               return maybeCode.get() == actualCode;
             });
   }
 
   @Traced
-  public CompletionStage<Integer> sendVerificationCode(UUID userId, PhoneNumber phoneNumber) {
+  public CompletionStage<Integer> sendVerificationCode(String key, PhoneNumber phoneNumber) {
     int code = newCode();
     return userPhoneCodeDatasource
-        .setCode(userId, code)
+        .setCode(key, code)
         .thenCompose(
             validitySeconds ->
                 sendVerificationCode(code, phoneNumber).thenApply(i1 -> validitySeconds));
