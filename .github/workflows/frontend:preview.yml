@@ -22,6 +22,8 @@ env:
   DEV_DOMAIN_NAME: ${{ secrets.DEV_DOMAIN_NAME }}
   PR_NAME: pr-${{ github.event.number }}
   PREVIEWS_BUCKET_NAME: ${{ secrets.AWS_S3_FRONTEND_PREVIEWS_BUCKET_NAME }}
+  PREVIEWS_APP_CERTIFICATE_ARN: ${{ secrets.AWS_APP_PREVIEW_CERTIFICATE_ARN }}
+  PREVIEWS_TRY_CERTIFICATE_ARN: ${{ secrets.AWS_TRY_PREVIEW_CERTIFICATE_ARN }}
 
 jobs:
   deploy_preview:
@@ -34,11 +36,11 @@ jobs:
           [
             {
               name: 'app',
-              certificate_arn: '${{ secrets.AWS_APP_PREVIEW_CERTIFICATE_ARN }}',
+              certificate_arn: '${{ env.AWS_APP_PREVIEW_CERTIFICATE_ARN }}',
             },
             {
               name: 'try',
-              certificate_arn: '${{ secrets.AWS_TRY_PREVIEW_CERTIFICATE_ARN }}',
+              certificate_arn: '${{ env.AWS_TRY_PREVIEW_CERTIFICATE_ARN }}',
             },
           ]
 
