@@ -3,6 +3,7 @@ package com.meemaw.auth.user.resource.v1;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
@@ -115,9 +116,9 @@ public class UserResourceImpl implements UserResource {
         userId,
         phoneNumber);
 
-    String key = String.format("%s-verify", userId);
+    String codeKey = TfaSmsProvider.verifyCodeKey(userId);
     return userPhoneCodeService
-        .sendVerificationCode(key, phoneNumber)
+        .sendVerificationCode(codeKey, phoneNumber)
         .thenApply(TfaChallengeCodeDetailsDTO::new)
         .thenApply(DataResponse::ok);
   }
