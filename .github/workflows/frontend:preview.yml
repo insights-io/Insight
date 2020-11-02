@@ -47,24 +47,7 @@ jobs:
         working-directory: frontend/app
         run: |
           aws s3 sync s3://$AWS_S3_APP_PREVIEW_BUCKET_NAME/$PR_NAME/.serverless .serverless --delete
-          echo "app:
-            component: '@sls-next/serverless-component@1.18.0-alpha.27'
-            inputs:
-              bucketRegion: '$AWS_REGION'
-              name: '$PR_NAME-app'
-              memory:
-                defaultLambda: 1024
-                apiLambda: 1024
-              cloudfront:
-                aliases: ['$PR_DEPLOYMENT_DOMAIN']
-                comment: '$PR_DEPLOYMENT_DOMAIN (Managed by @sls-next/serverless-component)'
-                api/*:
-                  forward:
-                    headers: [Host,Referer]
-                certificate:
-                  cloudFrontDefaultCertificate: false
-                  acmCertificateArn: '$AWS_APP_PREVIEW_CERTIFICATE_ARN'
-          " > serverless.yml
+          NAME='$PR_NAME-app' CERTIFICATE_ARN='$AWS_APP_PREVIEW_CERTIFICATE_ARN' envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
           npx serverless
           DISTRIBUTION_URL=$(cat .serverless/Template.app.CloudFront.json | jq -r '.url')
