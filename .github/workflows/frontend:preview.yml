@@ -25,7 +25,7 @@ env:
 
 jobs:
   deploy_preview:
-    name: Deploy previews
+    name: Deploy preview 🚀
     runs-on: ubuntu-latest
     if: github.event.action != 'closed'
     strategy:
@@ -50,7 +50,7 @@ jobs:
       - name: Install NPM dependencies & build dependencies
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/app prebuild
+          yarn workspace @insight/${{ matrix.target.name }} prebuild
           sed -i '180ires.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
       # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
       # http-proxy lib is not configurable enough to allow nice removal of 'connection' header. We should extract what we need at some point.
@@ -83,7 +83,7 @@ jobs:
           DNSName: ${{ env.DISTRIBUTION_DOMAIN }}
 
   comment_previews:
-    name: Comment previews
+    name: Comment preview 💬
     runs-on: ubuntu-latest
     needs: [deploy_preview]
 
@@ -97,9 +97,12 @@ jobs:
             Try preview available at: https://pr-${{ github.event.number }}.try.${{ secrets.DEV_DOMAIN_NAME }} 🚀
 
   cleanup_preview:
-    name: Cleanup preview
+    name: Cleanup preview 💣
     runs-on: ubuntu-latest
     if: github.event.action == 'closed'
+    strategy:
+      matrix:
+        target: ['app', 'try']
 
     steps:
       - uses: actions/checkout@v2
@@ -109,10 +112,10 @@ jobs:
       - name: Install NPM dependencies
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/app prebuild
+          yarn workspace @insight/${{ matrix.target }} prebuild
           sed -i '180ires.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
       - name: Serverless remove
-        working-directory: frontend/app
+        working-directory: frontend/${{ matrix.target }}
         run: |
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           aws s3 cp s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/serverless.yml serverless.yml
@@ -123,19 +126,12 @@ jobs:
           npx serverless remove
           aws s3 rm s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME --recursive
         env:
-          NAME: app
+          NAME: ${{ matrix.target }}
       - name: Remove DNS records
         run: |
-          aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch '{
-            "Comment": "Delete alias resource record sets in Route 53",
-            "Changes": [{
-                      "Action": "DELETE",
-                      "ResourceRecordSet": {
-                                  "Name": "${{ env.PREVIEWS_APP_DEPLOYMENT_DOMAIN }}",
-                                  "Type": "A",
-                                  "AliasTarget":{
-                                          "HostedZoneId": "Z2FDTNDATAQYW2",
-                                          "DNSName": "${{ env.DISTRIBUTION_DOMAIN }}",
-                                          "EvaluateTargetHealth": false
-                                    }}
-                                }]}'
+          envsubst < frontend/shared/previews/route53-change-set.json > route53-change-set.json
+          aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch 'file://route53-change-set.json'
+        env:
+          action: DELETE
+          NAME: pr-${{ github.event.number }}.${{ matrix.target }}.${{ secrets.DEV_DOMAIN_NAME }}
+          DNSName: ${{ env.DISTRIBUTION_DOMAIN }}
