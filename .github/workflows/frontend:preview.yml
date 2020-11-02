@@ -50,7 +50,7 @@ jobs:
         working-directory: frontend/${{ matrix.target }}
         run: |
           CERTIFICATE_ARN_LOOKUP="AWS_$(echo $matrix.target | tr a-z A-Z)_PREVIEW_CERTIFICATE_ARN"
-          CERTIFICATE_ARN=${{ secrets[CERTIFICATE_ARN_LOOKUP] }}
+          CERTIFICATE_ARN=${{ env[CERTIFICATE_ARN_LOOKUP] }}
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
