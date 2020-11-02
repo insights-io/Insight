@@ -22,8 +22,6 @@ env:
   DEV_DOMAIN_NAME: ${{ secrets.DEV_DOMAIN_NAME }}
   PR_NAME: pr-${{ github.event.number }}
   PREVIEWS_BUCKET_NAME: ${{ secrets.AWS_S3_FRONTEND_PREVIEWS_BUCKET_NAME }}
-  PREVIEWS_APP_CERTIFICATE_ARN: ${{ secrets.AWS_APP_PREVIEW_CERTIFICATE_ARN }}
-  PREVIEWS_TRY_CERTIFICATE_ARN: ${{ secrets.AWS_TRY_PREVIEW_CERTIFICATE_ARN }}
 
 jobs:
   deploy_preview:
@@ -33,6 +31,16 @@ jobs:
     strategy:
       matrix:
         target: ['app', 'try']
+          [
+            {
+              name: 'app',
+              certificate_arn_lookup: 'AWS_APP_PREVIEW_CERTIFICATE_ARN'
+            },
+            {
+              name: 'try',
+              certificate_arn_lookup: 'AWS_TRY_PREVIEW_CERTIFICATE_ARN'
+            },
+          ]
 
     steps:
       - uses: actions/checkout@v2
@@ -47,10 +55,8 @@ jobs:
       # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
       # http-proxy lib is not configurable enough to allow nice removal of 'connection' header. We should extract what we need at some point.
       - name: Serverless Deploy
-        working-directory: frontend/${{ matrix.target }}
+        working-directory: frontend/${{ matrix.name }}
         run: |
-          CERTIFICATE_ARN_LOOKUP="AWS_$(echo $matrix.target | tr a-z A-Z)_PREVIEW_CERTIFICATE_ARN"
-          CERTIFICATE_ARN=${{ env[CERTIFICATE_ARN_LOOKUP] }}
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
@@ -64,15 +70,16 @@ jobs:
           aws s3 sync .serverless s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless --delete
           aws s3 cp serverless.yml s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/serverless.yml
         env:
-          NAME: ${{ matrix.target }}
-          PR_DEPLOYMENT_DOMAIN: pr-${{ github.event.number }}.${{ matrix.target }}.${{ secrets.DEV_DOMAIN_NAME }}
+          NAME: ${{ matrix.target.name }}
+          CERTIFICATE_ARN: ${{ secrets[matrix.target.certificate_arn_lookup] }}
+          PR_DEPLOYMENT_DOMAIN: pr-${{ github.event.number }}.${{ matrix.target.name }}.${{ secrets.DEV_DOMAIN_NAME }}
       - name: Create DNS records
         run: |
           envsubst < frontend/shared/previews/route53-change-set.json > route53-change-set.json
           aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch 'file://route53-change-set.json'
         env:
           ACTION: UPSERT
-          NAME: pr-${{ github.event.number }}.${{ matrix.target }}.${{ secrets.DEV_DOMAIN_NAME }}
+          NAME: pr-${{ github.event.number }}.${{ matrix.target.name }}.${{ secrets.DEV_DOMAIN_NAME }}
           DNSName: ${{ env.DISTRIBUTION_DOMAIN }}
 
   comment_previews:
