@@ -1,0 +1,19 @@
+$NAME:
+  component: '@sls-next/serverless-component@1.18.0-alpha.27'
+  inputs:
+    bucketRegion: '$AWS_REGION'
+    name:
+      defaultLambda: '$PR_NAME-$NAME-default-lambda'
+      apiLambda: '$PR_NAME-$NAME-api-lambda'
+    memory:
+      defaultLambda: 1024
+      apiLambda: 1024
+    cloudfront:
+      aliases: ['$PR_DEPLOYMENT_DOMAIN']
+      comment: '$PR_DEPLOYMENT_DOMAIN (Managed by @sls-next/serverless-component)'
+      api/*:
+        forward:
+          headers: [Host, Referer]
+      certificate:
+        cloudFrontDefaultCertificate: false
+        acmCertificateArn: '$CERTIFICATE_ARN'
