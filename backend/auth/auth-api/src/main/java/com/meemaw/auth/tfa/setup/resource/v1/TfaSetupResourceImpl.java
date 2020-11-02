@@ -74,6 +74,7 @@ public class TfaSetupResourceImpl implements TfaSetupResource {
   public CompletionStage<Response> sendSmsCode() {
     AuthUser user = principal.user();
     PhoneNumber phoneNumber = user.getPhoneNumber();
-    return tfaSmsProvider.prepareChallenge(user.getId(), phoneNumber).thenApply(DataResponse::ok);
+    String codeKey = TfaSmsProvider.setupCodeKey(user.getId());
+    return tfaSmsProvider.sendVerificationCode(codeKey, phoneNumber).thenApply(DataResponse::ok);
   }
 }

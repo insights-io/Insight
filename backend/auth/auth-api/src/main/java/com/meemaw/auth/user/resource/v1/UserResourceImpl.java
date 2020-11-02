@@ -115,8 +115,9 @@ public class UserResourceImpl implements UserResource {
         userId,
         phoneNumber);
 
+    String key = String.format("%s-verify", userId);
     return userPhoneCodeService
-        .sendVerificationCode(userId, phoneNumber)
+        .sendVerificationCode(key, phoneNumber)
         .thenApply(TfaChallengeCodeDetailsDTO::new)
         .thenApply(DataResponse::ok);
   }

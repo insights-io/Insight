@@ -6,7 +6,7 @@ import java.util.concurrent.CompletionStage;
 
 public interface TfaProvider<T> {
 
-  CompletionStage<Boolean> validate(int code, TfaSetup tfaSetup)
+  CompletionStage<Boolean> completeChallenge(String challengeId, int code, TfaSetup tfaSetup)
       throws TfaChallengeValidatationException;
 
   CompletionStage<TfaSetup> setupComplete(UUID userId, int code);

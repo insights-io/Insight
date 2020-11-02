@@ -2,11 +2,13 @@ package com.meemaw.auth.user.service;
 
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
+import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
@@ -28,6 +30,7 @@ public class UserService {
   @Inject UserDatasource userDatasource;
   @Inject SsoSessionDatasource ssoSessionDatasource;
   @Inject UserPhoneCodeService userPhoneCodeService;
+  @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
 
   @Traced
   public CompletionStage<Optional<AuthUser>> getUser(UUID userId) {
@@ -77,8 +80,9 @@ public class UserService {
     }
 
     log.info("[AUTH]: Trying to verify phone number user={} code={}", userId, code);
+    String key = TfaSmsProvider.verifyCodeKey(userId);
     return userPhoneCodeService
-        .validate(code, userId)
+        .validate(code, key)
         .thenCompose(
             isValid -> {
               if (!isValid) {
@@ -88,8 +92,13 @@ public class UserService {
                 throw Boom.badRequest().errors(TfaChallengeService.INVALID_CODE_ERRORS).exception();
               }
 
-              return updateUser(
-                  userId, UpdateDTO.from(Map.of(UserTable.PHONE_NUMBER_VERIFIED, true)));
+              UpdateDTO updates = UpdateDTO.from(Map.of(UserTable.PHONE_NUMBER_VERIFIED, true));
+              return updateUser(userId, updates)
+                  .thenApply(
+                      updatedUser -> {
+                        userPhoneCodeDatasource.deleteCode(key);
+                        return updatedUser;
+                      });
             });
   }
 }

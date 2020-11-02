@@ -62,7 +62,7 @@ public class TfaChallengeService {
                         TfaProvider<?> tfaProvider = tfaProvidersRegistry.get(method);
                         try {
                           return tfaProvider
-                              .validate(code, tfaSetup)
+                              .completeChallenge(challengeId, code, tfaSetup)
                               .thenCompose(
                                   isValid -> {
                                     if (!isValid) {

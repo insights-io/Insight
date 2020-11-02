@@ -3,7 +3,6 @@ package com.meemaw.auth.user.phone.datasource;
 import com.hazelcast.map.IMap;
 import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -18,7 +17,7 @@ public class HazelcastUserPhoneCodeDatasource implements UserPhoneCodeDatasource
 
   private static final int VALIDITY_SECONDS = 60;
 
-  private IMap<UUID, Integer> userPhoneCodeMap;
+  private IMap<String, Integer> userPhoneCodeMap;
 
   @Inject HazelcastProvider hazelcastProvider;
 
@@ -32,19 +31,19 @@ public class HazelcastUserPhoneCodeDatasource implements UserPhoneCodeDatasource
   }
 
   @Override
-  public CompletionStage<Integer> setCode(UUID userId, int code) {
+  public CompletionStage<Integer> setCode(String key, int code) {
     return userPhoneCodeMap
-        .setAsync(userId, code, VALIDITY_SECONDS, TimeUnit.SECONDS)
+        .setAsync(key, code, VALIDITY_SECONDS, TimeUnit.SECONDS)
         .thenApply(ignored -> VALIDITY_SECONDS);
   }
 
   @Override
-  public CompletionStage<Optional<Integer>> getCode(UUID userId) {
-    return userPhoneCodeMap.getAsync(userId).thenApply(Optional::ofNullable);
+  public CompletionStage<Optional<Integer>> getCode(String key) {
+    return userPhoneCodeMap.getAsync(key).thenApply(Optional::ofNullable);
   }
 
   @Override
-  public void deleteCode(UUID userId) {
-    userPhoneCodeMap.delete(userId);
+  public void deleteCode(String key) {
+    userPhoneCodeMap.delete(key);
   }
 }
