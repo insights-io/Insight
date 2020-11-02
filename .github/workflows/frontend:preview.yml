@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/frontend:preview.yml'
       - 'frontend/app/**'
+      - 'frontend/try/**'
       - 'frontend/shared/**'
       - 'jest.config.js'
       - 'lerna.json'
@@ -32,14 +33,8 @@ jobs:
       matrix:
         target:
           [
-            {
-              name: 'app',
-              certificate_arn_lookup: 'AWS_APP_PREVIEW_CERTIFICATE_ARN',
-            },
-            {
-              name: 'try',
-              certificate_arn_lookup: 'AWS_TRY_PREVIEW_CERTIFICATE_ARN',
-            },
+            { name: 'app', cert_arn_lookup: 'AWS_APP_PREVIEW_CERTIFICATE_ARN' },
+            { name: 'try', cert_arn_lookup: 'AWS_TRY_PREVIEW_CERTIFICATE_ARN' },
           ]
 
     steps:
@@ -71,7 +66,7 @@ jobs:
           aws s3 cp serverless.yml s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/serverless.yml
         env:
           NAME: ${{ matrix.target.name }}
-          CERTIFICATE_ARN: ${{ secrets[matrix.target.certificate_arn_lookup] }}
+          CERTIFICATE_ARN: ${{ secrets[matrix.target.cert_arn_lookup] }}
           PR_DEPLOYMENT_DOMAIN: pr-${{ github.event.number }}.${{ matrix.target.name }}.${{ secrets.DEV_DOMAIN_NAME }}
       - name: Create DNS records
         run: |
@@ -93,8 +88,9 @@ jobs:
         with:
           check_for_duplicate_msg: true
           msg: |
-            App preview available at: https://pr-${{ github.event.number }}.app.${{ secrets.DEV_DOMAIN_NAME }} 🚀
-            Try preview available at: https://pr-${{ github.event.number }}.try.${{ secrets.DEV_DOMAIN_NAME }} 🚀
+            Available previews:
+            - app: https://pr-${{ github.event.number }}.app.${{ secrets.DEV_DOMAIN_NAME }} 🚀
+            - try: https://pr-${{ github.event.number }}.try.${{ secrets.DEV_DOMAIN_NAME }} 🚀
 
   cleanup_preview:
     name: Cleanup preview 💣
