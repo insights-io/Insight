@@ -30,15 +30,15 @@ jobs:
     if: github.event.action != 'closed'
     strategy:
       matrix:
-        target: ['app', 'try']
+        target:
           [
             {
               name: 'app',
-              certificate_arn_lookup: 'AWS_APP_PREVIEW_CERTIFICATE_ARN'
+              certificate_arn_lookup: 'AWS_APP_PREVIEW_CERTIFICATE_ARN',
             },
             {
               name: 'try',
-              certificate_arn_lookup: 'AWS_TRY_PREVIEW_CERTIFICATE_ARN'
+              certificate_arn_lookup: 'AWS_TRY_PREVIEW_CERTIFICATE_ARN',
             },
           ]
 
