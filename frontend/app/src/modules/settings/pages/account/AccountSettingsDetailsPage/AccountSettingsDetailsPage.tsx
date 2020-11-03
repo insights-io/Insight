@@ -35,6 +35,7 @@ export const AccountSettingsDetailsPage = ({
       organization={organization}
       path={PATH}
       header="Account details"
+      title="Details"
     >
       <AccountInfoTable user={user} updateUser={updateUser} setUser={setUser} />
     </AccountSettingsPageLayout>

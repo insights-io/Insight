@@ -69,7 +69,19 @@ export const TopbarMenu = ({
         </VerticalAligned>
 
         <VerticalAligned>
-          <Breadcrumbs>
+          <Breadcrumbs
+            overrides={{
+              List: { style: { display: 'flex', flexWrap: 'wrap' } },
+              ListItem: { style: { display: 'flex' } },
+              Separator: {
+                style: {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                },
+              },
+            }}
+          >
             {path.map((pathPart, index) => {
               const link = joinSegments(
                 path.slice(0, index + 1).map((p) => p.segment)
@@ -86,7 +98,7 @@ export const TopbarMenu = ({
       </Flex>
 
       {searchOptions.length > 0 && (
-        <VerticalAligned maxWidth="300px" width="100%">
+        <VerticalAligned maxWidth="300px" width="100%" marginLeft="16px">
           <Select
             options={searchOptions}
             placeholder="Search"

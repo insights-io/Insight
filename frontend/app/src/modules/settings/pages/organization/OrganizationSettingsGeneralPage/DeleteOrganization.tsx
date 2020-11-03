@@ -6,6 +6,7 @@ import { AuthApi } from 'api';
 import { toaster } from 'baseui/toast';
 import { useRouter } from 'next/router';
 import { LOGIN_PAGE } from 'shared/constants/routes';
+import { SIZE } from 'baseui/button';
 
 export const DeleteOrganization = () => {
   const router = useRouter();
@@ -33,6 +34,7 @@ export const DeleteOrganization = () => {
   return (
     <>
       <Button
+        size={SIZE.compact}
         $style={{ backgroundColor: theme.colors.negative400 }}
         onClick={() => setIsModalOpen(true)}
       >
@@ -45,7 +47,7 @@ export const DeleteOrganization = () => {
           sure you want to continue?
         </ModalBody>
         <ModalFooter>
-          <Button kind="tertiary" onClick={closeModal}>
+          <Button kind="tertiary" onClick={closeModal} size={SIZE.compact}>
             Cancel
           </Button>
           <Button
@@ -55,6 +57,7 @@ export const DeleteOrganization = () => {
               background: theme.colors.negative400,
               marginLeft: theme.sizing.scale400,
             }}
+            size={SIZE.compact}
           >
             Confirm
           </Button>

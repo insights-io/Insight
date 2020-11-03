@@ -9,6 +9,7 @@ import { useStyletron } from 'baseui';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import { Flex } from '@insight/elements';
+import Head from 'next/head';
 
 type Props = {
   user: UserDTO;
@@ -51,6 +52,9 @@ export const InsightsPage = ({
         },
       }}
     >
+      <Head>
+        <title>Insights</title>
+      </Head>
       <LocationDistribution countByLocation={countByLocation} />
       <Flex width="100%" marginTop={theme.sizing.scale600}>
         <CountByDeviceClass

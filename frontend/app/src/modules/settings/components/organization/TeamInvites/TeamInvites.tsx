@@ -81,11 +81,16 @@ export const TeamInvites = ({
         onChange={(event) => setQuery(event.currentTarget.value)}
         clearable
         endEnhancer={isSearching ? <StyledSpinnerNext size={16} /> : undefined}
+        size={SIZE.compact}
       >
         <TeamInviteModal createTeamInvite={createTeamInvite}>
           {(open) => (
             <Block marginLeft="16px" width="240px">
-              <Button onClick={open} $style={{ width: '100%' }}>
+              <Button
+                onClick={open}
+                $style={{ width: '100%' }}
+                size={SIZE.compact}
+              >
                 <Plus /> Invite member
               </Button>
             </Block>

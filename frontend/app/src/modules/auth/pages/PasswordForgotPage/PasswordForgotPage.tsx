@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
 import { useStyletron } from 'baseui';
 import { Paragraph4, Paragraph2 } from 'baseui/typography';
-import { Button } from 'baseui/button';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { APIError, APIErrorDataResponse } from '@insight/types';
 import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api/auth';
-import { createInputOverrides } from 'shared/styles/input';
 import Link from 'next/link';
 import Head from 'next/head';
 import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import AuthPageLayout from 'modules/auth/components/PageLayout';
-import { Flex, SpacedBetween } from '@insight/elements';
+import { Button, Flex, SpacedBetween, Input } from '@insight/elements';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 
 type FormData = {
@@ -27,7 +24,6 @@ export const PasswordForgotPage = () => {
   const { register, handleSubmit, errors } = useForm<FormData>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
-  const inputOverrides = createInputOverrides(theme);
 
   const onSubmit = handleSubmit((formData) => {
     if (isSubmitting) {
@@ -47,18 +43,23 @@ export const PasswordForgotPage = () => {
 
   return (
     <AuthPageLayout subtitle={checkYourInbox ? 'Check your inbox!' : undefined}>
-      <Head>
-        <title>Insight | Password forgot</title>
-      </Head>
       {checkYourInbox ? (
-        <Flex justifyContent="center" marginBottom={theme.sizing.scale400}>
-          <Paragraph4>
-            If your email address is associated with an Insight account, you
-            will be receiving a password reset request shortly.
-          </Paragraph4>
-        </Flex>
+        <>
+          <Head>
+            <title>Check your inbox</title>
+          </Head>
+          <Flex justifyContent="center" marginBottom={theme.sizing.scale400}>
+            <Paragraph4>
+              If your email address is associated with an Insight account, you
+              will be receiving a password reset request shortly.
+            </Paragraph4>
+          </Flex>
+        </>
       ) : (
         <>
+          <Head>
+            <title>Forgot password?</title>
+          </Head>
           <Flex justifyContent="center" marginBottom={theme.sizing.scale400}>
             <Paragraph2>
               Enter your email below and we&apos;ll send you a link to reset
@@ -79,7 +80,6 @@ export const PasswordForgotPage = () => {
                 error={errors.email?.message}
               >
                 <Input
-                  overrides={inputOverrides}
                   id="email"
                   name="email"
                   type="email"

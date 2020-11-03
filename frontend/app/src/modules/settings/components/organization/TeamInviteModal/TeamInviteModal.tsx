@@ -18,6 +18,7 @@ import type {
 } from '@insight/types';
 import { Input, Button } from '@insight/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
+import { SIZE } from 'baseui/button';
 
 type Props = {
   createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
@@ -100,10 +101,11 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button kind="tertiary" onClick={close}>
+            <Button kind="tertiary" onClick={close} size={SIZE.compact}>
               Cancel
             </Button>
             <Button
+              size={SIZE.compact}
               type="submit"
               isLoading={isSubmitting}
               $style={{ marginLeft: theme.sizing.scale400 }}

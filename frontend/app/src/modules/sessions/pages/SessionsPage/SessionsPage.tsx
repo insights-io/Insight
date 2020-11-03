@@ -15,6 +15,7 @@ import { SessionFilter } from 'modules/sessions/components/SessionSearch/Session
 import { useUser } from 'shared/hooks/useUser';
 import { useSessions } from 'modules/sessions/hooks/useSessions';
 import { useOrganization } from 'shared/hooks/useOrganization';
+import Head from 'next/head';
 
 type Props = {
   user: UserDTO;
@@ -58,6 +59,10 @@ export const SessionsPage = ({
         },
       }}
     >
+      <Head>
+        <title>Sessions</title>
+      </Head>
+
       {hasSessions ? (
         <>
           <SessionSearch

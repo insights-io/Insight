@@ -65,6 +65,7 @@ export const OrganizationMembers = ({
     <Block>
       <Table.Header
         placeholder="Search members"
+        size={SIZE.compact}
         value={query}
         onChange={(event) => setQuery(event.currentTarget.value)}
         clearable

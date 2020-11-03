@@ -21,6 +21,7 @@ import type { Path } from 'modules/settings/types';
 import type { OrganizationDTO, UserDTO, UserRole } from '@insight/types';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
+import { SIZE } from 'baseui/input';
 
 import { DeleteOrganization } from './DeleteOrganization';
 import { SetupAvatar } from './SetupAvatar';
@@ -87,6 +88,7 @@ export const OrganizationSettingsGeneralPage = ({
       organization={organization}
       path={PATH}
       header="Organization settings"
+      title="General"
     >
       <Panel>
         <Panel.Header>General</Panel.Header>
@@ -106,6 +108,7 @@ export const OrganizationSettingsGeneralPage = ({
               name="id"
               placeholder="Organization ID"
               disabled
+              size={SIZE.compact}
             />
           </VerticalAligned>
         </Panel.Item>
@@ -128,6 +131,7 @@ export const OrganizationSettingsGeneralPage = ({
               placeholder="Display name"
               disabled={updatingName}
               onBlur={() => maybeUpdateName()}
+              size={SIZE.compact}
             />
           </VerticalAligned>
         </Panel.Item>
@@ -148,6 +152,7 @@ export const OrganizationSettingsGeneralPage = ({
               disabled
               name="createdAt"
               id="createdAt"
+              size={SIZE.compact}
             />
           </VerticalAligned>
         </Panel.Item>
@@ -168,6 +173,7 @@ export const OrganizationSettingsGeneralPage = ({
               disabled
               name="updatedAt"
               id="updatedAt"
+              size={SIZE.compact}
             />
           </VerticalAligned>
         </Panel.Item>
@@ -197,6 +203,7 @@ export const OrganizationSettingsGeneralPage = ({
                 onBlur={() => maybeUpdateDefaultRole()}
                 isLoading={updatingDefaultRole}
                 disabled={updatingDefaultRole}
+                size={SIZE.compact}
               />
             </VerticalAligned>
           </SpacedBetween>

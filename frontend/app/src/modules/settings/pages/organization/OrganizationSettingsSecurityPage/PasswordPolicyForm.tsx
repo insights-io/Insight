@@ -183,7 +183,7 @@ export const PasswordPolicyForm = ({ initialPasswordPolicy }: Props) => {
 
       <Divider />
       {apiError && <FormError error={apiError} />}
-      <Button type="submit" isLoading={isSubmitting}>
+      <Button type="submit" isLoading={isSubmitting} size={SIZE.compact}>
         Save
       </Button>
     </form>
