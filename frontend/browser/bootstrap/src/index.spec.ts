@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable jest/no-standalone-expect */
 /* eslint-disable no-underscore-dangle */
 import path from 'path';
 

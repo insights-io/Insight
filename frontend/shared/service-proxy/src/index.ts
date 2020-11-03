@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-console */
 import querystring from 'querystring';
 
 import { createProxy } from 'http-proxy';
