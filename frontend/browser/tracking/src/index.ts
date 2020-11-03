@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-
 import Context from 'context';
 import EventQueue from 'queue';
 import {

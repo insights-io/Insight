@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-nested-ternary */
 import { EventData } from 'event';
 
 export const enum ContentType {

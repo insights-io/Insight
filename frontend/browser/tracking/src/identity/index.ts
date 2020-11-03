@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-/* eslint-disable lodash/prefer-lodash-typecheck */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-underscore-dangle */
 
