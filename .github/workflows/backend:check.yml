@@ -118,3 +118,26 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cat report.xml | reviewdog -f=checkstyle -reporter=github-pr-check -name="checkstyle"
+
+  codeql:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: java
+      - name: Build
+        working-directory: backend
+        run: ./gradlew quarkusBuild --uber-jar
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
