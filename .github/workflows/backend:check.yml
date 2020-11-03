@@ -118,3 +118,9 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cat report.xml | reviewdog -f=checkstyle -reporter=github-pr-check -name="checkstyle"
+
+  gradle_wrapper_validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gradle/wrapper-validation-action@v1
