@@ -64,16 +64,22 @@ test('As a user with business email, I should be able to setup SAML SSO', async 
     metadataEndpoint: OrganizationAuthSettingsPage.OKTA_METADATA_ENDPOINT,
   });
 
+  const oktaDomain = 'snuderlstest';
+  const oktaOrganization = 'snuderls-org-2948061';
+  const oktaApp = `${oktaOrganization.split('-').join('')}_rebrowse_2`;
+
   // Is on okta page on SSO saml flow
   await Sidebar.signOut(t)
     .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, 'matej.snuderl@snuderls.eu')
     .click(LoginPage.signInButton)
     .expect(getTitle())
-    .eql('snuderls-org-2948061 - Sign In', 'Title indicates Okta page')
+    .eql(`${oktaOrganization} - Sign In`, 'Title indicates Okta page')
     .expect(getLocation())
     .match(
-      /^https:\/\/snuderlstest\.okta\.com\/login\/login\.htm\?fromURI=%2Flogin(.*)$/,
+      new RegExp(
+        `^https://${oktaDomain}.okta.com/login/login.htm\\?fromURI=%2Fapp%2F${oktaApp}%2FexkligrqDovHJsGmk5d5%2Fsso%2Fsaml%3FRelayState%3(.*)http%253A%252F%252Flocalhost%253A3000%252F$`
+      ),
       'Location indicates Okta page'
     )
     .expect(Selector('input[name="username"]').visible)
@@ -90,10 +96,12 @@ test('As a user with business email, I should be able to setup SAML SSO', async 
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
     .expect(getTitle())
-    .eql('snuderls-org-2948061 - Sign In', 'Title indicates Okta page')
+    .eql(`${oktaOrganization} - Sign In`, 'Title indicates Okta page')
     .expect(getLocation())
     .match(
-      /^https:\/\/snuderlstest\.okta\.com\/login\/login\.htm\?fromURI=%2Flogin(.*)$/,
+      new RegExp(
+        `^https://${oktaDomain}.okta.com/login/login.htm\\?fromURI=%2Fapp%2F${oktaApp}%2FexkligrqDovHJsGmk5d5%2Fsso%2Fsaml%3FRelayState%3(.*)http%253A%252F%252Flocalhost%253A3000%252Fsettings%252Forganization%252Fauth$`
+      ),
       'Location indicates Okta page'
     )
     .expect(Selector('input[name="username"]').visible)
