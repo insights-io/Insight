@@ -4,7 +4,11 @@ import type { Meta } from '@storybook/react';
 import { INSIGHT_ADMIN_DTO, SSO_SAML_SETUP_DTO } from 'test/data';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 import { AuthApi } from 'api';
-import { SamlConfigurationDTO, SamlSsoMethod } from '@insight/types';
+import {
+  SamlConfigurationDTO,
+  SamlSsoMethod,
+  SsoSetupDTO,
+} from '@insight/types';
 
 import { OrganizationSettingsAuthPage } from './OrganizationSettingsAuthPage';
 
@@ -23,7 +27,7 @@ export const WithSaml = () => {
   return (
     <OrganizationSettingsAuthPage
       {...baseProps}
-      maybeSsoSetup={SSO_SAML_SETUP_DTO}
+      maybeSsoSetup={SSO_SAML_SETUP_DTO as SsoSetupDTO}
     />
   );
 };
