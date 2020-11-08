@@ -70,7 +70,12 @@ test('As a user with business email, I should be able to setup SAML SSO', async 
     .typeText(LoginPage.workEmailInput, 'matej.snuderl@snuderls.eu')
     .click(LoginPage.signInButton)
     .expect(getTitle())
-    .eql('snuderls-org-2948061 - Sign In', 'Is on Okta page')
+    .eql('snuderls-org-2948061 - Sign In', 'Title indicates Okta page')
+    .expect(getLocation())
+    .match(
+      /^https:\/\/snuderlstest\.okta\.com\/login\/login\.htm\?fromURI=%2Flogin(.*)$/,
+      'Location indicates Okta page'
+    )
     .expect(Selector('input[name="username"]').visible)
     .ok('Has username input')
     .expect(Selector('input[name="password"]').visible)
@@ -85,7 +90,12 @@ test('As a user with business email, I should be able to setup SAML SSO', async 
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
     .expect(getTitle())
-    .eql('snuderls-org-2948061 - Sign In', 'Is on Okta page')
+    .eql('snuderls-org-2948061 - Sign In', 'Title indicates Okta page')
+    .expect(getLocation())
+    .match(
+      /^https:\/\/snuderlstest\.okta\.com\/login\/login\.htm\?fromURI=%2Flogin(.*)$/,
+      'Location indicates Okta page'
+    )
     .expect(Selector('input[name="username"]').visible)
     .ok('Has username input')
     .expect(Selector('input[name="password"]').visible)
