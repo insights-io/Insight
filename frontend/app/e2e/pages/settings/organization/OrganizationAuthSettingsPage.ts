@@ -7,7 +7,7 @@ import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettings
 type SsoMethodWithConfigurationEndpointText = 'Okta' | 'OneLogin' | 'Auth0';
 type SsoMethodWithoutConfigurationEndpointText =
   | 'Google'
-  | 'Microsoft'
+  | 'Active directory'
   | 'Github';
 
 type SetupSsoParams =

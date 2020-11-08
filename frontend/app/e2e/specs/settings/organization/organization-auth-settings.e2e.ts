@@ -1,4 +1,8 @@
-import { queryByTestId, queryByText } from '@testing-library/testcafe';
+import {
+  queryByDisplayValue,
+  queryByTestId,
+  queryByText,
+} from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { v4 as uuid } from 'uuid';
 
@@ -10,7 +14,7 @@ import {
   OrganizationSubscriptionSettingsPage,
   OrganizationAuthSettingsPage,
 } from '../../../pages';
-import { getLocation } from '../../../utils';
+import { getLocation, getTitle } from '../../../utils';
 
 fixture('/settings/organization/auth').page(
   OrganizationGeneralSettingsPage.path
@@ -65,12 +69,14 @@ test('As a user with business email, I should be able to setup SAML SSO', async 
     .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, 'matej.snuderl@snuderls.eu')
     .click(LoginPage.signInButton)
-    .expect(
-      queryByText(
-        'Sign-in with your snuderls-org-2948061 account to access Rebrowse'
-      ).visible
-    )
-    .ok('Is on okta page');
+    .expect(getTitle())
+    .eql('snuderls-org-2948061 - Sign In', 'Is on Okta page')
+    .expect(Selector('input[name="username"]').visible)
+    .ok('Has username input')
+    .expect(Selector('input[name="password"]').visible)
+    .ok('Has password input')
+    .expect(queryByDisplayValue('Sign In').visible)
+    .ok('Has Sign in button');
 
   // Is on okta page even after normal login flow
   await t
@@ -78,12 +84,14 @@ test('As a user with business email, I should be able to setup SAML SSO', async 
     .typeText(LoginPage.emailInput, 'matej.snuderl@snuderls.eu')
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
-    .expect(
-      queryByText(
-        'Sign-in with your snuderls-org-2948061 account to access Rebrowse'
-      ).visible
-    )
-    .ok('Is on okta page');
+    .expect(getTitle())
+    .eql('snuderls-org-2948061 - Sign In', 'Is on Okta page')
+    .expect(Selector('input[name="username"]').visible)
+    .ok('Has username input')
+    .expect(Selector('input[name="password"]').visible)
+    .ok('Has password input')
+    .expect(queryByDisplayValue('Sign In').visible)
+    .ok('Has Sign in button');
 });
 
 test('As a user with business email should be able to setup Google SSO', async (t) => {
@@ -165,7 +173,7 @@ test('As a user with business email, I should be able to setup Microsoft SSO', a
     .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
-  await OrganizationAuthSettingsPage.setupSso(t, { label: 'Microsoft' });
+  await OrganizationAuthSettingsPage.setupSso(t, { label: 'Active directory' });
 
   // Is on Microsoft SSO flow
   const microsoftInput = Selector('input[type="email"]').with({
