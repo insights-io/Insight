@@ -3,13 +3,14 @@ package com.meemaw.auth.sso.setup.resource.v1;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
-import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
-import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -75,7 +76,7 @@ public interface SsoSetupResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> create(@NotNull(message = "Required") @Valid CreateSsoSetupDTO body);
+  CompletionStage<Response> create(@NotNull(message = "Required") @Valid CreateSsoSetupParams body);
 
   @GET
   @Tag(name = TAG)
@@ -121,6 +122,44 @@ public interface SsoSetupResource {
       })
   CompletionStage<Response> get();
 
+  @DELETE
+  @Tag(name = TAG)
+  @Operation(summary = "Delete SSO setup")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(responseCode = "204", description = "Success"),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> delete();
+
   @GET
   @Path("{domain}")
   @Tag(name = TAG)
@@ -150,7 +189,7 @@ public interface SsoSetupResource {
       })
   CompletionStage<Response> get(@PathParam("domain") String domain);
 
-  class SsoSetupDataResponse extends OkDataResponse<SsoSetupDTO> {}
+  class SsoSetupDataResponse extends OkDataResponse<SsoSetup> {}
 
   class SsoSetupExistsDataResponse extends OkDataResponse<String> {}
 

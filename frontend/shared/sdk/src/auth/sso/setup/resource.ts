@@ -1,5 +1,10 @@
 import ky from 'ky-universal';
-import type { DataResponse, SsoMethod, SsoSetupDTO } from '@insight/types';
+import type {
+  DataResponse,
+  SsoMethod,
+  SsoSetupDTO,
+  SamlConfigurationDTO,
+} from '@insight/types';
 
 import { getData, withCredentials } from '../../../core';
 import type { RequestOptions } from '../../../core/types';
@@ -12,15 +17,18 @@ export const ssoSetupResource = (authApiBaseURL: string) => {
         .json<DataResponse<SsoSetupDTO>>()
         .then(getData);
     },
+    delete: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+      return ky.delete(`${baseURL}/v1/sso/setup`, withCredentials(rest));
+    },
     create: (
       method: SsoMethod,
-      configurationEndpoint: string | undefined,
+      saml: SamlConfigurationDTO | undefined,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
         .post(
           `${baseURL}/v1/sso/setup`,
-          withCredentials({ json: { method, configurationEndpoint }, ...rest })
+          withCredentials({ json: { method, saml }, ...rest })
         )
         .json<DataResponse<SsoSetupDTO>>()
         .then(getData);

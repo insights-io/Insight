@@ -14,6 +14,7 @@ dependencies {
     implementation project(":shared:shared-sql")
     implementation project(":shared:shared-sms")
     implementation project(":shared:shared-hazelcast")
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.3"
 
     testImplementation project(":shared:testing-utils")
 }

@@ -1,25 +1,31 @@
 package com.meemaw.auth.sso.setup.resource.v1;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.sso.setup.model.SamlMethod;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
-import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
+import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +33,25 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("integration")
 public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
+
+  @Test
+  public void delete__should_throw__when_unauthorized() {
+    ssoSessionCookieTestCases(Method.DELETE, SsoSetupResource.PATH);
+    ssoBearerTokenTestCases(Method.DELETE, SsoSetupResource.PATH);
+  }
+
+  @Test
+  public void delete__should_throw_404__when_setup_does_not_exist() {
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .delete(SsoSetupResource.PATH)
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
 
   @Test
   public void get_setup_by_domain__should_return_false__when_no_sso_setup() {
@@ -133,40 +158,46 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   }
 
   @Test
-  public void sso_saml_setup__should_fail__when_saml_without_configuration_endpoint() {
+  public void sso_saml_setup__should_fail__when_saml_without_configuration()
+      throws JsonProcessingException {
+    String payload =
+        objectMapper.writeValueAsString(new CreateSsoSetupParams(SsoMethod.SAML, null));
+
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body("{\"method\": \"saml\"}")
+        .body(payload)
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"configurationEndpoint\":\"Required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"saml\":\"Required\"}}}"));
   }
 
   @Test
-  public void sso_saml_setup__should_fail__when_broken_configuration_endpoint() {
+  public void sso_saml_setup__should_fail__when_malformed_url() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .body("{\"method\": \"saml\", \"configurationEndpoint\": \"random\"}")
+        .body("{\"method\": \"saml\", \"saml\": {\"metadataEndpoint\": \"random\"}}")
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
         .post(SsoSetupResource.PATH)
         .then()
         .statusCode(422)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"configurationEndpoint\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\"}}}"));
+                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"metadataEndpoint\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\",\"saml\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\"}}}"));
   }
 
   @Test
   public void sso_saml_setup__should_fail__when_endpoint_is_down()
       throws MalformedURLException, JsonProcessingException {
-    CreateSsoSetupDTO body =
-        new CreateSsoSetupDTO(SsoMethod.SAML, new URL("http://localhost:1000"));
+    CreateSsoSetupParams body =
+        new CreateSsoSetupParams(
+            SsoMethod.SAML,
+            new SamlConfiguration(SamlMethod.CUSTOM, new URL("http://localhost:1000")));
 
     given()
         .when()
@@ -178,14 +209,16 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Failed to fetch SSO configuration\",\"errors\":{\"configurationEndpoint\":\"Connection refused\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"saml\":{\"metadataEndpoint\":\"Failed to retrieve: Connection refused\"}}}}"));
   }
 
   @Test
   public void sso_saml_setup__should_fail__when_endpoint_does_not_serve_xml()
       throws MalformedURLException, JsonProcessingException {
-    CreateSsoSetupDTO body =
-        new CreateSsoSetupDTO(SsoMethod.SAML, new URL("https://www.google.com"));
+    CreateSsoSetupParams body =
+        new CreateSsoSetupParams(
+            SsoMethod.SAML,
+            new SamlConfiguration(SamlMethod.CUSTOM, new URL("https://www.google.com")));
 
     given()
         .when()
@@ -197,16 +230,17 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Failed to fetch SSO configuration\",\"errors\":{\"configurationEndpoint\":\"Unable to parse inputstream, it contained invalid XML\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"saml\":{\"metadataEndpoint\":\"Failed to retrieve: Malformed XML\"}}}}"));
   }
 
   @Test
   public void sso_saml_setup__should_fail__when_endpoint_404()
       throws MalformedURLException, JsonProcessingException {
-    CreateSsoSetupDTO body =
-        new CreateSsoSetupDTO(
+    CreateSsoSetupParams body =
+        new CreateSsoSetupParams(
             SsoMethod.SAML,
-            new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metada"));
+            SamlConfiguration.okta(
+                new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metada")));
 
     given()
         .when()
@@ -218,7 +252,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Failed to fetch SSO configuration\",\"errors\":{\"configurationEndpoint\":\"Not Found\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"saml\":{\"metadataEndpoint\":\"Failed to retrieve: Not Found\"}}}}"));
   }
 
   @Test
@@ -227,10 +261,11 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     String password = UUID.randomUUID().toString();
     String sessionId = authApi().signUpAndLogin(password + "@gmail.com", password);
 
-    CreateSsoSetupDTO body =
-        new CreateSsoSetupDTO(
+    CreateSsoSetupParams body =
+        new CreateSsoSetupParams(
             SsoMethod.SAML,
-            new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"));
+            SamlConfiguration.okta(
+                new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata")));
 
     given()
         .when()
@@ -246,6 +281,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   }
 
   @Test
+  @Disabled
   public void sso_saml_setup__should_work__when_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
     String password = UUID.randomUUID().toString();
@@ -254,7 +290,8 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
 
     URL configurationEndpoint =
         new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
-    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.SAML, configurationEndpoint);
+    CreateSsoSetupParams body =
+        new CreateSsoSetupParams(SsoMethod.SAML, SamlConfiguration.okta(configurationEndpoint));
 
     given()
         .when()
@@ -265,7 +302,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .then()
         .statusCode(201);
 
-    DataResponse<SsoSetupDTO> dataResponse =
+    DataResponse<SsoSetup> dataResponse =
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -273,7 +310,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
             .as(new TypeRef<>() {});
 
     Assertions.assertEquals(
-        configurationEndpoint, dataResponse.getData().getConfigurationEndpoint());
+        configurationEndpoint, dataResponse.getData().getSaml().getMetadataEndpoint());
     Assertions.assertEquals(SsoMethod.SAML, dataResponse.getData().getMethod());
     Assertions.assertEquals(EmailUtils.domainFromEmail(email), dataResponse.getData().getDomain());
 
@@ -303,7 +340,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
     String password = UUID.randomUUID().toString();
     String email = password + "@snuderls10.io";
     String sessionId = authApi().signUpAndLogin(email, password);
-    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
+    CreateSsoSetupParams body = new CreateSsoSetupParams(SsoMethod.GOOGLE, null);
 
     given()
         .when()
@@ -333,5 +370,12 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"SSO setup already configured\"}}"));
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .delete(SsoSetupResource.PATH)
+        .then()
+        .statusCode(204);
   }
 }

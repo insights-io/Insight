@@ -5,8 +5,7 @@ import javax.ws.rs.core.NewCookie;
 public final class SsoSignInSession {
 
   private static final String COOKIE_PATH = "/";
-
-  public static final String COOKIE_NAME = "state";
+  public static final String COOKIE_NAME = "SsoSessionState";
 
   private SsoSignInSession() {}
 

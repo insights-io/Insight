@@ -117,12 +117,23 @@ CREATE TABLE auth.user_tfa_setup
     PRIMARY KEY (user_id, method)
 );
 
+CREATE TABLE auth.sso_method
+(
+    name text PRIMARY KEY
+);
+
+INSERT INTO auth.sso_method
+VALUES ('saml'),
+       ('google'),
+       ('microsoft'),
+       ('github');
+
 CREATE TABLE auth.organization_sso_setup
 (
     organization_id        TEXT REFERENCES auth.organization (id) ON DELETE CASCADE,
     domain                 TEXT        NOT NULL UNIQUE,
-    method                 TEXT        NOT NULL,
-    configuration_endpoint TEXT,
+    method                 TEXT REFERENCES auth.sso_method (name) ON UPDATE CASCADE,
+    saml                   JSONB,
     created_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     PRIMARY KEY (organization_id, domain)

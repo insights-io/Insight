@@ -7,18 +7,17 @@ import com.meemaw.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
 import com.meemaw.auth.sso.oauth.microsoft.resource.v1.MicrosoftOAuthResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
-import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import io.quarkus.test.common.http.TestHTTPResource;
-import java.net.URI;
+
 import javax.inject.Inject;
+import java.net.URI;
 
 public abstract class AbstractSsoResourceTest extends AbstractAuthApiTest {
 
   public static final String SIMPLE_REDIRECT = "http://localhost:3000/test";
 
   @Inject protected AppConfig appConfig;
-  @Inject protected UserDatasource userDatasource;
   @Inject protected TfaTotpSetupDatasource tfaTotpSetupDatasource;
 
   @TestHTTPResource(MicrosoftOAuthResource.PATH + "/" + OAuthResource.SIGNIN_PATH)

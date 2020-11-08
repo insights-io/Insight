@@ -28,15 +28,34 @@ export type Session = Omit<SessionDTO, 'createdAt'> & {
   createdAt: Date;
 };
 
-export type SsoMethod = 'saml' | 'google' | 'microsoft' | 'github';
+export type OAuthSsoMethod = 'google' | 'microsoft' | 'github';
+export type SamlSsoMethod = 'saml';
 
-export type SsoSetupDTO = {
+export type SsoMethod = SamlSsoMethod | OAuthSsoMethod;
+
+export type SamlMethod = 'okta' | 'onelogin' | 'auth0' | 'custom';
+
+type SsoSetupBase = {
   organizationId: string;
   domain: string;
   createdAt: string;
-  method: SsoMethod;
-  configurationEndpoint?: string;
 };
+
+export type OAuthSsoSetupDTO = SsoSetupBase & {
+  method: OAuthSsoMethod;
+};
+
+export type SamlConfigurationDTO = {
+  method: SamlMethod;
+  metadataEndpoint: string;
+};
+
+export type SamlSsoSetupDTO = SsoSetupBase & {
+  method: SamlSsoMethod;
+  saml: SamlConfigurationDTO;
+};
+
+export type SsoSetupDTO = OAuthSsoSetupDTO | SamlSsoSetupDTO;
 
 export type SsoSetup = Omit<SsoSetupDTO, 'createdAt'> & {
   createdAt: Date;

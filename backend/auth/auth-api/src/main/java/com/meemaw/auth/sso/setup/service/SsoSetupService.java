@@ -5,8 +5,8 @@ import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
-import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
@@ -23,8 +23,10 @@ public class SsoSetupService {
   @Inject SamlService samlService;
 
   @Traced
-  public CompletionStage<SsoSetupDTO> setup(
-      String organizationId, String domain, CreateSsoSetupDTO createSsoSetupDTO) {
+  public CompletionStage<SsoSetup> setup(
+      String organizationId, String domain, CreateSsoSetupParams params) {
+    SsoMethod method = params.getMethod();
+
     if (!EmailUtils.isBusinessDomain(domain)) {
       log.info(
           "[AUTH]: Tried to setup SSO on non work email organization={} domain={}",
@@ -42,14 +44,13 @@ public class SsoSetupService {
                 throw Boom.badRequest().message("SSO setup already configured").exception();
               }
 
-              SsoMethod method = createSsoSetupDTO.getMethod();
-              URL configurationEndpoint = createSsoSetupDTO.getConfigurationEndpoint();
-              if (SsoMethod.SAML.equals(method)) {
-                samlService.validateConfigurationEndpoint(configurationEndpoint);
+              if (method.equals(SsoMethod.SAML)) {
+                URL metadataEndpoint = params.getSaml().getMetadataEndpoint();
+                samlService.validateConfigurationEndpoint(metadataEndpoint);
               }
 
               return ssoSetupDatasource
-                  .create(new CreateSsoSetup(organizationId, domain, method, configurationEndpoint))
+                  .create(new CreateSsoSetup(organizationId, domain, method, params.getSaml()))
                   .thenApply(
                       ssoSetup -> {
                         log.info(

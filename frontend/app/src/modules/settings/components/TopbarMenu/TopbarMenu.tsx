@@ -28,6 +28,7 @@ type Props = {
 
 const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
   const option = untypedOption as SearchOption;
+
   return (
     <Link href={option.link}>
       <UnstyledLink href={option.link}>
@@ -53,7 +54,11 @@ export const TopbarMenu = ({
   setOverlaySidebarOpen,
 }: Props) => {
   return (
-    <SpacedBetween as="nav" padding="20px 30px" className="topbar menu">
+    <SpacedBetween
+      as="nav"
+      padding={isSidebarOverlay ? '16px' : '20px 30px'}
+      className="topbar menu"
+    >
       <Flex>
         <VerticalAligned
           marginRight="8px"
@@ -106,6 +111,16 @@ export const TopbarMenu = ({
             size={SIZE.compact}
             valueKey="label"
             getOptionLabel={getOptionLabel}
+            filterOptions={(options, filterValue) => {
+              const query = filterValue.toLowerCase();
+              return options.filter((option) => {
+                const searchOption = option as SearchOption;
+                return (
+                  searchOption.label.toLowerCase().includes(query) ||
+                  searchOption.description.toLowerCase().includes(query)
+                );
+              });
+            }}
             overrides={{
               ControlContainer: { style: expandBorderRadius('8px') },
               Popover: {

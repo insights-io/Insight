@@ -91,12 +91,11 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   public void applyFlywayMigrations(Path moduleSqlMigrationsPath) {
     Path absolutePath = moduleSqlMigrationsPath.toAbsolutePath();
     if (!Files.exists(moduleSqlMigrationsPath)) {
-      System.out.println(
-          String.format("[TEST-SETUP]: Skipping applyMigrations from=%s", absolutePath));
+      System.out.printf("[TEST-SETUP]: Skipping applyMigrations from=%s%n", absolutePath);
       return;
     }
 
-    System.out.println(String.format("[TEST-SETUP]: Applying migrations from=%s", absolutePath));
+    System.out.printf("[TEST-SETUP]: Applying migrations from=%s%n", absolutePath);
     new PostgresFlywayTestContainer<>(moduleSqlMigrationsPath).start();
     if (moduleSqlMigrationsPath.toAbsolutePath().toString().contains(Api.AUTH.fullName())) {
       createTestUserPassword();
@@ -109,8 +108,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
    * only be executed after V1__auth_api_initial.sql is applied and auth.user table exists.
    */
   private void createTestUserPassword() {
-    System.out.println(
-        String.format("[TEST-SETUP]: Creating test password for \"%s\"", INSIGHT_ADMIN_EMAIL));
+    System.out.printf("[TEST-SETUP]: Creating test password for \"%s\"%n", INSIGHT_ADMIN_EMAIL);
 
     Query query =
         SQLContext.POSTGRES

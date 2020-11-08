@@ -13,7 +13,7 @@ import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.dto.SsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
 import com.meemaw.auth.tfa.ChallengeLoginResult;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
@@ -153,7 +153,7 @@ public class SsoServiceImpl implements SsoService {
       String email, String password, String ipAddress, URL redirect, URI serverBaseUri) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
 
-    Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> passwordLoginSupplier =
+    Function<Optional<SsoSetup>, CompletionStage<LoginResult<?>>> passwordLoginSupplier =
         (maybeSsoSetup) -> {
           log.info("[AUTH]: Email login attempt with password email={} ip={}", email, ipAddress);
           return passwordService
@@ -165,7 +165,7 @@ public class SsoServiceImpl implements SsoService {
                           userWithLoginInformation.getTfaMethods()));
         };
 
-    Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
+    Function<SsoSetup, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetup ->
             passwordLoginSsoAlternative(
                 identityProviderRegistry.ssoSignInLocation(
@@ -193,8 +193,8 @@ public class SsoServiceImpl implements SsoService {
   private CompletionStage<LoginResult<?>> login(
       String email,
       LoginMethod loginMethod,
-      Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider,
-      Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> defaultLoginProvider) {
+      Function<SsoSetup, CompletionStage<LoginResult<?>>> alternativeLoginProvider,
+      Function<Optional<SsoSetup>, CompletionStage<LoginResult<?>>> defaultLoginProvider) {
     if (!EmailUtils.isBusinessDomain(email)) {
       return defaultLoginProvider.apply(Optional.empty());
     }
@@ -212,7 +212,7 @@ public class SsoServiceImpl implements SsoService {
                 return defaultLoginProvider.apply(Optional.empty());
               }
 
-              SsoSetupDTO ssoSetup = maybeSsoSetup.get();
+              SsoSetup ssoSetup = maybeSsoSetup.get();
               SsoMethod method = ssoSetup.getMethod();
               if (method.getKey().equals(loginMethod.getKey())) {
                 log.info(
@@ -292,7 +292,7 @@ public class SsoServiceImpl implements SsoService {
     log.info(
         "[AUTH]: Social login attempt method={} email={} redirect={}", method, email, redirect);
 
-    Function<Optional<SsoSetupDTO>, CompletionStage<LoginResult<?>>> socialLoginProvider =
+    Function<Optional<SsoSetup>, CompletionStage<LoginResult<?>>> socialLoginProvider =
         (maybeSsoSetup) -> {
           CompletionStage<UserWithLoginInformation> signUpFuture =
               maybeSsoSetup.isEmpty()
@@ -316,7 +316,7 @@ public class SsoServiceImpl implements SsoService {
                   });
         };
 
-    Function<SsoSetupDTO, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
+    Function<SsoSetup, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
         ssoSetupDTO -> {
           SsoMethod ssoMethod = ssoSetupDTO.getMethod();
           log.info(
