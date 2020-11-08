@@ -1,9 +1,8 @@
 package com.meemaw.auth.sso.session.model;
 
-import lombok.Value;
-
 import java.util.function.Function;
 import javax.ws.rs.core.Response;
+import lombok.Value;
 
 @Value
 public class ResponseLoginResult implements LoginResult<Void> {

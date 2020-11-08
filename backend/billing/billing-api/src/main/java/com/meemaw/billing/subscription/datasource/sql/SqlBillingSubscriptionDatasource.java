@@ -2,11 +2,6 @@ package com.meemaw.billing.subscription.datasource.sql;
 
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.*;
 
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import org.jooq.Condition;
-import org.jooq.Query;
-
 import com.meemaw.billing.subscription.datasource.BillingSubscriptionDatasource;
 import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.CreateBillingSubscriptionParams;
@@ -14,7 +9,8 @@ import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +18,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jooq.Condition;
+import org.jooq.Query;
 
 @ApplicationScoped
 public class SqlBillingSubscriptionDatasource implements BillingSubscriptionDatasource {

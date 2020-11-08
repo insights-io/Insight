@@ -2,17 +2,15 @@ package com.meemaw.events.model.incoming;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.events.model.shared.BrowserEventType;
 import com.meemaw.events.model.shared.LogLevel;
 import com.meemaw.test.rest.data.EventTestData;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 public class AbstractBrowserEventDeserializationTest {
 

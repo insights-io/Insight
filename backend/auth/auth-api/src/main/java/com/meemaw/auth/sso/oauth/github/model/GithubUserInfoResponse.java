@@ -2,12 +2,11 @@ package com.meemaw.auth.sso.oauth.github.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meemaw.auth.sso.oauth.OAuthUserInfo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import com.meemaw.auth.sso.oauth.OAuthUserInfo;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

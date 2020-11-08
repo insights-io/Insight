@@ -1,23 +1,21 @@
 package com.meemaw.shared.sms.impl.twilio;
 
+import com.meemaw.shared.sms.SmsMessage;
+import com.meemaw.shared.sms.SmsService;
+import com.meemaw.shared.sms.impl.mock.MockSmsboxImpl;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import io.quarkus.runtime.StartupEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.opentracing.Traced;
-
-import com.meemaw.shared.sms.SmsMessage;
-import com.meemaw.shared.sms.SmsService;
-import com.meemaw.shared.sms.impl.mock.MockSmsboxImpl;
-
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @Slf4j
 @ApplicationScoped

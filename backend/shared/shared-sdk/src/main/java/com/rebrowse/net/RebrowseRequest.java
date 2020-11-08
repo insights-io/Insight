@@ -1,14 +1,12 @@
 package com.rebrowse.net;
 
-import lombok.Value;
-
 import com.rebrowse.model.ApiRequestParams;
 import com.rebrowse.util.StringUtils;
-
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import lombok.Value;
 
 @Value
 public class RebrowseRequest {

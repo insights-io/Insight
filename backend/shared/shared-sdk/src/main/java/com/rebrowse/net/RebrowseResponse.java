@@ -1,9 +1,8 @@
 package com.rebrowse.net;
 
-import lombok.Value;
-
 import java.net.http.HttpHeaders;
 import java.util.Objects;
+import lombok.Value;
 
 @Value
 public class RebrowseResponse {

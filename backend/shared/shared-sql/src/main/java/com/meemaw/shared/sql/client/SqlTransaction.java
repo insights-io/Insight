@@ -1,16 +1,14 @@
 package com.meemaw.shared.sql.client;
 
+import com.meemaw.shared.sql.exception.SqlException;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Transaction;
 import io.vertx.pgclient.PgException;
-import lombok.extern.slf4j.Slf4j;
-import org.jooq.Query;
-
-import com.meemaw.shared.sql.exception.SqlException;
-
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.Query;
 
 @Slf4j
 public class SqlTransaction implements SqlClient {

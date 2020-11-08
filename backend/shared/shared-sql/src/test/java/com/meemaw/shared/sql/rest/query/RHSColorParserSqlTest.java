@@ -3,20 +3,18 @@ package com.meemaw.shared.sql.rest.query;
 import static org.jooq.impl.DSL.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.jooq.Field;
-import org.jooq.Query;
-import org.jooq.conf.ParamType;
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.rhs.colon.RHSColonParser;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jooq.Field;
+import org.jooq.Query;
+import org.jooq.conf.ParamType;
+import org.junit.jupiter.api.Test;
 
 public class RHSColorParserSqlTest {
 

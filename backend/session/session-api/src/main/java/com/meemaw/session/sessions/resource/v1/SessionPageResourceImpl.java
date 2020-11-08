@@ -9,7 +9,6 @@ import com.meemaw.session.sessions.service.SessionSocketService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;

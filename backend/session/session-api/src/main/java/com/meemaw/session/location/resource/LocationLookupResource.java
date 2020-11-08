@@ -1,10 +1,8 @@
 package com.meemaw.session.location.resource;
 
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-
 import com.meemaw.session.location.model.dto.IpStackLocationDTO;
-
 import javax.ws.rs.*;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey = "location-lookup-resource")
 public interface LocationLookupResource {

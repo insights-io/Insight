@@ -1,18 +1,16 @@
 package com.meemaw.auth.sso;
 
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
-
 import com.meemaw.auth.sso.AbstractSecurityRequirementAuthDynamicFeature.AuthenticatedFilter;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
-
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 
 public abstract class AbstractSecurityRequirementAuthDynamicFeature
     extends AbstractAuthDynamicFeature<SecurityRequirements, AuthenticatedFilter> {

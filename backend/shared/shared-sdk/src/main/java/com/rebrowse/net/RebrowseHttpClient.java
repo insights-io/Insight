@@ -2,14 +2,12 @@ package com.rebrowse.net;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.rebrowse.exception.ApiException;
 import com.rebrowse.exception.RebrowseException;
 import com.rebrowse.model.ApiRequestParams;
 import com.rebrowse.model.RebrowseOkDataResponse;
 import com.rebrowse.model.error.RebrowseError;
 import com.rebrowse.model.error.RebrowseErrorDataResponse;
-
 import java.util.concurrent.CompletionStage;
 
 public class RebrowseHttpClient implements HttpClient {

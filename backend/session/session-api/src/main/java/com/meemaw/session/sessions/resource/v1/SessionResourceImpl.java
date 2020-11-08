@@ -1,7 +1,5 @@
 package com.meemaw.session.sessions.resource.v1;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.session.sessions.service.SessionService;
@@ -9,7 +7,6 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -17,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SessionResourceImpl implements SessionResource {

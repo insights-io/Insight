@@ -2,6 +2,12 @@ package com.meemaw.events.search.indexer;
 
 import static org.awaitility.Awaitility.with;
 
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.test.testconainers.kafka.Kafka;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -12,14 +18,6 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-
-import com.meemaw.events.model.incoming.AbstractBrowserEvent;
-import com.meemaw.events.model.incoming.UserEvent;
-import com.meemaw.test.testconainers.kafka.Kafka;
-
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Kafka
 @Slf4j

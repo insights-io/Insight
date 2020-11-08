@@ -1,14 +1,12 @@
 package com.meemaw.auth.user.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meemaw.auth.user.model.PhoneNumber;
+import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import com.meemaw.auth.user.model.PhoneNumber;
-
-import javax.validation.constraints.NotBlank;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

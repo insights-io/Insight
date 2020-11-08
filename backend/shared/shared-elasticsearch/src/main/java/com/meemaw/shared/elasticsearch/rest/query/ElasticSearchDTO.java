@@ -1,10 +1,9 @@
 package com.meemaw.shared.elasticsearch.rest.query;
 
+import com.meemaw.shared.rest.query.SearchDTO;
 import lombok.Value;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-
-import com.meemaw.shared.rest.query.SearchDTO;
 
 @Value
 public class ElasticSearchDTO {

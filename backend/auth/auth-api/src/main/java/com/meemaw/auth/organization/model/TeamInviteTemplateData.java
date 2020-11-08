@@ -1,8 +1,7 @@
 package com.meemaw.auth.organization.model;
 
-import lombok.Value;
-
 import com.meemaw.auth.user.model.UserRole;
+import lombok.Value;
 
 @Value
 public class TeamInviteTemplateData {

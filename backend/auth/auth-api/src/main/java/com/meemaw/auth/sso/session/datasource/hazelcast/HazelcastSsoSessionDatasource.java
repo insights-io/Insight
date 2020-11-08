@@ -1,18 +1,13 @@
 package com.meemaw.auth.sso.session.datasource.hazelcast;
 
 import com.hazelcast.map.IMap;
-import io.smallrye.mutiny.Uni;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.opentracing.Traced;
-
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import com.meemaw.shared.hazelcast.processors.SetValueEntryProcessor;
-
+import io.smallrye.mutiny.Uni;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +17,9 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j

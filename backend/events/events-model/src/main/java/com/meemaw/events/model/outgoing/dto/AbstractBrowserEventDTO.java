@@ -10,11 +10,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import com.meemaw.events.model.Recorded;
 import com.meemaw.events.model.shared.BrowserEventType;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @JsonTypeInfo(
     use = Id.NAME,

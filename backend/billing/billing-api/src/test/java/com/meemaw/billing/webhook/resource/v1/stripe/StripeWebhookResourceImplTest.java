@@ -3,26 +3,24 @@ package com.meemaw.billing.webhook.resource.v1.stripe;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
-import com.stripe.model.Event;
-import com.stripe.net.ApiResource;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusMock;
-import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.billing.AbstractStripeTest;
 import com.meemaw.billing.subscription.resource.v1.SubscriptionResource;
 import com.meemaw.billing.webhook.service.stripe.StripeWebhookTransformer;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-
+import com.stripe.model.Event;
+import com.stripe.net.ApiResource;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusMock;
+import io.quarkus.test.junit.QuarkusTest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTestResource(AuthApiTestResource.class)

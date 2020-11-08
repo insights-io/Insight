@@ -1,9 +1,7 @@
 package com.meemaw.test.setup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

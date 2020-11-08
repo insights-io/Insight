@@ -3,10 +3,9 @@ package com.meemaw.auth.user.phone.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.quarkus.test.junit.QuarkusTest;
+import javax.inject.Inject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import javax.inject.Inject;
 
 @QuarkusTest
 @Tag("integration")

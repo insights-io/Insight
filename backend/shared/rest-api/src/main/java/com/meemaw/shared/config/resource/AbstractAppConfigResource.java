@@ -1,7 +1,6 @@
 package com.meemaw.shared.config.resource;
 
 import com.meemaw.shared.config.model.AppConfigBase;
-
 import javax.ws.rs.GET;
 
 public abstract class AbstractAppConfigResource<T extends AppConfigBase> {

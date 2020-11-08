@@ -1,13 +1,5 @@
 package com.meemaw.auth.sso.saml.service;
 
-import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.xml.XMLParserException;
-import org.opensaml.core.xml.io.UnmarshallingException;
-import org.opensaml.xmlsec.signature.Signature;
-import org.opensaml.xmlsec.signature.support.SignatureException;
-import org.opensaml.xmlsec.signature.support.SignatureValidator;
-import org.slf4j.MDC;
-
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.SsoSignInSession;
@@ -22,7 +14,6 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +26,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
+import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.xmlsec.signature.Signature;
+import org.opensaml.xmlsec.signature.support.SignatureException;
+import org.opensaml.xmlsec.signature.support.SignatureValidator;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j

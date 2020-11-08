@@ -1,10 +1,9 @@
 package com.meemaw.test.testconainers.pg;
 
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 import java.util.Collections;
 import java.util.Map;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * JUnit5 compatible test resource.

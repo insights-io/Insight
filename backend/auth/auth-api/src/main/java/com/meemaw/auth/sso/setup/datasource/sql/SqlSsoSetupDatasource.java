@@ -2,22 +2,20 @@ package com.meemaw.auth.sso.setup.datasource.sql;
 
 import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.*;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import org.jooq.Query;
-
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
 import com.meemaw.shared.sql.client.SqlPool;
-
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jooq.Query;
 
 @ApplicationScoped
 public class SqlSsoSetupDatasource implements SsoSetupDatasource {

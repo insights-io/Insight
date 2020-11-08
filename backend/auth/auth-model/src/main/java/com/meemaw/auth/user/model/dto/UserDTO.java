@@ -1,15 +1,13 @@
 package com.meemaw.auth.user.model.dto;
 
+import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.auth.user.model.UserRole;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.UserRole;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

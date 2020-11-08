@@ -1,12 +1,10 @@
 package com.meemaw.auth.password.model.impl;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import com.meemaw.auth.password.model.PasswordPolicyValidator;
 import com.meemaw.auth.password.model.PasswordValidationException;
-
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class PreventPasswordReusePasswordPolicyValidator implements PasswordPolicyValidator {
 

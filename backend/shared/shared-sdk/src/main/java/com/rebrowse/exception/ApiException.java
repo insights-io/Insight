@@ -1,8 +1,7 @@
 package com.rebrowse.exception;
 
-import lombok.Getter;
-
 import com.rebrowse.model.error.RebrowseError;
+import lombok.Getter;
 
 @Getter
 public class ApiException extends RebrowseException {

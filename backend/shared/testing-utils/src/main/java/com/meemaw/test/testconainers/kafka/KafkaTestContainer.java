@@ -1,14 +1,13 @@
 package com.meemaw.test.testconainers.kafka;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class KafkaTestContainer extends KafkaContainer {
 

@@ -1,7 +1,6 @@
 package com.meemaw.auth.tfa;
 
 import com.meemaw.auth.tfa.model.TfaSetup;
-
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 

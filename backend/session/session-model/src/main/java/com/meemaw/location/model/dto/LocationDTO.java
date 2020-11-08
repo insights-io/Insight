@@ -1,8 +1,7 @@
 package com.meemaw.location.model.dto;
 
-import lombok.*;
-
 import com.meemaw.location.model.Location;
+import lombok.*;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

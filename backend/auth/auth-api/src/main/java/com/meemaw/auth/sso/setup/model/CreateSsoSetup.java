@@ -1,8 +1,7 @@
 package com.meemaw.auth.sso.setup.model;
 
-import lombok.Value;
-
 import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
+import lombok.Value;
 
 @Value
 public class CreateSsoSetup {

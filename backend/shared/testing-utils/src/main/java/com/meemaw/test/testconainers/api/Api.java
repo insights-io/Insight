@@ -1,14 +1,12 @@
 package com.meemaw.test.testconainers.api;
 
-import org.testcontainers.containers.GenericContainer;
-
 import com.meemaw.test.project.ProjectUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
 import com.meemaw.test.testconainers.pg.PostgresTestExtension;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import org.testcontainers.containers.GenericContainer;
 
 public enum Api {
   SESSION {

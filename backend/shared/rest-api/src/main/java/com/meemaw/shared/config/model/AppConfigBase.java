@@ -1,9 +1,8 @@
 package com.meemaw.shared.config.model;
 
+import javax.enterprise.context.ApplicationScoped;
 import lombok.Data;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @Data

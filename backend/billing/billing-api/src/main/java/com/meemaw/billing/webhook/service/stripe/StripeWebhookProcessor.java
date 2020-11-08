@@ -1,10 +1,5 @@
 package com.meemaw.billing.webhook.service.stripe;
 
-import com.stripe.exception.SignatureVerificationException;
-import com.stripe.model.*;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-
 import com.meemaw.billing.customer.datasource.BillingCustomerDatasource;
 import com.meemaw.billing.invoice.datasource.BillingInvoiceDatasource;
 import com.meemaw.billing.invoice.model.BillingInvoice;
@@ -16,11 +11,14 @@ import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.meemaw.billing.webhook.service.WebhookProcessor;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
-
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.model.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j

@@ -2,14 +2,11 @@ package com.meemaw.beacon.resource.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.beacon.model.Beacon;
 import com.meemaw.beacon.model.dto.BeaconDTO;
 import com.meemaw.beacon.service.BeaconService;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.status.MissingStatus;
-
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +16,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BeaconResourceImpl implements BeaconResource {

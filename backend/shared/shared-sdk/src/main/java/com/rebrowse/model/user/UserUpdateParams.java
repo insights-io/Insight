@@ -1,9 +1,8 @@
 package com.rebrowse.model.user;
 
+import com.rebrowse.model.ApiRequestParams;
 import lombok.Builder;
 import lombok.Value;
-
-import com.rebrowse.model.ApiRequestParams;
 
 @Value
 @Builder

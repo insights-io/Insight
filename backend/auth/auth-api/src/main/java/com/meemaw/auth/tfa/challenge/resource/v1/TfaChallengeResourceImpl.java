@@ -1,8 +1,5 @@
 package com.meemaw.auth.tfa.challenge.resource.v1;
 
-import io.vertx.core.http.HttpServerRequest;
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.VerificationSessionExpiredException;
@@ -18,13 +15,14 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-
+import io.vertx.core.http.HttpServerRequest;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TfaChallengeResourceImpl implements TfaChallengeResource {

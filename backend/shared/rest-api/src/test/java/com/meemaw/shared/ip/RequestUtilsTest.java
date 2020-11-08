@@ -2,13 +2,11 @@ package com.meemaw.shared.ip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.shared.context.RequestUtils;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 public class RequestUtilsTest {
 

@@ -1,12 +1,10 @@
 package com.meemaw.auth.organization.model;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.user.model.UserRole;
-
 import java.time.OffsetDateTime;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OrganizationTest {
 

@@ -1,13 +1,11 @@
 package com.meemaw.shared.rest.query;
 
-import lombok.Value;
-
 import com.meemaw.shared.rest.query.rhs.colon.RHSColonParser;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import lombok.Value;
 
 @Value
 public class SearchDTO {

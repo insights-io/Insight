@@ -1,7 +1,6 @@
 package com.meemaw.test.rest.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.meemaw.shared.rest.mappers.JacksonObjectMapperCustomizer;
 
 public class JacksonMapper {

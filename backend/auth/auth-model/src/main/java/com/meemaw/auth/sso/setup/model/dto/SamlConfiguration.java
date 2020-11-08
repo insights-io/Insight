@@ -1,14 +1,12 @@
 package com.meemaw.auth.sso.setup.model.dto;
 
+import com.meemaw.auth.sso.setup.model.SamlMethod;
+import java.net.URL;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import com.meemaw.auth.sso.setup.model.SamlMethod;
-
-import java.net.URL;
-import javax.validation.constraints.NotNull;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

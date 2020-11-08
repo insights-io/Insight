@@ -4,17 +4,6 @@ import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.HASH;
 import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.TABLE_ALIAS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.*;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.jooq.Field;
-import org.jooq.Query;
-import org.jooq.SelectConditionStep;
-import org.jooq.UpdateSetFirstStep;
-import org.jooq.impl.DSL;
-
 import com.meemaw.auth.password.datasource.sql.SqlPasswordTable;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
@@ -30,13 +19,22 @@ import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
-
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.jooq.Field;
+import org.jooq.Query;
+import org.jooq.SelectConditionStep;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j

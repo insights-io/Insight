@@ -2,6 +2,11 @@ package com.meemaw.test.testconainers.elasticsearch;
 
 import static org.awaitility.Awaitility.await;
 
+import com.meemaw.test.project.ProjectUtils;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -12,13 +17,6 @@ import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.testcontainers.containers.Network;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
-
-import com.meemaw.test.project.ProjectUtils;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
 public class ElasticsearchTestContainer extends ElasticsearchContainer {
 

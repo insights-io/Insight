@@ -3,17 +3,15 @@ package com.meemaw.auth.organization.datasource.sql;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
-import org.jooq.Field;
-import org.jooq.Table;
-
 import com.meemaw.auth.organization.datasource.OrganizationTeamInviteTable;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jooq.Field;
+import org.jooq.Table;
 
 public final class SqlOrganizationTeamInviteTable {
 

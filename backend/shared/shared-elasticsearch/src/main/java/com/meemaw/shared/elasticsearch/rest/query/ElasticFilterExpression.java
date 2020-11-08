@@ -1,10 +1,9 @@
 package com.meemaw.shared.elasticsearch.rest.query;
 
-import org.elasticsearch.index.query.QueryBuilder;
-
 import com.meemaw.shared.rest.query.BooleanFilterExpression;
 import com.meemaw.shared.rest.query.FilterExpression;
 import com.meemaw.shared.rest.query.TermFilterExpression;
+import org.elasticsearch.index.query.QueryBuilder;
 
 public interface ElasticFilterExpression extends FilterExpression {
 

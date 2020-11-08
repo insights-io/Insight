@@ -1,9 +1,8 @@
 package com.meemaw.test.testconainers.api.session;
 
+import java.util.Map;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-
-import java.util.Map;
 
 /**
  * JUnit5 compatible test resource.

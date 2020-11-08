@@ -4,7 +4,6 @@ import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;

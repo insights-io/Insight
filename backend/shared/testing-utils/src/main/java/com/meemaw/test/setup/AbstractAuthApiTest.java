@@ -3,10 +3,9 @@ package com.meemaw.test.setup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.http.TestHTTPResource;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.net.URI;
 import javax.inject.Inject;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractAuthApiTest {
 

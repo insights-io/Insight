@@ -1,8 +1,7 @@
 package com.meemaw.events.model.outgoing.dto;
 
-import lombok.*;
-
 import java.util.UUID;
+import lombok.*;
 
 @Value
 @Builder

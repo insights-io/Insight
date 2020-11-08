@@ -1,8 +1,5 @@
 package com.meemaw.auth.sso.oauth;
 
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-
 import com.meemaw.auth.core.config.model.AppConfig;
 import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
@@ -10,7 +7,6 @@ import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
@@ -19,6 +15,8 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 @Slf4j
 public abstract class AbstractOAuthIdentityProvider<

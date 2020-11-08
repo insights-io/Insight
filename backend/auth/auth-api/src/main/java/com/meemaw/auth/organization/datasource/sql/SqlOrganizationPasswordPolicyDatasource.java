@@ -3,18 +3,14 @@ package com.meemaw.auth.organization.datasource.sql;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.*;
 
 import com.google.common.base.CaseFormat;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import org.jooq.Query;
-import org.jooq.UpdateSetFirstStep;
-
 import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyDatasource;
 import com.meemaw.auth.organization.model.dto.PasswordPolicyDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
-
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +19,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jooq.Query;
+import org.jooq.UpdateSetFirstStep;
 
 @ApplicationScoped
 public class SqlOrganizationPasswordPolicyDatasource

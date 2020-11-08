@@ -6,8 +6,6 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
-
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
@@ -17,7 +15,7 @@ import com.rebrowse.model.auth.ApiKey;
 import com.rebrowse.model.auth.SessionInfo;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.net.RequestOptions;
-
+import io.restassured.response.Response;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.ws.rs.core.MediaType;

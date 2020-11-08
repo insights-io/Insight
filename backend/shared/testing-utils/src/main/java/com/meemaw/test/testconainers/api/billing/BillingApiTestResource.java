@@ -1,9 +1,7 @@
 package com.meemaw.test.testconainers.api.billing;
 
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
-
 import com.meemaw.test.testconainers.api.auth.AuthApiTestExtension;
-
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.util.Map;
 
 /**

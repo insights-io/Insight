@@ -1,13 +1,12 @@
 package com.meemaw.shared.elasticsearch;
 
+import java.util.Arrays;
+import java.util.Optional;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 public final class ElasticsearchUtils {
 

@@ -1,14 +1,12 @@
 package com.rebrowse.model.organization;
 
+import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestOptions;
+import java.time.OffsetDateTime;
+import java.util.concurrent.CompletionStage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import com.rebrowse.net.ApiResource;
-import com.rebrowse.net.RequestOptions;
-
-import java.time.OffsetDateTime;
-import java.util.concurrent.CompletionStage;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

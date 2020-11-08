@@ -1,7 +1,6 @@
 package com.meemaw.test.testconainers.elasticsearch;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
-
 import java.util.Map;
 
 /**

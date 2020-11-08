@@ -4,7 +4,6 @@ import com.meemaw.auth.sso.cookie.AbstractSessionCookieSecurityRequirementAuthDy
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
-
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;

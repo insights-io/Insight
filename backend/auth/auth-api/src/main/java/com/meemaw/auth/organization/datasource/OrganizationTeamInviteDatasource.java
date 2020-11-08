@@ -1,17 +1,15 @@
 package com.meemaw.auth.organization.datasource;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import org.apache.commons.lang3.tuple.Pair;
 
 public interface OrganizationTeamInviteDatasource {
 

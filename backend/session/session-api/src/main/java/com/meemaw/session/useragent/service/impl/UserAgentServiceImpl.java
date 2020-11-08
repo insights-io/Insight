@@ -2,15 +2,13 @@ package com.meemaw.session.useragent.service.impl;
 
 import static nl.basjes.parse.useragent.UserAgent.*;
 
+import com.meemaw.session.useragent.service.UserAgentService;
+import com.meemaw.useragent.model.UserAgentDTO;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.eclipse.microprofile.opentracing.Traced;
-
-import com.meemaw.session.useragent.service.UserAgentService;
-import com.meemaw.useragent.model.UserAgentDTO;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UserAgentServiceImpl implements UserAgentService {

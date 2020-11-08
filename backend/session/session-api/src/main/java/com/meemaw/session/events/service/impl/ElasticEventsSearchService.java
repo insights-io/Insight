@@ -4,7 +4,23 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.events.index.UserEventIndex;
+import com.meemaw.events.model.outgoing.dto.AbstractBrowserEventDTO;
+import com.meemaw.events.model.outgoing.dto.UserEventDTO;
+import com.meemaw.session.events.service.EventsSearchService;
+import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
+import com.meemaw.shared.elasticsearch.rest.query.ElasticSearchDTO;
+import com.meemaw.shared.rest.query.SearchDTO;
 import io.quarkus.runtime.StartupEvent;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -15,24 +31,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-
-import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.outgoing.dto.AbstractBrowserEventDTO;
-import com.meemaw.events.model.outgoing.dto.UserEventDTO;
-import com.meemaw.session.events.service.EventsSearchService;
-import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
-import com.meemaw.shared.elasticsearch.rest.query.ElasticSearchDTO;
-import com.meemaw.shared.rest.query.SearchDTO;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 @ApplicationScoped
 @Slf4j

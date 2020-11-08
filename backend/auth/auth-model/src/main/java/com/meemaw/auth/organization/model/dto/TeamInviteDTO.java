@@ -2,13 +2,11 @@ package com.meemaw.auth.organization.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Value;
-
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.model.CanExpire;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.Value;
 
 @Value
 @JsonIgnoreProperties(ignoreUnknown = true)

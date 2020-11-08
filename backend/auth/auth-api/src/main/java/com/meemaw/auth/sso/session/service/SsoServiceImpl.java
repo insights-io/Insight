@@ -1,10 +1,5 @@
 package com.meemaw.auth.sso.session.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.metrics.annotation.Timed;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.slf4j.MDC;
-
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
@@ -22,7 +17,6 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
@@ -31,6 +25,10 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j

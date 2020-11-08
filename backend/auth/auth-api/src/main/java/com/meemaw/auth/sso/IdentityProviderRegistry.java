@@ -1,13 +1,11 @@
 package com.meemaw.auth.sso;
 
-import io.quarkus.runtime.StartupEvent;
-
 import com.meemaw.auth.sso.oauth.github.GithubIdentityProvider;
 import com.meemaw.auth.sso.oauth.google.GoogleIdentityProvider;
 import com.meemaw.auth.sso.oauth.microsoft.MicrosoftIdentityProvider;
 import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-
+import io.quarkus.runtime.StartupEvent;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;

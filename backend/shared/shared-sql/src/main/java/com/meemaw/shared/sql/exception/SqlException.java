@@ -1,8 +1,7 @@
 package com.meemaw.shared.sql.exception;
 
-import io.vertx.pgclient.PgException;
-
 import com.meemaw.shared.rest.exception.DatasourceException;
+import io.vertx.pgclient.PgException;
 
 public class SqlException extends DatasourceException {
 

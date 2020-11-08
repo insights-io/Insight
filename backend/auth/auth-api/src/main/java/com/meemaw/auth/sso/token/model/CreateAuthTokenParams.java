@@ -1,9 +1,8 @@
 package com.meemaw.auth.sso.token.model;
 
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Value;
-
-import java.util.UUID;
 
 @Value
 @Builder

@@ -1,5 +1,8 @@
 package com.meemaw.billing.payment.provider.stripe;
 
+import com.meemaw.billing.payment.provider.PaymentProvider;
+import com.meemaw.shared.rest.exception.BoomException;
+import com.meemaw.shared.rest.response.Boom;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -11,20 +14,15 @@ import com.stripe.param.CustomerUpdateParams;
 import com.stripe.param.PaymentMethodAttachParams;
 import com.stripe.param.SubscriptionCreateParams;
 import io.quarkus.runtime.StartupEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.context.ThreadContext;
-
-import com.meemaw.billing.payment.provider.PaymentProvider;
-import com.meemaw.shared.rest.exception.BoomException;
-import com.meemaw.shared.rest.response.Boom;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.context.ThreadContext;
 
 @ApplicationScoped
 @Slf4j

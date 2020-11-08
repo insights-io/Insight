@@ -1,11 +1,9 @@
 package com.meemaw.auth.sso.session.model;
 
+import com.meemaw.auth.user.model.AuthUser;
+import javax.enterprise.context.RequestScoped;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import com.meemaw.auth.user.model.AuthUser;
-
-import javax.enterprise.context.RequestScoped;
 
 @RequestScoped
 @Data

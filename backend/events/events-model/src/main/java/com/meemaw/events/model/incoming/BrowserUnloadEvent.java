@@ -1,12 +1,10 @@
 package com.meemaw.events.model.incoming;
 
+import com.meemaw.events.model.incoming.BrowserUnloadEvent.Arguments;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import com.meemaw.events.model.incoming.BrowserUnloadEvent.Arguments;
-
-import java.util.Map;
 
 public class BrowserUnloadEvent extends AbstractBrowserEvent<Arguments> {
 

@@ -6,14 +6,6 @@ import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowIterator;
-import io.vertx.mutiny.sqlclient.RowSet;
-import lombok.extern.slf4j.Slf4j;
-import org.jooq.Field;
-import org.jooq.Query;
-
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.model.SessionDTO;
@@ -24,12 +16,18 @@ import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLGroupByQuery;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.useragent.model.UserAgentDTO;
-
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowIterator;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.Field;
+import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j

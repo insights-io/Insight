@@ -1,8 +1,7 @@
 package com.meemaw.events.index;
 
-import lombok.Value;
-
 import java.util.Map;
+import lombok.Value;
 
 @Value
 public class IndexField {

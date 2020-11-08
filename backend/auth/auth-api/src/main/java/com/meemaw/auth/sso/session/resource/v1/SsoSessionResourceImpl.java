@@ -1,8 +1,5 @@
 package com.meemaw.auth.sso.session.resource.v1;
 
-import io.vertx.core.http.HttpServerRequest;
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.organization.service.OrganizationService;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.service.SsoService;
@@ -11,7 +8,7 @@ import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-
+import io.vertx.core.http.HttpServerRequest;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -25,6 +22,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SsoSessionResourceImpl implements SsoSessionResource {

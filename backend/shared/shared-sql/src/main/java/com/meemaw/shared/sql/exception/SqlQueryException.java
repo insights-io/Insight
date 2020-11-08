@@ -1,7 +1,6 @@
 package com.meemaw.shared.sql.exception;
 
 import io.vertx.pgclient.PgException;
-
 import java.util.List;
 
 public class SqlQueryException extends SqlException {

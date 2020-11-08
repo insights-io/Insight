@@ -1,15 +1,5 @@
 package com.meemaw.auth.password.service;
 
-import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.reactive.ReactiveMailer;
-import io.quarkus.qute.Template;
-import io.quarkus.qute.api.ResourcePath;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.metrics.annotation.Timed;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.mindrot.jbcrypt.BCrypt;
-
 import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyDatasource;
 import com.meemaw.auth.password.datasource.PasswordDatasource;
@@ -23,7 +13,10 @@ import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
+import io.quarkus.mailer.Mail;
+import io.quarkus.mailer.reactive.ReactiveMailer;
+import io.quarkus.qute.Template;
+import io.quarkus.qute.api.ResourcePath;
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -34,6 +27,11 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.mindrot.jbcrypt.BCrypt;
 
 @ApplicationScoped
 @Slf4j

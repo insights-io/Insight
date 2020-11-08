@@ -1,8 +1,7 @@
 package com.meemaw.shared.rest.query;
 
-import lombok.Value;
-
 import java.util.List;
+import lombok.Value;
 
 @Value
 public class GroupByQuery {

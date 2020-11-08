@@ -1,16 +1,5 @@
 package com.meemaw.beacon.service;
 
-import io.smallrye.mutiny.Uni;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.metrics.annotation.Timed;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.OnOverflow;
-import org.eclipse.microprofile.reactive.messaging.OnOverflow.Strategy;
-import org.slf4j.MDC;
-
 import com.meemaw.beacon.model.Beacon;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.BrowserUnloadEvent;
@@ -21,7 +10,7 @@ import com.meemaw.shared.rest.response.Boom;
 import com.rebrowse.exception.ApiException;
 import com.rebrowse.model.session.SessionPage;
 import com.rebrowse.net.RequestOptions;
-
+import io.smallrye.mutiny.Uni;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
@@ -31,6 +20,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.OnOverflow;
+import org.eclipse.microprofile.reactive.messaging.OnOverflow.Strategy;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j

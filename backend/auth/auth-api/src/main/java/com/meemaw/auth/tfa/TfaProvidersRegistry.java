@@ -1,10 +1,8 @@
 package com.meemaw.auth.tfa;
 
-import io.quarkus.runtime.StartupEvent;
-
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.tfa.totp.impl.TfaTotpProvider;
-
+import io.quarkus.runtime.StartupEvent;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;

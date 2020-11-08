@@ -5,7 +5,6 @@ import com.meemaw.auth.sso.oauth.github.GithubIdentityProvider;
 import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
-
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;

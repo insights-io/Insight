@@ -2,12 +2,11 @@ package com.meemaw.billing.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
+import com.meemaw.billing.subscription.resource.v1.SubscriptionResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import com.meemaw.billing.subscription.resource.v1.SubscriptionResource;
 
 @QuarkusTest
 @Tag("integration")

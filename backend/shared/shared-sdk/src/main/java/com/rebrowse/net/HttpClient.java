@@ -1,7 +1,6 @@
 package com.rebrowse.net;
 
 import com.rebrowse.model.ApiRequestParams;
-
 import java.util.concurrent.CompletionStage;
 
 public interface HttpClient {

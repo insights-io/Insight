@@ -3,14 +3,12 @@ package com.meemaw.session.pages.datasource.sql;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
-import org.jooq.Field;
-import org.jooq.Table;
-
 import com.meemaw.session.pages.datasource.PageTable;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.jooq.Field;
+import org.jooq.Table;
 
 public final class SqlPageTable {
 

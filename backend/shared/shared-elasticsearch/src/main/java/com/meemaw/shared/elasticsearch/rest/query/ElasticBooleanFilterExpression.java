@@ -1,12 +1,11 @@
 package com.meemaw.shared.elasticsearch.rest.query;
 
+import com.meemaw.shared.rest.query.BooleanFilterExpression;
+import com.meemaw.shared.rest.query.FilterExpression;
 import lombok.Value;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-
-import com.meemaw.shared.rest.query.BooleanFilterExpression;
-import com.meemaw.shared.rest.query.FilterExpression;
 
 @Value
 public class ElasticBooleanFilterExpression implements ElasticFilterExpression {

@@ -1,13 +1,11 @@
 package com.meemaw.events.model.incoming;
 
+import com.meemaw.events.model.incoming.BrowserXhrEvent.Arguments;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import com.meemaw.events.model.incoming.BrowserXhrEvent.Arguments;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class BrowserXhrEvent extends AbstractBrowserEvent<Arguments> {
 

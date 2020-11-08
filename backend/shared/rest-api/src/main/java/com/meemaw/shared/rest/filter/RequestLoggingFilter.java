@@ -3,14 +3,9 @@ package com.meemaw.shared.rest.filter;
 import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 
+import com.meemaw.shared.metrics.MetricsService;
 import io.opentracing.Tracer;
 import io.vertx.core.http.HttpServerRequest;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.slf4j.MDC;
-
-import com.meemaw.shared.metrics.MetricsService;
-
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Priority;
@@ -23,6 +18,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.slf4j.MDC;
 
 @Provider
 @Priority(0)

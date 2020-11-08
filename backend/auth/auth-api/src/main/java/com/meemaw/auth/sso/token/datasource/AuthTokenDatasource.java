@@ -3,7 +3,6 @@ package com.meemaw.auth.sso.token.datasource;
 import com.meemaw.auth.sso.token.model.CreateAuthTokenParams;
 import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
 import com.meemaw.auth.user.model.AuthUser;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

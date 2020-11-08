@@ -1,7 +1,6 @@
 package com.meemaw.auth.organization.resource.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.meemaw.auth.organization.datasource.OrganizationTable;
 import com.meemaw.auth.organization.model.AvatarType;
 import com.meemaw.auth.organization.model.Organization;
@@ -17,7 +16,6 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;

@@ -7,14 +7,12 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.meemaw.events.model.Recorded;
+import com.meemaw.events.model.shared.BrowserEventType;
+import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import com.meemaw.events.model.Recorded;
-import com.meemaw.events.model.shared.BrowserEventType;
-
-import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -1,12 +1,11 @@
 package com.meemaw.shared.sql;
 
 import io.vertx.core.json.JsonObject;
-import org.jooq.*;
-
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 import java.util.Objects;
+import org.jooq.*;
 
 public class JsonObjectBinding implements Binding<Object, JsonObject> {
 

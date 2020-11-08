@@ -1,11 +1,10 @@
 package com.meemaw.shared.rest.query;
 
-import lombok.Value;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import lombok.Value;
 
 @Value
 public class UpdateDTO {

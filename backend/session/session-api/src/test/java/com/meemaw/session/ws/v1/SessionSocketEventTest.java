@@ -3,22 +3,20 @@ package com.meemaw.session.ws.v1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.test.testconainers.kafka.KafkaTestResource;
-
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.websocket.DeploymentException;
 import javax.websocket.Session;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @Tag("integration")

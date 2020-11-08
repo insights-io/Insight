@@ -6,12 +6,6 @@
           <package name="" withSubpackages="true" static="true" />
           <emptyLine />
           <package name="" withSubpackages="true" static="false" />
-          <emptyLine />
-          <package name="com.meemaw" withSubpackages="true" static="false" />
-          <package name="com.rebrowse" withSubpackages="true" static="false" />
-          <emptyLine />
-          <package name="java" withSubpackages="true" static="false" />
-          <package name="javax" withSubpackages="true" static="false" />
         </value>
       </option>
     </JavaCodeStyleSettings>

@@ -1,13 +1,11 @@
 package com.meemaw.events.model.incoming;
 
+import com.meemaw.events.model.incoming.BrowserResourcePerformanceEvent.Arguments;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import com.meemaw.events.model.incoming.BrowserResourcePerformanceEvent.Arguments;
-
-import java.util.Map;
 
 public class BrowserResourcePerformanceEvent extends AbstractBrowserEvent<Arguments> {
 

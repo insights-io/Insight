@@ -2,13 +2,11 @@ package com.meemaw.auth.sso.oauth.google;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.auth.sso.AbstractIdentityProvider;
 import io.quarkus.test.junit.QuarkusTest;
+import javax.inject.Inject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import com.meemaw.auth.sso.AbstractIdentityProvider;
-
-import javax.inject.Inject;
 
 @QuarkusTest
 @Tag("integration")

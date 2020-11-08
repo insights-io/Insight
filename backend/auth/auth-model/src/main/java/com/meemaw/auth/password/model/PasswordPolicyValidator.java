@@ -1,7 +1,6 @@
 package com.meemaw.auth.password.model;
 
 import com.meemaw.auth.password.model.impl.MinCharactersPasswordPolicyValidator;
-
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;

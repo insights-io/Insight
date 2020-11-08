@@ -7,7 +7,6 @@ import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;

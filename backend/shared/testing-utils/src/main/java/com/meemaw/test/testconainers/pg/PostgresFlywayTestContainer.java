@@ -1,13 +1,12 @@
 package com.meemaw.test.testconainers.pg;
 
+import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-
-import java.nio.file.Path;
 
 @Slf4j
 public class PostgresFlywayTestContainer<SELF extends PostgresFlywayTestContainer<SELF>>

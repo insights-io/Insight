@@ -3,15 +3,13 @@ package com.meemaw.billing.subscription.datasource.sql;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
-import org.jooq.Field;
-import org.jooq.Table;
-
 import com.meemaw.billing.subscription.datasource.BillingSubscriptionTable;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jooq.Field;
+import org.jooq.Table;
 
 public class SqlBillingSubscriptionTable {
 

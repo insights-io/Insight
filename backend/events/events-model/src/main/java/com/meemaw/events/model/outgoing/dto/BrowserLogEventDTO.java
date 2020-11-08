@@ -1,13 +1,11 @@
 package com.meemaw.events.model.outgoing.dto;
 
+import com.meemaw.events.model.shared.LogLevel;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import com.meemaw.events.model.shared.LogLevel;
-
-import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

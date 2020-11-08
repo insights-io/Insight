@@ -4,15 +4,6 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
-import org.apache.commons.lang3.tuple.Pair;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.CreateOrganizationParams;
@@ -35,7 +26,10 @@ import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.auth.SessionInfo;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserRole;
-
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -47,6 +41,10 @@ import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest

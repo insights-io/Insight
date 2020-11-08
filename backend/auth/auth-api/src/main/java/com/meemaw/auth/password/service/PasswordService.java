@@ -4,7 +4,6 @@ import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Optional;

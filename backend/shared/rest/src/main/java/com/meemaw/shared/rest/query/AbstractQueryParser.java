@@ -1,12 +1,10 @@
 package com.meemaw.shared.rest.query;
 
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.meemaw.shared.rest.exception.SearchParseException;
-
 import java.util.*;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class AbstractQueryParser {
 

@@ -1,10 +1,5 @@
 package com.meemaw.auth.sso.bearer;
 
-import io.opentracing.Span;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.opentracing.Traced;
-
 import com.meemaw.auth.sso.AbstractAuthDynamicFeature;
 import com.meemaw.auth.sso.AuthSchemeResolver;
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature.BearerTokenAuthFilter;
@@ -13,7 +8,7 @@ import com.meemaw.auth.user.UserRegistry;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestContextUtils;
 import com.meemaw.shared.rest.response.Boom;
-
+import io.opentracing.Span;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.regex.Matcher;
@@ -23,6 +18,9 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @Slf4j
 public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature

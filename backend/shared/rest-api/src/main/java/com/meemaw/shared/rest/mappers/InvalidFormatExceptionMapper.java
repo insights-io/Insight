@@ -2,10 +2,8 @@ package com.meemaw.shared.rest.mappers;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.status.MissingStatus;
-
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;

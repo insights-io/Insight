@@ -1,10 +1,9 @@
 package com.meemaw.shared.sql.rest.query;
 
+import com.meemaw.shared.rest.query.TermOperation;
 import lombok.ToString;
 import org.jooq.Condition;
 import org.jooq.Field;
-
-import com.meemaw.shared.rest.query.TermOperation;
 
 @ToString
 public enum SQLTermOperation {

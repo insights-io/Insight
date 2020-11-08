@@ -3,9 +3,7 @@ package com.meemaw.shared.rest.mappers;
 import static com.fasterxml.jackson.databind.JsonMappingException.Reference;
 
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
-
 import com.meemaw.shared.rest.response.Boom;
-
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;

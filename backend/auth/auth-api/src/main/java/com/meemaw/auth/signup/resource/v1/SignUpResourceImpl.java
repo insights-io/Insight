@@ -1,8 +1,5 @@
 package com.meemaw.auth.signup.resource.v1;
 
-import io.vertx.core.http.HttpServerRequest;
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.signup.model.SignUpRequest;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.service.SignUpServiceImpl;
@@ -10,7 +7,7 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
-
+import io.vertx.core.http.HttpServerRequest;
 import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SignUpResourceImpl implements SignUpResource {

@@ -2,13 +2,6 @@ package com.meemaw.auth.organization.datasource.sql;
 
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.*;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import lombok.extern.slf4j.Slf4j;
-import org.jooq.Query;
-import org.jooq.UpdateSetFirstStep;
-
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.CreateOrganizationParams;
 import com.meemaw.auth.organization.model.Organization;
@@ -19,11 +12,16 @@ import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
-
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.Query;
+import org.jooq.UpdateSetFirstStep;
 
 @ApplicationScoped
 @Slf4j

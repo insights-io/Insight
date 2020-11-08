@@ -2,7 +2,6 @@ package com.meemaw.auth.sso;
 
 import com.meemaw.auth.sso.cookie.SessionCookieSecurityRequirementAuthSidecarDynamicFeature;
 import com.meemaw.auth.sso.token.BearerTokenSidecarSecurityRequirementAuthDynamicFeature;
-
 import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
 

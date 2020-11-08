@@ -1,9 +1,5 @@
 package com.meemaw.auth.organization.service;
 
-import io.vertx.core.json.JsonObject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
-
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.datasource.OrganizationTable;
 import com.meemaw.auth.organization.model.Organization;
@@ -13,7 +9,7 @@ import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
-
+import io.vertx.core.json.JsonObject;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +17,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j

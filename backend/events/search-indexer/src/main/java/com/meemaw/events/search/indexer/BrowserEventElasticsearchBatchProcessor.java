@@ -1,16 +1,14 @@
 package com.meemaw.events.search.indexer;
 
+import com.meemaw.events.index.UserEventIndex;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
+import java.util.Map;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RestHighLevelClient;
-
-import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.incoming.AbstractBrowserEvent;
-import com.meemaw.events.model.incoming.UserEvent;
-
-import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 public class BrowserEventElasticsearchBatchProcessor

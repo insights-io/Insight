@@ -1,13 +1,12 @@
 package com.meemaw.auth.sso.saml.model;
 
+import java.util.List;
+import java.util.Optional;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml.saml2.metadata.SingleLogoutService;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
-
-import java.util.List;
-import java.util.Optional;
 
 public class SamlMetadataEntityDescriptor {
 

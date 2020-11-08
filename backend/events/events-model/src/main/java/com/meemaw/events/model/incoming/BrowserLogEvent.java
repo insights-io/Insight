@@ -1,9 +1,7 @@
 package com.meemaw.events.model.incoming;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import com.meemaw.events.model.shared.LogLevel;
-
 import java.util.List;
 import java.util.Map;
 

@@ -1,9 +1,8 @@
 package com.meemaw.auth.sso.token.model.dto;
 
-import lombok.Value;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.Value;
 
 @Value
 public class AuthTokenDTO {

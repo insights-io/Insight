@@ -1,12 +1,10 @@
 package com.meemaw.events.model.incoming;
 
-import lombok.*;
-
 import com.meemaw.events.index.UserEventIndex;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import lombok.*;
 
 @Value
 @Builder

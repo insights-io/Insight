@@ -1,12 +1,11 @@
 package com.meemaw.session.model;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

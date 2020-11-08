@@ -2,19 +2,17 @@ package com.meemaw.billing.customer.datasource.sql;
 
 import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.*;
 
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import org.jooq.Query;
-
 import com.meemaw.billing.customer.datasource.BillingCustomerDatasource;
 import com.meemaw.billing.customer.model.BillingCustomer;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jooq.Query;
 
 @ApplicationScoped
 public class SqlBillingCustomerDatasource implements BillingCustomerDatasource {

@@ -1,10 +1,8 @@
 package com.meemaw.billing.subscription.model.dto;
 
-import lombok.Value;
-
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
-
 import java.time.OffsetDateTime;
+import lombok.Value;
 
 @Value
 public class SubscriptionDTO {

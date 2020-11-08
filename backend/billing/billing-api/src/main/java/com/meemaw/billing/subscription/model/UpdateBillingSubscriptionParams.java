@@ -1,12 +1,11 @@
 package com.meemaw.billing.subscription.model;
 
 import com.stripe.model.Subscription;
-import lombok.Builder;
-import lombok.Value;
-
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import lombok.Builder;
+import lombok.Value;
 
 @Value
 @Builder

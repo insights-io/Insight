@@ -2,23 +2,21 @@ package com.meemaw.billing.invoice.datasource.sql;
 
 import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.*;
 
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import org.jooq.Query;
-
 import com.meemaw.billing.invoice.datasource.BillingInvoiceDatasource;
 import com.meemaw.billing.invoice.model.BillingInvoice;
 import com.meemaw.billing.invoice.model.CreateBillingInvoiceParams;
 import com.meemaw.billing.invoice.model.UpdateBillingInvoiceParams;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.jooq.Query;
 
 @ApplicationScoped
 public class SqlBillingInvoiceDatasource implements BillingInvoiceDatasource {

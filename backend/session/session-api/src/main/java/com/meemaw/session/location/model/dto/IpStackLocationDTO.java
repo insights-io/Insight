@@ -3,12 +3,11 @@ package com.meemaw.session.location.model.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meemaw.location.model.Location;
+import com.meemaw.location.model.dto.LocationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-
-import com.meemaw.location.model.Location;
-import com.meemaw.location.model.dto.LocationDTO;
 
 @Value
 @AllArgsConstructor

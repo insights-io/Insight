@@ -1,15 +1,13 @@
 package com.meemaw.shared.sql.rest.query;
 
 import com.google.common.base.CaseFormat;
+import com.meemaw.shared.rest.query.UpdateDTO;
+import java.util.Map;
+import java.util.Map.Entry;
 import lombok.Value;
 import org.jooq.Field;
 import org.jooq.UpdateFromStep;
 import org.jooq.UpdateSetFirstStep;
-
-import com.meemaw.shared.rest.query.UpdateDTO;
-
-import java.util.Map;
-import java.util.Map.Entry;
 
 @Value
 public class SQLUpdateDTO {

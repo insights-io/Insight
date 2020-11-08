@@ -1,16 +1,14 @@
 package com.meemaw.auth.signup.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.shared.model.CanExpire;
-
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
 
 @Value
 @Builder

@@ -1,15 +1,13 @@
 package com.meemaw.auth.tfa;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.tfa.model.TfaSetup;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.rest.response.Boom;
-
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AbstractTfaProvider<T> implements TfaProvider<T> {

@@ -1,9 +1,8 @@
 package com.meemaw.shared.date;
 
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.time.OffsetDateTime;
 
 public class DateUtilsTest {
 

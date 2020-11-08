@@ -1,5 +1,8 @@
 package com.rebrowse;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Objects;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -7,10 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Objects;
 
 public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
 

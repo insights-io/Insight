@@ -1,19 +1,17 @@
 package com.meemaw.auth.tfa.challenge.service;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.tfa.*;
 import com.meemaw.auth.tfa.challenge.datasource.TfaChallengeDatasource;
 import com.meemaw.auth.tfa.model.TfaSetup;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.rest.response.Boom;
-
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
 @Slf4j

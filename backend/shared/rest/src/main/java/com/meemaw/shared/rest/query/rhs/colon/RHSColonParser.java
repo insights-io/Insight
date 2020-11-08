@@ -1,15 +1,13 @@
 package com.meemaw.shared.rest.query.rhs.colon;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.meemaw.shared.rest.exception.GroupBySearchParseException;
 import com.meemaw.shared.rest.exception.SortBySearchParseException;
 import com.meemaw.shared.rest.query.*;
-
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 
 public final class RHSColonParser extends AbstractQueryParser {
 

@@ -4,23 +4,21 @@ import static com.meemaw.test.setup.AuthApiTestProvider.*;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
+import com.meemaw.shared.sql.SQLContext;
+import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.api.Api;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.PoolOptions;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
 import org.mindrot.jbcrypt.BCrypt;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
-
-import com.meemaw.shared.sql.SQLContext;
-import com.meemaw.test.project.ProjectUtils;
-import com.meemaw.test.testconainers.api.Api;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.UUID;
 
 public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestContainer> {
 

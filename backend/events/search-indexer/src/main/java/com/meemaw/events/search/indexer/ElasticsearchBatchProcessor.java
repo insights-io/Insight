@@ -1,5 +1,9 @@
 package com.meemaw.events.search.indexer;
 
+import com.meemaw.events.stream.processor.BatchProcessor;
+import com.meemaw.events.stream.processor.BatchProcessorFailureCallback;
+import com.meemaw.events.stream.processor.ProcessorUnavailableException;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -11,12 +15,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.rest.RestStatus;
-
-import com.meemaw.events.stream.processor.BatchProcessor;
-import com.meemaw.events.stream.processor.BatchProcessorFailureCallback;
-import com.meemaw.events.stream.processor.ProcessorUnavailableException;
-
-import java.util.*;
 
 @Slf4j
 public abstract class ElasticsearchBatchProcessor<V> implements BatchProcessor<V> {

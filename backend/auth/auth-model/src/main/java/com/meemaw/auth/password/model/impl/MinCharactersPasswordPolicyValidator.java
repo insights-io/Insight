@@ -1,9 +1,8 @@
 package com.meemaw.auth.password.model.impl;
 
-import lombok.Value;
-
 import com.meemaw.auth.password.model.PasswordPolicyValidator;
 import com.meemaw.auth.password.model.PasswordValidationException;
+import lombok.Value;
 
 @Value
 public class MinCharactersPasswordPolicyValidator implements PasswordPolicyValidator {

@@ -1,13 +1,12 @@
 package com.meemaw.shared.rest.response;
 
+import java.util.Objects;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import java.util.Objects;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

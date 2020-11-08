@@ -1,14 +1,12 @@
 package com.meemaw.session.core.config.model;
 
+import com.meemaw.shared.config.model.AppConfigBase;
+import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
+import javax.enterprise.context.ApplicationScoped;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.http.HttpHost;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import com.meemaw.shared.config.model.AppConfigBase;
-import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
-
-import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @Data

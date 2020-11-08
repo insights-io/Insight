@@ -1,16 +1,14 @@
 package com.meemaw.session.sessions.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-
 import com.meemaw.events.model.incoming.BrowserUnloadEvent;
 import com.meemaw.events.stream.EventsStream;
-
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.Session;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 @ApplicationScoped
 @Slf4j

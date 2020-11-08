@@ -1,8 +1,7 @@
 package com.meemaw.events.model.incoming.serialization;
 
-import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
-
 import com.meemaw.events.model.incoming.UserEvent;
+import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
 
 public class UserEventDeserializer extends ObjectMapperDeserializer<UserEvent> {
 

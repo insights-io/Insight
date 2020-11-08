@@ -1,8 +1,7 @@
 package com.meemaw.auth.sso.session.model;
 
-import lombok.Value;
-
 import javax.ws.rs.core.NewCookie;
+import lombok.Value;
 
 @Value
 public class DirectLoginResult implements LoginResult<Boolean> {

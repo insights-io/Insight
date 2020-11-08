@@ -1,7 +1,5 @@
 package com.meemaw.auth.user.resource.v1;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -15,13 +13,13 @@ import com.meemaw.auth.user.service.UserService;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UserResourceImpl implements UserResource {

@@ -1,9 +1,8 @@
 package com.meemaw.shared.sms;
 
 import com.twilio.rest.api.v2010.account.Message;
-import lombok.Value;
-
 import java.time.OffsetDateTime;
+import lombok.Value;
 
 @Value
 public class SmsMessage {

@@ -2,7 +2,6 @@ package com.meemaw.auth.password.datasource;
 
 import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.shared.sql.client.SqlTransaction;
-
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;

@@ -2,15 +2,13 @@ package com.meemaw.shared.ip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
-
 import com.meemaw.shared.context.RequestContextUtils;
-
 import java.lang.reflect.Method;
 import java.util.Optional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceInfo;
+import org.junit.jupiter.api.Test;
 
 public class RequestContextUtilsTest {
 

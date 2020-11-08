@@ -1,9 +1,6 @@
 package com.meemaw.session.sessions.ws.v1;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.session.sessions.service.SessionSocketService;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.websocket.OnClose;
@@ -11,6 +8,7 @@ import javax.websocket.OnError;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import lombok.extern.slf4j.Slf4j;
 
 @ServerEndpoint(SessionSocketImpl.PATH)
 @ApplicationScoped

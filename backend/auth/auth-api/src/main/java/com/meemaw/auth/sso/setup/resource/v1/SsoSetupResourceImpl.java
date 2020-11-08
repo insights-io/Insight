@@ -1,8 +1,5 @@
 package com.meemaw.auth.sso.setup.resource.v1;
 
-import io.vertx.core.http.HttpServerRequest;
-import lombok.extern.slf4j.Slf4j;
-
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.IdentityProviderRegistry;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
@@ -15,7 +12,7 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-
+import io.vertx.core.http.HttpServerRequest;
 import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +25,7 @@ import javax.validation.Validator;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SsoSetupResourceImpl implements SsoSetupResource {

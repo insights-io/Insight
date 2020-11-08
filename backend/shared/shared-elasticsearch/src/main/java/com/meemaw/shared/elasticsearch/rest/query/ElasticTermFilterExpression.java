@@ -1,14 +1,12 @@
 package com.meemaw.shared.elasticsearch.rest.query;
 
+import com.meemaw.shared.rest.query.TermFilterExpression;
+import com.meemaw.shared.rest.query.TermOperation;
+import java.util.Arrays;
 import lombok.Value;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-
-import com.meemaw.shared.rest.query.TermFilterExpression;
-import com.meemaw.shared.rest.query.TermOperation;
-
-import java.util.Arrays;
 
 @Value
 public class ElasticTermFilterExpression<T> implements ElasticFilterExpression {

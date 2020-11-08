@@ -1,8 +1,7 @@
 package com.meemaw.session.model;
 
-import lombok.*;
-
 import java.util.UUID;
+import lombok.*;
 
 @Value
 @Builder

@@ -2,16 +2,6 @@ package com.meemaw.auth.organization.datasource.sql;
 
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTeamInviteTable.*;
 
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.jooq.Query;
-import org.jooq.SelectConditionStep;
-import org.jooq.Table;
-import org.jooq.impl.DSL;
-
 import com.meemaw.auth.organization.datasource.OrganizationTeamInviteDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.TeamInviteTemplateData;
@@ -21,7 +11,8 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
-
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +22,13 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.jooq.Query;
+import org.jooq.SelectConditionStep;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
