@@ -1,10 +1,13 @@
 package com.meemaw.auth.sso.oauth;
 
+import io.vertx.core.http.HttpServerRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.shared.context.RequestUtils;
-import io.vertx.core.http.HttpServerRequest;
+
 import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
@@ -15,7 +18,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AbstractOAuthResource<T, U extends OAuthUserInfo, E extends OAuthError>

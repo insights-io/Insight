@@ -2,18 +2,20 @@ package com.meemaw.auth.sso.oauth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.shared.rest.response.Boom;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+
+import com.meemaw.shared.rest.response.Boom;
+
 import java.net.URI;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
 
 @Slf4j
 public abstract class AbstractOAuthClient<T, U extends OAuthUserInfo, E extends OAuthError> {

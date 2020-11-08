@@ -3,14 +3,16 @@ package com.meemaw.auth.sso.token.datasource.sql;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
+import org.jooq.Field;
+import org.jooq.Table;
+
 import com.meemaw.auth.sso.token.datasource.AuthTokenTable;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jooq.Field;
-import org.jooq.Table;
 
 public final class SqlAuthTokenTable {
 

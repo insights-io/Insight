@@ -1,10 +1,11 @@
 package com.meemaw.auth.sso.session.model;
 
+import lombok.Value;
+
 import java.net.URL;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import lombok.Value;
 
 @Value
 public class RedirectSessionLoginResult implements LoginResult<Void> {

@@ -1,16 +1,16 @@
 package com.meemaw.auth.sso.session.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.slf4j.MDC;
+
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.password.service.PasswordService;
 import com.meemaw.auth.signup.service.SignUpService;
 import com.meemaw.auth.sso.IdentityProviderRegistry;
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
-import com.meemaw.auth.sso.session.model.DirectLoginResult;
-import com.meemaw.auth.sso.session.model.LoginMethod;
-import com.meemaw.auth.sso.session.model.LoginResult;
-import com.meemaw.auth.sso.session.model.RedirectSessionLoginResult;
-import com.meemaw.auth.sso.session.model.ResponseLoginResult;
-import com.meemaw.auth.sso.session.model.SsoUser;
+import com.meemaw.auth.sso.session.model.*;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
@@ -22,23 +22,15 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
+
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.metrics.annotation.Timed;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j

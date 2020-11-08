@@ -1,7 +1,8 @@
 package com.meemaw.auth.sso.session.model;
 
-import javax.ws.rs.core.Response;
 import lombok.Value;
+
+import javax.ws.rs.core.Response;
 
 @Value
 public class SsoLoginResult<T> {

@@ -1,10 +1,12 @@
 package com.meemaw.auth.tfa.totp.model;
 
+import lombok.Value;
+
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.model.TfaSetup;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import lombok.Value;
 
 @Value
 public class TfaTotpSetup implements TfaSetup {

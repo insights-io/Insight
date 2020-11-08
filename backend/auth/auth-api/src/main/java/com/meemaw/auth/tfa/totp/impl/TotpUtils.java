@@ -7,13 +7,14 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
+import net.glxn.qrgen.javase.QRCode;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
 import javax.imageio.ImageIO;
-import net.glxn.qrgen.javase.QRCode;
 
 public final class TotpUtils {
 

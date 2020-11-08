@@ -1,5 +1,8 @@
 package com.meemaw.auth.sso.setup.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
@@ -8,12 +11,11 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
 import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
 import com.meemaw.shared.rest.response.Boom;
+
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j

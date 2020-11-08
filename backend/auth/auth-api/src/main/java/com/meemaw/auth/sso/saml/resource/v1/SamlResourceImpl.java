@@ -1,12 +1,15 @@
 package com.meemaw.auth.sso.saml.resource.v1;
 
+import io.vertx.core.http.HttpServerRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
-import io.vertx.core.http.HttpServerRequest;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -16,7 +19,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SamlResourceImpl implements SamlResource {

@@ -1,17 +1,19 @@
 package com.meemaw.auth.sso.token.resource.v1;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.sso.token.datasource.AuthTokenDatasource;
 import com.meemaw.auth.sso.token.model.CreateAuthTokenParams;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
 public class AuthTokenResourceImpl implements AuthTokenResource {

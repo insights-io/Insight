@@ -1,5 +1,8 @@
 package com.meemaw.auth.tfa.totp.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.meemaw.auth.tfa.AbstractTfaProvider;
 import com.meemaw.auth.tfa.TfaChallengeValidatationException;
 import com.meemaw.auth.tfa.TfaMethod;
@@ -12,6 +15,7 @@ import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.io.IoUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
+
 import java.io.ByteArrayOutputStream;
 import java.security.GeneralSecurityException;
 import java.util.UUID;
@@ -19,8 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 @Slf4j

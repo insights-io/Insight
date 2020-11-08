@@ -1,8 +1,5 @@
 package com.meemaw.auth.sso.saml.service;
 
-import com.meemaw.auth.sso.saml.model.SamlCoreDataResponse;
-import com.meemaw.auth.sso.saml.model.SamlMetadataEntityDescriptor;
-import com.meemaw.shared.rest.response.Boom;
 import io.quarkus.runtime.StartupEvent;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -24,8 +21,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import com.meemaw.auth.sso.saml.model.SamlCoreDataResponse;
+import com.meemaw.auth.sso.saml.model.SamlMetadataEntityDescriptor;
+import com.meemaw.shared.rest.response.Boom;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +34,8 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 
 @ApplicationScoped
 @Slf4j

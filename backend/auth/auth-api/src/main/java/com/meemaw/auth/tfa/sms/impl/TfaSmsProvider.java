@@ -1,5 +1,8 @@
 package com.meemaw.auth.tfa.sms.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+
 import com.meemaw.auth.tfa.AbstractTfaProvider;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
@@ -14,12 +17,11 @@ import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
+
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j

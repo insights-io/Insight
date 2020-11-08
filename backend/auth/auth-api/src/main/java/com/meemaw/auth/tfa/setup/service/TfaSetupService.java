@@ -1,17 +1,19 @@
 package com.meemaw.auth.tfa.setup.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.TfaProvider;
 import com.meemaw.auth.tfa.TfaProvidersRegistry;
 import com.meemaw.auth.tfa.model.TfaSetup;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.rest.response.Boom;
+
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 @Slf4j
