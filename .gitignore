@@ -9,6 +9,7 @@ bin/
 !backend/.idea/checkstyle-idea.xml
 !backend/.idea/google-java-format.xml
 !backend/.idea/saveactions_settings.xml
+!backend/.idea/codeStyles/Project.xml
 
 *.ipr
 *.iml
