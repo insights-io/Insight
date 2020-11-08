@@ -1,6 +1,7 @@
 package com.meemaw.shared.rest.mappers;
 
 import com.meemaw.shared.rest.response.Boom;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;

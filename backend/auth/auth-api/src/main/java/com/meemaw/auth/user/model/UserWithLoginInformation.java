@@ -1,13 +1,15 @@
 package com.meemaw.auth.user.model;
 
+import lombok.Value;
+
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
+
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import lombok.Value;
 
 @Value
 public class UserWithLoginInformation {

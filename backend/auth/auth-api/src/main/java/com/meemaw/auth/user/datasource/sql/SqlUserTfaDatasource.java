@@ -1,10 +1,13 @@
 package com.meemaw.auth.user.datasource.sql;
 
-import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.CREATED_AT;
-import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.METHOD;
-import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.PARAMS;
-import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.TABLE;
-import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.USER_ID;
+import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.*;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.jooq.Query;
 
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.model.TfaSetup;
@@ -13,9 +16,7 @@ import com.meemaw.auth.tfa.totp.model.TfaTotpSetup;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j

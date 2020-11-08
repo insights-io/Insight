@@ -1,15 +1,14 @@
 package com.meemaw.auth.signup.datasource.sql;
 
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.COMPANY;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.CREATED_AT;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.EMAIL;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.FULL_NAME;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.HASHED_PASSWORD;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERER;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.*;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.jooq.Field;
+import org.jooq.Query;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
@@ -18,18 +17,12 @@ import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
+
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.jooq.Field;
-import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j

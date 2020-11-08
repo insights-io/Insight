@@ -5,11 +5,12 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import io.vertx.core.json.JsonObject;
+import org.jooq.Field;
+import org.jooq.Table;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.jooq.Field;
-import org.jooq.Table;
 
 public final class SignUpRequestTable {
 

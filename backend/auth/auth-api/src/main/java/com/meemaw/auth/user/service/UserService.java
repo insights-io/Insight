@@ -1,5 +1,9 @@
 package com.meemaw.auth.user.service;
 
+import io.vertx.core.json.JsonObject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.opentracing.Traced;
+
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
 import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
@@ -12,7 +16,7 @@ import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
-import io.vertx.core.json.JsonObject;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,8 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.opentracing.Traced;
 
 @ApplicationScoped
 @Slf4j

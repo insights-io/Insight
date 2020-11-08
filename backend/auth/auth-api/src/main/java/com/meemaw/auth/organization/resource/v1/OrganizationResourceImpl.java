@@ -1,7 +1,7 @@
 package com.meemaw.auth.organization.resource.v1;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.meemaw.auth.organization.datasource.OrganizationTable;
 import com.meemaw.auth.organization.model.AvatarType;
 import com.meemaw.auth.organization.model.Organization;
@@ -17,17 +17,15 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.rebrowse.model.organization.OrganizationUpdateParams;
-import org.jboss.resteasy.spi.ApplicationException;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import javax.inject.Inject;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 public class OrganizationResourceImpl implements OrganizationResource {
 

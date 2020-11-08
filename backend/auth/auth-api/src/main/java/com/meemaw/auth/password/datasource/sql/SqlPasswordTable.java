@@ -3,11 +3,13 @@ package com.meemaw.auth.password.datasource.sql;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
-import com.meemaw.auth.password.datasource.PasswordTable;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 import org.jooq.Field;
 import org.jooq.Table;
+
+import com.meemaw.auth.password.datasource.PasswordTable;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 public final class SqlPasswordTable {
 

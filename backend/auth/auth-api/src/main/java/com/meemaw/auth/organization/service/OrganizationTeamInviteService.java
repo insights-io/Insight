@@ -1,5 +1,14 @@
 package com.meemaw.auth.organization.service;
 
+import io.quarkus.mailer.Mail;
+import io.quarkus.mailer.reactive.ReactiveMailer;
+import io.quarkus.qute.Template;
+import io.quarkus.qute.api.ResourcePath;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.slf4j.MDC;
+
 import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyDatasource;
@@ -22,10 +31,7 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
-import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.reactive.ReactiveMailer;
-import io.quarkus.qute.Template;
-import io.quarkus.qute.api.ResourcePath;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,10 +41,6 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j

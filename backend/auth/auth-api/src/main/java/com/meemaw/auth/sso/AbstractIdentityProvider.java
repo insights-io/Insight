@@ -1,9 +1,12 @@
 package com.meemaw.auth.sso;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.shared.rest.response.Boom;
+
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -12,7 +15,6 @@ import java.security.SecureRandom;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
-import org.apache.commons.lang3.RandomStringUtils;
 
 public abstract class AbstractIdentityProvider {
 

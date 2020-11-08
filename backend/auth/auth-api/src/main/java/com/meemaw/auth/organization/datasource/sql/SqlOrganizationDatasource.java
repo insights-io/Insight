@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Query;
 import org.jooq.UpdateSetFirstStep;
 
+
 @ApplicationScoped
 @Slf4j
 public class SqlOrganizationDatasource implements OrganizationDatasource {
