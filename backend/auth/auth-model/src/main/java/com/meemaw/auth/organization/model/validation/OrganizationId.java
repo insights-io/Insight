@@ -3,6 +3,7 @@ package com.meemaw.auth.organization.model.validation;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import com.meemaw.auth.organization.model.Organization;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

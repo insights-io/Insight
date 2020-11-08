@@ -1,6 +1,7 @@
 package com.meemaw.shared.context;
 
 import com.meemaw.shared.rest.headers.MissingHttpHeaders;
+
 import java.util.Optional;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestContext;

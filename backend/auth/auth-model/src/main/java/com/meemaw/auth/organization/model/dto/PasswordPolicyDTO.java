@@ -1,13 +1,15 @@
 package com.meemaw.auth.organization.model.dto;
 
-import com.meemaw.auth.password.model.PasswordPolicy;
-import java.time.OffsetDateTime;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.auth.password.model.PasswordPolicy;
+
+import java.time.OffsetDateTime;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

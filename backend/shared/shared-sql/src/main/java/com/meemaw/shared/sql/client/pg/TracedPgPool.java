@@ -1,28 +1,26 @@
 package com.meemaw.shared.sql.client.pg;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import io.opentracing.tag.Tags;
+import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.*;
+import io.vertx.pgclient.PgException;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.DSLContext;
+import org.jooq.Query;
+import org.jooq.conf.ParamType;
+
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.exception.SqlQueryException;
 import com.meemaw.shared.tracing.TracingUtils;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-import io.opentracing.tag.Tags;
-import io.vertx.mutiny.pgclient.PgPool;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import io.vertx.mutiny.sqlclient.SqlClient;
-import io.vertx.mutiny.sqlclient.Transaction;
-import io.vertx.mutiny.sqlclient.Tuple;
-import io.vertx.pgclient.PgException;
+
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.jooq.DSLContext;
-import org.jooq.Query;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j

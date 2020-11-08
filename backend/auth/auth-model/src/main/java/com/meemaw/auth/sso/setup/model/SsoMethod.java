@@ -2,6 +2,7 @@ package com.meemaw.auth.sso.setup.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+
 import com.meemaw.auth.sso.session.model.LoginMethod;
 
 public enum SsoMethod {

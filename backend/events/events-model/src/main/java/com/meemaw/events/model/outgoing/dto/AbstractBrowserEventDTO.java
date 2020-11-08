@@ -1,19 +1,7 @@
 package com.meemaw.events.model.outgoing.dto;
 
 import static com.meemaw.events.model.incoming.AbstractBrowserEvent.EVENT_TYPE;
-import static com.meemaw.events.model.shared.BrowserEventType.CLICK_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.ERROR_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.LOAD_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.LOG_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.MOUSEDOWN_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.MOUSEMOVE_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.MOUSEUP_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.NAVIGATE_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.PERFORMANCE_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.RESIZE_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.RESOURCE_PERFORMANCE_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.UNLOAD_KEY;
-import static com.meemaw.events.model.shared.BrowserEventType.XHR_KEY;
+import static com.meemaw.events.model.shared.BrowserEventType.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,10 +10,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.meemaw.events.model.Recorded;
-import com.meemaw.events.model.shared.BrowserEventType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import com.meemaw.events.model.Recorded;
+import com.meemaw.events.model.shared.BrowserEventType;
 
 @JsonTypeInfo(
     use = Id.NAME,

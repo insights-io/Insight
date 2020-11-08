@@ -3,6 +3,17 @@ package com.meemaw.beacon.resource.v1;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.CreatePageDTO;
@@ -13,9 +24,7 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.data.UserAgentData;
 import com.meemaw.test.testconainers.api.session.SessionApiTestResource;
 import com.meemaw.test.testconainers.kafka.KafkaTestResource;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.smallrye.mutiny.Uni;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -25,13 +34,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
-import org.eclipse.microprofile.opentracing.Traced;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 @QuarkusTestResource(SessionApiTestResource.class)
 @QuarkusTestResource(KafkaTestResource.class)

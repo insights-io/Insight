@@ -2,10 +2,12 @@ package com.meemaw.session.useragent.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.meemaw.useragent.model.UserAgentDTO;
 import io.quarkus.test.junit.QuarkusTest;
-import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
+
+import com.meemaw.useragent.model.UserAgentDTO;
+
+import javax.inject.Inject;
 
 @QuarkusTest
 public class UserAgentServiceTest {

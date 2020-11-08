@@ -4,28 +4,6 @@ import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.meemaw.events.index.UserEventIndex;
-import com.meemaw.events.model.incoming.AbstractBrowserEvent;
-import com.meemaw.events.model.incoming.UserEvent;
-import com.meemaw.events.model.incoming.serialization.UserEventSerializer;
-import com.meemaw.test.rest.data.EventTestData;
-import com.meemaw.test.rest.mappers.JacksonMapper;
-import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
-import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -40,6 +18,24 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
+
+import com.meemaw.events.index.UserEventIndex;
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.events.model.incoming.serialization.UserEventSerializer;
+import com.meemaw.test.rest.data.EventTestData;
+import com.meemaw.test.rest.mappers.JacksonMapper;
+import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
+import com.meemaw.test.testconainers.kafka.KafkaTestExtension;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class AbstractSearchIndexerTest {

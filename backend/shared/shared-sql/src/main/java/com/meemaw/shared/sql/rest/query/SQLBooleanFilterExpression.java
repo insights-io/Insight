@@ -1,12 +1,14 @@
 package com.meemaw.shared.sql.rest.query;
 
-import com.meemaw.shared.rest.query.BooleanFilterExpression;
-import com.meemaw.shared.rest.query.FilterExpression;
-import java.util.List;
-import java.util.Map;
 import lombok.Value;
 import org.jooq.Field;
 import org.jooq.SelectConditionStep;
+
+import com.meemaw.shared.rest.query.BooleanFilterExpression;
+import com.meemaw.shared.rest.query.FilterExpression;
+
+import java.util.List;
+import java.util.Map;
 
 @Value
 public class SQLBooleanFilterExpression implements SQLFilterExpression {

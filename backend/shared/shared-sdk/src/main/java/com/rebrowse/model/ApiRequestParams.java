@@ -2,8 +2,10 @@ package com.rebrowse.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.rebrowse.exception.JsonException;
 import com.rebrowse.net.ApiResource;
+
 import java.util.Map;
 
 public interface ApiRequestParams {

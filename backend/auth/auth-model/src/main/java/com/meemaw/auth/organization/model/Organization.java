@@ -1,11 +1,13 @@
 package com.meemaw.auth.organization.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.RandomStringUtils;
+
 import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.date.DateUtils;
+
 import java.time.OffsetDateTime;
-import org.apache.commons.lang3.RandomStringUtils;
 
 public interface Organization {
 

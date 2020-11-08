@@ -1,7 +1,8 @@
 package com.meemaw.auth.sso.setup.model.dto;
 
-import com.meemaw.auth.sso.setup.model.SsoMethod;
 import lombok.Value;
+
+import com.meemaw.auth.sso.setup.model.SsoMethod;
 
 import java.time.OffsetDateTime;
 

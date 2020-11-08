@@ -3,16 +3,18 @@ package com.meemaw.events.model.outgoing.dto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.json.JSONException;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.events.model.shared.BrowserEventType;
 import com.meemaw.events.model.shared.LogLevel;
 import com.meemaw.test.matchers.SameJSON;
 import com.meemaw.test.rest.data.EventTestData;
 import com.meemaw.test.rest.mappers.JacksonMapper;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
-import org.json.JSONException;
-import org.junit.jupiter.api.Test;
 
 public class AbstractBrowserEventDtoSerializationTest {
 

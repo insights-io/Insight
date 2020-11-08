@@ -2,6 +2,17 @@ package com.meemaw.billing.service.stripe;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 
+import com.stripe.model.Customer;
+import com.stripe.model.PaymentIntent;
+import com.stripe.model.PaymentMethod;
+import com.stripe.model.Subscription;
+import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.CustomerUpdateParams;
+import com.stripe.param.PaymentMethodAttachParams;
+import com.stripe.param.SubscriptionCreateParams;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.billing.customer.datasource.BillingCustomerDatasource;
@@ -12,33 +23,16 @@ import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.CreateBillingSubscriptionParams;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
-import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
-import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
-import com.meemaw.billing.subscription.model.dto.PlanDTO;
-import com.meemaw.billing.subscription.model.dto.PriceDTO;
-import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
+import com.meemaw.billing.subscription.model.dto.*;
 import com.meemaw.shared.rest.response.Boom;
-import com.stripe.model.Customer;
-import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethod;
-import com.stripe.model.Subscription;
-import com.stripe.param.CustomerCreateParams;
-import com.stripe.param.CustomerUpdateParams;
-import com.stripe.param.PaymentMethodAttachParams;
-import com.stripe.param.SubscriptionCreateParams;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 @Slf4j

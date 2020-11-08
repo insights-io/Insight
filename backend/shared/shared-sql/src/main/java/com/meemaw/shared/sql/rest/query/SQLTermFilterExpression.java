@@ -1,12 +1,14 @@
 package com.meemaw.shared.sql.rest.query;
 
-import com.meemaw.shared.rest.query.TermFilterExpression;
-import java.util.Map;
 import lombok.Value;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
+
+import com.meemaw.shared.rest.query.TermFilterExpression;
+
+import java.util.Map;
 
 @Value
 public class SQLTermFilterExpression<T> implements SQLFilterExpression {

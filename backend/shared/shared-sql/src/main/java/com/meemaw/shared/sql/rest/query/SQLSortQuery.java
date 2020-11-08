@@ -1,10 +1,12 @@
 package com.meemaw.shared.sql.rest.query;
 
-import com.meemaw.shared.rest.query.SortQuery;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Value;
 import org.jooq.SortField;
+
+import com.meemaw.shared.rest.query.SortQuery;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Value
 public class SQLSortQuery {

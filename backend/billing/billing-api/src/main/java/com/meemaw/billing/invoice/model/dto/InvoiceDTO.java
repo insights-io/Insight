@@ -1,7 +1,8 @@
 package com.meemaw.billing.invoice.model.dto;
 
-import java.time.OffsetDateTime;
 import lombok.Value;
+
+import java.time.OffsetDateTime;
 
 @Value
 public class InvoiceDTO {

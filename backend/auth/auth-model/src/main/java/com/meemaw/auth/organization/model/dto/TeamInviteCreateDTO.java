@@ -1,13 +1,15 @@
 package com.meemaw.auth.organization.model.dto;
 
-import com.meemaw.auth.user.model.UserRole;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.auth.user.model.UserRole;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

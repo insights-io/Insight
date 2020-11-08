@@ -3,9 +3,10 @@ package com.meemaw.shared.elasticsearch.rest.query;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import com.meemaw.shared.rest.query.TermOperation;
 import lombok.ToString;
 import org.elasticsearch.index.query.QueryBuilder;
+
+import com.meemaw.shared.rest.query.TermOperation;
 
 @ToString
 public enum ElasticTermOperation {

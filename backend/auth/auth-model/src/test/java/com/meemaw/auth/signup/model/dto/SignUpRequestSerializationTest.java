@@ -4,8 +4,9 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.test.rest.mappers.JacksonMapper;
 import org.junit.jupiter.api.Test;
+
+import com.meemaw.test.rest.mappers.JacksonMapper;
 
 public class SignUpRequestSerializationTest {
 

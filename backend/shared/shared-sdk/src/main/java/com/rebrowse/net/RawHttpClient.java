@@ -1,8 +1,10 @@
 package com.rebrowse.net;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.rebrowse.Rebrowse;
 import com.rebrowse.exception.JsonException;
+
 import java.net.http.HttpHeaders;
 import java.net.http.HttpTimeoutException;
 import java.time.Duration;

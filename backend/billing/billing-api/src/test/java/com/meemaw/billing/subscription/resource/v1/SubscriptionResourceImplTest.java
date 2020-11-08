@@ -5,6 +5,17 @@ import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentMethod;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.http.Method;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
@@ -19,20 +30,11 @@ import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.user.User;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentMethod;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
-import io.restassured.http.Method;
+
 import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTestResource(AuthApiTestResource.class)

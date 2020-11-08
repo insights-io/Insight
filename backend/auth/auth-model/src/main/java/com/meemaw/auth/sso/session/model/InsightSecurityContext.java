@@ -1,10 +1,12 @@
 package com.meemaw.auth.sso.session.model;
 
+import lombok.Value;
+
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
+
 import java.security.Principal;
 import javax.ws.rs.core.SecurityContext;
-import lombok.Value;
 
 @Value
 public class InsightSecurityContext implements SecurityContext {

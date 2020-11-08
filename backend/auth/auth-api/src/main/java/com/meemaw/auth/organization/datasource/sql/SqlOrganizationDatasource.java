@@ -1,16 +1,13 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.AVATAR;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.CREATED_AT;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.DEFAULT_ROLE;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELD_MAPPINGS;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ID;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.INSERT_FIELDS;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.NAME;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.OPEN_MEMBERSHIP;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.TABLE;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.UPDATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.*;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.sqlclient.Row;
+import io.vertx.mutiny.sqlclient.RowSet;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.Query;
+import org.jooq.UpdateSetFirstStep;
 
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.CreateOrganizationParams;
@@ -22,17 +19,11 @@ import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
+
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.jooq.Query;
-import org.jooq.UpdateSetFirstStep;
-
 
 @ApplicationScoped
 @Slf4j

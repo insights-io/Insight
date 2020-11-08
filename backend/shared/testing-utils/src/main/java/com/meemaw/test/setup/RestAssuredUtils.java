@@ -5,13 +5,15 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.config.RedirectConfig.redirectConfig;
 import static io.restassured.config.RestAssuredConfig.newConfig;
 
-import com.meemaw.auth.sso.session.model.SsoSession;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookie;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+
+import com.meemaw.auth.sso.session.model.SsoSession;
+
 import java.util.UUID;
 import javax.ws.rs.core.HttpHeaders;
 

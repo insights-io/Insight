@@ -10,6 +10,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.quarkus.test.Mock;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
+import io.vertx.core.json.JsonObject;
+import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.Tuple;
+import org.jooq.Query;
+import org.jooq.conf.ParamType;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.location.model.Location;
 import com.meemaw.location.model.dto.LocationDTO;
@@ -25,15 +39,7 @@ import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
 import com.rebrowse.model.organization.Organization;
-import io.quarkus.test.Mock;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
-import io.restassured.response.ValidatableResponse;
-import io.vertx.core.json.JsonObject;
-import io.vertx.mutiny.pgclient.PgPool;
-import io.vertx.mutiny.sqlclient.Tuple;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -48,10 +54,6 @@ import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
-import org.jooq.Query;
-import org.jooq.conf.ParamType;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @Tag("integration")

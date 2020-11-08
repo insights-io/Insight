@@ -6,6 +6,7 @@ import com.meemaw.session.events.service.EventsSearchService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.DataResponse;
+
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;

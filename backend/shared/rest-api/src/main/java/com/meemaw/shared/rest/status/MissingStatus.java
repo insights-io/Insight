@@ -1,10 +1,11 @@
 package com.meemaw.shared.rest.status;
 
+import lombok.Getter;
+import lombok.ToString;
+
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
-import lombok.Getter;
-import lombok.ToString;
 
 /** Status codes not part of the JAX-RS {@link Status} enum. */
 @Getter

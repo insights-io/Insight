@@ -2,9 +2,15 @@ package com.meemaw.billing.service.stripe;
 
 import static com.meemaw.billing.BillingTestUtils.create3DSecurePaymentMethod;
 import static com.meemaw.billing.BillingTestUtils.createVisaTestPaymentMethod;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.stripe.exception.StripeException;
+import com.stripe.model.Event;
+import com.stripe.model.PaymentMethod;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.billing.AbstractStripeTest;
@@ -19,14 +25,8 @@ import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.meemaw.billing.subscription.model.dto.PlanDTO;
 import com.meemaw.billing.webhook.service.WebhookProcessor;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import com.stripe.exception.StripeException;
-import com.stripe.model.Event;
-import com.stripe.model.PaymentMethod;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+
 import javax.inject.Inject;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 // TODO: rewrite tests to use resource only (mock signature verification)
 @QuarkusTestResource(PostgresTestResource.class)

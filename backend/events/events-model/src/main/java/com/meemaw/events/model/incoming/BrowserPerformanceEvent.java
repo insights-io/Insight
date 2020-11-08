@@ -1,10 +1,12 @@
 package com.meemaw.events.model.incoming;
 
-import com.meemaw.events.model.incoming.BrowserPerformanceEvent.Arguments;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.events.model.incoming.BrowserPerformanceEvent.Arguments;
+
+import java.util.Map;
 
 public class BrowserPerformanceEvent extends AbstractBrowserEvent<Arguments> {
 

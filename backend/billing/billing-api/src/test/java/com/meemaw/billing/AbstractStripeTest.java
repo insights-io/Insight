@@ -1,15 +1,18 @@
 package com.meemaw.billing;
 
 import com.google.gson.JsonObject;
+import com.stripe.model.Event;
+import com.stripe.model.PaymentMethod;
+import com.stripe.net.ApiResource;
+import lombok.SneakyThrows;
+
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.billing.payment.provider.stripe.StripePaymentProvider;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
-import com.stripe.model.Event;
-import com.stripe.model.PaymentMethod;
-import com.stripe.net.ApiResource;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
@@ -17,7 +20,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
-import lombok.SneakyThrows;
 
 public abstract class AbstractStripeTest extends ExternalAuthApiProvidedTest {
 

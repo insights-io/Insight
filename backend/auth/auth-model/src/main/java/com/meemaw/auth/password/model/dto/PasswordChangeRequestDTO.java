@@ -1,12 +1,14 @@
 package com.meemaw.auth.password.model.dto;
 
-import com.meemaw.shared.rest.response.Boom;
-import java.util.Map;
-import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.shared.rest.response.Boom;
+
+import java.util.Map;
+import javax.validation.constraints.NotBlank;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

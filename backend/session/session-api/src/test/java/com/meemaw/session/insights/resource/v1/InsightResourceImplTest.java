@@ -1,13 +1,18 @@
 package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
-import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
-import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
-import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.*;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
+
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.Method;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.location.model.dto.LocationDTO;
@@ -17,18 +22,13 @@ import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.meemaw.useragent.model.UserAgentDTO;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.Method;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @Tag("integration")

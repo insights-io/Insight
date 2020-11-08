@@ -1,6 +1,7 @@
 package com.meemaw.test.testconainers.kafka;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+
 import java.util.Map;
 
 /**

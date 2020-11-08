@@ -1,17 +1,19 @@
 package com.meemaw.auth.sso;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import org.slf4j.MDC;
+
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.logging.LoggingConstants;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
+
 import java.lang.annotation.Annotation;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
-import org.slf4j.MDC;
 
 public abstract class AbstractAuthDynamicFeature<
         T extends Annotation, F extends ContainerRequestFilter>

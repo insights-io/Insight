@@ -3,12 +3,13 @@ package com.meemaw.auth.core.config.resource;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.test.testconainers.pg.PostgresTestExtension;
-import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import com.meemaw.test.testconainers.pg.PostgresTestExtension;
+import com.meemaw.test.testconainers.pg.PostgresTestResource;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest

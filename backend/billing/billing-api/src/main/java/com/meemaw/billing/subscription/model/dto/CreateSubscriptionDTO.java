@@ -1,12 +1,14 @@
 package com.meemaw.billing.subscription.model.dto;
 
-import com.meemaw.billing.subscription.model.SubscriptionPlan;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.billing.subscription.model.SubscriptionPlan;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

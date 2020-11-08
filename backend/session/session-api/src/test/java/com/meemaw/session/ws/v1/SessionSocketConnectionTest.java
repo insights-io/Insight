@@ -3,11 +3,12 @@ package com.meemaw.session.ws.v1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.quarkus.test.junit.QuarkusTest;
-import java.util.concurrent.TimeUnit;
-import javax.websocket.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.TimeUnit;
+import javax.websocket.Session;
 
 @QuarkusTest
 @Tag("integration")

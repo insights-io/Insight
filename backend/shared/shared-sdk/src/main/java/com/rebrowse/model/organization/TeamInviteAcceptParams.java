@@ -1,8 +1,9 @@
 package com.rebrowse.model.organization;
 
-import com.rebrowse.model.ApiRequestParams;
 import lombok.Builder;
 import lombok.Value;
+
+import com.rebrowse.model.ApiRequestParams;
 
 @Value
 @Builder

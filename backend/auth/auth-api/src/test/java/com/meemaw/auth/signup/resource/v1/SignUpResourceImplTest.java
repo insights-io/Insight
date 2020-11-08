@@ -9,23 +9,25 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.quarkus.mailer.Mail;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.http.TestHTTPResource;
+import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.EmailTestUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import io.quarkus.mailer.Mail;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.common.http.TestHTTPResource;
-import io.quarkus.test.junit.QuarkusTest;
+
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest

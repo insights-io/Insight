@@ -1,12 +1,14 @@
 package com.meemaw.events.search.indexer;
 
-import com.meemaw.events.stream.EventsStream;
-import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
-import java.util.Arrays;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestHighLevelClient;
+
+import com.meemaw.events.stream.EventsStream;
+import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 public class SearchIndexerRunner {

@@ -2,9 +2,10 @@ package com.meemaw.shared.sql.rest.query;
 
 import static org.jooq.impl.DSL.field;
 
-import com.meemaw.shared.rest.query.SortDirection;
 import lombok.ToString;
 import org.jooq.SortField;
+
+import com.meemaw.shared.rest.query.SortDirection;
 
 @ToString
 public enum SQLSortDirection {

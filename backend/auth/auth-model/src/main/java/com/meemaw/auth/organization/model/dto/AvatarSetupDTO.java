@@ -1,11 +1,13 @@
 package com.meemaw.auth.organization.model.dto;
 
-import com.meemaw.auth.organization.model.AvatarType;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.auth.organization.model.AvatarType;
+
+import javax.validation.constraints.NotNull;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

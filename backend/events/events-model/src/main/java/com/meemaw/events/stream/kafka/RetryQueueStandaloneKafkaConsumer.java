@@ -1,15 +1,16 @@
 package com.meemaw.events.stream.kafka;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.concurrent.Future;
 
 @Slf4j
 public class RetryQueueStandaloneKafkaConsumer<K, V> extends StandaloneKafkaConsumer<K, V> {

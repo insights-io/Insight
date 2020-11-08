@@ -1,19 +1,10 @@
 package com.meemaw.session.pages.datasource.sql;
 
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.COMPILED_TIMESTAMP;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.CREATED_AT;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.DOCTYPE;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.HEIGHT;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.ID;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.INSERT_FIELDS;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.ORGANIZATION_ID;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.REFERRER;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SCREEN_HEIGHT;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SCREEN_WIDTH;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SESSION_ID;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.TABLE;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.URL;
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.WIDTH;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.*;
+
+import io.vertx.mutiny.sqlclient.Row;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.Query;
 
 import com.meemaw.location.model.Location;
 import com.meemaw.session.model.CreatePageDTO;
@@ -24,14 +15,12 @@ import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.useragent.model.UserAgentDTO;
-import io.vertx.mutiny.sqlclient.Row;
+
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j

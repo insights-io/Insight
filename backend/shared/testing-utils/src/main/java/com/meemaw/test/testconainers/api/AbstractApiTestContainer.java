@@ -1,18 +1,20 @@
 package com.meemaw.test.testconainers.api;
 
-import com.meemaw.test.project.ProjectUtils;
-import com.meemaw.test.testconainers.api.auth.AuthApiTestContainer;
-import com.meemaw.test.testconainers.pg.PostgresTestContainer;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
+
+import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.api.auth.AuthApiTestContainer;
+import com.meemaw.test.testconainers.pg.PostgresTestContainer;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.util.Objects;
 
 @Slf4j
 public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>

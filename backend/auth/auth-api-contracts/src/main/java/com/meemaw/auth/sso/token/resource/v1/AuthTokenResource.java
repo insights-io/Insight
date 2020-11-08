@@ -1,22 +1,5 @@
 package com.meemaw.auth.sso.token.resource.v1;
 
-import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
-import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
-import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
-import com.meemaw.auth.user.model.dto.UserDTO;
-import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
-import java.util.List;
-import java.util.concurrent.CompletionStage;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -26,6 +9,20 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
+import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.shared.rest.response.ErrorDataResponse;
+import com.meemaw.shared.rest.response.OkDataResponse;
+
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path(AuthTokenResource.PATH)
 @Produces(MediaType.APPLICATION_JSON)

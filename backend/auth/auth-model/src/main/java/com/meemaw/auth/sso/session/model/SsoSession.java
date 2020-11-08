@@ -1,9 +1,10 @@
 package com.meemaw.auth.sso.session.model;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import org.apache.commons.lang3.RandomStringUtils;
 
 public class SsoSession {
 

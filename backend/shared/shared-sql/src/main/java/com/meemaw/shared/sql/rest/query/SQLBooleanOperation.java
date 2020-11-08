@@ -1,9 +1,10 @@
 package com.meemaw.shared.sql.rest.query;
 
-import com.meemaw.shared.rest.query.BooleanOperation;
 import lombok.ToString;
 import org.jooq.Condition;
 import org.jooq.SelectConditionStep;
+
+import com.meemaw.shared.rest.query.BooleanOperation;
 
 @ToString
 public enum SQLBooleanOperation {

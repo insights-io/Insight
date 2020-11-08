@@ -2,15 +2,17 @@ package com.meemaw.shared.sql.rest.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.shared.elasticsearch.rest.query.ElasticSearchDTO;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.rhs.colon.RHSColonParser;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.jupiter.api.Test;
 
 public class RHSColonParserElasticTest {
 

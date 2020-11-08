@@ -10,6 +10,15 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.http.Method;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.auth.organization.model.AvatarType;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
@@ -28,18 +37,11 @@ import com.rebrowse.model.organization.TeamInviteCreateParams;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserUpdateParams;
 import com.rebrowse.net.RequestOptions;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
-import io.restassured.http.Method;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.ws.rs.core.HttpHeaders;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest

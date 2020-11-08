@@ -2,6 +2,7 @@ package com.meemaw.auth.tfa.model;
 
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.model.dto.TfaSetupDTO;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

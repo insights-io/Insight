@@ -1,9 +1,11 @@
 package com.rebrowse.model.auth;
 
-import com.rebrowse.model.ApiRequestParams;
-import java.net.URL;
 import lombok.Builder;
 import lombok.Value;
+
+import com.rebrowse.model.ApiRequestParams;
+
+import java.net.URL;
 
 @Value
 @Builder

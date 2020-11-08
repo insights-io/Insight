@@ -1,17 +1,15 @@
 package com.meemaw.events.stream.kafka;
 
-import com.meemaw.events.stream.consumer.StandaloneConsumer;
-import java.time.Duration;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
+
+import com.meemaw.events.stream.consumer.StandaloneConsumer;
+
+import java.time.Duration;
+import java.util.*;
 
 @Slf4j
 public class StandaloneKafkaConsumer<K, V>

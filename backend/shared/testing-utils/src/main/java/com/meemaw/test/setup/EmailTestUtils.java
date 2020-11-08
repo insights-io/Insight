@@ -1,11 +1,12 @@
 package com.meemaw.test.setup;
 
 import io.quarkus.mailer.Mail;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class EmailTestUtils {
 

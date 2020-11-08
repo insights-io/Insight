@@ -2,6 +2,7 @@ package com.meemaw.shared.sql.rest.mappers;
 
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.exception.SqlException;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;

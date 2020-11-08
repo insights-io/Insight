@@ -1,8 +1,10 @@
 package com.rebrowse.net;
 
-import com.rebrowse.Rebrowse;
-import java.time.Duration;
 import lombok.Value;
+
+import com.rebrowse.Rebrowse;
+
+import java.time.Duration;
 
 @Value
 public class RequestOptions {

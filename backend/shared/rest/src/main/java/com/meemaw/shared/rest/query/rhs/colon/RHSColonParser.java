@@ -1,26 +1,15 @@
 package com.meemaw.shared.rest.query.rhs.colon;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.meemaw.shared.rest.exception.GroupBySearchParseException;
 import com.meemaw.shared.rest.exception.SortBySearchParseException;
-import com.meemaw.shared.rest.query.AbstractQueryParser;
-import com.meemaw.shared.rest.query.BooleanFilterExpression;
-import com.meemaw.shared.rest.query.BooleanOperation;
-import com.meemaw.shared.rest.query.FilterExpression;
-import com.meemaw.shared.rest.query.SearchDTO;
-import com.meemaw.shared.rest.query.SortDirection;
-import com.meemaw.shared.rest.query.TermFilterExpression;
-import com.meemaw.shared.rest.query.TermOperation;
+import com.meemaw.shared.rest.query.*;
+
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.tuple.Pair;
 
 public final class RHSColonParser extends AbstractQueryParser {
 

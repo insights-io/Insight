@@ -1,11 +1,12 @@
 package com.meemaw.shared.elasticsearch.rest.query;
 
-import com.meemaw.shared.rest.query.BooleanOperation;
 import lombok.ToString;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
+
+import com.meemaw.shared.rest.query.BooleanOperation;
 
 @ToString
 public enum ElasticBooleanOperation {

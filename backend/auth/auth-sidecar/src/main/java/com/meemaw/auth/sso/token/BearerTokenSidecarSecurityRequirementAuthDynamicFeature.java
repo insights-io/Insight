@@ -1,5 +1,7 @@
 package com.meemaw.auth.sso.token;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
@@ -7,11 +9,11 @@ import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.rebrowse.model.auth.ApiKey;
 import com.rebrowse.net.RequestOptions;
+
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.Provider;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Provider
 @ApplicationScoped

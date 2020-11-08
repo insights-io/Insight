@@ -4,17 +4,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.meemaw.events.model.incoming.AbstractBrowserEvent;
-import com.meemaw.events.model.incoming.UserEvent;
-import com.meemaw.test.testconainers.elasticsearch.Elasticsearch;
-import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
-import com.meemaw.test.testconainers.kafka.Kafka;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -27,6 +16,19 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.test.testconainers.elasticsearch.Elasticsearch;
+import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestExtension;
+import com.meemaw.test.testconainers.kafka.Kafka;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Kafka
 @Elasticsearch

@@ -1,7 +1,8 @@
 package com.meemaw.auth.tfa.model;
 
-import javax.ws.rs.core.NewCookie;
 import org.apache.commons.lang3.RandomStringUtils;
+
+import javax.ws.rs.core.NewCookie;
 
 public class SsoChallenge {
 

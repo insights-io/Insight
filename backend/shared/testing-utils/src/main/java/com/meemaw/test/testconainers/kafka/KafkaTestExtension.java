@@ -1,9 +1,10 @@
 package com.meemaw.test.testconainers.kafka;
 
-import java.util.Collections;
-import java.util.Map;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class KafkaTestExtension implements BeforeAllCallback {
 

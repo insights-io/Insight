@@ -3,6 +3,7 @@ package com.meemaw.test.setup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
+
 import java.util.List;
 
 public class InternalAuthApiTestProvider extends AuthApiTestProvider {

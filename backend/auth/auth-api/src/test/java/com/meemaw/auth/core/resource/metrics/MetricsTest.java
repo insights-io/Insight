@@ -4,9 +4,10 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.StringContains.containsString;
 
 import io.quarkus.test.junit.QuarkusTest;
-import java.util.UUID;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 @QuarkusTest
 @Tag("integration")

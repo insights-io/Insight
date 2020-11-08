@@ -2,12 +2,14 @@ package com.meemaw.session.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.session.sessions.resource.v1.SessionResource;
 import io.quarkus.test.junit.QuarkusTest;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import com.meemaw.session.sessions.resource.v1.SessionResource;
+
+import java.util.List;
 
 @QuarkusTest
 @Tag("integration")

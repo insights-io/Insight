@@ -1,13 +1,15 @@
 package com.meemaw.shared.sql.rest.query;
 
-import com.meemaw.shared.rest.query.BooleanFilterExpression;
-import com.meemaw.shared.rest.query.FilterExpression;
-import com.meemaw.shared.rest.query.TermFilterExpression;
-import java.util.Map;
 import org.jooq.Field;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.impl.DSL;
+
+import com.meemaw.shared.rest.query.BooleanFilterExpression;
+import com.meemaw.shared.rest.query.FilterExpression;
+import com.meemaw.shared.rest.query.TermFilterExpression;
+
+import java.util.Map;
 
 public interface SQLFilterExpression extends FilterExpression {
 

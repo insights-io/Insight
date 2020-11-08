@@ -1,13 +1,15 @@
 package com.meemaw.session.model;
 
-import com.meemaw.auth.organization.model.validation.OrganizationId;
-import java.util.UUID;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.auth.organization.model.validation.OrganizationId;
+
+import java.util.UUID;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

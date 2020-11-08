@@ -1,18 +1,20 @@
 package com.meemaw.events.search.indexer;
 
-import com.meemaw.events.model.incoming.AbstractBrowserEvent;
-import com.meemaw.events.model.incoming.UserEvent;
-import com.meemaw.events.model.incoming.serialization.UserEventDeserializer;
-import com.meemaw.events.model.incoming.serialization.UserEventSerializer;
-import com.meemaw.events.stream.kafka.KafkaSourcedBatchProcessor;
-import com.meemaw.events.stream.kafka.RetryQueueStandaloneKafkaConsumer;
-import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.elasticsearch.client.RestHighLevelClient;
+
+import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.events.model.incoming.serialization.UserEventDeserializer;
+import com.meemaw.events.model.incoming.serialization.UserEventSerializer;
+import com.meemaw.events.stream.kafka.KafkaSourcedBatchProcessor;
+import com.meemaw.events.stream.kafka.RetryQueueStandaloneKafkaConsumer;
+
+import java.util.Properties;
 
 @Slf4j
 public class SearchIndexer {

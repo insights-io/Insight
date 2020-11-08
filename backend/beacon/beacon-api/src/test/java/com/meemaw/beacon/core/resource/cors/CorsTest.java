@@ -2,12 +2,14 @@ package com.meemaw.beacon.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.beacon.resource.v1.BeaconResource;
 import io.quarkus.test.junit.QuarkusTest;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import com.meemaw.beacon.resource.v1.BeaconResource;
+
+import java.util.List;
 
 @QuarkusTest
 @Tag("integration")

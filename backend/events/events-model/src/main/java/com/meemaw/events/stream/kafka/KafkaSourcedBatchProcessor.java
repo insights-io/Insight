@@ -1,15 +1,17 @@
 package com.meemaw.events.stream.kafka;
 
-import com.meemaw.events.stream.processor.BatchProcessor;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+
+import com.meemaw.events.stream.processor.BatchProcessor;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 @SuppressWarnings("PMD.AvoidCatchingGenericException")

@@ -1,20 +1,20 @@
 package com.meemaw.auth.sso.saml.model;
 
-import com.meemaw.auth.sso.saml.service.SamlParser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.quarkus.test.junit.QuarkusTest;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.opensaml.core.xml.io.UnmarshallingException;
 
-import javax.inject.Inject;
+import com.meemaw.auth.sso.saml.service.SamlParser;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Base64;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import javax.inject.Inject;
 
 @QuarkusTest
 @Tag("integration")

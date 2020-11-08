@@ -5,9 +5,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.meemaw.test.rest.mappers.JacksonMapper;
-import org.junit.jupiter.api.Test;
 
 public class TeamInviteDTOAcceptSerializationTest {
 

@@ -1,18 +1,16 @@
 package com.meemaw.shared.context;
 
+import io.vertx.core.http.HttpServerRequest;
+
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.headers.MissingHttpHeaders;
 import com.meemaw.shared.rest.response.Boom;
-import io.vertx.core.http.HttpServerRequest;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;

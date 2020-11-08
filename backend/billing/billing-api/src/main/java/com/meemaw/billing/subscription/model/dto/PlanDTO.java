@@ -2,12 +2,14 @@ package com.meemaw.billing.subscription.model.dto;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
 
-import com.meemaw.billing.subscription.model.SubscriptionPlan;
-import java.time.OffsetDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import com.meemaw.billing.subscription.model.SubscriptionPlan;
+
+import java.time.OffsetDateTime;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

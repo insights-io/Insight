@@ -3,9 +3,11 @@ package com.meemaw.session.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.meemaw.test.rest.mappers.JacksonMapper;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
+
+import com.meemaw.test.rest.mappers.JacksonMapper;
+
+import java.util.UUID;
 
 public class PageIdentitySerializationTest {
 

@@ -4,16 +4,18 @@ import static com.meemaw.shared.sql.SQLContext.JSON_OBJECT_DATA_TYPE;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
-import com.meemaw.session.sessions.datasource.SessionTable;
 import io.vertx.core.json.JsonObject;
+import org.jooq.Field;
+import org.jooq.Table;
+
+import com.meemaw.session.sessions.datasource.SessionTable;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jooq.Field;
-import org.jooq.Table;
 
 public final class SqlSessionTable {
 

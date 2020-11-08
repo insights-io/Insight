@@ -2,10 +2,11 @@ package com.meemaw.shared.elasticsearch.rest.query;
 
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
-import com.meemaw.shared.rest.query.SortDirection;
 import lombok.ToString;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+
+import com.meemaw.shared.rest.query.SortDirection;
 
 @ToString
 public enum ElasticSortDirection {

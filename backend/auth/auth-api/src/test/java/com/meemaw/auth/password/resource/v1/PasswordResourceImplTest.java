@@ -7,6 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.mailer.Mail;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import io.restassured.http.Method;
+import io.restassured.response.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
@@ -24,12 +36,7 @@ import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.organization.PasswordPolicy;
 import com.rebrowse.model.organization.PasswordPolicyCreateParams;
 import com.rebrowse.model.user.User;
-import io.quarkus.mailer.Mail;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
-import io.restassured.http.Method;
-import io.restassured.response.Response;
+
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
@@ -38,11 +45,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest

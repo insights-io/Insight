@@ -2,6 +2,7 @@ package com.meemaw.events.index;
 
 import com.meemaw.events.model.Recorded;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
+
 import java.util.Map;
 
 public final class UserEventIndex {

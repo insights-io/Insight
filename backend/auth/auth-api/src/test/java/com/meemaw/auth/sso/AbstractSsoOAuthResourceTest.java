@@ -5,6 +5,8 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.Test;
+
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.oauth.AbstractOAuthClient;
 import com.meemaw.auth.sso.session.model.SsoSession;
@@ -16,11 +18,11 @@ import com.rebrowse.model.auth.SsoSetupCreateParams;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.model.organization.OrganizationUpdateParams;
 import com.rebrowse.model.user.UserRole;
+
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
 
 public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTest {
 
