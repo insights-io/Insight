@@ -62,7 +62,10 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
-        applyApiFormErrors(setError, errorDTO.error.errors);
+        applyApiFormErrors(
+          setError,
+          errorDTO.error.errors as Record<string, string>
+        );
       })
       .finally(() => setIsSubmitting(false));
   });

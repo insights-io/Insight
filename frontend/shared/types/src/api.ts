@@ -2,15 +2,17 @@ export type DataResponse<T> = {
   data: T;
 };
 
-export type APIErrorDataResponse = {
-  error: APIError;
+export type ApiErrors = { [name: string]: string | ApiErrors };
+
+export type APIErrorDataResponse<T extends ApiErrors = ApiErrors> = {
+  error: APIError<T>;
 };
 
-export type APIError = {
+export type APIError<T extends ApiErrors = ApiErrors> = {
   statusCode: number;
   reason: string;
   message: string;
-  errors?: Record<string, string>;
+  errors?: T;
 };
 
 export type QueryParam =

@@ -11,6 +11,7 @@ import { useOrganization } from 'shared/hooks/useOrganization';
 import { Panel } from '@insight/elements';
 import type { Path } from 'modules/settings/types';
 import type { OrganizationDTO, SsoSetupDTO, UserDTO } from '@insight/types';
+import { cdnLogo } from 'shared/utils/assets';
 
 import { SsoProvider } from './SsoProvider';
 
@@ -35,8 +36,6 @@ export const OrganizationSettingsAuthPage = ({
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
 
-  console.log(maybeSsoSetup);
-
   return (
     <OrganizationSettingsPageLayout
       path={PATH}
@@ -50,7 +49,7 @@ export const OrganizationSettingsAuthPage = ({
           <SsoProvider
             method="google"
             label="Google"
-            image="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png"
+            image={cdnLogo('google.svg')}
             activeSetup={maybeSsoSetup}
             setActiveSetup={setSsoSetup}
           />
@@ -60,7 +59,7 @@ export const OrganizationSettingsAuthPage = ({
           <SsoProvider
             method="github"
             label="Github"
-            image="https://seeklogo.com/images/G/github-logo-7880D80B8D-seeklogo.com.png"
+            image={cdnLogo('github.svg')}
             activeSetup={maybeSsoSetup}
             setActiveSetup={setSsoSetup}
           />
@@ -70,7 +69,7 @@ export const OrganizationSettingsAuthPage = ({
           <SsoProvider
             method="microsoft"
             label="Active directory"
-            image="https://s1.sentry-cdn.com/_static/993bc29839537d64c65049472d7b1245/sentry/dist/logo-microsoft.1573e4.svg"
+            image={cdnLogo('microsoft.svg')}
             activeSetup={maybeSsoSetup}
             setActiveSetup={setSsoSetup}
           />
@@ -81,7 +80,7 @@ export const OrganizationSettingsAuthPage = ({
             method="saml"
             samlMethod="okta"
             label="Okta"
-            image="https://s1.sentry-cdn.com/_static/993bc29839537d64c65049472d7b1245/sentry/dist/logo-okta.19e492.svg"
+            image={cdnLogo('okta.svg')}
             activeSetup={maybeSsoSetup}
             setActiveSetup={setSsoSetup}
           />
@@ -92,7 +91,7 @@ export const OrganizationSettingsAuthPage = ({
             method="saml"
             samlMethod="onelogin"
             label="OneLogin"
-            image="https://s1.sentry-cdn.com/_static/202d96a6babb2914a6c051843bed0776/sentry/dist/logo-onelogin.3e672d.svg"
+            image={cdnLogo('onelogin.svg')}
             activeSetup={maybeSsoSetup}
             setActiveSetup={setSsoSetup}
           />
@@ -103,18 +102,7 @@ export const OrganizationSettingsAuthPage = ({
             method="saml"
             samlMethod="auth0"
             label="Auth0"
-            image="https://s1.sentry-cdn.com/_static/202d96a6babb2914a6c051843bed0776/sentry/dist/logo-auth0.8d3ad5.svg"
-            activeSetup={maybeSsoSetup}
-            setActiveSetup={setSsoSetup}
-          />
-        </Panel.Item>
-
-        <Panel.Item>
-          <SsoProvider
-            method="saml"
-            samlMethod="custom"
-            label="SAML 2.0"
-            image="https://s1.sentry-cdn.com/_static/993bc29839537d64c65049472d7b1245/sentry/dist/logo-saml2.590c9d.svg"
+            image={cdnLogo('auth0.svg')}
             activeSetup={maybeSsoSetup}
             setActiveSetup={setSsoSetup}
           />

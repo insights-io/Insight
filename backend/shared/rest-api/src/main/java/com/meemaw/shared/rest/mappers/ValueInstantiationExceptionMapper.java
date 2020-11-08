@@ -20,7 +20,7 @@ public class ValueInstantiationExceptionMapper
     List<Reference> references = ex.getPath();
     int index = references.size() - 1;
     Map<String, ?> errors = Map.of(references.get(index).getFieldName(), "Invalid Value");
-    for (int i = index - 1; i >= 0; i--) {
+    while (--index >= 0) {
       errors = Map.of(references.get(index).getFieldName(), errors);
     }
 

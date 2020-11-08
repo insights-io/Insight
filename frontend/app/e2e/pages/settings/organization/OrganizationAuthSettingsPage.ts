@@ -1,68 +1,66 @@
-import { queryByText } from '@testing-library/testcafe';
+import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 
 import { ORGANIZATION_SETTINGS_AUTH_PAGE } from '../../../../src/shared/constants/routes';
 
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';
 
-type SsoMethodWithConfigurationEndpointText = 'SAML';
+type SsoMethodWithConfigurationEndpointText = 'Okta' | 'OneLogin' | 'Auth0';
 type SsoMethodWithoutConfigurationEndpointText =
   | 'Google'
   | 'Microsoft'
   | 'Github';
 
-type SsoMethodText =
-  | SsoMethodWithConfigurationEndpointText
-  | SsoMethodWithoutConfigurationEndpointText;
-
 type SetupSsoParams =
-  | { configurationEndpoint: string; from?: undefined; to?: undefined }
   | {
-      from: SsoMethodText;
-      to: SsoMethodWithConfigurationEndpointText;
-      configurationEndpoint: string;
+      label: SsoMethodWithConfigurationEndpointText;
+      metadataEndpoint: string;
     }
   | {
-      from: SsoMethodText;
-      to: SsoMethodWithoutConfigurationEndpointText;
-      configurationEndpoint?: undefined;
+      label: SsoMethodWithoutConfigurationEndpointText;
+      metadataEndpoint?: undefined;
     };
 
 export class OrganizationAuthSettingsPage extends AbstractOrganizationSettingsPage {
+  public readonly OKTA_METADATA_ENDPOINT =
+    'https://snuderlstest.okta.com/app/exkligrqDovHJsGmk5d5/sso/saml/metadata';
+
   public readonly header = this.withinContainer.queryByText('Authentication');
-  public readonly ssoConfigurationEndpointInput = this.withinContainer.queryByPlaceholderText(
-    'https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
+  public readonly metadataInput = queryByPlaceholderText(
+    this.OKTA_METADATA_ENDPOINT
   );
-  public readonly ssoSubmitButton = this.withinContainer.queryByText('Setup');
-  public readonly nonBusinessEmailErrorMessage = this.withinContainer.queryByText(
+  public readonly enableButton = queryByText('Enable');
+  public readonly nonBusinessEmailErrorMessage = queryByText(
     'SSO setup is only possible for work domain.'
   );
-  public readonly ssoSetupCompleteMessage = queryByText('SSO setup complete');
+
+  public ssoSetupCompleteMessage = (label: string) => {
+    return queryByText(`${label} SSO setup enabled`);
+  };
+
+  public getToggleInput = (label: string) => {
+    return this.withinContainer
+      .queryByText(label)
+      .parent()
+      .parent()
+      .parent()
+      .find('input')
+      .parent();
+  };
 
   public setupSso = (
     t: TestController,
-    { from, to, configurationEndpoint }: SetupSsoParams
+    { label, metadataEndpoint }: SetupSsoParams
   ) => {
-    let base = t;
+    let base = t.click(this.getToggleInput(label));
 
-    if (from) {
-      base = base.click(queryByText(from));
-    }
-
-    if (to) {
-      base = base.click(queryByText(to));
-    }
-
-    if (configurationEndpoint) {
-      base = base.typeText(
-        this.ssoConfigurationEndpointInput,
-        configurationEndpoint
-      );
+    if (metadataEndpoint) {
+      base = base.typeText(this.metadataInput, metadataEndpoint);
     }
 
     return base
-      .click(this.ssoSubmitButton)
-      .expect(this.ssoSetupCompleteMessage.visible)
-      .ok('SSO setup complete');
+      .click(this.enableButton)
+      .expect(this.ssoSetupCompleteMessage(label).visible)
+      .ok('SSO setup enabled');
   };
 }
 

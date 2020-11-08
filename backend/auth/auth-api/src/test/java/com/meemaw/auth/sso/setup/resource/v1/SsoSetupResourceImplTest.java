@@ -1,10 +1,5 @@
 package com.meemaw.auth.sso.setup.resource.v1;
 
-import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
-import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
-import static io.restassured.RestAssured.given;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.AbstractSsoResourceTest;
@@ -20,14 +15,19 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.Method;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import javax.ws.rs.core.MediaType;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
-import javax.ws.rs.core.MediaType;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+
+import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
+import static io.restassured.RestAssured.given;
 
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTest
@@ -188,7 +188,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
         .statusCode(422)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"metadataEndpoint\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\",\"saml\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\"}}}"));
+                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"saml\":{\"metadataEndpoint\":\"Cannot deserialize value of type `java.net.URL` from String \\\"random\\\": not a valid textual representation, problem: no protocol: random\"}}}}"));
   }
 
   @Test
@@ -281,17 +281,14 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
   }
 
   @Test
-  @Disabled
   public void sso_saml_setup__should_work__when_business_email_is_used()
       throws MalformedURLException, JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = password + "@snuderls5.io";
     String sessionId = authApi().signUpAndLogin(email, password);
 
-    URL configurationEndpoint =
-        new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata");
     CreateSsoSetupParams body =
-        new CreateSsoSetupParams(SsoMethod.SAML, SamlConfiguration.okta(configurationEndpoint));
+        new CreateSsoSetupParams(SsoMethod.SAML, SamlConfiguration.okta(oktaMetadataEndpoint()));
 
     given()
         .when()
@@ -310,7 +307,7 @@ public class SsoSetupResourceImplTest extends AbstractSsoResourceTest {
             .as(new TypeRef<>() {});
 
     Assertions.assertEquals(
-        configurationEndpoint, dataResponse.getData().getSaml().getMetadataEndpoint());
+        oktaMetadataEndpoint(), dataResponse.getData().getSaml().getMetadataEndpoint());
     Assertions.assertEquals(SsoMethod.SAML, dataResponse.getData().getMethod());
     Assertions.assertEquals(EmailUtils.domainFromEmail(email), dataResponse.getData().getDomain());
 

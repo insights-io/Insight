@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
-import { Input, InputOverrides } from 'baseui/input';
 import { FormControl } from 'baseui/form-control';
-import { Button } from 'baseui/button';
 import { Country, COUNTRIES } from 'baseui/phone-input';
 import { useForm } from 'react-hook-form';
 import {
@@ -13,7 +11,7 @@ import {
 } from '@insight/types';
 import FormError from 'shared/components/FormError';
 import Router from 'next/router';
-import { PhoneNumberInput } from '@insight/elements';
+import { PhoneNumberInput, Button, Input } from '@insight/elements';
 
 type SignUpFormData = Omit<SignUpRequestDTO, 'phoneNumber'> & {
   phoneNumber: string | undefined;
@@ -57,24 +55,11 @@ export const SignUpForm = ({
       .finally(() => setIsSubmitting(false));
   });
 
-  const inputBorderRadius = {
-    borderBottomRightRadius: theme.sizing.scale100,
-    borderTopRightRadius: theme.sizing.scale100,
-    borderTopLeftRadius: theme.sizing.scale100,
-    borderBottomLeftRadius: theme.sizing.scale100,
-  };
-
-  const inputOverrides: InputOverrides = {
-    InputContainer: { style: inputBorderRadius },
-    Input: { style: inputBorderRadius },
-  };
-
   return (
     <form onSubmit={onSubmit} noValidate>
       <Block>
         <FormControl label="Full name" error={errors.fullName?.message}>
           <Input
-            overrides={inputOverrides}
             name="fullName"
             placeholder="Full name"
             required
@@ -87,7 +72,6 @@ export const SignUpForm = ({
       <Block>
         <FormControl label="Company" error={errors.company?.message}>
           <Input
-            overrides={inputOverrides}
             placeholder="Company"
             name="company"
             inputRef={register({ required: 'Required' })}
@@ -106,7 +90,6 @@ export const SignUpForm = ({
       <Block>
         <FormControl label="Email" error={errors.email?.message}>
           <Input
-            overrides={inputOverrides}
             name="email"
             type="email"
             placeholder="Email"
@@ -126,7 +109,6 @@ export const SignUpForm = ({
       <Block marginBottom={theme.sizing.scale1200}>
         <FormControl label="Password" error={errors.password?.message}>
           <Input
-            overrides={inputOverrides}
             placeholder="Password"
             name="password"
             type="password"

@@ -24,29 +24,27 @@ test('As a user with non-business email I should not be able to setup SAML SSO',
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth)
-    .typeText(
-      OrganizationAuthSettingsPage.ssoConfigurationEndpointInput,
-      'htqw'
-    )
-    .click(OrganizationAuthSettingsPage.ssoSubmitButton)
+    .click(OrganizationAuthSettingsPage.getToggleInput('Okta'))
+    .typeText(OrganizationAuthSettingsPage.metadataInput, 'htqw')
+    .click(OrganizationAuthSettingsPage.enableButton)
     .expect(
       queryByText(
         'Cannot deserialize value of type `java.net.URL` from String "htqw": not a valid textual representation, problem: no protocol: htqw'
       ).visible
     )
     .ok('Validates URL')
-    .selectText(OrganizationAuthSettingsPage.ssoConfigurationEndpointInput)
+    .selectText(OrganizationAuthSettingsPage.metadataInput)
     .pressKey('delete')
     .typeText(
-      OrganizationAuthSettingsPage.ssoConfigurationEndpointInput,
+      OrganizationAuthSettingsPage.metadataInput,
       'https:///www.google.com'
     )
-    .click(OrganizationAuthSettingsPage.ssoSubmitButton)
+    .click(OrganizationAuthSettingsPage.enableButton)
     .expect(OrganizationAuthSettingsPage.nonBusinessEmailErrorMessage.visible)
     .ok('Checks if work domain');
 });
 
-test('[SSO SAML]: User with business email should be able to setup SAML SSO', async (t) => {
+test('As a user with business email, I should be able to setup SAML SSO', async (t) => {
   const { email, password } = SignUpPage.generateRandomCredentialsForDomain(
     'snuderls.eu'
   );
@@ -58,8 +56,8 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
-    configurationEndpoint:
-      'https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata',
+    label: 'Okta',
+    metadataEndpoint: OrganizationAuthSettingsPage.OKTA_METADATA_ENDPOINT,
   });
 
   // Is on okta page on SSO saml flow
@@ -67,11 +65,12 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
     .click(LoginPage.tabs.sso)
     .typeText(LoginPage.workEmailInput, 'matej.snuderl@snuderls.eu')
     .click(LoginPage.signInButton)
-    .expect(getLocation())
-    .match(
-      /^https:\/\/snuderls\.okta\.com\/login\/login\.htm\?fromURI=%2Fapp%2Fsnuderlsorg446661_insightdev_1%2Fexkw843tlucjMJ0kL4x6%2Fsso%2Fsaml%3FRelayState%3D(.*)http%253A%252F%252Flocalhost%253A3000%252F$/,
-      'Is on okta page'
-    );
+    .expect(
+      queryByText(
+        'Sign-in with your snuderls-org-2948061 account to access Rebrowse'
+      ).visible
+    )
+    .ok('Is on okta page');
 
   // Is on okta page even after normal login flow
   await t
@@ -79,14 +78,15 @@ test('[SSO SAML]: User with business email should be able to setup SAML SSO', as
     .typeText(LoginPage.emailInput, 'matej.snuderl@snuderls.eu')
     .typeText(LoginPage.passwordInput, 'randomPassword')
     .click(LoginPage.signInButton)
-    .expect(getLocation())
-    .match(
-      /^https:\/\/snuderls\.okta\.com\/login\/login\.htm\?fromURI=%2Fapp%2Fsnuderlsorg446661_insightdev_1%2Fexkw843tlucjMJ0kL4x6%2Fsso%2Fsaml%3FRelayState%3D(.*)http%253A%252F%252Flocalhost%253A3000%252Fsettings%252Forganization%252Fauth$/,
-      'Is on okta page'
-    );
+    .expect(
+      queryByText(
+        'Sign-in with your snuderls-org-2948061 account to access Rebrowse'
+      ).visible
+    )
+    .ok('Is on okta page');
 });
 
-test('As a user with business email should be able to setup Google SSO', async (t) => {
+test.only('As a user with business email should be able to setup Google SSO', async (t) => {
   const {
     email,
     password,
@@ -101,8 +101,7 @@ test('As a user with business email should be able to setup Google SSO', async (
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
   await OrganizationAuthSettingsPage.setupSso(t, {
-    from: 'SAML',
-    to: 'Google',
+    label: 'Google',
   });
 
   // Is on Google SSO flow
@@ -166,10 +165,7 @@ test('As a user with business email, I should be able to setup Microsoft SSO', a
     .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
-  await OrganizationAuthSettingsPage.setupSso(t, {
-    from: 'SAML',
-    to: 'Microsoft',
-  });
+  await OrganizationAuthSettingsPage.setupSso(t, { label: 'Microsoft' });
 
   // Is on Microsoft SSO flow
   const microsoftInput = Selector('input[type="email"]').with({
@@ -229,10 +225,7 @@ test('As a user with business email, I should be able to setup Github SSO', asyn
     .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.auth);
 
-  await OrganizationAuthSettingsPage.setupSso(t, {
-    from: 'SAML',
-    to: 'Github',
-  });
+  await OrganizationAuthSettingsPage.setupSso(t, { label: 'Github' });
 
   // Is on Github SSO flow
   const githubLoginInput = Selector('input[name="login"]').with({

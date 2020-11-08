@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import org.jooq.Query;
+import org.jooq.conf.ParamType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -55,16 +56,16 @@ public class SqlSsoSetupDatasource implements SsoSetupDatasource {
   @Override
   public CompletionStage<Optional<SsoSetup>> get(String organizationId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
-    return sqlPool.execute(query).thenApply(SqlSsoSetupDatasource::onGetSsoSetup);
+    return sqlPool.execute(query).thenApply(SqlSsoSetupDatasource::onRetrieveSsoSetup);
   }
 
   @Override
   public CompletionStage<Optional<SsoSetup>> getByDomain(String domain) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(DOMAIN.eq(domain));
-    return sqlPool.execute(query).thenApply(SqlSsoSetupDatasource::onGetSsoSetup);
+    return sqlPool.execute(query).thenApply(SqlSsoSetupDatasource::onRetrieveSsoSetup);
   }
 
-  public static Optional<SsoSetup> onGetSsoSetup(RowSet<Row> rows) {
+  public static Optional<SsoSetup> onRetrieveSsoSetup(RowSet<Row> rows) {
     if (!rows.iterator().hasNext()) {
       return Optional.empty();
     }

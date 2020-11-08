@@ -1,5 +1,7 @@
 package com.meemaw.auth.organization.resource.v1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.organization.datasource.OrganizationTable;
 import com.meemaw.auth.organization.model.AvatarType;
 import com.meemaw.auth.organization.model.Organization;
@@ -15,20 +17,24 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import com.rebrowse.model.organization.OrganizationUpdateParams;
+import org.jboss.resteasy.spi.ApplicationException;
+
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class OrganizationResourceImpl implements OrganizationResource {
 
   @Inject InsightPrincipal insightPrincipal;
   @Inject OrganizationService organizationService;
   @Context UriInfo uriInfo;
+  @Inject ObjectMapper objectMapper;
 
   @Override
   public CompletionStage<Response> delete() {
@@ -71,15 +77,10 @@ public class OrganizationResourceImpl implements OrganizationResource {
   public CompletionStage<Response> updateAssociated(Map<String, Object> params) {
     AuthUser user = insightPrincipal.user();
     if (params.isEmpty()) {
-      return CompletableFuture.completedStage(
-          Boom.badRequest()
-              .message("Validation Error")
-              .errors(Map.of("body", "Required"))
-              .response());
+      return CompletableFuture.completedStage(Boom.bodyRequired().response());
     }
 
     UpdateDTO update = UpdateDTO.from(params);
-
     Map<String, String> errors = update.validate(OrganizationTable.UPDATABLE_FIELDS);
     if (!errors.isEmpty()) {
       return CompletableFuture.completedStage(Boom.badRequest().errors(errors).response());

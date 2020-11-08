@@ -55,7 +55,7 @@ export const SsoProvider = ({
       <Flex>
         <img
           src={image}
-          alt={label}
+          alt={`${label} logo`}
           style={{ width: '32px', height: '32px' }}
         />
         <FlexColumn marginLeft="16px">

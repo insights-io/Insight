@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
+import { applyApiFormErrors } from 'shared/utils/form';
 
 type Props = {
   method: SsoMethod;
@@ -41,7 +42,7 @@ export const SsoProviderSetupModal = ({
 }: Props) => {
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { handleSubmit, register, errors } = useForm<FormValues>();
+  const { handleSubmit, register, errors, setError } = useForm<FormValues>();
 
   const onSubmit = handleSubmit(({ metadataEndpoint }) => {
     if (isSubmitting) {
@@ -63,6 +64,10 @@ export const SsoProviderSetupModal = ({
       .catch(async (setupError) => {
         const errorDTO: APIErrorDataResponse = await setupError.response.json();
         setFormError(errorDTO.error);
+        applyApiFormErrors(
+          setError,
+          errorDTO.error.errors?.saml as Record<string, string>
+        );
       })
       .finally(() => setIsSubmitting(false));
   });
@@ -81,10 +86,10 @@ export const SsoProviderSetupModal = ({
             <Block marginTop="16px">
               <FormControl
                 label="Metadata endpoint"
-                error={errors.metadataEndpoint}
+                error={errors.metadataEndpoint?.message}
               >
                 <Input
-                  placeholder="https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"
+                  placeholder="https://snuderlstest.okta.com/app/exkligrqDovHJsGmk5d5/sso/saml/metadata"
                   ref={register(REQUIRED_VALIDATION)}
                   name="metadataEndpoint"
                 />

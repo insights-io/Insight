@@ -12,6 +12,7 @@ import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
+import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
@@ -234,7 +235,6 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  @Disabled
   public void
       login__should_redirect_to_saml_sso_provider_with_correct_redirect__when_sso_saml_setup()
           throws JsonProcessingException, MalformedURLException {
@@ -244,9 +244,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     CreateSsoSetupParams body =
         new CreateSsoSetupParams(
             SsoMethod.SAML,
-            new SamlConfiguration(
-                SamlMethod.OKTA,
-                new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata")));
+            new SamlConfiguration(SamlMethod.OKTA, AbstractSsoResourceTest.oktaMetadataEndpoint()));
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -289,7 +287,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
         .header(
             "Location",
             Matchers.matchesPattern(
-                "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"))
+                "^https:\\/\\/snuderlstest\\.okta\\.com\\/app\\/snuderlsorg2948061_rebrowse_2\\/exkligrqDovHJsGmk5d5\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"))
         .cookie(SsoSignInSession.COOKIE_NAME);
   }
 

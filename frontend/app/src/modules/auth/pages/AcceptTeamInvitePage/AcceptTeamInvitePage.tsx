@@ -41,7 +41,10 @@ export const AcceptTeamInvitePage = ({
       .then(() => router.replace(INDEX_PAGE))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
-        const formErrors = applyApiFormErrors(setError, errorDTO.error.errors);
+        const formErrors = applyApiFormErrors(
+          setError,
+          errorDTO.error.errors as Record<string, string>
+        );
         if (Object.keys(formErrors).length === 0) {
           setApiError(errorDTO.error);
         }
