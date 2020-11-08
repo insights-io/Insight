@@ -12,10 +12,10 @@ public interface OrganizationDatasource {
   CompletionStage<Organization> createOrganization(
       CreateOrganizationParams params, SqlTransaction transaction);
 
+  CompletionStage<Organization> createOrganization(CreateOrganizationParams params);
+
   CompletionStage<Optional<Organization>> updateOrganization(
       String organizationId, UpdateDTO update);
-
-  CompletionStage<Organization> createOrganization(CreateOrganizationParams params);
 
   CompletionStage<Optional<Organization>> findOrganization(String organizationId);
 

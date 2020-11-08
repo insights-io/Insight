@@ -4,6 +4,11 @@ import type { Meta } from '@storybook/react';
 import { INSIGHT_ADMIN_DTO, SSO_SAML_SETUP_DTO } from 'test/data';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 import { AuthApi } from 'api';
+import {
+  SamlConfigurationDTO,
+  SamlSsoMethod,
+  SsoSetupDTO,
+} from '@insight/types';
 
 import { OrganizationSettingsAuthPage } from './OrganizationSettingsAuthPage';
 
@@ -22,7 +27,7 @@ export const WithSaml = () => {
   return (
     <OrganizationSettingsAuthPage
       {...baseProps}
-      maybeSsoSetup={SSO_SAML_SETUP_DTO}
+      maybeSsoSetup={SSO_SAML_SETUP_DTO as SsoSetupDTO}
     />
   );
 };
@@ -30,11 +35,11 @@ WithSaml.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox
       .stub(AuthApi.sso.setup, 'create')
-      .callsFake((method, configurationEndpoint) => {
+      .callsFake((method, saml) => {
         return Promise.resolve({
           ...SSO_SAML_SETUP_DTO,
-          method,
-          configurationEndpoint,
+          method: method as SamlSsoMethod,
+          saml: saml as SamlConfigurationDTO,
         });
       });
   },

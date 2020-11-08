@@ -1,25 +1,25 @@
-import { sandbox } from '@insight/testing';
 import React from 'react';
-import { SSO_SAML_SETUP } from 'test/data';
+import { sandbox } from '@insight/testing';
 import { render } from 'test/utils';
+import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 
 import { WithSaml } from './OrganizationSettingsAuthPage.stories';
 
 describe('<OrganizationSettingsAuthPage />', () => {
   it('User should be able to change SSO after initial setup', async () => {
     WithSaml.story.setupMocks(sandbox);
-    const { getByPlaceholderText, container } = render(<WithSaml />);
+    render(<WithSaml />);
 
-    const methodInput = container.querySelector(
-      'input[aria-label="Selected SAML. "]'
-    );
-    const configurationInput = getByPlaceholderText(
-      'https://example.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata'
-    ) as HTMLInputElement;
+    const toggle = screen
+      .getByText('Enable your organization to sign in with Okta.')
+      .parentElement?.parentElement?.parentElement?.querySelector(
+        'input'
+      ) as HTMLInputElement;
 
-    expect(methodInput).toBeInTheDocument();
-    expect(configurationInput.value).toEqual(
-      SSO_SAML_SETUP.configurationEndpoint
-    );
+    expect(toggle).toBeChecked();
+    userEvent.click(toggle);
+
+    await screen.findByText('Disable Okta authentication');
   });
 });

@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.saml.resource.v1;
 
-import com.meemaw.auth.sso.oauth.OAuthResource;
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import java.net.URL;
@@ -29,10 +29,12 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public interface SamlResource {
 
   String PATH = SsoSessionResource.PATH + "/saml";
+  String SIGNIN_PATH = "signin";
+  String CALLBACK_PATH = "callback";
   String TAG = "SAML SSO";
 
   @GET
-  @Path(OAuthResource.SIGNIN_PATH)
+  @Path(SIGNIN_PATH)
   @Tag(name = TAG)
   @Operation(summary = "SAML sign in")
   @APIResponses(
@@ -77,7 +79,7 @@ public interface SamlResource {
           String email);
 
   @POST
-  @Path(OAuthResource.CALLBACK_PATH)
+  @Path(CALLBACK_PATH)
   @Tag(name = TAG)
   @Operation(summary = "SAML callback")
   @APIResponses(
@@ -101,5 +103,5 @@ public interface SamlResource {
   CompletionStage<Response> callback(
       @NotBlank(message = "Required") @FormParam("SAMLResponse") String SAMLResponse,
       @NotBlank(message = "Required") @FormParam("RelayState") String RelayState,
-      @CookieParam("state") String sessionState);
+      @CookieParam(SsoSignInSession.COOKIE_NAME) String sessionState);
 }

@@ -65,6 +65,7 @@ export const OrganizationMembersLayout = ({
       path={PATH}
       user={user}
       organization={organization}
+      title={pageTab}
     >
       <Tabs activeKey={activeTab} activateOnFocus>
         {TABS.map(({ path, label }) => {

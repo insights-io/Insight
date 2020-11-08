@@ -44,7 +44,7 @@ public class SamlResourceImpl implements SamlResource {
                     .response();
               }
 
-              URL configurationEndpoint = maybeSsoSetup.get().getConfigurationEndpoint();
+              URL configurationEndpoint = maybeSsoSetup.get().getSaml().getMetadataEndpoint();
               return samlService.signInRedirectResponse(
                   configurationEndpoint, cookieDomain, redirect);
             });

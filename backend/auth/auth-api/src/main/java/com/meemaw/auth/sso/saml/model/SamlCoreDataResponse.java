@@ -4,7 +4,7 @@ import lombok.Value;
 import org.opensaml.xmlsec.signature.Signature;
 
 @Value
-public class SamlDataResponse {
+public class SamlCoreDataResponse {
 
   String email;
   String fullName;

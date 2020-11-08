@@ -61,7 +61,7 @@ export const PasswordPolicyForm = ({ initialPasswordPolicy }: Props) => {
         if (apiErrors) {
           Object.keys(apiErrors).forEach((field) => {
             setError(field as keyof PasswordPolicy, {
-              message: apiErrors[field],
+              message: apiErrors[field] as string,
             });
           });
         } else {
@@ -183,7 +183,7 @@ export const PasswordPolicyForm = ({ initialPasswordPolicy }: Props) => {
 
       <Divider />
       {apiError && <FormError error={apiError} />}
-      <Button type="submit" isLoading={isSubmitting}>
+      <Button type="submit" isLoading={isSubmitting} size={SIZE.compact}>
         Save
       </Button>
     </form>

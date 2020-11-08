@@ -32,7 +32,7 @@ export const LoginPage = () => {
   return (
     <AuthPageLayout>
       <Head>
-        <title>Insight | Login</title>
+        <title>Sign in</title>
       </Head>
 
       <SsoButton

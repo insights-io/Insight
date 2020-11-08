@@ -1,16 +1,15 @@
 package com.meemaw.auth.sso.setup.model.dto;
 
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import java.net.URL;
 import java.time.OffsetDateTime;
 import lombok.Value;
 
 @Value
-public class SsoSetupDTO {
+public class SsoSetup {
 
   String organizationId;
   String domain;
   SsoMethod method;
-  URL configurationEndpoint;
+  SamlConfiguration saml;
   OffsetDateTime createdAt;
 }

@@ -55,7 +55,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
           errorDTO.error.message === 'SSO login required' &&
           errorDTO.error.errors?.goto
         ) {
-          locationAssign(errorDTO.error.errors.goto);
+          locationAssign(errorDTO.error.errors.goto as string);
         } else {
           setFormError(errorDTO.error);
         }

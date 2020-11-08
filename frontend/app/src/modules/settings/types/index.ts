@@ -9,6 +9,7 @@ export type SettingsLayoutPropsBase = {
   children: React.ReactNode;
   path: Path;
   header: string;
+  title?: string;
 };
 
 export type SearchOption = { label: string; link: string; description: string };

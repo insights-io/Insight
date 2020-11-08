@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.status.MissingStatus;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -14,12 +14,14 @@ import javax.ws.rs.ext.Provider;
 public class InvalidFormatExceptionMapper implements ExceptionMapper<InvalidFormatException> {
 
   @Override
-  public Response toResponse(InvalidFormatException exception) {
-    String errorMessage = extractErrorMessage(exception);
-
-    Map<String, String> errors =
-        exception.getPath().stream()
-            .collect(Collectors.toMap(Reference::getFieldName, (ref) -> errorMessage));
+  public Response toResponse(InvalidFormatException ex) {
+    String errorMessage = extractErrorMessage(ex);
+    List<Reference> references = ex.getPath();
+    int index = references.size() - 1;
+    Map<String, ?> errors = Map.of(references.get(index).getFieldName(), errorMessage);
+    while (--index >= 0) {
+      errors = Map.of(references.get(index).getFieldName(), errors);
+    }
 
     return Boom.status(MissingStatus.UNPROCESSABLE_ENTITY).errors(errors).response();
   }

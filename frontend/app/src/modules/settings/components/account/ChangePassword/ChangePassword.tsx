@@ -43,7 +43,7 @@ export const ChangePassword = ({ overrides }: Props) => {
         if (apiErrors) {
           Object.keys(apiErrors).forEach((field) => {
             setError(field as keyof ChangePasswordDTO, {
-              message: apiErrors[field],
+              message: apiErrors[field] as string,
             });
           });
         } else {

@@ -12,13 +12,16 @@ import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
+import com.meemaw.auth.sso.AbstractSsoResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.sso.setup.model.SamlMethod;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
+import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
@@ -35,7 +38,6 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -168,7 +170,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     String password = UUID.randomUUID().toString();
     String email = password + "@insight-io.com2";
     String sessionId = authApi().signUpAndLogin(email, password);
-    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.GOOGLE, null);
+    CreateSsoSetupParams body = new CreateSsoSetupParams(SsoMethod.GOOGLE, null);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -237,10 +239,10 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     String password = UUID.randomUUID().toString();
     String email = password + "@insight-io.com";
     String sessionId = authApi().signUpAndLogin(email, password);
-    CreateSsoSetupDTO body =
-        new CreateSsoSetupDTO(
+    CreateSsoSetupParams body =
+        new CreateSsoSetupParams(
             SsoMethod.SAML,
-            new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"));
+            new SamlConfiguration(SamlMethod.OKTA, AbstractSsoResourceTest.oktaMetadataEndpoint()));
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -283,7 +285,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
         .header(
             "Location",
             Matchers.matchesPattern(
-                "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"))
+                "^https:\\/\\/snuderlstest\\.okta\\.com\\/app\\/snuderlsorg2948061_rebrowse_2\\/exkligrqDovHJsGmk5d5\\/sso\\/saml\\?RelayState=(.*)http%3A%2F%2Flocalhost%3A3000%2Faccount%2Fsettings$"))
         .cookie(SsoSignInSession.COOKIE_NAME);
   }
 

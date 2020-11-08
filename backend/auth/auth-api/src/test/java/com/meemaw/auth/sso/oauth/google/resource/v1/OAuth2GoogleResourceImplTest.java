@@ -17,8 +17,10 @@ import com.meemaw.auth.sso.oauth.google.GoogleOAuthClient;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.sso.setup.model.SamlMethod;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
-import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupDTO;
+import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
+import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -33,7 +35,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -154,7 +155,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         .when()
         .queryParam("code", "random")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .get(googleCallbackURI)
         .then()
         .statusCode(400)
@@ -175,7 +176,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
             "code",
             "4/wwF1aA6SPPRdiJdy95vNLmeFt5237v5juu86VqdJxyR_3VruynuXyXUbFFhtmdGd1jApNM3P3vr8fgGpey-NryM")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .get(googleCallbackURI)
         .then()
         .statusCode(400)
@@ -195,7 +196,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         .config(RestAssuredUtils.dontFollowRedirects())
         .queryParam("code", "any")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .get(googleCallbackURI)
         .then()
         .statusCode(302)
@@ -237,7 +238,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         .config(RestAssuredUtils.dontFollowRedirects())
         .queryParam("code", "any")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .get(googleCallbackURI)
         .then()
         .statusCode(302)
@@ -252,7 +253,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
     String email = password + "@company.io";
     String sessionId = authApi().signUpAndLogin(email, password);
 
-    CreateSsoSetupDTO body = new CreateSsoSetupDTO(SsoMethod.MICROSOFT, null);
+    CreateSsoSetupParams body = new CreateSsoSetupParams(SsoMethod.MICROSOFT, null);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -282,7 +283,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
             .config(RestAssuredUtils.dontFollowRedirects())
             .queryParam("code", "any")
             .queryParam("state", paramState)
-            .cookie("state", paramState)
+            .cookie(SsoSignInSession.COOKIE_NAME, paramState)
             .get(googleCallbackURI);
 
     // Should redirect to microsoft SSO sign in server url
@@ -316,10 +317,9 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
     String email = password + "@" + domain;
     String sessionId = authApi().signUpAndLogin(email, password);
 
-    CreateSsoSetupDTO body =
-        new CreateSsoSetupDTO(
-            SsoMethod.SAML,
-            new URL("https://snuderls.okta.com/app/exkw843tlucjMJ0kL4x6/sso/saml/metadata"));
+    CreateSsoSetupParams body =
+        new CreateSsoSetupParams(
+            SsoMethod.SAML, new SamlConfiguration(SamlMethod.OKTA, oktaMetadataEndpoint()));
 
     given()
         .when()
@@ -341,7 +341,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
             .when()
             .queryParam("code", "any")
             .queryParam("state", paramState)
-            .cookie("state", paramState)
+            .cookie(SsoSignInSession.COOKIE_NAME, paramState)
             .get(googleCallbackURI);
 
     // Should redirect to SAML SSO server sign in
@@ -366,7 +366,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
     assertThat(
         response.header("Location"),
         Matchers.matchesRegex(
-            "^https:\\/\\/snuderls\\.okta\\.com\\/app\\/snuderlsorg446661_insightdev_1\\/exkw843tlucjMJ0kL4x6\\/sso\\/saml\\?RelayState=(.*)https%3A%2F%2Fwww\\.insight\\.io%2Fmy_path$"));
+            "^https:\\/\\/snuderlstest\\.okta\\.com\\/app\\/snuderlsorg2948061_rebrowse_2\\/exkligrqDovHJsGmk5d5\\/sso\\/saml\\?RelayState=(.*)https%3A%2F%2Fwww\\.insight\\.io%2Fmy_path$"));
   }
 
   private static class MockedGoogleOAuthClient extends GoogleOAuthClient {

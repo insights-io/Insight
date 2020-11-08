@@ -1,5 +1,6 @@
 package com.meemaw.auth.organization.resource.v1;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.organization.datasource.OrganizationTable;
 import com.meemaw.auth.organization.model.AvatarType;
 import com.meemaw.auth.organization.model.Organization;
@@ -29,6 +30,7 @@ public class OrganizationResourceImpl implements OrganizationResource {
   @Inject InsightPrincipal insightPrincipal;
   @Inject OrganizationService organizationService;
   @Context UriInfo uriInfo;
+  @Inject ObjectMapper objectMapper;
 
   @Override
   public CompletionStage<Response> delete() {
@@ -71,15 +73,10 @@ public class OrganizationResourceImpl implements OrganizationResource {
   public CompletionStage<Response> updateAssociated(Map<String, Object> params) {
     AuthUser user = insightPrincipal.user();
     if (params.isEmpty()) {
-      return CompletableFuture.completedStage(
-          Boom.badRequest()
-              .message("Validation Error")
-              .errors(Map.of("body", "Required"))
-              .response());
+      return CompletableFuture.completedStage(Boom.bodyRequired().response());
     }
 
     UpdateDTO update = UpdateDTO.from(params);
-
     Map<String, String> errors = update.validate(OrganizationTable.UPDATABLE_FIELDS);
     if (!errors.isEmpty()) {
       return CompletableFuture.completedStage(Boom.badRequest().errors(errors).response());

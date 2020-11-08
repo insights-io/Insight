@@ -95,6 +95,10 @@ public class Boom<T> {
     return (Boom<T>) badRequest().message("Validation Error").errors(errors);
   }
 
+  public static <T> Boom<T> bodyRequired() {
+    return validationErrors(Map.of("body", "Required"));
+  }
+
   public static <T> Boom<T> notFound() {
     return Boom.status(Status.NOT_FOUND);
   }

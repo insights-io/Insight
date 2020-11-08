@@ -323,7 +323,6 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"field1\":\"Unexpected field\"}}}"));
   }
 
-  // TODO: fix
   @Test
   @Disabled
   public void patch_associated_organization__should_throw__when_invalid_role()

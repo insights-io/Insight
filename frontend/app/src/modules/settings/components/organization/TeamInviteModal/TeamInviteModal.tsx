@@ -18,6 +18,7 @@ import type {
 } from '@insight/types';
 import { Input, Button } from '@insight/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
+import { SIZE } from 'baseui/button';
 
 type Props = {
   createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
@@ -61,7 +62,10 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
-        applyApiFormErrors(setError, errorDTO.error.errors);
+        applyApiFormErrors(
+          setError,
+          errorDTO.error.errors as Record<string, string>
+        );
       })
       .finally(() => setIsSubmitting(false));
   });
@@ -100,10 +104,11 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button kind="tertiary" onClick={close}>
+            <Button kind="tertiary" onClick={close} size={SIZE.compact}>
               Cancel
             </Button>
             <Button
+              size={SIZE.compact}
               type="submit"
               isLoading={isSubmitting}
               $style={{ marginLeft: theme.sizing.scale400 }}

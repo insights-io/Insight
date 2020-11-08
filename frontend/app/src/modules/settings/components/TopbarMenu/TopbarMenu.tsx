@@ -28,6 +28,7 @@ type Props = {
 
 const getOptionLabel = ({ option: untypedOption }: { option?: Option }) => {
   const option = untypedOption as SearchOption;
+
   return (
     <Link href={option.link}>
       <UnstyledLink href={option.link}>
@@ -53,7 +54,11 @@ export const TopbarMenu = ({
   setOverlaySidebarOpen,
 }: Props) => {
   return (
-    <SpacedBetween as="nav" padding="20px 30px" className="topbar menu">
+    <SpacedBetween
+      as="nav"
+      padding={isSidebarOverlay ? '16px' : '20px 30px'}
+      className="topbar menu"
+    >
       <Flex>
         <VerticalAligned
           marginRight="8px"
@@ -69,7 +74,19 @@ export const TopbarMenu = ({
         </VerticalAligned>
 
         <VerticalAligned>
-          <Breadcrumbs>
+          <Breadcrumbs
+            overrides={{
+              List: { style: { display: 'flex', flexWrap: 'wrap' } },
+              ListItem: { style: { display: 'flex' } },
+              Separator: {
+                style: {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                },
+              },
+            }}
+          >
             {path.map((pathPart, index) => {
               const link = joinSegments(
                 path.slice(0, index + 1).map((p) => p.segment)
@@ -86,7 +103,7 @@ export const TopbarMenu = ({
       </Flex>
 
       {searchOptions.length > 0 && (
-        <VerticalAligned maxWidth="300px" width="100%">
+        <VerticalAligned maxWidth="300px" width="100%" marginLeft="16px">
           <Select
             options={searchOptions}
             placeholder="Search"
@@ -94,6 +111,16 @@ export const TopbarMenu = ({
             size={SIZE.compact}
             valueKey="label"
             getOptionLabel={getOptionLabel}
+            filterOptions={(options, filterValue) => {
+              const query = filterValue.toLowerCase();
+              return options.filter((option) => {
+                const searchOption = option as SearchOption;
+                return (
+                  searchOption.label.toLowerCase().includes(query) ||
+                  searchOption.description.toLowerCase().includes(query)
+                );
+              });
+            }}
             overrides={{
               ControlContainer: { style: expandBorderRadius('8px') },
               Popover: {

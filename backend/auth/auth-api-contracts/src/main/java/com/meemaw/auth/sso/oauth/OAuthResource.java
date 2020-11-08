@@ -1,5 +1,6 @@
 package com.meemaw.auth.sso.oauth;
 
+import com.meemaw.auth.sso.SsoSignInSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import java.net.URL;
@@ -87,5 +88,5 @@ public interface OAuthResource {
   CompletionStage<Response> oauth2callback(
       @NotBlank(message = "Required") @QueryParam("code") String code,
       @NotBlank(message = "Required") @QueryParam("state") String state,
-      @CookieParam("state") String sessionState);
+      @CookieParam(SsoSignInSession.COOKIE_NAME) String sessionState);
 }

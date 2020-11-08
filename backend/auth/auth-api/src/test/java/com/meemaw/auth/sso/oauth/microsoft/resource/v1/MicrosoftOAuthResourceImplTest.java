@@ -142,13 +142,14 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
   @Test
   public void microsoft_oauth2callback__should_fail__on_random_code() {
     String state =
-        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
         .queryParam("code", "random")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .get(microsoftCallbackURI)
         .then()
         .statusCode(400)
@@ -160,13 +161,14 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
   @Test
   public void microsoft_oauth2callback__should_fail__on_expired_code() {
     String state =
-        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
 
     given()
         .when()
         .queryParam("code", "M.R3_BAY.aff053f8-9755-f5ea-c1b5-a3bb3e4f7b01")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .get(microsoftCallbackURI)
         .then()
         .statusCode(400)
@@ -178,7 +180,8 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
   @Test
   public void microsoft_oauth2callback__should_fail__on_invalid_redirect() {
     String state =
-        microsoftService.secureState(URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+        AbstractIdentityProvider.secureState(
+            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
 
@@ -186,7 +189,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
         .when()
         .queryParam("code", "M.R3_BAY.aff053f8-9755-f5ea-c1b5-a3bb3e4f7b01")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .header("X-Forwarded-Proto", forwardedProto)
         .header("X-Forwarded-Host", forwardedHost)
         .get(microsoftCallbackURI)
@@ -226,14 +229,14 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
     String Location = "https://www.insight.io/my_path";
     QuarkusMock.installMockForInstance(
         new MockedMicrosoftOAuthClient(user.getEmail()), microsoftClient);
-    String state = microsoftService.secureState(Location);
+    String state = AbstractIdentityProvider.secureState(Location);
 
     given()
         .when()
         .config(RestAssuredUtils.dontFollowRedirects())
         .queryParam("code", "any")
         .queryParam("state", state)
-        .cookie("state", state)
+        .cookie(SsoSignInSession.COOKIE_NAME, state)
         .get(microsoftCallbackURI)
         .then()
         .statusCode(302)
