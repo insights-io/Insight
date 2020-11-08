@@ -1,6 +1,12 @@
 package com.meemaw.auth.password.datasource.sql;
 
-import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.*;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.CREATED_AT;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.EMAIL;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.TABLE;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.TOKEN;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordResetRequestTable.USER_ID;
 
 import com.meemaw.auth.password.datasource.PasswordResetDatasource;
 import com.meemaw.auth.password.model.PasswordResetRequest;

@@ -1,6 +1,8 @@
 package com.meemaw.test.testconainers.pg;
 
-import static com.meemaw.test.setup.AuthApiTestProvider.*;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_ID;
+import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_PASSWORD;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 

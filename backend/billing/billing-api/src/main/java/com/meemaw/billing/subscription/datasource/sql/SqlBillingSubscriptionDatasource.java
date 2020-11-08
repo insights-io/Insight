@@ -1,6 +1,18 @@
 package com.meemaw.billing.subscription.datasource.sql;
 
-import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.*;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CANCELED_AT;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CREATED_AT;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CURRENT_PERIOD_END;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CURRENT_PERIOD_START;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CUSTOMER_EXTERNAL_ID;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CUSTOMER_INTERNAL_ID;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.FIELDS;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.ID;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.INSERT_FIELDS;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.PLAN;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.PRICE_ID;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.STATUS;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.TABLE;
 
 import com.meemaw.billing.subscription.datasource.BillingSubscriptionDatasource;
 import com.meemaw.billing.subscription.model.BillingSubscription;

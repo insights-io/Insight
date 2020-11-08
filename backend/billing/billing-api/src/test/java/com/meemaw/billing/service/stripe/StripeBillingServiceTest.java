@@ -2,7 +2,9 @@ package com.meemaw.billing.service.stripe;
 
 import static com.meemaw.billing.BillingTestUtils.create3DSecurePaymentMethod;
 import static com.meemaw.billing.BillingTestUtils.createVisaTestPaymentMethod;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.billing.AbstractStripeTest;

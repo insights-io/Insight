@@ -1,6 +1,19 @@
 package com.meemaw.session.pages.datasource.sql;
 
-import static com.meemaw.session.pages.datasource.sql.SqlPageTable.*;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.COMPILED_TIMESTAMP;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.CREATED_AT;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.DOCTYPE;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.HEIGHT;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.ID;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.INSERT_FIELDS;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.ORGANIZATION_ID;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.REFERRER;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SCREEN_HEIGHT;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SCREEN_WIDTH;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.SESSION_ID;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.TABLE;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.URL;
+import static com.meemaw.session.pages.datasource.sql.SqlPageTable.WIDTH;
 
 import com.meemaw.location.model.Location;
 import com.meemaw.session.model.CreatePageDTO;

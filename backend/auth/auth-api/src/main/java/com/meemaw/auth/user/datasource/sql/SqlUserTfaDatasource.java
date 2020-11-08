@@ -1,6 +1,10 @@
 package com.meemaw.auth.user.datasource.sql;
 
-import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.*;
+import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.CREATED_AT;
+import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.METHOD;
+import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.PARAMS;
+import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.TABLE;
+import static com.meemaw.auth.user.datasource.sql.SqlTfaSetupTable.USER_ID;
 
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.model.TfaSetup;

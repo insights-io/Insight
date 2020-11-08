@@ -1,6 +1,11 @@
 package com.meemaw.billing.customer.datasource.sql;
 
-import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.*;
+import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.CREATED_AT;
+import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.EXTERNAL_ID;
+import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.FIELDS;
+import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.INSERT_FIELDS;
+import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.INTERNAL_ID;
+import static com.meemaw.billing.customer.datasource.sql.SqlBillingCustomerTable.TABLE;
 
 import com.meemaw.billing.customer.datasource.BillingCustomerDatasource;
 import com.meemaw.billing.customer.model.BillingCustomer;

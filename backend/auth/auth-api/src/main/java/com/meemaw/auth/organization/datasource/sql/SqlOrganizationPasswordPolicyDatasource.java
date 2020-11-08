@@ -1,6 +1,17 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.*;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.FIELD_MAPPINGS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.MIN_CHARACTERS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.ORGANIZATION_ID;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.PREVENT_PASSWORD_REUSE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.REQUIRE_LOWERCASE_CHARACTER;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.REQUIRE_NON_ALPHANUMERIC_CHARACTER;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.REQUIRE_NUMBER;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.REQUIRE_UPPERCASE_CHARACTER;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationPasswordPolicyTable.UPDATED_AT;
 
 import com.google.common.base.CaseFormat;
 import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyDatasource;

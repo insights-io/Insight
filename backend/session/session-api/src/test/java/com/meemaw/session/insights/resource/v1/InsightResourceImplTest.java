@@ -1,7 +1,9 @@
 package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
-import static com.meemaw.shared.rest.query.AbstractQueryParser.*;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;

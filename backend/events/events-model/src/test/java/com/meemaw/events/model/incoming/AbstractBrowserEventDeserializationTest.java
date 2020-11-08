@@ -1,6 +1,8 @@
 package com.meemaw.events.model.incoming;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.meemaw.events.model.shared.BrowserEventType;
 import com.meemaw.events.model.shared.LogLevel;

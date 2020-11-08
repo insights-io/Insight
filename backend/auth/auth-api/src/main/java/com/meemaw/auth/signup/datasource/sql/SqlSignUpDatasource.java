@@ -1,6 +1,15 @@
 package com.meemaw.auth.signup.datasource.sql;
 
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.*;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.COMPANY;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.CREATED_AT;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.EMAIL;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.FULL_NAME;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.HASHED_PASSWORD;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERER;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;

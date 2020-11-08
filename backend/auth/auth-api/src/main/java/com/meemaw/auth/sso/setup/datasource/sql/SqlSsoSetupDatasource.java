@@ -1,6 +1,13 @@
 package com.meemaw.auth.sso.setup.datasource.sql;
 
-import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.*;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.CREATED_AT;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.DOMAIN;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.FIELDS;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.INSERT_FIELDS;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.METHOD;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.ORGANIZATION_ID;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.SAML;
+import static com.meemaw.auth.sso.setup.datasource.sql.SqlSsoSetupTable.TABLE;
 
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.CreateSsoSetup;

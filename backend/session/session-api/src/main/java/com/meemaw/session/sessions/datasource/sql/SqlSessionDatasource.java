@@ -1,6 +1,15 @@
 package com.meemaw.session.sessions.datasource.sql;
 
-import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.*;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.CREATED_AT;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.DEVICE_ID;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELD_MAPPINGS;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ID;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.INSERT_FIELDS;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATION;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
+import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
 import static com.meemaw.shared.sql.rest.query.SQLFilterExpression.sqlSelectField;
 import static org.jooq.impl.DSL.condition;
 
@@ -20,7 +29,11 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowIterator;
 import io.vertx.mutiny.sqlclient.RowSet;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;

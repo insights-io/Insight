@@ -5,7 +5,13 @@ import io.quarkus.test.common.http.TestHTTPResource;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.LinkedBlockingDeque;
-import javax.websocket.*;
+import javax.websocket.ClientEndpoint;
+import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
 
 public class AbstractSessionSocketTest {
 

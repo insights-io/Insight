@@ -1,6 +1,19 @@
 package com.meemaw.billing.invoice.datasource.sql;
 
-import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.*;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.AMOUNT_DUE;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.AMOUNT_PAID;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CREATED_AT;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CURRENCY;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CUSTOMER_EXTERNAL_ID;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.CUSTOMER_INTERNAL_ID;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.FIELDS;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.ID;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.INSERT_FIELDS;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.LINK;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.PAYMENT_INTENT;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.STATUS;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.SUBSCRIPTION_ID;
+import static com.meemaw.billing.invoice.datasource.sql.SqlBillingInvoiceTable.TABLE;
 
 import com.meemaw.billing.invoice.datasource.BillingInvoiceDatasource;
 import com.meemaw.billing.invoice.model.BillingInvoice;

@@ -2,8 +2,14 @@ package com.meemaw.shared.rest.query;
 
 import com.google.common.base.CaseFormat;
 import com.meemaw.shared.rest.exception.SearchParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class AbstractQueryParser {

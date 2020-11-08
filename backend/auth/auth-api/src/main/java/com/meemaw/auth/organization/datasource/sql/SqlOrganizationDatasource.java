@@ -1,6 +1,16 @@
 package com.meemaw.auth.organization.datasource.sql;
 
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.*;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.AVATAR;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.CREATED_AT;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.DEFAULT_ROLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELD_MAPPINGS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ID;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.INSERT_FIELDS;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.NAME;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.OPEN_MEMBERSHIP;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.TABLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.UPDATED_AT;
 
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.CreateOrganizationParams;

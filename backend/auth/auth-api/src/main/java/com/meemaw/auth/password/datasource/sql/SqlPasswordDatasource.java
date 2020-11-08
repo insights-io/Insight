@@ -1,6 +1,9 @@
 package com.meemaw.auth.password.datasource.sql;
 
-import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.*;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.CREATED_AT;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.HASH;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.TABLE;
+import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.USER_ID;
 
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.shared.sql.client.SqlPool;

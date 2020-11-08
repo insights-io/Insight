@@ -1,6 +1,8 @@
 package com.meemaw.session.sessions.resource.v1;
 
-import static com.meemaw.shared.rest.query.AbstractQueryParser.*;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

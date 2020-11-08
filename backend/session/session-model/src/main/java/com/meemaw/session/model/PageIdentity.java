@@ -1,7 +1,11 @@
 package com.meemaw.session.model;
 
 import java.util.UUID;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
 @Value
 @Builder

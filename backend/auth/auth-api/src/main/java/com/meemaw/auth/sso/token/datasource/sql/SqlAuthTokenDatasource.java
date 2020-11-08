@@ -1,6 +1,10 @@
 package com.meemaw.auth.sso.token.datasource.sql;
 
-import static com.meemaw.auth.sso.token.datasource.sql.SqlAuthTokenTable.*;
+import static com.meemaw.auth.sso.token.datasource.sql.SqlAuthTokenTable.CREATED_AT;
+import static com.meemaw.auth.sso.token.datasource.sql.SqlAuthTokenTable.FIELDS;
+import static com.meemaw.auth.sso.token.datasource.sql.SqlAuthTokenTable.TABLE;
+import static com.meemaw.auth.sso.token.datasource.sql.SqlAuthTokenTable.TOKEN;
+import static com.meemaw.auth.sso.token.datasource.sql.SqlAuthTokenTable.USER_ID;
 
 import com.meemaw.auth.sso.token.datasource.AuthTokenDatasource;
 import com.meemaw.auth.sso.token.model.CreateAuthTokenParams;

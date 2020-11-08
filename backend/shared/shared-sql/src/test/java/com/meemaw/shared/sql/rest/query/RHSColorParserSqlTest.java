@@ -1,6 +1,8 @@
 package com.meemaw.shared.sql.rest.query;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.select;
+import static org.jooq.impl.DSL.table;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.meemaw.shared.rest.query.SearchDTO;
