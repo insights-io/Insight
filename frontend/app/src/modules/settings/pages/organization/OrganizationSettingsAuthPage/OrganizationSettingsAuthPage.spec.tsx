@@ -1,6 +1,6 @@
-import { sandbox } from '@insight/testing';
 import React from 'react';
-import { SSO_SAML_SETUP } from 'test/data';
+import { sandbox } from '@insight/testing';
+import { SSO_SAML_SETUP_DTO } from 'test/data';
 import { render } from 'test/utils';
 
 import { WithSaml } from './OrganizationSettingsAuthPage.stories';
@@ -19,7 +19,7 @@ describe('<OrganizationSettingsAuthPage />', () => {
 
     expect(methodInput).toBeInTheDocument();
     expect(configurationInput.value).toEqual(
-      SSO_SAML_SETUP.configurationEndpoint
+      SSO_SAML_SETUP_DTO.saml.metadataEndpoint
     );
   });
 });

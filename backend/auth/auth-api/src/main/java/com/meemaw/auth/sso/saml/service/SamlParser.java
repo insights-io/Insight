@@ -28,6 +28,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -61,7 +63,7 @@ public class SamlParser {
     return new BasicX509Credential(
         (X509Certificate)
             certificateFactory.generateCertificate(
-                new ByteArrayInputStream(certificate.getBytes())));
+                new ByteArrayInputStream(certificate.getBytes(StandardCharsets.UTF_8))));
   }
 
   private SamlCoreDataResponse fromAssertion(Assertion assertion) {

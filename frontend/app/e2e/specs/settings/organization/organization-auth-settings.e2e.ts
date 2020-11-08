@@ -86,7 +86,7 @@ test('As a user with business email, I should be able to setup SAML SSO', async 
     .ok('Is on okta page');
 });
 
-test.only('As a user with business email should be able to setup Google SSO', async (t) => {
+test('As a user with business email should be able to setup Google SSO', async (t) => {
   const {
     email,
     password,

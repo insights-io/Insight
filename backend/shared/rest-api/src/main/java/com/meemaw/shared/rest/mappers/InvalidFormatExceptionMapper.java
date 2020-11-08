@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.status.MissingStatus;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.util.List;
+import java.util.Map;
 
 @Provider
 public class InvalidFormatExceptionMapper implements ExceptionMapper<InvalidFormatException> {
