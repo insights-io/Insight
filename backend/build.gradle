@@ -62,7 +62,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = "8.36.1"
+        toolVersion = "8.36.2"
         configFile = rootProject.file("config/checkstyle/.checkstyle.xml")
         configProperties = [
                 "checkstyle.cache.file": "${buildDir}/checkstyle.cache",
