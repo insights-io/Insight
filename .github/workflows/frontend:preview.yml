@@ -116,6 +116,8 @@ jobs:
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           aws s3 cp s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/serverless.yml serverless.yml
           npx serverless
+          DISTRIBUTION_ID=$(cat .serverless/Template.$NAME.CloudFront.json | jq -r '.id')
+          echo "DISTRIBUTION_ID=$DISTRIBUTION_ID" >> $GITHUB_ENV
           DISTRIBUTION_URL=$(cat .serverless/Template.$NAME.CloudFront.json | jq -r '.url')
           DISTRIBUTION_DOMAIN=$(echo "$DISTRIBUTION_URL" | awk -F/ '{print $3}')
           echo "DISTRIBUTION_DOMAIN=$DISTRIBUTION_DOMAIN" >> $GITHUB_ENV
@@ -131,3 +133,8 @@ jobs:
           ACTION: DELETE
           NAME: pr-${{ github.event.number }}.${{ matrix.target }}.${{ secrets.DEV_DOMAIN_NAME }}
           DNSName: ${{ env.DISTRIBUTION_DOMAIN }}
+      - name: Delete Cloudfront distribution
+        run: |
+          aws cloudfront wait distribution-deployed --id $DISTRIBUTION_ID
+          ETAG=$(aws cloudfront get-distribution-config --id $DISTRIBUTION_ID | jq -r '.ETag')
+          aws cloudfront delete-distribution --id $DISTRIBUTION_ID --if-match $ETAG
