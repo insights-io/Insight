@@ -30,7 +30,9 @@ export const SetupTwoFactorAuthenticationPage = () => {
         activateOnFocus
       >
         <Tab title="Authy" key="totp">
-          <TimeBasedTwoFactorAuthenticationForm onTfaConfigured={console.log} />
+          <TimeBasedTwoFactorAuthenticationForm
+            onTfaConfigured={() => undefined}
+          />
         </Tab>
         <Tab title="Text message" key="sms">
           todo
