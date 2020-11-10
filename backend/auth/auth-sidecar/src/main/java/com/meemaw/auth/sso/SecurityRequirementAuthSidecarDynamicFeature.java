@@ -10,8 +10,7 @@ public class SecurityRequirementAuthSidecarDynamicFeature
     extends AbstractSecurityRequirementAuthDynamicFeature {
 
   @Inject BearerTokenSidecarSecurityRequirementAuthDynamicFeature bearerTokenAuthDynamicFeature;
-  @Inject
-  SsoSessionCookieSecurityRequirementAuthSidecarDynamicFeature cookieAuthDynamicFeature;
+  @Inject SsoSessionCookieSecurityRequirementAuthSidecarDynamicFeature cookieAuthDynamicFeature;
 
   @Override
   public AuthSchemeResolver getCookieAuthSchemeResolver() {
