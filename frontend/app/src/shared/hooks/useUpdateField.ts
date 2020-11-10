@@ -12,6 +12,17 @@ type UseUpdateFieldOptions<
   update: (update: U) => Promise<R>;
 };
 
+const snakeCaseToNiceCase = (snakeCaseValue: string) => {
+  return snakeCaseValue.split('').reduce((str, char) => {
+    const lowercaseCharacter = char.toLowerCase();
+    if (char === lowercaseCharacter) {
+      return str + char;
+    }
+
+    return `${str} ${lowercaseCharacter}`;
+  }, '');
+};
+
 const buildUpdateTextMessage = <
   K extends keyof R,
   R extends Record<string, unknown>,
@@ -23,18 +34,19 @@ const buildUpdateTextMessage = <
   currentValue: C
 ) => {
   const nextValue = updatedResource[fieldName];
+  const niceFieldName = snakeCaseToNiceCase(fieldName as string);
   if (nextValue === true) {
-    return `Successfully enabled ${resource} ${fieldName}`;
+    return `Successfully enabled ${resource} ${niceFieldName}`;
   }
   if (nextValue === false) {
-    return `Successfully disabled ${resource} ${fieldName}`;
+    return `Successfully disabled ${resource} ${niceFieldName}`;
   }
 
-  let message = `Successfully cleared ${resource} ${fieldName}`;
+  let message = `Successfully cleared ${resource} ${niceFieldName}`;
   if (nextValue) {
     message = currentValue
-      ? `Successfully changed ${resource} ${fieldName} from "${currentValue}" to "${nextValue}"`
-      : `Successfully changed ${resource} ${fieldName} to "${nextValue}"`;
+      ? `Successfully changed ${resource} ${niceFieldName} from "${currentValue}" to "${nextValue}"`
+      : `Successfully changed ${resource} ${niceFieldName} to "${nextValue}"`;
   }
 
   return message;

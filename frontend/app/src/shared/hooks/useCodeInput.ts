@@ -10,7 +10,7 @@ type Props<T> = {
   length?: number;
 };
 
-const useCodeInput = <T>({
+export const useCodeInput = <T>({
   submitAction,
   handleError,
   length = 6,
@@ -67,5 +67,3 @@ const useCodeInput = <T>({
     apiError,
   };
 };
-
-export default useCodeInput;

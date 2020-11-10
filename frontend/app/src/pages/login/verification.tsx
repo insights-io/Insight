@@ -8,12 +8,17 @@ import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { AuthApi } from 'api/auth';
 import type { APIErrorDataResponse, TfaMethod } from '@insight/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
+import { SetupTwoFactorAuthenticationPage } from 'modules/auth/pages/SetupTwoFactorAuthenticationPage';
 
 type Props = {
   methods: TfaMethod[];
 };
 
 const Verification = ({ methods }: Props) => {
+  if (methods.length === 0) {
+    return <SetupTwoFactorAuthenticationPage />;
+  }
+
   return <VerificationPage methods={methods} />;
 };
 

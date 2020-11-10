@@ -63,7 +63,7 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
     log.info("[AUTH]: Get challengeId={} request", id);
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return tfaChallengeDatasource
-        .retrieveUserByChallengeId(id)
+        .retrieve(id)
         .thenCompose(
             maybeUserId -> {
               if (maybeUserId.isEmpty()) {
@@ -78,7 +78,7 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
     log.info("[AUTH]: Send TFA SMS code challengeId={} request", challengeId);
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return tfaChallengeDatasource
-        .retrieveUserByChallengeId(challengeId)
+        .retrieve(challengeId)
         .thenCompose(
             maybeUserId -> {
               if (maybeUserId.isEmpty()) {

@@ -10,7 +10,7 @@ public class OrganizationTest {
 
   private Organization organizationWithStartTime(OffsetDateTime createdAt) {
     return new OrganizationDTO(
-        "", "", false, UserRole.MEMBER, null, createdAt, OffsetDateTime.now());
+        "", "", false, false, UserRole.MEMBER, null, createdAt, OffsetDateTime.now());
   }
 
   @Test

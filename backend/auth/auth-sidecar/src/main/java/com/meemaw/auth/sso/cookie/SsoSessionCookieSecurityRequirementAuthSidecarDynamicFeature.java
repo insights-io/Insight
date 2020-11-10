@@ -14,8 +14,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Provider
 @ApplicationScoped
-public class SessionCookieSecurityRequirementAuthSidecarDynamicFeature
-    extends AbstractSessionCookieSecurityRequirementAuthDynamicFeature {
+public class SsoSessionCookieSecurityRequirementAuthSidecarDynamicFeature
+    extends AbstractSsoSessionCookieSecurityRequirementAuthDynamicFeature {
 
   @ConfigProperty(name = "auth-api/mp-rest/url")
   String authApiBaseUrl;

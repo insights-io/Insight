@@ -16,6 +16,7 @@ public class OrganizationDTO implements Organization {
   String id;
   String name;
   boolean openMembership;
+  boolean enforceTwoFactorAuthentication;
   UserRole defaultRole;
   AvatarSetupDTO avatar;
   OffsetDateTime createdAt;

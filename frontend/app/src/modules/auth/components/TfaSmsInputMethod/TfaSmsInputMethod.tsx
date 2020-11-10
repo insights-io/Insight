@@ -10,7 +10,12 @@ type Props = TfaInputMethodProps & {
   sendCode: () => Promise<CodeValidityDTO>;
 };
 
-const TfaSmsInputMethod = ({ code, handleChange, error, sendCode }: Props) => {
+export const TfaSmsInputMethod = ({
+  code,
+  handleChange,
+  error,
+  sendCode,
+}: Props) => {
   const [validitySeconds, setValiditySeconds] = useState(0);
   const countdownInterval = useRef(null) as MutableRefObject<number | null>;
 
@@ -57,5 +62,3 @@ const TfaSmsInputMethod = ({ code, handleChange, error, sendCode }: Props) => {
     </Flex>
   );
 };
-
-export default TfaSmsInputMethod;

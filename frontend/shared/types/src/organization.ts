@@ -10,6 +10,7 @@ export type OrganizationDTO = {
   id: string;
   name: string | undefined;
   openMembership: boolean;
+  enforceTwoFactorAuthentication: boolean;
   avatar?: AvatarDTO;
   defaultRole: UserRole;
   createdAt: string;

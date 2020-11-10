@@ -335,6 +335,8 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .extract()
             .as(new TypeRef<>() {});
 
+    String organizationId = dataResponse.getData().getId();
+
     // sso setup
     given()
         .when()
@@ -396,7 +398,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .getUser();
 
     assertEquals(newUser.getFullName(), "Blaz Snuderl");
-    assertEquals(newUser.getOrganizationId(), dataResponse.getData().getId());
+    assertEquals(newUser.getOrganizationId(), organizationId);
     assertEquals(newUser.getRole(), UserRole.MEMBER);
   }
 

@@ -65,7 +65,7 @@ test('[TFA](TOTP): User should be able to complete full TFA flow after password 
     .expect(getLocation())
     .eql(`${VerificationPage.path}?redirect=%2F`)
     .expect(getTitle())
-    .eql('Insight | Verification')
+    .eql('Verification')
     .expect(VerificationPage.tabs.totp.title.visible)
     .ok('TOTP TFA tab visible')
     .expect(VerificationPage.tabs.sms.title.visible)

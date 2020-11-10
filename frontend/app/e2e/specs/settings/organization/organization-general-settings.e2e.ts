@@ -44,7 +44,7 @@ test('[ORGANIZATION_GENERAL_SETTINGS]: User should be able to change general org
     .pressKey('tab') // blur input
     .expect(
       queryByText(
-        'Successfully changed organization defaultRole from "member" to "admin"'
+        'Successfully changed organization default role from "member" to "admin"'
       ).visible
     )
     .ok('Should change default role');
@@ -53,7 +53,7 @@ test('[ORGANIZATION_GENERAL_SETTINGS]: User should be able to change general org
   await t
     .click(OrganizationGeneralSettingsPage.openMembershipToggle)
     .expect(
-      queryByText('Successfully enabled organization openMembership').visible
+      queryByText('Successfully enabled organization open membership').visible
     )
     .ok('Should change open membership');
 

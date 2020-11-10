@@ -5,7 +5,7 @@ import { TfaInputMethodProps } from '../types';
 
 type Props = TfaInputMethodProps;
 
-const TfaTotpInputMethod = ({ code, handleChange, error }: Props) => {
+export const TfaTotpInputMethod = ({ code, handleChange, error }: Props) => {
   return (
     <CodeInput
       label="Google verification code"
@@ -15,5 +15,3 @@ const TfaTotpInputMethod = ({ code, handleChange, error }: Props) => {
     />
   );
 };
-
-export default TfaTotpInputMethod;
