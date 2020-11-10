@@ -10,7 +10,7 @@ import type {
 } from '@insight/types';
 import FormError from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
-import { Paragraph3, ParagraphXSmall } from 'baseui/typography';
+import { Paragraph3 } from 'baseui/typography';
 
 type Props = {
   onTfaConfigured: (tfaSetup: TfaSetupDTO) => void;
