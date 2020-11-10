@@ -116,10 +116,10 @@ jobs:
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           aws s3 cp s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/serverless.yml serverless.yml
           npx serverless
-          API_LAMBDA_NAME=$(cat .serverless/Template.$NAME.apiEdgeLambda.json | jq -r '.name')
-          echo "API_LAMBDA_NAME=$API_LAMBDA_NAME" >> $GITHUB_ENV
-          DEFAULT_LAMBDA_NAME=$(cat .serverless/Template.$NAME.defaultEdgeLambda.json | jq -r '.name')
-          echo "DEFAULT_LAMBDA_NAME=$DEFAULT_LAMBDA_NAME" >> $GITHUB_ENV
+          API_EDGE_LAMBDA_NAME=$(cat .serverless/Template.$NAME.apiEdgeLambda.json | jq -r '.name')
+          echo "API_EDGE_LAMBDA_NAME=$API_EDGE_LAMBDA_NAME" >> $GITHUB_ENV
+          DEFAULT_EDGE_LAMBDA_NAME=$(cat .serverless/Template.$NAME.defaultEdgeLambda.json | jq -r '.name')
+          echo "DEFAULT_EDGE_LAMBDA_NAME=$DEFAULT_EDGE_LAMBDA_NAME" >> $GITHUB_ENV
           DISTRIBUTION_ID=$(cat .serverless/Template.$NAME.CloudFront.json | jq -r '.id')
           echo "DISTRIBUTION_ID=$DISTRIBUTION_ID" >> $GITHUB_ENV
           DISTRIBUTION_URL=$(cat .serverless/Template.$NAME.CloudFront.json | jq -r '.url')
@@ -142,7 +142,7 @@ jobs:
           aws cloudfront wait distribution-deployed --id $DISTRIBUTION_ID
           ETAG=$(aws cloudfront get-distribution-config --id $DISTRIBUTION_ID | jq -r '.ETag')
           aws cloudfront delete-distribution --id $DISTRIBUTION_ID --if-match $ETAG
-      - name: Delete AWS Lambda functions
+      - name: Delete AWS Lambda @ Edge functions
         run: |
-          aws lambda delete-function --function-name $DEFAULT_LAMBDA_NAME
-          aws lambda delete-function --function-name $API_LAMBDA_NAME
+          aws lambda delete-function --function-name $DEFAULT_EDGE_LAMBDA_NAME
+          aws lambda delete-function --function-name $API_EDGE_LAMBDA_NAME
