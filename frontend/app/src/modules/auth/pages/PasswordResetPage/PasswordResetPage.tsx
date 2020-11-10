@@ -12,7 +12,7 @@ import { APIError, APIErrorDataResponse } from '@insight/types';
 import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
-import AuthPageLayout from 'modules/auth/components/PageLayout';
+import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import { INDEX_PAGE } from 'shared/constants/routes';
 
 type Props = {

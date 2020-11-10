@@ -21,6 +21,7 @@ import {
   VerticalAligned,
 } from '@insight/elements';
 import { Block } from 'baseui/block';
+import { useUpdateField } from 'shared/hooks/useUpdateField';
 
 import { PasswordPolicyForm } from './PasswordPolicyForm';
 
@@ -42,7 +43,20 @@ export const OrganizationSettingsSecurityPage = ({
   passwordPolicy: initialPasswordPolicy,
 }: Props) => {
   const { user } = useUser(initialUser);
-  const { organization } = useOrganization(initialOrganization);
+  const { organization, updateOrganization } = useOrganization(
+    initialOrganization
+  );
+
+  const {
+    value: enforce2fa,
+    updating: updatingEnforce2fa,
+    updateNext: update2fa,
+  } = useUpdateField({
+    fieldName: 'enforceTwoFactorAuthentication',
+    currentValue: organization.enforceTwoFactorAuthentication,
+    resource: 'organization',
+    update: updateOrganization,
+  });
 
   return (
     <OrganizationSettingsPageLayout
@@ -67,8 +81,9 @@ export const OrganizationSettingsSecurityPage = ({
               <Toggle
                 id="enforce2fa"
                 name="enforce2fa"
-                checked={false}
-                disabled={false}
+                checked={enforce2fa}
+                disabled={updatingEnforce2fa}
+                onChange={() => update2fa(!enforce2fa)}
               />
             </Block>
           </VerticalAligned>

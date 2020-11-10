@@ -10,7 +10,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import FormError from 'shared/components/FormError';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
-import AuthPageLayout from 'modules/auth/components/PageLayout';
+import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import { Button, Flex, SpacedBetween, Input } from '@insight/elements';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 

@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'baseui/modal';
-import { AuthApi } from 'api/auth';
-import { Block } from 'baseui/block';
-import { CodeInput, Button, Flex } from '@insight/elements';
-import useCodeInput from 'shared/hooks/useCodeInput';
-import { APIError, APIErrorDataResponse } from '@insight/types';
-import FormError from 'shared/components/FormError';
-import { Skeleton } from 'baseui/skeleton';
+import React from 'react';
+import { Modal, ModalBody, ModalHeader } from 'baseui/modal';
+import { TimeBasedTwoFactorAuthenticationForm } from 'modules/auth/components/TimeBasedTwoFactorAuthenticationForm';
 
 import { Props } from './types';
 
@@ -15,86 +9,14 @@ const TimeBasedTwoFactorAuthenticationSetupModal = ({
   onClose,
   onTfaConfigured,
 }: Props) => {
-  const [setupStartError, setSetupStartError] = useState<APIError>();
-  const [qrImage, setQrImage] = useState<string>();
-  const {
-    handleChange,
-    handleSubmit,
-    code,
-    codeError,
-    submitButtonRef,
-    isSubmitting,
-    apiError,
-  } = useCodeInput({
-    submitAction: (data) => {
-      return AuthApi.tfa.setup.complete('totp', data).then(onTfaConfigured);
-    },
-    handleError: (error, setError) => {
-      setError(error.error);
-    },
-  });
-
-  useEffect(() => {
-    if (!qrImage && isOpen) {
-      AuthApi.tfa.setup.totp
-        .start()
-        .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
-        .catch(async (error) => {
-          const errorDTO: APIErrorDataResponse = await error.response.json();
-          setSetupStartError(errorDTO.error);
-        });
-    }
-  }, [qrImage, setQrImage, isOpen]);
-
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
-      <form
-        noValidate
-        onSubmit={(event) => {
-          event.preventDefault();
-          handleSubmit(code);
-        }}
-      >
-        <Block display="flex" justifyContent="center">
-          <ModalHeader>Setup two factor authentication</ModalHeader>
-        </Block>
-        <ModalBody>
-          <Flex justifyContent="center" marginBottom="24px">
-            {qrImage ? (
-              <img
-                src={`data:image/jpeg;base64,${qrImage}`}
-                alt="TFA QR code"
-              />
-            ) : (
-              <Skeleton width="200px" height="200px" />
-            )}
-          </Flex>
-          <Flex justifyContent="center">
-            <Block>
-              <CodeInput
-                label="Google verification code"
-                disabled={setupStartError !== undefined}
-                code={code}
-                handleChange={handleChange}
-                error={codeError}
-              />
-            </Block>
-          </Flex>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            disabled={setupStartError !== undefined}
-            ref={submitButtonRef}
-            type="submit"
-            isLoading={isSubmitting}
-            $style={{ width: '100%' }}
-          >
-            Submit
-          </Button>
-        </ModalFooter>
-        {setupStartError && <FormError error={setupStartError} />}
-        {apiError && !codeError && <FormError error={apiError} />}
-      </form>
+      <ModalHeader>Setup two factor authentication</ModalHeader>
+      <ModalBody>
+        <TimeBasedTwoFactorAuthenticationForm
+          onTfaConfigured={onTfaConfigured}
+        />
+      </ModalBody>
     </Modal>
   );
 };

@@ -1,0 +1,1 @@
+export { SetupTwoFactorAuthenticationPage } from './SetupTwoFactorAuthenticationPage';

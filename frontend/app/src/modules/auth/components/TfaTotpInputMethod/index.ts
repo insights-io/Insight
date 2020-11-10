@@ -1,1 +1,1 @@
-export { default } from './TfaTotpInputMethod';
+export { TfaTotpInputMethod } from './TfaTotpInputMethod';

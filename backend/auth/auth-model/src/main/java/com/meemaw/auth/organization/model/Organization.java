@@ -12,21 +12,23 @@ public interface Organization {
   int ID_LENGTH = 6;
   int BILLING_PERIOD_DURATION_DAYS = 30;
 
+  static String identifier() {
+    return RandomStringUtils.randomAlphanumeric(ID_LENGTH);
+  }
+
   String getId();
 
   String getName();
 
   boolean isOpenMembership();
 
+  boolean isEnforceTwoFactorAuthentication();
+
   UserRole getDefaultRole();
 
   AvatarSetupDTO getAvatar();
 
   OffsetDateTime getCreatedAt();
-
-  static String identifier() {
-    return RandomStringUtils.randomAlphanumeric(ID_LENGTH);
-  }
 
   @JsonIgnore
   default OffsetDateTime getStartOfCurrentBillingPeriod() {

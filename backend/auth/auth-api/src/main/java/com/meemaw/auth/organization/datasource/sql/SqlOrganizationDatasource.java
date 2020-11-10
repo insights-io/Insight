@@ -3,6 +3,7 @@ package com.meemaw.auth.organization.datasource.sql;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.AVATAR;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.CREATED_AT;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.DEFAULT_ROLE;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ENFORCE_TWO_FACTOR_AUTHENTICATION;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELD_MAPPINGS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ID;
@@ -39,12 +40,17 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
 
   @Inject SqlPool sqlPool;
 
-  @Override
-  public CompletionStage<Organization> createOrganization(
-      CreateOrganizationParams params, SqlTransaction transaction) {
-    return transaction
-        .execute(createOrganizationQuery(params))
-        .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
+  public static OrganizationDTO mapOrganization(Row row) {
+    JsonObject avatar = (JsonObject) row.getValue(AVATAR.getName());
+    return new OrganizationDTO(
+        row.getString(ID.getName()),
+        row.getString(NAME.getName()),
+        row.getBoolean(OPEN_MEMBERSHIP.getName()),
+        row.getBoolean(ENFORCE_TWO_FACTOR_AUTHENTICATION.getName()),
+        UserRole.fromString(row.getString(DEFAULT_ROLE.getName())),
+        Optional.ofNullable(avatar).map(p -> p.mapTo(AvatarSetupDTO.class)).orElse(null),
+        row.getOffsetDateTime(CREATED_AT.getName()),
+        row.getOffsetDateTime(UPDATED_AT.getName()));
   }
 
   @Override
@@ -58,6 +64,14 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
             .returning(FIELDS);
 
     return sqlPool.execute(query).thenApply(this::mapOrganizationIfPresent);
+  }
+
+  @Override
+  public CompletionStage<Organization> createOrganization(
+      CreateOrganizationParams params, SqlTransaction transaction) {
+    return transaction
+        .execute(createOrganizationQuery(params))
+        .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
   }
 
   @Override
@@ -105,17 +119,5 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
       return Optional.empty();
     }
     return Optional.of(mapOrganization(rows.iterator().next()));
-  }
-
-  public static OrganizationDTO mapOrganization(Row row) {
-    JsonObject avatar = (JsonObject) row.getValue(AVATAR.getName());
-    return new OrganizationDTO(
-        row.getString(ID.getName()),
-        row.getString(NAME.getName()),
-        row.getBoolean(OPEN_MEMBERSHIP.getName()),
-        UserRole.fromString(row.getString(DEFAULT_ROLE.getName())),
-        Optional.ofNullable(avatar).map(p -> p.mapTo(AvatarSetupDTO.class)).orElse(null),
-        row.getOffsetDateTime(CREATED_AT.getName()),
-        row.getOffsetDateTime(UPDATED_AT.getName()));
   }
 }

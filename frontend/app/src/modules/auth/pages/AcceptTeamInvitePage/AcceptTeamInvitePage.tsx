@@ -1,5 +1,5 @@
-import AuthPageLayout from 'modules/auth/components/PageLayout';
 import React, { useState } from 'react';
+import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import type {
   APIError,
   TeamInvite,

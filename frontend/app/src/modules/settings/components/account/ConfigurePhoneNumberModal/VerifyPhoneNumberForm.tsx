@@ -4,9 +4,9 @@ import { AuthApi } from 'api';
 import { Block } from 'baseui/block';
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import { toaster } from 'baseui/toast';
-import TfaSmsInputMethod from 'modules/auth/components/TfaSmsInputMethod';
+import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
 import { Flex } from '@insight/elements';
-import useCodeInput from 'shared/hooks/useCodeInput';
+import { useCodeInput } from 'shared/hooks/useCodeInput';
 
 type Props = {
   onBack: () => void;

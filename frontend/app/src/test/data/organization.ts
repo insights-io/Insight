@@ -11,6 +11,7 @@ export const INSIGHT_ORGANIZATION_DTO: OrganizationDTO = {
   name: 'Insight',
   defaultRole: 'member',
   openMembership: false,
+  enforceTwoFactorAuthentication: false,
   createdAt: new Date().toUTCString(),
   updatedAt: new Date().toUTCString(),
 };

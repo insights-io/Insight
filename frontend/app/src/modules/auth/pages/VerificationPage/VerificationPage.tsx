@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import AuthPageLayout from 'modules/auth/components/PageLayout';
+import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import Head from 'next/head';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
-import { Button } from 'baseui/button';
 import { AuthApi } from 'api/auth';
 import { useRouter } from 'next/router';
 import FormError from 'shared/components/FormError';
-import useCodeInput from 'shared/hooks/useCodeInput';
+import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
-import TfaTotpInputMethod from 'modules/auth/components/TfaTotpInputMethod';
-import TfaSmsInputMethod from 'modules/auth/components/TfaSmsInputMethod';
-import { TfaMethod } from '@insight/types';
+import { TfaTotpInputMethod } from 'modules/auth/components/TfaTotpInputMethod';
+import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
+import type { TfaMethod } from '@insight/types';
+import { Button } from '@insight/elements';
 
 type Props = {
   methods: TfaMethod[];
@@ -64,7 +64,7 @@ export const VerificationPage = ({ methods }: Props) => {
   return (
     <AuthPageLayout>
       <Head>
-        <title>Insight | Verification</title>
+        <title>Verification</title>
       </Head>
 
       <Block display="flex" justifyContent="center" marginBottom="32px">

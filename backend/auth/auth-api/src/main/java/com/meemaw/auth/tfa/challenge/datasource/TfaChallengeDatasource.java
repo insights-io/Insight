@@ -6,9 +6,9 @@ import java.util.concurrent.CompletionStage;
 
 public interface TfaChallengeDatasource {
 
-  CompletionStage<String> createChallengeForUser(UUID userId);
+  CompletionStage<String> create(UUID userId);
 
-  CompletionStage<Optional<UUID>> retrieveUserByChallengeId(String challengeId);
+  CompletionStage<Optional<UUID>> retrieve(String challengeId);
 
-  void deleteChallenge(String challengeId);
+  void delete(String challengeId);
 }

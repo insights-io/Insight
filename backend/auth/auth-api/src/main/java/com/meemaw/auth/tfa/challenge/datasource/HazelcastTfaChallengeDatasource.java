@@ -16,32 +16,31 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Slf4j
 public class HazelcastTfaChallengeDatasource implements TfaChallengeDatasource {
 
-  private IMap<String, UUID> tfaChallengeMap;
-
   @Inject HazelcastProvider hazelcastProvider;
 
   @ConfigProperty(name = "hazelcast.auth.tfa-challenge-map")
   String tfaChallengeMapName;
 
+  private IMap<String, UUID> challengeUserIdMap;
+
   @PostConstruct
   public void init() {
-    log.info("tfaChallengeMapName: {}", tfaChallengeMapName);
-    tfaChallengeMap = hazelcastProvider.getInstance().getMap(tfaChallengeMapName);
+    challengeUserIdMap = hazelcastProvider.getInstance().getMap(tfaChallengeMapName);
   }
 
   @Override
-  public CompletionStage<String> createChallengeForUser(UUID userId) {
+  public CompletionStage<String> create(UUID userId) {
     String challengeId = SsoChallenge.newIdentifier();
-    return tfaChallengeMap.setAsync(challengeId, userId).thenApply(oldValue -> challengeId);
+    return challengeUserIdMap.setAsync(challengeId, userId).thenApply(oldValue -> challengeId);
   }
 
   @Override
-  public CompletionStage<Optional<UUID>> retrieveUserByChallengeId(String challengeId) {
-    return tfaChallengeMap.getAsync(challengeId).thenApply(Optional::ofNullable);
+  public CompletionStage<Optional<UUID>> retrieve(String challengeId) {
+    return challengeUserIdMap.getAsync(challengeId).thenApply(Optional::ofNullable);
   }
 
   @Override
-  public void deleteChallenge(String challengeId) {
-    tfaChallengeMap.delete(challengeId);
+  public void delete(String challengeId) {
+    challengeUserIdMap.delete(challengeId);
   }
 }

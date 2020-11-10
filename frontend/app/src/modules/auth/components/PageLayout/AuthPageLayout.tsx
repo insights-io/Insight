@@ -9,7 +9,7 @@ type Props = {
   subtitle?: string;
 };
 
-const AuthPageLayout = ({ children, subtitle }: Props) => {
+export const AuthPageLayout = ({ children, subtitle }: Props) => {
   const [_css, theme] = useStyletron();
   return (
     <FlexColumn height="100%">
@@ -49,5 +49,3 @@ const AuthPageLayout = ({ children, subtitle }: Props) => {
     </FlexColumn>
   );
 };
-
-export default AuthPageLayout;

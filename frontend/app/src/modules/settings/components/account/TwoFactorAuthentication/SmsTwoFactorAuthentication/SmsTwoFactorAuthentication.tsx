@@ -4,9 +4,9 @@ import { Checkbox } from 'baseui/checkbox';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { StatefulTooltip } from 'baseui/tooltip';
 import React, { useState } from 'react';
-import useCodeInput from 'shared/hooks/useCodeInput';
+import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { toaster } from 'baseui/toast';
-import TfaSmsInputMethod from 'modules/auth/components/TfaSmsInputMethod';
+import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
 
 import DisableTwoFactorAuthenticationModal from '../DisableTwoFactorAuthenticationModal';
 

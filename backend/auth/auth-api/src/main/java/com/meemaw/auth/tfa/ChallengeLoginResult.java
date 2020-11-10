@@ -14,6 +14,7 @@ import lombok.Value;
 public class ChallengeLoginResult implements LoginResult<ChallengeResponseDTO> {
 
   String challengeId;
+  // Might be empty if 2fa enforced on organization and user did not set it up yet
   List<TfaMethod> methods;
   URL redirect;
 

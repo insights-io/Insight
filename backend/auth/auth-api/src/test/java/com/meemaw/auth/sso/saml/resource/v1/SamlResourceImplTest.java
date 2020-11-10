@@ -20,7 +20,6 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
 import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
-import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.auth.SessionInfo;
@@ -323,7 +322,8 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String sessionId = authApi().signUpAndLogin(email, UUID.randomUUID().toString());
 
     // open membership setup
-    DataResponse<OrganizationDTO> dataResponse =
+
+    <OrganizationDTO> dataResponse =
         given()
             .when()
             .contentType(ContentType.JSON)

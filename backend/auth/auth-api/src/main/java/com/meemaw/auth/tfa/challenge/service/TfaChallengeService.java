@@ -29,12 +29,12 @@ public class TfaChallengeService {
   @Inject SsoService ssoService;
 
   public CompletionStage<String> start(UUID userId) {
-    return tfaChallengeDatasource.createChallengeForUser(userId);
+    return tfaChallengeDatasource.create(userId);
   }
 
   public CompletionStage<String> complete(TfaMethod method, int code, String challengeId) {
     return tfaChallengeDatasource
-        .retrieveUserByChallengeId(challengeId)
+        .retrieve(challengeId)
         .thenCompose(
             maybeUserId -> {
               UUID userId =
@@ -75,7 +75,7 @@ public class TfaChallengeService {
                                           .exception();
                                     }
 
-                                    tfaChallengeDatasource.deleteChallenge(challengeId);
+                                    tfaChallengeDatasource.delete(challengeId);
                                     return ssoService.createSession(userId);
                                   });
                         } catch (TfaChallengeValidatationException ex) {
