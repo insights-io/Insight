@@ -20,6 +20,7 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
 import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
+import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.auth.SessionInfo;
@@ -322,8 +323,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String sessionId = authApi().signUpAndLogin(email, UUID.randomUUID().toString());
 
     // open membership setup
-
-    <OrganizationDTO> dataResponse =
+    DataResponse<OrganizationDTO> dataResponse =
         given()
             .when()
             .contentType(ContentType.JSON)
@@ -334,6 +334,8 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .statusCode(200)
             .extract()
             .as(new TypeRef<>() {});
+
+    String organizationId = dataResponse.getData().getId();
 
     // sso setup
     given()
@@ -396,7 +398,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .getUser();
 
     assertEquals(newUser.getFullName(), "Blaz Snuderl");
-    assertEquals(newUser.getOrganizationId(), dataResponse.getData().getId());
+    assertEquals(newUser.getOrganizationId(), organizationId);
     assertEquals(newUser.getRole(), UserRole.MEMBER);
   }
 
