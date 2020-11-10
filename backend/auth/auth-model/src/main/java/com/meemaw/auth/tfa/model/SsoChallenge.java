@@ -3,19 +3,17 @@ package com.meemaw.auth.tfa.model;
 import javax.ws.rs.core.NewCookie;
 import org.apache.commons.lang3.RandomStringUtils;
 
+// TODO: add test for TTL and such
 public class SsoChallenge {
 
-  private static final String COOKIE_PATH = "/";
+  // Keep for 5 minutes
+  public static final int TTL = 60 * 5;
 
   public static final String COOKIE_NAME = "ChallengeId";
 
-  private static final int SECONDS_IN_DAY = 60 * 60 * 24;
-
-  // Keep for 365 days
-  public static final int TTL = SECONDS_IN_DAY * 365;
-
   // Number of characters in cookie
   public static final int SIZE = 50;
+  private static final String COOKIE_PATH = "/";
 
   private SsoChallenge() {}
 

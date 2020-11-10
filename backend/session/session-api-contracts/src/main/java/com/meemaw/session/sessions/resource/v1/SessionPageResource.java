@@ -1,7 +1,7 @@
 package com.meemaw.session.sessions.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.session.model.CreatePageDTO;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -46,7 +46,7 @@ public interface SessionPageResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
   @Operation(summary = "Retrieve page")

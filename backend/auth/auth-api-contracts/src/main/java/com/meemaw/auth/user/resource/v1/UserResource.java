@@ -1,7 +1,7 @@
 package com.meemaw.auth.user.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -47,7 +47,7 @@ public interface UserResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -85,7 +85,7 @@ public interface UserResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -130,7 +130,7 @@ public interface UserResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -176,7 +176,7 @@ public interface UserResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -231,7 +231,7 @@ public interface UserResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -277,7 +277,7 @@ public interface UserResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {

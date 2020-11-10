@@ -1,10 +1,10 @@
 package com.meemaw.auth.sso;
 
-public final class SessionCookieSecurityScheme {
+public final class SsoSessionCookieSecurityScheme {
 
-  public static final String NAME = "Session Cookie";
+  public static final String NAME = "SSO Session Cookie";
   public static final String DESCRIPTION =
       "Cookie authentication uses HTTP cookies to authenticate client requests and maintain session information.";
 
-  private SessionCookieSecurityScheme() {}
+  private SsoSessionCookieSecurityScheme() {}
 }

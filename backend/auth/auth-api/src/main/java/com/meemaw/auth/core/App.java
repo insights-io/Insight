@@ -1,8 +1,10 @@
 package com.meemaw.auth.core;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.ChallengeSessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.tfa.model.SsoChallenge;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
@@ -32,11 +34,17 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
     in = SecuritySchemeIn.HEADER,
     apiKeyName = HttpHeaders.AUTHORIZATION)
 @SecurityScheme(
-    securitySchemeName = SessionCookieSecurityScheme.NAME,
-    description = SessionCookieSecurityScheme.DESCRIPTION,
+    securitySchemeName = SsoSessionCookieSecurityScheme.NAME,
+    description = SsoSessionCookieSecurityScheme.DESCRIPTION,
     type = SecuritySchemeType.APIKEY,
     in = SecuritySchemeIn.COOKIE,
     apiKeyName = SsoSession.COOKIE_NAME)
+@SecurityScheme(
+    securitySchemeName = ChallengeSessionCookieSecurityScheme.NAME,
+    description = ChallengeSessionCookieSecurityScheme.DESCRIPTION,
+    type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.COOKIE,
+    apiKeyName = SsoChallenge.COOKIE_NAME)
 public class App extends Application {
 
   public static final String TITLE = "Auth API";

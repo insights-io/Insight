@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso;
 
-import com.meemaw.auth.sso.AbstractSecurityRequirementAuthDynamicFeature.AuthenticatedFilter;
+import com.meemaw.auth.sso.AbstractSecurityRequirementDynamicFeature.AuthenticatedFilter;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.Map;
@@ -12,23 +12,16 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 
-public abstract class AbstractSecurityRequirementAuthDynamicFeature
+public abstract class AbstractSecurityRequirementDynamicFeature
     extends AbstractAuthDynamicFeature<SecurityRequirements, AuthenticatedFilter> {
-
-  public abstract AuthSchemeResolver getCookieAuthSchemeResolver();
-
-  public abstract AuthSchemeResolver getBearerTokenAuthSchemeResolver();
 
   private Map<AuthScheme, AuthSchemeResolver> authSchemeResolvers;
 
+  public abstract Map<AuthScheme, AuthSchemeResolver> initResolvers();
+
   @PostConstruct
   public void init() {
-    authSchemeResolvers =
-        Map.of(
-            AuthScheme.SESSION_COOKIE,
-            getCookieAuthSchemeResolver(),
-            AuthScheme.BEARER_TOKEN,
-            getBearerTokenAuthSchemeResolver());
+    authSchemeResolvers = initResolvers();
   }
 
   @Override
@@ -37,8 +30,8 @@ public abstract class AbstractSecurityRequirementAuthDynamicFeature
   }
 
   @Override
-  public AuthenticatedFilter authFilter(SecurityRequirements SecurityRequirements) {
-    return new AuthenticatedFilter(SecurityRequirements);
+  public AuthenticatedFilter authFilter(SecurityRequirements securityRequirements) {
+    return new AuthenticatedFilter(securityRequirements);
   }
 
   @Priority(Priorities.AUTHENTICATION)

@@ -13,11 +13,8 @@ public class RedirectSessionLoginResult implements LoginResult<Void> {
   URL location;
 
   @Override
-  public Response loginResponse(String cookieDomain) {
-    return Response.status(Status.FOUND)
-        .header("Location", location)
-        .cookie(cookie(cookieDomain))
-        .build();
+  public Response.ResponseBuilder loginResponseBuilder(String cookieDomain) {
+    return Response.status(Status.FOUND).header("Location", location).cookie(cookie(cookieDomain));
   }
 
   @Override

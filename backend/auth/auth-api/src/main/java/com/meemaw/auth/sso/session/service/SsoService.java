@@ -46,4 +46,6 @@ public interface SsoService {
       String email, String fullName, String organizationId, URL redirect);
 
   CompletionStage<LoginResult<?>> authenticate(AuthUser user);
+
+  CompletionStage<LoginResult<?>> authenticateDirect(AuthUser user);
 }

@@ -6,9 +6,13 @@ import { Paragraph3 } from 'baseui/typography';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { TfaMethod } from '@insight/types';
 import { TimeBasedTwoFactorAuthenticationForm } from 'modules/auth/components/TimeBasedTwoFactorAuthenticationForm';
+import { AuthApi } from 'api';
+import { useRouter } from 'next/router';
 
 export const SetupTwoFactorAuthenticationPage = () => {
   const [activeMethod, setActiveMethod] = useState<TfaMethod>('totp');
+  const router = useRouter();
+  const relativeRedirect = (router.query.redirect || '/') as string;
 
   return (
     <AuthPageLayout>
@@ -31,7 +35,8 @@ export const SetupTwoFactorAuthenticationPage = () => {
       >
         <Tab title="Authy" key="totp">
           <TimeBasedTwoFactorAuthenticationForm
-            onTfaConfigured={() => undefined}
+            setupComplete={AuthApi.tfa.setup.completeChallenge}
+            onTfaConfigured={() => router.replace(relativeRedirect)}
           />
         </Tab>
         <Tab title="Text message" key="sms">

@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.token.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
@@ -77,7 +77,7 @@ public interface AuthTokenResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -113,7 +113,7 @@ public interface AuthTokenResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -150,7 +150,7 @@ public interface AuthTokenResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {

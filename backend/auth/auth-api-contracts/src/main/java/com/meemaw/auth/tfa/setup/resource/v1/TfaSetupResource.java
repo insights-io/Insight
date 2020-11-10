@@ -1,7 +1,8 @@
 package com.meemaw.auth.tfa.setup.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.ChallengeSessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
@@ -44,7 +45,7 @@ public interface TfaSetupResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -81,7 +82,7 @@ public interface TfaSetupResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -126,7 +127,7 @@ public interface TfaSetupResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -165,7 +166,8 @@ public interface TfaSetupResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME),
+        @SecurityRequirement(name = ChallengeSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -215,7 +217,7 @@ public interface TfaSetupResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -256,13 +258,61 @@ public interface TfaSetupResource {
       @NotNull(message = "Required") @Valid TfaChallengeCompleteDTO body);
 
   @POST
+  @Path("{method}/complete/challenge")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Tag(name = TAG)
+  @Operation(
+      summary = "Complete Challenge Two-Factor-Authentication setup",
+      description =
+          "Complete two factor authentication flow associated with challenge. Upon successful completion, challenge session is exchanged for SSO session and user is logged in.")
+  @SecurityRequirements(
+      value = {@SecurityRequirement(name = ChallengeSessionCookieSecurityScheme.NAME)})
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Two-Factor-Authentication setup details",
+            content =
+                @Content(
+                    schema = @Schema(implementation = TfaSetupDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> completeChallenge(
+      @PathParam("method") TfaMethod method,
+      @NotNull(message = "Required") @Valid TfaChallengeCompleteDTO body);
+
+  @POST
   @Path("sms/send_code")
   @Tag(name = TAG)
   @Operation(summary = "Send Two-Factor-Authentication setup SMS code")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {

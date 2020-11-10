@@ -1,7 +1,7 @@
 package com.meemaw.session.insights.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.NotEmpty;
@@ -31,7 +31,7 @@ public interface InsightsResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
   @Operation(summary = "Count")
@@ -42,7 +42,7 @@ public interface InsightsResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
   @Operation(summary = "Distinct")

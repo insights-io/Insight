@@ -14,16 +14,16 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Provider
 @ApplicationScoped
-public class SsoSessionCookieSecurityRequirementAuthSidecarDynamicFeature
-    extends AbstractSsoSessionCookieSecurityRequirementAuthDynamicFeature {
+public class SsoSessionCookieSecurityRequirementSidecarDynamicFeature
+    extends AbstractSsoSessionCookieSecurityRequirementDynamicFeature {
 
   @ConfigProperty(name = "auth-api/mp-rest/url")
   String authApiBaseUrl;
 
   @Override
-  protected CompletionStage<Optional<AuthUser>> findSession(String sessionId) {
+  protected CompletionStage<Optional<AuthUser>> findSession(String cookieValue) {
     return User.retrieve(
-            new RequestOptions.Builder().apiBaseUrl(authApiBaseUrl).sessionId(sessionId).build())
+            new RequestOptions.Builder().apiBaseUrl(authApiBaseUrl).sessionId(cookieValue).build())
         .thenApply(
             user ->
                 Optional.of(

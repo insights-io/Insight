@@ -1,7 +1,7 @@
 package com.meemaw.billing.invoice.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.billing.invoice.model.dto.InvoiceDTO;
 import com.meemaw.billing.subscription.resource.v1.SubscriptionResource;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
@@ -38,7 +38,7 @@ public interface InvoiceResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {
@@ -75,7 +75,7 @@ public interface InvoiceResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {

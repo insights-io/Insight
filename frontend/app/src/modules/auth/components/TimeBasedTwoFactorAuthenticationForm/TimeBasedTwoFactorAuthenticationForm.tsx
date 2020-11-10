@@ -13,11 +13,13 @@ import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';
 
 type Props = {
-  onTfaConfigured: (tfaSetup: TfaSetupDTO) => void;
+  onTfaConfigured?: (tfaSetup: TfaSetupDTO) => void;
+  setupComplete?: typeof AuthApi.tfa.setup.complete;
 };
 
 export const TimeBasedTwoFactorAuthenticationForm = ({
   onTfaConfigured,
+  setupComplete = AuthApi.tfa.setup.complete,
 }: Props) => {
   const [setupStartError, setSetupStartError] = useState<APIError>();
   const [qrImage, setQrImage] = useState<string>();
@@ -31,7 +33,7 @@ export const TimeBasedTwoFactorAuthenticationForm = ({
     apiError,
   } = useCodeInput({
     submitAction: (data) => {
-      return AuthApi.tfa.setup.complete('totp', data).then(onTfaConfigured);
+      return setupComplete('totp', data).then(onTfaConfigured);
     },
     handleError: (error, setError) => {
       setError(error.error);

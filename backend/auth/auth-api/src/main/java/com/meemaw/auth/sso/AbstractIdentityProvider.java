@@ -19,30 +19,6 @@ public abstract class AbstractIdentityProvider {
   public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final SecureRandom random = new SecureRandom();
 
-  public abstract LoginMethod getLoginMethod();
-
-  public abstract String basePath();
-
-  public ResponseLoginResult handleSsoException(Throwable throwable, URL redirect) {
-    String message = throwable.getCause().getMessage();
-    String location =
-        UriBuilder.fromUri(URI.create(redirect.toString()))
-            .queryParam("oauthError", message)
-            .build()
-            .toString();
-
-    return new ResponseLoginResult(
-        (ignored) -> Response.status(Status.FOUND).header("Location", location).build());
-  }
-
-  public String callbackPath() {
-    return String.join("/", basePath(), OAuthResource.CALLBACK_PATH);
-  }
-
-  public String signInPath() {
-    return String.join("/", basePath(), OAuthResource.SIGNIN_PATH);
-  }
-
   public static String secureState(String data) {
     return secureState() + data;
   }
@@ -64,5 +40,29 @@ public abstract class AbstractIdentityProvider {
     } catch (StringIndexOutOfBoundsException ex) {
       throw Boom.badRequest().message("Invalid state parameter").exception(ex);
     }
+  }
+
+  public abstract LoginMethod getLoginMethod();
+
+  public abstract String basePath();
+
+  public ResponseLoginResult handleSsoException(Throwable throwable, URL redirect) {
+    String message = throwable.getCause().getMessage();
+    String location =
+        UriBuilder.fromUri(URI.create(redirect.toString()))
+            .queryParam("oauthError", message)
+            .build()
+            .toString();
+
+    return new ResponseLoginResult(
+        (ignored) -> Response.status(Status.FOUND).header("Location", location));
+  }
+
+  public String callbackPath() {
+    return String.join("/", basePath(), OAuthResource.CALLBACK_PATH);
+  }
+
+  public String signInPath() {
+    return String.join("/", basePath(), OAuthResource.SIGNIN_PATH);
   }
 }

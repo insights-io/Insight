@@ -7,10 +7,10 @@ import lombok.Value;
 @Value
 public class ResponseLoginResult implements LoginResult<Void> {
 
-  Function<String, Response> responseSupplier;
+  Function<String, Response.ResponseBuilder> responseSupplier;
 
   @Override
-  public Response loginResponse(String cookieDomain) {
+  public Response.ResponseBuilder loginResponseBuilder(String cookieDomain) {
     return responseSupplier.apply(cookieDomain);
   }
 }

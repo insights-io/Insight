@@ -29,14 +29,10 @@ public class ChallengeLoginResult implements LoginResult<ChallengeResponseDTO> {
   }
 
   @Override
-  public Response loginResponse(String cookieDomain) {
+  public Response.ResponseBuilder loginResponseBuilder(String cookieDomain) {
     if (redirect == null) {
-      return LoginResult.super.loginResponse(cookieDomain);
+      return LoginResult.super.loginResponseBuilder(cookieDomain);
     }
-
-    return Response.status(Status.FOUND)
-        .header("Location", redirect)
-        .cookie(cookie(cookieDomain))
-        .build();
+    return Response.status(Status.FOUND).header("Location", redirect).cookie(cookie(cookieDomain));
   }
 }

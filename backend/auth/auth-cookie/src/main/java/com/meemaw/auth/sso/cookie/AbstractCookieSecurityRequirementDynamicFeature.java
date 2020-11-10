@@ -22,10 +22,10 @@ import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.MDC;
 
 @Slf4j
-public abstract class AbstractCookieSecurityRequirementAuthDynamicFeature
+public abstract class AbstractCookieSecurityRequirementDynamicFeature
     extends AbstractAuthDynamicFeature<
         SessionCookieSecurityRequirement,
-        AbstractCookieSecurityRequirementAuthDynamicFeature.CookieAuthFilter>
+        AbstractCookieSecurityRequirementDynamicFeature.CookieAuthFilter>
     implements AuthSchemeResolver {
 
   private final String cookieName;
@@ -33,7 +33,7 @@ public abstract class AbstractCookieSecurityRequirementAuthDynamicFeature
   private final String identifier;
   private final BiFunction<InsightPrincipal, String, InsightPrincipal> cookieProvider;
 
-  public AbstractCookieSecurityRequirementAuthDynamicFeature(
+  public AbstractCookieSecurityRequirementDynamicFeature(
       String cookieName,
       int cookieSize,
       String identifier,
@@ -44,7 +44,7 @@ public abstract class AbstractCookieSecurityRequirementAuthDynamicFeature
     this.cookieProvider = cookieProvider;
   }
 
-  protected abstract CompletionStage<Optional<AuthUser>> findSession(String sessionId);
+  protected abstract CompletionStage<Optional<AuthUser>> findSession(String cookieValue);
 
   @Override
   public Class<SessionCookieSecurityRequirement> getAnnotation() {

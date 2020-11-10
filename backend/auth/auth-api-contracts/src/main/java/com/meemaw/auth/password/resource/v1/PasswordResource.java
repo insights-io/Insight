@@ -4,7 +4,7 @@ import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse.BooleanDataResponse;
@@ -129,7 +129,7 @@ public interface PasswordResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @APIResponses(
       value = {

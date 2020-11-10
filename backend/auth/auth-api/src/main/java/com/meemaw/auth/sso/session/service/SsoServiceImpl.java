@@ -36,6 +36,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -237,6 +238,35 @@ public class SsoServiceImpl implements SsoService {
   }
 
   /**
+   * Authenticate user directly by skipping TFA checks. This is the last step in the login flow.
+   * This is used on the end of TFA challenge setup flow where user just completed the TFA setup so
+   * he should not be challenged again.
+   *
+   * @param user to be authenticated
+   * @return login result
+   */
+  @Override
+  public CompletionStage<LoginResult<?>> authenticateDirect(AuthUser user) {
+    return authenticateDirect(user, null);
+  }
+
+  private CompletionStage<LoginResult<?>> authenticateDirect(
+      AuthUser user, @Nullable URL redirect) {
+    UUID userId = user.getId();
+    return createSession(user)
+        .thenApply(
+            sessionId -> {
+              if (redirect != null) {
+                log.debug("[AUTH]: Successful login for user={} redirect={}", userId, redirect);
+                return new RedirectSessionLoginResult(sessionId, redirect);
+              }
+
+              log.debug("[AUTH]: Successful login for user={}", userId);
+              return new DirectLoginResult(sessionId);
+            });
+  }
+
+  /**
    * Authenticate a user with no TFA methods set. This method can be used on the end of user
    * creation flows (e.g. team invite accept).
    *
@@ -287,20 +317,7 @@ public class SsoServiceImpl implements SsoService {
                   return challengeSupplier.get();
                 }
 
-                return createSession(user)
-                    .thenApply(
-                        sessionId -> {
-                          if (redirect != null) {
-                            log.debug(
-                                "[AUTH]: Successful login for user={} redirect={}",
-                                userId,
-                                redirect);
-                            return new RedirectSessionLoginResult(sessionId, redirect);
-                          }
-
-                          log.debug("[AUTH]: Successful login for user={}", userId);
-                          return new DirectLoginResult(sessionId);
-                        });
+                return authenticateDirect(user, redirect);
               });
     }
 
@@ -350,7 +367,7 @@ public class SsoServiceImpl implements SsoService {
               redirect);
           return CompletableFuture.completedStage(
               new ResponseLoginResult(
-                  identityProviderRegistry.ssoSignInRedirect(
+                  identityProviderRegistry.ssoSignInRedirectResponse(
                       ssoMethod, email, serverBaseUri, redirect)));
         };
 
