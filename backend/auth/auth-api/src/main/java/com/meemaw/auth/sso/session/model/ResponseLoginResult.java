@@ -1,16 +1,16 @@
 package com.meemaw.auth.sso.session.model;
 
 import java.util.function.Function;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import lombok.Value;
 
 @Value
 public class ResponseLoginResult implements LoginResult<Void> {
 
-  Function<String, Response> responseSupplier;
+  Function<String, ResponseBuilder> responseSupplier;
 
   @Override
-  public Response loginResponse(String cookieDomain) {
+  public ResponseBuilder loginResponseBuilder(String cookieDomain) {
     return responseSupplier.apply(cookieDomain);
   }
 }

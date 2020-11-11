@@ -8,7 +8,6 @@ import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
-import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
@@ -48,7 +47,7 @@ public abstract class AbstractOAuthIdentityProvider<
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 
-    URL redirect = RequestUtils.sneakyURL(secureStateData(sessionState));
+    URI clientRedirect = URI.create(secureStateData(sessionState));
     URI serverRedirect = UriBuilder.fromUri(serverBaseUri).path(callbackPath()).build();
 
     return client
@@ -58,19 +57,14 @@ public abstract class AbstractOAuthIdentityProvider<
             userInfo -> {
               String fullName = userInfo.getFullName();
               String email = userInfo.getEmail();
-              String cookieDomain = RequestUtils.parseCookieDomain(redirect);
+              String cookieDomain = RequestUtils.parseCookieDomain(clientRedirect);
               MDC.put(LoggingConstants.USER_EMAIL, email);
               log.info("[AUTH]: OAuth successfully retrieved user info email={}", email);
 
               return ssoService
-                  .socialLogin(email, fullName, getLoginMethod(), redirect, serverBaseUri)
-                  .exceptionally(throwable -> handleSsoException(throwable, redirect))
-                  .thenApply(
-                      loginResult -> {
-                        log.info(
-                            "[AUTH]: OAuth flow successful email={} redirect={}", email, redirect);
-                        return new SsoLoginResult<>(loginResult, cookieDomain);
-                      });
+                  .socialLogin(email, fullName, getLoginMethod(), clientRedirect, serverBaseUri)
+                  .exceptionally(throwable -> ssoErrorLoginResult(throwable, clientRedirect))
+                  .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
   }
 }

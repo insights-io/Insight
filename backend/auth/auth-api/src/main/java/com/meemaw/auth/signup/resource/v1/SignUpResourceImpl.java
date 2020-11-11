@@ -8,6 +8,7 @@ import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,7 +66,7 @@ public class SignUpResourceImpl implements SignUpResource {
     }
 
     return Response.status(Status.FOUND)
-        .header("Location", maybeRefererCallbackURL.get())
+        .location(URI.create(maybeRefererCallbackURL.get()))
         .cookie(SsoSession.cookie(sessionId, cookieDomain))
         .build();
   }

@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.session.model;
 
-import java.net.URL;
+import java.net.URI;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -10,18 +10,15 @@ import lombok.Value;
 public class RedirectSessionLoginResult implements LoginResult<Void> {
 
   String sessionId;
-  URL location;
+  URI location;
 
   @Override
-  public Response loginResponse(String cookieDomain) {
-    return Response.status(Status.FOUND)
-        .header("Location", location)
-        .cookie(cookie(cookieDomain))
-        .build();
+  public Response.ResponseBuilder loginResponseBuilder(String cookieDomain) {
+    return Response.status(Status.FOUND).location(location).cookie(loginCookie(cookieDomain));
   }
 
   @Override
-  public NewCookie cookie(String cookieDomain) {
+  public NewCookie loginCookie(String cookieDomain) {
     return SsoSession.cookie(sessionId, cookieDomain);
   }
 }

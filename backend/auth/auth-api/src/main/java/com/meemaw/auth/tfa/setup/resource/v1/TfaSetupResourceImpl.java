@@ -1,7 +1,9 @@
 package com.meemaw.auth.tfa.setup.resource.v1;
 
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.tfa.TfaMethod;
+import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.TfaSetup;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.tfa.setup.service.TfaSetupService;
@@ -9,12 +11,17 @@ import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import io.vertx.core.http.HttpServerRequest;
+import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 public class TfaSetupResourceImpl implements TfaSetupResource {
 
@@ -22,6 +29,9 @@ public class TfaSetupResourceImpl implements TfaSetupResource {
   @Inject TfaSetupService tfaSetupService;
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject TfaSmsProvider tfaSmsProvider;
+  @Inject SsoService ssoService;
+  @Context HttpServerRequest request;
+  @Context UriInfo uriInfo;
 
   @Override
   public CompletionStage<Response> list() {
@@ -68,6 +78,28 @@ public class TfaSetupResourceImpl implements TfaSetupResource {
     return tfaSetupService
         .tfaSetupComplete(method, user.getId(), body.getCode())
         .thenApply(tfaSetup -> DataResponse.ok(tfaSetup.dto()));
+  }
+
+  // TODO: write test
+  @Override
+  public CompletionStage<Response> completeChallenge(
+      TfaMethod method, TfaChallengeCompleteDTO body) {
+    URL serverBaseUrl = RequestUtils.getServerBaseURL(uriInfo, request);
+    String cookieDomain = RequestUtils.parseCookieDomain(serverBaseUrl);
+    AuthUser user = principal.user();
+    return tfaSetupService
+        .tfaSetupComplete(method, user.getId(), body.getCode())
+        .thenCompose(
+            ignored ->
+                ssoService
+                    .authenticateDirect(user)
+                    .thenApply(
+                        loginResult ->
+                            DataResponse.okBuilder(loginResult.getData())
+                                .cookie(
+                                    loginResult.loginCookie(cookieDomain),
+                                    SsoChallenge.clearCookie(cookieDomain))
+                                .build()));
   }
 
   @Override

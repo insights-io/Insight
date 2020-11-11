@@ -28,6 +28,21 @@ export const tfaSetupResource = (authApiBaseURL: string) => {
       .json<DataResponse<T>>();
   };
 
+  const tfaChallengeComplete = (
+    method: TfaMethod,
+    code: number,
+    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {},
+    path = ''
+  ) => {
+    return ky
+      .post(
+        `${resourceBaseURL(baseURL)}/${method}/complete${path}`,
+        withCredentials({ json: { code }, ...rest })
+      )
+      .json<DataResponse<TfaSetupDTO>>()
+      .then(getData);
+  };
+
   return {
     get: (
       method: TfaMethod,
@@ -67,18 +82,15 @@ export const tfaSetupResource = (authApiBaseURL: string) => {
         tfaSetupStart<TfaTotpSetupStart>('totp', options),
     },
 
-    complete: (
+    complete: (method: TfaMethod, code: number, options?: RequestOptions) => {
+      return tfaChallengeComplete(method, code, options);
+    },
+    completeChallenge: (
       method: TfaMethod,
       code: number,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      options?: RequestOptions
     ) => {
-      return ky
-        .post(
-          `${resourceBaseURL(baseURL)}/${method}/complete`,
-          withCredentials({ json: { code }, ...rest })
-        )
-        .json<DataResponse<TfaSetupDTO>>()
-        .then(getData);
+      return tfaChallengeComplete(method, code, options, '/challenge');
     },
     disable: (
       method: TfaMethod,

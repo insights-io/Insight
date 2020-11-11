@@ -51,12 +51,12 @@ public class TfaTotpProvider extends AbstractTfaProvider<TfaTotpSetupStartDTO> {
             i1 -> {
               String secret = TotpUtils.generateSecret();
               return tfaTotpSetupDatasource
-                  .setTotpSecret(userId, secret)
+                  .set(userId, secret)
                   .thenApply(
                       i2 -> {
-                        String keyId = String.format("%s:%s", issuer, email);
+                        String qrImageKeyId = String.format("%s:%s", issuer, email);
                         ByteArrayOutputStream qrImage =
-                            TotpUtils.generateQrImage(keyId, secret, issuer);
+                            TotpUtils.generateQrImage(qrImageKeyId, secret, issuer);
                         return new TfaTotpSetupStartDTO(IoUtils.base64encodeImage(qrImage));
                       });
             });
@@ -70,7 +70,7 @@ public class TfaTotpProvider extends AbstractTfaProvider<TfaTotpSetupStartDTO> {
   @Override
   public CompletionStage<TfaSetup> setupComplete(UUID userId, int code) {
     return tfaTotpSetupDatasource
-        .getTotpSecret(userId)
+        .retrieve(userId)
         .thenCompose(
             maybeSecret -> {
               if (maybeSecret.isEmpty()) {
@@ -95,7 +95,7 @@ public class TfaTotpProvider extends AbstractTfaProvider<TfaTotpSetupStartDTO> {
                                 .storeTotpTfa(userId, maybeSecret.get(), transaction)
                                 .thenCompose(
                                     tfaSetup -> {
-                                      tfaTotpSetupDatasource.deleteTotpSecret(userId);
+                                      tfaTotpSetupDatasource.delete(userId);
                                       return transaction.commit().thenApply(k -> tfaSetup);
                                     }))
                     .thenApply(

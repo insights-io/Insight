@@ -218,7 +218,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         .statusCode(200);
 
     String secret =
-        tfaTotpSetupDatasource.getTotpSecret(user.getId()).toCompletableFuture().join().get();
+        tfaTotpSetupDatasource.retrieve(user.getId()).toCompletableFuture().join().get();
     int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
     given()

@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso.cookie;
 
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,5 +10,5 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-@SecurityRequirements(value = {@SecurityRequirement(name = SessionCookieSecurityScheme.NAME)})
+@SecurityRequirements(value = {@SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)})
 public @interface SessionCookieSecurityRequirement {}

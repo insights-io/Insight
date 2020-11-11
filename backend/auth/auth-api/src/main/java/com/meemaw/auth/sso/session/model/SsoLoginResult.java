@@ -1,5 +1,6 @@
 package com.meemaw.auth.sso.session.model;
 
+import com.meemaw.auth.sso.SsoSignInSession;
 import javax.ws.rs.core.Response;
 import lombok.Value;
 
@@ -10,6 +11,9 @@ public class SsoLoginResult<T> {
   String cookieDomain;
 
   public Response response() {
-    return loginResult.loginResponse(cookieDomain);
+    return loginResult
+        .loginResponseBuilder(cookieDomain)
+        .cookie(SsoSignInSession.clearCookie(cookieDomain))
+        .build();
   }
 }

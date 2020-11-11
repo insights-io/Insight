@@ -1,7 +1,7 @@
 package com.meemaw.session.core;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
@@ -31,8 +31,8 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
     in = SecuritySchemeIn.HEADER,
     apiKeyName = HttpHeaders.AUTHORIZATION)
 @SecurityScheme(
-    securitySchemeName = SessionCookieSecurityScheme.NAME,
-    description = SessionCookieSecurityScheme.DESCRIPTION,
+    securitySchemeName = SsoSessionCookieSecurityScheme.NAME,
+    description = SsoSessionCookieSecurityScheme.DESCRIPTION,
     type = SecuritySchemeType.APIKEY,
     in = SecuritySchemeIn.COOKIE,
     apiKeyName = SsoSession.COOKIE_NAME)

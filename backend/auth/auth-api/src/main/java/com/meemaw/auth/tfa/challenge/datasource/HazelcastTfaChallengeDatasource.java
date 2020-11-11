@@ -6,6 +6,7 @@ import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -31,7 +32,9 @@ public class HazelcastTfaChallengeDatasource implements TfaChallengeDatasource {
   @Override
   public CompletionStage<String> create(UUID userId) {
     String challengeId = SsoChallenge.newIdentifier();
-    return challengeUserIdMap.setAsync(challengeId, userId).thenApply(oldValue -> challengeId);
+    return challengeUserIdMap
+        .setAsync(challengeId, userId, SsoChallenge.TTL, TimeUnit.SECONDS)
+        .thenApply(oldValue -> challengeId);
   }
 
   @Override

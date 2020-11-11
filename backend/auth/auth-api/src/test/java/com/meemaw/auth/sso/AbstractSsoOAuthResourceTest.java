@@ -133,8 +133,8 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
         .join();
 
     String newUserEmail = String.format("%s@%s", UUID.randomUUID(), domain);
-    String Location = "https://www.insight.io/my_path";
-    String state = AbstractIdentityProvider.secureState(Location);
+    String location = "https://www.insight.io/my_path";
+    String state = AbstractIdentityProvider.secureState(location);
 
     installMockForClient(newUserEmail);
 
@@ -149,7 +149,8 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
         .statusCode(302)
         .header(
             "Location",
-            "https://www.insight.io/my_path?oauthError=Organization+does+not+support+open+membership.+Please+contact+your+Administrator");
+            "https://www.insight.io/my_path?oauthError=Organization+does+not+support+open+membership.+Please+contact+your+Administrator")
+        .cookie(SsoSignInSession.COOKIE_NAME, "");
   }
 
   @Test
@@ -179,8 +180,8 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
               .join();
 
       String newUserEmail = String.format("%s@%s", UUID.randomUUID(), domain);
-      String Location = "https://www.insight.io/my_path";
-      String state = AbstractIdentityProvider.secureState(Location);
+      String location = "https://www.insight.io/my_path";
+      String state = AbstractIdentityProvider.secureState(location);
 
       installMockForClient(newUserEmail);
 
@@ -194,8 +195,9 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
               .get(callbackUri())
               .then()
               .statusCode(302)
-              .header("Location", Location)
+              .header("Location", location)
               .cookie(SsoSession.COOKIE_NAME)
+              .cookie(SsoSignInSession.COOKIE_NAME, "")
               .extract()
               .detailedCookie(SsoSession.COOKIE_NAME)
               .getValue();

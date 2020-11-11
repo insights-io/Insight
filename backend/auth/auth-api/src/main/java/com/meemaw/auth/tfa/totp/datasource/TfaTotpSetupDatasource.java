@@ -6,9 +6,9 @@ import java.util.concurrent.CompletionStage;
 
 public interface TfaTotpSetupDatasource {
 
-  CompletionStage<Optional<String>> getTotpSecret(UUID userId);
+  CompletionStage<Optional<String>> retrieve(UUID userId);
 
-  CompletionStage<Void> setTotpSecret(UUID userId, String secret);
+  CompletionStage<Void> set(UUID userId, String secret);
 
-  void deleteTotpSecret(UUID userId);
+  void delete(UUID userId);
 }

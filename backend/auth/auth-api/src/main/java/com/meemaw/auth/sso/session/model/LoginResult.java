@@ -7,14 +7,18 @@ import javax.ws.rs.core.Response;
 public interface LoginResult<T> {
 
   default Response loginResponse(String cookieDomain) {
-    return DataResponse.okBuilder(getData()).cookie(cookie(cookieDomain)).build();
+    return loginResponseBuilder(cookieDomain).build();
+  }
+
+  default Response.ResponseBuilder loginResponseBuilder(String cookieDomain) {
+    return DataResponse.okBuilder(getData()).cookie(loginCookie(cookieDomain));
   }
 
   default T getData() {
     return null;
   }
 
-  default NewCookie cookie(String cookieDomain) {
+  default NewCookie loginCookie(String cookieDomain) {
     return null;
   }
 }

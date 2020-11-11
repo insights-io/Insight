@@ -46,11 +46,8 @@ public class SsoSessionResourceImpl implements SsoSessionResource {
             .map(redirect -> URLDecoder.decode(redirect, StandardCharsets.UTF_8))
             .orElse("/");
 
-    URL redirect =
-        RequestUtils.sneakyURL(
-            UriBuilder.fromUri(RequestUtils.parseBaseURL(refererURL))
-                .path(relativeRedirect)
-                .build());
+    URI redirect =
+        UriBuilder.fromUri(RequestUtils.parseBaseURL(refererURL)).path(relativeRedirect).build();
 
     return ssoService
         .passwordLogin(email, password, ipAddress, redirect, serverBaseURI)

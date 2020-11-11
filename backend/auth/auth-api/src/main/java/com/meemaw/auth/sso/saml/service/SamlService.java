@@ -143,12 +143,12 @@ public class SamlService extends AbstractIdentityProvider {
                 throw Boom.badRequest().message("Invalid entityId").exception();
               }
               validateSignature(samlCoreDataResponse.getSignature(), entityDescriptor);
-              URL redirect = RequestUtils.sneakyURL(secureStateData(relayState));
+              URI redirect = URI.create(secureStateData(relayState));
               String cookieDomain = RequestUtils.parseCookieDomain(redirect);
 
               return ssoService
                   .ssoLogin(email, samlCoreDataResponse.getFullName(), organizationId, redirect)
-                  .exceptionally(throwable -> handleSsoException(throwable, redirect))
+                  .exceptionally(throwable -> ssoErrorLoginResult(throwable, redirect))
                   .thenApply(loginResult -> new SsoLoginResult<>(loginResult, cookieDomain));
             });
   }
@@ -172,7 +172,7 @@ public class SamlService extends AbstractIdentityProvider {
     URI location = buildAuthorizationURI(relayState, configurationEndpoint);
     return javax.ws.rs.core.Response.status(Status.FOUND)
         .cookie(SsoSignInSession.cookie(relayState, cookieDomain))
-        .header("Location", location)
+        .location(location)
         .build();
   }
 }

@@ -2,10 +2,10 @@ package com.meemaw.auth.sso;
 
 import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.session.model.LoginMethod;
+import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -18,30 +18,6 @@ public abstract class AbstractIdentityProvider {
 
   public static final int SECURE_STATE_PREFIX_LENGTH = 26;
   private static final SecureRandom random = new SecureRandom();
-
-  public abstract LoginMethod getLoginMethod();
-
-  public abstract String basePath();
-
-  public ResponseLoginResult handleSsoException(Throwable throwable, URL redirect) {
-    String message = throwable.getCause().getMessage();
-    String location =
-        UriBuilder.fromUri(URI.create(redirect.toString()))
-            .queryParam("oauthError", message)
-            .build()
-            .toString();
-
-    return new ResponseLoginResult(
-        (ignored) -> Response.status(Status.FOUND).header("Location", location).build());
-  }
-
-  public String callbackPath() {
-    return String.join("/", basePath(), OAuthResource.CALLBACK_PATH);
-  }
-
-  public String signInPath() {
-    return String.join("/", basePath(), OAuthResource.SIGNIN_PATH);
-  }
 
   public static String secureState(String data) {
     return secureState() + data;
@@ -64,5 +40,25 @@ public abstract class AbstractIdentityProvider {
     } catch (StringIndexOutOfBoundsException ex) {
       throw Boom.badRequest().message("Invalid state parameter").exception(ex);
     }
+  }
+
+  public abstract LoginMethod getLoginMethod();
+
+  public abstract String basePath();
+
+  public LoginResult<?> ssoErrorLoginResult(Throwable throwable, URI redirect) {
+    String message = throwable.getCause().getMessage();
+    URI location = UriBuilder.fromUri(redirect).queryParam("oauthError", message).build();
+
+    return new ResponseLoginResult(
+        (cookieDomain) -> Response.status(Status.FOUND).location(location));
+  }
+
+  public String callbackPath() {
+    return String.join("/", basePath(), OAuthResource.CALLBACK_PATH);
+  }
+
+  public String signInPath() {
+    return String.join("/", basePath(), OAuthResource.SIGNIN_PATH);
   }
 }

@@ -1,7 +1,7 @@
 package com.meemaw.session.sessions.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
-import com.meemaw.auth.sso.SessionCookieSecurityScheme;
+import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;
@@ -28,7 +28,7 @@ public interface SessionResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
   @Operation(summary = "List sessions")
@@ -39,7 +39,7 @@ public interface SessionResource {
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
   @Operation(summary = "Retrieve session")
