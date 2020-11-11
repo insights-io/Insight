@@ -191,8 +191,9 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
         .when()
         .get(String.join("/", SignUpResource.PATH, token, "complete"))
         .then()
-        .statusCode(204)
-        .cookie(SsoSession.COOKIE_NAME);
+        .statusCode(200)
+        .cookie(SsoSession.COOKIE_NAME)
+        .body(sameJson("{\"data\":true}"));
 
     // verify that the SignUpRequest does not exist anymore
     given()

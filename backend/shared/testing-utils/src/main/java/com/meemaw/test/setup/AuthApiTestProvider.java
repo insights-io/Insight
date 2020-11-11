@@ -1,7 +1,6 @@
 package com.meemaw.test.setup;
 
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.RestAssuredUtils.extractSessionCookie;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,7 +14,6 @@ import com.rebrowse.model.auth.ApiKey;
 import com.rebrowse.model.auth.SessionInfo;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.net.RequestOptions;
-import io.restassured.response.Response;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.ws.rs.core.MediaType;
@@ -96,12 +94,16 @@ public class AuthApiTestProvider {
         .then()
         .statusCode(204);
 
-    Response response =
-        given().when().get(signUpConfirmationLinkProvider.apply(signUpRequest.getEmail()));
-
-    response.then().statusCode(204).cookie(SsoSession.COOKIE_NAME);
-
-    return extractSessionCookie(response).getValue();
+    return given()
+        .when()
+        .get(signUpConfirmationLinkProvider.apply(signUpRequest.getEmail()))
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\": true}"))
+        .cookie(SsoSession.COOKIE_NAME)
+        .extract()
+        .detailedCookie(SsoSession.COOKIE_NAME)
+        .getValue();
   }
 
   public String loginWithInsightAdmin() {

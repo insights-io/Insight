@@ -14,8 +14,6 @@ import java.util.concurrent.CompletionStage;
 
 public interface SsoService {
 
-  CompletionStage<String> createSession(AuthUser user);
-
   CompletionStage<String> createSession(UUID userId);
 
   CompletionStage<Optional<AuthUser>> findSession(String sessionId);
@@ -44,7 +42,15 @@ public interface SsoService {
   CompletionStage<LoginResult<?>> ssoLogin(
       String email, String fullName, String organizationId, URI redirect);
 
-  CompletionStage<LoginResult<?>> authenticate(AuthUser user);
+  default CompletionStage<LoginResult<?>> authenticate(AuthUser user) {
+    return authenticate(user, null);
+  }
 
-  CompletionStage<LoginResult<?>> authenticateDirect(AuthUser user);
+  CompletionStage<LoginResult<?>> authenticate(AuthUser user, URI redirect);
+
+  CompletionStage<LoginResult<?>> authenticateDirect(AuthUser user, URI redirect);
+
+  default CompletionStage<LoginResult<?>> authenticateDirect(AuthUser user) {
+    return authenticateDirect(user, null);
+  }
 }
