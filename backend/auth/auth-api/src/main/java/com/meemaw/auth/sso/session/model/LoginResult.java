@@ -11,14 +11,14 @@ public interface LoginResult<T> {
   }
 
   default Response.ResponseBuilder loginResponseBuilder(String cookieDomain) {
-    return DataResponse.okBuilder(getData()).cookie(cookie(cookieDomain));
+    return DataResponse.okBuilder(getData()).cookie(loginCookie(cookieDomain));
   }
 
   default T getData() {
     return null;
   }
 
-  default NewCookie cookie(String cookieDomain) {
+  default NewCookie loginCookie(String cookieDomain) {
     return null;
   }
 }

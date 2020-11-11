@@ -25,11 +25,14 @@ import com.meemaw.shared.sms.impl.mock.MockSmsboxImpl;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.organization.Organization;
+import com.rebrowse.model.organization.OrganizationUpdateParams;
 import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import java.io.IOException;
@@ -64,6 +67,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     String path = String.join("/", TfaSetupResource.PATH, method, "start");
     RestAssuredUtils.ssoSessionCookieTestCases(Method.POST, path);
     RestAssuredUtils.ssoBearerTokenTestCases(Method.POST, path);
+    RestAssuredUtils.challengeSessionCookieTestCases(Method.POST, path);
   }
 
   @ParameterizedTest
@@ -72,6 +76,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     String path = String.join("/", TfaSetupResource.PATH, method, "complete");
     RestAssuredUtils.ssoSessionCookieTestCases(Method.POST, path, ContentType.JSON);
     RestAssuredUtils.ssoBearerTokenTestCases(Method.POST, path, ContentType.JSON);
+    RestAssuredUtils.challengeSessionCookieTestCases(Method.POST, path, ContentType.JSON);
   }
 
   @ParameterizedTest
@@ -232,7 +237,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
         .statusCode(200);
 
     String secret =
-        tfaTotpSetupDatasource.getTotpSecret(user.getId()).toCompletableFuture().join().get();
+        tfaTotpSetupDatasource.retrieve(user.getId()).toCompletableFuture().join().get();
     int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
     given()
@@ -291,7 +296,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
             .as(new TypeRef<>() {});
 
     String secret =
-        tfaTotpSetupDatasource.getTotpSecret(user.getId()).toCompletableFuture().join().get();
+        tfaTotpSetupDatasource.retrieve(user.getId()).toCompletableFuture().join().get();
     assertEquals(
         String.format("otpauth://totp/%s:%s?secret=%s", issuer, email, secret),
         TotpUtils.readBarcode(dataResponse.getData().getQrImage()).getText());
@@ -499,8 +504,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     User user = authApi().getSessionInfo(sessionId).getUser();
 
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);
-    String tfaSecret =
-        AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
+    String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
 
     given()
         .when()
@@ -575,12 +579,71 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
         .cookie(SsoChallenge.COOKIE_NAME, challengeId)
         .body(
             objectMapper.writeValueAsString(
-                new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(tfaSecret))))
+                new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
         .post(TfaChallengeResourceImpl.PATH + "/totp/complete")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME)
         .cookie(SsoChallenge.COOKIE_NAME, "");
+  }
+
+  @Test
+  public void user__should_be_able_to_setup_tfa_and_login__when_tfa_enforced()
+      throws JsonProcessingException, GeneralSecurityException {
+    String password = UUID.randomUUID().toString();
+    String email = String.format("%s@gmail.com", password);
+    String sessionId = authApi().signUpAndLogin(email, password);
+
+    Organization.update(
+            OrganizationUpdateParams.builder().enforceTwoFactorAuthentication(true).build(),
+            authApi().sdkRequest().sessionId(sessionId).build())
+        .toCompletableFuture()
+        .join();
+
+    Cookie challengeCookie =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("email", email)
+            .param("password", password)
+            .header("referer", "http://localhost:3000")
+            .post(SsoSessionResource.PATH + "/login")
+            .then()
+            .statusCode(200)
+            .extract()
+            .detailedCookie(SsoChallenge.COOKIE_NAME);
+
+    String challengeId = challengeCookie.getValue();
+    assertEquals(SsoChallenge.SIZE, challengeId.length());
+    assertEquals(SsoChallenge.TTL, challengeCookie.getMaxAge());
+
+    given()
+        .when()
+        .cookie(SsoChallenge.COOKIE_NAME, challengeId)
+        .post(TfaSetupResource.PATH + "/totp/start")
+        .then()
+        .statusCode(200);
+
+    UUID userId = authApi().getSessionInfo(sessionId).getUser().getId();
+    String secret = tfaTotpSetupDatasource.retrieve(userId).toCompletableFuture().join().get();
+
+    await()
+        .atMost(5, TimeUnit.SECONDS)
+        .untilAsserted(
+            () -> {
+              int code = TotpUtils.generateCurrentNumber(secret);
+              given()
+                  .when()
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .cookie(SsoChallenge.COOKIE_NAME, challengeId)
+                  .body(objectMapper.writeValueAsString(new TfaChallengeCompleteDTO(code)))
+                  .post(TfaSetupResource.PATH + "/totp/complete/challenge")
+                  .then()
+                  .statusCode(200)
+                  .body(sameJson("{\"data\":true}"))
+                  .cookie(SsoSession.COOKIE_NAME)
+                  .cookie(SsoChallenge.COOKIE_NAME, "");
+            });
   }
 
   private Response completeTotpTfaChallenge(String challengeId, String secret) {
@@ -597,7 +660,6 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
 
   private Response completeTfaChallenge(String challengeId, Supplier<Integer> codeSupplier) {
     AtomicReference<Response> responseWrapper = new AtomicReference<>();
-
     await()
         .atMost(5, TimeUnit.SECONDS)
         .untilAsserted(

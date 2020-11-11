@@ -10,11 +10,10 @@ public class SsoLoginResult<T> {
   LoginResult<T> loginResult;
   String cookieDomain;
 
-  // TODO: write test that sso session is cleared
   public Response response() {
     return loginResult
         .loginResponseBuilder(cookieDomain)
-        .cookie(loginResult.cookie(cookieDomain), SsoSignInSession.clearCookie(cookieDomain))
+        .cookie(SsoSignInSession.clearCookie(cookieDomain))
         .build();
   }
 }

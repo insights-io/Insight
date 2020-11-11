@@ -2,10 +2,10 @@ package com.meemaw.auth.sso;
 
 import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.session.model.LoginMethod;
+import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -46,16 +46,12 @@ public abstract class AbstractIdentityProvider {
 
   public abstract String basePath();
 
-  public ResponseLoginResult handleSsoException(Throwable throwable, URL redirect) {
+  public LoginResult<?> ssoErrorLoginResult(Throwable throwable, URI redirect) {
     String message = throwable.getCause().getMessage();
-    String location =
-        UriBuilder.fromUri(URI.create(redirect.toString()))
-            .queryParam("oauthError", message)
-            .build()
-            .toString();
+    URI location = UriBuilder.fromUri(redirect).queryParam("oauthError", message).build();
 
     return new ResponseLoginResult(
-        (ignored) -> Response.status(Status.FOUND).header("Location", location));
+        (cookieDomain) -> Response.status(Status.FOUND).location(location));
   }
 
   public String callbackPath() {

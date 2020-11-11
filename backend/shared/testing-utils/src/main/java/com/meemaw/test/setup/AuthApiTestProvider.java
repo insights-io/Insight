@@ -122,22 +122,20 @@ public class AuthApiTestProvider {
 
   public String login(String email, String password) {
     String loginURI = resourcePath(String.join("/", SsoSessionResource.PATH, "login"));
-    Response response =
-        given()
-            .when()
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("email", email)
-            .param("password", password)
-            .header("referer", "http://localhost:3000")
-            .post(loginURI);
-
-    response
+    return given()
+        .when()
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("email", email)
+        .param("password", password)
+        .header("referer", "http://localhost:3000")
+        .post(loginURI)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\": true}"))
-        .cookie(SsoSession.COOKIE_NAME);
-
-    return extractSessionCookie(response).getValue();
+        .cookie(SsoSession.COOKIE_NAME)
+        .extract()
+        .detailedCookie(SsoSession.COOKIE_NAME)
+        .getValue();
   }
 
   public String createApiKey(String sessionId) {

@@ -86,7 +86,7 @@ public final class AuthApiSetupUtils {
         .then()
         .statusCode(200);
 
-    String secret = tfaTotpSetupDatasource.getTotpSecret(userId).toCompletableFuture().join().get();
+    String secret = tfaTotpSetupDatasource.retrieve(userId).toCompletableFuture().join().get();
     int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
     given()

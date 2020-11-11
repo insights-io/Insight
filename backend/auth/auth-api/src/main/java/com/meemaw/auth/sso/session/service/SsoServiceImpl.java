@@ -25,7 +25,6 @@ import com.meemaw.auth.user.model.UserWithLoginInformation;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import java.net.URI;
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +154,7 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "login", description = "A measure of how long it takes to do a password login")
   public CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, URL redirect, URI serverBaseUri) {
+      String email, String password, String ipAddress, URI redirect, URI serverBaseUri) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
 
     Function<Optional<SsoSetup>, CompletionStage<LoginResult<?>>> passwordLoginSupplier =
@@ -251,7 +250,7 @@ public class SsoServiceImpl implements SsoService {
   }
 
   private CompletionStage<LoginResult<?>> authenticateDirect(
-      AuthUser user, @Nullable URL redirect) {
+      AuthUser user, @Nullable URI redirect) {
     UUID userId = user.getId();
     return createSession(user)
         .thenApply(
@@ -287,7 +286,7 @@ public class SsoServiceImpl implements SsoService {
   }
 
   private CompletionStage<LoginResult<?>> authenticate(
-      AuthUser user, List<TfaMethod> userTfaMethods, URL redirect) {
+      AuthUser user, List<TfaMethod> userTfaMethods, @Nullable URI redirect) {
     UUID userId = user.getId();
     String organizationId = user.getOrganizationId();
     MDC.put(LoggingConstants.USER_ID, userId.toString());
@@ -328,7 +327,7 @@ public class SsoServiceImpl implements SsoService {
   @Traced
   @Timed(name = "socialLogin", description = "A measure of how long it takes to do social login")
   public CompletionStage<LoginResult<?>> socialLogin(
-      String email, String fullName, LoginMethod method, URL redirect, URI serverBaseUri) {
+      String email, String fullName, LoginMethod method, URI redirect, URI serverBaseUri) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     log.info(
         "[AUTH]: Social login attempt method={} email={} redirect={}", method, email, redirect);
@@ -376,7 +375,7 @@ public class SsoServiceImpl implements SsoService {
 
   @Override
   public CompletionStage<LoginResult<?>> ssoLogin(
-      String email, String fullName, String organizationId, URL redirect) {
+      String email, String fullName, String organizationId, URI redirect) {
     MDC.put(LoggingConstants.USER_EMAIL, email);
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
     log.info(

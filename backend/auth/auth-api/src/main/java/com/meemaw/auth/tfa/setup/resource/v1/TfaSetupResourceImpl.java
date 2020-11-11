@@ -97,7 +97,7 @@ public class TfaSetupResourceImpl implements TfaSetupResource {
                         loginResult ->
                             DataResponse.okBuilder(loginResult.getData())
                                 .cookie(
-                                    loginResult.cookie(cookieDomain),
+                                    loginResult.loginCookie(cookieDomain),
                                     SsoChallenge.clearCookie(cookieDomain))
                                 .build()));
   }

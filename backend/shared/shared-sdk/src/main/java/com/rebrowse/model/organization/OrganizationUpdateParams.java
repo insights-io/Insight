@@ -12,4 +12,5 @@ public class OrganizationUpdateParams implements ApiRequestParams {
   String name;
   UserRole defaultRole;
   boolean openMembership;
+  boolean enforceTwoFactorAuthentication;
 }

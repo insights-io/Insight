@@ -5,7 +5,6 @@ import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.user.model.AuthUser;
 import java.net.URI;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -37,13 +36,13 @@ public interface SsoService {
   }
 
   CompletionStage<LoginResult<?>> passwordLogin(
-      String email, String password, String ipAddress, URL redirect, URI serverBase);
+      String email, String password, String ipAddress, URI redirect, URI serverBase);
 
   CompletionStage<LoginResult<?>> socialLogin(
-      String email, String fullName, LoginMethod loginMethod, URL redirect, URI serverBase);
+      String email, String fullName, LoginMethod loginMethod, URI redirect, URI serverBase);
 
   CompletionStage<LoginResult<?>> ssoLogin(
-      String email, String fullName, String organizationId, URL redirect);
+      String email, String fullName, String organizationId, URI redirect);
 
   CompletionStage<LoginResult<?>> authenticate(AuthUser user);
 

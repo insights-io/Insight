@@ -7,7 +7,6 @@ import com.meemaw.auth.sso.saml.service.SamlService;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import io.quarkus.runtime.StartupEvent;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -49,7 +48,7 @@ public class IdentityProviderRegistry {
     return ssoSignInLocationBaseBuilder(method, serverBaseURI).build();
   }
 
-  public URI ssoSignInLocation(SsoMethod method, String email, URI serverBaseURI, URL redirect) {
+  public URI ssoSignInLocation(SsoMethod method, String email, URI serverBaseURI, URI redirect) {
     return ssoSignInLocationBaseBuilder(method, serverBaseURI)
         .queryParam("redirect", redirect)
         .queryParam("email", email)
@@ -57,8 +56,8 @@ public class IdentityProviderRegistry {
   }
 
   public Function<String, Response.ResponseBuilder> ssoSignInRedirectResponse(
-      SsoMethod method, String email, URI serverBaseURI, URL redirect) {
+      SsoMethod method, String email, URI serverBaseURI, URI redirect) {
     URI location = ssoSignInLocation(method, email, serverBaseURI, redirect);
-    return (cookieDomain) -> Response.status(Status.FOUND).header("Location", location);
+    return (cookieDomain) -> Response.status(Status.FOUND).location(location);
   }
 }

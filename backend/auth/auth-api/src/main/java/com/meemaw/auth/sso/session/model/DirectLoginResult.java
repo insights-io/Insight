@@ -14,7 +14,7 @@ public class DirectLoginResult implements LoginResult<Boolean> {
   }
 
   @Override
-  public NewCookie cookie(String cookieDomain) {
+  public NewCookie loginCookie(String cookieDomain) {
     return SsoSession.cookie(sessionId, cookieDomain);
   }
 }

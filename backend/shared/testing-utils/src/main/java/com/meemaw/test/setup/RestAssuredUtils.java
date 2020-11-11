@@ -6,6 +6,7 @@ import static io.restassured.config.RedirectConfig.redirectConfig;
 import static io.restassured.config.RestAssuredConfig.newConfig;
 
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.tfa.model.SsoChallenge;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookie;
@@ -72,6 +73,22 @@ public final class RestAssuredUtils {
     sessionCookieExpect401(method, path, null, contentType);
     sessionCookieExpect401(method, path, "random", contentType);
     sessionCookieExpect401(method, path, SsoSession.newIdentifier(), contentType);
+  }
+
+  public static void challengeSessionCookieTestCases(Method method, String path) {
+    challengeSessionCookieTestCases(method, path, null);
+  }
+
+  public static void challengeSessionCookieTestCases(
+      Method method, String path, ContentType contentType) {
+    challengeCookieExpect401(method, path, null, contentType);
+    challengeCookieExpect401(method, path, "random", contentType);
+    challengeCookieExpect401(method, path, SsoChallenge.newIdentifier(), contentType);
+  }
+
+  public static void challengeCookieExpect401(
+      Method method, String path, String value, ContentType contentType) {
+    cookieExpect401(method, path, SsoChallenge.COOKIE_NAME, value, contentType);
   }
 
   public static void ssoBearerTokenTestCases(Method method, String path) {

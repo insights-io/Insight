@@ -39,12 +39,12 @@ public abstract class AbstractOAuthResource<T, U extends OAuthUserInfo, E extend
     URI serverRedirectUri = getServerRedirectUri(oauthService, info, request);
     URI authorizationUri = oauthService.buildAuthorizationUri(state, serverRedirectUri, email);
     String cookieDomain = RequestUtils.parseCookieDomain(serverRedirectUri);
-    log.info("[AUTH]: OAuth2 sign in request authorizationUri={}", authorizationUri);
+    log.debug("[AUTH]: OAuth2 sign in request authorizationUri={}", authorizationUri);
 
     return CompletableFuture.completedStage(
         Response.status(Status.FOUND)
             .cookie(SsoSignInSession.cookie(state, cookieDomain))
-            .header("Location", authorizationUri)
+            .location(authorizationUri)
             .build());
   }
 
@@ -53,9 +53,9 @@ public abstract class AbstractOAuthResource<T, U extends OAuthUserInfo, E extend
       String code,
       String state,
       String sessionState) {
-    URI serverBase = RequestUtils.getServerBaseURI(info, request);
+    URI serverBaseUri = RequestUtils.getServerBaseURI(info, request);
     return identityProvider
-        .oauthCallback(state, sessionState, code, serverBase)
+        .oauthCallback(state, sessionState, code, serverBaseUri)
         .thenApply(SsoLoginResult::response);
   }
 }

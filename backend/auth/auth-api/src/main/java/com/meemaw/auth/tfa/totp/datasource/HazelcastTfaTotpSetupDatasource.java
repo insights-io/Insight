@@ -1,10 +1,12 @@
 package com.meemaw.auth.tfa.totp.datasource;
 
 import com.hazelcast.map.IMap;
+import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.shared.hazelcast.cdi.HazelcastProvider;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -15,31 +17,30 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Slf4j
 public class HazelcastTfaTotpSetupDatasource implements TfaTotpSetupDatasource {
 
-  private IMap<UUID, String> tfaTotpChallengeSetupMap;
-
   @Inject HazelcastProvider hazelcastProvider;
 
   @ConfigProperty(name = "hazelcast.auth.tfa-totp-challenge-setup-map")
   String tfaTotpChallengeSetupMapName;
 
+  private IMap<UUID, String> tfaTotpChallengeSetupMap;
+
   @PostConstruct
   public void init() {
-    log.info("tfaTotpChallengeSetupMapName: {}", tfaTotpChallengeSetupMapName);
     tfaTotpChallengeSetupMap = hazelcastProvider.getInstance().getMap(tfaTotpChallengeSetupMapName);
   }
 
   @Override
-  public CompletionStage<Optional<String>> getTotpSecret(UUID userId) {
+  public CompletionStage<Optional<String>> retrieve(UUID userId) {
     return tfaTotpChallengeSetupMap.getAsync(userId).thenApply(Optional::ofNullable);
   }
 
   @Override
-  public CompletionStage<Void> setTotpSecret(UUID userId, String secret) {
-    return tfaTotpChallengeSetupMap.setAsync(userId, secret);
+  public CompletionStage<Void> set(UUID userId, String secret) {
+    return tfaTotpChallengeSetupMap.setAsync(userId, secret, SsoChallenge.TTL, TimeUnit.SECONDS);
   }
 
   @Override
-  public void deleteTotpSecret(UUID userId) {
+  public void delete(UUID userId) {
     tfaTotpChallengeSetupMap.delete(userId);
   }
 }
