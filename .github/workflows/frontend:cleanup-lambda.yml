@@ -32,5 +32,5 @@ jobs:
           CLEANUP_STATUS=
           while [ "$CLEANUP_STATUS" != "DONE" ]; do aws lambda delete-function --function-name $DEFAULT_EDGE_LAMBDA_NAME && CLEANUP_STATUS="DONE" || echo "Sleaping for 30 seconds..." && sleep 30; done
         env:
-          DEFAULT_EDGE_LAMBDA_NAME: pr-836-app-default-lambda
-          API_EDGE_LAMBDA_NAME: pr-836-app-api-lambda
+          DEFAULT_EDGE_LAMBDA_NAME: pr-852-app-default-lambda
+          API_EDGE_LAMBDA_NAME: pr-852-app-api-lambda
