@@ -56,12 +56,11 @@ public class SsoServiceImpl implements SsoService {
   @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject IdentityProviderRegistry identityProviderRegistry;
 
-  @Override
   @Traced
   @Timed(
       name = "createSessionForUser",
       description = "A measure of how long it takes to create session for user")
-  public CompletionStage<String> createSession(AuthUser user) {
+  private CompletionStage<String> createSession(AuthUser user) {
     MDC.put(LoggingConstants.USER_ID, user.getId().toString());
     MDC.put(LoggingConstants.USER_EMAIL, user.getEmail());
     MDC.put(LoggingConstants.ORGANIZATION_ID, user.getOrganizationId());
@@ -114,9 +113,9 @@ public class SsoServiceImpl implements SsoService {
     return ssoSessionDatasource
         .retrieve(sessionId)
         .thenCompose(
-            ssoUser ->
+            maybeUser ->
                 ssoSessionDatasource.listAllForUser(
-                    ssoUser.orElseThrow(() -> Boom.notFound().exception()).getId()));
+                    maybeUser.orElseThrow(() -> Boom.notFound().exception()).getId()));
   }
 
   @Override
@@ -242,15 +241,11 @@ public class SsoServiceImpl implements SsoService {
    * he should not be challenged again.
    *
    * @param user to be authenticated
+   * @param redirect to take user to
    * @return login result
    */
   @Override
-  public CompletionStage<LoginResult<?>> authenticateDirect(AuthUser user) {
-    return authenticateDirect(user, null);
-  }
-
-  private CompletionStage<LoginResult<?>> authenticateDirect(
-      AuthUser user, @Nullable URI redirect) {
+  public CompletionStage<LoginResult<?>> authenticateDirect(AuthUser user, @Nullable URI redirect) {
     UUID userId = user.getId();
     return createSession(user)
         .thenApply(
@@ -273,11 +268,12 @@ public class SsoServiceImpl implements SsoService {
    * configure TFA method using challenge session.
    *
    * @param user to be authenticated
+   * @param redirect to take user to
    * @return login result
    */
   @Override
-  public CompletionStage<LoginResult<?>> authenticate(AuthUser user) {
-    return authenticate(user, Collections.emptyList());
+  public CompletionStage<LoginResult<?>> authenticate(AuthUser user, @Nullable URI redirect) {
+    return authenticate(user, Collections.emptyList(), redirect);
   }
 
   private CompletionStage<LoginResult<?>> authenticate(

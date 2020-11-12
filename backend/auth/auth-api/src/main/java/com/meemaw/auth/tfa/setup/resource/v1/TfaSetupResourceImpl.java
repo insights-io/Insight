@@ -80,13 +80,13 @@ public class TfaSetupResourceImpl implements TfaSetupResource {
         .thenApply(tfaSetup -> DataResponse.ok(tfaSetup.dto()));
   }
 
-  // TODO: write test
   @Override
-  public CompletionStage<Response> completeChallenge(
+  public CompletionStage<Response> completeChallengeSetup(
       TfaMethod method, TfaChallengeCompleteDTO body) {
     URL serverBaseUrl = RequestUtils.getServerBaseURL(uriInfo, request);
     String cookieDomain = RequestUtils.parseCookieDomain(serverBaseUrl);
     AuthUser user = principal.user();
+
     return tfaSetupService
         .tfaSetupComplete(method, user.getId(), body.getCode())
         .thenCompose(

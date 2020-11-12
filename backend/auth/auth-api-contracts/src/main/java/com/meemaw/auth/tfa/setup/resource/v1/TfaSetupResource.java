@@ -301,7 +301,7 @@ public interface TfaSetupResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> completeChallenge(
+  CompletionStage<Response> completeChallengeSetup(
       @PathParam("method") TfaMethod method,
       @NotNull(message = "Required") @Valid TfaChallengeCompleteDTO body);
 

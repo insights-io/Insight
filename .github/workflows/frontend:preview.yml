@@ -145,5 +145,7 @@ jobs:
           aws cloudfront delete-distribution --id $DISTRIBUTION_ID --if-match $ETAG
       - name: Delete AWS Lambda @ Edge functions
         run: |
-          while [ $? -ne 0 ]; do sleep 30; aws lambda delete-function --function-name $DEFAULT_EDGE_LAMBDA_NAME; done
-          while [ $? -ne 0 ]; do sleep 30; aws lambda delete-function --function-name $API_EDGE_LAMBDA_NAME; done
+          DO_WHILE=true
+          while $DO_WHILE | [ $? -ne 0 ]; do sleep 30; DO_WHILE=false; aws lambda delete-function --function-name $DEFAULT_EDGE_LAMBDA_NAME; done
+          DO_WHILE=true
+          while $DO_WHILE | [ $? -ne 0 ]; do sleep 30; DO_WHILE=false; aws lambda delete-function --function-name $API_EDGE_LAMBDA_NAME; done

@@ -87,7 +87,6 @@ public class OrganizationTeamInviteResourceImpl implements OrganizationTeamInvit
   public CompletionStage<Response> accept(UUID token, TeamInviteAcceptDTO body) {
     URL serverBaseUrl = RequestUtils.getServerBaseURL(uriInfo, request);
     String cookieDomain = RequestUtils.parseCookieDomain(serverBaseUrl);
-
     return inviteService
         .acceptTeamInvite(token, body)
         .thenCompose(
