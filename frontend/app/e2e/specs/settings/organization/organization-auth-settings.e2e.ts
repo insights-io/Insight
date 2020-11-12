@@ -350,6 +350,8 @@ test('As a user, I can subscribe using VISA card and then cancel my subscription
   /* External (Stripe) invoice details window */
   await t
     .click(queryByTestId('invoice-link'))
+    .expect(queryByText('$15.00').with({ timeout: 3000 }).visible)
+    .ok('Displays amount')
     .click(invoiceDetails.downloadButton)
     .click(invoiceDetails.downloadReceipt)
     .closeWindow();
@@ -419,6 +421,8 @@ test('As a user, I can subscribe using a 3DS payment method and then cancel my s
   /* External (Stripe) invoice details window */
   await t
     .click(queryByTestId('invoice-link'))
+    .expect(queryByText('$15.00').with({ timeout: 3000 }).visible)
+    .ok('Displays amount')
     .click(invoiceDetails.downloadButton)
     .click(invoiceDetails.downloadReceipt)
     .closeWindow();
