@@ -27,10 +27,10 @@ jobs:
           node-version: '14.x'
       - name: Delete AWS Lambda @ Edge functions
         run: |
-          DO_WHILE=true
-          while $DO_WHILE | [ $? -ne 0 ]; do sleep 30; DO_WHILE=false; aws lambda delete-function --function-name $DEFAULT_EDGE_LAMBDA_NAME; done
-          DO_WHILE=true
-          while $DO_WHILE | [ $? -ne 0 ]; do sleep 30; DO_WHILE=false; aws lambda delete-function --function-name $API_EDGE_LAMBDA_NAME; done
+          CLEANUP_STATUS=
+          while [ "$CLEANUP_STATUS" != "DONE" ]; do aws lambda delete-function --function-name $DEFAULT_EDGE_LAMBDA_NAME && CLEANUP_STATUS="DONE" || echo "Sleaping for 30 seconds..." && sleep 30; done
+          CLEANUP_STATUS=
+          while [ "$CLEANUP_STATUS" != "DONE" ]; do aws lambda delete-function --function-name $DEFAULT_EDGE_LAMBDA_NAME && CLEANUP_STATUS="DONE" || echo "Sleaping for 30 seconds..." && sleep 30; done
         env:
           DEFAULT_EDGE_LAMBDA_NAME: pr-836-app-default-lambda
           API_EDGE_LAMBDA_NAME: pr-836-app-api-lambda
