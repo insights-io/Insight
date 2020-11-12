@@ -34,8 +34,9 @@ export class OrganizationSubscriptionSettingsPage extends AbstractOrganizationSe
   };
 
   public readonly invoiceDetails = {
-    downloadButton: queryByText('Download as PDF…'),
-    downloadReceipt: queryByText('Download receipt'),
+    downloadButton: queryByText('Download...'),
+    downloadReceipt: queryByText('Receipt PDF'),
+    downloadInvoice: queryByText('Invoice PDF'),
   };
 
   public readonly upgradeButton = this.withinContainer.queryByText('Upgrade');

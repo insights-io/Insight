@@ -227,11 +227,11 @@ services:
     ports:
       - '5000:80'
 
-  stripe_print_secret:
+  stripe-print-secret:
     image: stripe/stripe-cli
     command: listen --print-secret --api-key ${STRIPE_SECRET_KEY}
 
-  stripe_listen:
+  stripe-listen:
     image: stripe/stripe-cli
     command: listen --api-key ${STRIPE_SECRET_KEY} --forward-to localhost:8083/v1/billing/subscriptions/event --skip-verify
     network_mode: host

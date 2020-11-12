@@ -324,11 +324,7 @@ test('As a user, I can subscribe using VISA card and then cancel my subscription
     .expect(queryByText('Insight Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
-    .switchToIframe(
-      checkoutForm.iframe.with({
-        timeout: 15000,
-      })
-    )
+    .switchToIframe(checkoutForm.iframe.with({ timeout: 15000 }))
     .typeText(checkoutForm.cardNumberInputElement, '4242 4242 4242 4242')
     .typeText(checkoutForm.exipiryInputElement, '1044')
     .typeText(checkoutForm.cvcInputElement, '222')
