@@ -11,7 +11,7 @@ fi
 
 while [ "$CLEANUP_STATUS" != "$EXPECTED_CLEANUP_STATUS" ]
 do
-  RESULT="$(aws lambda delete-function --function-name $1 2>&1)"
+  RESULT=$(aws lambda delete-function --function-name "$1" 2>&1)
 
   if [ "$(echo "$RESULT" | grep -c "replicated function")" -eq 1 ]
   then
