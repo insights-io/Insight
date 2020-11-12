@@ -113,9 +113,9 @@ public class SsoServiceImpl implements SsoService {
     return ssoSessionDatasource
         .retrieve(sessionId)
         .thenCompose(
-            ssoUser ->
+            maybeUser ->
                 ssoSessionDatasource.listAllForUser(
-                    ssoUser.orElseThrow(() -> Boom.notFound().exception()).getId()));
+                    maybeUser.orElseThrow(() -> Boom.notFound().exception()).getId()));
   }
 
   @Override
