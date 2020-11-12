@@ -2,6 +2,7 @@
 
 CLEANUP_STATUS=
 EXPECTED_CLEANUP_STATUS="DONE"
+RETRY_BACKOFF=30
 
 if [ -z "$1" ]
   then
@@ -15,8 +16,8 @@ do
 
   if [ "$(echo "$RESULT" | grep -c "replicated function")" -eq 1 ]
   then
-    echo "$1 is still a replicated function. Sleeping for 30 seconds..."
-    sleep 30
+    echo "$1 is still a replicated function. Sleeping for $RETRY_BACKOFF seconds..."
+    sleep "$RETRY_BACKOFF"
   else
     echo "Finished with output: $RESULT"
     CLEANUP_STATUS="$EXPECTED_CLEANUP_STATUS"
