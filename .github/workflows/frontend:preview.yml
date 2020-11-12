@@ -140,10 +140,8 @@ jobs:
           DNSName: ${{ env.DISTRIBUTION_DOMAIN }}
       - name: Delete AWS Cloudfront distribution
         run: |
-          aws cloudfront wait distribution-deployed --id $DISTRIBUTION_ID
-          ETAG=$(aws cloudfront get-distribution-config --id $DISTRIBUTION_ID | jq -r '.ETag')
-          aws cloudfront delete-distribution --id $DISTRIBUTION_ID --if-match $ETAG
+          ./scripts/aws/delete_cloudfront_distribution.sh "$DISTRIBUTION_ID"
       - name: Delete AWS Lambda @ Edge functions
         run: |
-          ./scripts/cleanup_lambda.sh "$DEFAULT_EDGE_LAMBDA_NAME"
-          ./scripts/cleanup_lambda.sh "$API_EDGE_LAMBDA_NAME"
+          ./scripts/aws/delete_lambda@edge.sh "$DEFAULT_EDGE_LAMBDA_NAME"
+          ./scripts/aws/delete_lambda@edge.sh "$API_EDGE_LAMBDA_NAME"
