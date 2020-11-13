@@ -25,7 +25,7 @@ import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.dto.SessionInfoDTO;
+import com.meemaw.auth.user.model.dto.UserDataDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
@@ -447,23 +447,24 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     // Make sure sessions are not the same
     assertNotEquals(firstSessionId, secondSessionId);
 
-    DataResponse<SessionInfoDTO> firstSessionIdInfo =
+    DataResponse<UserDataDTO> firstSessionIdInfo =
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-            .get(SsoSessionResource.PATH + "/session")
+            .get(SsoSessionResource.PATH + "/session/userdata")
             .then()
             .statusCode(200)
             .extract()
             .response()
             .as(new TypeRef<>() {});
+
     AuthUser firstUser = firstSessionIdInfo.getData().getUser();
 
-    DataResponse<SessionInfoDTO> secondSessionIdInfo =
+    DataResponse<UserDataDTO> secondSessionIdInfo =
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-            .get(SsoSessionResource.PATH + "/session")
+            .get(SsoSessionResource.PATH + "/session/userdata")
             .then()
             .statusCode(200)
             .extract()
@@ -509,7 +510,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-        .get(SsoSessionResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -528,7 +529,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-        .get(SsoSessionResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -538,7 +539,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
   public void session_should_fail_when_no_sessionId() {
     given()
         .when()
-        .get(SsoSessionResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
         .statusCode(400)
         .body(
@@ -550,7 +551,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
   public void session_should_clear_session_cookie_when_missing_sessionId() {
     given()
         .when()
-        .get(SsoSessionResource.PATH + "/session/random")
+        .get(SsoSessionResource.PATH + "/session/random/userdata")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -560,7 +561,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
   public void me_should_fail_when_missing_sessionId_cookie() {
     given()
         .when()
-        .get(SsoSessionResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
         .statusCode(400)
         .body(
@@ -573,8 +574,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, "random")
-        .queryParam("id", "random")
-        .get(SsoSessionResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
         .statusCode(204)
         .cookie(SsoSession.COOKIE_NAME, "");
@@ -597,25 +597,25 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     // should be able to get session by id
     given()
         .when()
-        .get(SsoSessionResource.PATH + "/session/" + sessionId)
+        .get(SsoSessionResource.PATH + "/session/" + sessionId + "/userdata")
         .then()
         .statusCode(200)
         .body(
             sameJson(
                 objectMapper.writeValueAsString(
-                    DataResponse.data(SessionInfoDTO.from(authUser, organization)))));
+                    DataResponse.data(UserDataDTO.from(authUser, organization)))));
 
     // should be able to get session via cookie
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(SsoSessionResource.PATH + "/session")
+        .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
         .statusCode(200)
         .body(
             sameJson(
                 objectMapper.writeValueAsString(
-                    DataResponse.data(SessionInfoDTO.from(authUser, organization)))));
+                    DataResponse.data(UserDataDTO.from(authUser, organization)))));
 
     // should be able to logout
     given()

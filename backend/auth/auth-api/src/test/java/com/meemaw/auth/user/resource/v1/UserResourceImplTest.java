@@ -15,8 +15,8 @@ import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
-import com.meemaw.auth.user.model.dto.SessionInfoDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.auth.user.model.dto.UserDataDTO;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sms.MockSmsbox;
@@ -359,12 +359,12 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
     assertFalse(updateUserDataResponse.getData().isPhoneNumberVerified());
 
     // Should also update the sessions
-    DataResponse<SessionInfoDTO> getSessionInfoDataResponse =
+    DataResponse<UserDataDTO> getSessionInfoDataResponse =
         given()
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoSessionResource.PATH, "session"))
+            .get(String.join("/", SsoSessionResource.PATH, "session", "userdata"))
             .as(new TypeRef<>() {});
 
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());
@@ -402,7 +402,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .get(String.join("/", SsoSessionResource.PATH, "session"))
+            .get(String.join("/", SsoSessionResource.PATH, "session", "userdata"))
             .as(new TypeRef<>() {});
 
     assertEquals(updateUserDataResponse.getData(), getSessionInfoDataResponse.getData().getUser());

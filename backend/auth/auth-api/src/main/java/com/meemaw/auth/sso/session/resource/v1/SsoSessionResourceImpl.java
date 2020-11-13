@@ -4,7 +4,7 @@ import com.meemaw.auth.organization.service.OrganizationService;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.dto.SessionInfoDTO;
+import com.meemaw.auth.user.model.dto.UserDataDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -79,7 +79,7 @@ public class SsoSessionResourceImpl implements SsoSessionResource {
   }
 
   @Override
-  public CompletionStage<Response> retrieveSession(String sessionId) {
+  public CompletionStage<Response> retrieveUserData(String sessionId) {
     String cookieDomain = RequestUtils.parseCookieDomain(request.absoluteURI());
     return ssoService
         .findSession(sessionId)
@@ -105,7 +105,7 @@ public class SsoSessionResourceImpl implements SsoSessionResource {
                               .build();
                         }
 
-                        return DataResponse.ok(SessionInfoDTO.from(user, maybeOrganization.get()));
+                        return DataResponse.ok(UserDataDTO.from(user, maybeOrganization.get()));
                       });
             });
   }

@@ -98,6 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.action == 'closed'
     strategy:
+      fail-fast: false
       matrix:
         target: ['app', 'try']
 

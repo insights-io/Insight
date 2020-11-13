@@ -11,7 +11,7 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.rebrowse.model.auth.ApiKey;
-import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.net.RequestOptions;
 import java.util.UUID;
@@ -52,10 +52,6 @@ public class AuthApiTestProvider {
     return new SignUpRequestDTO(email, password, "Marko Novak", "Insight", phoneNumber);
   }
 
-  public String signUpAndLoginWithRandomCredentials() throws JsonProcessingException {
-    return signUpAndLoginWithRandomCredentials(null);
-  }
-
   public String signUpAndLoginWithRandomBusinessCredentials() throws JsonProcessingException {
     return signUpAndLoginWithRandomBusinessCredentials(null);
   }
@@ -65,6 +61,10 @@ public class AuthApiTestProvider {
     String password = UUID.randomUUID().toString();
     String email = String.format("%s@%s.com", password, UUID.randomUUID());
     return signUpAndLogin(signUpRequestMock(email, password, phoneNumber));
+  }
+
+  public String signUpAndLoginWithRandomCredentials() throws JsonProcessingException {
+    return signUpAndLoginWithRandomCredentials(null);
   }
 
   public String signUpAndLoginWithRandomCredentials(PhoneNumberDTO phoneNumber)
@@ -110,14 +110,14 @@ public class AuthApiTestProvider {
     return login(INSIGHT_ADMIN_EMAIL, INSIGHT_ADMIN_PASSWORD);
   }
 
-  public Organization getOrganization(String sessionId) {
+  public Organization retrieveOrganization(String sessionId) {
     return Organization.retrieve(sdkRequest().sessionId(sessionId).build())
         .toCompletableFuture()
         .join();
   }
 
-  public SessionInfo getSessionInfo(String sessionId) {
-    return SessionInfo.retrieve(sdkRequest().sessionId(sessionId).build())
+  public UserData retrieveUserData(String sessionId) {
+    return UserData.retrieve(sdkRequest().sessionId(sessionId).build())
         .toCompletableFuture()
         .join();
   }

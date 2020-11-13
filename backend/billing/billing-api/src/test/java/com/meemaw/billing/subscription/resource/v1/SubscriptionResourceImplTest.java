@@ -167,7 +167,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
   public void get_plan__should_return_free_plan__when_no_subscription()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    String organizationId = authApi().getOrganization(sessionId).getId();
+    String organizationId = authApi().retrieveOrganization(sessionId).getId();
 
     given()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -221,7 +221,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
   public void cancel__should_return_free_plan__when_successfully_canceled()
       throws JsonProcessingException, StripeException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
 
     PaymentMethod visaTestPaymentMethod = createVisaTestPaymentMethod();
     billingService

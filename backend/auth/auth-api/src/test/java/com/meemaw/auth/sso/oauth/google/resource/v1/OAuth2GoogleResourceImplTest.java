@@ -208,7 +208,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
   public void google_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
 
     given()
         .when()
@@ -231,7 +231,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         .statusCode(200);
 
     QuarkusMock.installMockForInstance(new MockedGoogleOAuthClient(user.getEmail()), googleClient);
-    String state = googleService.secureState("https://www.insight.io/my_path");
+    String state = AbstractIdentityProvider.secureState("https://www.insight.io/my_path");
 
     given()
         .when()
@@ -276,7 +276,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
             + "&state=";
 
     String redirect = "https://www.insight.io/my_path";
-    String paramState = googleService.secureState(redirect);
+    String paramState = AbstractIdentityProvider.secureState(redirect);
     Response response =
         given()
             .when()
@@ -302,8 +302,13 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         given()
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .get(URLDecoder.decode(location, StandardCharsets.UTF_8));
-    response.then().statusCode(302).cookie(SsoSignInSession.COOKIE_NAME);
+            .get(URLDecoder.decode(location, StandardCharsets.UTF_8))
+            .then()
+            .statusCode(302)
+            .cookie(SsoSignInSession.COOKIE_NAME)
+            .extract()
+            .response();
+
     String state = response.header("Location").replace(expectedLocationBase, "");
     String actualClientDestination = AbstractIdentityProvider.secureStateData(state);
     assertEquals(redirect, URLDecoder.decode(actualClientDestination, StandardCharsets.UTF_8));

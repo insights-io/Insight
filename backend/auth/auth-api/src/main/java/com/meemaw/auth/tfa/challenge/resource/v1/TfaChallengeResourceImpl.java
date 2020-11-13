@@ -116,6 +116,19 @@ public class TfaChallengeResourceImpl implements TfaChallengeResource {
             });
   }
 
+  @Override
+  public CompletionStage<Response> retrieveUser(String challengeId) {
+    return tfaChallengeService
+        .retrieveUser(challengeId)
+        .thenApply(
+            maybeUser -> {
+              if (maybeUser.isEmpty()) {
+                return Boom.notFound().response();
+              }
+              return DataResponse.ok(maybeUser.get());
+            });
+  }
+
   private Response challengeNotFoundResponse(String cookieDomain) {
     return DataResponse.error(Boom.notFound())
         .builder()

@@ -12,6 +12,11 @@ class Verification extends AbstractPage {
   public readonly message = queryByText(
     'To protect your account, please complete the following verification.'
   );
+
+  public readonly tfaEnforcedMessage = queryByText(
+    'Your organization has enforced two factor authentication for all members.'
+  );
+
   public readonly codeInput = Selector(
     'input[aria-label="Please enter your pin code"]'
   );

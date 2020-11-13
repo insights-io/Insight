@@ -33,11 +33,14 @@ export const ssoSessionResource = (authApiBaseURL: string) => {
       id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky.get(`${resourceBaseURL(baseURL)}/session/${id}`, rest);
+      return ky.get(`${resourceBaseURL(baseURL)}/session/${id}/userdata`, rest);
     },
     me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
-        .get(`${resourceBaseURL(baseURL)}/session`, withCredentials(rest))
+        .get(
+          `${resourceBaseURL(baseURL)}/session/userdata`,
+          withCredentials(rest)
+        )
         .json<DataResponse<SessionInfoDTO>>()
         .then(getData);
     },

@@ -7,6 +7,10 @@ import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettings
 export class OrganizationSecuritySettingsPage extends AbstractOrganizationSettingsPage {
   public readonly header = this.withinContainer.queryByText('Security');
 
+  public readonly enforce2faToggle = this.container
+    .find('input[name="enforce2fa"]')
+    .parent();
+
   public readonly passwordPolicy = {
     minCharactersInput: this.withinContainer.queryByPlaceholderText(
       'Min characters'

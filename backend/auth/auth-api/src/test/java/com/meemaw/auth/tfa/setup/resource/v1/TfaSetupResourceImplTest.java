@@ -227,7 +227,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
   public void delete_totp_tfa__should_succeed__when_user_with_tfa()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
 
     given()
         .when()
@@ -283,7 +283,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     String password = UUID.randomUUID().toString();
     String email = password + "@gmail.com";
     String sessionId = authApi().signUpAndLogin(email, password);
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
 
     DataResponse<TfaTotpSetupStartDTO> dataResponse =
         given()
@@ -501,7 +501,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
     String password = "tfa-sms-and-top-full-flow";
     PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222334");
     String sessionId = authApi().signUpAndLogin(email, password, phoneNumber);
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
 
     AuthApiSetupUtils.setupSmsTfa(phoneNumber, sessionId, mockSmsbox);
     String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
@@ -624,7 +624,7 @@ public class TfaSetupResourceImplTest extends AbstractAuthApiTest {
         .then()
         .statusCode(200);
 
-    UUID userId = authApi().getSessionInfo(sessionId).getUser().getId();
+    UUID userId = authApi().retrieveUserData(sessionId).getUser().getId();
     String secret = tfaTotpSetupDatasource.retrieve(userId).toCompletableFuture().join().get();
 
     await()

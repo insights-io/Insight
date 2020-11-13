@@ -9,10 +9,10 @@ import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.oauth.AbstractOAuthClient;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.test.setup.RestAssuredUtils;
-import com.rebrowse.model.auth.SessionInfo;
 import com.rebrowse.model.auth.SsoMethod;
 import com.rebrowse.model.auth.SsoSetup;
 import com.rebrowse.model.auth.SsoSetupCreateParams;
+import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.model.organization.OrganizationUpdateParams;
 import com.rebrowse.model.user.UserRole;
@@ -122,7 +122,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomBusinessCredentials();
     String domain =
-        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).getUser().getEmail());
+        EmailUtils.domainFromEmail(authApi().retrieveUserData(sessionId).getUser().getEmail());
 
     SsoSetup.create(
             SsoSetupCreateParams.builder()
@@ -158,7 +158,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomBusinessCredentials();
     String domain =
-        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).getUser().getEmail());
+        EmailUtils.domainFromEmail(authApi().retrieveUserData(sessionId).getUser().getEmail());
 
     SsoSetup.create(
             SsoSetupCreateParams.builder()
@@ -202,11 +202,11 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
               .detailedCookie(SsoSession.COOKIE_NAME)
               .getValue();
 
-      SessionInfo sessionInfo = authApi().getSessionInfo(createdUserSessionId);
+      UserData userData = authApi().retrieveUserData(createdUserSessionId);
 
-      assertEquals(domain, EmailUtils.domainFromEmail(sessionInfo.getUser().getEmail()));
-      assertEquals(sessionInfo.getOrganization(), organization);
-      assertEquals(userRole, sessionInfo.getOrganization().getDefaultRole());
+      assertEquals(domain, EmailUtils.domainFromEmail(userData.getUser().getEmail()));
+      assertEquals(userData.getOrganization(), organization);
+      assertEquals(userRole, userData.getOrganization().getDefaultRole());
     }
   }
 }
