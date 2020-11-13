@@ -232,7 +232,7 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
     String sessionId =
         authApi().signUpAndLogin(email, password, new PhoneNumberDTO("+1", "223344"));
 
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
 
     given()
         .when()
@@ -343,7 +343,7 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
             .detailedCookie(SsoSession.COOKIE_NAME)
             .getValue();
 
-    assertEquals(authApi().getSessionInfo(sessionId), authApi().getSessionInfo(newSessionId));
+    assertEquals(authApi().retrieveUserData(sessionId), authApi().retrieveUserData(newSessionId));
 
     given()
         .when()

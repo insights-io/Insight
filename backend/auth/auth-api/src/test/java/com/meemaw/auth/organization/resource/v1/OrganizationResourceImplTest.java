@@ -540,7 +540,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void get_organization__should_work__when_authenticated() throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    UserData userData = authApi().getSessionInfo(sessionId);
+    UserData userData = authApi().retrieveUserData(sessionId);
     User user = userData.getUser();
 
     DataResponse<OrganizationDTO> firstResponse =

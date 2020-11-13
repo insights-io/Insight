@@ -164,7 +164,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   public void password_forgot__should_send_email__when_existing_user()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    String email = authApi().getSessionInfo(sessionId).getUser().getEmail();
+    String email = authApi().retrieveUserData(sessionId).getUser().getEmail();
 
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
     // can trigger the forgot flow multiple times!!
@@ -271,7 +271,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   public void password_reset_flow__should_require_verification__if_tfa_setup()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
     String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
 
     // init flow

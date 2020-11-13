@@ -105,7 +105,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
   public void post_page__should_throw__when_free_quota_exceeded()
       throws IOException, URISyntaxException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    Organization organization = authApi().getOrganization(sessionId);
+    Organization organization = authApi().retrieveOrganization(sessionId);
     CreatePageDTO withFreePlanOrganization =
         withUpdateOrganizationId(readSimplePage(), organization.getId());
     String body = objectMapper.writeValueAsString(withFreePlanOrganization);

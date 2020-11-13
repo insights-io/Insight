@@ -462,7 +462,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
   public void send_invite_flow__should_succeed__when_existing_invite()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    UserData userData = authApi().getSessionInfo(sessionId);
+    UserData userData = authApi().retrieveUserData(sessionId);
     String invitedUserEmail = "send-invite-flow@gmail.com";
     String invitePayload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));

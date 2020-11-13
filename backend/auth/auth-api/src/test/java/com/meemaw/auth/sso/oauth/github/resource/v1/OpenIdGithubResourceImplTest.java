@@ -177,7 +177,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
   public void github_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    User user = authApi().getSessionInfo(sessionId).getUser();
+    User user = authApi().retrieveUserData(sessionId).getUser();
 
     given()
         .when()

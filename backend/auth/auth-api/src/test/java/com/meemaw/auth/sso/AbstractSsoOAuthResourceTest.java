@@ -122,7 +122,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomBusinessCredentials();
     String domain =
-        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).getUser().getEmail());
+        EmailUtils.domainFromEmail(authApi().retrieveUserData(sessionId).getUser().getEmail());
 
     SsoSetup.create(
             SsoSetupCreateParams.builder()
@@ -158,7 +158,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomBusinessCredentials();
     String domain =
-        EmailUtils.domainFromEmail(authApi().getSessionInfo(sessionId).getUser().getEmail());
+        EmailUtils.domainFromEmail(authApi().retrieveUserData(sessionId).getUser().getEmail());
 
     SsoSetup.create(
             SsoSetupCreateParams.builder()
@@ -202,7 +202,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
               .detailedCookie(SsoSession.COOKIE_NAME)
               .getValue();
 
-      UserData userData = authApi().getSessionInfo(createdUserSessionId);
+      UserData userData = authApi().retrieveUserData(createdUserSessionId);
 
       assertEquals(domain, EmailUtils.domainFromEmail(userData.getUser().getEmail()));
       assertEquals(userData.getOrganization(), organization);
