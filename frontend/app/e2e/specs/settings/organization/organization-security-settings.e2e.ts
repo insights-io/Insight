@@ -9,7 +9,9 @@ import {
   AccountSettingsSecurityPage,
   OrganizationMembersSettingsPage,
   AcceptTeamInvitePage,
+  LoginPage,
 } from '../../../pages';
+import Verification from '../../../pages/Verification';
 import { findLinkFromDockerLogs } from '../../../utils';
 
 fixture('/settings/organization/security').page(
@@ -190,4 +192,31 @@ test('[/settings/organization/security]: As a user I should be able to accept a 
     .ok('In member list')
     .expect(queryByText(newUserFullName).visible)
     .ok('In member list');
+});
+
+test('[/settings/organization/security]: As a user with no TFA, in organization with TFA enforced, I should be able to set it up when I login', async (t) => {
+  const credentials = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, credentials);
+
+  await t
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
+    .click(OrganizationGeneralSettingsPage.sidebar.security)
+    .click(OrganizationSecuritySettingsPage.enforce2faToggle)
+    .expect(
+      queryByText(
+        'Successfully enabled organization enforce two factor authentication'
+      ).visible
+    )
+    .ok('2fa is enforced')
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.signOut);
+
+  await LoginPage.login(t, credentials)
+    .expect(Verification.tfaEnforcedMessage.visible)
+    .ok('TFA enforced message visible');
+
+  await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(t);
+
+  await t.expect(Sidebar.banner.trigger.visible).ok('Is logged in');
 });
