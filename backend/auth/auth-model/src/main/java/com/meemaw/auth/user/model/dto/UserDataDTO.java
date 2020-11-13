@@ -11,12 +11,12 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class SessionInfoDTO {
+public class UserDataDTO {
 
   UserDTO user;
   OrganizationDTO organization;
 
-  public static SessionInfoDTO from(AuthUser user, Organization organization) {
-    return new SessionInfoDTO((UserDTO) user, (OrganizationDTO) organization);
+  public static UserDataDTO from(AuthUser user, Organization organization) {
+    return new UserDataDTO((UserDTO) user, (OrganizationDTO) organization);
   }
 }

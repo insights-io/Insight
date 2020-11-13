@@ -17,7 +17,7 @@ import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.EmailTestUtils;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.PasswordPolicy;
 import com.rebrowse.model.organization.PasswordPolicyCreateParams;
 import com.rebrowse.model.organization.TeamInvite;
@@ -246,8 +246,8 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     String payload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO(email, UserRole.ADMIN));
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    SessionInfo sessionInfo =
-        SessionInfo.retrieve(authApi().sdkRequest().sessionId(sessionId).build())
+    UserData userData =
+        UserData.retrieve(authApi().sdkRequest().sessionId(sessionId).build())
             .toCompletableFuture()
             .join();
 
@@ -285,8 +285,8 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
         TeamInvite.retrieve(token, authApi().sdkRequest().build()).toCompletableFuture().join();
 
     assertEquals(email, invite.getEmail());
-    assertEquals(sessionInfo.getOrganization().getId(), invite.getOrganizationId());
-    assertEquals(sessionInfo.getUser().getId(), invite.getCreator());
+    assertEquals(userData.getOrganization().getId(), invite.getOrganizationId());
+    assertEquals(userData.getUser().getId(), invite.getCreator());
 
     String inviteAcceptPayload =
         objectMapper.writeValueAsString(
@@ -307,7 +307,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
     assertEquals(
         "Marko Novak",
-        SessionInfo.retrieve(authApi().sdkRequest().sessionId(acceptedUserSessionId).build())
+        UserData.retrieve(authApi().sdkRequest().sessionId(acceptedUserSessionId).build())
             .toCompletableFuture()
             .join()
             .getUser()
@@ -462,7 +462,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
   public void send_invite_flow__should_succeed__when_existing_invite()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    SessionInfo sessionInfo = authApi().getSessionInfo(sessionId);
+    UserData userData = authApi().getSessionInfo(sessionId);
     String invitedUserEmail = "send-invite-flow@gmail.com";
     String invitePayload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
@@ -504,9 +504,9 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
     assertEquals(dataResponse.getData().getRole(), UserRole.ADMIN);
     assertEquals(dataResponse.getData().getEmail(), invitedUserEmail);
-    assertEquals(dataResponse.getData().getCreator(), sessionInfo.getUser().getId());
+    assertEquals(dataResponse.getData().getCreator(), userData.getUser().getId());
     assertEquals(
-        dataResponse.getData().getOrganizationId(), sessionInfo.getUser().getOrganizationId());
+        dataResponse.getData().getOrganizationId(), userData.getUser().getOrganizationId());
 
     assertEquals(2, mailbox.getMessagesSentTo(invitedUserEmail).size());
     acceptInviteUrl = Jsoup.parse(sent.get(1).getHtml()).select("a").attr("href");
@@ -581,7 +581,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
     assertEquals(
         "Bruce Lee",
-        SessionInfo.retrieve(authApi().sdkRequest().sessionId(acceptedUserSessionId).build())
+        UserData.retrieve(authApi().sdkRequest().sessionId(acceptedUserSessionId).build())
             .toCompletableFuture()
             .join()
             .getUser()

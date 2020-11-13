@@ -23,7 +23,7 @@ import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserRole;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -392,7 +392,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .getValue();
 
     User newUser =
-        SessionInfo.retrieve(authApi().sdkRequest().sessionId(newSessionId).build())
+        UserData.retrieve(authApi().sdkRequest().sessionId(newSessionId).build())
             .toCompletableFuture()
             .join()
             .getUser();

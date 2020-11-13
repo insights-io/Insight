@@ -11,7 +11,7 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.rebrowse.model.auth.ApiKey;
-import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.net.RequestOptions;
 import java.util.UUID;
@@ -116,8 +116,8 @@ public class AuthApiTestProvider {
         .join();
   }
 
-  public SessionInfo getSessionInfo(String sessionId) {
-    return SessionInfo.retrieve(sdkRequest().sessionId(sessionId).build())
+  public UserData getSessionInfo(String sessionId) {
+    return UserData.retrieve(sdkRequest().sessionId(sessionId).build())
         .toCompletableFuture()
         .join();
   }

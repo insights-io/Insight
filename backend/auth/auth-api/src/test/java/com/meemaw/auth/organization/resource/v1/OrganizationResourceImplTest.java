@@ -21,7 +21,7 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import com.rebrowse.model.auth.SessionInfo;
+import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.TeamInvite;
 import com.rebrowse.model.organization.TeamInviteAcceptParams;
 import com.rebrowse.model.organization.TeamInviteCreateParams;
@@ -540,8 +540,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void get_organization__should_work__when_authenticated() throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    SessionInfo sessionInfo = authApi().getSessionInfo(sessionId);
-    User user = sessionInfo.getUser();
+    UserData userData = authApi().getSessionInfo(sessionId);
+    User user = userData.getUser();
 
     DataResponse<OrganizationDTO> firstResponse =
         given()

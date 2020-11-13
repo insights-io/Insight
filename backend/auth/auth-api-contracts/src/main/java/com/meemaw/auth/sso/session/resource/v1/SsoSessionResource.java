@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.session.resource.v1;
 
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.user.model.dto.SessionInfoDTO;
+import com.meemaw.auth.user.model.dto.UserDataDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
 import com.meemaw.shared.validation.Password;
@@ -149,7 +149,7 @@ public interface SsoSessionResource {
       @NotNull(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
 
   @GET
-  @Path("session/{id}")
+  @Path("session/{id}/userdata")
   @Produces(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
   @Operation(summary = "Retrieve session")
@@ -160,7 +160,7 @@ public interface SsoSessionResource {
             description = "Success",
             content =
                 @Content(
-                    schema = @Schema(implementation = SessionInfoDataResponse.class),
+                    schema = @Schema(implementation = UserDataDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "204",
@@ -175,10 +175,10 @@ public interface SsoSessionResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> retrieveSession(@PathParam("id") String sessionId);
+  CompletionStage<Response> retrieveUserData(@PathParam("id") String sessionId);
 
   @GET
-  @Path("session")
+  @Path("session/userdata")
   @Produces(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
   @Operation(summary = "Retrieve session associated with authenticated user")
@@ -189,7 +189,7 @@ public interface SsoSessionResource {
             description = "Success",
             content =
                 @Content(
-                    schema = @Schema(implementation = SessionInfoDataResponse.class),
+                    schema = @Schema(implementation = UserDataDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "204",
@@ -204,12 +204,12 @@ public interface SsoSessionResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  default CompletionStage<Response> getAssociatedSession(
+  default CompletionStage<Response> retrieveUserDataByCookieParam(
       @NotNull(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId) {
-    return retrieveSession(sessionId);
+    return retrieveUserData(sessionId);
   }
 
-  class SessionInfoDataResponse extends OkDataResponse<SessionInfoDTO> {}
+  class UserDataDataResponse extends OkDataResponse<UserDataDTO> {}
 
   class SessionListResponse extends OkDataResponse<List<String>> {}
 }
