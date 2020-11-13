@@ -20,6 +20,7 @@ import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
@@ -52,6 +53,18 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
+
+  @Test
+  public void get_tfa_challenge_user__should_throw__when_random_challenge_id() {
+    given()
+        .when()
+        .get(TfaChallengeResource.PATH + "/random/user")
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Not Found\"}}"));
+  }
 
   @Test
   public void get_tfa_challenge__should_throw__when_random_challenge_id() {
@@ -282,6 +295,18 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
             .response();
 
     String challengeId = loginResponse.getDetailedCookie(SsoChallenge.COOKIE_NAME).getValue();
+
+    DataResponse<UserDTO> challengedUser =
+        given()
+            .when()
+            .get(TfaChallengeResource.PATH + "/" + challengeId + "/user")
+            .then()
+            .statusCode(200)
+            .extract()
+            .as(new TypeRef<>() {});
+
+    assertEquals(challengedUser.getData().getId(), user.getId());
+
     DataResponse<ChallengeResponseDTO> loginDataResponse =
         loginResponse.body().as(new TypeRef<>() {});
 

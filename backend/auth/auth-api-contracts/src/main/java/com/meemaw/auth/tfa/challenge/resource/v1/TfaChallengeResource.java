@@ -4,6 +4,7 @@ import com.meemaw.auth.tfa.TfaMethod;
 import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.user.resource.v1.UserResource.UserDataResponse;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
 import java.util.List;
@@ -149,6 +150,39 @@ public interface TfaChallengeResource {
       })
   CompletionStage<Response> sendSmsChallengeCode(
       @NotBlank(message = "Required") @CookieParam(SsoChallenge.COOKIE_NAME) String challengeId);
+
+  @GET
+  @Path("{challengeId}/user")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Tag(name = TAG)
+  @Operation(summary = "Retrieve user associated with challenge")
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "User object",
+            content =
+                @Content(
+                    schema = @Schema(implementation = UserDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> retrieveUser(@PathParam("challengeId") String challengeId);
 
   class TfaMethodCollectionDataResponse extends OkDataResponse<List<TfaMethod>> {}
 
