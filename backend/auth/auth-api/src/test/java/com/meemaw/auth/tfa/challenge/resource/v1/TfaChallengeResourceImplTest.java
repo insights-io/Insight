@@ -17,7 +17,6 @@ import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
 import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
 import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
-import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTfaDatasource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
@@ -49,7 +48,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 @Tag("integration")
 public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
 
-  @Inject UserDatasource userDatasource;
   @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
   @Inject UserTfaDatasource userTfaDatasource;
   @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
@@ -160,8 +158,9 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
     String email = "tfa-complete-not-configured-flow@gmail.com";
     String password = "tfa-complete-not-configured-flow";
     String sessionId = authApi().signUpAndLogin(email, password);
-    UUID userId = userDatasource.findUser(email).toCompletableFuture().join().get().getId();
-    String secret = AuthApiSetupUtils.setupTotpTfa(userId, sessionId, tfaTotpSetupDatasource);
+    User user = authApi().retrieveUserData(sessionId).getUser();
+
+    String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
 
     given()
         .when()
@@ -181,7 +180,7 @@ public class TfaChallengeResourceImplTest extends AbstractAuthApiTest {
             .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
-    assertTrue(userTfaDatasource.delete(userId, TfaMethod.TOTP).toCompletableFuture().join());
+    assertTrue(userTfaDatasource.delete(user.getId(), TfaMethod.TOTP).toCompletableFuture().join());
 
     // Complete when tfa is not set up should clean up verification id
     given()

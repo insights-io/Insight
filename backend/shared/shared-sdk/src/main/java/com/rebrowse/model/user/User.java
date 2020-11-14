@@ -1,6 +1,7 @@
 package com.rebrowse.model.user;
 
 import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -28,11 +29,7 @@ public class User {
   }
 
   public static CompletionStage<User> retrieve(RequestOptions options) {
-    return ApiResource.get("/v1/user", User.class, options);
-  }
-
-  public static CompletionStage<User> update(UserUpdateParams params, RequestOptions options) {
-    return ApiResource.patch("/v1/user", params, User.class, options);
+    return ApiResource.request(RequestMethod.GET, "/v1/user", User.class, options);
   }
 
   public static CompletionStage<User> retrieve(UUID id) {
@@ -40,6 +37,11 @@ public class User {
   }
 
   public static CompletionStage<User> retrieve(UUID id, RequestOptions options) {
-    return ApiResource.get(String.format("/v1/user/%s", id), User.class, options);
+    return ApiResource.request(
+        RequestMethod.GET, String.format("/v1/user/%s", id), User.class, options);
+  }
+
+  public static CompletionStage<User> update(UserUpdateParams params, RequestOptions options) {
+    return ApiResource.request(RequestMethod.PATCH, "/v1/user", params, User.class, options);
   }
 }

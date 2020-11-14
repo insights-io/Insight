@@ -19,11 +19,11 @@ public class RequestOptions {
 
   public static final class Builder {
 
+    private final Duration timeout;
+    private final int maxNetworkRetries;
     private String sessionId = null;
     private String apiKey;
     private String apiBaseUrl;
-    private final Duration timeout;
-    private final int maxNetworkRetries;
 
     public Builder() {
       this.apiKey = Rebrowse.apiKey;

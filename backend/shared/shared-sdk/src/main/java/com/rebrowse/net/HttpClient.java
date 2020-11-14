@@ -1,17 +1,14 @@
 package com.rebrowse.net;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.rebrowse.model.ApiRequestParams;
 import java.util.concurrent.CompletionStage;
 
 public interface HttpClient {
 
-  <T> CompletionStage<T> get(String url, Class<T> clazz, RequestOptions requestOptions);
+  <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method, String url, P params, Class<R> clazz, RequestOptions options);
 
-  <T> CompletionStage<T> post(String url, Class<T> clazz, RequestOptions requestOptions);
-
-  <P extends ApiRequestParams, T> CompletionStage<T> post(
-      String url, P params, Class<T> clazz, RequestOptions requestOptions);
-
-  <P extends ApiRequestParams, T> CompletionStage<T> patch(
-      String url, P params, Class<T> clazz, RequestOptions requestOptions);
+  <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method, String url, P params, TypeReference<R> clazz, RequestOptions options);
 }

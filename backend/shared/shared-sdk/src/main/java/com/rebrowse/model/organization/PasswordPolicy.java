@@ -1,6 +1,7 @@
 package com.rebrowse.model.organization;
 
 import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletionStage;
@@ -27,7 +28,8 @@ public class PasswordPolicy {
   }
 
   public static CompletionStage<PasswordPolicy> retrieve(RequestOptions options) {
-    return ApiResource.get("/v1/organization/password/policy", PasswordPolicy.class, options);
+    return ApiResource.request(
+        RequestMethod.GET, "/v1/organization/password/policy", PasswordPolicy.class, options);
   }
 
   public static CompletionStage<PasswordPolicy> create(PasswordPolicyCreateParams params) {
@@ -36,8 +38,12 @@ public class PasswordPolicy {
 
   public static CompletionStage<PasswordPolicy> create(
       PasswordPolicyCreateParams params, RequestOptions options) {
-    return ApiResource.post(
-        "/v1/organization/password/policy", params, PasswordPolicy.class, options);
+    return ApiResource.request(
+        RequestMethod.POST,
+        "/v1/organization/password/policy",
+        params,
+        PasswordPolicy.class,
+        options);
   }
 
   public static CompletionStage<PasswordPolicy> update(PasswordPolicyCreateParams params) {
@@ -46,7 +52,11 @@ public class PasswordPolicy {
 
   public static CompletionStage<PasswordPolicy> update(
       PasswordPolicyCreateParams params, RequestOptions options) {
-    return ApiResource.patch(
-        "/v1/organization/password/policy", params, PasswordPolicy.class, options);
+    return ApiResource.request(
+        RequestMethod.PATCH,
+        "/v1/organization/password/policy",
+        params,
+        PasswordPolicy.class,
+        options);
   }
 }

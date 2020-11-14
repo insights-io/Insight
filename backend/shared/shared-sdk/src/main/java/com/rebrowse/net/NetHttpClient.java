@@ -1,6 +1,5 @@
 package com.rebrowse.net;
 
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
@@ -21,14 +20,24 @@ public class NetHttpClient extends RawHttpClient {
     this.httpClient = httpClient;
   }
 
+  private static Map<String, List<String>> getHeaders(RebrowseRequest request) {
+    Map<String, List<String>> headers = request.getHeaders();
+
+    // User Agent
+    headers.put("User-Agent", Collections.singletonList(RawHttpClient.userAgentString()));
+    headers.put(
+        "X-Rebrowse-Client-User-Agent",
+        Collections.singletonList(RawHttpClient.clientUserAgentString()));
+
+    return headers;
+  }
+
   @Override
   public CompletionStage<RebrowseResponse> request(RebrowseRequest request) {
-    RequestOptions options = request.getRequestOptions();
-    URI uri = URI.create(String.format("%s%s", options.getApiBaseUrl(), request.getPath()));
     HttpRequest.Builder httpRequestBuilder =
-        HttpRequest.newBuilder(uri)
+        HttpRequest.newBuilder(request.getUri())
             .method(request.getMethod().toString(), request.getBodyPublisher())
-            .timeout(options.getTimeout());
+            .timeout(request.getOptions().getTimeout());
 
     for (Map.Entry<String, List<String>> entry : getHeaders(request).entrySet()) {
       String headerName = entry.getKey();
@@ -42,17 +51,5 @@ public class NetHttpClient extends RawHttpClient {
         .thenApply(
             response ->
                 new RebrowseResponse(response.statusCode(), response.headers(), response.body()));
-  }
-
-  private static Map<String, List<String>> getHeaders(RebrowseRequest request) {
-    Map<String, List<String>> headers = request.getHeaders();
-
-    // User Agent
-    headers.put("User-Agent", Collections.singletonList(RawHttpClient.userAgentString()));
-    headers.put(
-        "X-Rebrowse-Client-User-Agent",
-        Collections.singletonList(RawHttpClient.clientUserAgentString()));
-
-    return headers;
   }
 }
