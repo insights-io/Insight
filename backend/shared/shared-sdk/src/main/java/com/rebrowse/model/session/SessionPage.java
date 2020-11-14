@@ -1,6 +1,7 @@
 package com.rebrowse.model.session;
 
 import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -33,7 +34,8 @@ public class SessionPage {
 
   public static CompletionStage<SessionPage> retrieve(
       UUID id, UUID sessionId, String organizationId, RequestOptions requestOptions) {
-    return ApiResource.get(
+    return ApiResource.request(
+        RequestMethod.GET,
         String.format("/v1/sessions/%s/pages/%s?organizationId=%s", sessionId, id, organizationId),
         SessionPage.class,
         requestOptions);

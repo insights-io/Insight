@@ -1,6 +1,7 @@
 package com.rebrowse.net;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -31,23 +32,23 @@ public final class ApiResource {
     return mapper;
   }
 
-  public static <R> CompletionStage<R> get(
-      String url, Class<R> clazz, RequestOptions requestOptions) {
-    return httpClient.get(url, clazz, requestOptions);
+  public static <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method, String url, P params, Class<R> clazz, RequestOptions options) {
+    return httpClient.request(method, url, params, clazz, options);
   }
 
-  public static <R> CompletionStage<R> post(
-      String url, Class<R> clazz, RequestOptions requestOptions) {
-    return httpClient.post(url, clazz, requestOptions);
+  public static <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method, String url, Class<R> clazz, RequestOptions options) {
+    return request(method, url, null, clazz, options);
   }
 
-  public static <P extends ApiRequestParams, R> CompletionStage<R> post(
-      String url, P params, Class<R> clazz, RequestOptions requestOptions) {
-    return httpClient.post(url, params, clazz, requestOptions);
+  public static <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method, String url, P params, TypeReference<R> clazz, RequestOptions options) {
+    return httpClient.request(method, url, params, clazz, options);
   }
 
-  public static <P extends ApiRequestParams, R> CompletionStage<R> patch(
-      String url, P params, Class<R> clazz, RequestOptions requestOptions) {
-    return httpClient.patch(url, params, clazz, requestOptions);
+  public static <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method, String url, TypeReference<R> clazz, RequestOptions options) {
+    return request(method, url, null, clazz, options);
   }
 }

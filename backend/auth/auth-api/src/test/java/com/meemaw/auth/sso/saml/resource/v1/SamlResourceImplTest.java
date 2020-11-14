@@ -197,11 +197,10 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
   public void saml_callback__should_fail__when_configuration_endpoint_is_down()
       throws IOException, URISyntaxException {
     String organizationId = Organization.identifier();
-    Organization organization =
-        organizationDatasource
-            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
-            .toCompletableFuture()
-            .join();
+    organizationDatasource
+        .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+        .toCompletableFuture()
+        .join();
 
     Pair<String, String> data = samlResponseForRandomDomain();
     String email = data.getLeft();
@@ -210,15 +209,15 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     ssoSetupDatasource
         .create(
             new CreateSsoSetup(
-                organization.getId(),
+                organizationId,
                 EmailUtils.domainFromEmail(email),
                 SsoMethod.SAML,
                 SamlConfiguration.okta(new URL("http://localhost:1000"))))
         .toCompletableFuture()
         .join();
 
-    String Location = "https://www.insight.io/my_path";
-    String state = AbstractIdentityProvider.secureState(Location);
+    String location = "https://www.insight.io/my_path";
+    String state = AbstractIdentityProvider.secureState(location);
 
     given()
         .when()
@@ -238,11 +237,11 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
   public void saml_callback__should_fail__when_configuration_endpoint_serves_broken_xml()
       throws IOException, URISyntaxException {
     String organizationId = Organization.identifier();
-    Organization organization =
-        organizationDatasource
-            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
-            .toCompletableFuture()
-            .join();
+
+    organizationDatasource
+        .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+        .toCompletableFuture()
+        .join();
 
     Pair<String, String> data = samlResponseForRandomDomain();
     String email = data.getLeft();
@@ -251,15 +250,15 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     ssoSetupDatasource
         .create(
             new CreateSsoSetup(
-                organization.getId(),
+                organizationId,
                 EmailUtils.domainFromEmail(email),
                 SsoMethod.SAML,
                 SamlConfiguration.okta(new URL("https://google.com"))))
         .toCompletableFuture()
         .join();
 
-    String Location = "https://www.insight.io/my_path";
-    String state = AbstractIdentityProvider.secureState(Location);
+    String location = "https://www.insight.io/my_path";
+    String state = AbstractIdentityProvider.secureState(location);
 
     given()
         .when()
@@ -299,8 +298,8 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
         .toCompletableFuture()
         .join();
 
-    String Location = "https://www.insight.io/my_path";
-    String state = AbstractIdentityProvider.secureState(Location);
+    String location = "https://www.insight.io/my_path";
+    String state = AbstractIdentityProvider.secureState(location);
 
     given()
         .when()
@@ -335,8 +334,6 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .extract()
             .as(new TypeRef<>() {});
 
-    String organizationId = dataResponse.getData().getId();
-
     // sso setup
     given()
         .when()
@@ -350,14 +347,15 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
         .then()
         .statusCode(201);
 
-    String Location = "https://www.insight.io/my_path";
-    String state = AbstractIdentityProvider.secureState(Location);
+    String location = "https://www.insight.io/my_path";
+    String state = AbstractIdentityProvider.secureState(location);
     String samlResponse =
         new String(
             Base64.getEncoder()
                 .encode(
                     readFileAsString("/sso/saml/response/okta_matej_snuderls_eu.xml").getBytes()));
 
+    String organizationId = dataResponse.getData().getId();
     given()
         .when()
         .config(RestAssuredUtils.dontFollowRedirects())
@@ -367,7 +365,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
         .post(samlCallbackURI)
         .then()
         .statusCode(302)
-        .header("Location", Location)
+        .header("Location", location)
         .cookie(SsoSession.COOKIE_NAME);
 
     String blazSnuderlSamlResponse =
@@ -386,7 +384,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .post(samlCallbackURI)
             .then()
             .statusCode(302)
-            .header("Location", Location)
+            .header("Location", location)
             .extract()
             .detailedCookie(SsoSession.COOKIE_NAME)
             .getValue();
@@ -410,24 +408,23 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String email = data.getLeft();
     String samlResponse = data.getRight();
 
-    Organization organization =
-        organizationDatasource
-            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
-            .toCompletableFuture()
-            .join();
+    organizationDatasource
+        .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+        .toCompletableFuture()
+        .join();
 
     ssoSetupDatasource
         .create(
             new CreateSsoSetup(
-                organization.getId(),
+                organizationId,
                 EmailUtils.domainFromEmail(email),
                 SsoMethod.SAML,
                 SamlConfiguration.okta(oktaMetadataEndpoint())))
         .toCompletableFuture()
         .join();
 
-    String Location = "https://www.insight.io/my_path";
-    String state = AbstractIdentityProvider.secureState(Location);
+    String location = "https://www.insight.io/my_path";
+    String state = AbstractIdentityProvider.secureState(location);
 
     given()
         .when()

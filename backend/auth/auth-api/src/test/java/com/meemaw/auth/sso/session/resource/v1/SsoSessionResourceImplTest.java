@@ -8,8 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.core.config.model.AppConfig;
-import com.meemaw.auth.organization.datasource.OrganizationDatasource;
-import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.sso.AbstractSsoResourceTest;
@@ -23,14 +21,16 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
 import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
-import com.meemaw.auth.user.datasource.UserDatasource;
-import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.auth.user.model.dto.UserDataDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.SearchParam;
+import com.rebrowse.model.auth.UserData;
+import com.rebrowse.model.organization.Organization;
+import com.rebrowse.model.user.User;
+import com.rebrowse.model.user.UserSearchParams;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -58,9 +58,7 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
 
-  @Inject UserDatasource userDatasource;
   @Inject AppConfig appConfig;
-  @Inject OrganizationDatasource organizationDatasource;
 
   @TestHTTPResource(SamlResource.PATH + "/" + OAuthResource.SIGNIN_PATH)
   URI samlSignInUri;
@@ -447,30 +445,17 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     // Make sure sessions are not the same
     assertNotEquals(firstSessionId, secondSessionId);
 
-    DataResponse<UserDataDTO> firstSessionIdInfo =
-        given()
-            .when()
-            .cookie(SsoSession.COOKIE_NAME, firstSessionId)
-            .get(SsoSessionResource.PATH + "/session/userdata")
-            .then()
-            .statusCode(200)
-            .extract()
-            .response()
-            .as(new TypeRef<>() {});
+    User firstUser =
+        UserData.retrieve(authApi().sdkRequest().sessionId(firstSessionId).build())
+            .toCompletableFuture()
+            .join()
+            .getUser();
 
-    AuthUser firstUser = firstSessionIdInfo.getData().getUser();
-
-    DataResponse<UserDataDTO> secondSessionIdInfo =
-        given()
-            .when()
-            .cookie(SsoSession.COOKIE_NAME, secondSessionId)
-            .get(SsoSessionResource.PATH + "/session/userdata")
-            .then()
-            .statusCode(200)
-            .extract()
-            .response()
-            .as(new TypeRef<>() {});
-    AuthUser secondUser = secondSessionIdInfo.getData().getUser();
+    User secondUser =
+        UserData.retrieve(authApi().sdkRequest().sessionId(secondSessionId).build())
+            .toCompletableFuture()
+            .join()
+            .getUser();
 
     // Make sure both sessions are associated with same user
     assertEquals(firstUser.getId(), secondUser.getId());
@@ -586,36 +571,31 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     String password = "sso_flow_test_password";
     String sessionId = authApi().signUpAndLogin(email, password);
 
-    AuthUser authUser = userDatasource.findUser(email).toCompletableFuture().join().orElseThrow();
-    Organization organization =
-        organizationDatasource
-            .findOrganization(authUser.getOrganizationId())
+    User user =
+        Organization.members(
+                UserSearchParams.builder().email(SearchParam.eq(email)).build(),
+                authApi().sdkRequest().sessionId(sessionId).build())
             .toCompletableFuture()
             .join()
-            .get();
+            .get(0);
+
+    Organization organization =
+        Organization.retrieve(authApi().sdkRequest().sessionId(sessionId).build())
+            .toCompletableFuture()
+            .join();
 
     // should be able to get session by id
-    given()
-        .when()
-        .get(SsoSessionResource.PATH + "/session/" + sessionId + "/userdata")
-        .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                objectMapper.writeValueAsString(
-                    DataResponse.data(UserDataDTO.from(authUser, organization)))));
+    UserData userData =
+        UserData.retrieve(sessionId, authApi().sdkRequest().build()).toCompletableFuture().join();
+    assertEquals(userData, new UserData(user, organization));
 
     // should be able to get session via cookie
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(SsoSessionResource.PATH + "/session/userdata")
-        .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                objectMapper.writeValueAsString(
-                    DataResponse.data(UserDataDTO.from(authUser, organization)))));
+    userData =
+        UserData.retrieve(authApi().sdkRequest().sessionId(sessionId).build())
+            .toCompletableFuture()
+            .join();
+
+    assertEquals(userData, new UserData(user, organization));
 
     // should be able to logout
     given()

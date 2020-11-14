@@ -2,6 +2,7 @@ package com.rebrowse.model.auth;
 
 import com.rebrowse.model.user.User;
 import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -23,10 +24,12 @@ public class ApiKey {
   }
 
   public static CompletionStage<User> retrieveUser(RequestOptions requestOptions) {
-    return ApiResource.get("/v1/sso/auth/token/user", User.class, requestOptions);
+    return ApiResource.request(
+        RequestMethod.GET, "/v1/sso/auth/token/user", User.class, requestOptions);
   }
 
   public static CompletionStage<ApiKey> create(RequestOptions requestOptions) {
-    return ApiResource.post("/v1/sso/auth/token", ApiKey.class, requestOptions);
+    return ApiResource.request(
+        RequestMethod.POST, "/v1/sso/auth/token", ApiKey.class, requestOptions);
   }
 }

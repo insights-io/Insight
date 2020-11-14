@@ -1,6 +1,7 @@
 package com.rebrowse.model.auth;
 
 import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
 import java.net.URL;
 import java.time.OffsetDateTime;
@@ -25,6 +26,7 @@ public class SsoSetup {
 
   public static CompletionStage<SsoSetup> create(
       SsoSetupCreateParams params, RequestOptions options) {
-    return ApiResource.post("/v1/sso/setup", params, SsoSetup.class, options);
+    return ApiResource.request(
+        RequestMethod.POST, "/v1/sso/setup", params, SsoSetup.class, options);
   }
 }

@@ -1,9 +1,10 @@
 package com.rebrowse.net;
 
 import com.rebrowse.model.ApiRequestParams;
+import com.rebrowse.util.FormEncoder;
 import com.rebrowse.util.StringUtils;
-import java.net.http.HttpRequest.BodyPublisher;
-import java.net.http.HttpRequest.BodyPublishers;
+import java.net.URI;
+import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,26 +17,22 @@ import lombok.Value;
 public class RebrowseRequest {
 
   RequestMethod method;
-  String path;
+  URI uri;
   Map<String, List<String>> headers;
-  RequestOptions requestOptions;
-  BodyPublisher bodyPublisher;
+  RequestOptions options;
+  HttpRequest.BodyPublisher bodyPublisher;
 
-  private RebrowseRequest(
-      RequestMethod method,
-      String path,
-      RequestOptions requestOptions,
-      BodyPublisher bodyPublisher) {
+  public RebrowseRequest(
+      RequestMethod method, String path, RequestOptions maybeOptions, ApiRequestParams params) {
     this.method = method;
-    this.path = path;
-    this.bodyPublisher = bodyPublisher;
-    this.requestOptions =
-        Optional.ofNullable(requestOptions).orElseGet(RequestOptions::createDefault);
-    this.headers = buildHeaders(this.requestOptions, bodyPublisher);
+    this.bodyPublisher = bodyPublisher(params);
+    this.options = Optional.ofNullable(maybeOptions).orElseGet(RequestOptions::createDefault);
+    this.headers = buildHeaders(this.options, bodyPublisher);
+    this.uri = buildURI(options.getApiBaseUrl(), path, method, params);
   }
 
   private static Map<String, List<String>> buildHeaders(
-      RequestOptions options, BodyPublisher bodyPublisher) {
+      RequestOptions options, HttpRequest.BodyPublisher bodyPublisher) {
     Map<String, List<String>> headers = new HashMap<>();
 
     // Accept
@@ -65,37 +62,23 @@ public class RebrowseRequest {
     return token != null && !token.isEmpty() && !StringUtils.containsWhitespace(token);
   }
 
-  public static RebrowseRequest get(String path, RequestOptions options) {
-    return noBody(RequestMethod.GET, path, options);
+  private <P extends ApiRequestParams> URI buildURI(
+      String apiBaseUrl, String path, RequestMethod method, P params) {
+    StringBuilder sb = new StringBuilder(apiBaseUrl).append(path);
+    if (params != null && method.equals(RequestMethod.GET)) {
+      String queryString = FormEncoder.createQueryString(params.toMap());
+      if (!queryString.isBlank()) {
+        sb.append("?");
+        sb.append(queryString);
+      }
+    }
+
+    return URI.create(sb.toString());
   }
 
-  public static RebrowseRequest post(String path, RequestOptions options) {
-    return noBody(RequestMethod.POST, path, options);
-  }
-
-  public static <P extends ApiRequestParams> RebrowseRequest post(
-      String path, P params, RequestOptions options) {
-    return ofString(RequestMethod.POST, path, params, options);
-  }
-
-  public static RebrowseRequest patch(String path, RequestOptions options) {
-    return noBody(RequestMethod.PATCH, path, options);
-  }
-
-  public static <P extends ApiRequestParams> RebrowseRequest patch(
-      String path, P params, RequestOptions options) {
-    return ofString(RequestMethod.PATCH, path, params, options);
-  }
-
-  private static RebrowseRequest noBody(
-      RequestMethod method, String path, RequestOptions requestOptions) {
-    return new RebrowseRequest(method, path, requestOptions, BodyPublishers.noBody());
-  }
-
-  private static <P extends ApiRequestParams> RebrowseRequest ofString(
-      RequestMethod method, String path, P params, RequestOptions options) {
-    BodyPublisher bodyPublisher =
-        BodyPublishers.ofString(params.writeValueAsString(), StandardCharsets.UTF_8);
-    return new RebrowseRequest(method, path, options, bodyPublisher);
+  private <P extends ApiRequestParams> HttpRequest.BodyPublisher bodyPublisher(P params) {
+    return params == null
+        ? HttpRequest.BodyPublishers.noBody()
+        : HttpRequest.BodyPublishers.ofString(params.writeValueAsString(), StandardCharsets.UTF_8);
   }
 }

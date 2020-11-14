@@ -2,6 +2,7 @@ package com.rebrowse.model.organization;
 
 import com.rebrowse.model.user.UserRole;
 import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -23,21 +24,23 @@ public class TeamInvite {
   OffsetDateTime expiresAt;
   boolean valid;
 
+  public static CompletionStage<TeamInvite> retrieve(UUID token) {
+    return retrieve(token, null);
+  }
+
+  public static CompletionStage<TeamInvite> retrieve(UUID token, RequestOptions options) {
+    String url = String.format("/v1/organization/invites/%s", token);
+    return ApiResource.request(RequestMethod.GET, url, TeamInvite.class, options);
+  }
+
   public static CompletionStage<TeamInvite> create(TeamInviteCreateParams params) {
     return create(params, null);
   }
 
   public static CompletionStage<TeamInvite> create(
       TeamInviteCreateParams params, RequestOptions options) {
-    return ApiResource.post("/v1/organization/invites", params, TeamInvite.class, options);
-  }
-
-  public CompletionStage<Void> accept(TeamInviteAcceptParams params) {
-    return accept(token, params);
-  }
-
-  public CompletionStage<Void> accept(TeamInviteAcceptParams params, RequestOptions options) {
-    return accept(token, params, options);
+    return ApiResource.request(
+        RequestMethod.POST, "/v1/organization/invites", params, TeamInvite.class, options);
   }
 
   public static CompletionStage<Void> accept(UUID token, TeamInviteAcceptParams params) {
@@ -47,15 +50,14 @@ public class TeamInvite {
   public static CompletionStage<Void> accept(
       UUID token, TeamInviteAcceptParams params, RequestOptions options) {
     String url = String.format("/v1/organization/invites/%s/accept", token);
-    return ApiResource.post(url, params, Void.class, options);
+    return ApiResource.request(RequestMethod.POST, url, params, Void.class, options);
   }
 
-  public static CompletionStage<TeamInvite> retrieve(UUID token) {
-    return retrieve(token, null);
+  public CompletionStage<Void> accept(TeamInviteAcceptParams params) {
+    return accept(token, params);
   }
 
-  public static CompletionStage<TeamInvite> retrieve(UUID token, RequestOptions options) {
-    String url = String.format("/v1/organization/invites/%s", token);
-    return ApiResource.get(url, TeamInvite.class, options);
+  public CompletionStage<Void> accept(TeamInviteAcceptParams params, RequestOptions options) {
+    return accept(token, params, options);
   }
 }

@@ -9,17 +9,20 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class UserAgent {
 
+  private static final String ROBOT = "Robot";
+  private static final String HACKER = "Hacker";
+
   String deviceClass;
   String operatingSystemName;
   String browserName;
 
   @JsonIgnore
   public boolean isRobot() {
-    return "Robot".equals(deviceClass);
+    return ROBOT.equals(deviceClass);
   }
 
   @JsonIgnore
   public boolean isHacker() {
-    return "Hacker".equals(deviceClass);
+    return HACKER.equals(deviceClass);
   }
 }

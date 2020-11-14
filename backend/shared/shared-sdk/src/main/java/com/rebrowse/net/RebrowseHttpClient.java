@@ -1,6 +1,7 @@
 package com.rebrowse.net;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rebrowse.exception.ApiException;
 import com.rebrowse.exception.RebrowseException;
@@ -29,31 +30,27 @@ public class RebrowseHttpClient implements HttpClient {
   }
 
   @Override
-  public <T> CompletionStage<T> get(String url, Class<T> clazz, RequestOptions requestOptions) {
-    return request(RebrowseRequest.get(url, requestOptions), clazz);
+  public <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method, String path, P params, Class<R> clazz, RequestOptions requestOptions) {
+    return request(
+        new RebrowseRequest(method, path, requestOptions, params),
+        (body) -> dataResponseType(body, clazz));
   }
 
   @Override
-  public <P extends ApiRequestParams, T> CompletionStage<T> post(
-      String url, P params, Class<T> clazz, RequestOptions requestOptions) {
-    RebrowseRequest request = RebrowseRequest.post(url, params, requestOptions);
-    return request(request, clazz);
+  public <R, P extends ApiRequestParams> CompletionStage<R> request(
+      RequestMethod method,
+      String path,
+      P params,
+      TypeReference<R> clazz,
+      RequestOptions requestOptions) {
+    return request(
+        new RebrowseRequest(method, path, requestOptions, params),
+        (body) -> dataResponseType(body, clazz));
   }
 
-  @Override
-  public <P extends ApiRequestParams, T> CompletionStage<T> patch(
-      String url, P params, Class<T> clazz, RequestOptions requestOptions) {
-    RebrowseRequest request = RebrowseRequest.patch(url, params, requestOptions);
-    return request(request, clazz);
-  }
-
-  @Override
-  public <T> CompletionStage<T> post(String url, Class<T> clazz, RequestOptions requestOptions) {
-    RebrowseRequest request = RebrowseRequest.post(url, requestOptions);
-    return request(request, clazz);
-  }
-
-  private <T> CompletionStage<T> request(RebrowseRequest request, Class<T> clazz) {
+  private <T> CompletionStage<T> request(
+      RebrowseRequest request, ReadValue<String, RebrowseOkDataResponse<T>> readValue) {
     return rawHttpClient
         .requestWithRetries(request)
         .thenApply(
@@ -71,13 +68,7 @@ public class RebrowseHttpClient implements HttpClient {
               }
 
               try {
-                RebrowseOkDataResponse<T> dataResponse =
-                    objectMapper.readValue(
-                        body,
-                        objectMapper
-                            .getTypeFactory()
-                            .constructParametricType(RebrowseOkDataResponse.class, clazz));
-
+                RebrowseOkDataResponse<T> dataResponse = readValue.apply(body);
                 return dataResponse.getData();
               } catch (JsonProcessingException ex) {
                 throw malformedJsonError(body, statusCode, requestId, ex);
@@ -102,5 +93,22 @@ public class RebrowseHttpClient implements HttpClient {
             "Invalid response object from API: %s. (HTTP response code was %d)", body, statusCode);
     RebrowseError<?> apiError = new RebrowseError<>(statusCode, "Malformed JSON", message, null);
     return new ApiException(apiError, requestId, statusCode, exception);
+  }
+
+  private <R> RebrowseOkDataResponse<R> dataResponseType(String body, Class<R> clazz)
+      throws JsonProcessingException {
+    return objectMapper.readValue(
+        body,
+        objectMapper.getTypeFactory().constructParametricType(RebrowseOkDataResponse.class, clazz));
+  }
+
+  private <R> RebrowseOkDataResponse<R> dataResponseType(
+      String body, TypeReference<R> typeReference) throws JsonProcessingException {
+    return objectMapper.readValue(
+        body,
+        objectMapper
+            .getTypeFactory()
+            .constructParametricType(
+                RebrowseOkDataResponse.class, objectMapper.constructType(typeReference.getType())));
   }
 }

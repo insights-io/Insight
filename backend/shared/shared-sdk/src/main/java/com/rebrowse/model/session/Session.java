@@ -1,6 +1,7 @@
 package com.rebrowse.model.session;
 
 import com.rebrowse.net.ApiResource;
+import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class Session {
   OffsetDateTime createdAt;
 
   public static CompletionStage<Session> retrieve(UUID id, RequestOptions requestOptions) {
-    return ApiResource.get(String.format("/v1/sessions/%s", id), Session.class, requestOptions);
+    return ApiResource.request(
+        RequestMethod.GET, String.format("/v1/sessions/%s", id), Session.class, requestOptions);
   }
 }

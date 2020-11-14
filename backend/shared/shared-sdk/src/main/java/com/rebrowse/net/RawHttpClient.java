@@ -22,6 +22,35 @@ public abstract class RawHttpClient {
   /** Minimum sleep time between tries to send HTTP requests after network failure. */
   public static final Duration minNetworkRetriesDelay = Duration.ofMillis(500);
 
+  public static String userAgentString() {
+    return String.format("Rebrowse/v1 JavaBindings/%s", Rebrowse.VERSION);
+  }
+
+  public static String clientUserAgentString() {
+    String[] propertyNames = {
+      "os.name",
+      "os.version",
+      "os.arch",
+      "java.version",
+      "java.vendor",
+      "java.vm.version",
+      "java.vm.vendor"
+    };
+
+    Map<String, String> propertyMap = new HashMap<>();
+    for (String propertyName : propertyNames) {
+      propertyMap.put(propertyName, System.getProperty(propertyName));
+    }
+    propertyMap.put("lang", "Java");
+    propertyMap.put("publisher", "Rebrowse");
+
+    try {
+      return ApiResource.OBJECT_MAPPER.writeValueAsString(propertyMap);
+    } catch (JsonProcessingException exception) {
+      throw new JsonException(exception);
+    }
+  }
+
   public abstract CompletionStage<RebrowseResponse> request(RebrowseRequest request);
 
   public CompletionStage<RebrowseResponse> requestWithRetries(RebrowseRequest request) {
@@ -59,7 +88,7 @@ public abstract class RawHttpClient {
       RebrowseRequest request,
       RebrowseResponse response,
       CompletionException exception) {
-    if (attempt >= request.getRequestOptions().getMaxNetworkRetries()) {
+    if (attempt >= request.getOptions().getMaxNetworkRetries()) {
       return false;
     }
 
@@ -145,34 +174,5 @@ public abstract class RawHttpClient {
     }
 
     return delay;
-  }
-
-  public static String userAgentString() {
-    return String.format("Rebrowse/v1 JavaBindings/%s", Rebrowse.VERSION);
-  }
-
-  public static String clientUserAgentString() {
-    String[] propertyNames = {
-      "os.name",
-      "os.version",
-      "os.arch",
-      "java.version",
-      "java.vendor",
-      "java.vm.version",
-      "java.vm.vendor"
-    };
-
-    Map<String, String> propertyMap = new HashMap<>();
-    for (String propertyName : propertyNames) {
-      propertyMap.put(propertyName, System.getProperty(propertyName));
-    }
-    propertyMap.put("lang", "Java");
-    propertyMap.put("publisher", "Rebrowse");
-
-    try {
-      return ApiResource.OBJECT_MAPPER.writeValueAsString(propertyMap);
-    } catch (JsonProcessingException exception) {
-      throw new JsonException(exception);
-    }
   }
 }
