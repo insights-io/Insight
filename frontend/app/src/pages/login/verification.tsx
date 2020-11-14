@@ -6,17 +6,19 @@ import nextCookie from 'next-cookies';
 import { VerificationPage } from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { AuthApi } from 'api/auth';
-import type { APIErrorDataResponse, TfaMethod } from '@insight/types';
+import type { APIErrorDataResponse, TfaMethod, UserDTO } from '@insight/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SetupTwoFactorAuthenticationPage } from 'modules/auth/pages/SetupTwoFactorAuthenticationPage';
+import { mapUser } from '@insight/sdk';
 
 type Props = {
   methods: TfaMethod[];
+  user: UserDTO;
 };
 
-const Verification = ({ methods }: Props) => {
+const Verification = ({ methods, user }: Props) => {
   if (methods.length === 0) {
-    return <SetupTwoFactorAuthenticationPage />;
+    return <SetupTwoFactorAuthenticationPage user={mapUser(user)} />;
   }
 
   return <VerificationPage methods={methods} />;
@@ -44,12 +46,19 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     }
 
     try {
-      const methods = await AuthApi.tfa.challenge.get(ChallengeId, {
+      const methodsPromise = AuthApi.tfa.challenge.get(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });
 
-      return { props: { methods } };
+      const userPromise = AuthApi.tfa.challenge.retrieveUser(ChallengeId, {
+        baseURL: process.env.AUTH_API_BASE_URL,
+        headers: prepareCrossServiceHeaders(requestSpan),
+      });
+
+      const [methods, user] = await Promise.all([methodsPromise, userPromise]);
+
+      return { props: { methods, user } };
     } catch (error) {
       const errorDTO: APIErrorDataResponse = await error.response.json();
       if (errorDTO.error.statusCode === 404) {

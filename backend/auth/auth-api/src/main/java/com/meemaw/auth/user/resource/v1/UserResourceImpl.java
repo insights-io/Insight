@@ -1,18 +1,20 @@
 package com.meemaw.auth.user.resource.v1;
 
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
-import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
-import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.sms.impl.TfaSmsProvider;
+import com.meemaw.auth.tfa.dto.MfaChallengeCodeDetailsDTO;
+import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.sms.impl.MfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.phone.service.UserPhoneCodeService;
 import com.meemaw.auth.user.service.UserService;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -52,6 +54,14 @@ public class UserResourceImpl implements UserResource {
   }
 
   @Override
+  public CompletionStage<Response> updatePhoneNumber(PhoneNumberDTO phoneNumber) {
+    AuthUser user = principal.user();
+    Map<String, Object> params = new LinkedHashMap<>(2);
+    params.put(UserTable.PHONE_NUMBER, phoneNumber);
+    return update(user.getId(), user, params);
+  }
+
+  @Override
   public CompletionStage<Response> update(Map<String, Object> body) {
     AuthUser user = principal.user();
     return update(user.getId(), user, body);
@@ -85,7 +95,7 @@ public class UserResourceImpl implements UserResource {
   }
 
   @Override
-  public CompletionStage<Response> verifyPhoneNumber(TfaChallengeCompleteDTO body) {
+  public CompletionStage<Response> verifyPhoneNumber(MfaChallengeCompleteDTO body) {
     AuthUser user = principal.user();
     return userService.verifyPhoneNumber(user, body.getCode()).thenApply(DataResponse::ok);
   }
@@ -116,10 +126,10 @@ public class UserResourceImpl implements UserResource {
         userId,
         phoneNumber);
 
-    String codeKey = TfaSmsProvider.verifyCodeKey(userId);
+    String codeKey = MfaSmsProvider.verifyCodeKey(userId);
     return userPhoneCodeService
         .sendVerificationCode(codeKey, phoneNumber)
-        .thenApply(TfaChallengeCodeDetailsDTO::new)
+        .thenApply(MfaChallengeCodeDetailsDTO::new)
         .thenApply(DataResponse::ok);
   }
 }

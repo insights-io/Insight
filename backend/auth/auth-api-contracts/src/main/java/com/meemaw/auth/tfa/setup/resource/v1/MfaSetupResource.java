@@ -1,24 +1,22 @@
-package com.meemaw.auth.user.resource.v1;
+package com.meemaw.auth.tfa.setup.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.ChallengeSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
-import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.tfa.MfaMethod;
 import com.meemaw.auth.tfa.dto.MfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
-import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
-import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.auth.tfa.model.dto.MfaSetupDTO;
+import com.meemaw.auth.tfa.totp.model.dto.MfaTotpSetupStartDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -33,57 +31,17 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@Path(UserResource.PATH)
+@Path(MfaSetupResource.PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@RegisterRestClient(configKey = "auth-api")
-public interface UserResource {
+public interface MfaSetupResource {
 
-  String PATH = "/v1/user";
-  String TAG = "User";
-
-  @GET
-  @Tag(name = TAG)
-  @Operation(summary = "Retrieve authenticated user")
-  @SecurityRequirements(
-      value = {
-        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
-      })
-  @APIResponses(
-      value = {
-        @APIResponse(
-            responseCode = "200",
-            description = "User object",
-            content =
-                @Content(
-                    schema = @Schema(implementation = UserDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON)),
-        @APIResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
-        @APIResponse(
-            responseCode = "500",
-            description = "Internal Server Error",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
-      })
-  CompletionStage<Response> retrieveAssociated(
-      @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
+  String PATH = "/v1/mfa/setup";
+  String TAG = "Multi-factor authentication";
 
   @GET
-  @Path("{userId}")
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve user")
+  @Operation(summary = "List Multi-factor authentication configurations")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -93,66 +51,11 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "Multi-factor authentication configurations",
             content =
                 @Content(
-                    schema = @Schema(implementation = UserDataResponse.class),
+                    schema = @Schema(implementation = TfaSetupCollectionDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
-        @APIResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
-        @APIResponse(
-            responseCode = "404",
-            description = "User Not Found",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
-        @APIResponse(
-            responseCode = "500",
-            description = "Internal Server Error",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
-      })
-  CompletionStage<Response> retrieve(@PathParam("userId") UUID userId);
-
-  @PATCH
-  @Path("phone_number")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Tag(name = TAG)
-  @Operation(summary = "Update user's phone number")
-  @SecurityRequirements(
-      value = {
-        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME),
-        @SecurityRequirement(name = ChallengeSessionCookieSecurityScheme.NAME)
-      })
-  @APIResponses(
-      value = {
-        @APIResponse(
-            responseCode = "200",
-            description = "User object",
-            content =
-                @Content(
-                    schema = @Schema(implementation = UserDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON)),
-        @APIResponse(
-            responseCode = "400",
-            description = "Bad Request",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
         @APIResponse(
             responseCode = "401",
             description = "Unauthorized",
@@ -170,12 +73,12 @@ public interface UserResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> updatePhoneNumber(PhoneNumberDTO phoneNumber);
+  CompletionStage<Response> list();
 
-  @PATCH
-  @Consumes(MediaType.APPLICATION_JSON)
+  @GET
+  @Path("{method}")
   @Tag(name = TAG)
-  @Operation(summary = "Update user")
+  @Operation(summary = "Retrieve Multi-factor authentication setup")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -185,65 +88,11 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "Multi-factor authentication setup",
             content =
                 @Content(
-                    schema = @Schema(implementation = UserDataResponse.class),
+                    schema = @Schema(implementation = TfaSetupDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
-        @APIResponse(
-            responseCode = "400",
-            description = "Bad Request",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
-        @APIResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
-        @APIResponse(
-            responseCode = "500",
-            description = "Internal Server Error",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
-      })
-  CompletionStage<Response> update(@NotNull(message = "Required") Map<String, Object> body);
-
-  @PATCH
-  @Path("{userId}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Tag(name = TAG)
-  @Operation(summary = "Update user")
-  @SecurityRequirements(
-      value = {
-        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
-      })
-  @APIResponses(
-      value = {
-        @APIResponse(
-            responseCode = "200",
-            description = "User object",
-            content =
-                @Content(
-                    schema = @Schema(implementation = UserDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON)),
-        @APIResponse(
-            responseCode = "400",
-            description = "Bad Request",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
         @APIResponse(
             responseCode = "401",
             description = "Unauthorized",
@@ -269,14 +118,102 @@ public interface UserResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> update(
-      @PathParam("userId") UUID userId, @NotNull(message = "Required") Map<String, Object> body);
+  CompletionStage<Response> retrieve(@PathParam("method") MfaMethod method);
 
-  @Path("phone_number/verify")
-  @PATCH
+  @DELETE
+  @Path("{method}")
+  @Tag(name = TAG)
+  @Operation(summary = "Delete Multi-factor authentication configuration")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(responseCode = "204", description = "Success"),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> delete(@PathParam("method") MfaMethod method);
+
+  @POST
+  @Path("{method}/start")
+  @Tag(name = TAG)
+  @Operation(summary = "Start Multi-factor authentication configuration setup")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME),
+        @SecurityRequirement(name = ChallengeSessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Multi-factor authentication setup details",
+            content = {
+              @Content(
+                  schema = @Schema(implementation = TfaTotpSetupStartDataResponse.class),
+                  mediaType = MediaType.APPLICATION_JSON),
+              @Content(
+                  schema = @Schema(implementation = TfaChallengeCodeDetailsDataResponse.class),
+                  mediaType = MediaType.APPLICATION_JSON)
+            }),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.NOT_FOUND_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> start(@PathParam("method") MfaMethod method);
+
+  @POST
+  @Path("{method}/complete")
   @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
-  @Operation(summary = "Verify phone number")
+  @Operation(summary = "Complete Multi-factor authentication configuration setup")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -286,10 +223,58 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "Multi-factor authentication configuration",
             content =
                 @Content(
-                    schema = @Schema(implementation = UserDataResponse.class),
+                    schema = @Schema(implementation = TfaSetupDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> complete(
+      @PathParam("method") MfaMethod method,
+      @NotNull(message = "Required") @Valid MfaChallengeCompleteDTO body);
+
+  @POST
+  @Path("{method}/complete/enforced")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Tag(name = TAG)
+  @Operation(
+      summary = "Complete Multi-factor authentication configuration setup",
+      description =
+          "Complete Multi-factor authentication flow associated with challenge. Upon successful completion, challenge session is exchanged for SSO session and user is logged in.")
+  @SecurityRequirements(
+      value = {@SecurityRequirement(name = ChallengeSessionCookieSecurityScheme.NAME)})
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "Multi-factor authentication setup details",
+            content =
+                @Content(
+                    schema = @Schema(implementation = TfaSetupDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "400",
@@ -316,35 +301,29 @@ public interface UserResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> verifyPhoneNumber(
+  CompletionStage<Response> completeEnforcedSetup(
+      @PathParam("method") MfaMethod method,
       @NotNull(message = "Required") @Valid MfaChallengeCompleteDTO body);
 
   @POST
-  @Path("phone_number/verify/send_code")
+  @Path("sms/send_code")
   @Tag(name = TAG)
-  @Operation(summary = "Send phone number verification code")
+  @Operation(summary = "Send Multi-factor authentication setup SMS code")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME),
+        @SecurityRequirement(name = ChallengeSessionCookieSecurityScheme.NAME),
       })
   @APIResponses(
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "Verification validity info",
+            description = "Multi-factor authentication setup details",
             content =
                 @Content(
-                    schema = @Schema(implementation = TfaSetupStartResponse.class),
+                    schema = @Schema(implementation = TfaChallengeCodeDetailsDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
-        @APIResponse(
-            responseCode = "400",
-            description = "Phone number already verified",
-            content =
-                @Content(
-                    schema = @Schema(implementation = ErrorDataResponse.class),
-                    mediaType = MediaType.APPLICATION_JSON,
-                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
         @APIResponse(
             responseCode = "401",
             description = "Unauthorized",
@@ -362,9 +341,13 @@ public interface UserResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> phoneNumberVerifySendCode();
+  CompletionStage<Response> sendSmsCode();
 
-  class UserDataResponse extends OkDataResponse<UserDTO> {}
+  class TfaSetupDataResponse extends OkDataResponse<MfaSetupDTO> {}
 
-  class TfaSetupStartResponse extends OkDataResponse<MfaChallengeCodeDetailsDTO> {}
+  class TfaSetupCollectionDataResponse extends OkDataResponse<List<MfaSetupDTO>> {}
+
+  class TfaTotpSetupStartDataResponse extends OkDataResponse<MfaTotpSetupStartDTO> {}
+
+  class TfaChallengeCodeDetailsDataResponse extends OkDataResponse<MfaChallengeCodeDetailsDTO> {}
 }

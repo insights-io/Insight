@@ -4,12 +4,17 @@ import Head from 'next/head';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
-import { TfaMethod } from '@insight/types';
+import { TfaMethod, User } from '@insight/types';
 import { TimeBasedTwoFactorAuthenticationForm } from 'modules/auth/components/TimeBasedTwoFactorAuthenticationForm';
 import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
+import { SmsTwoFactorAuthenticationForm } from 'modules/auth/components/SmsTwoFactorAuthenticationForm';
 
-export const SetupTwoFactorAuthenticationPage = () => {
+type Props = {
+  user: User;
+};
+
+export const SetupTwoFactorAuthenticationPage = ({ user: _user }: Props) => {
   const [activeMethod, setActiveMethod] = useState<TfaMethod>('totp');
   const router = useRouter();
   const relativeRedirect = (router.query.redirect || '/') as string;
@@ -40,7 +45,7 @@ export const SetupTwoFactorAuthenticationPage = () => {
           />
         </Tab>
         <Tab title="Text message" key="sms">
-          todo
+          <SmsTwoFactorAuthenticationForm />
         </Tab>
       </Tabs>
     </AuthPageLayout>

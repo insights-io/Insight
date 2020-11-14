@@ -108,7 +108,7 @@ CREATE TABLE auth.sign_up_request
     CONSTRAINT email_length CHECK (length(auth.sign_up_request.email) < 255)
 );
 
-CREATE TABLE auth.user_tfa_setup
+CREATE TABLE auth.user_mfa_configuration
 (
     user_id    UUID REFERENCES auth.user (id) ON DELETE CASCADE,
     params     JSONB       NOT NULL,

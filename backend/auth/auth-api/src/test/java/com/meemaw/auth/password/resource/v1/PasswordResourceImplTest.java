@@ -12,10 +12,10 @@ import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
-import com.meemaw.auth.tfa.challenge.resource.v1.TfaChallengeResourceImpl;
+import com.meemaw.auth.tfa.challenge.resource.v1.MfaChallengeResourceImpl;
 import com.meemaw.auth.tfa.model.SsoChallenge;
-import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.totp.datasource.TfaTotpSetupDatasource;
+import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.totp.datasource.MfaTotpSetupDatasource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.test.setup.AbstractAuthApiTest;
@@ -61,7 +61,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   public static final String PASSWORD_RESET_EXISTS_PATH_TEMPLATE =
       String.join("/", PASSWORD_RESET_PATH_TEMPLATE, "exists");
 
-  @Inject TfaTotpSetupDatasource tfaTotpSetupDatasource;
+  @Inject MfaTotpSetupDatasource mfaTotpSetupDatasource;
 
   @Test
   public void password_reset_exists__should_be_false__when_random_token() {
@@ -272,7 +272,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     User user = authApi().retrieveUserData(sessionId).getUser();
-    String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, tfaTotpSetupDatasource);
+    String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, mfaTotpSetupDatasource);
 
     // init flow
     PasswordResourceImplTest.passwordForgot(user.getEmail(), objectMapper);
@@ -312,8 +312,8 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .cookie(SsoChallenge.COOKIE_NAME, challengeId)
         .body(
             objectMapper.writeValueAsString(
-                new TfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
-        .post(TfaChallengeResourceImpl.PATH + "/totp/complete")
+                new MfaChallengeCompleteDTO(TotpUtils.generateCurrentNumber(secret))))
+        .post(MfaChallengeResourceImpl.PATH + "/totp/complete")
         .then()
         .statusCode(204)
         .cookie(SsoChallenge.COOKIE_NAME, "")

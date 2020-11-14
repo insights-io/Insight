@@ -1,6 +1,6 @@
 package com.meemaw.auth.user.model;
 
-import com.meemaw.auth.tfa.TfaMethod;
+import com.meemaw.auth.tfa.MfaMethod;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import java.time.OffsetDateTime;
@@ -22,7 +22,7 @@ public class UserWithLoginInformation {
   PhoneNumber phoneNumber;
   boolean phoneNumberVerified;
   String password;
-  List<TfaMethod> tfaMethods;
+  List<MfaMethod> mfaMethods;
 
   public AuthUser user() {
     return new UserDTO(

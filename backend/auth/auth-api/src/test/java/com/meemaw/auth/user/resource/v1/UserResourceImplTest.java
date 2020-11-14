@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
-import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
@@ -25,6 +25,8 @@ import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.model.user.PhoneNumberUpdateParams;
+import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
@@ -177,7 +179,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(10)))
+        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
         .statusCode(400)
@@ -190,7 +192,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(10)))
+        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
         .statusCode(400)
@@ -208,7 +210,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(10)))
+        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
         .statusCode(400)
@@ -221,13 +223,36 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
-        .body(JacksonMapper.get().writeValueAsString(new TfaChallengeCompleteDTO(10)))
+        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
         .statusCode(400)
         .body(
             sameJson(
                 "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"phone_number\":\"Required\"}}}"));
+  }
+
+  @Test
+  public void update_user_phone_number__should_throw__when_unauthorized() {
+    RestAssuredUtils.ssoSessionCookieTestCases(
+        Method.PATCH, UserResource.PATH + "/phone_number", ContentType.JSON);
+    RestAssuredUtils.ssoBearerTokenTestCases(
+        Method.PATCH, UserResource.PATH + "/phone_number", ContentType.JSON);
+  }
+
+  @Test
+  public void update_user_phone_number__should_work__when_valid_body()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+
+    User updated =
+        User.updatePhoneNumber(
+                PhoneNumberUpdateParams.builder().countryCode("+386").digits("51123456").build(),
+                authApi().sdkRequest().sessionId(sessionId).build())
+            .toCompletableFuture()
+            .join();
+
+    assertEquals("+38651123456", updated.getPhoneNumber().getNumber());
   }
 
   @ParameterizedTest
@@ -390,7 +415,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .cookie(SsoSession.COOKIE_NAME, sessionId)
             .body(
                 JacksonMapper.get()
-                    .writeValueAsString(new TfaChallengeCompleteDTO(verificationCode)))
+                    .writeValueAsString(new MfaChallengeCompleteDTO(verificationCode)))
             .patch(PHONE_NUMBER_VERIFY_PATH)
             .as(new TypeRef<>() {});
 

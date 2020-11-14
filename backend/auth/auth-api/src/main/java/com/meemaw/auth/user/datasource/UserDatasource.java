@@ -24,6 +24,8 @@ public interface UserDatasource {
 
   CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update);
 
+  CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update, SqlTransaction transaction);
+
   CompletionStage<Optional<AuthUser>> findUser(UUID userId);
 
   CompletionStage<Optional<AuthUser>> findUser(String email);

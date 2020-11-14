@@ -17,8 +17,8 @@ import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
 import com.meemaw.auth.tfa.ChallengeLoginResult;
-import com.meemaw.auth.tfa.TfaMethod;
-import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
+import com.meemaw.auth.tfa.MfaMethod;
+import com.meemaw.auth.tfa.challenge.service.MfaChallengeService;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
@@ -52,7 +52,7 @@ public class SsoServiceImpl implements SsoService {
   @Inject PasswordService passwordService;
   @Inject UserDatasource userDatasource;
   @Inject SignUpService signUpService;
-  @Inject TfaChallengeService tfaChallengeService;
+  @Inject MfaChallengeService mfaChallengeService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject IdentityProviderRegistry identityProviderRegistry;
 
@@ -165,7 +165,7 @@ public class SsoServiceImpl implements SsoService {
                   userWithLoginInformation ->
                       authenticate(
                           userWithLoginInformation.user(),
-                          userWithLoginInformation.getTfaMethods()));
+                          userWithLoginInformation.getMfaMethods()));
         };
 
     Function<SsoSetup, CompletionStage<LoginResult<?>>> alternativeLoginProvider =
@@ -277,12 +277,12 @@ public class SsoServiceImpl implements SsoService {
   }
 
   private CompletionStage<LoginResult<?>> authenticate(
-      AuthUser user, List<TfaMethod> userTfaMethods) {
-    return authenticate(user, userTfaMethods, null);
+      AuthUser user, List<MfaMethod> userMfaMethods) {
+    return authenticate(user, userMfaMethods, null);
   }
 
   private CompletionStage<LoginResult<?>> authenticate(
-      AuthUser user, List<TfaMethod> userTfaMethods, @Nullable URI redirect) {
+      AuthUser user, List<MfaMethod> userMfaMethods, @Nullable URI redirect) {
     UUID userId = user.getId();
     String organizationId = user.getOrganizationId();
     MDC.put(LoggingConstants.USER_ID, userId.toString());
@@ -290,15 +290,15 @@ public class SsoServiceImpl implements SsoService {
 
     Supplier<CompletionStage<LoginResult<?>>> challengeSupplier =
         () ->
-            tfaChallengeService
+            mfaChallengeService
                 .start(userId)
                 .thenApply(
                     challengeId -> {
                       log.debug("[AUTH]: TFA challenge={} for user={}", challengeId, userId);
-                      return new ChallengeLoginResult(challengeId, userTfaMethods, redirect);
+                      return new ChallengeLoginResult(challengeId, userMfaMethods, redirect);
                     });
 
-    if (userTfaMethods.isEmpty()) {
+    if (userMfaMethods.isEmpty()) {
       // TODO: should probably read from cache
       return organizationDatasource
           .findOrganization(organizationId)
@@ -340,7 +340,7 @@ public class SsoServiceImpl implements SsoService {
                   userWithLoginInformation ->
                       authenticate(
                           userWithLoginInformation.user(),
-                          userWithLoginInformation.getTfaMethods(),
+                          userWithLoginInformation.getMfaMethods(),
                           redirect))
               .thenApply(
                   loginResult -> {
@@ -384,8 +384,8 @@ public class SsoServiceImpl implements SsoService {
         .thenCompose(
             userWithLoginInformation -> {
               AuthUser user = userWithLoginInformation.user();
-              List<TfaMethod> tfaMethods = userWithLoginInformation.getTfaMethods();
-              return authenticate(user, tfaMethods, redirect);
+              List<MfaMethod> mfaMethods = userWithLoginInformation.getMfaMethods();
+              return authenticate(user, mfaMethods, redirect);
             })
         .thenApply(
             loginResult -> {

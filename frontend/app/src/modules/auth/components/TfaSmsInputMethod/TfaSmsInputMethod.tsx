@@ -1,5 +1,5 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { CodeValidityDTO } from '@insight/types';
+import type { CodeValidityDTO } from '@insight/types';
 import { Block } from 'baseui/block';
 import { toaster } from 'baseui/toast';
 import { Flex, CodeInput, FlexColumn, Button } from '@insight/elements';
@@ -18,6 +18,7 @@ export const TfaSmsInputMethod = ({
 }: Props) => {
   const [validitySeconds, setValiditySeconds] = useState(0);
   const countdownInterval = useRef(null) as MutableRefObject<number | null>;
+  const [isSendingCode, setIsSendingCode] = useState(false);
 
   useEffect(() => {
     if (countdownInterval.current !== null && validitySeconds === 0) {
@@ -26,22 +27,28 @@ export const TfaSmsInputMethod = ({
     }
   }, [validitySeconds, countdownInterval]);
 
-  const handleActionClick = async (
+  const handleActionClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.stopPropagation();
     event.preventDefault();
-    if (validitySeconds !== 0) {
+    if (validitySeconds !== 0 || isSendingCode) {
       return;
     }
 
-    const response = await sendCode();
-    toaster.positive('Success', {});
-    setValiditySeconds(response.validitySeconds);
+    setIsSendingCode(true);
 
-    countdownInterval.current = window.setInterval(() => {
-      setValiditySeconds((v) => v - 1);
-    }, 1000);
+    sendCode()
+      .then((response) => {
+        toaster.positive('Success', {});
+        setValiditySeconds(response.validitySeconds);
+
+        countdownInterval.current = window.setInterval(() => {
+          setValiditySeconds((v) => v - 1);
+        }, 1000);
+      })
+      .catch(() => toaster.negative('Something went wrong', {}))
+      .finally(() => setIsSendingCode(false));
   };
 
   return (
@@ -55,7 +62,7 @@ export const TfaSmsInputMethod = ({
         />
       </Block>
       <FlexColumn justifyContent={error ? 'center' : 'flex-end'} width="100%">
-        <Button onClick={handleActionClick}>
+        <Button onClick={handleActionClick} isLoading={isSendingCode}>
           {validitySeconds ? `${validitySeconds}s` : 'Send Code'}
         </Button>
       </FlexColumn>
