@@ -1,5 +1,7 @@
 package com.rebrowse.net;
 
+import static com.rebrowse.api.RebrowseApi.REQUEST_ID_HEADER;
+
 import java.net.http.HttpHeaders;
 import java.util.Objects;
 import lombok.Value;
@@ -26,6 +28,6 @@ public class RebrowseResponse {
    * @return the ID of the request, as returned by Rebrowse
    */
   public String requestId() {
-    return this.headers.firstValue("X-Request-Id").orElse(null);
+    return this.headers.firstValue(REQUEST_ID_HEADER).orElse(null);
   }
 }

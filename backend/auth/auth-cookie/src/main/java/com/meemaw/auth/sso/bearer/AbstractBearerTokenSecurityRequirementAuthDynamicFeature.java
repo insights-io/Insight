@@ -29,6 +29,10 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
 
   private static final Pattern BEARER_PATTERN = Pattern.compile("^Bearer ([^ ]+)$");
 
+  private static final String MALFORMED_MESSAGE = "[AUTH]: Malformed authorization header";
+  private static final String MISSING_MESSAGE = "[AUTH]: Missing authorization header";
+  private static final String SERVICE_TO_SERVICE_MESSAGE = "[AUTH]: S2S authorization header";
+
   @ConfigProperty(name = "authorization.s2s.api.key")
   String s2sApiKey;
 
@@ -57,17 +61,15 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
     String authorization = context.getHeaderString(HttpHeaders.AUTHORIZATION);
 
     if (authorization == null) {
-      String message = "[AUTH]: Missing authorization header";
-      log.debug(message);
-      span.log(message);
+      log.debug(MISSING_MESSAGE);
+      span.log(MISSING_MESSAGE);
       throw Boom.unauthorized().exception();
     }
 
     Matcher matcher = BEARER_PATTERN.matcher(authorization);
     if (!matcher.matches()) {
-      String message = "[AUTH]: Malformed authorization header";
-      log.debug(message);
-      span.log(message);
+      log.debug(MALFORMED_MESSAGE);
+      span.log(MALFORMED_MESSAGE);
       span.setTag(HttpHeaders.AUTHORIZATION, authorization);
       throw Boom.unauthorized().exception();
     }
@@ -76,7 +78,7 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
     AuthUser user;
     if (s2sApiKey.equals(apiKey)) {
       user = UserRegistry.S2S_INTERNAL_USER;
-      span.log("[AUTH]: S2S Request");
+      span.log(SERVICE_TO_SERVICE_MESSAGE);
     } else {
       Optional<AuthUser> maybeUser = findUser(apiKey).toCompletableFuture().join();
       user = maybeUser.orElseThrow(() -> Boom.unauthorized().exception());

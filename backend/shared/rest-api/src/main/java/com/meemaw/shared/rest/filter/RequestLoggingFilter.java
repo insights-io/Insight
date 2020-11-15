@@ -1,9 +1,12 @@
 package com.meemaw.shared.rest.filter;
 
+import static com.rebrowse.api.RebrowseApi.REQUEST_ID_HEADER;
 import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 
+import com.meemaw.shared.context.RequestContextUtils;
 import com.meemaw.shared.metrics.MetricsService;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.vertx.core.http.HttpServerRequest;
 import java.util.Optional;
@@ -14,6 +17,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.UriInfo;
@@ -27,15 +31,16 @@ import org.slf4j.MDC;
 @Slf4j
 public class RequestLoggingFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
-  public static final String REQUEST_ID_HEADER = "X-Request-ID";
-
+  private static final String REQUEST_METHOD = "X-Request-Method";
+  private static final String REQUEST_ENDPOINT = "X-Request-Endpoint";
   private static final String LOG_START_TIME_PROPERTY = "X-Start-Time";
-  private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 200;
+  private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 1000;
 
   @Inject MetricsService metricsService;
   @Inject Tracer tracer;
   @Context UriInfo info;
   @Context HttpServerRequest request;
+  @Context ResourceInfo resourceInfo;
 
   /**
    * Generate a unique request id.
@@ -59,9 +64,20 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
         Optional.ofNullable(ctx.getHeaderString(REQUEST_ID_HEADER))
             .orElseGet(this::generateRequestId);
 
-    ctx.setProperty(REQUEST_ID_HEADER, requestId);
+    MDC.put(REQUEST_METHOD, ctx.getMethod());
     MDC.put(REQUEST_ID_HEADER, requestId);
-    tracer.activeSpan().setTag(REQUEST_ID_HEADER, requestId);
+    ctx.setProperty(REQUEST_ID_HEADER, requestId);
+
+    Span span = tracer.activeSpan();
+    span.setTag(REQUEST_ID_HEADER, requestId);
+
+    RequestContextUtils.getResourcePath(resourceInfo)
+        .ifPresent(
+            endpoint -> {
+              ctx.setProperty(REQUEST_ENDPOINT, endpoint);
+              span.setTag(REQUEST_ENDPOINT, endpoint);
+              MDC.put(REQUEST_ENDPOINT, endpoint);
+            });
   }
 
   /**
@@ -84,34 +100,33 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     }
     metricsService.requestCount().inc();
 
-    requestId(request)
-        .ifPresent(requestId -> response.getHeaders().putSingle(REQUEST_ID_HEADER, requestId));
+    String maybeRequestId = requestId(request);
+    if (maybeRequestId != null) {
+      response.getHeaders().putSingle(REQUEST_ID_HEADER, maybeRequestId);
+      logRequestLatency(request.getMethod(), endpoint(request), startTime(request), status);
+    }
 
-    logRequestLatency(request, status);
     MDC.clear();
   }
 
-  private void logRequestLatency(ContainerRequestContext request, int status) {
-    startTime(request)
-        .ifPresent(
-            startTime ->
-                logRequestLatency(
-                    request.getUriInfo().getPath(), request.getMethod(), startTime, status));
-  }
-
-  private void logRequestLatency(String path, String method, long startTime, int status) {
+  private void logRequestLatency(String method, String path, long startTime, int status) {
     long timeElapsed = System.currentTimeMillis() - startTime;
-    metricsService.requestDuration(path, method, status).update(timeElapsed);
+    metricsService.requestDuration(method, path, status).update(timeElapsed);
+
     if (timeElapsed > REQUEST_LATENCY_LOG_LIMIT_MS) {
-      log.info("Request processing latency: {}ms", timeElapsed);
+      log.warn("High request processing latency: {}ms", timeElapsed);
     }
   }
 
-  private Optional<String> requestId(ContainerRequestContext request) {
-    return Optional.ofNullable((String) request.getProperty(REQUEST_ID_HEADER));
+  private String endpoint(ContainerRequestContext request) {
+    return (String) request.getProperty(REQUEST_ENDPOINT);
   }
 
-  private Optional<Long> startTime(ContainerRequestContext request) {
-    return Optional.ofNullable((Long) request.getProperty(LOG_START_TIME_PROPERTY));
+  private String requestId(ContainerRequestContext request) {
+    return (String) request.getProperty(REQUEST_ID_HEADER);
+  }
+
+  private long startTime(ContainerRequestContext request) {
+    return (long) request.getProperty(LOG_START_TIME_PROPERTY);
   }
 }
