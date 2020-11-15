@@ -85,7 +85,7 @@ export const tfaSetupResource = (authApiBaseURL: string) => {
     complete: (method: TfaMethod, code: number, options?: RequestOptions) => {
       return tfaChallengeComplete(method, code, options);
     },
-    completeChallenge: (
+    completeEnforced: (
       method: TfaMethod,
       code: number,
       options?: RequestOptions

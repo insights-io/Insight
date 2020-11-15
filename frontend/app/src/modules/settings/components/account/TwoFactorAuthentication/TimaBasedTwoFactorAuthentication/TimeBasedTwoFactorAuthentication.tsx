@@ -4,8 +4,8 @@ import { AuthApi } from 'api/auth';
 import { toaster } from 'baseui/toast';
 import { TfaSetupDTO } from '@insight/types';
 
-import TimeBasedTwoFactorAuthenticationSetupModal from '../TimeBasedTwoFactorAuthenticationSetupModal';
-import DisableTwoFactorAuthenticationModal from '../DisableTwoFactorAuthenticationModal';
+import TimeBasedMultiFactorAuthenticationSetupModal from '../TimeBasedMultiFactorAuthenticationSetupModal';
+import DisableMultiFactorAuthenticationModal from '../DisableMultiFactorAuthenticationModal';
 
 import { Props } from './types';
 
@@ -27,14 +27,14 @@ const TimeBasedTwoFactorAuthentication = ({
     AuthApi.tfa.setup.disable('totp').then(() => {
       onMethodDisabled();
       closeModal();
-      toaster.positive(`${LABEL} two factor authentication disabled`, {});
+      toaster.positive(`${LABEL} multi-factor authentication disabled`, {});
     });
   }, [onMethodDisabled, closeModal]);
 
   const onTfaConfigured = (newTfaSetup: TfaSetupDTO) => {
     onMethodEnabled(newTfaSetup);
     closeModal();
-    toaster.positive(`${LABEL} two factor authentication enabled`, {});
+    toaster.positive(`${LABEL} multi-factor authentication enabled`, {});
   };
 
   const isEnabled = setupsMaps.totp?.createdAt !== undefined;
@@ -51,14 +51,14 @@ const TimeBasedTwoFactorAuthentication = ({
       </Checkbox>
 
       {isEnabled ? (
-        <DisableTwoFactorAuthenticationModal
+        <DisableMultiFactorAuthenticationModal
           closeModal={closeModal}
           isOpen={isModalOpen}
-          header="Are you sure you want to disable two factor authentication method?"
+          header="Are you sure you want to disable multi-factor authentication method?"
           onConfirm={onTotpDisable}
         />
       ) : (
-        <TimeBasedTwoFactorAuthenticationSetupModal
+        <TimeBasedMultiFactorAuthenticationSetupModal
           isOpen={isModalOpen}
           onClose={closeModal}
           onTfaConfigured={onTfaConfigured}

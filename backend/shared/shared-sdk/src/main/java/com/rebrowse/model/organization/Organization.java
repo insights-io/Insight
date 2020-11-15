@@ -21,7 +21,7 @@ public class Organization {
   String id;
   String name;
   boolean openMembership;
-  boolean enforceTwoFactorAuthentication;
+  boolean enforceMultiFactorAuthentication;
   UserRole defaultRole;
   AvatarType avatar;
   OffsetDateTime createdAt;

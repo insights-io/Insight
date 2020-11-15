@@ -13,10 +13,10 @@ export const SETTINGS_SEARCH_OPTIONS: SearchOption[] = [
     description: 'Configure single sign-on',
   },
   {
-    label: 'Require Two-Factor Authentication',
+    label: 'Require Multi-Factor Authentication',
     link: ORGANIZATION_SETTINGS_SECURITY_PAGE,
     description:
-      'Require and enforce two-factor authentication for all members',
+      'Require and enforce multi-factor authentication for all members',
   },
   {
     label: 'Set password policy',

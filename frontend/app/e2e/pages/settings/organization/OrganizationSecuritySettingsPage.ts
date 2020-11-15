@@ -7,9 +7,13 @@ import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettings
 export class OrganizationSecuritySettingsPage extends AbstractOrganizationSettingsPage {
   public readonly header = this.withinContainer.queryByText('Security');
 
-  public readonly enforce2faToggle = this.container
-    .find('input[name="enforce2fa"]')
+  public readonly enforceMfaToggle = this.container
+    .find('input[name="enforceMfa"]')
     .parent();
+
+  public readonly enforceMfaEnabledMessage = queryByText(
+    'Successfully enabled organization enforce multi factor authentication'
+  );
 
   public readonly passwordPolicy = {
     minCharactersInput: this.withinContainer.queryByPlaceholderText(

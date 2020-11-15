@@ -194,7 +194,7 @@ test('[/settings/organization/security]: As a user I should be able to accept a 
     .ok('In member list');
 });
 
-test('[/settings/organization/security]: As a user with no TFA, in organization with TFA enforced, I should be able to set it up when I login', async (t) => {
+test('[/settings/organization/security]: As a user with no MFA, in organization with MFA enforced, I should be able to set TOTP MFA up when I login', async (t) => {
   const credentials = SignUpPage.generateRandomCredentials();
   await SignUpPage.signUpAndLogin(t, credentials);
 
@@ -202,21 +202,46 @@ test('[/settings/organization/security]: As a user with no TFA, in organization 
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.organization.settings)
     .click(OrganizationGeneralSettingsPage.sidebar.security)
-    .click(OrganizationSecuritySettingsPage.enforce2faToggle)
-    .expect(
-      queryByText(
-        'Successfully enabled organization enforce two factor authentication'
-      ).visible
-    )
-    .ok('2fa is enforced')
+    .click(OrganizationSecuritySettingsPage.enforceMfaToggle)
+    .expect(OrganizationSecuritySettingsPage.enforceMfaEnabledMessage.visible)
+    .ok('MFA is enforced')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut);
 
   await LoginPage.login(t, credentials)
     .expect(Verification.tfaEnforcedMessage.visible)
-    .ok('TFA enforced message visible');
+    .ok('MFA enforced message visible');
 
   await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(t);
+
+  await t.expect(Sidebar.banner.trigger.visible).ok('Is logged in');
+});
+
+test('[/settings/organization/security]: As a user with no MFA, in organization with MFA enforced, I should be able to set SMS MFA up when I login', async (t) => {
+  const credentials = SignUpPage.generateRandomCredentials();
+  await SignUpPage.signUpAndLogin(t, credentials);
+
+  await t
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.organization.settings)
+    .click(OrganizationGeneralSettingsPage.sidebar.security)
+    .click(OrganizationSecuritySettingsPage.enforceMfaToggle)
+    .expect(OrganizationSecuritySettingsPage.enforceMfaEnabledMessage.visible)
+    .ok('MFA is enforced')
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.signOut);
+
+  await LoginPage.login(t, credentials)
+    .expect(Verification.tfaEnforcedMessage.visible)
+    .ok('MFA enforced message visible')
+    .click(Verification.tabs.sms.title)
+    .click(AccountSettingsDetailsPage.phoneNumberCountryPicker)
+    .typeText(AccountSettingsDetailsPage.phoneNumberCountryPicker, 'Slove')
+    .click(queryByText('Slovenia (Slovenija)'))
+    .typeText(AccountSettingsDetailsPage.phoneNumberInput, '51222333')
+    .click(AccountSettingsDetailsPage.phoneNumberNextStep);
+
+  await AccountSettingsSecurityPage.tfa.setupTextMessageTFA(t);
 
   await t.expect(Sidebar.banner.trigger.visible).ok('Is logged in');
 });

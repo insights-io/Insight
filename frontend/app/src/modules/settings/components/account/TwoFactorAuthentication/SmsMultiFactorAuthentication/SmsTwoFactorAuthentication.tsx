@@ -8,13 +8,13 @@ import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { toaster } from 'baseui/toast';
 import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
 
-import DisableTwoFactorAuthenticationModal from '../DisableTwoFactorAuthenticationModal';
+import DisableMultiFactorAuthenticationModal from '../DisableMultiFactorAuthenticationModal';
 
 import { Props } from './types';
 
 const LABEL = 'Text message';
 
-const SmsTwoFactorAuthentication = ({
+const SmsMultiFactorAuthentication = ({
   setupsMaps,
   setupDisabled,
   onMethodEnabled,
@@ -26,7 +26,6 @@ const SmsTwoFactorAuthentication = ({
   const isEnabled = setupsMaps.sms?.createdAt !== undefined;
   const closeModal = () => setIsModalOpen(false);
   const openModal = () => setIsModalOpen(true);
-
   const isSetupForSmsTfa = Boolean(phoneNumber) && phoneNumberVerified;
 
   const {
@@ -39,7 +38,7 @@ const SmsTwoFactorAuthentication = ({
   } = useCodeInput({
     submitAction: (paramCode) => {
       return AuthApi.tfa.setup.complete('sms', paramCode).then((setup) => {
-        toaster.positive(`${LABEL} two factor authentication enabled`, {});
+        toaster.positive(`${LABEL} multi-factor authentication enabled`, {});
         onMethodEnabled(setup);
         closeModal();
       });
@@ -53,7 +52,7 @@ const SmsTwoFactorAuthentication = ({
     AuthApi.tfa.setup.disable('sms').then(() => {
       onMethodDisabled();
       closeModal();
-      toaster.positive(`${LABEL} two factor authentication disabled`, {});
+      toaster.positive(`${LABEL} multi-factor authentication disabled`, {});
     });
   };
 
@@ -64,7 +63,7 @@ const SmsTwoFactorAuthentication = ({
         content={
           isSetupForSmsTfa
             ? undefined
-            : 'Verify your phone number to enable text message two factor authentication'
+            : 'Verify your phone number to enable text message multi-factor authentication'
         }
       >
         <li style={{ listStyleType: 'none' }}>
@@ -80,8 +79,8 @@ const SmsTwoFactorAuthentication = ({
       </StatefulTooltip>
 
       {isEnabled ? (
-        <DisableTwoFactorAuthenticationModal
-          header="Are you sure you want to disable text message two factor authentication?"
+        <DisableMultiFactorAuthenticationModal
+          header="Are you sure you want to disable text message multi-factor authentication?"
           onConfirm={disableSmsTwoFactorAuthentication}
           isOpen={isModalOpen}
           closeModal={closeModal}
@@ -89,7 +88,7 @@ const SmsTwoFactorAuthentication = ({
       ) : (
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <ModalHeader>
-            Configure text message two factor authentication
+            Configure text message multi-factor authentication
           </ModalHeader>
           <form
             noValidate
@@ -126,4 +125,4 @@ const SmsTwoFactorAuthentication = ({
   );
 };
 
-export default React.memo(SmsTwoFactorAuthentication);
+export default React.memo(SmsMultiFactorAuthentication);

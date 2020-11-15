@@ -47,7 +47,7 @@ export const SettingsPage = ({
                 link: ACCOUNT_SETTINGS_SECURITY_PAGE,
               },
               {
-                text: 'Setup Two-Factor Authentication',
+                text: 'Setup Multi-Factor Authentication',
                 link: ACCOUNT_SETTINGS_SECURITY_PAGE,
               },
             ]}

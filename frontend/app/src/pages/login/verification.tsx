@@ -8,8 +8,7 @@ import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { AuthApi } from 'api/auth';
 import type { APIErrorDataResponse, TfaMethod, UserDTO } from '@insight/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
-import { SetupTwoFactorAuthenticationPage } from 'modules/auth/pages/SetupTwoFactorAuthenticationPage';
-import { mapUser } from '@insight/sdk';
+import { SetupMultiFactorAuthenticationPage } from 'modules/auth/pages/SetupMultiFactorAuthenticationPage';
 
 type Props = {
   methods: TfaMethod[];
@@ -18,7 +17,7 @@ type Props = {
 
 const Verification = ({ methods, user }: Props) => {
   if (methods.length === 0) {
-    return <SetupTwoFactorAuthenticationPage user={mapUser(user)} />;
+    return <SetupMultiFactorAuthenticationPage user={user} />;
   }
 
   return <VerificationPage methods={methods} />;

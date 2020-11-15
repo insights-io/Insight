@@ -1,20 +1,25 @@
-import React from 'react';
-import type { TfaSetupDTO } from '@insight/types';
+import React, { useState } from 'react';
+import type { PhoneNumber, TfaSetupDTO } from '@insight/types';
 import { AuthApi } from 'api';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
 import { Button } from '@insight/elements';
 import { Block } from 'baseui/block';
+import { SetPhoneNumberForm } from 'modules/auth/components/SetPhoneNumberForm';
+import FormError from 'shared/components/FormError';
 
 type Props = {
-  setupComplete?: typeof AuthApi.tfa.setup.complete;
-  onSetupComplete?: (tfaSetup: TfaSetupDTO) => void;
+  phoneNumber: PhoneNumber | null;
+  completeSetup?: typeof AuthApi.tfa.setup.complete;
+  onCompleted?: (tfaSetup: TfaSetupDTO) => void;
 };
 
 export const SmsTwoFactorAuthenticationForm = ({
-  setupComplete = AuthApi.tfa.setup.complete,
-  onSetupComplete,
+  phoneNumber: initialPhoneNumber,
+  completeSetup = AuthApi.tfa.setup.complete,
+  onCompleted,
 }: Props) => {
+  const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber);
   const {
     code,
     handleChange,
@@ -22,14 +27,29 @@ export const SmsTwoFactorAuthenticationForm = ({
     codeError,
     isSubmitting,
     handleSubmit,
+    apiError,
   } = useCodeInput({
     submitAction: (paramCode) => {
-      return setupComplete('sms', paramCode).then(onSetupComplete);
+      return completeSetup('sms', paramCode).then(onCompleted);
     },
     handleError: (error, setError) => {
       setError(error.error);
     },
   });
+
+  if (!phoneNumber) {
+    return (
+      <SetPhoneNumberForm
+        initialValue={phoneNumber}
+        updatePhoneNumber={(data) =>
+          AuthApi.user.updatePhoneNumber(data).then((user) => {
+            setPhoneNumber(user.phoneNumber);
+            return user;
+          })
+        }
+      />
+    );
+  }
 
   return (
     <form
@@ -56,6 +76,8 @@ export const SmsTwoFactorAuthenticationForm = ({
           Submit
         </Button>
       </Block>
+
+      {apiError && <FormError error={apiError} />}
     </form>
   );
 };

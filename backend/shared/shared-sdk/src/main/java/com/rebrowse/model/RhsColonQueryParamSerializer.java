@@ -5,14 +5,14 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 
-public class SearchParamSerializer extends JsonSerializer<SearchParam<?>> {
+public class RhsColonQueryParamSerializer extends JsonSerializer<QueryParam<?>> {
 
   @Override
   public void serialize(
-      SearchParam searchParam, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+      QueryParam queryParam, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
       throws IOException {
     jsonGenerator.writeString(
         String.format(
-            "%s:%s", searchParam.getOperation().name().toLowerCase(), searchParam.getValue()));
+            "%s:%s", queryParam.getOperation().name().toLowerCase(), queryParam.getValue()));
   }
 }

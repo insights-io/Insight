@@ -14,7 +14,7 @@ class Verification extends AbstractPage {
   );
 
   public readonly tfaEnforcedMessage = queryByText(
-    'Your organization has enforced two factor authentication for all members.'
+    'Your organization has enforced multi-factor authentication for all members.'
   );
 
   public readonly codeInput = Selector(

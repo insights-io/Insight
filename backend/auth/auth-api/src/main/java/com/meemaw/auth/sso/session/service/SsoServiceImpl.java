@@ -307,8 +307,8 @@ public class SsoServiceImpl implements SsoService {
                 Organization organization =
                     maybeOrganization.orElseThrow(() -> Boom.notFound().exception());
 
-                if (organization.isEnforceTwoFactorAuthentication()) {
-                  log.debug("[AUTH]: User login with enforced 2fa and no setup");
+                if (organization.isEnforceMultiFactorAuthentication()) {
+                  log.debug("[AUTH]: User login with enforced MFA and no setup");
                   return challengeSupplier.get();
                 }
 

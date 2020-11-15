@@ -1,33 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import Head from 'next/head';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
-import { TfaMethod, User } from '@insight/types';
-import { TimeBasedTwoFactorAuthenticationForm } from 'modules/auth/components/TimeBasedTwoFactorAuthenticationForm';
+import { TfaMethod, UserDTO } from '@insight/types';
+import { TimeBasedMultiFactorAuthenticationForm } from 'modules/auth/components/TimeBasedMultiFactorAuthenticationForm';
 import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { SmsTwoFactorAuthenticationForm } from 'modules/auth/components/SmsTwoFactorAuthenticationForm';
 
 type Props = {
-  user: User;
+  user: UserDTO;
 };
 
-export const SetupTwoFactorAuthenticationPage = ({ user: _user }: Props) => {
+export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
   const [activeMethod, setActiveMethod] = useState<TfaMethod>('totp');
   const router = useRouter();
-  const relativeRedirect = (router.query.redirect || '/') as string;
+
+  const onCompleted = useCallback(() => {
+    router.replace((router.query.redirect || '/') as string);
+  }, [router]);
 
   return (
     <AuthPageLayout>
       <Head>
-        <title>Setup two factor authentication</title>
+        <title>Setup multi-factor authentication</title>
       </Head>
 
       <Block display="flex" justifyContent="center" marginBottom="32px">
         <Paragraph3>
-          Your organization has enforced two factor authentication for all
+          Your organization has enforced multi-factor authentication for all
           members.
         </Paragraph3>
       </Block>
@@ -39,13 +42,17 @@ export const SetupTwoFactorAuthenticationPage = ({ user: _user }: Props) => {
         activateOnFocus
       >
         <Tab title="Authy" key="totp">
-          <TimeBasedTwoFactorAuthenticationForm
-            setupComplete={AuthApi.tfa.setup.completeChallenge}
-            onTfaConfigured={() => router.replace(relativeRedirect)}
+          <TimeBasedMultiFactorAuthenticationForm
+            completeSetup={AuthApi.tfa.setup.completeEnforced}
+            onCompleted={onCompleted}
           />
         </Tab>
         <Tab title="Text message" key="sms">
-          <SmsTwoFactorAuthenticationForm />
+          <SmsTwoFactorAuthenticationForm
+            phoneNumber={user.phoneNumber}
+            completeSetup={AuthApi.tfa.setup.completeEnforced}
+            onCompleted={onCompleted}
+          />
         </Tab>
       </Tabs>
     </AuthPageLayout>

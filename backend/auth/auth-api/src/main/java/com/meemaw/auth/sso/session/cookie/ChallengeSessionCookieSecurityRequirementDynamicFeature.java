@@ -12,8 +12,7 @@ import javax.ws.rs.ext.Provider;
 public class ChallengeSessionCookieSecurityRequirementDynamicFeature
     extends AbstractChallengeSecurityRequirementDynamicFeature {
 
-  @Inject
-  MfaChallengeService challengeService;
+  @Inject MfaChallengeService challengeService;
 
   @Override
   protected CompletionStage<Optional<AuthUser>> findSession(String cookieValue) {

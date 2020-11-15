@@ -1,1 +1,1 @@
-export { default } from './ConfigurePhoneNumberModal';
+export { ConfigurePhoneNumberModal } from './ConfigurePhoneNumberModal';

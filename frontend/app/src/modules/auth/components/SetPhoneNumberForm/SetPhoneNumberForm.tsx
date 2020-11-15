@@ -1,7 +1,5 @@
-import { UpdateUserPayload } from '@insight/sdk/dist/auth';
-import { PhoneNumberInput } from '@insight/elements';
-import { Button, SHAPE, SIZE } from 'baseui/button';
 import React, { useState } from 'react';
+import { Button, PhoneNumberInput } from '@insight/elements';
 import { useForm } from 'react-hook-form';
 import FormError from 'shared/components/FormError';
 import type {
@@ -18,25 +16,25 @@ type Data = {
 };
 
 type Props = {
-  phoneNumber: PhoneNumber | null;
-  onPhoneNumberSet: () => void;
-  updateUser: (user: UpdateUserPayload) => Promise<UserDTO>;
+  initialValue: PhoneNumber | null;
+  updatePhoneNumber: (phoneNumber: PhoneNumber | null) => Promise<UserDTO>;
+  onContinue?: () => void;
 };
 
-const SetPhoneNumberForm = ({
-  phoneNumber,
-  updateUser,
-  onPhoneNumberSet,
+export const SetPhoneNumberForm = ({
+  initialValue,
+  updatePhoneNumber,
+  onContinue,
 }: Props) => {
   const [formError, setFormError] = useState<APIError | undefined>();
   const [country, setCountry] = useState(() =>
-    getCountryFromPhoneNumber(phoneNumber)
+    getCountryFromPhoneNumber(initialValue)
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { handleSubmit, errors, control } = useForm<Data>({
     defaultValues: {
-      phoneNumber: phoneNumber?.digits || undefined,
+      phoneNumber: initialValue?.digits || undefined,
     },
   });
 
@@ -47,19 +45,19 @@ const SetPhoneNumberForm = ({
 
     const nextPhoneNumber = `${country.dialCode}${data.phoneNumber}`;
     if (
-      nextPhoneNumber === `${phoneNumber?.countryCode}${phoneNumber?.digits}`
+      nextPhoneNumber === `${initialValue?.countryCode}${initialValue?.digits}`
     ) {
-      onPhoneNumberSet();
+      onContinue?.();
       return;
     }
 
     setIsSubmitting(true);
-    updateUser({
-      phone_number: data.phoneNumber
+    updatePhoneNumber(
+      data.phoneNumber
         ? { countryCode: country.dialCode, digits: data.phoneNumber }
-        : null,
-    })
-      .then(() => onPhoneNumberSet())
+        : null
+    )
+      .then(onContinue)
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
@@ -75,18 +73,10 @@ const SetPhoneNumberForm = ({
         error={errors?.phoneNumber}
         control={control}
       />
-      <Button
-        isLoading={isSubmitting}
-        type="submit"
-        $style={{ width: '100%' }}
-        shape={SHAPE.pill}
-        size={SIZE.compact}
-      >
-        Next
+      <Button isLoading={isSubmitting} type="submit" $style={{ width: '100%' }}>
+        Continue
       </Button>
       {formError && <FormError error={formError} />}
     </form>
   );
 };
-
-export default React.memo(SetPhoneNumberForm);

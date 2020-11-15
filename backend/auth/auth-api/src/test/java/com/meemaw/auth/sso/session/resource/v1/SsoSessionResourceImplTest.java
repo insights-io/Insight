@@ -26,7 +26,7 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import com.rebrowse.model.SearchParam;
+import com.rebrowse.model.QueryParam;
 import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.model.user.User;
@@ -573,7 +573,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
 
     User user =
         Organization.members(
-                UserSearchParams.builder().email(SearchParam.eq(email)).build(),
+                UserSearchParams.builder().email(QueryParam.eq(email)).build(),
                 authApi().sdkRequest().sessionId(sessionId).build())
             .toCompletableFuture()
             .join()

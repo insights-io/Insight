@@ -600,7 +600,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
     String sessionId = authApi().signUpAndLogin(email, password);
 
     Organization.update(
-            OrganizationUpdateParams.builder().enforceTwoFactorAuthentication(true).build(),
+            OrganizationUpdateParams.builder().enforceMultiFactorAuthentication(true).build(),
             authApi().sdkRequest().sessionId(sessionId).build())
         .toCompletableFuture()
         .join();
@@ -667,7 +667,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
     String sessionId = authApi().signUpAndLogin(email, password);
 
     Organization.update(
-            OrganizationUpdateParams.builder().enforceTwoFactorAuthentication(true).build(),
+            OrganizationUpdateParams.builder().enforceMultiFactorAuthentication(true).build(),
             authApi().sdkRequest().sessionId(sessionId).build())
         .toCompletableFuture()
         .join();

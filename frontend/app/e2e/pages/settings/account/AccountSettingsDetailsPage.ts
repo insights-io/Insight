@@ -50,7 +50,7 @@ export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
     .parent();
 
   public readonly phoneNumberInput = queryByPlaceholderText('Phone number');
-  public readonly phoneNumberNextStep = queryByText('Next');
+  public readonly phoneNumberNextStep = queryByText('Continue');
 
   public completeSmsChallenge = (t: TestController) => {
     return VerificationPage.completeSmsChallenge(t);

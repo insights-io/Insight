@@ -11,7 +11,7 @@ import FormError from 'shared/components/FormError';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
 
 import TimeBasedTwoFactorAuthentication from './TimaBasedTwoFactorAuthentication';
-import SmsTwoFactorAuthentication from './SmsTwoFactorAuthentication';
+import SmsMultiFactorAuthentication from './SmsMultiFactorAuthentication';
 import type { Props } from './types';
 
 const EMPTY_LIST: TfaSetupDTO[] = [];
@@ -62,7 +62,7 @@ export const TwoFactorAuthentication = ({ user }: Props) => {
     onMethodDisabled,
   ]);
 
-  let cardTitle: React.ReactNode = 'Two-factor Authentication (2FA) Methods';
+  let cardTitle: React.ReactNode = 'Multi-factor authentication (MFA) methods';
   if (enabledSince) {
     cardTitle = (
       <SpacedBetween>
@@ -91,9 +91,9 @@ export const TwoFactorAuthentication = ({ user }: Props) => {
           $style={{ fontSize: '0.8rem' }}
           marginRight={theme.sizing.scale1000}
         >
-          Select your preffered method of receiving the two-factor
-          authentication code. Two factor authentication adds an extra layer of
-          security to your account.
+          Select your preffered method of receiving the multi-factor
+          authentication code. Multi-factor authentication adds an extra layer
+          of security to your account.
         </Block>
         <Block as="ul" margin={0} padding={0}>
           <TimeBasedTwoFactorAuthentication
@@ -102,7 +102,7 @@ export const TwoFactorAuthentication = ({ user }: Props) => {
             onMethodDisabled={onTotpMethodDisabled}
             onMethodEnabled={onMethodEnabled}
           />
-          <SmsTwoFactorAuthentication
+          <SmsMultiFactorAuthentication
             phoneNumber={user.phoneNumber}
             phoneNumberVerified={user.phoneNumberVerified}
             setupDisabled={loading || error !== undefined}

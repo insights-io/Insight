@@ -9,7 +9,7 @@ type Props = {
   header: string;
 };
 
-const DisableTwoFactorAuthenticationModal = ({
+const DisableMultiFactorAuthenticationModal = ({
   isOpen,
   closeModal,
   onConfirm,
@@ -30,4 +30,4 @@ const DisableTwoFactorAuthenticationModal = ({
   );
 };
 
-export default React.memo(DisableTwoFactorAuthenticationModal);
+export default React.memo(DisableMultiFactorAuthenticationModal);
