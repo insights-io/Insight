@@ -10,6 +10,7 @@ COPY events/events-model/ /backend/events/events-model/
 COPY session/session-model/ /backend/session/session-model/
 COPY session/session-api-contracts/ /backend/session/session-api-contracts/
 COPY shared/rest/ /backend/shared/rest/
+COPY shared/rest-core/ /backend/shared/rest-core/
 COPY shared/rest-api/ /backend/shared/rest-api/
 COPY shared/shared-sdk/ /backend/shared/shared-sdk/
 

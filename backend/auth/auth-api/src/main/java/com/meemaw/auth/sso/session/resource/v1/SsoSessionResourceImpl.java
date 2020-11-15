@@ -8,11 +8,11 @@ import com.meemaw.auth.user.model.dto.UserDataDTO;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
+import com.rebrowse.api.RebrowseApi;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -43,7 +43,7 @@ public class SsoSessionResourceImpl implements SsoSessionResource {
 
     String relativeRedirect =
         Optional.ofNullable(RequestUtils.getQueryMap(refererURL.getQuery()).get("redirect"))
-            .map(redirect -> URLDecoder.decode(redirect, StandardCharsets.UTF_8))
+            .map(redirect -> URLDecoder.decode(redirect, RebrowseApi.CHARSET))
             .orElse("/");
 
     URI redirect =

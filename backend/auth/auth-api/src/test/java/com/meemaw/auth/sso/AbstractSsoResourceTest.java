@@ -1,12 +1,12 @@
 package com.meemaw.auth.sso;
 
 import com.meemaw.auth.core.config.model.AppConfig;
+import com.meemaw.auth.mfa.totp.datasource.MfaTotpSetupDatasource;
 import com.meemaw.auth.sso.oauth.OAuthResource;
 import com.meemaw.auth.sso.oauth.github.resource.v1.GithubOAuthResource;
 import com.meemaw.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
 import com.meemaw.auth.sso.oauth.microsoft.resource.v1.MicrosoftOAuthResource;
 import com.meemaw.auth.sso.saml.resource.v1.SamlResource;
-import com.meemaw.auth.tfa.totp.datasource.MfaTotpSetupDatasource;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import io.quarkus.test.common.http.TestHTTPResource;
 import java.io.IOException;

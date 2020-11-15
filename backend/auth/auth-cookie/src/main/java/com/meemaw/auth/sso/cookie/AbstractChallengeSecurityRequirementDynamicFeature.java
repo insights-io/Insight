@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.cookie;
 
+import com.meemaw.auth.mfa.model.SsoChallenge;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
-import com.meemaw.auth.tfa.model.SsoChallenge;
 import com.meemaw.shared.logging.LoggingConstants;
 
 public abstract class AbstractChallengeSecurityRequirementDynamicFeature

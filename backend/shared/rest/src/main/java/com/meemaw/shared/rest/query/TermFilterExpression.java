@@ -1,11 +1,11 @@
 package com.meemaw.shared.rest.query;
 
+import com.rebrowse.api.query.QueryParam;
 import lombok.Value;
 
 @Value
 public class TermFilterExpression<T> implements FilterExpression {
 
   String field;
-  TermOperation operation;
-  T target;
+  QueryParam<T> queryParam;
 }

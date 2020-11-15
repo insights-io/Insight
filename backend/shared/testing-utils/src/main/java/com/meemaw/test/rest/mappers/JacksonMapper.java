@@ -1,15 +1,17 @@
 package com.meemaw.test.rest.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meemaw.shared.rest.mappers.JacksonObjectMapperCustomizer;
+import com.rebrowse.api.JacksonUtils;
 
-public class JacksonMapper {
+public final class JacksonMapper {
 
   private static ObjectMapper INSTANCE;
 
+  private JacksonMapper() {}
+
   public static ObjectMapper get() {
     if (INSTANCE == null) {
-      INSTANCE = JacksonObjectMapperCustomizer.configure(new ObjectMapper());
+      INSTANCE = JacksonUtils.configure(new ObjectMapper());
     }
     return INSTANCE;
   }

@@ -22,6 +22,23 @@ public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
     this.compareMode = Objects.requireNonNull(compareMode);
   }
 
+  public static Matcher<String> sameJson(String expected) {
+    return sameJson(expected, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
+  public static Matcher<String> sameJson(String expected, JSONCompareMode compareMode) {
+    return new SameJSON(expected, compareMode);
+  }
+
+  public static void assertEquals(String expected, String actual, JSONCompareMode compareMode)
+      throws JSONException {
+    JSONAssert.assertEquals(new JSONObject(expected), new JSONObject(actual), compareMode);
+  }
+
+  public static void assertEquals(String expected, String actual) throws JSONException {
+    assertEquals(expected, actual, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
   @Override
   protected boolean matchesSafely(String actual, Description mismatchDescription) {
     try {
@@ -40,22 +57,5 @@ public class SameJSON extends TypeSafeDiagnosingMatcher<String> {
   @Override
   public void describeTo(Description description) {
     description.appendText("is ").appendValue(this.expected);
-  }
-
-  public static Matcher<String> sameJson(String expected) {
-    return sameJson(expected, JSONCompareMode.NON_EXTENSIBLE);
-  }
-
-  public static Matcher<String> sameJson(String expected, JSONCompareMode compareMode) {
-    return new SameJSON(expected, compareMode);
-  }
-
-  public static void assertEquals(String expected, String actual, JSONCompareMode compareMode)
-      throws JSONException {
-    JSONAssert.assertEquals(new JSONObject(expected), new JSONObject(actual), compareMode);
-  }
-
-  public static void assertEquals(String expected, String actual) throws JSONException {
-    assertEquals(expected, actual, JSONCompareMode.NON_EXTENSIBLE);
   }
 }

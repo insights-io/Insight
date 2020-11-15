@@ -3,8 +3,8 @@ package com.meemaw.auth.sso.session.resource.v1;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.dto.UserDataDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
 import com.meemaw.shared.validation.Password;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.Email;
@@ -209,7 +209,7 @@ public interface SsoSessionResource {
     return retrieveUserData(sessionId);
   }
 
-  class UserDataDataResponse extends OkDataResponse<UserDataDTO> {}
+  class UserDataDataResponse extends RebrowseApiDataResponse<UserDataDTO> {}
 
-  class SessionListResponse extends OkDataResponse<List<String>> {}
+  class SessionListResponse extends RebrowseApiDataResponse<List<String>> {}
 }

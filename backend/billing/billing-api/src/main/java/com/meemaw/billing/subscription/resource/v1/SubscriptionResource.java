@@ -7,7 +7,6 @@ import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.meemaw.billing.subscription.model.dto.PlanDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

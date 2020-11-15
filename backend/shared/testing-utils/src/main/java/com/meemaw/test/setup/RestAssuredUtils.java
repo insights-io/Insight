@@ -5,8 +5,8 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.config.RedirectConfig.redirectConfig;
 import static io.restassured.config.RestAssuredConfig.newConfig;
 
+import com.meemaw.auth.mfa.model.SsoChallenge;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.tfa.model.SsoChallenge;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookie;

@@ -1,5 +1,6 @@
 package com.meemaw.shared.rest.response;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.Objects;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -11,11 +12,11 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = true)
-public class DataResponse<T> extends OkDataResponse<T> {
+public class DataResponse<T> extends RebrowseApiDataResponse<T> {
 
   Boom<?> error;
 
-  public DataResponse(T data, Boom boom) {
+  public DataResponse(T data, Boom<?> boom) {
     super(data);
     this.error = boom;
   }

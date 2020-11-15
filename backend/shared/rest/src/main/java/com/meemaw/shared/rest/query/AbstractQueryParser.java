@@ -2,6 +2,7 @@ package com.meemaw.shared.rest.query;
 
 import com.google.common.base.CaseFormat;
 import com.meemaw.shared.rest.exception.SearchParseException;
+import com.rebrowse.api.query.SortDirection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +44,10 @@ public abstract class AbstractQueryParser {
     this.allowedFields = Objects.requireNonNull(allowedFields);
   }
 
+  protected static String snakeCase(String field) {
+    return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field);
+  }
+
   public abstract void process(Entry<String, List<String>> entry);
 
   public SearchDTO searchDTO() {
@@ -55,9 +60,5 @@ public abstract class AbstractQueryParser {
 
     return new SearchDTO(
         rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit, query);
-  }
-
-  protected static String snakeCase(String field) {
-    return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field);
   }
 }

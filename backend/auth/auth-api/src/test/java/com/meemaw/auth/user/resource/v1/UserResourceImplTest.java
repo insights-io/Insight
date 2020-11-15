@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;

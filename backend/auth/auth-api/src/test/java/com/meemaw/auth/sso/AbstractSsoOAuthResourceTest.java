@@ -9,6 +9,7 @@ import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.oauth.AbstractOAuthClient;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.test.setup.RestAssuredUtils;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.auth.SsoMethod;
 import com.rebrowse.model.auth.SsoSetup;
 import com.rebrowse.model.auth.SsoSetupCreateParams;
@@ -18,7 +19,6 @@ import com.rebrowse.model.organization.OrganizationUpdateParams;
 import com.rebrowse.model.user.UserRole;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
@@ -85,7 +85,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
 
   @Test
   public void oauth2callback__should_fail__on_too_short_state_parameter() {
-    String state = URLEncoder.encode("test", StandardCharsets.UTF_8);
+    String state = URLEncoder.encode("test", RebrowseApi.CHARSET);
     given()
         .when()
         .queryParam("code", "random")
@@ -103,7 +103,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
   public void oauth2callback__should_fail__on_state_cookie_miss_match() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()

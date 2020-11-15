@@ -23,6 +23,7 @@ import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserRole;
@@ -35,7 +36,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
@@ -161,7 +161,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
   public void saml_callback__should_fail__on_random_saml_response() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
     given()
         .when()
         .formParam("SAMLResponse", "random")
@@ -179,7 +179,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
   public void saml_callback__should_fail__on_invalid_state_cookie() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()

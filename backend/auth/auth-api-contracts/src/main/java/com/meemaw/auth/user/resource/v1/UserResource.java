@@ -1,15 +1,15 @@
 package com.meemaw.auth.user.resource.v1;
 
+import com.meemaw.auth.mfa.dto.MfaChallengeCodeDetailsDTO;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.ChallengeSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.tfa.dto.MfaChallengeCodeDetailsDTO;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -335,7 +335,7 @@ public interface UserResource {
             description = "Verification validity info",
             content =
                 @Content(
-                    schema = @Schema(implementation = TfaSetupStartResponse.class),
+                    schema = @Schema(implementation = MfaSetupStartResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "400",
@@ -364,7 +364,7 @@ public interface UserResource {
       })
   CompletionStage<Response> phoneNumberVerifySendCode();
 
-  class UserDataResponse extends OkDataResponse<UserDTO> {}
+  class UserDataResponse extends RebrowseApiDataResponse<UserDTO> {}
 
-  class TfaSetupStartResponse extends OkDataResponse<MfaChallengeCodeDetailsDTO> {}
+  class MfaSetupStartResponse extends RebrowseApiDataResponse<MfaChallengeCodeDetailsDTO> {}
 }

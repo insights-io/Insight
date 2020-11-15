@@ -18,8 +18,8 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE_FIELDS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.UPDATED_AT;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.USER_TABLE_ID;
 
+import com.meemaw.auth.mfa.MfaMethod;
 import com.meemaw.auth.password.datasource.sql.SqlPasswordTable;
-import com.meemaw.auth.tfa.MfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;

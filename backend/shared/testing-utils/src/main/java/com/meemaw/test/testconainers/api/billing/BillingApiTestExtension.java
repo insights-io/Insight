@@ -17,11 +17,6 @@ public class BillingApiTestExtension implements BeforeAllCallback {
     return BILLING_API;
   }
 
-  @Override
-  public void beforeAll(ExtensionContext context) {
-    start(BILLING_API).forEach(System::setProperty);
-  }
-
   public static void stop() {
     BILLING_API.stop();
   }
@@ -37,9 +32,13 @@ public class BillingApiTestExtension implements BeforeAllCallback {
     }
 
     String billingApiBaseURI = billingApi.getBaseURI();
-    System.out.println(
-        String.format("[TEST-SETUP]: Connecting to billing-api on=%s", billingApiBaseURI));
+    System.out.printf("[TEST-SETUP]: Connecting to billing-api on=%s%n", billingApiBaseURI);
 
     return Map.of("billing-api/mp-rest/url", billingApiBaseURI);
+  }
+
+  @Override
+  public void beforeAll(ExtensionContext context) {
+    start(BILLING_API).forEach(System::setProperty);
   }
 }

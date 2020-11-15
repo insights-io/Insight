@@ -26,7 +26,8 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import com.rebrowse.model.QueryParam;
+import com.rebrowse.api.RebrowseApi;
+import com.rebrowse.api.query.QueryParam;
 import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.model.user.User;
@@ -40,7 +41,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -206,7 +206,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
             .header("referer", "http://localhost:3000")
-            .get(URLDecoder.decode(signInRedirect, StandardCharsets.UTF_8))
+            .get(URLDecoder.decode(signInRedirect, RebrowseApi.CHARSET))
             .then()
             .statusCode(302)
             .cookie(SsoSignInSession.COOKIE_NAME)
@@ -217,16 +217,16 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
         "https://accounts.google.com/o/oauth2/auth?client_id="
             + appConfig.getGoogleOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(oauth2CallbackUri.toString(), StandardCharsets.UTF_8)
+            + URLEncoder.encode(oauth2CallbackUri.toString(), RebrowseApi.CHARSET)
             + "&response_type=code&scope=openid+email+profile&login_hint="
-            + URLEncoder.encode(email, StandardCharsets.UTF_8)
+            + URLEncoder.encode(email, RebrowseApi.CHARSET)
             + "&state=";
 
     assertThat(response.header("Location"), Matchers.startsWith(expectedLocationBase));
     String state = response.header("Location").replace(expectedLocationBase, "");
     String clientRedirect = state.substring(26);
     assertEquals(
-        URLEncoder.encode("http://localhost:3000/account/settings", StandardCharsets.UTF_8),
+        URLEncoder.encode("http://localhost:3000/account/settings", RebrowseApi.CHARSET),
         clientRedirect);
   }
 
@@ -277,7 +277,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
         .config(RestAssuredUtils.dontFollowRedirects())
         .when()
         .header("referer", "http://localhost:3000")
-        .get(URLDecoder.decode(signInRedirect, StandardCharsets.UTF_8))
+        .get(URLDecoder.decode(signInRedirect, RebrowseApi.CHARSET))
         .then()
         .statusCode(302)
         .header(

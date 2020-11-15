@@ -4,11 +4,11 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.mfa.setup.resource.v1.MfaSetupResource;
+import com.meemaw.auth.mfa.totp.datasource.MfaTotpSetupDatasource;
+import com.meemaw.auth.mfa.totp.impl.TotpUtils;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.setup.resource.v1.MfaSetupResource;
-import com.meemaw.auth.tfa.totp.datasource.MfaTotpSetupDatasource;
-import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.sms.MockSmsbox;
@@ -39,7 +39,7 @@ public final class AuthApiSetupUtils {
     return Integer.parseInt(matcher.group(1));
   }
 
-  public static void setupSmsTfa(PhoneNumberDTO sentTo, String sessionId, MockSmsbox mockSmsbox)
+  public static void setupSmsMfa(PhoneNumberDTO sentTo, String sessionId, MockSmsbox mockSmsbox)
       throws JsonProcessingException {
     given()
         .when()
@@ -67,20 +67,20 @@ public final class AuthApiSetupUtils {
         .then()
         .statusCode(200);
 
-    int tfaSetupCode = getLastSmsMessageVerificationCode(mockSmsbox, sentTo);
+    int code = getLastSmsMessageVerificationCode(mockSmsbox, sentTo);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(tfaSetupCode)))
+        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(code)))
         .post(MfaSetupResource.PATH + "/sms/complete")
         .then()
         .statusCode(200);
 
-    assertNotEquals(phoneNumberVerificationCode, tfaSetupCode);
+    assertNotEquals(phoneNumberVerificationCode, code);
   }
 
-  public static String setupTotpTfa(
+  public static String setupTotpMfa(
       UUID userId, String sessionId, MfaTotpSetupDatasource mfaTotpSetupDatasource)
       throws GeneralSecurityException, JsonProcessingException {
     given()
@@ -91,13 +91,13 @@ public final class AuthApiSetupUtils {
         .statusCode(200);
 
     String secret = mfaTotpSetupDatasource.retrieve(userId).toCompletableFuture().join().get();
-    int tfaCode = TotpUtils.generateCurrentNumber(secret);
+    int code = TotpUtils.generateCurrentNumber(secret);
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(tfaCode)))
+        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(code)))
         .post(MfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);

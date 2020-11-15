@@ -6,10 +6,10 @@ import static com.meemaw.auth.user.datasource.sql.SqlMfaConfigurationTable.PARAM
 import static com.meemaw.auth.user.datasource.sql.SqlMfaConfigurationTable.TABLE;
 import static com.meemaw.auth.user.datasource.sql.SqlMfaConfigurationTable.USER_ID;
 
-import com.meemaw.auth.tfa.MfaMethod;
-import com.meemaw.auth.tfa.model.MfaConfiguration;
-import com.meemaw.auth.tfa.sms.model.SmsMfaSetup;
-import com.meemaw.auth.tfa.totp.model.MfaConfigurationDTO;
+import com.meemaw.auth.mfa.MfaMethod;
+import com.meemaw.auth.mfa.model.MfaConfiguration;
+import com.meemaw.auth.mfa.sms.model.SmsMfaSetup;
+import com.meemaw.auth.mfa.totp.model.MfaConfigurationDTO;
 import com.meemaw.auth.user.datasource.UserMfaDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -40,10 +40,10 @@ public class SqlUserMfaDatasource implements UserMfaDatasource {
     }
 
     Row row = rows.iterator().next();
-    return Optional.of(mapTfaSetup(row));
+    return Optional.of(mapConfiguration(row));
   }
 
-  public static MfaConfiguration mapTfaSetup(Row row) {
+  public static MfaConfiguration mapConfiguration(Row row) {
     MfaMethod method = MfaMethod.fromString(row.getString(METHOD.getName()));
     OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
     UUID userId = row.getUUID(USER_ID.getName());
@@ -56,10 +56,10 @@ public class SqlUserMfaDatasource implements UserMfaDatasource {
     return new SmsMfaSetup(createdAt, userId);
   }
 
-  public static List<MfaConfiguration> mapTfaSetupList(RowSet<Row> rows) {
+  public static List<MfaConfiguration> mapConfigurations(RowSet<Row> rows) {
     List<MfaConfiguration> mfaConfigurations = new ArrayList<>(rows.size());
     for (Row row : rows) {
-      mfaConfigurations.add(mapTfaSetup(row));
+      mfaConfigurations.add(mapConfiguration(row));
     }
     return mfaConfigurations;
   }
@@ -68,12 +68,12 @@ public class SqlUserMfaDatasource implements UserMfaDatasource {
   @Traced
   public CompletionStage<List<MfaConfiguration>> list(UUID userId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(USER_ID.eq(userId));
-    return sqlPool.execute(query).thenApply(SqlUserMfaDatasource::mapTfaSetupList);
+    return sqlPool.execute(query).thenApply(SqlUserMfaDatasource::mapConfigurations);
   }
 
   @Override
   @Traced
-  public CompletionStage<Optional<MfaConfiguration>> get(UUID userId, MfaMethod method) {
+  public CompletionStage<Optional<MfaConfiguration>> retrieve(UUID userId, MfaMethod method) {
     Query query =
         sqlPool
             .getContext()
@@ -96,7 +96,7 @@ public class SqlUserMfaDatasource implements UserMfaDatasource {
 
   @Override
   @Traced
-  public CompletionStage<MfaConfiguration> store(
+  public CompletionStage<MfaConfiguration> create(
       UUID userId, MfaMethod method, JsonObject params, SqlTransaction transaction) {
     Query query =
         sqlPool

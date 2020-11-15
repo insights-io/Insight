@@ -3,12 +3,12 @@ package com.rebrowse.net;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rebrowse.api.RebrowseApiDataResponse;
+import com.rebrowse.api.RebrowseApiError;
+import com.rebrowse.api.RebrowseApiErrorResponse;
 import com.rebrowse.exception.ApiException;
 import com.rebrowse.exception.RebrowseException;
 import com.rebrowse.model.ApiRequestParams;
-import com.rebrowse.model.RebrowseOkDataResponse;
-import com.rebrowse.model.error.RebrowseError;
-import com.rebrowse.model.error.RebrowseErrorDataResponse;
 import java.util.concurrent.CompletionStage;
 
 public class RebrowseHttpClient implements HttpClient {
@@ -50,7 +50,7 @@ public class RebrowseHttpClient implements HttpClient {
   }
 
   private <T> CompletionStage<T> request(
-      RebrowseRequest request, ReadValue<String, RebrowseOkDataResponse<T>> readValue) {
+      RebrowseRequest request, ReadValue<String, RebrowseApiDataResponse<T>> readValue) {
     return rawHttpClient
         .requestWithRetries(request)
         .thenApply(
@@ -68,7 +68,7 @@ public class RebrowseHttpClient implements HttpClient {
               }
 
               try {
-                RebrowseOkDataResponse<T> dataResponse = readValue.apply(body);
+                RebrowseApiDataResponse<T> dataResponse = readValue.apply(body);
                 return dataResponse.getData();
               } catch (JsonProcessingException ex) {
                 throw malformedJsonError(body, statusCode, requestId, ex);
@@ -78,8 +78,8 @@ public class RebrowseHttpClient implements HttpClient {
 
   private RebrowseException handleError(String body, int statusCode, String requestId) {
     try {
-      RebrowseError<?> apiError =
-          ApiResource.OBJECT_MAPPER.readValue(body, RebrowseErrorDataResponse.class).getError();
+      RebrowseApiError<?> apiError =
+          ApiResource.OBJECT_MAPPER.readValue(body, RebrowseApiErrorResponse.class).getError();
       throw new ApiException(apiError, requestId, statusCode, null);
     } catch (JsonProcessingException ex) {
       return malformedJsonError(body, statusCode, requestId, ex);
@@ -91,24 +91,28 @@ public class RebrowseHttpClient implements HttpClient {
     String message =
         String.format(
             "Invalid response object from API: %s. (HTTP response code was %d)", body, statusCode);
-    RebrowseError<?> apiError = new RebrowseError<>(statusCode, "Malformed JSON", message, null);
+    RebrowseApiError<?> apiError =
+        new RebrowseApiError<>(statusCode, "Malformed JSON", message, null);
     return new ApiException(apiError, requestId, statusCode, exception);
   }
 
-  private <R> RebrowseOkDataResponse<R> dataResponseType(String body, Class<R> clazz)
+  private <R> RebrowseApiDataResponse<R> dataResponseType(String body, Class<R> clazz)
       throws JsonProcessingException {
     return objectMapper.readValue(
         body,
-        objectMapper.getTypeFactory().constructParametricType(RebrowseOkDataResponse.class, clazz));
+        objectMapper
+            .getTypeFactory()
+            .constructParametricType(RebrowseApiDataResponse.class, clazz));
   }
 
-  private <R> RebrowseOkDataResponse<R> dataResponseType(
+  private <R> RebrowseApiDataResponse<R> dataResponseType(
       String body, TypeReference<R> typeReference) throws JsonProcessingException {
     return objectMapper.readValue(
         body,
         objectMapper
             .getTypeFactory()
             .constructParametricType(
-                RebrowseOkDataResponse.class, objectMapper.constructType(typeReference.getType())));
+                RebrowseApiDataResponse.class,
+                objectMapper.constructType(typeReference.getType())));
   }
 }

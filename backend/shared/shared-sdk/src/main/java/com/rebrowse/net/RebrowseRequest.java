@@ -5,7 +5,6 @@ import com.rebrowse.util.FormEncoder;
 import com.rebrowse.util.StringUtils;
 import java.net.URI;
 import java.net.http.HttpRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +78,6 @@ public class RebrowseRequest {
   private <P extends ApiRequestParams> HttpRequest.BodyPublisher bodyPublisher(P params) {
     return params == null
         ? HttpRequest.BodyPublishers.noBody()
-        : HttpRequest.BodyPublishers.ofString(params.writeValueAsString(), StandardCharsets.UTF_8);
+        : HttpRequest.BodyPublishers.ofString(params.writeValueAsString(), ApiResource.CHARSET);
   }
 }

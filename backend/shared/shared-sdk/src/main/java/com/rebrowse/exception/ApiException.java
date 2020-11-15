@@ -1,14 +1,15 @@
 package com.rebrowse.exception;
 
-import com.rebrowse.model.error.RebrowseError;
+import com.rebrowse.api.RebrowseApiError;
 import lombok.Getter;
 
 @Getter
 public class ApiException extends RebrowseException {
 
-  private final RebrowseError<?> apiError;
+  private final RebrowseApiError<?> apiError;
 
-  public ApiException(RebrowseError<?> apiError, String requestId, int statusCode, Throwable ex) {
+  public ApiException(
+      RebrowseApiError<?> apiError, String requestId, int statusCode, Throwable ex) {
     super(apiError.getMessage(), requestId, statusCode, ex);
     this.apiError = apiError;
   }

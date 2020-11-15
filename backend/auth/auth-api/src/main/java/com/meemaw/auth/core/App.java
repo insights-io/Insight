@@ -1,10 +1,10 @@
 package com.meemaw.auth.core;
 
+import com.meemaw.auth.mfa.model.SsoChallenge;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.ChallengeSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.tfa.model.SsoChallenge;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;

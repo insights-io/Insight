@@ -6,6 +6,10 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.meemaw.auth.mfa.model.SsoChallenge;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.mfa.setup.resource.v1.MfaSetupResource;
+import com.meemaw.auth.mfa.totp.impl.TotpUtils;
 import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.AbstractSsoOAuthResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
@@ -16,12 +20,9 @@ import com.meemaw.auth.sso.oauth.github.GithubOAuthClient;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.tfa.model.SsoChallenge;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.setup.resource.v1.MfaSetupResource;
-import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
@@ -30,7 +31,6 @@ import io.restassured.response.Response;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -94,7 +94,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
         "https://github.com/login/oauth/authorize?client_id="
             + appConfig.getGithubOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(oAuth2CallbackUri, StandardCharsets.UTF_8)
+            + URLEncoder.encode(oAuth2CallbackUri, RebrowseApi.CHARSET)
             + "&response_type=code&scope=read%3Auser+user%3Aemail&state=";
 
     response
@@ -105,7 +105,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = AbstractIdentityProvider.secureStateData(state);
-    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, StandardCharsets.UTF_8));
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, RebrowseApi.CHARSET));
   }
 
   @Test
@@ -114,7 +114,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
         "https://github.com/login/oauth/authorize?client_id="
             + appConfig.getGithubOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(githubCallbackURI.toString(), StandardCharsets.UTF_8)
+            + URLEncoder.encode(githubCallbackURI.toString(), RebrowseApi.CHARSET)
             + "&response_type=code&scope=read%3Auser+user%3Aemail&state=";
 
     Response response =
@@ -132,14 +132,14 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = AbstractIdentityProvider.secureStateData(state);
-    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, StandardCharsets.UTF_8));
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, RebrowseApi.CHARSET));
   }
 
   @Test
   public void github_oauth2callback__should_fail__on_random_code() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()
@@ -158,7 +158,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
   public void github_oauth2callback__should_fail__on_expired_code() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()
@@ -188,20 +188,20 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
 
     String secret =
         mfaTotpSetupDatasource.retrieve(user.getId()).toCompletableFuture().join().get();
-    int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
+    int code = TotpUtils.generateCurrentNumber(secret);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(objectMapper.writeValueAsString(new MfaChallengeCompleteDTO(tfaCode)))
+        .body(objectMapper.writeValueAsString(new MfaChallengeCompleteDTO(code)))
         .post(MfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);
 
-    String Location = "https://www.insight.io/my_path";
+    String location = "https://www.insight.io/my_path";
     QuarkusMock.installMockForInstance(new MockedGithubOAuthClient(user.getEmail()), oauthClient);
-    String state = AbstractIdentityProvider.secureState(Location);
+    String state = AbstractIdentityProvider.secureState(location);
 
     given()
         .when()
@@ -212,7 +212,7 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
         .get(githubCallbackURI)
         .then()
         .statusCode(302)
-        .header("Location", Location)
+        .header("Location", location)
         .cookie(SsoChallenge.COOKIE_NAME);
   }
 
