@@ -48,12 +48,12 @@ export const OrganizationSettingsSecurityPage = ({
   );
 
   const {
-    value: enforce2fa,
-    updating: updatingEnforce2fa,
+    value: enforceMfa,
+    updating: updatingEnforceMfa,
     updateNext: update2fa,
   } = useUpdateField({
-    fieldName: 'enforceTwoFactorAuthentication',
-    currentValue: organization.enforceTwoFactorAuthentication,
+    fieldName: 'enforceMultiFactorAuthentication',
+    currentValue: organization.enforceMultiFactorAuthentication,
     resource: 'organization',
     update: updateOrganization,
   });
@@ -70,20 +70,20 @@ export const OrganizationSettingsSecurityPage = ({
         <Panel.Item display="flex" justifyContent="space-between">
           <ExplainedLabel
             for="enforce2fa"
-            explanation="Require and enforce two-factor authentication for all members"
+            explanation="Require and enforce multi-factor authentication for all members"
             width="50%"
           >
-            Require Two-Factor Authentication
+            Require Multi-Factor Authentication
           </ExplainedLabel>
 
           <VerticalAligned width="50%">
             <Block width="fit-content">
               <Toggle
-                id="enforce2fa"
-                name="enforce2fa"
-                checked={enforce2fa}
-                disabled={updatingEnforce2fa}
-                onChange={() => update2fa(!enforce2fa)}
+                id="enforceMfa"
+                name="enforceMfa"
+                checked={enforceMfa}
+                disabled={updatingEnforceMfa}
+                onChange={() => update2fa(!enforceMfa)}
               />
             </Block>
           </VerticalAligned>

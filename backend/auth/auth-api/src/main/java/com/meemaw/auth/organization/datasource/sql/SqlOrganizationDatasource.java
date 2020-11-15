@@ -3,7 +3,7 @@ package com.meemaw.auth.organization.datasource.sql;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.AVATAR;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.CREATED_AT;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.DEFAULT_ROLE;
-import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ENFORCE_TWO_FACTOR_AUTHENTICATION;
+import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ENFORCE_MULTI_FACTOR_AUTHENTICATION;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELDS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.FIELD_MAPPINGS;
 import static com.meemaw.auth.organization.datasource.sql.SqlOrganizationTable.ID;
@@ -46,7 +46,7 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
         row.getString(ID.getName()),
         row.getString(NAME.getName()),
         row.getBoolean(OPEN_MEMBERSHIP.getName()),
-        row.getBoolean(ENFORCE_TWO_FACTOR_AUTHENTICATION.getName()),
+        row.getBoolean(ENFORCE_MULTI_FACTOR_AUTHENTICATION.getName()),
         UserRole.fromString(row.getString(DEFAULT_ROLE.getName())),
         Optional.ofNullable(avatar).map(p -> p.mapTo(AvatarSetupDTO.class)).orElse(null),
         row.getOffsetDateTime(CREATED_AT.getName()),

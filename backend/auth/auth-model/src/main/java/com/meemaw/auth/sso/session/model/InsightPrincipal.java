@@ -14,4 +14,12 @@ public class InsightPrincipal {
   private String apiKey;
   private String sessionId;
   private String challengeId;
+
+  boolean isChallengeSession() {
+    return challengeId != null;
+  }
+
+  boolean isSsoSession() {
+    return sessionId != null;
+  }
 }

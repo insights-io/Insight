@@ -1,10 +1,12 @@
 package com.meemaw.auth.user.resource.v1;
 
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
+import com.meemaw.auth.sso.ChallengeSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.tfa.dto.TfaChallengeCodeDetailsDTO;
-import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.dto.MfaChallengeCodeDetailsDTO;
+import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
 import com.meemaw.shared.rest.response.OkDataResponse;
@@ -124,9 +126,56 @@ public interface UserResource {
   CompletionStage<Response> retrieve(@PathParam("userId") UUID userId);
 
   @PATCH
+  @Path("phone_number")
   @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
-  @Operation(summary = "Update authenticated user")
+  @Operation(summary = "Update user's phone number")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME),
+        @SecurityRequirement(name = ChallengeSessionCookieSecurityScheme.NAME)
+      })
+  @APIResponses(
+      value = {
+        @APIResponse(
+            responseCode = "200",
+            description = "User object",
+            content =
+                @Content(
+                    schema = @Schema(implementation = UserDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON)),
+        @APIResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.BAD_REQUEST_EXAMPLE)),
+        @APIResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.UNAUTHORIZED_EXAMPLE)),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
+      })
+  CompletionStage<Response> updatePhoneNumber(PhoneNumberDTO phoneNumber);
+
+  @PATCH
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Tag(name = TAG)
+  @Operation(summary = "Update user")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -268,7 +317,7 @@ public interface UserResource {
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> verifyPhoneNumber(
-      @NotNull(message = "Required") @Valid TfaChallengeCompleteDTO body);
+      @NotNull(message = "Required") @Valid MfaChallengeCompleteDTO body);
 
   @POST
   @Path("phone_number/verify/send_code")
@@ -317,5 +366,5 @@ public interface UserResource {
 
   class UserDataResponse extends OkDataResponse<UserDTO> {}
 
-  class TfaSetupStartResponse extends OkDataResponse<TfaChallengeCodeDetailsDTO> {}
+  class TfaSetupStartResponse extends OkDataResponse<MfaChallengeCodeDetailsDTO> {}
 }

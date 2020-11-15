@@ -19,7 +19,7 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.UPDATED_AT;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.USER_TABLE_ID;
 
 import com.meemaw.auth.password.datasource.sql.SqlPasswordTable;
-import com.meemaw.auth.tfa.TfaMethod;
+import com.meemaw.auth.tfa.MfaMethod;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
@@ -63,12 +63,26 @@ public class SqlUserDatasource implements UserDatasource {
               TABLE_FIELDS.stream(),
               Stream.of(
                   SqlPasswordTable.tableAliasField(HASH),
-                  SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.PARAMS),
-                  SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.METHOD),
-                  SqlTfaSetupTable.tableAliasField(SqlTfaSetupTable.CREATED_AT)))
+                  SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.PARAMS),
+                  SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.METHOD),
+                  SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.CREATED_AT)))
           .collect(Collectors.toUnmodifiableList());
 
   @Inject SqlPool sqlPool;
+
+  public static AuthUser mapUser(Row row) {
+    JsonObject phoneNumber = (JsonObject) row.getValue(PHONE_NUMBER.getName());
+    return new UserDTO(
+        row.getUUID(ID.getName()),
+        row.getString(EMAIL.getName()),
+        row.getString(FULL_NAME.getName()),
+        UserRole.fromString(row.getString(ROLE.getName())),
+        row.getString(ORGANIZATION_ID.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()),
+        row.getOffsetDateTime(UPDATED_AT.getName()),
+        Optional.ofNullable(phoneNumber).map(p -> p.mapTo(PhoneNumberDTO.class)).orElse(null),
+        row.getBoolean(PHONE_NUMBER_VERIFIED.getName()));
+  }
 
   @Override
   @Traced
@@ -92,14 +106,25 @@ public class SqlUserDatasource implements UserDatasource {
 
   @Override
   public CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update) {
-    UpdateSetFirstStep<?> updateStep = sqlPool.getContext().update(TABLE);
-    Query query =
-        SQLUpdateDTO.of(update)
-            .apply(updateStep, FIELD_MAPPINGS)
-            .where(ID.eq(userId))
-            .returning(FIELDS);
+    return sqlPool
+        .execute(updateUserQuery(userId, update))
+        .thenApply(rows -> mapUser(rows.iterator().next()));
+  }
 
-    return sqlPool.execute(query).thenApply(rows -> mapUser(rows.iterator().next()));
+  @Override
+  public CompletionStage<AuthUser> updateUser(
+      UUID userId, UpdateDTO update, SqlTransaction transaction) {
+    return transaction
+        .execute(updateUserQuery(userId, update))
+        .thenApply(rows -> mapUser(rows.iterator().next()));
+  }
+
+  private Query updateUserQuery(UUID userId, UpdateDTO update) {
+    UpdateSetFirstStep<?> updateStep = sqlPool.getContext().update(TABLE);
+    return SQLUpdateDTO.of(update)
+        .apply(updateStep, FIELD_MAPPINGS)
+        .where(ID.eq(userId))
+        .returning(FIELDS);
   }
 
   @Override
@@ -176,20 +201,6 @@ public class SqlUserDatasource implements UserDatasource {
     return users;
   }
 
-  public static AuthUser mapUser(Row row) {
-    JsonObject phoneNumber = (JsonObject) row.getValue(PHONE_NUMBER.getName());
-    return new UserDTO(
-        row.getUUID(ID.getName()),
-        row.getString(EMAIL.getName()),
-        row.getString(FULL_NAME.getName()),
-        UserRole.fromString(row.getString(ROLE.getName())),
-        row.getString(ORGANIZATION_ID.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()),
-        row.getOffsetDateTime(UPDATED_AT.getName()),
-        Optional.ofNullable(phoneNumber).map(p -> p.mapTo(PhoneNumberDTO.class)).orElse(null),
-        row.getBoolean(PHONE_NUMBER_VERIFIED.getName()));
-  }
-
   @Override
   @Traced
   public CompletionStage<Optional<UserWithLoginInformation>> findUserWithLoginInformation(
@@ -202,8 +213,8 @@ public class SqlUserDatasource implements UserDatasource {
                 TABLE
                     .leftJoin(TABLE_ALIAS)
                     .on(USER_TABLE_ID.eq(SqlPasswordTable.TABLE_ALIAS_USER_ID))
-                    .leftJoin(SqlTfaSetupTable.TABLE_ALIAS)
-                    .on(USER_TABLE_ID.eq(SqlTfaSetupTable.TABLE_ALIAS_USER_ID)))
+                    .leftJoin(SqlMfaConfigurationTable.TABLE_ALIAS)
+                    .on(USER_TABLE_ID.eq(SqlMfaConfigurationTable.TABLE_ALIAS_USER_ID)))
             .where(EMAIL.eq(email))
             .orderBy(SqlPasswordTable.TABLE_ALIAS_CREATED_AT.desc())
             .limit(2);
@@ -220,10 +231,10 @@ public class SqlUserDatasource implements UserDatasource {
     AuthUser user = SqlUserDatasource.mapUser(firstRow);
     String password = firstRow.getString(HASH.getName());
 
-    List<TfaMethod> tfaMethods = new ArrayList<>(rows.size());
+    List<MfaMethod> mfaMethods = new ArrayList<>(rows.size());
     for (Row row : rows) {
-      Optional.ofNullable(row.getString(SqlTfaSetupTable.METHOD.getName()))
-          .ifPresent(method -> tfaMethods.add(TfaMethod.fromString(method)));
+      Optional.ofNullable(row.getString(SqlMfaConfigurationTable.METHOD.getName()))
+          .ifPresent(method -> mfaMethods.add(MfaMethod.fromString(method)));
     }
 
     return Optional.of(
@@ -238,6 +249,6 @@ public class SqlUserDatasource implements UserDatasource {
             user.getPhoneNumber(),
             user.isPhoneNumberVerified(),
             password,
-            tfaMethods));
+            mfaMethods));
   }
 }

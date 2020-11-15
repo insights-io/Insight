@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.session.cookie;
 
 import com.meemaw.auth.sso.cookie.AbstractChallengeSecurityRequirementDynamicFeature;
-import com.meemaw.auth.tfa.challenge.service.TfaChallengeService;
+import com.meemaw.auth.tfa.challenge.service.MfaChallengeService;
 import com.meemaw.auth.user.model.AuthUser;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -12,7 +12,7 @@ import javax.ws.rs.ext.Provider;
 public class ChallengeSessionCookieSecurityRequirementDynamicFeature
     extends AbstractChallengeSecurityRequirementDynamicFeature {
 
-  @Inject TfaChallengeService challengeService;
+  @Inject MfaChallengeService challengeService;
 
   @Override
   protected CompletionStage<Optional<AuthUser>> findSession(String cookieValue) {

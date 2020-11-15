@@ -22,8 +22,8 @@ public final class SqlOrganizationTable {
   public static final Field<String> NAME = field(OrganizationTable.NAME, String.class);
   public static final Field<Boolean> OPEN_MEMBERSHIP =
       field(OrganizationTable.OPEN_MEMBERSHIP, Boolean.class);
-  public static final Field<Boolean> ENFORCE_TWO_FACTOR_AUTHENTICATION =
-      field(OrganizationTable.ENFORCE_TWO_FACTOR_AUTHENTICATION, Boolean.class);
+  public static final Field<Boolean> ENFORCE_MULTI_FACTOR_AUTHENTICATION =
+      field(OrganizationTable.ENFORCE_MULTI_FACTOR_AUTHENTICATION, Boolean.class);
   public static final Field<JsonObject> AVATAR =
       field(OrganizationTable.AVATAR, JSON_OBJECT_DATA_TYPE);
   public static final Field<String> DEFAULT_ROLE =
@@ -38,7 +38,7 @@ public final class SqlOrganizationTable {
   public static final List<Field<?>> FIELDS =
       Stream.concat(
               Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream()),
-              Stream.of(AVATAR, DEFAULT_ROLE, OPEN_MEMBERSHIP, ENFORCE_TWO_FACTOR_AUTHENTICATION))
+              Stream.of(AVATAR, DEFAULT_ROLE, OPEN_MEMBERSHIP, ENFORCE_MULTI_FACTOR_AUTHENTICATION))
           .collect(Collectors.toList());
 
   public static final Map<String, Field<?>> FIELD_MAPPINGS =

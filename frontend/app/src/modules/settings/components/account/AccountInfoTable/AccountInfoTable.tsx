@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
 import { Block } from 'baseui/block';
 import { Table } from 'baseui/table';
-import type { User, UserDTO } from '@insight/types';
+import type { PhoneNumber, User, UserDTO } from '@insight/types';
 import { useStyletron } from 'baseui';
-import { Button, SHAPE, SIZE } from 'baseui/button';
+import { SHAPE, SIZE } from 'baseui/button';
 import { FaCogs } from 'react-icons/fa';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import { VerticalAligned } from '@insight/elements';
-import { UpdateUserPayload } from '@insight/sdk/dist/auth';
-import ConfigurePhoneNumberModal from 'modules/settings/components/account/ConfigurePhoneNumberModal';
+import { Button, VerticalAligned } from '@insight/elements';
+import { ConfigurePhoneNumberModal } from 'modules/settings/components/account/ConfigurePhoneNumberModal';
 
 type Props = {
   user: User;
-  updateUser: (updateUserPayload: UpdateUserPayload) => Promise<UserDTO>;
+  updatePhoneNumber: (phoneNumber: PhoneNumber | null) => Promise<UserDTO>;
   setUser: (user: UserDTO) => void;
 };
 
-export const AccountInfoTable = ({ user, updateUser, setUser }: Props) => {
+export const AccountInfoTable = ({
+  user,
+  updatePhoneNumber,
+  setUser,
+}: Props) => {
   const [_css, theme] = useStyletron();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -51,7 +54,7 @@ export const AccountInfoTable = ({ user, updateUser, setUser }: Props) => {
           isOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           phoneNumber={user.phoneNumber}
-          updateUser={updateUser}
+          updatePhoneNumber={updatePhoneNumber}
           setUser={setUser}
         />
       </>,

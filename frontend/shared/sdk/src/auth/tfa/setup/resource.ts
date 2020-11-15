@@ -13,7 +13,7 @@ import type { TfaSetupStart, TfaTotpSetupStart } from './types';
 
 export const tfaSetupResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
-    return `${apiBaseURL}/v1/two-factor-authentication/setup`;
+    return `${apiBaseURL}/v1/mfa/setup`;
   };
 
   const tfaSetupStart = <T extends TfaSetupStart>(
@@ -85,12 +85,12 @@ export const tfaSetupResource = (authApiBaseURL: string) => {
     complete: (method: TfaMethod, code: number, options?: RequestOptions) => {
       return tfaChallengeComplete(method, code, options);
     },
-    completeChallenge: (
+    completeEnforced: (
       method: TfaMethod,
       code: number,
       options?: RequestOptions
     ) => {
-      return tfaChallengeComplete(method, code, options, '/challenge');
+      return tfaChallengeComplete(method, code, options, '/enforced');
     },
     disable: (
       method: TfaMethod,

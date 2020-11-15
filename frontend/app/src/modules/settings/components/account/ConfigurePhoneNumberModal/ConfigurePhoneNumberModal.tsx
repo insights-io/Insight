@@ -2,29 +2,28 @@ import React, { useCallback, useState } from 'react';
 import { Modal, SIZE } from 'baseui/modal';
 import { ProgressSteps, Step } from 'baseui/progress-steps';
 import { PhoneNumber, UserDTO } from '@insight/types';
-import { UpdateUserPayload } from '@insight/sdk/dist/auth';
+import { SetPhoneNumberForm } from 'modules/auth/components/SetPhoneNumberForm';
 
-import SetPhoneNumberForm from './SetPhoneNumberForm';
 import VerifyPhoneNumberForm from './VerifyPhoneNumberForm';
 
 type Props = {
   isOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
   phoneNumber: PhoneNumber | null;
-  updateUser: (userUpdatePayload: UpdateUserPayload) => Promise<UserDTO>;
+  updatePhoneNumber: (phoneNumber: PhoneNumber | null) => Promise<UserDTO>;
   setUser: (user: UserDTO) => void;
 };
 
-const ConfigurePhoneNumberModal = ({
+export const ConfigurePhoneNumberModal = ({
   isOpen,
   setIsModalOpen,
   phoneNumber,
-  updateUser,
+  updatePhoneNumber,
   setUser,
 }: Props) => {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const onPhoneNumberSet = useCallback(() => {
+  const onContinue = useCallback(() => {
     setCurrentStep((s) => s + 1);
   }, []);
 
@@ -49,9 +48,9 @@ const ConfigurePhoneNumberModal = ({
       <ProgressSteps current={currentStep}>
         <Step title="Set phone number">
           <SetPhoneNumberForm
-            phoneNumber={phoneNumber}
-            onPhoneNumberSet={onPhoneNumberSet}
-            updateUser={updateUser}
+            initialValue={phoneNumber}
+            onContinue={onContinue}
+            updatePhoneNumber={updatePhoneNumber}
           />
         </Step>
 
@@ -65,5 +64,3 @@ const ConfigurePhoneNumberModal = ({
     </Modal>
   );
 };
-
-export default React.memo(ConfigurePhoneNumberModal);

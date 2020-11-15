@@ -24,7 +24,7 @@ CREATE TABLE auth.organization
     id              TEXT PRIMARY KEY,
     name            TEXT,
     open_membership BOOL                                                    DEFAULT FALSE,
-    enforce_two_factor_authentication     BOOL                                                    DEFAULT FALSE,
+    enforce_multi_factor_authentication     BOOL                            DEFAULT FALSE,
     default_role    TEXT REFERENCES auth.user_role (name) ON UPDATE CASCADE DEFAULT 'member',
     avatar          JSONB,
     created_at      TIMESTAMPTZ NOT NULL                                    DEFAULT now(),
@@ -108,7 +108,7 @@ CREATE TABLE auth.sign_up_request
     CONSTRAINT email_length CHECK (length(auth.sign_up_request.email) < 255)
 );
 
-CREATE TABLE auth.user_tfa_setup
+CREATE TABLE auth.user_mfa_configuration
 (
     user_id    UUID REFERENCES auth.user (id) ON DELETE CASCADE,
     params     JSONB       NOT NULL,

@@ -22,7 +22,7 @@ public interface Organization {
 
   boolean isOpenMembership();
 
-  boolean isEnforceTwoFactorAuthentication();
+  boolean isEnforceMultiFactorAuthentication();
 
   UserRole getDefaultRole();
 

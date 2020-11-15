@@ -3,7 +3,7 @@ import { AuthApi } from 'api/auth';
 import { mapUser } from '@insight/sdk';
 import { UpdateUserPayload } from '@insight/sdk/dist/auth';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
-import type { UserDTO } from '@insight/types';
+import type { PhoneNumber, UserDTO } from '@insight/types';
 
 const CACHE_KEY = 'AuthApi.user.me';
 
@@ -31,7 +31,17 @@ export const useUser = (initialData: UserDTO) => {
     [setUser]
   );
 
+  const updatePhoneNumber = useCallback(
+    (phoneNumber: PhoneNumber | null) => {
+      return AuthApi.user.updatePhoneNumber(phoneNumber).then((updatedUser) => {
+        setUser(updatedUser);
+        return updatedUser;
+      });
+    },
+    [setUser]
+  );
+
   const user = useMemo(() => mapUser(data), [data]);
 
-  return { user, updateUser, setUser };
+  return { user, updateUser, updatePhoneNumber, setUser };
 };

@@ -44,4 +44,10 @@ public class User {
   public static CompletionStage<User> update(UserUpdateParams params, RequestOptions options) {
     return ApiResource.request(RequestMethod.PATCH, "/v1/user", params, User.class, options);
   }
+
+  public static CompletionStage<User> updatePhoneNumber(
+      PhoneNumberUpdateParams params, RequestOptions options) {
+    return ApiResource.request(
+        RequestMethod.PATCH, "/v1/user/phone_number", params, User.class, options);
+  }
 }

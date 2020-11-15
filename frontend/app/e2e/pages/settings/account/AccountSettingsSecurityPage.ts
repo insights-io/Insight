@@ -15,11 +15,11 @@ class TwoFactorAuthentication {
   public readonly authenticatorTfaCheckbox: SelectorPromise;
 
   public readonly authenticatorTfaDisabledToast = queryByText(
-    /Authy \/ Google Authenticator two factor authentication disabled/
+    /Authy \/ Google Authenticator multi-factor authentication disabled/
   );
 
   public readonly authenticatorTfaEnabledToast = queryByText(
-    /Authy \/ Google Authenticator two factor authentication enabled/
+    /Authy \/ Google Authenticator multi-factor authentication enabled/
   );
   public readonly authenticatorSetupModal = TimeBasedTwoFactorAuthenticationSetupModal;
 
@@ -33,13 +33,13 @@ class TwoFactorAuthentication {
 
   public readonly textMessageCheckbox: SelectorPromise;
   public readonly textMessageDisabledTooltipText = queryByText(
-    'Verify your phone number to enable text message two factor authentication'
+    'Verify your phone number to enable text message multi-factor authentication'
   );
   public readonly textMessageDisabledToastMessage = queryByText(
-    'Text message two factor authentication disabled'
+    'Text message multi-factor authentication disabled'
   );
   public readonly textMessageEnabledToastMessage = queryByText(
-    'Text message two factor authentication enabled'
+    'Text message multi-factor authentication enabled'
   );
   public setupTextMessageTFA = (t: TestController) =>
     VerificationPage.completeSmsChallenge(t);

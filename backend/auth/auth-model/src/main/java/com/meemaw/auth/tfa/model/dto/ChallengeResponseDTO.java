@@ -1,6 +1,6 @@
 package com.meemaw.auth.tfa.model.dto;
 
-import com.meemaw.auth.tfa.TfaMethod;
+import com.meemaw.auth.tfa.MfaMethod;
 import java.util.List;
 import lombok.Value;
 
@@ -8,5 +8,5 @@ import lombok.Value;
 public class ChallengeResponseDTO {
 
   String challengeId;
-  List<TfaMethod> methods;
+  List<MfaMethod> methods;
 }

@@ -2,8 +2,8 @@ package com.rebrowse.model.user;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.rebrowse.model.ApiRequestParams;
-import com.rebrowse.model.SearchParam;
-import com.rebrowse.model.SearchParamSerializer;
+import com.rebrowse.model.QueryParam;
+import com.rebrowse.model.RhsColonQueryParamSerializer;
 import lombok.Builder;
 import lombok.Value;
 
@@ -11,6 +11,6 @@ import lombok.Value;
 @Builder
 public class UserSearchParams implements ApiRequestParams {
 
-  @JsonSerialize(using = SearchParamSerializer.class)
-  SearchParam<String> email;
+  @JsonSerialize(using = RhsColonQueryParamSerializer.class)
+  QueryParam<String> email;
 }

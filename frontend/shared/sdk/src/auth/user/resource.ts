@@ -1,5 +1,10 @@
 import ky from 'ky-universal';
-import type { CodeValidityDTO, DataResponse, UserDTO } from '@insight/types';
+import type {
+  CodeValidityDTO,
+  DataResponse,
+  PhoneNumber,
+  UserDTO,
+} from '@insight/types';
 
 import type { RequestOptions } from '../../core/types';
 import { getData, withCredentials } from '../../core/utils';
@@ -20,6 +25,18 @@ export const userResource = (authApiBaseURL: string) => {
     ) => {
       return ky
         .patch(`${baseURL}/v1/user`, withCredentials({ json, ...rest }))
+        .json<DataResponse<UserDTO>>()
+        .then(getData);
+    },
+    updatePhoneNumber: (
+      json: PhoneNumber | null | undefined,
+      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    ) => {
+      return ky
+        .patch(
+          `${baseURL}/v1/user/phone_number`,
+          withCredentials({ json, ...rest })
+        )
         .json<DataResponse<UserDTO>>()
         .then(getData);
     },

@@ -1,0 +1,1 @@
+export { SmsTwoFactorAuthenticationForm } from './SmsTwoFactorAuthenticationForm';

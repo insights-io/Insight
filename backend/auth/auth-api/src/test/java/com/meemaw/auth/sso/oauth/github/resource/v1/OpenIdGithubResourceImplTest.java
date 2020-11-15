@@ -17,8 +17,8 @@ import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.tfa.model.SsoChallenge;
-import com.meemaw.auth.tfa.model.dto.TfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.setup.resource.v1.TfaSetupResource;
+import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.tfa.setup.resource.v1.MfaSetupResource;
 import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -182,20 +182,20 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .post(TfaSetupResource.PATH + "/totp/start")
+        .post(MfaSetupResource.PATH + "/totp/start")
         .then()
         .statusCode(200);
 
     String secret =
-        tfaTotpSetupDatasource.retrieve(user.getId()).toCompletableFuture().join().get();
+        mfaTotpSetupDatasource.retrieve(user.getId()).toCompletableFuture().join().get();
     int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(objectMapper.writeValueAsString(new TfaChallengeCompleteDTO(tfaCode)))
-        .post(TfaSetupResource.PATH + "/totp/complete")
+        .body(objectMapper.writeValueAsString(new MfaChallengeCompleteDTO(tfaCode)))
+        .post(MfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);
 
