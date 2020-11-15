@@ -7,6 +7,7 @@ import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.meemaw.billing.subscription.model.dto.PlanDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
@@ -253,11 +254,12 @@ public interface SubscriptionResource {
       })
   CompletionStage<Response> getActivePlan();
 
-  class ActivePlanDataResponse extends OkDataResponse<PlanDTO> {}
+  class ActivePlanDataResponse extends RebrowseApiDataResponse<PlanDTO> {}
 
-  class SubscriptionDataResponse extends OkDataResponse<SubscriptionDTO> {}
+  class SubscriptionDataResponse extends RebrowseApiDataResponse<SubscriptionDTO> {}
 
-  class SubscriptionCollectionResponse extends OkDataResponse<List<SubscriptionDTO>> {}
+  class SubscriptionCollectionResponse extends RebrowseApiDataResponse<List<SubscriptionDTO>> {}
 
-  class SubscriptionCreatedDataResponse extends OkDataResponse<CreateSubscriptionResponseDTO> {}
+  class SubscriptionCreatedDataResponse
+      extends RebrowseApiDataResponse<CreateSubscriptionResponseDTO> {}
 }

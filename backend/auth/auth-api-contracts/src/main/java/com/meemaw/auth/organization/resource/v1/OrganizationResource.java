@@ -16,10 +16,12 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -285,7 +287,13 @@ public interface OrganizationResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> retrieve(@PathParam("id") String id);
+  // HeaderParam required in PageService.java
+  default CompletionStage<Response> retrieve(
+      @PathParam("id") String id, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
+    return retrieve(id);
+  }
+
+  CompletionStage<Response> retrieve(String organizationId);
 
   @PATCH
   @Path("avatar")
