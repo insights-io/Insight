@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import type { OutgoingHttpHeaders } from 'http';
 
 import React from 'react';
@@ -10,17 +11,16 @@ import type { APIErrorDataResponse, TfaMethod, UserDTO } from '@insight/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SetupMultiFactorAuthenticationPage } from 'modules/auth/pages/SetupMultiFactorAuthenticationPage';
 
-type Props = {
-  methods: TfaMethod[];
-  user: UserDTO;
-};
+type Props =
+  | { methods: TfaMethod[]; user?: undefined }
+  | { methods?: undefined; user: UserDTO };
 
-const Verification = ({ methods, user }: Props) => {
-  if (methods.length === 0) {
-    return <SetupMultiFactorAuthenticationPage user={user} />;
+const Verification = (props: Props) => {
+  if (props.methods) {
+    return <VerificationPage methods={props.methods} />;
   }
 
-  return <VerificationPage methods={methods} />;
+  return <SetupMultiFactorAuthenticationPage user={props.user} />;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -45,19 +45,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     }
 
     try {
-      const methodsPromise = AuthApi.tfa.challenge.get(ChallengeId, {
+      const methods = await AuthApi.tfa.challenge.get(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });
 
-      const userPromise = AuthApi.tfa.challenge.retrieveUser(ChallengeId, {
+      if (methods.length > 0) {
+        return { props: { methods } };
+      }
+
+      const user = await AuthApi.tfa.challenge.retrieveUser(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });
 
-      const [methods, user] = await Promise.all([methodsPromise, userPromise]);
-
-      return { props: { methods, user } };
+      return { props: { user } };
     } catch (error) {
       const errorDTO: APIErrorDataResponse = await error.response.json();
       if (errorDTO.error.statusCode === 404) {
