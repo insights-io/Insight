@@ -66,7 +66,10 @@ export const TimeBasedMultiFactorAuthenticationForm = ({
 
       <Flex justifyContent="center" marginBottom="24px">
         {qrImage ? (
-          <img src={`data:image/jpeg;base64,${qrImage}`} alt="TFA QR code" />
+          <img
+            src={`data:image/jpeg;base64,${qrImage}`}
+            alt="Time-based one-time password QR code"
+          />
         ) : (
           <Skeleton width="200px" height="200px" />
         )}

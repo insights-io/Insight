@@ -9,7 +9,7 @@ export class TimeBasedTwoFactorAuthenticationSetupModal {
   public readonly title = queryByText('Setup multi-factor authentication');
 
   public extractAuthenticatorTfaCode = async (t: TestController) => {
-    const querySelector = 'img[alt="MFA QR code"]';
+    const querySelector = 'img[alt="Time-based one-time password QR code"]';
     await t
       .expect(Selector(querySelector, { timeout: 5000 }).visible)
       .ok('QR Image is visible');
