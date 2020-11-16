@@ -1,9 +1,9 @@
 package com.meemaw.auth.user.resource.v1;
 
+import com.meemaw.auth.mfa.dto.MfaChallengeCodeDetailsDTO;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.mfa.sms.impl.MfaSmsProvider;
 import com.meemaw.auth.sso.session.model.InsightPrincipal;
-import com.meemaw.auth.tfa.dto.MfaChallengeCodeDetailsDTO;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.sms.impl.MfaSmsProvider;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;

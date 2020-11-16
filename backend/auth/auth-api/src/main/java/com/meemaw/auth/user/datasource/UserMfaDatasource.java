@@ -1,7 +1,7 @@
 package com.meemaw.auth.user.datasource;
 
-import com.meemaw.auth.tfa.MfaMethod;
-import com.meemaw.auth.tfa.model.MfaConfiguration;
+import com.meemaw.auth.mfa.MfaMethod;
+import com.meemaw.auth.mfa.model.MfaConfiguration;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.core.json.JsonObject;
 import java.util.List;
@@ -12,24 +12,25 @@ import java.util.stream.Collectors;
 
 public interface UserMfaDatasource {
 
-  CompletionStage<List<MfaConfiguration>> list(UUID userId);
+  CompletionStage<Optional<MfaConfiguration>> retrieve(UUID userId, MfaMethod mfaMethod);
 
-  CompletionStage<Optional<MfaConfiguration>> get(UUID userId, MfaMethod mfaMethod);
+  CompletionStage<List<MfaConfiguration>> list(UUID userId);
 
   CompletionStage<Boolean> delete(UUID userId, MfaMethod method);
 
-  CompletionStage<MfaConfiguration> store(
+  CompletionStage<MfaConfiguration> create(
       UUID userId, MfaMethod method, JsonObject params, SqlTransaction sqlTransaction);
 
-  default CompletionStage<MfaConfiguration> storeTotpTfa(
+  default CompletionStage<MfaConfiguration> createTotpConfiguration(
       UUID userId, String secret, SqlTransaction transaction) {
     JsonObject params = new JsonObject();
     params.put("secret", secret);
-    return store(userId, MfaMethod.TOTP, params, transaction);
+    return create(userId, MfaMethod.TOTP, params, transaction);
   }
 
-  default CompletionStage<MfaConfiguration> storeSmsTfa(UUID userId, SqlTransaction transaction) {
-    return store(userId, MfaMethod.SMS, new JsonObject(), transaction);
+  default CompletionStage<MfaConfiguration> createSmsConfiguration(
+      UUID userId, SqlTransaction transaction) {
+    return create(userId, MfaMethod.SMS, new JsonObject(), transaction);
   }
 
   default CompletionStage<List<MfaMethod>> listMethods(UUID userId) {

@@ -5,8 +5,9 @@ import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
 import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
+import com.meemaw.shared.rest.response.BooleanDataResponse;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -173,10 +174,7 @@ public interface SsoSetupResource {
                 @Content(
                     schema =
                         @Schema(
-                            oneOf = {
-                              SsoSetupExistsDataResponse.class,
-                              SsoSetupDoesNotExistDataResponse.class
-                            }),
+                            oneOf = {SsoSetupExistsDataResponse.class, BooleanDataResponse.class}),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "500",
@@ -189,9 +187,7 @@ public interface SsoSetupResource {
       })
   CompletionStage<Response> get(@PathParam("domain") String domain);
 
-  class SsoSetupDataResponse extends OkDataResponse<SsoSetup> {}
+  class SsoSetupDataResponse extends RebrowseApiDataResponse<SsoSetup> {}
 
-  class SsoSetupExistsDataResponse extends OkDataResponse<String> {}
-
-  class SsoSetupDoesNotExistDataResponse extends OkDataResponse<Boolean> {}
+  class SsoSetupExistsDataResponse extends RebrowseApiDataResponse<String> {}
 }

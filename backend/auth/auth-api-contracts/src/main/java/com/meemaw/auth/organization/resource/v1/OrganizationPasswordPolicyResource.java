@@ -4,7 +4,7 @@ import com.meemaw.auth.organization.model.dto.PasswordPolicyDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.NotNull;
@@ -181,5 +181,5 @@ public interface OrganizationPasswordPolicyResource {
       })
   CompletionStage<Response> update(@NotNull(message = "Required") Map<String, Object> body);
 
-  class PasswordPolicyDataResponse extends OkDataResponse<PasswordPolicyDTO> {}
+  class PasswordPolicyDataResponse extends RebrowseApiDataResponse<PasswordPolicyDTO> {}
 }

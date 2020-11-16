@@ -81,12 +81,11 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
   public void applyMigrations(Path migrationsSqlPath) {
     Path absolutePath = migrationsSqlPath.toAbsolutePath();
     if (!Files.exists(migrationsSqlPath)) {
-      System.out.println(
-          String.format("[TEST-SETUP]: Skipping applyMigrations from=%s", absolutePath));
+      System.out.printf("[TEST-SETUP]: Skipping applyMigrations from=%s%n", absolutePath);
       return;
     }
 
-    System.out.println(String.format("[TEST-SETUP]: Applying migrations from=%s", absolutePath));
+    System.out.printf("[TEST-SETUP]: Applying migrations from=%s%n", absolutePath);
     new ElasticsearchMigrationsTestContainer<>(migrationsSqlPath).start();
   }
 }

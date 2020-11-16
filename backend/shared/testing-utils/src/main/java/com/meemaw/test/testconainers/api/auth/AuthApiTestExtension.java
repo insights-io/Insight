@@ -17,11 +17,6 @@ public class AuthApiTestExtension implements BeforeAllCallback {
     return AUTH_API;
   }
 
-  @Override
-  public void beforeAll(ExtensionContext context) {
-    start(AUTH_API).forEach(System::setProperty);
-  }
-
   public static void stop() {
     AUTH_API.stop();
   }
@@ -37,8 +32,13 @@ public class AuthApiTestExtension implements BeforeAllCallback {
     }
 
     String authApiBaseURI = authApi.getBaseURI();
-    System.out.println(String.format("[TEST-SETUP]: Connecting to auth-api on=%s", authApiBaseURI));
+    System.out.printf("[TEST-SETUP]: Connecting to auth-api on=%s%n", authApiBaseURI);
 
     return Map.of("auth-api/mp-rest/url", authApiBaseURI);
+  }
+
+  @Override
+  public void beforeAll(ExtensionContext context) {
+    start(AUTH_API).forEach(System::setProperty);
   }
 }

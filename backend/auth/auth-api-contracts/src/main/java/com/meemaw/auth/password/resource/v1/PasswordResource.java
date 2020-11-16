@@ -5,9 +5,9 @@ import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
+import com.meemaw.shared.rest.response.BooleanDataResponse;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse.BooleanDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
@@ -75,7 +75,7 @@ public interface PasswordResource {
             description = "Success",
             content =
                 @Content(
-                    schema = @Schema(implementation = OkDataResponse.class),
+                    schema = @Schema(implementation = RebrowseApiDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "400",

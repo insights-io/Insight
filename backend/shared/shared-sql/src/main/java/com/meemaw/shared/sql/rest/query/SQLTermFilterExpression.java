@@ -1,6 +1,7 @@
 package com.meemaw.shared.sql.rest.query;
 
 import com.meemaw.shared.rest.query.TermFilterExpression;
+import com.rebrowse.api.query.QueryParam;
 import java.util.Map;
 import lombok.Value;
 import org.jooq.Condition;
@@ -14,7 +15,8 @@ public class SQLTermFilterExpression<T> implements SQLFilterExpression {
   TermFilterExpression<T> expression;
 
   public Condition condition(Field<T> field) {
-    return SQLTermOperation.of(expression.getOperation()).apply(field, expression.getTarget());
+    QueryParam<T> queryParam = expression.getQueryParam();
+    return SQLTermCondition.of(queryParam.getCondition()).apply(field, queryParam.getValue());
   }
 
   @SuppressWarnings("unchecked")

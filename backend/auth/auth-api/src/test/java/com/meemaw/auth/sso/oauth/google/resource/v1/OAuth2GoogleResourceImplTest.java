@@ -7,6 +7,10 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.meemaw.auth.mfa.model.SsoChallenge;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.mfa.setup.resource.v1.MfaSetupResource;
+import com.meemaw.auth.mfa.totp.impl.TotpUtils;
 import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.AbstractSsoOAuthResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
@@ -22,12 +26,9 @@ import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
 import com.meemaw.auth.sso.setup.model.dto.SamlConfiguration;
 import com.meemaw.auth.sso.setup.resource.v1.SsoSetupResource;
-import com.meemaw.auth.tfa.model.SsoChallenge;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.setup.resource.v1.MfaSetupResource;
-import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
@@ -37,7 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.UUID;
@@ -95,7 +95,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         "https://accounts.google.com/o/oauth2/auth?client_id="
             + appConfig.getGoogleOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(callbackURI, StandardCharsets.UTF_8)
+            + URLEncoder.encode(callbackURI, RebrowseApi.CHARSET)
             + "&response_type=code&scope=openid+email+profile&state=";
 
     Response response =
@@ -115,7 +115,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = state.substring(26);
-    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, StandardCharsets.UTF_8));
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, RebrowseApi.CHARSET));
   }
 
   @Test
@@ -124,7 +124,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         "https://accounts.google.com/o/oauth2/auth?client_id="
             + appConfig.getGoogleOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(googleCallbackURI.toString(), StandardCharsets.UTF_8)
+            + URLEncoder.encode(googleCallbackURI.toString(), RebrowseApi.CHARSET)
             + "&response_type=code&scope=openid+email+profile&state=";
 
     Response response =
@@ -142,14 +142,14 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String destination = AbstractIdentityProvider.secureStateData(state);
-    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, StandardCharsets.UTF_8));
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(destination, RebrowseApi.CHARSET));
   }
 
   @Test
   public void google_oauth2callback__should_fail__on_random_code() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()
@@ -168,7 +168,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
   public void google_oauth2callback__should_fail__on_expired_code() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()
@@ -270,9 +270,9 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="
             + appConfig.getMicrosoftOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(microsoftCallbackURI.toString(), StandardCharsets.UTF_8)
+            + URLEncoder.encode(microsoftCallbackURI.toString(), RebrowseApi.CHARSET)
             + "&response_type=code&scope=openid+email+profile&response_mode=query&login_hint="
-            + URLEncoder.encode(otherUserEmail, StandardCharsets.UTF_8)
+            + URLEncoder.encode(otherUserEmail, RebrowseApi.CHARSET)
             + "&state=";
 
     String redirect = "https://www.insight.io/my_path";
@@ -302,7 +302,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         given()
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .get(URLDecoder.decode(location, StandardCharsets.UTF_8))
+            .get(URLDecoder.decode(location, RebrowseApi.CHARSET))
             .then()
             .statusCode(302)
             .cookie(SsoSignInSession.COOKIE_NAME)
@@ -311,7 +311,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
 
     String state = response.header("Location").replace(expectedLocationBase, "");
     String actualClientDestination = AbstractIdentityProvider.secureStateData(state);
-    assertEquals(redirect, URLDecoder.decode(actualClientDestination, StandardCharsets.UTF_8));
+    assertEquals(redirect, URLDecoder.decode(actualClientDestination, RebrowseApi.CHARSET));
   }
 
   @Test
@@ -364,7 +364,7 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         given()
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .get(URLDecoder.decode(location, StandardCharsets.UTF_8));
+            .get(URLDecoder.decode(location, RebrowseApi.CHARSET));
 
     // Should redirect to SAML SSO provider
     response.then().statusCode(302).cookie(SsoSignInSession.COOKIE_NAME);

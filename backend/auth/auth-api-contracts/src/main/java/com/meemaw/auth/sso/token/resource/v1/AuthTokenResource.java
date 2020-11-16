@@ -6,7 +6,7 @@ import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.sso.token.model.dto.AuthTokenDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.DELETE;
@@ -182,9 +182,9 @@ public interface AuthTokenResource {
       })
   CompletionStage<Response> delete(@PathParam("token") String token);
 
-  class UserDataResponse extends OkDataResponse<UserDTO> {}
+  class UserDataResponse extends RebrowseApiDataResponse<UserDTO> {}
 
-  class AuthTokenDataResponse extends OkDataResponse<AuthTokenDTO> {}
+  class AuthTokenDataResponse extends RebrowseApiDataResponse<AuthTokenDTO> {}
 
-  class AuthTokenCollectionDataResponse extends OkDataResponse<List<AuthTokenDTO>> {}
+  class AuthTokenCollectionDataResponse extends RebrowseApiDataResponse<List<AuthTokenDTO>> {}
 }

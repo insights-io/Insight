@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorDataResponse<T extends Boom<?>> {
 
-  T boom;
-
   public static final String FORBIDDEN_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"
@@ -20,7 +18,6 @@ public class ErrorDataResponse<T extends Boom<?>> {
           + "    \"message\": \"Forbidden\"\n"
           + "  }\n"
           + "}";
-
   public static final String NOT_FOUND_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"
@@ -29,7 +26,6 @@ public class ErrorDataResponse<T extends Boom<?>> {
           + "    \"message\": \"Not Found\"\n"
           + "  }\n"
           + "}";
-
   public static final String BAD_REQUEST_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"
@@ -41,7 +37,6 @@ public class ErrorDataResponse<T extends Boom<?>> {
           + "    }\n"
           + "  }\n"
           + "}";
-
   public static final String UNAUTHORIZED_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"
@@ -50,7 +45,6 @@ public class ErrorDataResponse<T extends Boom<?>> {
           + "    \"message\": \"Unauthorized\"\n"
           + "  }\n"
           + "}";
-
   public static final String CONFLICT_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"
@@ -59,7 +53,6 @@ public class ErrorDataResponse<T extends Boom<?>> {
           + "    \"message\": \"Conflict\"\n"
           + "  }\n"
           + "}";
-
   public static final String SERVER_ERROR_EXAMPLE =
       "{\n"
           + "  \"error\": {\n"
@@ -68,4 +61,5 @@ public class ErrorDataResponse<T extends Boom<?>> {
           + "    \"message\": \"Internal Server Error\"\n"
           + "  }\n"
           + "}";
+  T boom;
 }

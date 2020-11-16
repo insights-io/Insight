@@ -1,10 +1,10 @@
 package com.meemaw.auth.core;
 
 import com.meemaw.shared.rest.response.Boom;
+import com.rebrowse.api.RebrowseApi;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public final class EmailUtils {
           new BufferedReader(
               new InputStreamReader(
                   Thread.currentThread().getContextClassLoader().getResourceAsStream(resource),
-                  StandardCharsets.UTF_8))) {
+                  RebrowseApi.CHARSET))) {
         Set<String> providers = new HashSet<>();
         while (reader.ready()) {
           providers.add(reader.readLine().trim());

@@ -1,7 +1,7 @@
 package com.meemaw.shared.elasticsearch.rest.query;
 
 import com.meemaw.shared.rest.query.TermFilterExpression;
-import com.meemaw.shared.rest.query.TermOperation;
+import com.rebrowse.api.query.QueryParam;
 import java.util.Arrays;
 import lombok.Value;
 import org.apache.lucene.search.join.ScoreMode;
@@ -15,10 +15,11 @@ public class ElasticTermFilterExpression<T> implements ElasticFilterExpression {
 
   @Override
   public QueryBuilder apply() {
+    QueryParam<T> queryParam = expression.getQueryParam();
     String field = expression.getField();
-    T target = expression.getTarget();
-    TermOperation operation = expression.getOperation();
-    QueryBuilder termQuery = ElasticTermOperation.of(operation).apply(field, target);
+    QueryBuilder termQuery =
+        ElasticTermCondition.of(queryParam.getCondition()).apply(field, queryParam.getValue());
+
     String[] path = field.split("\\.");
     if (path.length <= 1) {
       return termQuery;

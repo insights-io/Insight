@@ -6,7 +6,8 @@ import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
+import com.meemaw.shared.rest.response.IntegerDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -166,7 +167,7 @@ public interface OrganizationTeamInviteResource {
             description = "Success",
             content =
                 @Content(
-                    schema = @Schema(implementation = CountDataResponse.class),
+                    schema = @Schema(implementation = IntegerDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "401",
@@ -308,9 +309,7 @@ public interface OrganizationTeamInviteResource {
       })
   CompletionStage<Response> send(@PathParam("token") UUID token);
 
-  class CountDataResponse extends OkDataResponse<Integer> {}
+  class TeamInviteDataResponse extends RebrowseApiDataResponse<TeamInviteDTO> {}
 
-  class TeamInviteDataResponse extends OkDataResponse<TeamInviteDTO> {}
-
-  class TeamInviteCollectionDataResponse extends OkDataResponse<List<TeamInviteDTO>> {}
+  class TeamInviteCollectionDataResponse extends RebrowseApiDataResponse<List<TeamInviteDTO>> {}
 }

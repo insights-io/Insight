@@ -29,14 +29,18 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
 
   private static final Pattern BEARER_PATTERN = Pattern.compile("^Bearer ([^ ]+)$");
 
+  private static final String MALFORMED_MESSAGE = "[AUTH]: Malformed authorization header";
+  private static final String MISSING_MESSAGE = "[AUTH]: Missing authorization header";
+  private static final String SERVICE_TO_SERVICE_MESSAGE = "[AUTH]: S2S authorization header";
+
   @ConfigProperty(name = "authorization.s2s.api.key")
   String s2sApiKey;
-
-  public abstract CompletionStage<Optional<AuthUser>> findUser(String apiKey);
 
   public static String header(String token) {
     return String.format("Bearer %s", token);
   }
+
+  public abstract CompletionStage<Optional<AuthUser>> findUser(String apiKey);
 
   @Override
   public BearerTokenAuthFilter authFilter(
@@ -49,31 +53,24 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
     return BearerTokenSecurityRequirement.class;
   }
 
-  @Priority(Priorities.AUTHENTICATION)
-  public class BearerTokenAuthFilter implements ContainerRequestFilter {
-
-    @Override
-    public void filter(ContainerRequestContext context) {
-      tryAuthenticate(context);
-    }
-  }
-
   @Override
-  @Traced(operationName = "BearerTokenAuthDynamicFeature.tryAuthenticate")
+  @Traced(
+      operationName = "AbstractBearerTokenSecurityRequirementAuthDynamicFeature.tryAuthenticate")
   public void tryAuthenticate(ContainerRequestContext context) {
     Span span = tracer.activeSpan();
     String authorization = context.getHeaderString(HttpHeaders.AUTHORIZATION);
 
     if (authorization == null) {
-      log.debug("[AUTH]: Missing authorization header");
-      span.log("[BearerTokenAuth]: Missing authorization header");
+      log.debug(MISSING_MESSAGE);
+      span.log(MISSING_MESSAGE);
       throw Boom.unauthorized().exception();
     }
+
     Matcher matcher = BEARER_PATTERN.matcher(authorization);
     if (!matcher.matches()) {
-      log.debug("[AUTH]: Malformed authorization header");
+      log.debug(MALFORMED_MESSAGE);
+      span.log(MALFORMED_MESSAGE);
       span.setTag(HttpHeaders.AUTHORIZATION, authorization);
-      span.log("[BearerTokenAuth]: Malformed authorization header");
       throw Boom.unauthorized().exception();
     }
 
@@ -81,7 +78,7 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
     AuthUser user;
     if (s2sApiKey.equals(apiKey)) {
       user = UserRegistry.S2S_INTERNAL_USER;
-      span.log("[BearerTokenAuth]: S2S Request");
+      span.log(SERVICE_TO_SERVICE_MESSAGE);
     } else {
       Optional<AuthUser> maybeUser = findUser(apiKey).toCompletableFuture().join();
       user = maybeUser.orElseThrow(() -> Boom.unauthorized().exception());
@@ -92,5 +89,14 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
     context.setSecurityContext(new InsightSecurityContext(user, isSecure));
     principal.user(user).apiKey(apiKey);
     log.debug("[AUTH]: Successfully authenticated user={}", user.getId());
+  }
+
+  @Priority(Priorities.AUTHENTICATION)
+  public class BearerTokenAuthFilter implements ContainerRequestFilter {
+
+    @Override
+    public void filter(ContainerRequestContext context) {
+      tryAuthenticate(context);
+    }
   }
 }

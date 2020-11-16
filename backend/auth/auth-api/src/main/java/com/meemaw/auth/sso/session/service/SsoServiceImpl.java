@@ -1,6 +1,9 @@
 package com.meemaw.auth.sso.session.service;
 
 import com.meemaw.auth.core.EmailUtils;
+import com.meemaw.auth.mfa.ChallengeLoginResult;
+import com.meemaw.auth.mfa.MfaMethod;
+import com.meemaw.auth.mfa.challenge.service.MfaChallengeService;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.password.service.PasswordService;
@@ -16,9 +19,6 @@ import com.meemaw.auth.sso.session.model.SsoUser;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.SsoSetup;
-import com.meemaw.auth.tfa.ChallengeLoginResult;
-import com.meemaw.auth.tfa.MfaMethod;
-import com.meemaw.auth.tfa.challenge.service.MfaChallengeService;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
@@ -236,8 +236,8 @@ public class SsoServiceImpl implements SsoService {
   }
 
   /**
-   * Authenticate user directly by skipping TFA checks. This is the last step in the login flow.
-   * This is used on the end of TFA challenge setup flow where user just completed the TFA setup so
+   * Authenticate user directly by skipping MFA checks. This is the last step in the login flow.
+   * This is used on the end of MFA challenge setup flow where user just completed the MFA setup so
    * he should not be challenged again.
    *
    * @param user to be authenticated
@@ -261,11 +261,11 @@ public class SsoServiceImpl implements SsoService {
   }
 
   /**
-   * Authenticate a user with no TFA methods set. This method can be used on the end of user
+   * Authenticate a user with no MFA methods set. This method can be used on the end of user
    * creation flows (e.g. team invite accept).
    *
-   * <p>If organization has TFA enforced, user will not be directly authenticated but will have to
-   * configure TFA method using challenge session.
+   * <p>If organization has MFA enforced, user will not be directly authenticated but will have to
+   * configure MFA method using challenge session.
    *
    * @param user to be authenticated
    * @param redirect to take user to
@@ -294,7 +294,7 @@ public class SsoServiceImpl implements SsoService {
                 .start(userId)
                 .thenApply(
                     challengeId -> {
-                      log.debug("[AUTH]: TFA challenge={} for user={}", challengeId, userId);
+                      log.debug("[AUTH]: MFA challenge={} for user={}", challengeId, userId);
                       return new ChallengeLoginResult(challengeId, userMfaMethods, redirect);
                     });
 

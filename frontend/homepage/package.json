@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@insight/sdk": "0.0.0-development",
-    "baseui": "9.104.0",
+    "baseui": "9.105.0",
     "next": "10.0.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",

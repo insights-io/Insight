@@ -18,9 +18,8 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     extends GenericContainer<SELF> {
 
-  protected final Api api;
-
   protected static final int EXPOSED_PORT = 80;
+  protected final Api api;
 
   public AbstractApiTestContainer(Api api) {
     super(imageFromDockerfile(Objects.requireNonNull(api)));
@@ -33,55 +32,14 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     this.api = api;
   }
 
-  @Override
-  public void start() {
-    api.dependencies().forEach(this::startDependantContainer);
-    super.start();
-  }
-
-  private void startDependantContainer(GenericContainer<?> container) {
-    System.out.println(
-        String.format(
-            "[TEST-SETUP]: Starting %s as a dependency of %s",
-            container.getDockerImageName(), api.fullName()));
-
-    container.start();
-
-    if (container instanceof PostgresTestContainer) {
-      PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
-      postgresTestContainer.applyFlywayMigrations(api.postgresMigrations());
-      withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
-    } else if (container instanceof AuthApiTestContainer) {
-      AuthApiTestContainer authApiTestContainer = (AuthApiTestContainer) container;
-      withEnv("auth-api/mp-rest/url", authApiTestContainer.getDockerBaseURI());
-    }
-  }
-
-  public String getDockerBaseURI() {
-    return getBaseURI(api.fullName(), EXPOSED_PORT);
-  }
-
-  public String getBaseURI() {
-    return getBaseURI(getContainerIpAddress(), getPort());
-  }
-
-  private static String getBaseURI(String host, int port) {
-    return String.format("http://%s:%s", host, port);
-  }
-
-  public int getPort() {
-    return getMappedPort(EXPOSED_PORT);
-  }
-
   // TODO: use testcontainers for this
   private static String imageFromDockerfile(Api api) {
     Path dockerfile = api.dockerfile();
     String imageName = api.imageName();
     Path context = ProjectUtils.backendPath();
-    System.out.println(
-        String.format(
-            "[TEST-SETUP]: Building %s api dockerfile=%s context=%s imageName=%s",
-            api.name().toLowerCase(), dockerfile.toString(), context.toAbsolutePath(), imageName));
+    System.out.printf(
+        "[TEST-SETUP]: Building %s api dockerfile=%s context=%s imageName=%s%n",
+        api.name().toLowerCase(), dockerfile.toString(), context.toAbsolutePath(), imageName);
 
     ProcessBuilder builder =
         new ProcessBuilder(
@@ -115,6 +73,45 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
       return imageName;
     } catch (IOException | InterruptedException ex) {
       throw new RuntimeException(ex);
+    }
+  }
+
+  public static String getBaseURI(String host, int port) {
+    return String.format("http://%s:%s", host, port);
+  }
+
+  public String getBaseURI() {
+    return getBaseURI(getContainerIpAddress(), getPort());
+  }
+
+  public String getDockerBaseURI() {
+    return getBaseURI(api.fullName(), EXPOSED_PORT);
+  }
+
+  public int getPort() {
+    return getMappedPort(EXPOSED_PORT);
+  }
+
+  @Override
+  public void start() {
+    api.dependencies().forEach(this::startDependantContainer);
+    super.start();
+  }
+
+  private void startDependantContainer(GenericContainer<?> container) {
+    System.out.printf(
+        "[TEST-SETUP]: Starting %s as a dependency of %s%n",
+        container.getDockerImageName(), api.fullName());
+
+    container.start();
+
+    if (container instanceof PostgresTestContainer) {
+      PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
+      postgresTestContainer.applyFlywayMigrations(api.postgresMigrations());
+      withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
+    } else if (container instanceof AuthApiTestContainer) {
+      AuthApiTestContainer authApiTestContainer = (AuthApiTestContainer) container;
+      withEnv("auth-api/mp-rest/url", authApiTestContainer.getDockerBaseURI());
     }
   }
 }

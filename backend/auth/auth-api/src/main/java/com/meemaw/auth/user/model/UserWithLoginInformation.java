@@ -1,6 +1,6 @@
 package com.meemaw.auth.user.model;
 
-import com.meemaw.auth.tfa.MfaMethod;
+import com.meemaw.auth.mfa.MfaMethod;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import java.time.OffsetDateTime;

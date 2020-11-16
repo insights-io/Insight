@@ -5,7 +5,7 @@ import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.billing.invoice.model.dto.InvoiceDTO;
 import com.meemaw.billing.subscription.resource.v1.SubscriptionResource;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -105,5 +105,5 @@ public interface InvoiceResource {
       })
   CompletionStage<Response> list();
 
-  class InvoiceCollectionDataResponse extends OkDataResponse<InvoiceDTO> {}
+  class InvoiceCollectionDataResponse extends RebrowseApiDataResponse<InvoiceDTO> {}
 }

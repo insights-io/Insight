@@ -7,16 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.auth.mfa.challenge.resource.v1.MfaChallengeResourceImpl;
+import com.meemaw.auth.mfa.model.SsoChallenge;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.mfa.totp.datasource.MfaTotpSetupDatasource;
+import com.meemaw.auth.mfa.totp.impl.TotpUtils;
 import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
-import com.meemaw.auth.tfa.challenge.resource.v1.MfaChallengeResourceImpl;
-import com.meemaw.auth.tfa.model.SsoChallenge;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.totp.datasource.MfaTotpSetupDatasource;
-import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
@@ -62,6 +62,30 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
       String.join("/", PASSWORD_RESET_PATH_TEMPLATE, "exists");
 
   @Inject MfaTotpSetupDatasource mfaTotpSetupDatasource;
+
+  /**
+   * Initializes a password forgot request flow and throws is it is not successful.
+   *
+   * @param email address
+   * @param objectMapper object mapper
+   * @return password forgot request response
+   * @throws JsonProcessingException if failed to serialize password forgot request
+   */
+  public static Response passwordForgot(String email, ObjectMapper objectMapper)
+      throws JsonProcessingException {
+    String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(email));
+
+    return given()
+        .header("referer", "https://www.insight.io")
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(payload)
+        .post(PASSWORD_FORGOT_PATH)
+        .then()
+        .statusCode(204)
+        .extract()
+        .response();
+  }
 
   @Test
   public void password_reset_exists__should_be_false__when_random_token() {
@@ -171,30 +195,6 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     PasswordResourceImplTest.passwordForgot(email, objectMapper);
   }
 
-  /**
-   * Initializes a password forgot request flow and throws is it is not successful.
-   *
-   * @param email address
-   * @param objectMapper object mapper
-   * @return password forgot request response
-   * @throws JsonProcessingException if failed to serialize password forgot request
-   */
-  public static Response passwordForgot(String email, ObjectMapper objectMapper)
-      throws JsonProcessingException {
-    String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(email));
-
-    return given()
-        .header("referer", "https://www.insight.io")
-        .when()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(payload)
-        .post(PASSWORD_FORGOT_PATH)
-        .then()
-        .statusCode(204)
-        .extract()
-        .response();
-  }
-
   @Test
   public void reset__should_fail__when_invalid_contentType() {
     given()
@@ -272,14 +272,10 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     User user = authApi().retrieveUserData(sessionId).getUser();
-    String secret = AuthApiSetupUtils.setupTotpTfa(user.getId(), sessionId, mfaTotpSetupDatasource);
+    String secret = AuthApiSetupUtils.setupTotpMfa(user.getId(), sessionId, mfaTotpSetupDatasource);
 
     // init flow
     PasswordResourceImplTest.passwordForgot(user.getEmail(), objectMapper);
-
-    String newPassword = "superDuperNewFancyPassword";
-    String resetPasswordPayload =
-        objectMapper.writeValueAsString(new PasswordResetRequestDTO(newPassword));
 
     List<Mail> sent = mailbox.getMessagesSentTo(user.getEmail());
     assertEquals(2, sent.size());
@@ -299,13 +295,15 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(resetPasswordPayload)
+            .body(
+                objectMapper.writeValueAsString(
+                    new PasswordResetRequestDTO("superDuperNewFancyPassword")))
             .post(String.format(PASSWORD_RESET_PATH_TEMPLATE, token));
 
     response.then().statusCode(200).cookie(SsoChallenge.COOKIE_NAME);
     String challengeId = response.getDetailedCookie(SsoChallenge.COOKIE_NAME).getValue();
 
-    // Complete tfa flow
+    // Complete mfa flow
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)

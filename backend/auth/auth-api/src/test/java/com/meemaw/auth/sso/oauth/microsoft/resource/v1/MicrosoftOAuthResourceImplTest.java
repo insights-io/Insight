@@ -6,6 +6,10 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.meemaw.auth.mfa.model.SsoChallenge;
+import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
+import com.meemaw.auth.mfa.setup.resource.v1.MfaSetupResource;
+import com.meemaw.auth.mfa.totp.impl.TotpUtils;
 import com.meemaw.auth.sso.AbstractIdentityProvider;
 import com.meemaw.auth.sso.AbstractSsoOAuthResourceTest;
 import com.meemaw.auth.sso.SsoSignInSession;
@@ -17,13 +21,10 @@ import com.meemaw.auth.sso.oauth.microsoft.MicrosoftOAuthClient;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.tfa.model.SsoChallenge;
-import com.meemaw.auth.tfa.model.dto.MfaChallengeCompleteDTO;
-import com.meemaw.auth.tfa.setup.resource.v1.MfaSetupResource;
-import com.meemaw.auth.tfa.totp.impl.TotpUtils;
 import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
@@ -32,7 +33,6 @@ import io.restassured.response.Response;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -87,7 +87,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="
             + appConfig.getMicrosoftOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(oAuth2CallbackUri, StandardCharsets.UTF_8)
+            + URLEncoder.encode(oAuth2CallbackUri, RebrowseApi.CHARSET)
             + "&response_type=code&scope=openid+email+profile&response_mode=query&state=";
 
     Response response =
@@ -108,7 +108,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
     String state = response.header("Location").replace(expectedLocationBase, "");
     String actualRedirect =
         state.substring(AbstractOAuthIdentityProvider.SECURE_STATE_PREFIX_LENGTH);
-    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, StandardCharsets.UTF_8));
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, RebrowseApi.CHARSET));
   }
 
   @Test
@@ -117,7 +117,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id="
             + appConfig.getMicrosoftOpenIdClientId()
             + "&redirect_uri="
-            + URLEncoder.encode(microsoftCallbackURI.toString(), StandardCharsets.UTF_8)
+            + URLEncoder.encode(microsoftCallbackURI.toString(), RebrowseApi.CHARSET)
             + "&response_type=code&scope=openid+email+profile&response_mode=query&state=";
 
     Response response =
@@ -136,14 +136,14 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
     String state = response.header("Location").replace(expectedLocationBase, "");
     String actualRedirect =
         state.substring(AbstractOAuthIdentityProvider.SECURE_STATE_PREFIX_LENGTH);
-    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, StandardCharsets.UTF_8));
+    assertEquals(SIMPLE_REDIRECT, URLDecoder.decode(actualRedirect, RebrowseApi.CHARSET));
   }
 
   @Test
   public void microsoft_oauth2callback__should_fail__on_random_code() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()
@@ -162,7 +162,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
   public void microsoft_oauth2callback__should_fail__on_expired_code() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
 
     given()
         .when()
@@ -181,7 +181,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
   public void microsoft_oauth2callback__should_fail__on_invalid_redirect() {
     String state =
         AbstractIdentityProvider.secureState(
-            URLEncoder.encode(SIMPLE_REDIRECT, StandardCharsets.UTF_8));
+            URLEncoder.encode(SIMPLE_REDIRECT, RebrowseApi.CHARSET));
     String forwardedProto = "https";
     String forwardedHost = "auth-api.minikube.snuderls.eu";
 
@@ -201,7 +201,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
   }
 
   @Test
-  public void microsoft_oauth2callback__should_set_verification_cookie__when_user_with_tfa_succeed()
+  public void microsoft_oauth2callback__should_set_verification_cookie__when_user_with_mfa_succeed()
       throws JsonProcessingException, GeneralSecurityException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     User user = authApi().retrieveUserData(sessionId).getUser();
@@ -215,21 +215,21 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
 
     String secret =
         mfaTotpSetupDatasource.retrieve(user.getId()).toCompletableFuture().join().get();
-    int tfaCode = TotpUtils.generateCurrentNumber(secret);
 
+    int code = TotpUtils.generateCurrentNumber(secret);
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(tfaCode)))
+        .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(code)))
         .post(MfaSetupResource.PATH + "/totp/complete")
         .then()
         .statusCode(200);
 
-    String Location = "https://www.insight.io/my_path";
+    String location = "https://www.insight.io/my_path";
     QuarkusMock.installMockForInstance(
         new MockedMicrosoftOAuthClient(user.getEmail()), microsoftClient);
-    String state = AbstractIdentityProvider.secureState(Location);
+    String state = AbstractIdentityProvider.secureState(location);
 
     given()
         .when()
@@ -240,7 +240,7 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
         .get(microsoftCallbackURI)
         .then()
         .statusCode(302)
-        .header("Location", Location)
+        .header("Location", location)
         .cookie(SsoChallenge.COOKIE_NAME);
   }
 

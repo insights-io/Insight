@@ -78,6 +78,7 @@ public class PageService {
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
+    // TODO: use SDK
     return organizationResource
         .retrieve(
             organizationId,

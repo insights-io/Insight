@@ -6,7 +6,8 @@ import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse;
+import com.meemaw.shared.rest.response.IntegerDataResponse;
+import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
@@ -130,10 +131,10 @@ public interface OrganizationResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User collection",
+            description = "User count",
             content =
                 @Content(
-                    schema = @Schema(implementation = MemberCountDataResponse.class),
+                    schema = @Schema(implementation = IntegerDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "401",
@@ -286,10 +287,13 @@ public interface OrganizationResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
+  // HeaderParam required in PageService.java
   default CompletionStage<Response> retrieve(
       @PathParam("id") String id, @HeaderParam(HttpHeaders.AUTHORIZATION) String authorization) {
     return retrieve(id);
   }
+
+  CompletionStage<Response> retrieve(String organizationId);
 
   @PATCH
   @Path("avatar")
@@ -337,11 +341,7 @@ public interface OrganizationResource {
   CompletionStage<Response> associatedAvatarSetup(
       @NotNull(message = "Required") @Valid AvatarSetupDTO body);
 
-  CompletionStage<Response> retrieve(String organizationId);
+  class MemberListDataResponse extends RebrowseApiDataResponse<List<UserDTO>> {}
 
-  class MemberCountDataResponse extends OkDataResponse<Integer> {}
-
-  class MemberListDataResponse extends OkDataResponse<List<UserDTO>> {}
-
-  class OrganizationDataResponse extends OkDataResponse<OrganizationDTO> {}
+  class OrganizationDataResponse extends RebrowseApiDataResponse<OrganizationDTO> {}
 }

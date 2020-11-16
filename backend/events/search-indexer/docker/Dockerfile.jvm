@@ -2,6 +2,7 @@ FROM --platform=$BUILDPLATFORM gradle:6.7.0-jdk14 as build
 
 COPY build.gradle lombok.config gradle.properties settings.gradle /backend/
 COPY shared/rest/ /backend/shared/rest/
+COPY shared/rest-core/ /backend/shared/rest-core/
 COPY shared/shared-elasticsearch/ /backend/shared/shared-elasticsearch/
 COPY events/events-model/ /backend/events/events-model/
 COPY events/search-indexer/ /backend/events/search-indexer/

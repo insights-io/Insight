@@ -5,9 +5,9 @@ import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.LoginResult;
 import com.meemaw.auth.sso.session.model.ResponseLoginResult;
 import com.meemaw.shared.rest.response.Boom;
+import com.rebrowse.api.RebrowseApi;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -36,7 +36,7 @@ public abstract class AbstractIdentityProvider {
   public static String secureStateData(String secureState) {
     try {
       return URLDecoder.decode(
-          secureState.substring(SECURE_STATE_PREFIX_LENGTH), StandardCharsets.UTF_8);
+          secureState.substring(SECURE_STATE_PREFIX_LENGTH), RebrowseApi.CHARSET);
     } catch (StringIndexOutOfBoundsException ex) {
       throw Boom.badRequest().message("Invalid state parameter").exception(ex);
     }

@@ -17,11 +17,6 @@ public class SessionApiTestExtension implements BeforeAllCallback {
     return SESSION_API;
   }
 
-  @Override
-  public void beforeAll(ExtensionContext context) {
-    start(SESSION_API).forEach(System::setProperty);
-  }
-
   public static void stop() {
     SESSION_API.stop();
   }
@@ -35,8 +30,12 @@ public class SessionApiTestExtension implements BeforeAllCallback {
       System.out.println("[TEST-SETUP]: Starting session api container ...");
       sessionApi.start();
     }
-    System.out.println(
-        String.format("[TEST-SETUP]: Connecting to session-api on=%s", sessionApi.getBaseURI()));
+    System.out.printf("[TEST-SETUP]: Connecting to session-api on=%s%n", sessionApi.getBaseURI());
     return Map.of("session-api/mp-rest/url", sessionApi.getBaseURI());
+  }
+
+  @Override
+  public void beforeAll(ExtensionContext context) {
+    start(SESSION_API).forEach(System::setProperty);
   }
 }

@@ -3,10 +3,10 @@ package com.meemaw.auth.sso.saml.service;
 import com.meemaw.auth.sso.saml.model.SamlCoreDataResponse;
 import com.meemaw.auth.sso.saml.model.SamlMetadataEntityDescriptor;
 import com.meemaw.shared.rest.response.Boom;
+import com.rebrowse.api.RebrowseApi;
 import io.quarkus.runtime.StartupEvent;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -61,7 +61,7 @@ public class SamlParser {
     return new BasicX509Credential(
         (X509Certificate)
             certificateFactory.generateCertificate(
-                new ByteArrayInputStream(certificate.getBytes(StandardCharsets.UTF_8))));
+                new ByteArrayInputStream(certificate.getBytes(RebrowseApi.CHARSET))));
   }
 
   private SamlCoreDataResponse fromAssertion(Assertion assertion) {

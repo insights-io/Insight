@@ -23,7 +23,7 @@ public class MetricsService {
     return appRegistry.histogram("request_duration_ms", tags);
   }
 
-  public Histogram requestDuration(String path, String method, int status) {
+  public Histogram requestDuration(String method, String path, int status) {
     return requestDuration(path(path), method(method), status(status));
   }
 
@@ -39,8 +39,8 @@ public class MetricsService {
     return appRegistry.counter("request_server_errors_total", status(status));
   }
 
-  private Tag path(String path) {
-    return new Tag("path", path);
+  private Tag path(String endpoint) {
+    return new Tag("path", endpoint);
   }
 
   private Tag status(int status) {

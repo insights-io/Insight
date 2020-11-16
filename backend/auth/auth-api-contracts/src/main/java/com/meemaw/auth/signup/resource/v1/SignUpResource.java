@@ -1,8 +1,8 @@
 package com.meemaw.auth.signup.resource.v1;
 
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
+import com.meemaw.shared.rest.response.BooleanDataResponse;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.OkDataResponse.BooleanDataResponse;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

@@ -6,9 +6,9 @@ import java.nio.file.Paths;
 
 public final class ProjectUtils {
 
-  private ProjectUtils() {}
-
   private static final String BACKEND = "backend";
+
+  private ProjectUtils() {}
 
   private static String getUserDirectory() {
     return System.getProperty("user.dir");
