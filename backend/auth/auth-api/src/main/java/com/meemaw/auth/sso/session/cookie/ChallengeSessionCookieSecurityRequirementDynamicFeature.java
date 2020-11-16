@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.session.cookie;
 
-import com.meemaw.auth.sso.cookie.AbstractChallengeSecurityRequirementDynamicFeature;
 import com.meemaw.auth.mfa.challenge.service.MfaChallengeService;
+import com.meemaw.auth.sso.cookie.AbstractChallengeSecurityRequirementDynamicFeature;
 import com.meemaw.auth.user.model.AuthUser;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;

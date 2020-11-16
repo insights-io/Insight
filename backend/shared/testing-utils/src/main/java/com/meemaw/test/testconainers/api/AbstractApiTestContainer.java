@@ -76,8 +76,20 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     }
   }
 
-  private static String getBaseURI(String host, int port) {
+  public static String getBaseURI(String host, int port) {
     return String.format("http://%s:%s", host, port);
+  }
+
+  public String getBaseURI() {
+    return getBaseURI(getContainerIpAddress(), getPort());
+  }
+
+  public String getDockerBaseURI() {
+    return getBaseURI(api.fullName(), EXPOSED_PORT);
+  }
+
+  public int getPort() {
+    return getMappedPort(EXPOSED_PORT);
   }
 
   @Override
@@ -101,17 +113,5 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
       AuthApiTestContainer authApiTestContainer = (AuthApiTestContainer) container;
       withEnv("auth-api/mp-rest/url", authApiTestContainer.getDockerBaseURI());
     }
-  }
-
-  public String getDockerBaseURI() {
-    return getBaseURI(api.fullName(), EXPOSED_PORT);
-  }
-
-  public String getBaseURI() {
-    return getBaseURI(getContainerIpAddress(), getPort());
-  }
-
-  public int getPort() {
-    return getMappedPort(EXPOSED_PORT);
   }
 }
