@@ -17,12 +17,19 @@ repositories:
     url: https://grafana.github.io/helm-charts
   - name: atlantis
     url: https://runatlantis.github.io/helm-charts
+  - name: datawire
+    url: https://getambassador.io
 
 
 helmfiles:
  {{ if eq .Environment.Name "production" }}- path: "./releases/cert-manager.yaml"{{ end }}
 
 releases:
+  - name: ambassador
+    chart: datawire/ambassador
+    namespace: ambassador
+    values:
+      - ambassador.yaml
   - name: postgres
     chart: bitnami/postgresql
     version: 9.3.2

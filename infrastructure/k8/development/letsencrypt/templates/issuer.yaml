@@ -1,8 +1,9 @@
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt
+  namespace: cert-manager
 spec:
   acme:
     # You must replace this email address with your own.
@@ -16,10 +17,12 @@ spec:
     # Add a single challenge solver, HTTP01 using nginx
     solvers:
       - dns01:
-          cloudflare:
-            email: {{ .Values.email }}
-            apiKeySecretRef:
-              name: {{ .Values.apiKeySecretName }}
-              key: api-token
+          route53:
+            region: {{ .Values.region }}
+            hostedZoneID: {{ .Values.hostedZoneID }}
+            accessKeyID: {{ .Values.accessKeyID }}
+            secretAccessKeySecretRef:
+              name: {{ .Values.secretAccessKeySecretName }}
+              key: {{ .Values.secretAccessKeySecretKey }}
         selector:
           dnsZones: {{ .Values.dnsZones }}

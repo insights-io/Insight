@@ -1,0 +1,28 @@
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: ambassador-rebrowse-dev
+  namespace: ambassador
+spec:
+  dnsNames:
+    - api.rebrowse.dev
+    - app.rebrowse.dev
+    - try.rebrowse.dev
+  secretName: ambassador-rebrowse-dev-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+
+---
+apiVersion: getambassador.io/v2
+kind: TLSContext
+metadata:
+  name: all
+  namespace: ambassador
+spec:
+  hosts: ['*']
+  secret: ambassador-rebrowse-dev-tls
+  alpn_protocols: h2,http/1.1
+  min_tls_version: v1.2
+  redirect_cleartext_from: 8080
