@@ -2,8 +2,20 @@
 apiVersion: getambassador.io/v2
 kind:  Mapping
 metadata:
-  name:  quote-backend-2
+  name:  app-rebrowse-dev
 spec:
   prefix: /
   host: app.rebrowse.dev
   service: app.recording
+
+---
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name:  www-app-rebrowse-dev
+spec:
+  prefix: /
+  host: www.app.rebrowse.dev
+  service: app.recording
+
+
