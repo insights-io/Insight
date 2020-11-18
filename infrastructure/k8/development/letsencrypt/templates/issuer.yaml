@@ -6,7 +6,7 @@ metadata:
   namespace: cert-manager
 spec:
   acme:
-    email: { { .Values.email } }
+    email: {{ .Values.email }}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt
@@ -14,11 +14,11 @@ spec:
     solvers:
       - dns01:
           route53:
-            region: { { .Values.region } }
-            hostedZoneID: { { .Values.hostedZoneID } }
-            accessKeyID: { { .Values.accessKeyID } }
+            region: {{ .Values.region }}
+            hostedZoneID: {{ .Values.hostedZoneID }}
+            accessKeyID: {{ .Values.accessKeyID }}
             secretAccessKeySecretRef:
-              name: { { .Values.secretAccessKeySecretName } }
-              key: { { .Values.secretAccessKeySecretKey } }
+              name: {{ .Values.secretAccessKeySecretName }}
+              key: {{ .Values.secretAccessKeySecretKey }}
         selector:
-          dnsZones: { { .Values.dnsZones } }
+          dnsZones: {{ .Values.dnsZones }}

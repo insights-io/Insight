@@ -11,4 +11,4 @@ releases:
     chart: ./../letsencrypt
     namespace: cert-manager
     values:
-      - email: { { .Values.cfEmail } }
+      - email: {{ .Values.cfEmail }}
