@@ -5,8 +5,8 @@ config:
   clientSecret: test-client-secret
 
 extraArgs:
-  whitelist-domain: .dev.snuderls.eu
-  cookie-domain: .dev.snuderls.eu
+  whitelist-domain: .rebrowse.dev
+  cookie-domain: .rebrowse.dev
   provider: github
   github-org: meemaw-corp
   pass-user-headers: true
@@ -18,9 +18,10 @@ ingress:
   path: /
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
   hosts:
-    - auth.dev.snuderls.eu
+    - auth.rebrowse.dev
   tls:
     - hosts:
-        - auth.dev.snuderls.eu
-      secretName: auth-dev-tls
+        - auth.rebrowse.dev
+      secretName: auth-rebrowse-dev-tls
