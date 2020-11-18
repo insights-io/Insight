@@ -1,19 +1,9 @@
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: getambassador.io/v2
+kind:  Mapping
 metadata:
-  name: try
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
+  name:  quote-backend-2
 spec:
-  tls:
-    - hosts:
-        - try.dev.snuderls.eu
-      secretName: frontend1-try-api-tls
-  rules:
-    - host: try.dev.snuderls.eu
-      http:
-        paths:
-          - backend:
-              serviceName: try
-              servicePort: 80
+  prefix: /
+  host: try.rebrowse.dev
+  service: try.recording

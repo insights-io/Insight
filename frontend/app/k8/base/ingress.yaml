@@ -1,19 +1,9 @@
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: getambassador.io/v2
+kind:  Mapping
 metadata:
-  name: app
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
+  name:  quote-backend-2
 spec:
-  tls:
-    - hosts:
-        - app.dev.snuderls.eu
-      secretName: frontend1-app-api-tls
-  rules:
-    - host: app.dev.snuderls.eu
-      http:
-        paths:
-          - backend:
-              serviceName: app
-              servicePort: 80
+  prefix: /
+  host: app.rebrowse.dev
+  service: app.recording
