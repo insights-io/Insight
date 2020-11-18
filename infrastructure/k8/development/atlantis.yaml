@@ -11,10 +11,6 @@ environmentSecrets:
     secretKeyRef:
       name: stripe-credentials
       key: secret-key
-  - name: CLOUDFLARE_API_KEY
-    secretKeyRef:
-      name: cloudflare-apikey-secret
-      key: api-token
   - name: GITHUB_TOKEN
     secretKeyRef:
       name: github-secrets
