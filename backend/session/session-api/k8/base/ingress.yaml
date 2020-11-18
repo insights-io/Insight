@@ -1,20 +1,8 @@
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: getambassador.io/v2
+kind: Mapping
 metadata:
-  name: session-api
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+  name: sessions-resource
 spec:
-  tls:
-    - hosts:
-        - session-api.dev.snuderls.eu
-      secretName: session1-api-tls
-  rules:
-    - host: session-api.dev.snuderls.eu
-      http:
-        paths:
-          - backend:
-              serviceName: session-api
-              servicePort: 80
+  prefix: /v1/sessions
+  service: session-api.recording

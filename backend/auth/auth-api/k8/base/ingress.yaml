@@ -1,20 +1,53 @@
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: getambassador.io/v2
+kind: Mapping
 metadata:
-  name: auth-api
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+  name: user-resource
 spec:
-  tls:
-    - hosts:
-        - auth-api.dev.snuderls.eu
-      secretName: auth-dev-api-tls
-  rules:
-    - host: auth-api.dev.snuderls.eu
-      http:
-        paths:
-          - backend:
-              serviceName: auth-api
-              servicePort: 80
+  prefix: /v1/user
+  service: auth-api.recording
+
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: organization-resource
+spec:
+  prefix: /v1/organization
+  service: auth-api.recording
+
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: sso-resource
+spec:
+  prefix: /v1/sso
+  service: auth-api.recording
+
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: mfa-resource
+spec:
+  prefix: /v1/mfa
+  service: auth-api.recording
+
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: password-resource
+spec:
+  prefix: /v1/password
+  service: auth-api.recording
+
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: signup-resource
+spec:
+  prefix: /v1/signup
+  service: auth-api.recording
