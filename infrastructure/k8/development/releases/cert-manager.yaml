@@ -11,5 +11,4 @@ releases:
     chart: ./../letsencrypt
     namespace: cert-manager
     values:
-      - apiKeySecretName: {{ .Values.cloudflareApiKeySecretName }}
       - email: {{ .Values.cfEmail }}

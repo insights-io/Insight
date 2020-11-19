@@ -57,7 +57,7 @@ describe('bootstrap', () => {
     }, headHandle);
 
     expect(injectedScriptResult).toEqual({
-      src: 'https://static.dev.snuderls.eu/s/insight.js',
+      src: 'https://static.rebrowse.dev/s/insight.js',
       async: true,
       crossOrigin: 'anonymous',
     });

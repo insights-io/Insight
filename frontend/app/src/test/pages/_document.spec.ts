@@ -33,7 +33,7 @@ describe('pages/_document', () => {
       const n = e.createElement(t);
       n.async = true;
       n.crossOrigin = 'anonymous';
-      n.src = 'https://static.dev.snuderls.eu/s/local.insight.js';
+      n.src = 'https://static.rebrowse.dev/s/local.insight.js';
       const i = e.getElementsByTagName(t)[0];
       i.parentNode.insertBefore(n, i);
     })(window, document, 'script');`);
@@ -53,7 +53,7 @@ describe('pages/_document', () => {
       const n = e.createElement(t);
       n.async = true;
       n.crossOrigin = 'anonymous';
-      n.src = 'https://static.dev.snuderls.eu/s/local.insight.js';
+      n.src = 'https://static.rebrowse.dev/s/local.insight.js';
       const i = e.getElementsByTagName(t)[0];
       i.parentNode.insertBefore(n, i);
     })(window, document, 'script');`,

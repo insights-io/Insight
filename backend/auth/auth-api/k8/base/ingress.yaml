@@ -6,15 +6,52 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/ingress.class: nginx
 spec:
   tls:
     - hosts:
-        - auth-api.dev.snuderls.eu
-      secretName: auth-dev-api-tls
+        - api.rebrowse.dev
+      secretName: api-rebrowse-dev-tls
   rules:
-    - host: auth-api.dev.snuderls.eu
+    - host: api.rebrowse.dev
       http:
         paths:
-          - backend:
+          - path: /v1/user
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/organization
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/sso
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/mfa
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/password
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/signup
+            backend:
               serviceName: auth-api
               servicePort: 80

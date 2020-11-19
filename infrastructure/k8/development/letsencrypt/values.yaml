@@ -1,10 +1,11 @@
 ---
-# Default values for letsencrypt.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-apiKeySecretName: enterme
-email: test@example.com
-
 dnsZones:
-  - dev.snuderls.eu
+  - rebrowse.dev
+
+region: us-east-1
+hostedZoneID: Z082926732A4WWMKU2W2Q
+accessKeyID: AKIA2L6OVXLRCRBVSSVN
+
+# Credentials
+secretAccessKeySecretName: acme-credentials-route53
+secretAccessKeySecretKey: secret-access-key

@@ -6,15 +6,17 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/ingress.class: nginx
 spec:
   tls:
     - hosts:
-        - billing-api.dev.snuderls.eu
-      secretName: billing-dev-api-tls
+        - api.rebrowse.dev
+      secretName: api-rebrowse-dev-tls
   rules:
-    - host: billing-api.dev.snuderls.eu
+    - host: api.rebrowse.dev
       http:
         paths:
-          - backend:
+          - path: /v1/billing
+            backend:
               serviceName: billing-api
               servicePort: 80

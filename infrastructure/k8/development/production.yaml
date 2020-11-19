@@ -1,7 +1,7 @@
 ---
 cfEmail: blaz.snuderl@gmail.com
 
-infraDomain: dev.snuderls.eu
+infraDomain: rebrowse.dev
 appNamespace: recording
 infraNamespace: infra
 
@@ -23,11 +23,10 @@ ingressAnnotationsHttps:
 ingressAnnotations:
   cert-manager.io/cluster-issuer: letsencrypt
   kubernetes.io/ingress.class: nginx
-  nginx.ingress.kubernetes.io/auth-url: "https://auth.dev.snuderls.eu/oauth2/auth"
-  nginx.ingress.kubernetes.io/auth-signin: "https://auth.dev.snuderls.eu/oauth2/start?rd=$escaped_request_uri"
-  nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email"
+  nginx.ingress.kubernetes.io/auth-url: 'https://auth.rebrowse.dev/oauth2/auth'
+  nginx.ingress.kubernetes.io/auth-signin: 'https://auth.rebrowse.dev/oauth2/start?rd=$escaped_request_uri'
+  nginx.ingress.kubernetes.io/auth-response-headers: 'X-Auth-Request-User,X-Auth-Request-Email'
 
 oauthExistingSecret: oauth2-proxy-creds
-cloudflareApiKeySecretName: cloudflare-apikey-secret
 
-storageClassName: "local-path"
+storageClassName: 'local-path'

@@ -1,7 +1,10 @@
 ---
 database:
   type: postgres
-  host: postgres-postgresql
+  host: postgres-postgresql.recording.svc.cluster.local
   dbname: metabase
   username: postgres
   password: postgres
+
+image:
+  tag: v0.37.2

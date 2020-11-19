@@ -31,7 +31,7 @@ describe('<SessionsPage />', () => {
     const { findByText } = render(<NoSessions />);
 
     await findByText("s._i_org = '000000';", { exact: false });
-    await findByText("n.src = 'https://static.dev.snuderls.eu/s/insight.js';", {
+    await findByText("n.src = 'https://static.rebrowse.dev/s/insight.js';", {
       exact: false,
     });
   });

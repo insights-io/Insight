@@ -1,25 +1,24 @@
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt
+  namespace: cert-manager
 spec:
   acme:
-    # You must replace this email address with your own.
-    # Let's Encrypt will use this to contact you about expiring
-    # certificates, and issues related to your account.
     email: {{ .Values.email }}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      # Secret resource that will be used to store the account's private key.
       name: letsencrypt
-    # Add a single challenge solver, HTTP01 using nginx
+
     solvers:
       - dns01:
-          cloudflare:
-            email: {{ .Values.email }}
-            apiKeySecretRef:
-              name: {{ .Values.apiKeySecretName }}
-              key: api-token
+          route53:
+            region: {{ .Values.region }}
+            hostedZoneID: {{ .Values.hostedZoneID }}
+            accessKeyID: {{ .Values.accessKeyID }}
+            secretAccessKeySecretRef:
+              name: {{ .Values.secretAccessKeySecretName }}
+              key: {{ .Values.secretAccessKeySecretKey }}
         selector:
           dnsZones: {{ .Values.dnsZones }}

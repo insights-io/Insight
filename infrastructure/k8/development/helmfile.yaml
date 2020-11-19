@@ -1,6 +1,5 @@
 ---
 repositories:
-  # To use official "stable" charts a.k.a https://github.com/helm/charts/tree/master/stable
   - name: stable
     url: https://kubernetes-charts.storage.googleapis.com
   - name: bitnami
@@ -15,24 +14,31 @@ repositories:
     url: https://kubernetes-charts-incubator.storage.googleapis.com/
   - name: grafana
     url: https://grafana.github.io/helm-charts
-  - name: atlantis
+  - name: runatlantis
     url: https://runatlantis.github.io/helm-charts
-
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
 
 helmfiles:
  {{ if eq .Environment.Name "production" }}- path: "./releases/cert-manager.yaml"{{ end }}
 
 releases:
+  - name: ingress-nginx
+    chart: ingress-nginx/ingress-nginx
+    version: 3.10.1
+    namespace: {{ .Values.infraNamespace }}
   - name: postgres
     chart: bitnami/postgresql
-    version: 9.3.2
+    version: 10.0.2
     namespace: {{ .Values.appNamespace }}
     values:
       - postgres.yaml
   - name: metabase
     chart: stable/metabase
-    version: 0.12.1
-    namespace: {{ .Values.appNamespace }}
+    version: 0.13.0
+    namespace: {{ .Values.infraNamespace }}
     values:
       - metabase.yaml
       - ingress:
@@ -40,18 +46,21 @@ releases:
           tls:
             - hosts:
               - "metabase.{{ .Values.infraDomain }}"
+              - "www.metabase.{{ .Values.infraDomain }}"
               secretName: metabase-tls
           hosts:
             - "metabase.{{ .Values.infraDomain }}"
+            - "www.metabase.{{ .Values.infraDomain }}"
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
 
   - name: kafka
     chart: bitnami/kafka
-    version: 11.8.6
+    version: 12.1.0
     namespace: {{ .Values.appNamespace }}
     values:
       - kafka.yaml
+
   - name: es5
     chart: elastic/elasticsearch
     version: 7.9.2
@@ -63,6 +72,7 @@ releases:
 {{ toYaml .Values.esResources | indent 10 }}
       - volumeClaimTemplate:
           storageClassName: "{{ .Values.storageClassName }}"
+
   - name: fluentbit
     chart: stable/fluent-bit
     version: 2.10.1
@@ -75,14 +85,15 @@ releases:
       - input:
           tail:
             parser: {{ .Values.fluentbitParser }}
+
   - name: kibana
     chart: elastic/kibana
     version: 7.9.2
     namespace: {{ .Values.infraNamespace }}
     values:
-      - kibana.yaml
       - elasticsearchHosts: "http://elasticsearch-master.{{ .Values.appNamespace }}:9200"
       - ingress:
+          enabled: true
           tls:
             - hosts:
               - "kibana.{{ .Values.infraDomain }}"
@@ -91,9 +102,10 @@ releases:
             - "kibana.{{ .Values.infraDomain }}"
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
+
   - name: dashboard
     chart: kubernetes-dashboard/kubernetes-dashboard
-    version: 2.3.0
+    version: 2.8.3
     namespace: {{ .Values.infraNamespace }}
     values:
       - dashboard.yaml
@@ -101,15 +113,17 @@ releases:
           tls:
             - hosts:
               - "dashboard.{{ .Values.infraDomain }}"
+              - "www.dashboard.{{ .Values.infraDomain }}"
               secretName: dashboard-tls
           hosts:
             - "dashboard.{{ .Values.infraDomain }}"
+            - "www.dashboard.{{ .Values.infraDomain }}"
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
 
   - name: prometheus
-    chart: stable/prometheus
-    version: 11.12.0
+    chart: prometheus-community/prometheus
+    version: 11.16.9
     namespace: prometheus
     values:
       - prometheus.yaml
@@ -119,9 +133,11 @@ releases:
             tls:
               - hosts:
                 - "prometheus.{{ .Values.infraDomain }}"
+                - "www.prometheus.{{ .Values.infraDomain }}"
                 secretName: prometheus-tls
             hosts:
               - "prometheus.{{ .Values.infraDomain }}"
+              - "www.prometheus.{{ .Values.infraDomain }}"
             annotations:
 {{ toYaml .Values.ingressAnnotations | indent 14 }}
 
@@ -139,7 +155,7 @@ releases:
 
   - name: grafana
     chart: grafana/grafana
-    version: 5.6.12
+    version: 6.1.7
     namespace: {{ .Values.infraNamespace }}
     values:
       - grafana.yaml
@@ -150,16 +166,18 @@ releases:
           tls:
             - hosts:
               - "grafana.{{ .Values.infraDomain }}"
+              - "www.grafana.{{ .Values.infraDomain }}"
               secretName: grafana-tls
           hosts:
             - "grafana.{{ .Values.infraDomain }}"
+            - "www.grafana.{{ .Values.infraDomain }}"
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
 
   - name: jaeger
     chart: jaegertracing/jaeger
     namespace: monitoring
-    version: 0.38.2
+    version: 0.39.1
     values:
       - jaeger.yaml
       - storage:
@@ -171,9 +189,11 @@ releases:
             tls:
               - hosts:
                 - "tracing.{{ .Values.infraDomain }}"
+                - "www.tracing.{{ .Values.infraDomain }}"
                 secretName: tracing-tls
             hosts:
               - "tracing.{{ .Values.infraDomain }}"
+              - "www.tracing.{{ .Values.infraDomain }}"
             annotations:
 {{ toYaml .Values.ingressAnnotations | indent 14 }}
 
@@ -206,7 +226,7 @@ releases:
             kind: Ingress
             spec:
               rules:
-              - host: atlantis.dev.snuderls.eu
+              - host: "atlantis.{{ .Values.infraDomain }}"
                 http:
                   paths:
                   - backend:
@@ -215,7 +235,7 @@ releases:
                     path: /events
               tls:
               - hosts:
-                - atlantis.dev.snuderls.eu
+                - "atlantis.{{ .Values.infraDomain }}"
                 secretName: atlantis-tls
             metadata:
               name: atlantis-public

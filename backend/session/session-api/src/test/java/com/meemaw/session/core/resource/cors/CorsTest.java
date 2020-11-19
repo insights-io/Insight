@@ -15,7 +15,7 @@ public class CorsTest {
 
   @ParameterizedTest
   @ValueSource(
-      strings = {"https://app.dev.snuderls.eu", "https://www.google.com", "http://localhost:3000"})
+      strings = {"https://app.rebrowse.dev", "https://www.google.com", "http://localhost:3000"})
   public void cors_on_create_page__should_be_enabled_for_all_origins(String origin) {
     List.of("GET", "POST", "OPTIONS")
         .forEach(

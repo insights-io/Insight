@@ -1,9 +1,22 @@
 locals {
-  s3_static_origin_id = "${var.bucket_name}-origin"
+  bucket_name         = "insight-${var.environment}-static"
+  s3_static_origin_id = "${local.bucket_name}-origin"
+  alias               = "static.${var.domain}"
+  tags = {
+    environment = var.environment
+  }
+}
+
+data "aws_route53_zone" "zone" {
+  name = "${var.domain}."
+}
+
+data "aws_acm_certificate" "wildcard_certificate" {
+  domain = "*.${var.domain}"
 }
 
 resource "aws_s3_bucket" "static" {
-  bucket = var.bucket_name
+  bucket = local.bucket_name
   acl    = "private"
 
   cors_rule {
@@ -14,9 +27,7 @@ resource "aws_s3_bucket" "static" {
   }
 
 
-  tags = {
-    environment = var.environment
-  }
+  tags = local.tags
 }
 
 resource "github_actions_secret" "s3_bucket_name" {
@@ -38,8 +49,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
-  comment             = "${var.bucket_name} (Managed by Terraform)"
-  aliases             = [var.alias]
+  comment             = "${local.bucket_name} (Managed by Terraform)"
+  aliases             = [local.alias]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
@@ -73,15 +84,13 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = module.certificate.arn
+    acm_certificate_arn      = data.aws_acm_certificate.wildcard_certificate.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2019"
   }
 
 
-  tags = {
-    environment = var.environment
-  }
+  tags = local.tags
 }
 
 resource "github_actions_secret" "cloudfront_distribution_id" {
@@ -89,6 +98,13 @@ resource "github_actions_secret" "cloudfront_distribution_id" {
   secret_name     = "AWS_CLOUDFRONT_STATIC_${upper(var.environment)}_DISTRIBUTION_ID"
   plaintext_value = aws_cloudfront_distribution.s3_distribution.id
 }
+
+resource "github_actions_secret" "cloudfront_alias" {
+  repository      = var.repository
+  secret_name     = "AWS_CLOUDFRONT_STATIC_${upper(var.environment)}_DOMAIN"
+  plaintext_value = local.alias
+}
+
 
 ## Restrict access only to Cloudfront
 
@@ -111,4 +127,17 @@ data "aws_iam_policy_document" "s3_cloudfront_static" {
 resource "aws_s3_bucket_policy" "s3_cloudfront_static" {
   bucket = aws_s3_bucket.static.id
   policy = data.aws_iam_policy_document.s3_cloudfront_static.json
+}
+
+resource "aws_route53_record" "static_alias" {
+  zone_id  = data.aws_route53_zone.zone.zone_id
+  for_each = toset([local.alias])
+  name     = each.value
+  type     = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
 }

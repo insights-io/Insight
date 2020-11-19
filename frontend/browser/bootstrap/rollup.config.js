@@ -7,15 +7,15 @@ import prettier from 'rollup-plugin-prettier';
 
 const BUILD_FOLDER = 'dist';
 const OUTPUT_FILE_NAME = 'insight.js';
-const CDN_BASE_URL = 'https://static.dev.snuderls.eu';
+const STATIC_BASE_URL = 'https://static.rebrowse.dev';
 const LOCAL_SERVE_BASE_URL = 'http://localhost:5000';
 
 const ENVIRONMENTS = {
   localhost: `${LOCAL_SERVE_BASE_URL}/local.${OUTPUT_FILE_NAME}`,
-  local: `${CDN_BASE_URL}/s/local.${OUTPUT_FILE_NAME}`,
-  development: `${CDN_BASE_URL}/s/development.${OUTPUT_FILE_NAME}`,
-  staging: `${CDN_BASE_URL}/s/staging.${OUTPUT_FILE_NAME}`,
-  production: `${CDN_BASE_URL}/s/${OUTPUT_FILE_NAME}`,
+  local: `${STATIC_BASE_URL}/s/local.${OUTPUT_FILE_NAME}`,
+  development: `${STATIC_BASE_URL}/s/development.${OUTPUT_FILE_NAME}`,
+  staging: `${STATIC_BASE_URL}/s/staging.${OUTPUT_FILE_NAME}`,
+  production: `${STATIC_BASE_URL}/s/${OUTPUT_FILE_NAME}`,
 };
 
 const input = path.join('src', 'index.js');

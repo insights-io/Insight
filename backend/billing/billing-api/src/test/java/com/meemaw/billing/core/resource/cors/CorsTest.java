@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class CorsTest {
 
   @ParameterizedTest
-  @ValueSource(strings = {"http://localhost:3000", "https://app.dev.snuderls.eu"})
+  @ValueSource(strings = {"http://localhost:3000", "https://app.rebrowse.dev"})
   public void returns_appropriate_headers__when_known_origin(String origin) {
     given()
         .header("Origin", origin)
