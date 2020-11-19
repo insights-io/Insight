@@ -50,6 +50,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: rlespinasse/github-slug-action@v2.x
+      - name: Configure destination directory
+        run: echo "DEST_DIR=$GITHUB_HEAD_REF_SLUG/" >> $GITHUB_ENV
+      - name: Configure destination directory on master
+        if: github.ref == 'refs/heads/master'
+        run: echo "DEST_DIR=" >> $GITHUB_ENV
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -73,12 +78,11 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          DEST_DIR: ${{ env.GITHUB_HEAD_REF_SLUG }}
           SOURCE_DIR: frontend/app/storybook-static
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: '🚀 Storybook preview of frontend/app available at https://${{ secrets.APP_STORYBOOK_DOMAIN_NAME }}/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
+          msg: '🚀 Storybook preview of frontend/app available at https://${{ secrets.APP_STORYBOOK_DOMAIN_NAME }}/${{ env.DEST_DIR }}index.html! 🚀'
           check_for_duplicate_msg: true
