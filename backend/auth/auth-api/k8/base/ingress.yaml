@@ -13,45 +13,45 @@ spec:
         - api.rebrowse.dev
       secretName: api-rebrowse-dev-tls
   rules:
-  - host: api.rebrowse.dev
-    http:
-      paths:
-      - path: /v1/user
-        backend:
-          serviceName: auth-api
-          servicePort: 80
-  - host: api.rebrowse.dev
-    http:
-      paths:
-      - path: /v1/organization
-        backend:
-          serviceName: auth-api
-          servicePort: 80
-  - host: api.rebrowse.dev
-    http:
-      paths:
-      - path: /v1/sso
-        backend:
-          serviceName: auth-api
-          servicePort: 80
-  - host: api.rebrowse.dev
-    http:
-      paths:
-      - path: /v1/mfa
-        backend:
-          serviceName: auth-api
-          servicePort: 80
-  - host: api.rebrowse.dev
-    http:
-      paths:
-      - path: /v1/password
-        backend:
-          serviceName: auth-api
-          servicePort: 80
-  - host: api.rebrowse.dev
-    http:
-      paths:
-      - path: /v1/signup
-        backend:
-          serviceName: auth-api
-          servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/user
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/organization
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/sso
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/mfa
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/password
+            backend:
+              serviceName: auth-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/signup
+            backend:
+              serviceName: auth-api
+              servicePort: 80

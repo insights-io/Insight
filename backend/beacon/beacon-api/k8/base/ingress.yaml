@@ -13,10 +13,10 @@ spec:
         - api.rebrowse.dev
       secretName: api-rebrowse-dev-tls
   rules:
-  - host: api.rebrowse.dev
-    http:
-      paths:
-      - path: /v1/beacon
-        backend:
-          serviceName: beacon-api
-          servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
+          - path: /v1/beacon
+            backend:
+              serviceName: beacon-api
+              servicePort: 80

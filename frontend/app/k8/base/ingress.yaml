@@ -14,15 +14,15 @@ spec:
         - www.app.rebrowse.dev
       secretName: app-rebrowse-dev-tls
   rules:
-  - host: app.rebrowse.dev
-    http:
-      paths:
-      - backend:
-          serviceName: app
-          servicePort: 80
-  - host: www.app.rebrowse.dev
-    http:
-      paths:
-      - backend:
-          serviceName: app
-          servicePort: 80
+    - host: app.rebrowse.dev
+      http:
+        paths:
+          - backend:
+              serviceName: app
+              servicePort: 80
+    - host: www.app.rebrowse.dev
+      http:
+        paths:
+          - backend:
+              serviceName: app
+              servicePort: 80
