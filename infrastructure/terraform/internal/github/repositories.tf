@@ -24,7 +24,7 @@ resource "github_repository_webhook" "atlantis_webhook" {
   repository = github_repository.monorepo.name
 
   configuration {
-    url          = "https://atlantis.dev.snuderls.eu/events"
+    url          = "https://atlantis.rebrowse.dev/events"
     content_type = "json"
     insecure_ssl = false
     secret       = "********"

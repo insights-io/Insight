@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "3.11.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "2.11.0"
+    }
   }
   required_version = ">= 0.13"
 }

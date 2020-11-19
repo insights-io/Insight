@@ -1,8 +1,22 @@
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
-  name: billing-resource
+  name: billing-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/ingress.class: nginx
 spec:
-  prefix: /v1/billing
-  service: billing-api.recording
+  tls:
+    - hosts:
+        - api.rebrowse.dev
+      secretName: api-rebrowse-dev-tls
+  rules:
+  - host: api.rebrowse.dev
+    http:
+      paths:
+      - path: /v1/billing
+        backend:
+          serviceName: billing-api
+          servicePort: 80

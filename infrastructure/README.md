@@ -24,26 +24,26 @@ helmfile --file k8/development/helmfile.yaml -e production -l name=grafana apply
 
 ##### Analytics
 
-Metabase [[staging]](https://metabase.dev.snuderls.eu/)
+Metabase [[staging]](https://metabase.rebrowse.dev/)
 
 ##### Kubernetes
 
-Dashboard [[staging]](https://dashboard.dev.snuderls.eu/)
+Dashboard [[staging]](https://dashboard.rebrowse.dev/)
 
 ##### Logging
 
-Kibana [[staging]](https://kibana.dev.snuderls.eu/app/kibana/)
+Kibana [[staging]](https://kibana.rebrowse.dev/app/kibana/)
 
 ##### Monitoring
 
-Grafana [[staging]](https://grafana.dev.snuderls.eu/)
-Prometheus [[staging]](https://prometheus.dev.snuderls.eu/)
+Grafana [[staging]](https://grafana.rebrowse.dev/)
+Prometheus [[staging]](https://prometheus.rebrowse.dev/)
 
 ##### Tracing
 
-Jaeger [[staging]](https://tracing.dev.snuderls.eu/)
+Jaeger [[staging]](https://tracing.rebrowse.dev/)
 
 ##### GitOps
 
-ArgoCD [[staging]](https://argo.dev.snuderls.eu/)
-Atlantis [[staging]](https://atlantis.dev.snuderls.eu/)
+ArgoCD [[staging]](https://argo.rebrowse.dev/)
+Atlantis [[staging]](https://atlantis.rebrowse.dev/)

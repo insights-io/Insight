@@ -23,3 +23,43 @@ resource "aws_route53_record" "api" {
   ttl     = "300"
   records = ["213.161.29.246"] # Point to Kubernetes cluster
 }
+
+resource "aws_route53_record" "api_www" {
+  zone_id = aws_route53_zone.staging.zone_id
+  name    = "www.api.${module.project_vars.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = ["213.161.29.246"] # Point to Kubernetes cluster
+}
+
+resource "aws_route53_record" "app" {
+  zone_id = aws_route53_zone.staging.zone_id
+  name    = "app.${module.project_vars.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = ["213.161.29.246"] # Point to Kubernetes cluster
+}
+
+resource "aws_route53_record" "app_www" {
+  zone_id = aws_route53_zone.staging.zone_id
+  name    = "www.app.${module.project_vars.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = ["213.161.29.246"] # Point to Kubernetes cluster
+}
+
+resource "aws_route53_record" "try" {
+  zone_id = aws_route53_zone.staging.zone_id
+  name    = "try.${module.project_vars.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = ["213.161.29.246"] # Point to Kubernetes cluster
+}
+
+resource "aws_route53_record" "try_www" {
+  zone_id = aws_route53_zone.staging.zone_id
+  name    = "www.try.${module.project_vars.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = ["213.161.29.246"] # Point to Kubernetes cluster
+}

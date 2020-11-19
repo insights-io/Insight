@@ -1,53 +1,57 @@
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
-  name: user-resource
+  name: auth-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/ingress.class: nginx
 spec:
-  prefix: /v1/user
-  service: auth-api.recording
-
----
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: organization-resource
-spec:
-  prefix: /v1/organization
-  service: auth-api.recording
-
----
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: sso-resource
-spec:
-  prefix: /v1/sso
-  service: auth-api.recording
-
----
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: mfa-resource
-spec:
-  prefix: /v1/mfa
-  service: auth-api.recording
-
----
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: password-resource
-spec:
-  prefix: /v1/password
-  service: auth-api.recording
-
----
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: signup-resource
-spec:
-  prefix: /v1/signup
-  service: auth-api.recording
+  tls:
+    - hosts:
+        - api.rebrowse.dev
+      secretName: api-rebrowse-dev-tls
+  rules:
+  - host: api.rebrowse.dev
+    http:
+      paths:
+      - path: /v1/user
+        backend:
+          serviceName: auth-api
+          servicePort: 80
+  - host: api.rebrowse.dev
+    http:
+      paths:
+      - path: /v1/organization
+        backend:
+          serviceName: auth-api
+          servicePort: 80
+  - host: api.rebrowse.dev
+    http:
+      paths:
+      - path: /v1/sso
+        backend:
+          serviceName: auth-api
+          servicePort: 80
+  - host: api.rebrowse.dev
+    http:
+      paths:
+      - path: /v1/mfa
+        backend:
+          serviceName: auth-api
+          servicePort: 80
+  - host: api.rebrowse.dev
+    http:
+      paths:
+      - path: /v1/password
+        backend:
+          serviceName: auth-api
+          servicePort: 80
+  - host: api.rebrowse.dev
+    http:
+      paths:
+      - path: /v1/signup
+        backend:
+          serviceName: auth-api
+          servicePort: 80

@@ -12,7 +12,7 @@ postgresqlExtendedConf:
   pg_stat_statements.max: 10000
   pg_stat_statements.track: all
 
-master:
+primary:
   podAnnotations:
     prometheus.io/scrape: 'true' ## TODO: this is scraping potgres container as well (which obviously fails)
   extraVolumes:

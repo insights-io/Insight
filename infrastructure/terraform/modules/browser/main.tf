@@ -11,7 +11,6 @@ data "aws_acm_certificate" "wildcard_certificate" {
   domain = "*.${var.domain}"
 }
 
-
 resource "aws_s3_bucket" "static" {
   bucket = local.bucket_name
   acl    = "private"
