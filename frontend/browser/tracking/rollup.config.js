@@ -24,22 +24,22 @@ const envConfig = (env) => {
     case 'development': {
       return {
         fileName,
-        beaconApiBaseURL: 'https://beacon-api.dev.snuderls.eu',
-        sessionApiBaseURL: 'https://session-api.dev.snuderls.eu',
+        beaconApiBaseURL: 'https://api.rebrowse.dev',
+        sessionApiBaseURL: 'https://api.rebrowse.dev',
       };
     }
     case 'staging': {
       return {
         fileName,
-        beaconApiBaseURL: 'https://staging.insight.com',
-        sessionApiBaseURL: 'https://staging.insight.com',
+        beaconApiBaseURL: 'https://api.rebrowse.dev',
+        sessionApiBaseURL: 'https://api.rebrowse.dev',
       };
     }
     case 'production': {
       return {
         fileName: baseName,
-        beaconApiBaseURL: 'https://insight.com',
-        sessionApiBaseURL: 'https://insight.com',
+        beaconApiBaseURL: 'https://api.rebrowse.io',
+        sessionApiBaseURL: 'https://api.rebrowse.io',
       };
     }
     default: {

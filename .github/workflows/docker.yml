@@ -34,12 +34,12 @@ jobs:
         run: curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/
       - name: Configure frontend environment
         run: |
-          sed -i 's,http://localhost:8080,https://auth-api.dev.snuderls.eu,g' frontend/app/.env.production
-          sed -i 's,http://localhost:8082,https://session-api.dev.snuderls.eu,g' frontend/app/.env.production
-          sed -i 's,http://localhost:8083,https://billing-api.dev.snuderls.eu,g' frontend/app/.env.production
-          sed -i 's,http://localhost:3002,https://try.dev.snuderls.eu,g' frontend/app/.env.production
-          sed -i 's,http://localhost:3000,https://app.dev.snuderls.eu,g' frontend/try/.env.production
-          sed -i 's,http://localhost:8080,https://auth-api.dev.snuderls.eu,g' frontend/try/.env.production
+          sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/app/.env.production
+          sed -i 's,http://localhost:8082,https://api.rebrowse.dev,g' frontend/app/.env.production
+          sed -i 's,http://localhost:8083,https://api.rebrowse.dev,g' frontend/app/.env.production
+          sed -i 's,http://localhost:3002,https://try.rebrowse.dev,g' frontend/app/.env.production
+          sed -i 's,http://localhost:3000,https://app.rebrowse.dev,g' frontend/try/.env.production
+          sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/try/.env.production
       - name: Build
         run: |
           mkdir -p out

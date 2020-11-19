@@ -11,7 +11,7 @@ export default {
 export const Base = () => {
   return (
     <RecordingSnippet
-      snipetURI="https://static.dev.snuderls.eu/b/insight.js"
+      snipetURI="https://static.rebrowse.dev/b/insight.js"
       organizationId="FE2Dj3"
     />
   );

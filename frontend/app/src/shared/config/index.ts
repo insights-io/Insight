@@ -3,4 +3,4 @@ export const TRY_BASE_URL =
 
 export const BOOTSTRAP_SCRIPT_URI =
   process.env.NEXT_PUBLIC_BOOTSTRAP_SCRIPT_URI ||
-  'https://static.dev.snuderls.eu/b/insight.js';
+  'https://static.rebrowse.dev/b/insight.js';

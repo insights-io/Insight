@@ -9,7 +9,7 @@ describe('<RecordingSnippet />', () => {
     expect(queryByText('Loading')).toBeInTheDocument();
 
     await findByText(`s._i_org = 'FE2Dj3';`, { exact: false });
-    await findByText(`n.src = 'https://static.dev.snuderls.eu/s/insight.js';`, {
+    await findByText(`n.src = 'https://static.rebrowse.dev/s/insight.js';`, {
       exact: false,
     });
   });
