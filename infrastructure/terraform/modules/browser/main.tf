@@ -7,6 +7,10 @@ locals {
   }
 }
 
+data "aws_route53_zone" "zone" {
+  name = "${var.domain}."
+}
+
 data "aws_acm_certificate" "wildcard_certificate" {
   domain = "*.${var.domain}"
 }
@@ -123,4 +127,17 @@ data "aws_iam_policy_document" "s3_cloudfront_static" {
 resource "aws_s3_bucket_policy" "s3_cloudfront_static" {
   bucket = aws_s3_bucket.static.id
   policy = data.aws_iam_policy_document.s3_cloudfront_static.json
+}
+
+resource "aws_route53_record" "static_alias" {
+  zone_id  = data.aws_route53_zone.zone.zone_id
+  for_each = toset([local.alias])
+  name     = each.value
+  type     = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
 }
