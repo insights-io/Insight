@@ -2,7 +2,7 @@
 
 [![storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://insights-io.github.io/Insight/try/storybook/master/)
 
-Sign up page for Insight. Deployed on a separate domain: https://try.insight.<>
+Sign up page for Rebrowse. Deployed on a separate domain: https://try.rebrowse.<>
 
 ## Storybook
 
