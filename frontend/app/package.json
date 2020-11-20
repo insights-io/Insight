@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@amcharts/amcharts4": "4.10.10",
-    "@amcharts/amcharts4-geodata": "4.1.18",
+    "@amcharts/amcharts4-geodata": "4.1.19",
     "@stripe/stripe-js": "1.11.0",
     "@stripe/react-stripe-js": "1.1.2",
     "@rebrowse/service-proxy": "0.0.0-development",
