@@ -6,7 +6,7 @@ on:
       - 'frontend/**'
       - '.eslintignore'
       - '.eslintrc.js'
-      - 'jest.config.js'
+      - 'jest.config.ts'
       - 'lerna.json'
       - 'package.json'
       - '.prettierrc'

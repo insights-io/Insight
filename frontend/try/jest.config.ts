@@ -1,6 +1,6 @@
 import type { Config } from '@jest/types';
 
-import baseConfig from '../../jest.config.js';
+import baseConfig from '../../jest.config';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pack = require('./package');
