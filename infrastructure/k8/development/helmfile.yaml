@@ -29,6 +29,8 @@ releases:
     chart: ingress-nginx/ingress-nginx
     version: 3.10.1
     namespace: {{ .Values.infraNamespace }}
+    values:
+     - ingress-nginx.yaml
   - name: postgres
     chart: bitnami/postgresql
     version: 10.0.2

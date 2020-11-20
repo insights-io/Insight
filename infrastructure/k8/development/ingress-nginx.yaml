@@ -1,7 +1,7 @@
 ---
 controller:
   config:
-    enable-opentracing: "true"
+    enable-opentracing: 'true'
     jaeger-collector-host: jaeger-agent.monitoring.svc.cluster.local
   service:
     externalTrafficPolicy: Local
