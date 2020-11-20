@@ -2,7 +2,7 @@ import {
   LogLevel,
   BrowserLogEventDTO,
   BrowserErrorEventDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import React from 'react';
 import { DeleteAlt, Alert, IconProps } from 'baseui/icon';
 

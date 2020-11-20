@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Flex, Input, VerticalAligned } from '@insight/elements';
+import { Button, Flex, Input, VerticalAligned } from '@rebrowse/elements';
 import { Block } from 'baseui/block';
 import { Checkbox } from 'baseui/checkbox';
 import { SIZE } from 'baseui/input';
@@ -9,7 +9,7 @@ import type {
   APIErrorDataResponse,
   OrganizationPasswordPolicyDTO,
   PasswordPolicy,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { useOrganizationPasswordPolicy } from 'shared/hooks/useOrganizationPasswordPolicy';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
 import Divider from 'shared/components/Divider';

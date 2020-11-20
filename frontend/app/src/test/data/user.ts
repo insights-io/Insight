@@ -1,9 +1,9 @@
-import { mapSsoSetup, mapUser } from '@insight/sdk';
-import type { UserDTO, User, SsoSetupDTO } from '@insight/types';
+import { mapSsoSetup, mapUser } from '@rebrowse/sdk';
+import type { UserDTO, User, SsoSetupDTO } from '@rebrowse/types';
 
 export const INSIGHT_ADMIN_DTO: UserDTO = {
   id: '7c071176-d186-40ac-aaf8-ac9779ab047b',
-  email: 'admin@insight.io',
+  email: 'admin@rebrowse.dev',
   fullName: 'Admin Admin',
   organizationId: '000000',
   role: 'admin',

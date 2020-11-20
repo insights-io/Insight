@@ -1,5 +1,5 @@
-import { mapAuthToken } from '@insight/sdk';
-import { AuthTokenDTO } from '@insight/types';
+import { mapAuthToken } from '@rebrowse/sdk';
+import { AuthTokenDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useCallback, useMemo } from 'react';
 import useSWRQuery from 'shared/hooks/useSWRQuery';

@@ -2,6 +2,7 @@ package com.meemaw.auth.user.phone.service;
 
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.sms.SmsMessage;
 import com.meemaw.shared.sms.SmsService;
 import java.security.SecureRandom;
@@ -20,6 +21,11 @@ public class UserPhoneCodeService {
 
   @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
   @Inject SmsService smsService;
+
+  public static int generateRandomDigits(int length) {
+    int min = (int) Math.pow(10, length - 1);
+    return min + random.nextInt(9 * min);
+  }
 
   public CompletionStage<Boolean> validate(int actualCode, String key) {
     return userPhoneCodeDatasource
@@ -49,15 +55,10 @@ public class UserPhoneCodeService {
     return smsService.sendMessage(
         "+19704594909",
         phoneNumber.getNumber(),
-        String.format("[Insight] Verification code: %d", code));
+        String.format("[%s] Verification code: %d", SharedConstants.NAME, code));
   }
 
   public int newCode() {
     return generateRandomDigits(CODE_LENGTH);
-  }
-
-  public static int generateRandomDigits(int length) {
-    int min = (int) Math.pow(10, length - 1);
-    return min + random.nextInt(9 * min);
   }
 }

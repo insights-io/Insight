@@ -1,4 +1,4 @@
-import type { PhoneNumber } from '@insight/types';
+import type { PhoneNumber } from '@rebrowse/types';
 
 import type { TwoFactorAuthenticationProps } from '../types';
 

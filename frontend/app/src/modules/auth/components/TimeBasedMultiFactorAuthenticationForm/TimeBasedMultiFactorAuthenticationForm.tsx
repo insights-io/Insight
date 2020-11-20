@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { AuthApi } from 'api/auth';
 import { Block } from 'baseui/block';
-import { CodeInput, Button, Flex } from '@insight/elements';
+import { CodeInput, Button, Flex } from '@rebrowse/elements';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import type {
   APIError,
   APIErrorDataResponse,
   TfaSetupDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import FormError from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';

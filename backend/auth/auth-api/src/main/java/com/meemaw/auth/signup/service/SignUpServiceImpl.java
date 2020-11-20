@@ -13,6 +13,7 @@ import com.meemaw.auth.signup.resource.v1.SignUpResource;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
@@ -131,6 +132,7 @@ public class SignUpServiceImpl implements SignUpService {
         .data("email", email)
         .data("token", token)
         .data("completeSignUpURL", completeSignUpLocation)
+        .data("name", SharedConstants.NAME)
         .renderAsync()
         .thenCompose(
             html ->

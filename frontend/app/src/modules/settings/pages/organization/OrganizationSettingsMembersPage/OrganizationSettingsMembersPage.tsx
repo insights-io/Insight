@@ -1,5 +1,5 @@
 import React from 'react';
-import type { OrganizationDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
 import { OrganizationMembersLayout } from 'modules/settings/components/organization/OrganizationMembersLayout';
 import { OrganizationMembers } from 'modules/settings/components/organization/OrganizationMembers';
 

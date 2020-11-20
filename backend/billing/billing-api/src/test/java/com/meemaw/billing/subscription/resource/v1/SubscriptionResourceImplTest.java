@@ -67,7 +67,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .post(SubscriptionResource.PATH)
         .then()
         .statusCode(400)
@@ -81,7 +81,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body("{}")
         .post(SubscriptionResource.PATH)
         .then()
@@ -96,7 +96,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body(
             objectMapper.writeValueAsString(
                 new CreateSubscriptionDTO("random", SubscriptionPlan.ENTERPRISE)))
@@ -113,7 +113,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body(
             objectMapper.writeValueAsString(
                 new CreateSubscriptionDTO(
@@ -131,7 +131,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body(
             objectMapper.writeValueAsString(
                 new CreateSubscriptionDTO("pm_1HS5TUI1ysvdCIIxoLNYYB9S", SubscriptionPlan.FREE)))
@@ -153,7 +153,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
   @Test
   public void get_plan__should_return_enterprise_plan__when_insight() {
     given()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .when()
         .get(SubscriptionResource.PATH + "/plan")
         .then()

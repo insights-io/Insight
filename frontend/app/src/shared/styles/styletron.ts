@@ -1,6 +1,6 @@
 import { Client, Server } from 'styletron-engine-atomic';
 import { DebugEngine } from 'styletron-react';
-import { getHydrateClass } from '@insight/elements';
+import { getHydrateClass } from '@rebrowse/elements';
 
 export const styletron =
   typeof window === 'undefined'

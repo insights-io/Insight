@@ -3,7 +3,7 @@ package com.meemaw.auth.sso.bearer;
 import com.meemaw.auth.sso.AbstractAuthDynamicFeature;
 import com.meemaw.auth.sso.AuthSchemeResolver;
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature.BearerTokenAuthFilter;
-import com.meemaw.auth.sso.session.model.InsightSecurityContext;
+import com.meemaw.auth.sso.session.model.PrincipalSecurityContext;
 import com.meemaw.auth.user.UserRegistry;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestContextUtils;
@@ -86,7 +86,7 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
 
     setUserContext(span, user);
     boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
-    context.setSecurityContext(new InsightSecurityContext(user, isSecure));
+    context.setSecurityContext(new PrincipalSecurityContext(user, isSecure));
     principal.user(user).apiKey(apiKey);
     log.debug("[AUTH]: Successfully authenticated user={}", user.getId());
   }

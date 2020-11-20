@@ -1,4 +1,4 @@
-import { User, UserDTO } from '@insight/types';
+import { User, UserDTO } from '@rebrowse/types';
 
 export const mapUser = (user: User | UserDTO): User => {
   return {

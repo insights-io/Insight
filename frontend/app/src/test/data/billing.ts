@@ -1,11 +1,11 @@
-import { mapInvoice, mapSubscription } from '@insight/sdk';
+import { mapInvoice, mapSubscription } from '@rebrowse/sdk';
 import type {
   Invoice,
   InvoiceDTO,
   PlanDTO,
   Subscription,
   SubscriptionDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 export const CANCELED_ENTERPRISE_SUBSCRIPTION: Subscription = {
   id: '1234',

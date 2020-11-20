@@ -1,5 +1,5 @@
 import ky from 'ky-universal';
-import type { DataResponse, AuthTokenDTO } from '@insight/types';
+import type { DataResponse, AuthTokenDTO } from '@rebrowse/types';
 
 import { RequestOptions, withCredentials, getData } from '../../../core';
 

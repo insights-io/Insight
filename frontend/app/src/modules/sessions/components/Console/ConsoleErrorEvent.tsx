@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserErrorEventDTO } from '@insight/types';
+import { BrowserErrorEventDTO } from '@rebrowse/types';
 import { Block } from 'baseui/block';
-import { SpacedBetween, VerticalAligned } from '@insight/elements';
+import { SpacedBetween, VerticalAligned } from '@rebrowse/elements';
 import { ArrowDown, ArrowUp } from 'baseui/icon';
 import { useStyletron } from 'baseui';
 import { Accordion, Panel } from 'baseui/accordion';

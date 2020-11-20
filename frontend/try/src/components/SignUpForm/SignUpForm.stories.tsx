@@ -1,8 +1,8 @@
 import React from 'react';
 import { action } from '@storybook/addon-actions';
 import { Block } from 'baseui/block';
-import { SignUpRequestDTO } from '@insight/types';
-import { mockApiError } from '@insight/storybook';
+import { SignUpRequestDTO } from '@rebrowse/types';
+import { mockApiError } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
 
 import { SignUpForm, Props } from './SignUpForm';

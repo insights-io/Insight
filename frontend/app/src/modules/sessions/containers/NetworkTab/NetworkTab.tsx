@@ -2,7 +2,7 @@ import React from 'react';
 import useSWR from 'swr';
 import { SessionApi } from 'api';
 import NetworkTab from 'modules/sessions/components/NetworkTab';
-import { BrowserXhrEventDTO } from '@insight/types';
+import { BrowserXhrEventDTO } from '@rebrowse/types';
 
 type Props = {
   sessionId: string;

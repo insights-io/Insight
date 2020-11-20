@@ -7,7 +7,7 @@ import { SignUpForm } from 'components/SignUpForm';
 import { appBaseURL, helpBaseURL } from 'shared/config';
 import { AuthApi } from 'api/auth';
 import { Topbar } from 'components/Topbar';
-import { FlexColumn } from '@insight/elements';
+import { FlexColumn } from '@rebrowse/elements';
 
 export const GetStarted = () => {
   const [_css, theme] = useStyletron();
@@ -15,7 +15,7 @@ export const GetStarted = () => {
   return (
     <FlexColumn height="100%">
       <Head>
-        <title>Insight | Sign up</title>
+        <title>Rebrowse | Sign up</title>
       </Head>
       <Topbar appBaseURL={appBaseURL} helpBaseURL={helpBaseURL} />
       <Block height="100%" padding={theme.sizing.scale600}>

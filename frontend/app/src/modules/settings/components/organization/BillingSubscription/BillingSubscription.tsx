@@ -12,7 +12,7 @@ import type {
   PlanDTO,
   Subscription,
   SubscriptionPlan,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 type Props = {
   subscriptions: Subscription[];

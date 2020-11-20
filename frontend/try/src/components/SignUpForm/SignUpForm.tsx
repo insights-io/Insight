@@ -8,10 +8,10 @@ import {
   APIErrorDataResponse,
   APIError,
   SignUpRequestDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import FormError from 'shared/components/FormError';
 import Router from 'next/router';
-import { PhoneNumberInput, Button, Input } from '@insight/elements';
+import { PhoneNumberInput, Button, Input } from '@rebrowse/elements';
 
 type SignUpFormData = Omit<SignUpRequestDTO, 'phoneNumber'> & {
   phoneNumber: string | undefined;

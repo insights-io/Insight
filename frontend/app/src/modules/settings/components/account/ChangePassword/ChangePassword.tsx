@@ -7,11 +7,11 @@ import type {
   ChangePasswordDTO,
   APIError,
   APIErrorDataResponse,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { toaster } from 'baseui/toast';
-import { Input, Button } from '@insight/elements';
+import { Input, Button } from '@rebrowse/elements';
 
 type Props = {
   overrides?: CardOverrides;

@@ -1,5 +1,5 @@
 import { BrowserEventArguments } from 'event';
-import { EventType } from '@insight/types';
+import { EventType } from '@rebrowse/types';
 
 /* eslint-disable camelcase */
 export interface InsightWindow {

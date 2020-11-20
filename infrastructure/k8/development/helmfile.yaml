@@ -1,17 +1,15 @@
 ---
 repositories:
   - name: stable
-    url: https://kubernetes-charts.storage.googleapis.com
+    url: https://charts.helm.sh/stable
   - name: bitnami
     url: https://charts.bitnami.com/bitnami
-  - name: jaegertracing
-    url: https://jaegertracing.github.io/helm-charts
   - name: elastic
     url: https://helm.elastic.co
   - name: kubernetes-dashboard
     url: https://kubernetes.github.io/dashboard/
   - name: incubator
-    url: https://kubernetes-charts-incubator.storage.googleapis.com/
+    url: https://charts.helm.sh/incubator
   - name: grafana
     url: https://grafana.github.io/helm-charts
   - name: runatlantis
@@ -29,6 +27,8 @@ releases:
     chart: ingress-nginx/ingress-nginx
     version: 3.10.1
     namespace: {{ .Values.infraNamespace }}
+    values:
+     - ingress-nginx.yaml
   - name: postgres
     chart: bitnami/postgresql
     version: 10.0.2
@@ -173,29 +173,6 @@ releases:
             - "www.grafana.{{ .Values.infraDomain }}"
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
-
-  - name: jaeger
-    chart: jaegertracing/jaeger
-    namespace: monitoring
-    version: 0.39.1
-    values:
-      - jaeger.yaml
-      - storage:
-          elasticsearch:
-            host: "elasticsearch-master.{{ .Values.appNamespace }}"
-      - query:
-          ingress:
-            enabled: true
-            tls:
-              - hosts:
-                - "tracing.{{ .Values.infraDomain }}"
-                - "www.tracing.{{ .Values.infraDomain }}"
-                secretName: tracing-tls
-            hosts:
-              - "tracing.{{ .Values.infraDomain }}"
-              - "www.tracing.{{ .Values.infraDomain }}"
-            annotations:
-{{ toYaml .Values.ingressAnnotations | indent 14 }}
 
 {{ if eq .Environment.Name "production" }}
   - name: oauth2-proxy

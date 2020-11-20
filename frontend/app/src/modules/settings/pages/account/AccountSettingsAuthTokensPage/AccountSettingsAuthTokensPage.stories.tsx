@@ -1,7 +1,7 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { Meta } from '@storybook/react';
-import { AuthTokenDTO } from '@insight/types';
+import { AuthTokenDTO } from '@rebrowse/types';
 import { INSIGHT_ADMIN_DTO } from 'test/data';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 

@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { AuthApi } from 'api/auth';
-import { mapUser } from '@insight/sdk';
-import { UpdateUserPayload } from '@insight/sdk/dist/auth';
+import { mapUser } from '@rebrowse/sdk';
+import { UpdateUserPayload } from '@rebrowse/sdk/dist/auth';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
-import type { PhoneNumber, UserDTO } from '@insight/types';
+import type { PhoneNumber, UserDTO } from '@rebrowse/types';
 
 const CACHE_KEY = 'AuthApi.user.me';
 

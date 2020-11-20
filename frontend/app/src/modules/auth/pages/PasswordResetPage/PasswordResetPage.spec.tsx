@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'test/utils';
 import userEvent from '@testing-library/user-event';
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { waitFor } from '@testing-library/react';
 
 import { Base } from './PasswordResetPage.stories';

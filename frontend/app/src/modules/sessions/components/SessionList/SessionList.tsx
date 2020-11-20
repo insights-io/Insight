@@ -2,7 +2,7 @@ import React from 'react';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList, FixedSizeListProps } from 'react-window';
-import { Session } from '@insight/types';
+import { Session } from '@rebrowse/types';
 import SessionListItem from 'modules/sessions/containers/SessionListItem';
 
 type Props = {

@@ -8,9 +8,9 @@ import { OrganizationSettingsPageLayout } from 'modules/settings/components/orga
 import { useSsoSetup } from 'modules/settings/hooks/useSsoSetup';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
-import { Panel } from '@insight/elements';
+import { Panel } from '@rebrowse/elements';
 import type { Path } from 'modules/settings/types';
-import type { OrganizationDTO, SsoSetupDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, SsoSetupDTO, UserDTO } from '@rebrowse/types';
 import { cdnLogo } from 'shared/utils/assets';
 
 import { SsoProvider } from './SsoProvider';

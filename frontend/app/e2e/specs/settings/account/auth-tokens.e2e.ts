@@ -3,7 +3,7 @@ import type {
   DataResponse,
   OrganizationDTO,
   APIErrorDataResponse,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import {
   AccountSettingsAuthTokensPage,

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Avatar, AvatarProps } from 'baseui/avatar';
-import { Organization, UserDTO } from '@insight/types';
+import { Organization, UserDTO } from '@rebrowse/types';
 import { useStyletron } from 'baseui';
-import { expandBorderRadius } from '@insight/elements';
+import { expandBorderRadius } from '@rebrowse/elements';
 
 type Props = Pick<Organization, 'name' | 'avatar'> &
   Omit<AvatarProps, 'name' | 'src'>;

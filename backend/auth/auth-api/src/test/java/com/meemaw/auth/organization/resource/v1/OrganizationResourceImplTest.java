@@ -1,11 +1,11 @@
 package com.meemaw.auth.organization.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.QUERY_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_FULL_NAME;
+import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_EMAIL;
+import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_FULL_NAME;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,6 +17,7 @@ import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
@@ -158,7 +159,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void setup_avatar_associated_organization__should_throw__when_no_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(ContentType.JSON)
@@ -173,7 +174,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void setup_avatar_associated_organization__should_throw__when_empty_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(ContentType.JSON)
@@ -189,7 +190,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void setup_avatar_associated_organization__should_throw__when_invalid_type() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     given()
         .when()
@@ -207,7 +208,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void setup_avatar_associated_organization__should_throw__when_avatar_without_image()
       throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     AvatarSetupDTO avatarSetup = new AvatarSetupDTO(AvatarType.AVATAR, null);
 
     given()
@@ -277,7 +278,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void patch_associated_organization__should_throw__when_empty_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(ContentType.JSON)
@@ -293,7 +294,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void patch_associated_organization__should_throw__when_no_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(ContentType.JSON)
@@ -309,7 +310,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void patch_associated_organization__should_throw__when_invalid_body()
       throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(ContentType.JSON)
@@ -327,7 +328,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
   @Disabled
   public void patch_associated_organization__should_throw__when_invalid_role()
       throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(ContentType.JSON)
@@ -391,7 +392,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void get_associated_organization__should_work__when_existing_user() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     DataResponse<OrganizationDTO> firstResponse =
         given()
@@ -404,8 +405,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals(INSIGHT_ORGANIZATION_ID, firstResponse.getData().getId());
-    assertEquals("Insight", firstResponse.getData().getName());
+    assertEquals(GENESIS_ORGANIZATION_ID, firstResponse.getData().getId());
+    assertEquals(SharedConstants.NAME, firstResponse.getData().getName());
 
     String authToken = authApi().createApiKey(sessionId);
     DataResponse<OrganizationDTO> secondResponse =
@@ -430,7 +431,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void get_organization_members__should_return__when_existing_user() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     DataResponse<List<UserDTO>> firstResponse =
         given()
@@ -443,8 +444,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals(INSIGHT_ADMIN_EMAIL, firstResponse.getData().get(0).getEmail());
-    assertEquals(INSIGHT_ADMIN_FULL_NAME, firstResponse.getData().get(0).getFullName());
+    assertEquals(GENESIS_ADMIN_EMAIL, firstResponse.getData().get(0).getEmail());
+    assertEquals(GENESIS_ADMIN_FULL_NAME, firstResponse.getData().get(0).getFullName());
     assertEquals(UserRole.ADMIN, firstResponse.getData().get(0).getRole());
 
     // Search by query
@@ -471,7 +472,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .queryParam(QUERY_PARAM, INSIGHT_ADMIN_FULL_NAME)
+            .queryParam(QUERY_PARAM, GENESIS_ADMIN_FULL_NAME)
             .queryParam(SORT_BY_PARAM, "created_at")
             .get(GET_ORGANIZATION_MEMBERS_PATH)
             .then()
@@ -483,7 +484,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam(QUERY_PARAM, INSIGHT_ADMIN_FULL_NAME)
+        .queryParam(QUERY_PARAM, GENESIS_ADMIN_FULL_NAME)
         .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
         .then()
         .statusCode(200)

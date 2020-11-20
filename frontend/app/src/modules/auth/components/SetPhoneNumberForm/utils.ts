@@ -1,4 +1,4 @@
-import { PhoneNumber } from '@insight/types';
+import { PhoneNumber } from '@rebrowse/types';
 import { COUNTRIES, Country } from 'baseui/phone-input';
 
 export const getCountryFromPhoneNumber = (

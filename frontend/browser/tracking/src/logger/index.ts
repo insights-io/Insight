@@ -1,4 +1,4 @@
-import { LogLevel } from '@insight/types';
+import { LogLevel } from '@rebrowse/types';
 
 import { LOG_LEVELS } from '../instrument';
 

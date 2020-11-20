@@ -10,6 +10,7 @@ import com.meemaw.auth.password.model.PasswordValidationException;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserWithLoginInformation;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -36,6 +37,9 @@ import org.mindrot.jbcrypt.BCrypt;
 @ApplicationScoped
 @Slf4j
 public class PasswordServiceImpl implements PasswordService {
+
+  private static final String PASSWORD_RESET_EMAIL_SENT_SUBJECT =
+      String.format("Reset your %s password", SharedConstants.NAME);
 
   @Inject PasswordDatasource passwordDatasource;
   @Inject PasswordResetDatasource passwordResetDatasource;
@@ -145,8 +149,7 @@ public class PasswordServiceImpl implements PasswordService {
       PasswordResetRequest passwordResetRequest, String passwordResetURL) {
     String email = passwordResetRequest.getEmail();
     UUID token = passwordResetRequest.getToken();
-    log.info("[AUTH]: Sending password reset email to user: {} token: {}", email, token);
-    String subject = "Reset your Insight password";
+    log.info("[AUTH]: Sending password reset email to user={} token={}", email, token);
 
     return passwordResetTemplate
         .data("email", email)
@@ -157,7 +160,8 @@ public class PasswordServiceImpl implements PasswordService {
             html ->
                 mailer
                     .send(
-                        Mail.withHtml(email, subject, html).setFrom(MailingConstants.FROM_SUPPORT))
+                        Mail.withHtml(email, PASSWORD_RESET_EMAIL_SENT_SUBJECT, html)
+                            .setFrom(MailingConstants.FROM_SUPPORT))
                     .subscribeAsCompletionStage());
   }
 

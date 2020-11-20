@@ -6,7 +6,7 @@ import {
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { SessionPage } from 'modules/sessions/pages/SessionPage';
 import { SessionApi } from 'api';
-import type { SessionDTO, APIErrorDataResponse } from '@insight/types';
+import type { SessionDTO, APIErrorDataResponse } from '@rebrowse/types';
 import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 
 type Props = AuthenticatedServerSideProps & {

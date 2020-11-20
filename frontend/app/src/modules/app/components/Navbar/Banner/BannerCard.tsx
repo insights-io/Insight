@@ -1,4 +1,4 @@
-import { Flex, FlexColumn, VerticalAligned } from '@insight/elements';
+import { Flex, FlexColumn, VerticalAligned } from '@rebrowse/elements';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import React, { forwardRef } from 'react';

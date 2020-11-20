@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 
 export const mockServerSideRequest = () => {
   const writeHead = sandbox.stub();

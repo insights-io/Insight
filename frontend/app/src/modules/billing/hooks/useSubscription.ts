@@ -1,8 +1,8 @@
 import { BillingApi } from 'api';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
-import type { SubscriptionDTO } from '@insight/types';
+import type { SubscriptionDTO } from '@rebrowse/types';
 import { useCallback, useMemo } from 'react';
-import { mapSubscription } from '@insight/sdk';
+import { mapSubscription } from '@rebrowse/sdk';
 
 const CACHE_KEY = 'BillingApi.subscriptions.get';
 

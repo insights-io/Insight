@@ -1,5 +1,5 @@
 {
-  "name": "@insight/next-storybook",
+  "name": "@rebrowse/next-storybook",
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
@@ -7,7 +7,7 @@
   "module": "dist/index.esm.js",
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
-  "author": "Insight Engineering",
+  "author": "Rebrowse Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
@@ -30,7 +30,7 @@
   "peerDependencies": {
     "@storybook/addons": "6.1.0-rc.3",
     "@storybook/addon-actions": "6.1.0-rc.3",
-    "@insight/storybook": "0.0.0-development",
+    "@rebrowse/storybook": "0.0.0-development",
     "@testing-library/react": "11.1.2",
     "next": "10.0.1",
     "react": "17.0.1"

@@ -3,7 +3,7 @@ import { TOPBAR_HEIGHT } from 'shared/theme';
 import { useStyletron } from 'baseui';
 import { FaInfo, FaBars, FaTimes } from 'react-icons/fa';
 import { PLACEMENT } from 'baseui/tooltip';
-import { Flex } from '@insight/elements';
+import { Flex } from '@rebrowse/elements';
 
 import NavbarItem from '../Item';
 

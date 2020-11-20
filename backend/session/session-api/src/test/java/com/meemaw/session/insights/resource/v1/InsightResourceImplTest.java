@@ -1,6 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
@@ -52,7 +52,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_throw__on_unsupported_fields() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     given()
         .when()
@@ -72,7 +72,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_count__on_empty_request() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -95,7 +95,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_count__on_request_with_filters() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -109,7 +109,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_counts__on_group_by_country() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -126,7 +126,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   @Test
   public void
       get_session_insights_count__should_return_counts__on_group_by_country_and_continent() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -142,7 +142,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_count__should_return_counts__on_group_by_device() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -164,7 +164,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_distinct__should_throw__when_no_columns() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -178,7 +178,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void get_session_insights_distinct__should_return_cities() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -205,7 +205,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   public void get_session_insights_distinct__should_return_continents() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "location.continentName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -218,7 +218,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   public void get_session_insights_distinct__should_return_countries() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "location.countryName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -231,7 +231,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   public void get_session_insights_distinct__should_return_regions() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "location.regionName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -244,7 +244,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   public void get_session_insights_distinct__should_return_browser_name() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "user_agent.browserName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -257,7 +257,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   public void get_session_insights_distinct__should_return_operating_system_name() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "user_agent.operatingSystemName")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -270,7 +270,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   public void get_session_insights_distinct__should_return_device_class() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "user_agent.deviceClass")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -283,7 +283,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
   public void get_session_insights_distinct__should_throw__when_unexpected_fields() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "random")
         .queryParam("created_at", String.format("gte:%s", createdAt))
         .get(DISTINCT_PATH)
@@ -311,7 +311,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 firstSessionId,
                                 UUID.randomUUID(),
-                                INSIGHT_ORGANIZATION_ID,
+                                GENESIS_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("New York")
                                     .countryName("United States")
@@ -325,7 +325,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                INSIGHT_ORGANIZATION_ID,
+                                GENESIS_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("Otawa")
                                     .countryName("Canada")
@@ -338,7 +338,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                INSIGHT_ORGANIZATION_ID,
+                                GENESIS_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("Maribor")
                                     .countryName("Slovenia")
@@ -352,7 +352,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                INSIGHT_ORGANIZATION_ID,
+                                GENESIS_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .countryName("Slovenia")
                                     .continentName("Europe")
@@ -364,7 +364,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                INSIGHT_ORGANIZATION_ID,
+                                GENESIS_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("Zagreb")
                                     .countryName("Croatia")
@@ -379,7 +379,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
     createdAt =
         sessionDatasource
-            .getSession(firstSessionId, INSIGHT_ORGANIZATION_ID)
+            .getSession(firstSessionId, GENESIS_ORGANIZATION_ID)
             .toCompletableFuture()
             .join()
             .get()

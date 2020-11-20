@@ -12,7 +12,7 @@ class PasswordForgot extends AbstractPage {
   public readonly rememeberPassword = getByText('Remember password?');
 
   public readonly requestSubmittedMessage = getByText(
-    'If your email address is associated with an Insight account, you will be receiving a password reset request shortly.'
+    'If your email address is associated with an Rebrowse account, you will be receiving a password reset request shortly.'
   );
 }
 

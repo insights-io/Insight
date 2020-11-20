@@ -1,6 +1,6 @@
 package com.meemaw.session.events.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
@@ -81,7 +81,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
                                         PAGE_ID,
                                         SESSION_ID,
                                         DEVICE_ID,
-                                        INSIGHT_ORGANIZATION_ID)
+                                        GENESIS_ORGANIZATION_ID)
                                     .index()),
                         RequestOptions.DEFAULT);
               } catch (IOException ex) {
@@ -99,7 +99,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void events_search__should_return_empty_list__on_random_session() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -111,7 +111,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void events_search__should_throw__on_unsupported_fields() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .queryParam("random", "gte:aba")
@@ -132,7 +132,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
   public void events_search__should_return_all_events__on_big_limit()
       throws IOException, URISyntaxException {
     String path = String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?limit=100";
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -153,7 +153,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void events_search__should_return_matching_events__when_type_filter() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -175,7 +175,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void events_search__should_return_matching_events__when_timestamp_filter() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -198,7 +198,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
   @Test
   public void events_search__should_return_matching_events__when_complex_type_filter() {
     String searchQuery = "?event.e=gte:11&event.e=lte:12";
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)

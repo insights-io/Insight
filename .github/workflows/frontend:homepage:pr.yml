@@ -62,8 +62,8 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/homepage prebuild
-          yarn workspace @insight/homepage storybook:build
+          yarn workspace @rebrowse/homepage prebuild
+          yarn workspace @rebrowse/homepage storybook:build
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete

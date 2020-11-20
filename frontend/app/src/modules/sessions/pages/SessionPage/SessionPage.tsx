@@ -3,7 +3,7 @@ import { AppLayout } from 'modules/app/components/AppLayout';
 import { SessionDetails } from 'modules/sessions/components/SessionDetails.tsx';
 import { useUser } from 'shared/hooks/useUser';
 import { useSession } from 'modules/sessions/hooks/useSession';
-import type { OrganizationDTO, SessionDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, SessionDTO, UserDTO } from '@rebrowse/types';
 import { useOrganization } from 'shared/hooks/useOrganization';
 
 type Props = {

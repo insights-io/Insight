@@ -10,8 +10,8 @@ import {
 } from 'shared/constants/routes';
 import { SettingsLayout } from 'modules/settings/components/SettingsLayout';
 import { SETTINGS_SEARCH_OPTIONS } from 'modules/settings/constants';
-import { Flex } from '@insight/elements';
-import { OrganizationDTO, UserDTO } from '@insight/types';
+import { Flex } from '@rebrowse/elements';
+import { OrganizationDTO, UserDTO } from '@rebrowse/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import { MEMBERS_SECTION } from 'shared/constants/copy';

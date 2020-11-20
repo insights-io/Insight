@@ -1,4 +1,4 @@
-import { APIError } from '@insight/types';
+import { APIError } from '@rebrowse/types';
 
 export const mockApiError = (apiError: APIError): Error => {
   const error = new Error('APIError');

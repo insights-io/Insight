@@ -9,7 +9,7 @@ import {
   VerticalAligned,
   Button,
   expandBorderRadius,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import { Plus, Delete } from 'baseui/icon';
 import { SIZE, KIND } from 'baseui/button';
 

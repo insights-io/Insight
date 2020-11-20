@@ -169,11 +169,11 @@ CREATE TABLE auth.token
 );
 
 
-/* Bootstrap Insight organization */
+/* Bootstrap Rebrowse organization */
 INSERT INTO auth.organization(id, name)
-VALUES ('000000', 'Insight');
+VALUES ('000000', 'Rebrowse');
 
-/* Bootstrap user for Insight organization */
+/* Bootstrap genesis user for Rebrowse organization */
 INSERT INTO auth.user(id, email, organization_id, role, full_name)
-VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', 'admin@insight.io', '000000', 'admin',
+VALUES ('7c071176-d186-40ac-aaf8-ac9779ab047b', 'admin@rebrowse.dev', '000000', 'admin',
         'Admin Admin');

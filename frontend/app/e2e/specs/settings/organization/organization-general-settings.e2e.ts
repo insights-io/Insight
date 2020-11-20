@@ -23,7 +23,7 @@ test('[ORGANIZATION_GENERAL_SETTINGS]: User should be able to change general org
   /* Display Name */
   await t
     .expect(OrganizationGeneralSettingsPage.nameInput.value)
-    .eql('Insight', 'Should have Insight value by default')
+    .eql('Rebrowse', 'Should have Rebrowse value by default')
     .selectText(OrganizationGeneralSettingsPage.nameInput)
     .pressKey('delete')
     .typeText(OrganizationGeneralSettingsPage.nameInput, 'Rebrowse')

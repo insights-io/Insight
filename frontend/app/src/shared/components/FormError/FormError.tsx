@@ -1,7 +1,7 @@
 import React from 'react';
 import { Paragraph3 } from 'baseui/typography';
 import { useStyletron } from 'baseui';
-import { Flex } from '@insight/elements';
+import { Flex } from '@rebrowse/elements';
 
 type HasMessage = {
   message: string;

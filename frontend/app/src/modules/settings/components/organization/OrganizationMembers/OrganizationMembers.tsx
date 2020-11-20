@@ -6,18 +6,18 @@ import {
   SpacedBetween,
   VerticalAligned,
   Table,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import { Avatar } from 'baseui/avatar';
 import { capitalize } from 'modules/billing/utils';
 import { SIZE } from 'baseui/button';
 import { Delete } from 'baseui/icon';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import { mapUser } from '@insight/sdk';
+import { mapUser } from '@rebrowse/sdk';
 import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { StyledSpinnerNext } from 'baseui/spinner';
-import type { SearchBean, User, UserDTO } from '@insight/types';
+import type { SearchBean, User, UserDTO } from '@rebrowse/types';
 
 type Props = {
   members: UserDTO[];

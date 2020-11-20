@@ -1,4 +1,4 @@
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';

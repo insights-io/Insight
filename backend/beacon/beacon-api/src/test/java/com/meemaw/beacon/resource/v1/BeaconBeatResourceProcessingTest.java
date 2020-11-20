@@ -40,7 +40,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class BeaconBeatResourceProcessingTest {
 
   // TODO: create new organization -- dont reuse Insight
-  private static final String ORGANIZATION_ID = SharedConstants.INSIGHT_ORGANIZATION_ID;
+  private static final String ORGANIZATION_ID = SharedConstants.GENESIS_ORGANIZATION_ID;
   private static final String BEACON_RESOURCE_BEAT_PATH = BeaconResource.PATH + "/beat";
 
   @Inject @RestClient SessionPageResource sessionPageResource;

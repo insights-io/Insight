@@ -16,7 +16,7 @@ import type {
   APIErrorDataResponse,
   PlanDTO,
   SubscriptionPlan,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import { confirmCardPayment, createCardPaymentMethod } from './stripe';
 

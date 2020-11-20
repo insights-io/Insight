@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM gradle:6.7.0-jdk14 as build
+FROM --platform=$BUILDPLATFORM gradle:6.7.1-jdk15 as build
 
 WORKDIR /backend
 
@@ -20,7 +20,7 @@ COPY shared/shared-sdk/ /backend/shared/shared-sdk/
 
 RUN gradle session:session-api:quarkusBuild --uber-jar
 
-FROM --platform=$TARGETPLATFORM adoptopenjdk:14-jre-hotspot
+FROM --platform=$TARGETPLATFORM adoptopenjdk:15-jre-hotspot
 
 COPY --from=build /backend/session/session-api/build/session-api-1.0-runner.jar /usr/app/service-runner.jar
 

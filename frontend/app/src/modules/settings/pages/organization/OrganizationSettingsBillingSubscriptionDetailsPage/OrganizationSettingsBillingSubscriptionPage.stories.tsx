@@ -1,5 +1,5 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
 import {
   ACTIVE_BUSINESS_SUBSCRIPTION_DTO,

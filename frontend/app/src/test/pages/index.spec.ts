@@ -1,10 +1,10 @@
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { AuthApi, SessionApi } from 'api';
 import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
 import { INSIGHT_ADMIN_DTO } from 'test/data';
 import { authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/index';
-import { mockServerSideRequest } from '@insight/next-testing';
+import { mockServerSideRequest } from '@rebrowse/next-testing';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 import { responsePromise } from 'test/utils/request';
 

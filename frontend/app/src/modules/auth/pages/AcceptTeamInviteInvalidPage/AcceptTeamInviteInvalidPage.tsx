@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Flex, UnstyledLink } from '@insight/elements';
+import { Button, Flex, UnstyledLink } from '@rebrowse/elements';
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import Link from 'next/link';
 import { LOGIN_PAGE } from 'shared/constants/routes';

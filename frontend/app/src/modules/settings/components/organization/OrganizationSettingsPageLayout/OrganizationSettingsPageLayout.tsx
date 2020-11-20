@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppLayout } from 'modules/app/components/AppLayout';
 import type { SettingsLayoutPropsBase } from 'modules/settings/types';
-import { Organization, User } from '@insight/types';
+import { Organization, User } from '@rebrowse/types';
 import Head from 'next/head';
 
 import { OrganizationSettingsLayout } from '../OrganizationSettingsLayout';

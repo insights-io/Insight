@@ -1,4 +1,4 @@
-import type { Invoice, InvoiceDTO } from '@insight/types';
+import type { Invoice, InvoiceDTO } from '@rebrowse/types';
 
 export const mapInvoice = (invoice: InvoiceDTO | Invoice): Invoice => {
   return {

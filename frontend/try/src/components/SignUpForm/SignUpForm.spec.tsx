@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'test/utils';
 import { waitFor } from '@testing-library/react';
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import userEvent from '@testing-library/user-event';
 
 import { Base } from './SignUpForm.stories';

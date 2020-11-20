@@ -299,8 +299,8 @@ test('As a user with business email, I should be able to setup Github SSO', asyn
 test('As a user, I should not be able to upgrade plan when already on Enterprise plan', async (t) => {
   await LoginPage.loginWithInsightUser(t)
     .click(OrganizationGeneralSettingsPage.sidebar.subscription)
-    .expect(queryByText('Insight Enterprise').visible)
-    .ok('Insight should be on enterprise plan')
+    .expect(queryByText('Rebrowse Enterprise').visible)
+    .ok('Rebrowse should be on enterprise plan')
     .expect(OrganizationSubscriptionSettingsPage.upgradeButton.visible)
     .notOk('Upgrade button is not visible');
 });
@@ -321,7 +321,7 @@ test('As a user, I can subscribe using VISA card and then cancel my subscription
   } = OrganizationSubscriptionSettingsPage;
 
   await t
-    .expect(queryByText('Insight Free').visible)
+    .expect(queryByText('Rebrowse Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
     .switchToIframe(checkoutForm.iframe.with({ timeout: 15000 }))
@@ -332,9 +332,9 @@ test('As a user, I can subscribe using VISA card and then cancel my subscription
     .click(checkoutForm.payButton)
     .expect(planUpgradedToBusinessMessage.with({ timeout: 15000 }).visible)
     .ok('Subscription should be created')
-    .expect(queryByText('Insight Business').visible)
+    .expect(queryByText('Rebrowse Business').visible)
     .ok('Plan should be upgraded')
-    .click(queryByText('Insight Business subscription'));
+    .click(queryByText('Rebrowse Business subscription'));
 
   /* Subscription details page */
   await t
@@ -368,7 +368,7 @@ test('As a user, I can subscribe using VISA card and then cancel my subscription
   await t.eval(() => location.reload());
 
   await t
-    .expect(queryByText('Insight Free').visible)
+    .expect(queryByText('Rebrowse Free').visible)
     .ok('Should be back on Free plan');
 });
 
@@ -388,7 +388,7 @@ test('As a user, I can subscribe using a 3DS payment method and then cancel my s
   } = OrganizationSubscriptionSettingsPage;
 
   await t
-    .expect(queryByText('Insight Free').visible)
+    .expect(queryByText('Rebrowse Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
     .switchToIframe(checkoutForm.iframe.with({ timeout: 15000 }))
@@ -409,9 +409,9 @@ test('As a user, I can subscribe using a 3DS payment method and then cancel my s
       planUpgradedToBusinessPropagationMessage.with({ timeout: 15000 }).visible
     )
     .ok('Subscription should be created')
-    .expect(queryByText('Insight Business').with({ timeout: 15000 }).visible)
+    .expect(queryByText('Rebrowse Business').with({ timeout: 15000 }).visible)
     .ok('Plan should be upgraded')
-    .click(queryByText('Insight Business subscription'));
+    .click(queryByText('Rebrowse Business subscription'));
 
   /* Subscription details page */
   await t
@@ -445,7 +445,7 @@ test('As a user, I can subscribe using a 3DS payment method and then cancel my s
   await t.eval(() => location.reload());
 
   await t
-    .expect(queryByText('Insight Free').visible)
+    .expect(queryByText('Rebrowse Free').visible)
     .ok('Should be back on Free plan');
 });
 
@@ -465,7 +465,7 @@ test('As a user, I can recover and subscribe after failing to authenticate 3DS p
   } = OrganizationSubscriptionSettingsPage;
 
   await t
-    .expect(queryByText('Insight Free').visible)
+    .expect(queryByText('Rebrowse Free').visible)
     .ok('Should have free plan by default')
     .click(upgradeButton)
     .switchToIframe(checkoutForm.iframe.with({ timeout: 15000 }))

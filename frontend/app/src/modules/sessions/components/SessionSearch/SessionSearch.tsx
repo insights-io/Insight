@@ -4,7 +4,7 @@ import { Filter } from 'baseui/icon';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
 import { createBorderRadius } from 'shared/styles/input';
-import { Flex } from '@insight/elements';
+import { Flex } from '@rebrowse/elements';
 
 import DateSearch from './DateSearch';
 import SessionFilters from './SessionFilters';

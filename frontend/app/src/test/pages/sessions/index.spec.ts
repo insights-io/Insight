@@ -2,8 +2,8 @@ import { authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/sessions';
 import { AuthApi, SessionApi } from 'api';
 import { INSIGHT_ADMIN_DTO, INSIGHT_SESSIONS_DTOS } from 'test/data';
-import { sandbox } from '@insight/testing';
-import { mockServerSideRequest } from '@insight/next-testing';
+import { sandbox } from '@rebrowse/testing';
+import { mockServerSideRequest } from '@rebrowse/next-testing';
 import { responsePromise } from 'test/utils/request';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 

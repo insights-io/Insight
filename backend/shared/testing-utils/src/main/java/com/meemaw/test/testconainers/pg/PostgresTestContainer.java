@@ -1,8 +1,8 @@
 package com.meemaw.test.testconainers.pg;
 
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_ID;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_PASSWORD;
+import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_EMAIL;
+import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_ID;
+import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_PASSWORD;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -108,13 +108,13 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
    * only be executed after V1__auth_api_initial.sql is applied and auth.user table exists.
    */
   private void createTestUserPassword() {
-    System.out.printf("[TEST-SETUP]: Creating test password for \"%s\"%n", INSIGHT_ADMIN_EMAIL);
+    System.out.printf("[TEST-SETUP]: Creating test password for \"%s\"%n", GENESIS_ADMIN_EMAIL);
 
     Query query =
         SQLContext.POSTGRES
             .insertInto(table("auth.password"))
             .columns(field("user_id", UUID.class), field("hash", String.class))
-            .values(INSIGHT_ADMIN_ID, BCrypt.hashpw(INSIGHT_ADMIN_PASSWORD, BCrypt.gensalt(4)));
+            .values(GENESIS_ADMIN_ID, BCrypt.hashpw(GENESIS_ADMIN_PASSWORD, BCrypt.gensalt(4)));
 
     client()
         .preparedQuery(query.getSQL(ParamType.NAMED))

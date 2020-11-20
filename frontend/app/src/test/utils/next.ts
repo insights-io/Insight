@@ -1,7 +1,7 @@
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { GetServerSideProps } from 'next';
 import { AuthApi } from 'api';
-import { mockServerSideRequest } from '@insight/next-testing';
+import { mockServerSideRequest } from '@rebrowse/next-testing';
 
 // eslint-disable-next-line jest/no-export
 export function authenticatedTestCases<T>(

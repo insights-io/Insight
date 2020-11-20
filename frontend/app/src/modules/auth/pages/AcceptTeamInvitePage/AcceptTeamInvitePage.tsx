@@ -5,12 +5,12 @@ import type {
   TeamInvite,
   AcceptTeamInviteDTO,
   APIErrorDataResponse,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { capitalize } from 'modules/billing/utils';
 import { useForm } from 'react-hook-form';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
-import { Button, Input } from '@insight/elements';
+import { Button, Input } from '@rebrowse/elements';
 import FormError from 'shared/components/FormError';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';

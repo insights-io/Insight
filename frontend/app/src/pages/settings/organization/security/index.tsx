@@ -9,7 +9,7 @@ import type {
   APIErrorDataResponse,
   OrganizationDTO,
   OrganizationPasswordPolicyDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
 

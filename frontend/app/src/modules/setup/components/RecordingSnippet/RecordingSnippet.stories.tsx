@@ -1,18 +1,19 @@
 import React from 'react';
 import type { Meta } from '@storybook/react';
 
-import { RecordingSnippet } from './RecordingSnippet';
+import { RecordingSnippet, Props } from './RecordingSnippet';
 
 export default {
   title: 'setup/components/RecordingSnippet',
   component: RecordingSnippet,
 } as Meta;
 
-export const Base = () => {
+export const Base = (props?: Partial<Props>) => {
   return (
     <RecordingSnippet
-      snipetURI="https://static.rebrowse.dev/b/insight.js"
+      snippetUri="https://static.rebrowse.dev/b/insight.js"
       organizationId="FE2Dj3"
+      {...props}
     />
   );
 };

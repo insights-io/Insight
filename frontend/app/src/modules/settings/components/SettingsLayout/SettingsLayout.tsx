@@ -1,6 +1,6 @@
 import { Block } from 'baseui/block';
 import React, { useState } from 'react';
-import { Flex, FlexColumn } from '@insight/elements';
+import { Flex, FlexColumn } from '@rebrowse/elements';
 import { SidebarMenu } from 'modules/settings/components/SidebarMenu';
 import { TopbarMenu } from 'modules/settings/components/TopbarMenu';
 import { H1 } from 'baseui/typography';

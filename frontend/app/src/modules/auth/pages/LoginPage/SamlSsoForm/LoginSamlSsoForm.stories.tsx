@@ -1,4 +1,4 @@
-import { configureStory } from '@insight/storybook';
+import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api';
 import React from 'react';
 import { ACCOUNT_SETTINGS_PAGE } from 'shared/constants/routes';

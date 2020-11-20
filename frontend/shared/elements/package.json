@@ -1,5 +1,5 @@
 {
-  "name": "@insight/elements",
+  "name": "@rebrowse/elements",
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
@@ -9,7 +9,7 @@
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
-  "author": "Insight Engineering",
+  "author": "Rebrowse Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
@@ -30,12 +30,12 @@
     "prettier:fix": "prettier -l 'src/**/*' --write",
     "storybook": "start-storybook",
     "storybook:build": "build-storybook",
-    "pretest": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/testing build\" \"yarn workspace @insight/storybook build\""
+    "pretest": "yarn workspace @rebrowse/types build && concurrently \"yarn workspace @rebrowse/testing build\" \"yarn workspace @rebrowse/storybook build\""
   },
   "dependencies": {},
   "devDependencies": {
-    "@insight/testing": "0.0.0-development",
-    "@insight/storybook": "0.0.0-development",
+    "@rebrowse/testing": "0.0.0-development",
+    "@rebrowse/storybook": "0.0.0-development",
     "baseui": "9.105.0",
     "react-hook-form": "6.11.2",
     "styletron-react": "5.2.7"

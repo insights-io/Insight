@@ -1,0 +1,11 @@
+---
+environments:
+  default:
+    missingFileHandler: Error
+    values:
+      - ../bases/defaults.yaml
+  staging:
+    missingFileHandler: Error
+    values:
+      - ../bases/defaults.yaml
+      - ../bases/staging.yaml

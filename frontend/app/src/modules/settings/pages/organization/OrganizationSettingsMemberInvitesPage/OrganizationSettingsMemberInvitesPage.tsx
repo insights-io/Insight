@@ -1,5 +1,5 @@
 import React from 'react';
-import type { OrganizationDTO, TeamInviteDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, TeamInviteDTO, UserDTO } from '@rebrowse/types';
 import { OrganizationMembersLayout } from 'modules/settings/components/organization/OrganizationMembersLayout';
 import { TeamInvites } from 'modules/settings/components/organization/TeamInvites';
 

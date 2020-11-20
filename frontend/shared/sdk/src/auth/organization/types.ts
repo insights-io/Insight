@@ -1,4 +1,4 @@
-import type { QueryParam, SearchBean } from '@insight/types';
+import type { QueryParam, SearchBean } from '@rebrowse/types';
 import type { RequestOptions } from 'core';
 
 export type MemberSearchBean = SearchBean & {

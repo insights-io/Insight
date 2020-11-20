@@ -1,9 +1,9 @@
 package com.meemaw.auth.user.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_EMAIL;
-import static com.meemaw.test.setup.AuthApiTestProvider.INSIGHT_ADMIN_ID;
+import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_EMAIL;
+import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_ID;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -113,7 +113,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void phone_number_verify__should_throw__when_no_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     given()
         .when()
@@ -141,7 +141,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void phone_number_verify__should_throw__when_empty_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     given()
         .when()
@@ -279,7 +279,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
   @ParameterizedTest
   @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
   public void update_user__should_throw__when_no_body(String path) {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -307,7 +307,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
   @ParameterizedTest
   @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
   public void update_user__should_throw__when_empty_body(String path) {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -338,7 +338,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
   @ValueSource(strings = {UserResource.PATH, USER_ID_PATH})
   public void update_user__should_throw__when_invalid_body(String path)
       throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -367,7 +367,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void update_user__should_work__when_valid_body() throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     PhoneNumber updatedPhoneNumber = new PhoneNumberDTO("+386", "51222333");
     DataResponse<UserDTO> updateUserDataResponse =
@@ -441,7 +441,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void me__should_return_current_user__when_authorized() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     DataResponse<UserDTO> dataResponse =
         given()
             .when()
@@ -452,9 +452,9 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .extract()
             .as(new TypeRef<>() {});
 
-    assertEquals(INSIGHT_ADMIN_ID, dataResponse.getData().getId());
-    assertEquals(INSIGHT_ADMIN_EMAIL, dataResponse.getData().getEmail());
-    assertEquals(INSIGHT_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
+    assertEquals(GENESIS_ADMIN_ID, dataResponse.getData().getId());
+    assertEquals(GENESIS_ADMIN_EMAIL, dataResponse.getData().getEmail());
+    assertEquals(GENESIS_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
 
     String authToken = authApi().createApiKey(sessionId);
     dataResponse =
@@ -467,9 +467,9 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .extract()
             .as(new TypeRef<>() {});
 
-    assertEquals(INSIGHT_ADMIN_ID, dataResponse.getData().getId());
-    assertEquals(INSIGHT_ADMIN_EMAIL, dataResponse.getData().getEmail());
-    assertEquals(INSIGHT_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
+    assertEquals(GENESIS_ADMIN_ID, dataResponse.getData().getId());
+    assertEquals(GENESIS_ADMIN_EMAIL, dataResponse.getData().getEmail());
+    assertEquals(GENESIS_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
   }
 
   @Test
@@ -482,7 +482,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void get_user__should_throw__when_unauthorized_to_access_different_user()
       throws JsonProcessingException {
-    String getDifferentUserPath = UserResource.PATH + "/" + INSIGHT_ADMIN_ID;
+    String getDifferentUserPath = UserResource.PATH + "/" + GENESIS_ADMIN_ID;
 
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     given()

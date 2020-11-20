@@ -30,7 +30,7 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(14)
+            languageVersion = JavaLanguageVersion.of(15)
         }
     }
 
@@ -45,6 +45,10 @@ subprojects {
 
     dependencies {
         implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    }
+
+    jacoco {
+        toolVersion = "0.8.6"
     }
 
     jacocoTestReport {

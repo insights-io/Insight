@@ -1,7 +1,7 @@
-import { Session, SessionDTO, UserAgentDTO, TfaMethod } from '@insight/types';
+import { Session, SessionDTO, UserAgentDTO, TfaMethod } from '@rebrowse/types';
 import { v4 as uuid } from 'uuid';
 import { subSeconds, subDays, subMonths } from 'date-fns';
-import { mapSession } from '@insight/sdk';
+import { mapSession } from '@rebrowse/sdk';
 
 import { INSIGHT_ADMIN } from './user';
 

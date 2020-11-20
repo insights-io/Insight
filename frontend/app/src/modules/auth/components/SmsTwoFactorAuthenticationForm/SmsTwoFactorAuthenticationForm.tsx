@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import type { PhoneNumber, TfaSetupDTO } from '@insight/types';
+import type { PhoneNumber, TfaSetupDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
-import { Button } from '@insight/elements';
+import { Button } from '@rebrowse/elements';
 import { Block } from 'baseui/block';
 import { SetPhoneNumberForm } from 'modules/auth/components/SetPhoneNumberForm';
 import FormError from 'shared/components/FormError';

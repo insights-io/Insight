@@ -1,6 +1,6 @@
 import React from 'react';
 import { FETCH_EVENTS } from 'test/data';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 
 import NetworkTab from './NetworkTab';
 

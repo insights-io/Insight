@@ -1,7 +1,7 @@
 import React from 'react';
 import { Block } from 'baseui/block';
 import { Table } from 'baseui/table';
-import type { Organization } from '@insight/types';
+import type { Organization } from '@rebrowse/types';
 
 type Props = {
   organization: Organization;

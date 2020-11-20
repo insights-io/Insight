@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, PhoneNumberInput } from '@insight/elements';
+import { Button, PhoneNumberInput } from '@rebrowse/elements';
 import { useForm } from 'react-hook-form';
 import FormError from 'shared/components/FormError';
 import type {
@@ -7,7 +7,7 @@ import type {
   APIErrorDataResponse,
   PhoneNumber,
   UserDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import { getCountryFromPhoneNumber } from './utils';
 

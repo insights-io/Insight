@@ -1,4 +1,4 @@
-import { LocationDTO } from '@insight/types';
+import { LocationDTO } from '@rebrowse/types';
 
 export const readableLocation = (location: LocationDTO) => {
   const locationSegments = [];

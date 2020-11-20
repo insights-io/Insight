@@ -141,7 +141,7 @@ public class SessionResourceValidationTest extends ExternalAuthApiProvidedTest {
         .queryParam(GROUP_BY_PARAM, "another")
         .queryParam(SORT_BY_PARAM, "hehe")
         .queryParam(LIMIT_PARAM, "not_string")
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .get(SessionResource.PATH)
         .then()
         .statusCode(400)

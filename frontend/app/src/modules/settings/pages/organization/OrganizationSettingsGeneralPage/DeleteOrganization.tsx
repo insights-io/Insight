@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@insight/elements';
+import { Button } from '@rebrowse/elements';
 import { useStyletron } from 'baseui';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { AuthApi } from 'api';

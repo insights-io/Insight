@@ -65,7 +65,7 @@ class Verification extends AbstractPage {
       .expect(this.tabs.sms.sendCodeSuccessMessage.visible)
       .ok('Sucessfuly sent message');
 
-    const smsPattern = /.*\[Insight\] Verification code: (.*).*$/;
+    const smsPattern = /.*\[Rebrowse\] Verification code: (.*).*$/;
     const verificationCode = findPatternInDockerLogs(smsPattern);
     return this.tfaLogin(t, () => verificationCode);
   };

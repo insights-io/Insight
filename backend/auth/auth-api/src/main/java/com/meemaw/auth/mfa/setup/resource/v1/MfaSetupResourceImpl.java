@@ -6,7 +6,7 @@ import com.meemaw.auth.mfa.model.SsoChallenge;
 import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.mfa.setup.service.MfaSetupService;
 import com.meemaw.auth.mfa.sms.impl.MfaSmsProvider;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.user.datasource.UserMfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
@@ -25,7 +25,7 @@ import javax.ws.rs.core.UriInfo;
 
 public class MfaSetupResourceImpl implements MfaSetupResource {
 
-  @Inject InsightPrincipal principal;
+  @Inject AuthPrincipal principal;
   @Inject MfaSetupService mfaSetupService;
   @Inject UserMfaDatasource userMfaDatasource;
   @Inject MfaSmsProvider smsProvider;

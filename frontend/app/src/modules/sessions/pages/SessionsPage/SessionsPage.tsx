@@ -3,7 +3,7 @@ import { AppLayout } from 'modules/app/components/AppLayout';
 import { useStyletron } from 'baseui';
 import { RecordingSnippet } from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
-import type { OrganizationDTO, SessionDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, SessionDTO, UserDTO } from '@rebrowse/types';
 import { SessionList } from 'modules/sessions/components/SessionList';
 import { SessionSearch } from 'modules/sessions/components/SessionSearch';
 import { Block } from 'baseui/block';
@@ -83,7 +83,7 @@ export const SessionsPage = ({
         user && (
           <RecordingSnippet
             organizationId={user.organizationId}
-            snipetURI={BOOTSTRAP_SCRIPT_URI}
+            snippetUri={BOOTSTRAP_SCRIPT_URI}
           />
         )
       )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CodeInput } from '@insight/elements';
+import { CodeInput } from '@rebrowse/elements';
 
 import { TfaInputMethodProps } from '../types';
 

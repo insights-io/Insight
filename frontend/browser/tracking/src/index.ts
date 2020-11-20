@@ -9,7 +9,7 @@ import {
 } from 'event';
 import { logger } from 'logger';
 import Backend from 'backend';
-import { CreatePageResponse, EventType } from '@insight/types';
+import { CreatePageResponse, EventType } from '@rebrowse/types';
 import Identity from 'identity';
 import { MILLIS_IN_SECOND } from 'time';
 import type { InsightWindow, Enqueue } from 'types';

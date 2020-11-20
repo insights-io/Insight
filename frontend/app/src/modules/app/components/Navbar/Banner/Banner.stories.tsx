@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStory, fullHeightDecorator } from '@insight/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { INSIGHT_ADMIN, NAMELESS_INSIGHT_ADMIN } from 'test/data';

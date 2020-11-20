@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStory, fullHeightDecorator } from '@insight/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { SessionApi } from 'api';
 import { CONSOLE_EVENTS, ERROR_EVENTS, FETCH_EVENTS } from 'test/data';
 import noop from 'lodash/noop';

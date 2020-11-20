@@ -1,9 +1,9 @@
 import React from 'react';
 import { Block } from 'baseui/block';
-import type { AvatarDTO, User } from '@insight/types';
+import type { AvatarDTO, User } from '@rebrowse/types';
 import Link from 'next/link';
 import { ACCOUNT_SETTINGS_DETAILS_PAGE } from 'shared/constants/routes';
-import { UnstyledLink } from '@insight/elements';
+import { UnstyledLink } from '@rebrowse/elements';
 
 import { OrganizationAvatar } from '../../OrganizationAvatar';
 import { UserAvatar } from '../../OrganizationAvatar/OrganizationAvatar';

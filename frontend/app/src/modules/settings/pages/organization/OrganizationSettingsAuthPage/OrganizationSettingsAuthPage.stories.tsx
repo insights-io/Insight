@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStory, fullHeightDecorator } from '@insight/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
 import { INSIGHT_ADMIN_DTO, SSO_SAML_SETUP_DTO } from 'test/data';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
@@ -8,7 +8,7 @@ import {
   SamlConfigurationDTO,
   SamlSsoMethod,
   SsoSetupDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import { OrganizationSettingsAuthPage } from './OrganizationSettingsAuthPage';
 

@@ -7,11 +7,11 @@ import {
   useReducer,
   Reducer,
 } from 'react';
-import { Session, SessionDTO } from '@insight/types';
-import { mapSession } from '@insight/sdk';
+import { Session, SessionDTO } from '@rebrowse/types';
+import { mapSession } from '@rebrowse/sdk';
 import debounce from 'lodash/debounce';
 import { UnreachableCaseError } from 'shared/utils/error';
-import { SessionSearchBean } from '@insight/sdk/dist/sessions';
+import { SessionSearchBean } from '@rebrowse/sdk/dist/sessions';
 import { DateRange } from 'modules/sessions/components/SessionSearch/utils';
 import { SessionFilter } from 'modules/sessions/components/SessionSearch/SessionFilters/utils';
 

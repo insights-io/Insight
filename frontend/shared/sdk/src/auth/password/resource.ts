@@ -1,4 +1,4 @@
-import { ChangePasswordDTO, DataResponse } from '@insight/types';
+import { ChangePasswordDTO, DataResponse } from '@rebrowse/types';
 import ky from 'ky-universal';
 
 import { withCredentials } from '../../core';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { createRenderer } from '@insight/next-testing';
+import { createRenderer } from '@rebrowse/next-testing';
 import { AppProviders, Props } from 'shared/containers/AppProviders';
 import { createQueryCache } from 'shared/utils/cache';
 

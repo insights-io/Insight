@@ -1,4 +1,4 @@
-import { APIError, APIErrorDataResponse } from '@insight/types';
+import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
@@ -6,7 +6,7 @@ import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
 import React, { useState, useMemo } from 'react';
 import FormError from 'shared/components/FormError';
 import { locationAssign } from 'shared/utils/window';
-import { Input, Button } from '@insight/elements';
+import { Input, Button } from '@rebrowse/elements';
 
 import { ssoIntegrationHrefBuilder } from '../utils';
 

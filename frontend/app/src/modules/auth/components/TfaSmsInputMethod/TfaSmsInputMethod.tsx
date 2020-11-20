@@ -1,8 +1,8 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import type { CodeValidityDTO } from '@insight/types';
+import type { CodeValidityDTO } from '@rebrowse/types';
 import { Block } from 'baseui/block';
 import { toaster } from 'baseui/toast';
-import { Flex, CodeInput, FlexColumn, Button } from '@insight/elements';
+import { Flex, CodeInput, FlexColumn, Button } from '@rebrowse/elements';
 
 import { TfaInputMethodProps } from '../types';
 

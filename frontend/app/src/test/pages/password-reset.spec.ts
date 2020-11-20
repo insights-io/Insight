@@ -1,7 +1,7 @@
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getServerSideProps } from 'pages/password-reset/index';
-import { mockServerSideRequest } from '@insight/next-testing';
+import { mockServerSideRequest } from '@rebrowse/next-testing';
 
 describe('pages/password-reset', () => {
   it('Injects correct server side data', async () => {

@@ -1,6 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.shared.context.RequestUtils;
@@ -19,13 +19,13 @@ import javax.ws.rs.core.UriInfo;
 
 public class InsightsResourceImpl implements InsightsResource {
 
-  @Inject InsightPrincipal insightPrincipal;
+  @Inject AuthPrincipal authPrincipal;
   @Inject SessionDatasource sessionDatasource;
   @Context UriInfo uriInfo;
 
   @Override
   public CompletionStage<Response> count() {
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
     SearchDTO search =
         SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS)
             .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
@@ -46,7 +46,7 @@ public class InsightsResourceImpl implements InsightsResource {
       return CompletableFuture.completedStage(Boom.badRequest().errors(errors).response());
     }
 
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
     Map<String, List<String>> params = RequestUtils.map(uriInfo.getQueryParameters());
     params.remove(ON);
     SearchDTO search = SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS).rhsColon(params);

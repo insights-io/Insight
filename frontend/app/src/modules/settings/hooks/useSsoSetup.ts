@@ -1,5 +1,5 @@
-import { mapSsoSetup } from '@insight/sdk';
-import { SsoSetupDTO } from '@insight/types';
+import { mapSsoSetup } from '@rebrowse/sdk';
+import { SsoSetupDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useCallback, useMemo } from 'react';
 import useSWRQuery from 'shared/hooks/useSWRQuery';

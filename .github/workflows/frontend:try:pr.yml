@@ -35,8 +35,8 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/try pretest
-          yarn workspace @insight/try storybook:build
+          yarn workspace @rebrowse/try pretest
+          yarn workspace @rebrowse/try storybook:build
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete

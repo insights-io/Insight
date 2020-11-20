@@ -7,7 +7,7 @@ import {
 import { OrganizationSettingsAuthPage } from 'modules/settings/pages/organization/OrganizationSettingsAuthPage';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
-import type { SsoSetupDTO } from '@insight/types';
+import type { SsoSetupDTO } from '@rebrowse/types';
 
 type Props = AuthenticatedServerSideProps & {
   maybeSsoSetup?: SsoSetupDTO;

@@ -1,0 +1,11 @@
+---
+ingressAnnotations:
+  cert-manager.io/cluster-issuer: letsencrypt
+  kubernetes.io/ingress.class: nginx
+
+ingressAnnotationsInternal:
+  cert-manager.io/cluster-issuer: letsencrypt
+  kubernetes.io/ingress.class: nginx
+  nginx.ingress.kubernetes.io/auth-url: 'https://auth.rebrowse.dev/oauth2/auth'
+  nginx.ingress.kubernetes.io/auth-signin: 'https://auth.rebrowse.dev/oauth2/start?rd=$escaped_request_uri'
+  nginx.ingress.kubernetes.io/auth-response-headers: 'X-Auth-Request-User,X-Auth-Request-Email'

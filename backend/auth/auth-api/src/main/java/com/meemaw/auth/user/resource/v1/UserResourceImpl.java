@@ -3,7 +3,7 @@ package com.meemaw.auth.user.resource.v1;
 import com.meemaw.auth.mfa.dto.MfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.mfa.sms.impl.MfaSmsProvider;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
 import com.meemaw.auth.user.model.AuthUser;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserResourceImpl implements UserResource {
 
-  @Inject InsightPrincipal principal;
+  @Inject AuthPrincipal principal;
   @Inject UserService userService;
   @Inject UserPhoneCodeService userPhoneCodeService;
 

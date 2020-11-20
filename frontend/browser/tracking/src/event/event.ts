@@ -1,5 +1,5 @@
 import { isHtmlElement, encodeTarget } from 'dom';
-import { EventType } from '@insight/types';
+import { EventType } from '@rebrowse/types';
 
 export type BrowserEventArgument = string | number | null;
 export type BrowserEventArguments = BrowserEventArgument[];

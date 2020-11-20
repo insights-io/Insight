@@ -41,7 +41,7 @@ describe('bootstrap', () => {
 
     expect(windowResult).toEqual({
       debug: false,
-      host: 'insight.com',
+      host: 'rebrowse.dev',
       namespace: 'IS',
       org: '<ORG>',
     });

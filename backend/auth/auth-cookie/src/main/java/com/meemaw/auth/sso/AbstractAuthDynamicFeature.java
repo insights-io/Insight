@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso;
 
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.logging.LoggingConstants;
 import io.opentracing.Span;
@@ -17,7 +17,7 @@ public abstract class AbstractAuthDynamicFeature<
         T extends Annotation, F extends ContainerRequestFilter>
     implements DynamicFeature {
 
-  @Inject protected InsightPrincipal principal;
+  @Inject protected AuthPrincipal principal;
   @Inject protected Tracer tracer;
 
   public abstract Class<T> getAnnotation();

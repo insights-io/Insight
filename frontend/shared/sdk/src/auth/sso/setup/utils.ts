@@ -1,4 +1,4 @@
-import type { SsoSetup, SsoSetupDTO } from '@insight/types';
+import type { SsoSetup, SsoSetupDTO } from '@rebrowse/types';
 
 export const mapSsoSetup = (ssoSetup: SsoSetupDTO | SsoSetup): SsoSetup => {
   return {

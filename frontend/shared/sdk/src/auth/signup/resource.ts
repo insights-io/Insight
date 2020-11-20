@@ -1,5 +1,5 @@
 import ky from 'ky-universal';
-import type { DataResponse, SignUpRequestDTO } from '@insight/types';
+import type { DataResponse, SignUpRequestDTO } from '@rebrowse/types';
 
 import type { RequestOptions } from '../../core/types';
 

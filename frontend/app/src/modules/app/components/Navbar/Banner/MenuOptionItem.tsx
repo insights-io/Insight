@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { StyledListItem } from 'baseui/menu';
 import Link from 'next/link';
-import { UnstyledLink } from '@insight/elements';
+import { UnstyledLink } from '@rebrowse/elements';
 
 type Item = {
   label: string;

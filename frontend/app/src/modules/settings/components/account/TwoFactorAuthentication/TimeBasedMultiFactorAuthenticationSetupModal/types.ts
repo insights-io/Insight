@@ -1,4 +1,4 @@
-import { TfaSetupDTO } from '@insight/types';
+import { TfaSetupDTO } from '@rebrowse/types';
 
 export type Props = {
   isOpen: boolean;

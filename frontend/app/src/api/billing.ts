@@ -1,4 +1,4 @@
-import { createBillingClient } from '@insight/sdk';
+import { createBillingClient } from '@rebrowse/sdk';
 
 import { billingApiBaseURL } from './base';
 

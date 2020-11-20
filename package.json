@@ -1,5 +1,5 @@
 {
-  "name": "@insight/frontend",
+  "name": "@rebrowse/frontend",
   "private": true,
   "workspaces": [
     "frontend/**"
@@ -13,11 +13,11 @@
     "test": "lerna run --stream --concurrency 2 --sort test",
     "test:coverage": "yarn test -- -- --coverage",
     "lint": "lerna run --stream --concurrency 2 lint",
-    "frontend:browser:boostrap:build": "yarn workspace @insight/browser-bootstrap build",
-    "frontend:browser:tracking:build": "yarn workspace @insight/browser-tracking build:with-deps",
-    "frontend:homepage:build": "yarn workspace @insight/homepage build",
-    "frontend:app:build": "yarn workspace @insight/app build",
-    "frontend:try:build": "yarn workspace @insight/try build"
+    "frontend:browser:boostrap:build": "yarn workspace @rebrowse/browser-bootstrap build",
+    "frontend:browser:tracking:build": "yarn workspace @rebrowse/browser-tracking build:with-deps",
+    "frontend:homepage:build": "yarn workspace @rebrowse/homepage build",
+    "frontend:app:build": "yarn workspace @rebrowse/app build",
+    "frontend:try:build": "yarn workspace @rebrowse/try build"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "1.0.20",

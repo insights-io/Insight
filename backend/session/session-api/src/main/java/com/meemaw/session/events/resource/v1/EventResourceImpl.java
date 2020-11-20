@@ -1,6 +1,6 @@
 package com.meemaw.session.events.resource.v1;
 
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.session.events.datasource.EventsTable;
 import com.meemaw.session.events.service.EventsSearchService;
 import com.meemaw.shared.context.RequestUtils;
@@ -16,12 +16,12 @@ import javax.ws.rs.core.UriInfo;
 public class EventResourceImpl implements EventsResource {
 
   @Inject EventsSearchService eventsSearchService;
-  @Inject InsightPrincipal insightPrincipal;
+  @Inject AuthPrincipal authPrincipal;
   @Context UriInfo uriInfo;
 
   @Override
   public CompletionStage<Response> search(UUID sessionId) {
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
     SearchDTO searchDTO =
         SearchDTO.withAllowedFields(EventsTable.QUERYABLE_FIELD)
             .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));

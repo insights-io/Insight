@@ -1,4 +1,4 @@
-import { PageIdentity } from '@insight/types';
+import { PageIdentity } from '@rebrowse/types';
 
 export type InsightIdentity = {
   organizationId: string;

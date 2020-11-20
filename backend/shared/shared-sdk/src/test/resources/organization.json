@@ -1,6 +1,6 @@
 {
   "id": "000000",
-  "name": "Insight",
+  "name": "Google",
   "openMembership": true,
   "enforceMultiFactorAuthentication": false,
   "defaultRole": "member",

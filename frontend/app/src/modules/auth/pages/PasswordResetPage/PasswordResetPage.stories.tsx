@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStory } from '@insight/storybook';
+import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api';
 import type { Meta } from '@storybook/react';
 

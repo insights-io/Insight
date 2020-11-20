@@ -10,8 +10,8 @@ import {
 } from 'shared/theme';
 import useSidebar from 'modules/app/hooks/useSidebar';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
-import { FlexColumn } from '@insight/elements';
-import type { Organization, User } from '@insight/types';
+import { FlexColumn } from '@rebrowse/elements';
+import type { Organization, User } from '@rebrowse/types';
 
 import { Sidebar } from '../Navbar/Sidebar';
 import { NavbarTopbar } from '../Navbar/Topbar';

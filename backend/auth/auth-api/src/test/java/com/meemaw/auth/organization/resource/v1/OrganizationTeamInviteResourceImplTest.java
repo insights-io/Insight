@@ -101,7 +101,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
   @Test
   public void invite__should_fail__when_no_payload() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
 
     given()
         .when()
@@ -129,7 +129,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
   @Test
   public void invite__should_fail__when_empty_payload() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -161,7 +161,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     String payload =
         Files.readString(Path.of(getClass().getResource("/org/invite/invalidRole.json").toURI()));
 
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -193,7 +193,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     String payload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO("notEmail", UserRole.ADMIN));
 
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -277,7 +277,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     List<Mail> sent = mailbox.getMessagesSentTo(email);
     assertEquals(1, sent.size());
     Mail actual = sent.get(0);
-    assertEquals("Insight Support <support@insight.com>", actual.getFrom());
+    assertEquals("Rebrowse Support <support@rebrowse.dev>", actual.getFrom());
 
     UUID token = UUID.fromString(EmailTestUtils.parseConfirmationToken(actual));
 
@@ -436,7 +436,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
   @Test
   public void delete_invite__should_fail__when_invalid_token_param() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -463,13 +463,15 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     UserData userData = authApi().retrieveUserData(sessionId);
-    String invitedUserEmail = "send-invite-flow@gmail.com";
+    String invitedUserEmail = String.format("%s@gmail.com", UUID.randomUUID());
     String invitePayload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
 
+    String referer = "https://www.rebrowse.dev";
+
     // Invite the user
     given()
-        .header("referer", "https://www.insight.io")
+        .header("referer", referer)
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -486,12 +488,12 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     String acceptInviteUrl = EmailTestUtils.parseLink(teamInviteEmail);
     String token = EmailTestUtils.parseConfirmationToken(acceptInviteUrl);
 
-    assertEquals(acceptInviteUrl, "https://www.insight.io/accept-invite?token=" + token);
+    assertEquals(acceptInviteUrl, referer + "/accept-invite?token=" + token);
 
     // resend the invite email
     DataResponse<TeamInviteDTO> dataResponse =
         given()
-            .header("referer", "https://www.insight.io")
+            .header("referer", referer)
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -510,7 +512,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
     assertEquals(2, mailbox.getMessagesSentTo(invitedUserEmail).size());
     acceptInviteUrl = Jsoup.parse(sent.get(1).getHtml()).select("a").attr("href");
-    assertEquals(acceptInviteUrl, "https://www.insight.io/accept-invite?token=" + token);
+    assertEquals(acceptInviteUrl, referer + "/accept-invite?token=" + token);
   }
 
   @Test

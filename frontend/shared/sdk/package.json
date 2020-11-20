@@ -1,5 +1,5 @@
 {
-  "name": "@insight/sdk",
+  "name": "@rebrowse/sdk",
   "version": "0.0.0-development",
   "private": true,
   "source": "src/index.ts",
@@ -9,7 +9,7 @@
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
-  "author": "Insight Engineering",
+  "author": "Rebrowse Engineering",
   "license": "MIT",
   "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
@@ -29,7 +29,7 @@
     "prettier:fix": "prettier -l 'src/**/*' --write"
   },
   "devDependencies": {
-    "@insight/types": "0.0.0-development"
+    "@rebrowse/types": "0.0.0-development"
   },
   "dependencies": {
     "ky": "0.24.0",

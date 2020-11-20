@@ -1,5 +1,5 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { GROUP_BY_COUNTRY } from 'test/data/sessions';
 
 import CountByCountry from './CountByCountry';

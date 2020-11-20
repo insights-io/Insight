@@ -7,7 +7,7 @@ import {
 import { OrganizationSettingsBillingUsageAndPaymentsPage } from 'modules/settings/pages/organization/OrganizationSettingsBillingUsageAndPaymentsPage';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { BillingApi } from 'api';
-import type { InvoiceDTO } from '@insight/types';
+import type { InvoiceDTO } from '@rebrowse/types';
 
 type Props = AuthenticatedServerSideProps & {
   invoices: InvoiceDTO[];

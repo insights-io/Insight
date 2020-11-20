@@ -11,7 +11,7 @@ const SignupConfirm = () => {
   return (
     <Block display="flex" flexDirection="column" height="100%">
       <Head>
-        <title>Insight | Confirm your email address</title>
+        <title>Rebrowse | Confirm your email address</title>
       </Head>
       <Topbar appBaseURL={appBaseURL} helpBaseURL={helpBaseURL} />
       <Block

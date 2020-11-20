@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStory } from '@insight/storybook';
+import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import { INSIGHT_ADMIN, TFA_SETUP_QR_IMAGE } from 'test/data';
 import { SWRConfig } from 'swr';

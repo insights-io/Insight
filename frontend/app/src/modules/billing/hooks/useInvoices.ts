@@ -1,8 +1,8 @@
 import { BillingApi } from 'api';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
 import { useMemo } from 'react';
-import { mapInvoice } from '@insight/sdk';
-import type { InvoiceDTO } from '@insight/types';
+import { mapInvoice } from '@rebrowse/sdk';
+import type { InvoiceDTO } from '@rebrowse/types';
 
 const CACHE_KEY = 'BillingApi.invoices.list';
 

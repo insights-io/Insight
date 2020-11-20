@@ -1,11 +1,11 @@
-import { mapPasswordPolicy } from '@insight/sdk';
+import { mapPasswordPolicy } from '@rebrowse/sdk';
 import { AuthApi } from 'api';
 import { useCallback, useMemo } from 'react';
 import type {
   OrganizationPasswordPolicyDTO,
   PasswordPolicyCreateParams,
   PasswordPolicyUpdateParams,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import useSWRQuery from './useSWRQuery';
 

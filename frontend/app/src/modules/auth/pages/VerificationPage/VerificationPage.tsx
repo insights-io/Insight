@@ -10,8 +10,8 @@ import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { TfaTotpInputMethod } from 'modules/auth/components/TfaTotpInputMethod';
 import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
-import type { TfaMethod } from '@insight/types';
-import { Button } from '@insight/elements';
+import type { TfaMethod } from '@rebrowse/types';
+import { Button } from '@rebrowse/elements';
 
 type Props = {
   methods: TfaMethod[];

@@ -3,7 +3,7 @@ import type {
   AppProps,
   BaseRouter,
 } from 'next/dist/next-server/lib/router/router';
-import type { StoryConfiguration } from '@insight/storybook';
+import type { StoryConfiguration } from '@rebrowse/storybook';
 
 export type NextApp = ComponentType<AppProps>;
 

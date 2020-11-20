@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Block } from 'baseui/block';
 import { Table } from 'baseui/table';
-import type { PhoneNumber, User, UserDTO } from '@insight/types';
+import type { PhoneNumber, User, UserDTO } from '@rebrowse/types';
 import { useStyletron } from 'baseui';
 import { SHAPE, SIZE } from 'baseui/button';
 import { FaCogs } from 'react-icons/fa';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import { Button, VerticalAligned } from '@insight/elements';
+import { Button, VerticalAligned } from '@rebrowse/elements';
 import { ConfigurePhoneNumberModal } from 'modules/settings/components/account/ConfigurePhoneNumberModal';
 
 type Props = {

@@ -1,4 +1,4 @@
-import { createAuthClient } from '@insight/sdk';
+import { createAuthClient } from '@rebrowse/sdk';
 
 import { authApiBaseURL } from './base';
 

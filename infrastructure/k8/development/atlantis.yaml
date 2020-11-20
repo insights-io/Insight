@@ -7,6 +7,10 @@ vcsSecretName: atlantis-vcs
 awsSecretName: atlantis-aws
 
 environmentSecrets:
+  - name: ATLANTIS_GH_WEBHOOK_SECRET
+    secretKeyRef:
+      name: github-webhook-secrets
+      key: runatlantis
   - name: STRIPE_API_TOKEN
     secretKeyRef:
       name: stripe-credentials

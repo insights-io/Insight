@@ -12,7 +12,7 @@ import { Provider as StyletronProvider } from 'styletron-react';
 import { styletron } from 'shared/styles/styletron';
 import ky from 'ky-universal';
 import { Server, Sheet } from 'styletron-engine-atomic';
-import { STYLETRON_HYDRATE_CLASSNAME } from '@insight/elements';
+import { STYLETRON_HYDRATE_CLASSNAME } from '@rebrowse/elements';
 
 type Props = {
   stylesheets: Sheet[];

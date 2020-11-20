@@ -1,10 +1,10 @@
-import { mapOrganization, mapTeamInvite } from '@insight/sdk';
+import { mapOrganization, mapTeamInvite } from '@rebrowse/sdk';
 import { addDays, subDays } from 'date-fns';
 import type {
   Organization,
   OrganizationDTO,
   TeamInviteDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 export const INSIGHT_ORGANIZATION_DTO: OrganizationDTO = {
   id: '000000',

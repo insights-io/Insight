@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStory, fullHeightDecorator } from '@insight/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { SessionApi } from 'api';
 import { FETCH_EVENTS } from 'test/data';
 import NetworkTab from 'modules/sessions/containers/NetworkTab';

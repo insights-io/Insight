@@ -1,5 +1,5 @@
 import React from 'react';
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
 

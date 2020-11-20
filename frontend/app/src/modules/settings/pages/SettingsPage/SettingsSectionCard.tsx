@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'baseui/card';
-import { Flex, FlexColumn } from '@insight/elements';
+import { Flex, FlexColumn } from '@rebrowse/elements';
 import Link from 'next/link';
 import { Avatar } from 'baseui/avatar';
 import { Block } from 'baseui/block';

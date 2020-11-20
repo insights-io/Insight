@@ -1,7 +1,7 @@
-import { mapOrganization } from '@insight/sdk';
+import { mapOrganization } from '@rebrowse/sdk';
 import { AuthApi } from 'api';
 import { useCallback, useMemo } from 'react';
-import type { OrganizationDTO } from '@insight/types';
+import type { OrganizationDTO } from '@rebrowse/types';
 
 import useSWRQuery from './useSWRQuery';
 

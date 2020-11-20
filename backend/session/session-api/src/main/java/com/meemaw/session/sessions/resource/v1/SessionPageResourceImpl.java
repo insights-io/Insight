@@ -1,7 +1,7 @@
 package com.meemaw.session.sessions.resource.v1;
 
 import com.meemaw.auth.permissions.AccessManager;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.pages.service.PageService;
@@ -23,7 +23,7 @@ public class SessionPageResourceImpl implements SessionPageResource {
 
   @Context HttpServletRequest request;
   @Context UriInfo uriInfo;
-  @Inject InsightPrincipal principal;
+  @Inject AuthPrincipal principal;
   @Inject PageService pageService;
   @Inject SessionSocketService sessionSocketService;
 
