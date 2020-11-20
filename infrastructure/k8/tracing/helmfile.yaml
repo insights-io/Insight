@@ -1,0 +1,36 @@
+---
+repositories:
+  - name: jaegertracing
+    url: https://jaegertracing.github.io/helm-charts
+
+bases:
+  - ../bases/environments.yaml
+
+---
+releases:
+  - name: jaeger
+    chart: jaegertracing/jaeger
+    namespace: tracing
+    version: 0.39.1
+    values:
+      - jaeger.yaml
+      - storage:
+          elasticsearch:
+            host: "elasticsearch-master.recording"
+{{ if eq .Environment.Name "staging" }}
+      - query:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "tracing.{{ .Values.domain }}"
+                - "www.tracing.{{ .Values.domain }}"
+                secretName: jaeger-tracing-tls
+            hosts:
+              - "tracing.{{ .Values.domain }}"
+              - "www.tracing.{{ .Values.domain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotationsInternal | indent 14 }}
+
+{{ end }}
+
