@@ -18,7 +18,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 15
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: spotbugsMain spotbugsTest --parallel
@@ -49,7 +49,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 15
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: pmdMain pmdTest --parallel --continue
@@ -82,7 +82,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 15
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: spotlessCheck --parallel --continue
@@ -101,7 +101,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 15
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: checkstyleMain checkstyleTest --parallel

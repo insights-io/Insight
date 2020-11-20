@@ -39,7 +39,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 15
       - run: cd backend && ./gradlew  ${{ matrix.api.namespace }}:${{ matrix.api.name }}:quarkusDev &
       - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
       - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml

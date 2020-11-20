@@ -21,7 +21,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 15
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
         with:
