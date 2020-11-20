@@ -21,7 +21,7 @@ jobs:
           java-version: 14
       - uses: eskatos/gradle-command-action@v1
         with:
-          arguments: test --continue jacocoTestReport
+          arguments: test jacocoTestReport
           build-root-directory: backend
           wrapper-directory: backend
         env:
