@@ -14,8 +14,8 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
             contact =
                 @Contact(
                     name = "Support",
-                    url = "mailto:support@rebrowse.io",
-                    email = "support@rebrowse.io")),
+                    url = "mailto:support@rebrowse.dev",
+                    email = "support@rebrowse.dev")),
     servers = @Server(url = App.SERVER))
 public class App extends Application {
 

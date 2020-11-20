@@ -46,7 +46,7 @@ import org.slf4j.MDC;
 public class OrganizationTeamInviteService {
 
   private static final String USER_INVITED_EMAIL_SUBJECT =
-      String.format("You've been invited to %s", SharedConstants.NAME);
+      String.format("You've been invited to %s", SharedConstants.ORGANIZATION_NAME);
 
   @Inject ReactiveMailer mailer;
   @Inject SqlPool sqlPool;

@@ -1,9 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const baseConfig = require('../../jest.config.js');
+import type { Config } from '@jest/types';
 
+import baseConfig from '../../../jest.config';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pack = require('./package');
 
-module.exports = {
+const config: Config.InitialOptions = {
   ...baseConfig,
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   displayName: pack.name,
@@ -13,3 +15,5 @@ module.exports = {
     'ts-jest': { tsconfig: 'tsconfig.jest.json' },
   },
 };
+
+export default config;

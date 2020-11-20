@@ -55,7 +55,7 @@ public class UserPhoneCodeService {
     return smsService.sendMessage(
         "+19704594909",
         phoneNumber.getNumber(),
-        String.format("[%s] Verification code: %d", SharedConstants.NAME, code));
+        String.format("[%s] Verification code: %d", SharedConstants.ORGANIZATION_NAME, code));
   }
 
   public int newCode() {

@@ -1,9 +1,9 @@
 package com.meemaw.auth.user.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_EMAIL;
-import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_ID;
+import static com.meemaw.test.setup.AuthApiTestProvider.REBROWSE_ADMIN_EMAIL;
+import static com.meemaw.test.setup.AuthApiTestProvider.REBROWSE_ADMIN_ID;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -452,9 +452,9 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .extract()
             .as(new TypeRef<>() {});
 
-    assertEquals(GENESIS_ADMIN_ID, dataResponse.getData().getId());
-    assertEquals(GENESIS_ADMIN_EMAIL, dataResponse.getData().getEmail());
-    assertEquals(GENESIS_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
+    assertEquals(REBROWSE_ADMIN_ID, dataResponse.getData().getId());
+    assertEquals(REBROWSE_ADMIN_EMAIL, dataResponse.getData().getEmail());
+    assertEquals(REBROWSE_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
 
     String authToken = authApi().createApiKey(sessionId);
     dataResponse =
@@ -467,9 +467,9 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
             .extract()
             .as(new TypeRef<>() {});
 
-    assertEquals(GENESIS_ADMIN_ID, dataResponse.getData().getId());
-    assertEquals(GENESIS_ADMIN_EMAIL, dataResponse.getData().getEmail());
-    assertEquals(GENESIS_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
+    assertEquals(REBROWSE_ADMIN_ID, dataResponse.getData().getId());
+    assertEquals(REBROWSE_ADMIN_EMAIL, dataResponse.getData().getEmail());
+    assertEquals(REBROWSE_ORGANIZATION_ID, dataResponse.getData().getOrganizationId());
   }
 
   @Test
@@ -482,7 +482,7 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void get_user__should_throw__when_unauthorized_to_access_different_user()
       throws JsonProcessingException {
-    String getDifferentUserPath = UserResource.PATH + "/" + GENESIS_ADMIN_ID;
+    String getDifferentUserPath = UserResource.PATH + "/" + REBROWSE_ADMIN_ID;
 
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     given()

@@ -19,6 +19,7 @@ import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.utils.AuthApiSetupUtils;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -75,9 +76,10 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   public static Response passwordForgot(String email, ObjectMapper objectMapper)
       throws JsonProcessingException {
     String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(email));
+    String referer = String.format("https://www.%s", SharedConstants.REBROWSE_STAGING_DOMAIN);
 
     return given()
-        .header("referer", "https://www.rebrowse.dev")
+        .header("referer", referer)
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
@@ -281,7 +283,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     List<Mail> sent = mailbox.getMessagesSentTo(user.getEmail());
     assertEquals(2, sent.size());
     Mail actual = sent.get(1);
-    assertEquals("Rebrowse Support <support@rebrowse.dev>", actual.getFrom());
+    assertEquals(MailingConstants.FROM_SUPPORT, actual.getFrom());
 
     Document doc = Jsoup.parse(actual.getHtml());
     Elements link = doc.select("a");
@@ -351,7 +353,11 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     tokenMatcher.matches();
     String token = tokenMatcher.group(1);
 
-    assertEquals(passwordForgotLink, "https://www.rebrowse.dev/password-reset?token=" + token);
+    assertEquals(
+        passwordForgotLink,
+        String.format(
+            "https://www.%s/password-reset?token=%s",
+            SharedConstants.REBROWSE_STAGING_DOMAIN, token));
 
     // reset request should exist
     given()

@@ -21,10 +21,12 @@ import javax.ws.rs.core.MediaType;
 
 public class AuthApiTestProvider {
 
-  public static final String GENESIS_ADMIN_EMAIL = "admin@rebrowse.dev";
-  public static final String GENESIS_ADMIN_FULL_NAME = "Admin Admin";
-  public static final String GENESIS_ADMIN_PASSWORD = "superDuperPassword123";
-  public static final UUID GENESIS_ADMIN_ID =
+  public static final String REBROWSE_ADMIN_EMAIL =
+      String.format("admin@%s", SharedConstants.REBROWSE_STAGING_DOMAIN);
+
+  public static final String REBROWSE_ADMIN_FULL_NAME = "Admin Admin";
+  public static final String REBROWSE_ADMIN_PASSWORD = "superDuperPassword123";
+  public static final UUID REBROWSE_ADMIN_ID =
       UUID.fromString("7c071176-d186-40ac-aaf8-ac9779ab047b");
 
   private final String baseUrl;
@@ -50,7 +52,8 @@ public class AuthApiTestProvider {
 
   public SignUpRequestDTO signUpRequestMock(
       String email, String password, PhoneNumberDTO phoneNumber) {
-    return new SignUpRequestDTO(email, password, "Marko Novak", SharedConstants.NAME, phoneNumber);
+    return new SignUpRequestDTO(
+        email, password, "Marko Novak", SharedConstants.ORGANIZATION_NAME, phoneNumber);
   }
 
   public String signUpAndLoginWithRandomBusinessCredentials() throws JsonProcessingException {
@@ -108,7 +111,7 @@ public class AuthApiTestProvider {
   }
 
   public String loginWithAdminUser() {
-    return login(GENESIS_ADMIN_EMAIL, GENESIS_ADMIN_PASSWORD);
+    return login(REBROWSE_ADMIN_EMAIL, REBROWSE_ADMIN_PASSWORD);
   }
 
   public Organization retrieveOrganization(String sessionId) {

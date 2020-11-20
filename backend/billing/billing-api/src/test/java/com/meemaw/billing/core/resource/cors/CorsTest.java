@@ -3,6 +3,7 @@ package com.meemaw.billing.core.resource.cors;
 import static io.restassured.RestAssured.given;
 
 import com.meemaw.billing.subscription.resource.v1.SubscriptionResource;
+import com.meemaw.shared.SharedConstants;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,7 +14,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class CorsTest {
 
   @ParameterizedTest
-  @ValueSource(strings = {"http://localhost:3000", "https://app.rebrowse.dev"})
+  @ValueSource(
+      strings = {"http://localhost:3000", "https://app." + SharedConstants.REBROWSE_STAGING_DOMAIN})
   public void returns_appropriate_headers__when_known_origin(String origin) {
     given()
         .header("Origin", origin)

@@ -1,11 +1,11 @@
 package com.meemaw.auth.organization.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.QUERY_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
-import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_EMAIL;
-import static com.meemaw.test.setup.AuthApiTestProvider.GENESIS_ADMIN_FULL_NAME;
+import static com.meemaw.test.setup.AuthApiTestProvider.REBROWSE_ADMIN_EMAIL;
+import static com.meemaw.test.setup.AuthApiTestProvider.REBROWSE_ADMIN_FULL_NAME;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -405,8 +405,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals(GENESIS_ORGANIZATION_ID, firstResponse.getData().getId());
-    assertEquals(SharedConstants.NAME, firstResponse.getData().getName());
+    assertEquals(REBROWSE_ORGANIZATION_ID, firstResponse.getData().getId());
+    assertEquals(SharedConstants.ORGANIZATION_NAME, firstResponse.getData().getName());
 
     String authToken = authApi().createApiKey(sessionId);
     DataResponse<OrganizationDTO> secondResponse =
@@ -444,8 +444,8 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals(GENESIS_ADMIN_EMAIL, firstResponse.getData().get(0).getEmail());
-    assertEquals(GENESIS_ADMIN_FULL_NAME, firstResponse.getData().get(0).getFullName());
+    assertEquals(REBROWSE_ADMIN_EMAIL, firstResponse.getData().get(0).getEmail());
+    assertEquals(REBROWSE_ADMIN_FULL_NAME, firstResponse.getData().get(0).getFullName());
     assertEquals(UserRole.ADMIN, firstResponse.getData().get(0).getRole());
 
     // Search by query
@@ -472,7 +472,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .queryParam(QUERY_PARAM, GENESIS_ADMIN_FULL_NAME)
+            .queryParam(QUERY_PARAM, REBROWSE_ADMIN_FULL_NAME)
             .queryParam(SORT_BY_PARAM, "created_at")
             .get(GET_ORGANIZATION_MEMBERS_PATH)
             .then()
@@ -484,7 +484,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam(QUERY_PARAM, GENESIS_ADMIN_FULL_NAME)
+        .queryParam(QUERY_PARAM, REBROWSE_ADMIN_FULL_NAME)
         .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
         .then()
         .statusCode(200)

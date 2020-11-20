@@ -1,6 +1,6 @@
 # Rebrowse Java client library
 
-The official [Rebrowse](https://rebrowse.io/) Java client library.
+The official [Rebrowse](https://rebrowse.dev/) Java client library.
 
 ## Installation
 

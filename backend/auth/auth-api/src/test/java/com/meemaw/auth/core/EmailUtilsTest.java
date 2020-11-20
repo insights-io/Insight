@@ -3,6 +3,7 @@ package com.meemaw.auth.core;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.meemaw.shared.SharedConstants;
 import org.junit.jupiter.api.Test;
 
 public class EmailUtilsTest {
@@ -14,7 +15,7 @@ public class EmailUtilsTest {
     assertFalse(EmailUtils.isBusinessDomain("yahoo.com"));
 
     assertTrue(EmailUtils.isBusinessDomain("snuderls.eu"));
-    assertTrue(EmailUtils.isBusinessDomain("rebrowse.dev"));
+    assertTrue(EmailUtils.isBusinessDomain(SharedConstants.REBROWSE_STAGING_DOMAIN));
     assertTrue(EmailUtils.isBusinessDomain("cognite.com"));
     assertTrue(EmailUtils.isBusinessDomain("revolut.com"));
     assertTrue(EmailUtils.isBusinessDomain("bitstamp.net"));

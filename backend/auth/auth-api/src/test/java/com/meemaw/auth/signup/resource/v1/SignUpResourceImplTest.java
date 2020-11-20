@@ -103,7 +103,11 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   public void sign_up__should_fail__when_empty_invalid_payload() throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
         new SignUpRequestDTO(
-            "email", "short", "Marko Novak", SharedConstants.NAME, new PhoneNumberDTO(null, null));
+            "email",
+            "short",
+            "Marko Novak",
+            SharedConstants.ORGANIZATION_NAME,
+            new PhoneNumberDTO(null, null));
 
     given()
         .when()
@@ -121,10 +125,10 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   public void sign_up__should_redirect_back_to_referer__when_valid_payload()
       throws JsonProcessingException {
     String referer = "http://localhost:3000";
-    String signUpEmail = "marko.skace@rebrowse.dev";
+    String signUpEmail = String.format("%s@gmail.com", UUID.randomUUID());
     SignUpRequestDTO signUpRequestDTO =
         new SignUpRequestDTO(
-            signUpEmail, "not_short_123", "Marko Novak", SharedConstants.NAME, null);
+            signUpEmail, "not_short_123", "Marko Novak", SharedConstants.ORGANIZATION_NAME, null);
 
     given()
         .when()
@@ -148,9 +152,10 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void sign_up__should_succeeded() throws JsonProcessingException {
-    String signUpEmail = "marko.novak@insight.io";
+    String signUpEmail = String.format("%s@gmail.com", UUID.randomUUID());
     SignUpRequestDTO signUpRequestDTO =
-        new SignUpRequestDTO(signUpEmail, "not_short_123", "Marko Novak", "Insight", null);
+        new SignUpRequestDTO(
+            signUpEmail, "not_short_123", "Marko Novak", SharedConstants.ORGANIZATION_NAME, null);
 
     given()
         .when()

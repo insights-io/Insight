@@ -1,6 +1,6 @@
 package com.meemaw.events.search.indexer;
 
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -205,7 +205,7 @@ public class AbstractSearchIndexerTest {
                         UUID.randomUUID(),
                         UUID.randomUUID(),
                         UUID.randomUUID(),
-                        GENESIS_ORGANIZATION_ID)))
+                        REBROWSE_ORGANIZATION_ID)))
         .collect(Collectors.toList());
   }
 }
