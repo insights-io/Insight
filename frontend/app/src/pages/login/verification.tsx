@@ -7,7 +7,7 @@ import nextCookie from 'next-cookies';
 import { VerificationPage } from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { AuthApi } from 'api/auth';
-import type { APIErrorDataResponse, TfaMethod, UserDTO } from '@insight/types';
+import type { APIErrorDataResponse, TfaMethod, UserDTO } from '@rebrowse/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SetupMultiFactorAuthenticationPage } from 'modules/auth/pages/SetupMultiFactorAuthenticationPage';
 

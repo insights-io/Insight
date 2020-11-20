@@ -8,7 +8,7 @@ import {
   ACCOUNT_SETTINGS_SECURITY_PAGE_PART,
   ACCOUNT_SETTINGS_PATH_PART,
 } from 'shared/constants/routes';
-import type { OrganizationDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
 import type { Path } from 'modules/settings/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';

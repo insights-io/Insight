@@ -1,6 +1,6 @@
 import React from 'react';
 import { INSIGHT_ADMIN_DTO } from 'test/data';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
 import { Meta } from '@storybook/react';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';

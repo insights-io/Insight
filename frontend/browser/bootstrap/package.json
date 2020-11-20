@@ -1,11 +1,11 @@
 {
-  "name": "@insight/browser-bootstrap",
+  "name": "@rebrowse/browser-bootstrap",
   "private": true,
-  "description": "Insight browser bootstrap script",
+  "description": "Rebrowse browser bootstrap script",
   "version": "0.0.0-development",
   "source": "src/index.ts",
   "license": "MIT",
-  "author": "Insight Engineering",
+  "author": "Rebrowse Engineering",
   "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
     "type": "git",

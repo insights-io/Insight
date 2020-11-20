@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
-import { APIError, APIErrorDataResponse } from '@insight/types';
+import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 
 type Props<T> = {
   submitAction: (code: number) => Promise<T>;

@@ -4,7 +4,7 @@ import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { Input } from 'baseui/input';
 import { StyleObject } from 'styletron-react';
-import { Flex, VerticalAligned } from '@insight/elements';
+import { Flex, VerticalAligned } from '@rebrowse/elements';
 import Divider from 'shared/components/Divider';
 import { StyledSpinnerNext } from 'baseui/spinner';
 

@@ -7,7 +7,7 @@ import {
 import { OrganizationSettingsMembersPage } from 'modules/settings/pages/organization/OrganizationSettingsMembersPage';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
-import type { UserDTO } from '@insight/types';
+import type { UserDTO } from '@rebrowse/types';
 
 type Props = AuthenticatedServerSideProps & {
   members: UserDTO[];

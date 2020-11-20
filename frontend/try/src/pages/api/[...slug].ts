@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { nextProxy } from '@insight/service-proxy';
+import { nextProxy } from '@rebrowse/service-proxy';
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   return nextProxy(req, res);

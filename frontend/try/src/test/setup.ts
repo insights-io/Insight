@@ -1,4 +1,4 @@
-import { setupEnvironment } from '@insight/testing';
+import { setupEnvironment } from '@rebrowse/testing';
 import * as dotenv from 'dotenv';
 import '@testing-library/jest-dom/extend-expect';
 

@@ -1,4 +1,4 @@
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { renderHook } from '@testing-library/react-hooks';
 import { SessionApi } from 'api';
 import { INSIGHT_SESSION, INSIGHT_SESSION_DTO } from 'test/data';

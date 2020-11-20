@@ -1,5 +1,5 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import useSidebar from 'modules/app/hooks/useSidebar';
 import { INSIGHT_ADMIN } from 'test/data';
 import type { Meta } from '@storybook/react';

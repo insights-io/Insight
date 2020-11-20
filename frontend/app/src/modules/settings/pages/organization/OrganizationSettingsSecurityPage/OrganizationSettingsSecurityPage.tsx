@@ -10,7 +10,7 @@ import {
   OrganizationDTO,
   OrganizationPasswordPolicyDTO,
   UserDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import {
@@ -19,7 +19,7 @@ import {
   Panel,
   Toggle,
   VerticalAligned,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import { Block } from 'baseui/block';
 import { useUpdateField } from 'shared/hooks/useUpdateField';
 

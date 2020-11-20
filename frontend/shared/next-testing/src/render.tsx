@@ -1,10 +1,10 @@
 import React, { ComponentType } from 'react';
 import { render as renderImpl } from '@testing-library/react';
 import { createRouter } from 'next/dist/client/router';
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
 import type { NextRouter } from 'next/router';
-import type { StoryConfiguration } from '@insight/storybook';
+import type { StoryConfiguration } from '@rebrowse/storybook';
 
 import type {
   AppProviders,

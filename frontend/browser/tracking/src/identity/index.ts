@@ -3,7 +3,7 @@
 /* eslint-disable no-underscore-dangle */
 
 import { logger } from 'logger';
-import { PageIdentity } from '@insight/types';
+import { PageIdentity } from '@rebrowse/types';
 import {
   MILLIS_IN_SECOND,
   currentTimeSeconds,

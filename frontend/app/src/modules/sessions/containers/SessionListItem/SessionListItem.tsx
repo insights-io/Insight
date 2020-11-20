@@ -1,5 +1,5 @@
 import React from 'react';
-import { Session } from '@insight/types';
+import { Session } from '@rebrowse/types';
 import { useStyletron } from 'baseui';
 import { ListChildComponentProps } from 'react-window';
 import SesssionListItemSkeleton from 'modules/sessions/components/SessionListItemSkeleton';

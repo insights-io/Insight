@@ -1,4 +1,4 @@
-import type { CodeValidityDTO } from '@insight/types';
+import type { CodeValidityDTO } from '@rebrowse/types';
 
 export type TfaTotpSetupStart = { qrImage: string };
 

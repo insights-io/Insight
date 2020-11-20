@@ -1,5 +1,5 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { INSIGHT_ADMIN_DTO } from 'test/data';
 import {
   ADMIN_TEAM_INVITE_DTO,

@@ -2,7 +2,7 @@ import React from 'react';
 import { Block } from 'baseui/block';
 import { H1, Paragraph3 } from 'baseui/typography';
 import { DeleteAlt } from 'baseui/icon';
-import { VerticalAligned } from '@insight/elements';
+import { VerticalAligned } from '@rebrowse/elements';
 
 type Props = {
   statusCode: number;
@@ -24,7 +24,7 @@ const ErrorPage = (_props: Props) => {
           <Paragraph3>
             We are tracking these errors automatically and are working on the
             fix. Please try again later or contact{' '}
-            <a href="mailto:support@insight.io">support</a> if the error
+            <a href="mailto:support@rebrowse.dev">support</a> if the error
             persists.
           </Paragraph3>
         </Block>

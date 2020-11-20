@@ -1,5 +1,5 @@
 import ky from 'ky-universal';
-import type { DataResponse, InvoiceDTO } from '@insight/types';
+import type { DataResponse, InvoiceDTO } from '@rebrowse/types';
 
 import { RequestOptions, withCredentials, getData } from '../../core';
 

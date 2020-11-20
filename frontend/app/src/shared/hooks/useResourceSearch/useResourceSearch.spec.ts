@@ -1,5 +1,5 @@
-import { sandbox } from '@insight/testing';
-import { SearchBean } from '@insight/types';
+import { sandbox } from '@rebrowse/testing';
+import { SearchBean } from '@rebrowse/types';
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import { useResourceSearch } from './useResourceSearch';

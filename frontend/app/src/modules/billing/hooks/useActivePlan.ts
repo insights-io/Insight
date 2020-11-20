@@ -1,6 +1,6 @@
 import { BillingApi } from 'api';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
-import type { PlanDTO } from '@insight/types';
+import type { PlanDTO } from '@rebrowse/types';
 import { useCallback } from 'react';
 import { mutate as globalMutate } from 'swr';
 

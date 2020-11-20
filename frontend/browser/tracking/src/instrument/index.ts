@@ -5,7 +5,7 @@
 /* eslint-disable lodash/prefer-lodash-typecheck */
 /* eslint-disable no-console */
 import { Enqueue } from 'types';
-import { EventType, LogLevel } from '@insight/types';
+import { EventType, LogLevel } from '@rebrowse/types';
 import Context from 'context';
 
 import { FetchTranport } from '../backend/transports/fetch';

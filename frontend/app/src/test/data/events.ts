@@ -2,7 +2,7 @@ import {
   BrowserLogEventDTO,
   BrowserErrorEventDTO,
   BrowserXhrEventDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 const STORYBOOK_WARN: BrowserLogEventDTO = {
   e: 9,

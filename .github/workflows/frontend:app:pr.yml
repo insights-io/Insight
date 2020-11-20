@@ -37,7 +37,7 @@ jobs:
       - name: install and unit test
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/app test --coverage --testTimeout=15000
+          yarn workspace @rebrowse/app test --coverage --testTimeout=15000
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -63,8 +63,8 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/app pretest
-          yarn workspace @insight/app storybook:build
+          yarn workspace @rebrowse/app pretest
+          yarn workspace @rebrowse/app storybook:build
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete

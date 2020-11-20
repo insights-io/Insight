@@ -4,14 +4,14 @@ import {
   SpacedBetween,
   expandBorderRadius,
   Flex,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import { Radio, RadioGroup } from 'baseui/radio';
 import type {
   AvatarDTO,
   AvatarType,
   Organization,
   OrganizationDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { Block } from 'baseui/block';
 import { Avatar } from 'baseui/avatar';
 import { useStyletron } from 'baseui';

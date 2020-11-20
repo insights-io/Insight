@@ -12,7 +12,7 @@ public final class UserRegistry {
   public static final AuthUser S2S_INTERNAL_USER =
       new UserDTO(
           UUID.randomUUID(),
-          "internal-s2s@insight.io",
+          "internal-s2s@rebrowse.dev",
           "Internal S2S User",
           UserRole.ADMIN,
           "internal-s2s",

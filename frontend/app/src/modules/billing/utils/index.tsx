@@ -3,7 +3,7 @@ import type {
   SubscriptionStatus,
   SubscriptionPlan,
   InvoiceStatus,
-} from '@insight/types';
+} from '@rebrowse/types';
 import type { Theme } from 'baseui/theme';
 import { Alert, Check, Delete } from 'baseui/icon';
 
@@ -16,7 +16,7 @@ export const subscriptionStatusText = (status: SubscriptionStatus) => {
 };
 
 export const subscriptionPlanText = (plan: SubscriptionPlan) => {
-  return `Insight ${capitalize(plan)} subscription`;
+  return `Rebrowse ${capitalize(plan)} subscription`;
 };
 
 export const subscriptionStatusIcon: Record<

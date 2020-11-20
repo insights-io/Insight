@@ -17,7 +17,7 @@ import type {
   Invoice,
   Subscription,
   SubscriptionDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { toaster } from 'baseui/toast';
 
 import { InvoiceList } from '../InvoiceList';

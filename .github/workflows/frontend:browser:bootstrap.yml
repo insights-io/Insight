@@ -40,7 +40,7 @@ jobs:
       - name: Install dependencies and run tests
         run: |
           yarn install --frozen-lockfile
-          xvfb-run --auto-servernum yarn workspace @insight/browser-bootstrap test --coverage
+          xvfb-run --auto-servernum yarn workspace @rebrowse/browser-bootstrap test --coverage
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

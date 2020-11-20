@@ -46,7 +46,7 @@ jobs:
       - name: Install NPM dependencies & build dependencies
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/${{ matrix.target.name }} prebuild
+          yarn workspace @rebrowse/${{ matrix.target.name }} prebuild
           sed -i '180ires.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
       # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
       # http-proxy lib is not configurable enough to allow nice removal of 'connection' header. We should extract what we need at some point.
@@ -110,7 +110,7 @@ jobs:
       - name: Install NPM dependencies
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/${{ matrix.target }} prebuild
+          yarn workspace @rebrowse/${{ matrix.target }} prebuild
           sed -i '180ires.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
       - name: Serverless remove
         working-directory: frontend/${{ matrix.target }}

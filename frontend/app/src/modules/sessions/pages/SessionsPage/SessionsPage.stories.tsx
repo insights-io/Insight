@@ -4,10 +4,10 @@ import {
   INSIGHT_SESSIONS,
   INSIGHT_SESSIONS_DTOS,
 } from 'test/data';
-import { fullHeightDecorator, configureStory } from '@insight/storybook';
+import { fullHeightDecorator, configureStory } from '@rebrowse/storybook';
 import { SessionApi } from 'api';
-import type { SessionDTO } from '@insight/types';
-import { SessionSearchBean } from '@insight/sdk/dist/sessions';
+import type { SessionDTO } from '@rebrowse/types';
+import { SessionSearchBean } from '@rebrowse/sdk/dist/sessions';
 import get from 'lodash/get';
 import type { Meta } from '@storybook/react';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';

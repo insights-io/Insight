@@ -4,7 +4,7 @@ import path from 'path';
 import { createServer, Server } from 'http';
 import fs from 'fs';
 
-import { CreatePageResponse } from '@insight/types';
+import { CreatePageResponse } from '@rebrowse/types';
 import { chromium, Response, Page } from 'playwright';
 import Identity from 'identity';
 import type { InsightWindow } from 'types';

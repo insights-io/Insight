@@ -5,10 +5,10 @@ import {
   ORGANIZATION_SETTINGS_BILLING_USAGE_AND_PAYMENTS_PAGE_PART,
 } from 'shared/constants/routes';
 import { OrganizationSettingsPageLayout } from 'modules/settings/components/organization/OrganizationSettingsPageLayout';
-import { mapInvoice } from '@insight/sdk';
+import { mapInvoice } from '@rebrowse/sdk';
 import { InvoiceList } from 'modules/billing/components/InvoiceList';
 import type { Path } from 'modules/settings/types';
-import type { InvoiceDTO, OrganizationDTO, UserDTO } from '@insight/types';
+import type { InvoiceDTO, OrganizationDTO, UserDTO } from '@rebrowse/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 

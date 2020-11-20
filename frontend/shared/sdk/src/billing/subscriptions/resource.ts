@@ -5,7 +5,7 @@ import type {
   SubscriptionDTO,
   CreateSubscriptionResponseDTO,
   PlanDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import { RequestOptions, withCredentials, getData } from '../../core';
 

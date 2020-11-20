@@ -1,5 +1,5 @@
 import React from 'react';
-import { Session, UserAgentDTO } from '@insight/types';
+import { Session, UserAgentDTO } from '@rebrowse/types';
 import { ListItem, ARTWORK_SIZES, ListItemLabel } from 'baseui/list';
 import { Tag } from 'baseui/tag';
 import UserAgent from 'shared/components/UserAgent';

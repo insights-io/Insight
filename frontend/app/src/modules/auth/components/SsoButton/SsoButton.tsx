@@ -1,6 +1,6 @@
 import React from 'react';
 import { Theme } from 'baseui/theme';
-import { UnstyledLink, Button } from '@insight/elements';
+import { UnstyledLink, Button } from '@rebrowse/elements';
 
 type Props = {
   href: string;

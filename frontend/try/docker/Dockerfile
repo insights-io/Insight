@@ -36,11 +36,11 @@ COPY --from=builder /tmp/node_modules/ ./node_modules/
 
 COPY --from=builder /src/frontend/try/.next ./.next
 
-COPY --from=builder /src/frontend/shared/sdk/package.json ./node_modules/@insight/sdk/package.json
-COPY --from=builder /src/frontend/shared/sdk/dist ./node_modules/@insight/sdk/dist
+COPY --from=builder /src/frontend/shared/sdk/package.json ./node_modules/@rebrowse/sdk/package.json
+COPY --from=builder /src/frontend/shared/sdk/dist ./node_modules/@rebrowse/sdk/dist
 
-COPY --from=builder /src/frontend/shared/elements/package.json ./node_modules/@insight/elements/package.json
-COPY --from=builder /src/frontend/shared/elements/dist ./node_modules/@insight/elements/dist
+COPY --from=builder /src/frontend/shared/elements/package.json ./node_modules/@rebrowse/elements/package.json
+COPY --from=builder /src/frontend/shared/elements/dist ./node_modules/@rebrowse/elements/dist
 
 USER node
 ENV NODE_ENV production

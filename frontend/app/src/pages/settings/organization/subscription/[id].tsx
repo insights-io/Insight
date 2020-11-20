@@ -7,7 +7,7 @@ import {
 import { OrganizationSettingsBillingSubscriptionDetailsPage } from 'modules/settings/pages/organization/OrganizationSettingsBillingSubscriptionDetailsPage';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { BillingApi } from 'api';
-import type { InvoiceDTO, SubscriptionDTO } from '@insight/types';
+import type { InvoiceDTO, SubscriptionDTO } from '@rebrowse/types';
 import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constants/routes';
 
 type Props = AuthenticatedServerSideProps & {

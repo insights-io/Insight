@@ -1,11 +1,11 @@
 {
-  "name": "@insight/browser-tracking",
+  "name": "@rebrowse/browser-tracking",
   "private": true,
   "version": "0.0.0-development",
-  "description": "Insight browser tracking script",
+  "description": "Rebrowse browser tracking script",
   "source": "src/index.ts",
   "license": "MIT",
-  "author": "Insight Engineering",
+  "author": "Rebrowse Engineering",
   "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "build:with-deps": "yarn lerna run build --scope=@insight/browser-tracking --include-filtered-dependencies --concurrency 2",
+    "build:with-deps": "yarn lerna run build --scope=@rebrowse/browser-tracking --include-filtered-dependencies --concurrency 2",
     "test": "jest",
     "pretest": "yarn build:with-deps",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
@@ -26,7 +26,7 @@
     "serve:templates": "serve templates --cors"
   },
   "devDependencies": {
-    "@insight/types": "0.0.0-development",
+    "@rebrowse/types": "0.0.0-development",
     "playwright": "1.6.2",
     "rollup-plugin-gzip": "2.5.0"
   }

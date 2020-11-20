@@ -1,5 +1,5 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { SETTINGS_SEARCH_OPTIONS } from 'modules/settings/constants';
 import type { Meta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';

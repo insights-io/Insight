@@ -1,7 +1,7 @@
 /* eslint-disable lodash/prefer-constant */
 import React from 'react';
 import { Meta } from '@storybook/react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { INSIGHT_SESSIONS } from 'test/data';
 
 import { SessionList } from './SessionList';

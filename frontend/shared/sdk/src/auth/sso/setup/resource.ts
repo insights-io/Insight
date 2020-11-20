@@ -4,7 +4,7 @@ import type {
   SsoMethod,
   SsoSetupDTO,
   SamlConfigurationDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import { getData, withCredentials } from '../../../core';
 import type { RequestOptions } from '../../../core/types';

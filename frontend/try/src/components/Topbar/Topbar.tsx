@@ -3,7 +3,7 @@ import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H6 } from 'baseui/typography';
 import { Button, SHAPE } from 'baseui/button';
-import { SpacedBetween, UnstyledLink } from '@insight/elements';
+import { SpacedBetween, UnstyledLink } from '@rebrowse/elements';
 
 type Props = {
   appBaseURL: string;

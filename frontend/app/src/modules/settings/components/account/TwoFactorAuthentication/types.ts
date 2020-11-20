@@ -1,4 +1,4 @@
-import { User, TfaMethod, TfaSetupDTO } from '@insight/types';
+import { User, TfaMethod, TfaSetupDTO } from '@rebrowse/types';
 
 export type Props = {
   user: User;

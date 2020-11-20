@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalFooter, ModalBody } from 'baseui/modal';
-import { Button, Input } from '@insight/elements';
+import { Button, Input } from '@rebrowse/elements';
 import type {
   APIError,
   APIErrorDataResponse,
@@ -8,7 +8,7 @@ import type {
   SamlMethod,
   SsoMethod,
   SsoSetupDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import FormError from 'shared/components/FormError';
 import { SIZE } from 'baseui/button';
 import { AuthApi } from 'api';

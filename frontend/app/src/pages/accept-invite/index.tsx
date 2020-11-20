@@ -1,12 +1,12 @@
 import React from 'react';
 import type { GetServerSideProps } from 'next';
-import type { APIErrorDataResponse, TeamInviteDTO } from '@insight/types';
+import type { APIErrorDataResponse, TeamInviteDTO } from '@rebrowse/types';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { AcceptTeamInviteInvalidPage } from 'modules/auth/pages/AcceptTeamInviteInvalidPage';
 import { AcceptTeamInvitePage } from 'modules/auth/pages/AcceptTeamInvitePage';
-import { mapTeamInvite } from '@insight/sdk';
+import { mapTeamInvite } from '@rebrowse/sdk';
 
 type Props = { invite: TeamInviteDTO } | { invite: null };
 

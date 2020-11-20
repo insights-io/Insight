@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import Context from 'context/Context';
 import { BrowserEvent, BrowserEventArgument } from 'event';
-import { EventType } from '@insight/types';
+import { EventType } from '@rebrowse/types';
 
 class EventQueue {
   private readonly _context: Context;

@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
-import { TfaMethod, UserDTO } from '@insight/types';
+import { TfaMethod, UserDTO } from '@rebrowse/types';
 import { TimeBasedMultiFactorAuthenticationForm } from 'modules/auth/components/TimeBasedMultiFactorAuthenticationForm';
 import { AuthApi } from 'api';
 import { useRouter } from 'next/router';

@@ -1,8 +1,8 @@
-import { mockApiError } from '@insight/storybook';
-import { sandbox } from '@insight/testing';
+import { mockApiError } from '@rebrowse/storybook';
+import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getServerSideProps } from 'pages/login/verification';
-import { mockServerSideRequest } from '@insight/next-testing';
+import { mockServerSideRequest } from '@rebrowse/next-testing';
 import { INSIGHT_ADMIN_DTO } from 'test/data';
 
 describe('pages/login/verification', () => {

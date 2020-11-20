@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'test/utils';
 import userEvent from '@testing-library/user-event';
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { waitFor } from '@testing-library/react';
 
 import { Base } from './PasswordForgotPage.stories';
@@ -18,7 +18,7 @@ describe('<PasswordForgotPage />', () => {
 
     await findByText('Check your inbox!');
     await findByText(
-      'If your email address is associated with an Insight account, you will be receiving a password reset request shortly.'
+      'If your email address is associated with an Rebrowse account, you will be receiving a password reset request shortly.'
     );
   });
 

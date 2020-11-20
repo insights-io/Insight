@@ -31,9 +31,9 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @insight/types build
-          yarn concurrently "yarn workspace @insight/storybook build && yarn workspace @insight/next-storybook build" "yarn workspace @insight/sdk build" "yarn workspace @insight/elements build"
-          yarn concurrently "yarn workspace @insight/app storybook:build" "yarn workspace @insight/try storybook:build" "yarn workspace @insight/storybook storybook:build" "yarn workspace @insight/homepage storybook:build"
+          yarn workspace @rebrowse/types build
+          yarn concurrently "yarn workspace @rebrowse/storybook build && yarn workspace @rebrowse/next-storybook build" "yarn workspace @rebrowse/sdk build" "yarn workspace @rebrowse/elements build"
+          yarn concurrently "yarn workspace @rebrowse/app storybook:build" "yarn workspace @rebrowse/try storybook:build" "yarn workspace @rebrowse/storybook storybook:build" "yarn workspace @rebrowse/homepage storybook:build"
       - uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

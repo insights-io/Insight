@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
-import { SortDirection } from '@insight/sdk';
-import type { SearchBean } from '@insight/types';
+import { SortDirection } from '@rebrowse/sdk';
+import type { SearchBean } from '@rebrowse/types';
 import { usePaginatedQuery, useQueryCache } from 'react-query';
 import { usePrevious } from 'shared/hooks/usePrevious';
 import { useDebounce } from 'use-debounce';

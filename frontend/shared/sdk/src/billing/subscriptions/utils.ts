@@ -3,7 +3,7 @@ import type {
   Subscription,
   PlanDTO,
   Plan,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 export const mapSubscription = (
   subscription: SubscriptionDTO | Subscription

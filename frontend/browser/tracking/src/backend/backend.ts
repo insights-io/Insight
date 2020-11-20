@@ -6,7 +6,7 @@ import {
   CreatePageResponse,
   PageIdentity,
   CreatePageDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import Context from '../context';
 

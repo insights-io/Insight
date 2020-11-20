@@ -1,8 +1,8 @@
 import { useMemo, useCallback } from 'react';
 import useSWR from 'swr';
 import { AuthApi } from 'api/auth';
-import { mapTeamInvite } from '@insight/sdk';
-import type { TeamInviteCreateDTO, TeamInviteDTO } from '@insight/types';
+import { mapTeamInvite } from '@rebrowse/sdk';
+import type { TeamInviteCreateDTO, TeamInviteDTO } from '@rebrowse/types';
 
 const CACHE_KEY = 'AuthApi.teamInvite.list';
 

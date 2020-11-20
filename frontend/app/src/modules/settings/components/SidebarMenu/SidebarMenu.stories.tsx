@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { SIDEBAR_SECTIONS } from 'modules/settings/components/organization/OrganizationSettingsLayout';
 import type { Meta } from '@storybook/react';
 

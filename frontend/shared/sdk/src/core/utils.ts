@@ -1,7 +1,7 @@
 import { stringify } from 'querystring';
 
 import type { Options } from 'ky';
-import type { DataResponse, QueryParam } from '@insight/types';
+import type { DataResponse, QueryParam } from '@rebrowse/types';
 
 export function withCredentials<T extends Options>(options: T): Options {
   return { ...options, credentials: 'include' };

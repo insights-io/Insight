@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'test/utils';
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import userEvent from '@testing-library/user-event';
 
 import { Base } from './SessionPage.stories';

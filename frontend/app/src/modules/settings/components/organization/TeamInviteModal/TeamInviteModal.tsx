@@ -15,8 +15,8 @@ import type {
   APIErrorDataResponse,
   UserRole,
   TeamInviteDTO,
-} from '@insight/types';
-import { Input, Button } from '@insight/elements';
+} from '@rebrowse/types';
+import { Input, Button } from '@rebrowse/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
 import { SIZE } from 'baseui/button';
 

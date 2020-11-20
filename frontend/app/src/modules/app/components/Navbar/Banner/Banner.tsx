@@ -3,9 +3,9 @@ import { PLACEMENT, StatefulPopover } from 'baseui/popover';
 import { Theme } from 'baseui/theme';
 import React, { useMemo } from 'react';
 import useHover from 'shared/hooks/useHover';
-import type { AvatarDTO, User } from '@insight/types';
+import type { AvatarDTO, User } from '@rebrowse/types';
 import { Block } from 'baseui/block';
-import { VerticalAligned, expandBorderRadius } from '@insight/elements';
+import { VerticalAligned, expandBorderRadius } from '@rebrowse/elements';
 import { ChevronDown } from 'baseui/icon';
 import {
   ACCOUNT_SETTINGS_AUTH_TOKENS_PAGE,

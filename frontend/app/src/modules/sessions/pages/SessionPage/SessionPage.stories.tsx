@@ -6,7 +6,7 @@ import {
   ERROR_EVENTS,
   INSIGHT_ADMIN_DTO,
 } from 'test/data';
-import { configureStory, fullHeightDecorator } from '@insight/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { SessionApi } from 'api';
 import { Meta } from '@storybook/react';
 import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';

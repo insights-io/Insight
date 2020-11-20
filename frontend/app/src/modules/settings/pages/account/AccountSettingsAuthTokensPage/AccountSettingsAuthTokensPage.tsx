@@ -6,11 +6,11 @@ import {
 } from 'shared/constants/routes';
 import { AccountSettingsPageLayout } from 'modules/settings/components/account/AccountSettingsPageLayout';
 import type { Path } from 'modules/settings/types';
-import { AuthTokenDTO, OrganizationDTO, UserDTO } from '@insight/types';
+import { AuthTokenDTO, OrganizationDTO, UserDTO } from '@rebrowse/types';
 import { useAuthTokens } from 'modules/settings/hooks/useAuthTokens';
 import { Block } from 'baseui/block';
 import { Delete, Plus } from 'baseui/icon';
-import { Button } from '@insight/elements';
+import { Button } from '@rebrowse/elements';
 import {
   StyledTable,
   StyledHead,

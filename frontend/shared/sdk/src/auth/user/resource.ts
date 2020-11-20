@@ -4,7 +4,7 @@ import type {
   DataResponse,
   PhoneNumber,
   UserDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import type { RequestOptions } from '../../core/types';
 import { getData, withCredentials } from '../../core/utils';

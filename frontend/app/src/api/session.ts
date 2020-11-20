@@ -1,4 +1,4 @@
-import { createSessionsClient } from '@insight/sdk';
+import { createSessionsClient } from '@rebrowse/sdk';
 
 import { sessionApiBaseURL } from './base';
 

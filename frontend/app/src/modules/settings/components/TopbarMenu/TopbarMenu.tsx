@@ -11,7 +11,7 @@ import {
   expandBorderRadius,
   Button,
   Flex,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import { FaLink } from 'react-icons/fa';
 import { joinSegments } from 'modules/settings/utils';
 import { Menu, Delete } from 'baseui/icon';

@@ -3,12 +3,12 @@ import { Card, StyledAction, StyledBody } from 'baseui/card';
 import { H4, ParagraphSmall } from 'baseui/typography';
 import { Block } from 'baseui/block';
 import Divider from 'shared/components/Divider';
-import { SpacedBetween } from '@insight/elements';
+import { SpacedBetween } from '@rebrowse/elements';
 import { ProgressBar, ProgressBarProps } from 'baseui/progress-bar';
 import { useStyletron } from 'baseui';
 import { format } from 'date-fns';
 import { Button, SHAPE, SIZE } from 'baseui/button';
-import type { Plan } from '@insight/types';
+import type { Plan } from '@rebrowse/types';
 
 type Props = {
   resetsOn?: Date;
@@ -60,7 +60,7 @@ const YourPlan = ({
       <StyledBody>
         <SpacedBetween>
           <H4 marginTop={0} marginBottom={theme.sizing.scale500}>
-            Insight {plan ? plan[0].toUpperCase() + plan.substring(1) : ''}
+            Rebrowse {plan ? plan[0].toUpperCase() + plan.substring(1) : ''}
           </H4>
           <Block flex={1} maxWidth="400px">
             <ProgressBar

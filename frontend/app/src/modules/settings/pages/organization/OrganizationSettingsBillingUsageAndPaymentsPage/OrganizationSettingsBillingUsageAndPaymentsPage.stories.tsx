@@ -1,5 +1,5 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { PAID_INVOICE_DTO } from 'test/data/billing';
 import type { Meta } from '@storybook/react';
 import { INSIGHT_ADMIN_DTO } from 'test/data';

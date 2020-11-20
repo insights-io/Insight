@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserAgentDTO } from '@insight/types';
+import { UserAgentDTO } from '@rebrowse/types';
 
 type Props = {
   value: UserAgentDTO;

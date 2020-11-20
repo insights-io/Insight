@@ -1,5 +1,5 @@
 import React from 'react';
-import { fullHeightDecorator } from '@insight/storybook';
+import { fullHeightDecorator } from '@rebrowse/storybook';
 import { Block } from 'baseui/block';
 import { INSIGHT_ADMIN } from 'test/data';
 import type { Meta } from '@storybook/react';

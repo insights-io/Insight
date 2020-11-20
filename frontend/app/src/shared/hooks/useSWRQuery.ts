@@ -1,4 +1,4 @@
-import { APIErrorDataResponse } from '@insight/types';
+import { APIErrorDataResponse } from '@rebrowse/types';
 import useSWR, { keyInterface, ConfigInterface } from 'swr';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

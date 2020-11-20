@@ -1,5 +1,9 @@
 import ky from 'ky-universal';
-import type { DataResponse, SessionDTO, BrowserEventDTO } from '@insight/types';
+import type {
+  DataResponse,
+  SessionDTO,
+  BrowserEventDTO,
+} from '@rebrowse/types';
 
 import { getData, querystring, withCredentials } from '../core/utils';
 import type { RequestOptions } from '../core/types';

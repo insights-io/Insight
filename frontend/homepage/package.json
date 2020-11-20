@@ -1,10 +1,10 @@
 {
-  "name": "@insight/homepage",
+  "name": "@rebrowse/homepage",
   "private": true,
   "version": "0.0.0-development",
-  "description": "Insight homepage",
+  "description": "Rebrowse homepage",
   "license": "MIT",
-  "author": "Insight Engineering",
+  "author": "Rebrowse Engineering",
   "homepage": "https://github.com/insights-io/insight#readme",
   "repository": {
     "type": "git",
@@ -28,10 +28,10 @@
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
     "pretest": "yarn prebuild",
-    "prebuild": "yarn workspace @insight/types build && concurrently \"yarn workspace @insight/storybook build\" \"yarn workspace @insight/testing build\" \"yarn workspace @insight/sdk build\" && concurrently \"yarn workspace @insight/next-testing build\" \"yarn workspace @insight/next-storybook build\""
+    "prebuild": "yarn workspace @rebrowse/types build && concurrently \"yarn workspace @rebrowse/storybook build\" \"yarn workspace @rebrowse/testing build\" \"yarn workspace @rebrowse/sdk build\" && concurrently \"yarn workspace @rebrowse/next-testing build\" \"yarn workspace @rebrowse/next-storybook build\""
   },
   "dependencies": {
-    "@insight/sdk": "0.0.0-development",
+    "@rebrowse/sdk": "0.0.0-development",
     "baseui": "9.105.0",
     "next": "10.0.1",
     "react": "17.0.1",
@@ -40,8 +40,8 @@
     "styletron-react": "5.2.7"
   },
   "devDependencies": {
-    "@insight/next-testing": "0.0.0-development",
-    "@insight/next-storybook": "0.0.0-development",
+    "@rebrowse/next-testing": "0.0.0-development",
+    "@rebrowse/next-storybook": "0.0.0-development",
     "@next/bundle-analyzer": "10.0.1",
     "@types/react": "16.9.56",
     "@types/react-dom": "16.9.9",

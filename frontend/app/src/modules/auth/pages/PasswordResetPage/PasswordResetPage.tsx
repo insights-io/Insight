@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from 'baseui/button';
 import { createInputOverrides } from 'shared/styles/input';
 import { useRouter } from 'next/router';
-import { APIError, APIErrorDataResponse } from '@insight/types';
+import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
@@ -50,7 +50,7 @@ export const PasswordResetPage = ({ token }: Props) => {
   return (
     <AuthPageLayout subtitle="Reset your password">
       <Head>
-        <title>Insight | Password reset</title>
+        <title>Rebrowse | Password reset</title>
       </Head>
 
       <form onSubmit={onSubmit} noValidate>

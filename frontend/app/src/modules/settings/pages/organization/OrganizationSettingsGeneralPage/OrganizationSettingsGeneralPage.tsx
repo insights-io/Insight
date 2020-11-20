@@ -15,10 +15,10 @@ import {
   AutocompleteInput,
   ExplainedLabel,
   Toggle,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import { useUpdateField } from 'shared/hooks/useUpdateField';
 import type { Path } from 'modules/settings/types';
-import type { OrganizationDTO, UserDTO, UserRole } from '@insight/types';
+import type { OrganizationDTO, UserDTO, UserRole } from '@rebrowse/types';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
 import { SIZE } from 'baseui/input';

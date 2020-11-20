@@ -5,9 +5,9 @@ import NavbarItem from 'modules/app/components/Navbar/Item';
 import { FaListUl, FaInfo } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight } from 'baseui/icon';
 import { StyleObject } from 'styletron-react';
-import { FlexColumn } from '@insight/elements';
+import { FlexColumn } from '@rebrowse/elements';
 import { INDEX_PAGE, SESSIONS_PAGE } from 'shared/constants/routes';
-import type { Organization, User } from '@insight/types';
+import type { Organization, User } from '@rebrowse/types';
 import * as zIndex from 'shared/constants/zIndex';
 
 import { NavbarBanner } from '../Banner';

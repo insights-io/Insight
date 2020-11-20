@@ -20,8 +20,8 @@ import {
   startRequestSpan,
   Span,
 } from 'modules/tracing';
-import { getBoostrapScript } from '@insight/sdk';
-import { STYLETRON_HYDRATE_CLASSNAME } from '@insight/elements';
+import { getBoostrapScript } from '@rebrowse/sdk';
+import { STYLETRON_HYDRATE_CLASSNAME } from '@rebrowse/elements';
 
 type Props = RenderPageResult & {
   stylesheets: Sheet[];

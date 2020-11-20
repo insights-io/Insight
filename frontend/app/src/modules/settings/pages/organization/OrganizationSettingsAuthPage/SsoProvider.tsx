@@ -5,14 +5,14 @@ import {
   SpacedBetween,
   VerticalAligned,
   Toggle,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import {
   SamlMethod,
   SamlSsoSetupDTO,
   SsoMethod,
   SsoSetup,
   SsoSetupDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { LabelSmall, LabelXSmall } from 'baseui/typography';
 
 import { SsoProviderSetupModal } from './SsoProviderSetupModal';

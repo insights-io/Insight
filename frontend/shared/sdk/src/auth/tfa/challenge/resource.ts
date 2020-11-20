@@ -4,7 +4,7 @@ import type {
   TfaMethod,
   CodeValidityDTO,
   UserDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import { getData, withCredentials } from '../../../core/utils';
 import type { RequestOptions } from '../../../core/types';

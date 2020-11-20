@@ -1,9 +1,9 @@
 import React from 'react';
 import { H3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
-import { Session } from '@insight/types';
+import { Session } from '@rebrowse/types';
 import DevTools from 'modules/sessions/containers/DevTools';
-import { FlexColumn } from '@insight/elements';
+import { FlexColumn } from '@rebrowse/elements';
 
 type Props = {
   session: Session;

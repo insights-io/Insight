@@ -13,12 +13,12 @@ import type {
   OrganizationDTO,
   User,
   UserDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import { Tabs, Tab } from 'baseui/tabs-motion';
 import Link from 'next/link';
-import { UnstyledLink } from '@insight/elements';
+import { UnstyledLink } from '@rebrowse/elements';
 import { useTabRoute } from 'shared/hooks/useTabRoute';
 
 const PATH: Path = [

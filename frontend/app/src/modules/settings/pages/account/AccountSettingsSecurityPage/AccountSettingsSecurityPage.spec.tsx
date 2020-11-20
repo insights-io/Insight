@@ -1,5 +1,5 @@
 import React from 'react';
-import { sandbox } from '@insight/testing';
+import { sandbox } from '@rebrowse/testing';
 import { BoundFunction, GetByText, waitFor } from '@testing-library/react';
 import { render } from 'test/utils';
 

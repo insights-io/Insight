@@ -1,11 +1,11 @@
 import React from 'react';
-import type { UserDTO } from '@insight/types';
+import type { UserDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { Block } from 'baseui/block';
 import { Button, SHAPE, SIZE } from 'baseui/button';
 import { toaster } from 'baseui/toast';
 import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
-import { Flex } from '@insight/elements';
+import { Flex } from '@rebrowse/elements';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 
 type Props = {

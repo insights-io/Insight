@@ -1,4 +1,4 @@
-import type { AuthToken, AuthTokenDTO } from '@insight/types';
+import type { AuthToken, AuthTokenDTO } from '@rebrowse/types';
 
 export const mapAuthToken = (
   authToken: AuthTokenDTO | AuthToken

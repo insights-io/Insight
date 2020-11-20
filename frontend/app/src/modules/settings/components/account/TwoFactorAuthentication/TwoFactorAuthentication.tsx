@@ -2,11 +2,11 @@ import React, { useMemo, useCallback } from 'react';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
-import type { TfaMethod, TfaSetupDTO } from '@insight/types';
+import type { TfaMethod, TfaSetupDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { isBefore } from 'date-fns';
 import { Check } from 'baseui/icon';
-import { SpacedBetween, VerticalAligned } from '@insight/elements';
+import { SpacedBetween, VerticalAligned } from '@rebrowse/elements';
 import FormError from 'shared/components/FormError';
 import useSWRQuery from 'shared/hooks/useSWRQuery';
 

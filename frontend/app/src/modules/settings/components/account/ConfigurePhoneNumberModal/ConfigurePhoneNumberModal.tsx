@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Modal, SIZE } from 'baseui/modal';
 import { ProgressSteps, Step } from 'baseui/progress-steps';
-import { PhoneNumber, UserDTO } from '@insight/types';
+import { PhoneNumber, UserDTO } from '@rebrowse/types';
 import { SetPhoneNumberForm } from 'modules/auth/components/SetPhoneNumberForm';
 
 import VerifyPhoneNumberForm from './VerifyPhoneNumberForm';

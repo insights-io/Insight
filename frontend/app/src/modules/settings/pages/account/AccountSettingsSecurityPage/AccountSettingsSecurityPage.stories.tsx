@@ -3,7 +3,7 @@ import {
   configureStory,
   fullHeightDecorator,
   mockApiError,
-} from '@insight/storybook';
+} from '@rebrowse/storybook';
 import { INSIGHT_ADMIN_DTO, TFA_SETUP_QR_IMAGE } from 'test/data';
 import { SWRConfig } from 'swr';
 import { AuthApi } from 'api';

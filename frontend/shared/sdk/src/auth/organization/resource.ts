@@ -10,7 +10,7 @@ import type {
   PasswordPolicyCreateParams,
   PasswordPolicyUpdateParams,
   AcceptTeamInviteDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 import type { RequestOptions } from '../../core/types';
 import { getData, querystring, withCredentials } from '../../core/utils';

@@ -8,7 +8,7 @@ import {
   NumericalColumn,
   CategoricalColumn,
 } from 'baseui/data-table';
-import { BrowserXhrEventDTO } from '@insight/types';
+import { BrowserXhrEventDTO } from '@rebrowse/types';
 
 type Props = {
   loading: boolean;

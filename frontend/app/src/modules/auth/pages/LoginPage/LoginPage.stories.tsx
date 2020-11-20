@@ -1,7 +1,7 @@
 import React from 'react';
-import { configureStory, mockApiError } from '@insight/storybook';
+import { configureStory, mockApiError } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
-import type { DataResponse } from '@insight/types';
+import type { DataResponse } from '@rebrowse/types';
 import type { Meta } from '@storybook/react';
 
 import { LoginPage } from './LoginPage';

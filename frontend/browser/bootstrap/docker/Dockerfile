@@ -8,7 +8,7 @@ RUN yarn install --frozen-lockfile
 
 COPY frontend/browser/bootstrap/ /src/frontend/browser/bootstrap/
 
-RUN yarn workspace @insight/browser-bootstrap build
+RUN yarn workspace @rebrowse/browser-bootstrap build
 
 FROM node:14-alpine
 

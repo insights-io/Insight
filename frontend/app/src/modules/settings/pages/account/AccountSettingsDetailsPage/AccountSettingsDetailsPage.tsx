@@ -8,7 +8,7 @@ import {
 import { AccountInfoTable } from 'modules/settings/components/account/AccountInfoTable';
 import { useUser } from 'shared/hooks/useUser';
 import type { Path } from 'modules/settings/types';
-import type { OrganizationDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
 import { useOrganization } from 'shared/hooks/useOrganization';
 
 const PATH: Path = [

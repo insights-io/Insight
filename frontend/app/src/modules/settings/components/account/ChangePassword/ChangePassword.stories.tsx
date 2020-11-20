@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStory, mockApiError } from '@insight/storybook';
+import { configureStory, mockApiError } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import type { Meta } from '@storybook/react';
 

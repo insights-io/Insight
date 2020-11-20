@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppLayout } from 'modules/app/components/AppLayout';
-import type { OrganizationDTO, UserDTO } from '@insight/types';
+import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
 import CountByDeviceClass from 'modules/insights/components/CountByDeviceClass';
 import type { CardProps } from 'baseui/card';
 import LocationDistribution from 'modules/insights/components/LocationDistribution';
@@ -8,7 +8,7 @@ import type { CountByLocation } from 'modules/insights/components/charts/CountBy
 import { useStyletron } from 'baseui';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
-import { Flex } from '@insight/elements';
+import { Flex } from '@rebrowse/elements';
 import Head from 'next/head';
 
 type Props = {

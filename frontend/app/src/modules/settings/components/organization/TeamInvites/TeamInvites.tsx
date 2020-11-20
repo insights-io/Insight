@@ -4,21 +4,21 @@ import type {
   SearchBean,
   TeamInviteCreateDTO,
   TeamInviteDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import {
   Button,
   Flex,
   SpacedBetween,
   VerticalAligned,
   Table,
-} from '@insight/elements';
+} from '@rebrowse/elements';
 import { Avatar } from 'baseui/avatar';
 import { capitalize } from 'modules/billing/utils';
 import { SIZE } from 'baseui/button';
 import { Delete, Plus } from 'baseui/icon';
 import { AuthApi } from 'api';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
-import { mapTeamInvite } from '@insight/sdk';
+import { mapTeamInvite } from '@rebrowse/sdk';
 import { useStyletron } from 'baseui';
 import { StyledSpinnerNext } from 'baseui/spinner';
 

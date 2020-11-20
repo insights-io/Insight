@@ -6,7 +6,7 @@ import {
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { SessionApi } from 'api';
-import { SessionDTO } from '@insight/types';
+import { SessionDTO } from '@rebrowse/types';
 import { SessionsPage } from 'modules/sessions/pages/SessionsPage';
 
 type Props = AuthenticatedServerSideProps & {

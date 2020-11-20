@@ -11,7 +11,7 @@ import {
 import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constants/routes';
 import Link from 'next/link';
 import type { StyleObject } from 'styletron-react';
-import type { Subscription } from '@insight/types';
+import type { Subscription } from '@rebrowse/types';
 import { Block } from 'baseui/block';
 
 type SubscriptionListElementProps = PropsWithChildren<{

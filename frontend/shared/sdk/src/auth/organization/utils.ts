@@ -5,7 +5,7 @@ import type {
   OrganizationPasswordPolicyDTO,
   TeamInvite,
   TeamInviteDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 
 export const mapOrganization = (
   organization: Organization | OrganizationDTO

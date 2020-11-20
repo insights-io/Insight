@@ -4,7 +4,7 @@ import { Button, SHAPE, SIZE, ButtonProps } from 'baseui/button';
 import Link from 'next/link';
 import { StatefulTooltip, PLACEMENT } from 'baseui/tooltip';
 import { StatefulPopoverProps } from 'baseui/popover';
-import { UnstyledLink } from '@insight/elements';
+import { UnstyledLink } from '@rebrowse/elements';
 import { Block } from 'baseui/block';
 
 type Props = {

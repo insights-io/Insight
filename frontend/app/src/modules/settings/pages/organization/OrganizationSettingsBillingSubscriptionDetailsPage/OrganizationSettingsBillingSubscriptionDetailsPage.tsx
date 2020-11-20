@@ -13,7 +13,7 @@ import type {
   OrganizationDTO,
   SubscriptionDTO,
   UserDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import type { Path } from 'modules/settings/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';

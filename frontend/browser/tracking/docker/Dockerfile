@@ -10,8 +10,8 @@ RUN yarn install --frozen-lockfile
 COPY frontend/browser/tracking/ /src/frontend/browser/tracking/
 COPY frontend/shared/types/ /src/frontend/shared/types/
 
-RUN yarn workspace @insight/types build
-RUN yarn workspace @insight/browser-tracking build
+RUN yarn workspace @rebrowse/types build
+RUN yarn workspace @rebrowse/browser-tracking build
 
 FROM node:14-alpine
 

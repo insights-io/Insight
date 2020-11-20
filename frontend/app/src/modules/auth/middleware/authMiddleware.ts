@@ -9,7 +9,7 @@ import type {
   DataResponse,
   SessionInfoDTO,
   OrganizationDTO,
-} from '@insight/types';
+} from '@rebrowse/types';
 import {
   startSpan,
   startRequestSpan,

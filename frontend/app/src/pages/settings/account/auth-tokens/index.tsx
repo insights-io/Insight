@@ -5,7 +5,7 @@ import {
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import type { AuthTokenDTO } from '@insight/types';
+import type { AuthTokenDTO } from '@rebrowse/types';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
 
