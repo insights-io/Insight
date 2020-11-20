@@ -6,7 +6,7 @@ import replace from '@rollup/plugin-replace';
 import prettier from 'rollup-plugin-prettier';
 
 const BUILD_FOLDER = 'dist';
-const OUTPUT_FILE_NAME = 'insight.js';
+const OUTPUT_FILE_NAME = 'rebrowse.js';
 const STATIC_BASE_URL = 'https://static.rebrowse.dev';
 const LOCAL_SERVE_BASE_URL = 'http://localhost:5000';
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Meta } from '@storybook/react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { INSIGHT_SESSIONS } from 'test/data';
+import { REBROWSE_SESSIONS } from 'test/data';
 
 import { SessionList } from './SessionList';
 
@@ -15,8 +15,8 @@ export default {
 export const Base = () => {
   return (
     <SessionList
-      sessions={INSIGHT_SESSIONS}
-      count={INSIGHT_SESSIONS.length}
+      sessions={REBROWSE_SESSIONS}
+      count={REBROWSE_SESSIONS.length}
       isItemLoaded={(_index) => true}
       loadMoreItems={() => Promise.resolve()}
     />

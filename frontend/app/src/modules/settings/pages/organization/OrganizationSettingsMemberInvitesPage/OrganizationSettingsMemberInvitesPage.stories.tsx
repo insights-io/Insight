@@ -1,10 +1,10 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ADMIN_DTO } from 'test/data';
 import {
   ADMIN_TEAM_INVITE_DTO,
   EXPIRED_TEAM_INVITE_DTO,
-  INSIGHT_ORGANIZATION_DTO,
+  REBROWSE_ORGANIZATION_DTO,
   STANDARD_TEAM_INVITE_DTO,
 } from 'test/data/organization';
 import type { Meta } from '@storybook/react';
@@ -20,8 +20,8 @@ export default {
 export const Base = () => {
   return (
     <OrganizationSettingsMemberInvitesPage
-      organization={INSIGHT_ORGANIZATION_DTO}
-      user={INSIGHT_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
+      user={REBROWSE_ADMIN_DTO}
       invites={[
         ADMIN_TEAM_INVITE_DTO,
         EXPIRED_TEAM_INVITE_DTO,

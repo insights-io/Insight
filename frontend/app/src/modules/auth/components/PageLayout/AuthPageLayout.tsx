@@ -30,7 +30,7 @@ export const AuthPageLayout = ({ children, subtitle }: Props) => {
               marginBottom={theme.sizing.scale400}
               $style={{ fontWeight: 700, fontSize: '24px' }}
             >
-              Insight
+              Rebrowse
             </H1>
 
             {subtitle && (

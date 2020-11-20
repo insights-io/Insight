@@ -12,7 +12,7 @@ Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-class InsightApp extends App {
+class RebrowseApp extends App {
   render() {
     const { Component, pageProps } = this.props;
     return (
@@ -23,4 +23,4 @@ class InsightApp extends App {
   }
 }
 
-export default InsightApp;
+export default RebrowseApp;

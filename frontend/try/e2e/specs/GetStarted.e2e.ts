@@ -15,7 +15,7 @@ test('Can sign up', async (t) => {
 
   await t
     .typeText(getByPlaceholderText('Full name'), 'Joe Makarena')
-    .typeText(getByPlaceholderText('Company'), 'Insight')
+    .typeText(getByPlaceholderText('Company'), 'Rebrowse')
     .typeText(emailInput, 'random')
     .typeText(passwordInput, 'short')
     .click(getStartedButton);

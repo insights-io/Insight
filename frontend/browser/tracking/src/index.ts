@@ -12,12 +12,12 @@ import Backend from 'backend';
 import { CreatePageResponse, EventType } from '@rebrowse/types';
 import Identity from 'identity';
 import { MILLIS_IN_SECOND } from 'time';
-import type { InsightWindow, Enqueue } from 'types';
+import type { RebrowseWindow, Enqueue } from 'types';
 import { instrumentGlobals } from 'instrument';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface Window extends InsightWindow {}
+  interface Window extends RebrowseWindow {}
 }
 
 ((window, location, compiledTs) => {

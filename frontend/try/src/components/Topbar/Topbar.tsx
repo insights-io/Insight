@@ -20,7 +20,7 @@ export const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
       $style={{ borderBottom: `1px solid ${theme.colors.primary200}` }}
     >
       <SpacedBetween>
-        <H6 margin={0}>Insight</H6>
+        <H6 margin={0}>Rebrowse</H6>
         <Block>
           <UnstyledLink
             href={helpBaseURL}

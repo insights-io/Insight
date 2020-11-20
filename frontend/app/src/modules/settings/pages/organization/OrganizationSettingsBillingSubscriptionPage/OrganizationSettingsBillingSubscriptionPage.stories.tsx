@@ -1,9 +1,8 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import type { Meta } from '@storybook/react';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 import { FREE_PLAN_DTO } from 'test/data/billing';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ADMIN_DTO, REBROWSE_ORGANIZATION_DTO } from 'test/data';
+import type { Meta } from '@storybook/react';
 
 import { OrganizationSettingsBillingSubscriptionPage } from './OrganizationSettingsBillingSubscriptionPage';
 
@@ -17,10 +16,10 @@ export default {
 export const FreeSubscription = () => {
   return (
     <OrganizationSettingsBillingSubscriptionPage
-      organization={INSIGHT_ORGANIZATION_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
       subscriptions={[]}
       plan={FREE_PLAN_DTO}
-      user={INSIGHT_ADMIN_DTO}
+      user={REBROWSE_ADMIN_DTO}
     />
   );
 };

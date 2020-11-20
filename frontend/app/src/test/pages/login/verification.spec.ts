@@ -3,7 +3,7 @@ import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getServerSideProps } from 'pages/login/verification';
 import { mockServerSideRequest } from '@rebrowse/next-testing';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ADMIN_DTO } from 'test/data';
 
 describe('pages/login/verification', () => {
   it('Injects correct server side data when existing MFA methods', async () => {
@@ -36,7 +36,7 @@ describe('pages/login/verification', () => {
 
     const retrieveUserStub = sandbox
       .stub(AuthApi.tfa.challenge, 'retrieveUser')
-      .resolves(INSIGHT_ADMIN_DTO);
+      .resolves(REBROWSE_ADMIN_DTO);
 
     const { req, res, writeHead } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({
@@ -55,7 +55,7 @@ describe('pages/login/verification', () => {
     });
 
     sandbox.assert.notCalled(writeHead);
-    expect(serverSideProps).toEqual({ props: { user: INSIGHT_ADMIN_DTO } });
+    expect(serverSideProps).toEqual({ props: { user: REBROWSE_ADMIN_DTO } });
   });
 
   it('Should redirect to login when missing challengeId cookie', async () => {

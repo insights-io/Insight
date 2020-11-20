@@ -297,7 +297,7 @@ test('As a user with business email, I should be able to setup Github SSO', asyn
 });
 
 test('As a user, I should not be able to upgrade plan when already on Enterprise plan', async (t) => {
-  await LoginPage.loginWithInsightUser(t)
+  await LoginPage.loginWithRebrowseUser(t)
     .click(OrganizationGeneralSettingsPage.sidebar.subscription)
     .expect(queryByText('Rebrowse Enterprise').visible)
     .ok('Rebrowse should be on enterprise plan')

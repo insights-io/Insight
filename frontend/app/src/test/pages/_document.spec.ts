@@ -1,7 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { getInitialProps } from 'pages/_document';
 import { Server } from 'styletron-engine-atomic';
-import * as insightSdk from '@rebrowse/sdk';
+import * as sdk from '@rebrowse/sdk';
 import { mockServerSideRequest } from '@rebrowse/next-testing';
 import * as tracerUtils from 'modules/tracing';
 import type { Tracer } from 'opentracing';
@@ -22,10 +22,8 @@ describe('pages/_document', () => {
         html: '<div>Hello world</div>',
       });
 
-    const fetchBoostrapScriptStub = sandbox.stub(
-      insightSdk,
-      'getBoostrapScript'
-    ).resolves(`((s, e, t) => {
+    const fetchBoostrapScriptStub = sandbox.stub(sdk, 'getBoostrapScript')
+      .resolves(`((s, e, t) => {
       s._i_debug = !1;
       s._i_host = 'rebrowse.dev';
       s._i_org = '<ORG>';
@@ -33,7 +31,7 @@ describe('pages/_document', () => {
       const n = e.createElement(t);
       n.async = true;
       n.crossOrigin = 'anonymous';
-      n.src = 'https://static.rebrowse.dev/s/local.insight.js';
+      n.src = 'https://static.rebrowse.dev/s/local.rebrowse.js';
       const i = e.getElementsByTagName(t)[0];
       i.parentNode.insertBefore(n, i);
     })(window, document, 'script');`);
@@ -53,7 +51,7 @@ describe('pages/_document', () => {
       const n = e.createElement(t);
       n.async = true;
       n.crossOrigin = 'anonymous';
-      n.src = 'https://static.rebrowse.dev/s/local.insight.js';
+      n.src = 'https://static.rebrowse.dev/s/local.rebrowse.js';
       const i = e.getElementsByTagName(t)[0];
       i.parentNode.insertBefore(n, i);
     })(window, document, 'script');`,
@@ -63,7 +61,7 @@ describe('pages/_document', () => {
   it('Should trace when request', async () => {
     process.env.BOOTSTRAP_SCRIPT = 'fromEnv';
     const renderPage = sandbox.stub().resolves();
-    sandbox.stub(insightSdk, 'getBoostrapScript').resolves('');
+    sandbox.stub(sdk, 'getBoostrapScript').resolves('');
 
     const tracer = { startSpan: sandbox.stub(), extract: sandbox.stub() };
     sandbox
@@ -93,7 +91,7 @@ describe('pages/_document', () => {
   it('Should trace continue previously started request trace', async () => {
     process.env.BOOTSTRAP_SCRIPT = 'fromEnv';
     const renderPage = sandbox.stub().resolves();
-    sandbox.stub(insightSdk, 'getBoostrapScript').resolves('');
+    sandbox.stub(sdk, 'getBoostrapScript').resolves('');
 
     const tracer = { startSpan: sandbox.stub(), extract: sandbox.stub() };
     sandbox

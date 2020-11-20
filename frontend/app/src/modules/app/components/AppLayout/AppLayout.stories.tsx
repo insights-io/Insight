@@ -1,9 +1,8 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
 import { Block } from 'baseui/block';
-import { INSIGHT_ADMIN } from 'test/data';
+import { REBROWSE_ADMIN, REBROWSE_ORGANIZATION } from 'test/data';
 import type { Meta } from '@storybook/react';
-import { INSIGHT_ORGANIZATION } from 'test/data/organization';
 
 import { AppLayout } from './AppLayout';
 
@@ -15,7 +14,7 @@ export default {
 
 export const Base = () => {
   return (
-    <AppLayout user={INSIGHT_ADMIN} organization={INSIGHT_ORGANIZATION}>
+    <AppLayout user={REBROWSE_ADMIN} organization={REBROWSE_ORGANIZATION}>
       <Block display="flex" justifyContent="center">
         Some content
       </Block>

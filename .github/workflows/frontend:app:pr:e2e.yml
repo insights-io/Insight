@@ -18,7 +18,7 @@ env:
   COMPOSE_DOCKER_CLI_BUILD: 1
   ARCHIVES: /home/runner/archives
   ARTIFACTS_PATH: frontend/app/artifacts/
-  BOOTSTRAP_SCRIPT: http://browser-bootstrap/localhost.insight.js
+  BOOTSTRAP_SCRIPT: http://browser-bootstrap/localhost.rebrowse.js
   MAILER_MOCK: true
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_API_KEY }}
 

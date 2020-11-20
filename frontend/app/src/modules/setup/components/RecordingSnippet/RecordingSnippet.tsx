@@ -51,7 +51,7 @@ export const RecordingSnippet = ({
   return (
     <Block>
       <H3 $style={{ fontSize: '22px', lineHeight: '22px' }} marginTop={0}>
-        Ready to get Insights? Setup the recording snippet.
+        Ready to get insights? Setup the recording snippet.
       </H3>
       <Paragraph3>
         Paste your snippet into the{' '}

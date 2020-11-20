@@ -1,8 +1,11 @@
 import React from 'react';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
-import { INSIGHT_ADMIN_DTO, SSO_SAML_SETUP_DTO } from 'test/data';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
+import {
+  REBROWSE_ADMIN_DTO,
+  REBROWSE_ORGANIZATION_DTO,
+  SSO_SAML_SETUP_DTO,
+} from 'test/data';
 import { AuthApi } from 'api';
 import {
   SamlConfigurationDTO,
@@ -19,8 +22,8 @@ export default {
 } as Meta;
 
 const baseProps = {
-  user: INSIGHT_ADMIN_DTO,
-  organization: INSIGHT_ORGANIZATION_DTO,
+  user: REBROWSE_ADMIN_DTO,
+  organization: REBROWSE_ORGANIZATION_DTO,
 };
 
 export const WithSaml = () => {

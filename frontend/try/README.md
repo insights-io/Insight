@@ -2,7 +2,7 @@
 
 [![storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://insights-io.github.io/Insight/try/storybook/master/)
 
-Sign up page for Insight. Deployed on a separate domain: https://try.insight.<>
+Sign up page for Rebrowse. Deployed on a separate domain: https://try.rebrowse.<>
 
 ## Storybook
 
@@ -20,5 +20,5 @@ If you also want to use the locally build bootstrap script, you can do the follo
 
 ```sh
 yarn workspace @rebrowse/browser-bootstrap serve
-BOOTSTRAP_SCRIPT=http://localhost:5001/localhost.insight.js yarn dev
+BOOTSTRAP_SCRIPT=http://localhost:5001/localhost.rebrowse.js yarn dev
 ```

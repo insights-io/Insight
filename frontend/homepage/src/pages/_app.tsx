@@ -2,7 +2,7 @@ import React from 'react';
 import App from 'next/app';
 import AppProviders from 'shared/containers/AppProviders';
 
-class InsightApp extends App {
+class RebrowseApp extends App {
   render() {
     const { Component, pageProps } = this.props;
     return (
@@ -13,4 +13,4 @@ class InsightApp extends App {
   }
 }
 
-export default InsightApp;
+export default RebrowseApp;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
-import { INSIGHT_ADMIN, TFA_SETUP_QR_IMAGE } from 'test/data';
+import { REBROWSE_ADMIN, TFA_SETUP_QR_IMAGE } from 'test/data';
 import { SWRConfig } from 'swr';
 import { Meta } from '@storybook/react';
 
@@ -15,7 +15,7 @@ export default {
 export const TfaEnabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <TwoFactorAuthentication user={INSIGHT_ADMIN} />
+      <TwoFactorAuthentication user={REBROWSE_ADMIN} />
     </SWRConfig>
   );
 };

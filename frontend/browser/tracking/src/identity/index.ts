@@ -11,7 +11,7 @@ import {
   expiresUTC,
 } from 'time';
 
-import { Cookie, InsightIdentity, Connected } from './types';
+import { Cookie, RebrowseIdentity, Connected } from './types';
 
 class Identity implements Connected {
   public static storageKey = '_is_device_id' as const;
@@ -75,7 +75,7 @@ class Identity implements Connected {
 
   private static decodeIdentity = (
     encoded: string | undefined
-  ): InsightIdentity | undefined => {
+  ): RebrowseIdentity | undefined => {
     if (!encoded) {
       return undefined;
     }

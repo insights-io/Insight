@@ -18,7 +18,7 @@ const HomePage = ({ loggedIn }: Props) => {
   return (
     <Block padding={theme.sizing.scale300}>
       <SpacedBetween>
-        <H6 margin={0}>Insight</H6>
+        <H6 margin={0}>Rebrowse</H6>
         <UnstyledA href={href} target="_blank" rel="noreferrer noopener">
           <Button shape={SHAPE.pill} size="compact">
             {loggedIn ? 'Go to app' : 'Sign up'}

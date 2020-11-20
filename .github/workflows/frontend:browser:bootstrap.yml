@@ -81,5 +81,5 @@ jobs:
           SLACK_USERNAME: botsights
           SLACK_CHANNEL: release
           SLACK_TITLE: Bootstrap script release
-          SLACK_MESSAGE: 'New version ${{ env.GITHUB_SHA_SHORT }} of bootstrap script released to https://${{ secrets.AWS_CLOUDFRONT_STATIC_STAGING_DOMAIN }}/b/insight.js! :rocket:'
+          SLACK_MESSAGE: 'New version ${{ env.GITHUB_SHA_SHORT }} of bootstrap script released to https://${{ secrets.AWS_CLOUDFRONT_STATIC_STAGING_DOMAIN }}/b/rebrowse.js! :rocket:'
           SLACK_ICON: https://avatars0.githubusercontent.com/u/66676697?s=96&v=4

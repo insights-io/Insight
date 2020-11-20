@@ -1,11 +1,14 @@
 import { authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/sessions';
 import { AuthApi, SessionApi } from 'api';
-import { INSIGHT_ADMIN_DTO, INSIGHT_SESSIONS_DTOS } from 'test/data';
+import {
+  REBROWSE_ADMIN_DTO,
+  REBROWSE_ORGANIZATION_DTO,
+  REBROWSE_SESSIONS_DTOS,
+} from 'test/data';
 import { sandbox } from '@rebrowse/testing';
 import { mockServerSideRequest } from '@rebrowse/next-testing';
 import { responsePromise } from 'test/utils/request';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 describe('pages/sessions', () => {
   authenticatedTestCases(getServerSideProps);
@@ -16,19 +19,19 @@ describe('pages/sessions', () => {
       responsePromise({
         status: 200,
         data: {
-          user: INSIGHT_ADMIN_DTO,
-          organization: INSIGHT_ORGANIZATION_DTO,
+          user: REBROWSE_ADMIN_DTO,
+          organization: REBROWSE_ORGANIZATION_DTO,
         },
       })
     );
 
     const getSessionsStub = sandbox
       .stub(SessionApi, 'getSessions')
-      .resolves(INSIGHT_SESSIONS_DTOS);
+      .resolves(REBROWSE_SESSIONS_DTOS);
 
     const getSessionCountStub = sandbox
       .stub(SessionApi, 'count')
-      .resolves({ count: INSIGHT_SESSIONS_DTOS.length });
+      .resolves({ count: REBROWSE_SESSIONS_DTOS.length });
 
     const { req, res } = mockServerSideRequest();
     const serverSideProps = await getServerSideProps({
@@ -56,10 +59,10 @@ describe('pages/sessions', () => {
 
     expect(serverSideProps).toEqual({
       props: {
-        sessionCount: INSIGHT_SESSIONS_DTOS.length,
-        sessions: INSIGHT_SESSIONS_DTOS,
-        user: INSIGHT_ADMIN_DTO,
-        organization: INSIGHT_ORGANIZATION_DTO,
+        sessionCount: REBROWSE_SESSIONS_DTOS.length,
+        sessions: REBROWSE_SESSIONS_DTOS,
+        user: REBROWSE_ADMIN_DTO,
+        organization: REBROWSE_ORGANIZATION_DTO,
       },
     });
   });

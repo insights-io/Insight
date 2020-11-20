@@ -1,7 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { renderHook } from '@testing-library/react-hooks';
 import { SessionApi } from 'api';
-import { INSIGHT_SESSION, INSIGHT_SESSION_DTO } from 'test/data';
+import { REBROWSE_SESSION_DTO, REBROWSE_SESSION } from 'test/data';
 
 import { useSessions } from './useSessions';
 
@@ -9,7 +9,7 @@ describe('useSessions', () => {
   it('Should correctly load more sessions', async () => {
     const searchSessionsStub = sandbox
       .stub(SessionApi, 'getSessions')
-      .resolves([INSIGHT_SESSION_DTO]);
+      .resolves([REBROWSE_SESSION_DTO]);
 
     const { result, waitForNextUpdate } = renderHook(() =>
       useSessions([], 0, {
@@ -36,7 +36,7 @@ describe('useSessions', () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.sessions).toEqual([INSIGHT_SESSION]);
+    expect(result.current.sessions).toEqual([REBROWSE_SESSION]);
 
     result.current.loadMoreItems(1, 1);
     sandbox.assert.calledWithExactly(searchSessionsStub, {
@@ -46,12 +46,15 @@ describe('useSessions', () => {
         'location.city': 'eq:Maribor',
         created_at: [
           'gte:1995-12-04T00:12:00.000Z',
-          `lte:${INSIGHT_SESSION.createdAt.toISOString()}`,
+          `lte:${REBROWSE_SESSION.createdAt.toISOString()}`,
         ],
       },
     });
 
     await waitForNextUpdate();
-    expect(result.current.sessions).toEqual([INSIGHT_SESSION, INSIGHT_SESSION]);
+    expect(result.current.sessions).toEqual([
+      REBROWSE_SESSION,
+      REBROWSE_SESSION,
+    ]);
   });
 });

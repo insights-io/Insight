@@ -26,16 +26,16 @@ test('[ORGANIZATION_GENERAL_SETTINGS]: User should be able to change general org
     .eql('Rebrowse', 'Should have Rebrowse value by default')
     .selectText(OrganizationGeneralSettingsPage.nameInput)
     .pressKey('delete')
-    .typeText(OrganizationGeneralSettingsPage.nameInput, 'Rebrowse')
+    .typeText(OrganizationGeneralSettingsPage.nameInput, 'Google')
     .pressKey('tab') // blur input
     .expect(
       queryByText(
-        'Successfully changed organization name from "Insight" to "Rebrowse"'
+        'Successfully changed organization name from "Rebrowse" to "Google"'
       ).visible
     )
     .ok('Should change organization name')
     .expect(OrganizationGeneralSettingsPage.nameInput.value)
-    .eql('Rebrowse', 'Input value updated');
+    .eql('Google', 'Input value updated');
 
   /* Default Role */
   await t

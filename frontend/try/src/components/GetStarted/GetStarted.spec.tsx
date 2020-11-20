@@ -7,7 +7,7 @@ import { Base } from './GetStarted.stories';
 describe('<GetStarted />', () => {
   test('Contains all relevant data', () => {
     const { getByText } = render(<Base />);
-    expect(getByText('Insight')).toBeInTheDocument();
+    expect(getByText('Rebrowse')).toBeInTheDocument();
     expect(getByText('Start your free trial now.')).toBeInTheDocument();
     expect(getByText("You're minutes away from insights.")).toBeInTheDocument();
 

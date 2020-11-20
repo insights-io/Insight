@@ -59,9 +59,13 @@ export const SetupAvatar = ({
   const imageRef = useRef<HTMLImageElement>(null);
   const [_css, theme] = useStyletron();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { control, watch, handleSubmit, errors, setError } = useForm<
-    SetupAvatarFormValues
-  >({
+  const {
+    control,
+    watch,
+    handleSubmit,
+    errors,
+    setError,
+  } = useForm<SetupAvatarFormValues>({
     defaultValues: {
       type: organization.avatar?.type || 'initials',
       avatar:

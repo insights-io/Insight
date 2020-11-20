@@ -1,7 +1,10 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { INSIGHT_ADMIN_DTO, NAMELESS_INSIGHT_ADMIN_DTO } from 'test/data';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
+import {
+  REBROWSE_ADMIN_DTO,
+  REBROWSE_ORGANIZATION_DTO,
+  NAMELESS_ADMIN_DTO,
+} from 'test/data';
 import type { Meta } from '@storybook/react';
 
 import { OrganizationSettingsMembersPage } from './OrganizationSettingsMembersPage';
@@ -13,12 +16,14 @@ export default {
 } as Meta;
 
 export const Base = () => {
+  const members = [REBROWSE_ADMIN_DTO, NAMELESS_ADMIN_DTO];
+
   return (
     <OrganizationSettingsMembersPage
-      organization={INSIGHT_ORGANIZATION_DTO}
-      user={INSIGHT_ADMIN_DTO}
-      members={[INSIGHT_ADMIN_DTO, NAMELESS_INSIGHT_ADMIN_DTO]}
-      memberCount={2}
+      organization={REBROWSE_ORGANIZATION_DTO}
+      user={REBROWSE_ADMIN_DTO}
+      members={members}
+      memberCount={members.length}
     />
   );
 };

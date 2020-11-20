@@ -11,7 +11,7 @@ export default {
 export const Base = (props?: Partial<Props>) => {
   return (
     <RecordingSnippet
-      snippetUri="https://static.rebrowse.dev/b/insight.js"
+      snippetUri="https://static.rebrowse.dev/b/rebrowse.js"
       organizationId="FE2Dj3"
       {...props}
     />
