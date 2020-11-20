@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'test/utils';
 import userEvent from '@testing-library/user-event';
 import { sandbox } from '@rebrowse/testing';
-import { INSIGHT_SESSION } from 'test/data';
+import { REBROWSE_SESSION } from 'test/data';
 import { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import { waitFor } from '@testing-library/react';
 
@@ -31,7 +31,7 @@ describe('<SessionsPage />', () => {
     const { findByText } = render(<NoSessions />);
 
     await findByText("._i_org = '000000';", { exact: false });
-    await findByText(".src = 'https://static.rebrowse.dev/s/insight.js';", {
+    await findByText(".src = 'https://static.rebrowse.dev/s/rebrowse.js';", {
       exact: false,
     });
   });
@@ -132,8 +132,8 @@ describe('<SessionsPage />', () => {
 
     sandbox.assert.calledWithExactly(
       push,
-      `/sessions/${INSIGHT_SESSION.id}`,
-      `/sessions/${INSIGHT_SESSION.id}`,
+      `/sessions/${REBROWSE_SESSION.id}`,
+      `/sessions/${REBROWSE_SESSION.id}`,
       {
         shallow: undefined,
         locale: undefined,

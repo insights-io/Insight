@@ -4,11 +4,14 @@ import {
   fullHeightDecorator,
   mockApiError,
 } from '@rebrowse/storybook';
-import { INSIGHT_ADMIN_DTO, TFA_SETUP_QR_IMAGE } from 'test/data';
+import {
+  REBROWSE_ADMIN_DTO,
+  REBROWSE_ORGANIZATION_DTO,
+  TFA_SETUP_QR_IMAGE,
+} from 'test/data';
 import { SWRConfig } from 'swr';
 import { AuthApi } from 'api';
 import type { Meta } from '@storybook/react';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 import { AccountSettingsSecurityPage } from './AccountSettingsSecurityPage';
 
@@ -22,8 +25,8 @@ export const TfaEnabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
       <AccountSettingsSecurityPage
-        user={INSIGHT_ADMIN_DTO}
-        organization={INSIGHT_ORGANIZATION_DTO}
+        user={REBROWSE_ADMIN_DTO}
+        organization={REBROWSE_ORGANIZATION_DTO}
       />
     </SWRConfig>
   );
@@ -50,8 +53,8 @@ export const TfaDisabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
       <AccountSettingsSecurityPage
-        user={INSIGHT_ADMIN_DTO}
-        organization={INSIGHT_ORGANIZATION_DTO}
+        user={REBROWSE_ADMIN_DTO}
+        organization={REBROWSE_ORGANIZATION_DTO}
       />
     </SWRConfig>
   );
@@ -75,8 +78,8 @@ export const WithError = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
       <AccountSettingsSecurityPage
-        user={INSIGHT_ADMIN_DTO}
-        organization={INSIGHT_ORGANIZATION_DTO}
+        user={REBROWSE_ADMIN_DTO}
+        organization={REBROWSE_ORGANIZATION_DTO}
       />
     </SWRConfig>
   );

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Meta } from '@storybook/react';
 import {
-  INSIGHT_ADMIN,
-  INSIGHT_ADMIN_DTO,
-  NAMELESS_INSIGHT_ADMIN_DTO,
+  REBROWSE_ADMIN,
+  REBROWSE_ADMIN_DTO,
+  NAMELESS_ADMIN_DTO,
 } from 'test/data';
 
 import { OrganizationMembers } from './OrganizationMembers';
@@ -14,11 +14,12 @@ export default {
 } as Meta;
 
 export const Base = () => {
+  const members = [REBROWSE_ADMIN_DTO, NAMELESS_ADMIN_DTO];
   return (
     <OrganizationMembers
-      user={INSIGHT_ADMIN}
-      memberCount={2}
-      members={[INSIGHT_ADMIN_DTO, NAMELESS_INSIGHT_ADMIN_DTO]}
+      user={REBROWSE_ADMIN}
+      memberCount={members.length}
+      members={members}
     />
   );
 };

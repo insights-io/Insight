@@ -24,7 +24,7 @@ class SignUp extends AbstractPage {
   public readonly phoneNumberInput = getByPlaceholderText('Phone number');
 
   public readonly userFullNameDefault = 'Miha Novak';
-  public readonly userCompanyDefault = 'Insight';
+  public readonly userCompanyDefault = 'Rebrowse';
 
   /* Utils */
   public signUp = (

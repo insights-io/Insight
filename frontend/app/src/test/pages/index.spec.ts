@@ -1,11 +1,10 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi, SessionApi } from 'api';
 import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from 'test/data';
 import { authenticatedTestCases } from 'test/utils/next';
 import { getServerSideProps } from 'pages/index';
 import { mockServerSideRequest } from '@rebrowse/next-testing';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 import { responsePromise } from 'test/utils/request';
 
 describe('pages/index', () => {
@@ -17,8 +16,8 @@ describe('pages/index', () => {
       responsePromise({
         status: 200,
         data: {
-          user: INSIGHT_ADMIN_DTO,
-          organization: INSIGHT_ORGANIZATION_DTO,
+          user: REBROWSE_ADMIN_DTO,
+          organization: REBROWSE_ORGANIZATION_DTO,
         },
       })
     );
@@ -52,8 +51,8 @@ describe('pages/index', () => {
     });
     expect(serverSideProps).toEqual({
       props: {
-        user: INSIGHT_ADMIN_DTO,
-        organization: INSIGHT_ORGANIZATION_DTO,
+        user: REBROWSE_ADMIN_DTO,
+        organization: REBROWSE_ORGANIZATION_DTO,
         countByLocation: COUNT_BY_LOCATION,
         countByDeviceClass: COUNT_BY_DEVICE,
       },

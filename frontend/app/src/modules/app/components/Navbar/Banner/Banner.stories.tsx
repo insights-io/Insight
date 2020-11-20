@@ -2,10 +2,13 @@ import React from 'react';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
-import { INSIGHT_ADMIN, NAMELESS_INSIGHT_ADMIN } from 'test/data';
+import {
+  REBROWSE_ADMIN,
+  NAMELESS_ADMIN,
+  REBROWSE_ORGANIZATION,
+} from 'test/data';
 import type { Meta } from '@storybook/react';
 import { Theme } from 'baseui/theme';
-import { INSIGHT_ORGANIZATION } from 'test/data/organization';
 import { AuthApi } from 'api';
 
 import { NavbarBanner } from './Banner';
@@ -40,9 +43,9 @@ export const Base = () => {
     <Wrapper theme={theme}>
       <NavbarBanner
         expanded
-        organizationName={INSIGHT_ORGANIZATION.name}
+        organizationName={REBROWSE_ORGANIZATION.name}
         organizationAvatar={undefined}
-        user={INSIGHT_ADMIN}
+        user={REBROWSE_ADMIN}
         theme={theme}
       />
     </Wrapper>
@@ -62,7 +65,7 @@ export const NamelessUserAndOrganization = () => {
         expanded
         organizationName={undefined}
         organizationAvatar={undefined}
-        user={NAMELESS_INSIGHT_ADMIN}
+        user={NAMELESS_ADMIN}
         theme={theme}
       />
     </Wrapper>

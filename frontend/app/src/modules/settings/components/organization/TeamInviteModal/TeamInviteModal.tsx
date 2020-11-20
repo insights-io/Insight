@@ -33,9 +33,14 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
-  const { register, handleSubmit, errors, control, setError, reset } = useForm<
-    TeamInviteCreateDTO
-  >();
+  const {
+    register,
+    handleSubmit,
+    errors,
+    control,
+    setError,
+    reset,
+  } = useForm<TeamInviteCreateDTO>();
   const inputOverrides = createInputOverrides(theme);
 
   const close = () => {

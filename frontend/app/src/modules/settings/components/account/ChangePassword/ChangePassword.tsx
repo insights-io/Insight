@@ -18,9 +18,13 @@ type Props = {
 };
 
 export const ChangePassword = ({ overrides }: Props) => {
-  const { register, handleSubmit, errors, watch, setError } = useForm<
-    ChangePasswordDTO
-  >();
+  const {
+    register,
+    handleSubmit,
+    errors,
+    watch,
+    setError,
+  } = useForm<ChangePasswordDTO>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
 

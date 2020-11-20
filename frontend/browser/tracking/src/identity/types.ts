@@ -1,6 +1,6 @@
 import { PageIdentity } from '@rebrowse/types';
 
-export type InsightIdentity = {
+export type RebrowseIdentity = {
   organizationId: string;
   deviceId: string;
   sessionId: string;
@@ -8,7 +8,7 @@ export type InsightIdentity = {
   expiresSeconds: number;
 };
 
-export type Cookie = Partial<InsightIdentity>;
+export type Cookie = Partial<RebrowseIdentity>;
 
 export interface Connected {
   connect(identity: PageIdentity): void;

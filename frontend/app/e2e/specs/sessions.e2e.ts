@@ -6,7 +6,7 @@ import { LoginPage, SessionPage, SessionsPage } from '../pages';
 fixture('/sessions').page(SessionsPage.path);
 
 test('User should be able to see page sessions', async (t) => {
-  await LoginPage.loginWithInsightUser(t)
+  await LoginPage.loginWithRebrowseUser(t)
     .click(SessionsPage.getLastSession())
     .click(SessionPage.devtools.button)
     .expect(SessionPage.devtools.filterInput.visible)

@@ -77,7 +77,7 @@ export const getInitialProps = async (
   }
 };
 
-class InsightDocument extends Document<Props> {
+class RebrowseDocument extends Document<Props> {
   static async getInitialProps(ctx: DocumentContext): Promise<Props> {
     return getInitialProps(ctx.req, ctx.renderPage, styletron as Server);
   }
@@ -86,7 +86,7 @@ class InsightDocument extends Document<Props> {
     return (
       <Html lang="en">
         <Head>
-          <meta name="application-name" content="Insight" />
+          <meta name="application-name" content="Rebrowse" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta
             name="apple-mobile-web-app-status-bar-style"
@@ -142,4 +142,4 @@ class InsightDocument extends Document<Props> {
   }
 }
 
-export default InsightDocument;
+export default RebrowseDocument;

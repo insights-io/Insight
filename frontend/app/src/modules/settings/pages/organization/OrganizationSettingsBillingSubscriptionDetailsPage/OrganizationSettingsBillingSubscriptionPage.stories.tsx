@@ -5,8 +5,7 @@ import {
   ACTIVE_BUSINESS_SUBSCRIPTION_DTO,
   PAID_INVOICE_DTO,
 } from 'test/data/billing';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
+import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from 'test/data';
 
 import { OrganizationSettingsBillingSubscriptionDetailsPage } from './OrganizationSettingsBillingSubscriptionDetailsPage';
 
@@ -20,10 +19,10 @@ export default {
 export const FreeSubscription = () => {
   return (
     <OrganizationSettingsBillingSubscriptionDetailsPage
-      user={INSIGHT_ADMIN_DTO}
+      user={REBROWSE_ADMIN_DTO}
       subscription={ACTIVE_BUSINESS_SUBSCRIPTION_DTO}
       invoices={[PAID_INVOICE_DTO]}
-      organization={INSIGHT_ORGANIZATION_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
     />
   );
 };

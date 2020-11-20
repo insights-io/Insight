@@ -6,9 +6,9 @@ import type {
   TeamInviteDTO,
 } from '@rebrowse/types';
 
-export const INSIGHT_ORGANIZATION_DTO: OrganizationDTO = {
+export const REBROWSE_ORGANIZATION_DTO: OrganizationDTO = {
   id: '000000',
-  name: 'Insight',
+  name: 'Rebrowse',
   defaultRole: 'member',
   openMembership: false,
   enforceMultiFactorAuthentication: false,
@@ -16,12 +16,12 @@ export const INSIGHT_ORGANIZATION_DTO: OrganizationDTO = {
   updatedAt: new Date().toUTCString(),
 };
 
-export const INSIGHT_ORGANIZATION: Organization = mapOrganization(
-  INSIGHT_ORGANIZATION_DTO
+export const REBROWSE_ORGANIZATION: Organization = mapOrganization(
+  REBROWSE_ORGANIZATION_DTO
 );
 
-export const NAMELESS_INSIGHT_ORGANIZATION: Organization = {
-  ...INSIGHT_ORGANIZATION,
+export const NAMELESS_ORGANIZATION: Organization = {
+  ...REBROWSE_ORGANIZATION,
   name: undefined,
 };
 

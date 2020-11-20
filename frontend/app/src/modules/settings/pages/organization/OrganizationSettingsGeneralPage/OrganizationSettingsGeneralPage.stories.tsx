@@ -1,8 +1,8 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
+import { REBROWSE_ORGANIZATION_DTO } from 'test/data/organization';
+import { REBROWSE_ADMIN_DTO } from 'test/data';
 import type { Meta } from '@storybook/react';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
 
 import { OrganizationSettingsGeneralPage } from './OrganizationSettingsGeneralPage';
 
@@ -15,8 +15,8 @@ export default {
 export const Base = () => {
   return (
     <OrganizationSettingsGeneralPage
-      organization={INSIGHT_ORGANIZATION_DTO}
-      user={INSIGHT_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
+      user={REBROWSE_ADMIN_DTO}
     />
   );
 };

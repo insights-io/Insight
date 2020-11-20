@@ -26,7 +26,7 @@ describe('<SignUpForm />', () => {
     expect((await findAllByText('Required')).length).toEqual(4);
 
     await userEvent.type(firstNameInput, 'Joe Makarena');
-    await userEvent.type(companyInput, 'Insight');
+    await userEvent.type(companyInput, 'Rebrowse');
     await userEvent.type(emailInput, 'random');
     await userEvent.type(passwordInput, 'short');
 
@@ -44,7 +44,7 @@ describe('<SignUpForm />', () => {
     await waitFor(() => {
       sandbox.assert.calledWithExactly(onSubmit, {
         fullName: 'Joe Makarena',
-        company: 'Insight',
+        company: 'Rebrowse',
         email: 'user@example.com',
         password: 'veryHardPassword',
       });
@@ -58,7 +58,7 @@ describe('<SignUpForm />', () => {
     await waitFor(() => {
       sandbox.assert.calledWithExactly(onSubmit, {
         fullName: 'Joe Makarena',
-        company: 'Insight',
+        company: 'Rebrowse',
         email: 'user@example.com',
         password: 'veryHardPassword',
         phoneNumber: { countryCode: '+1', digits: '51222333' },

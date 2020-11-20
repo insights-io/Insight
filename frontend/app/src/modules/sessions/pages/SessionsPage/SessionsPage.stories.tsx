@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  INSIGHT_ADMIN_DTO,
-  INSIGHT_SESSIONS,
-  INSIGHT_SESSIONS_DTOS,
+  REBROWSE_ADMIN_DTO,
+  REBROWSE_SESSIONS,
+  REBROWSE_SESSIONS_DTOS,
+  REBROWSE_ORGANIZATION_DTO,
 } from 'test/data';
 import { fullHeightDecorator, configureStory } from '@rebrowse/storybook';
 import { SessionApi } from 'api';
@@ -10,7 +11,6 @@ import type { SessionDTO } from '@rebrowse/types';
 import { SessionSearchBean } from '@rebrowse/sdk/dist/sessions';
 import get from 'lodash/get';
 import type { Meta } from '@storybook/react';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 import { SessionsPage } from './SessionsPage';
 
@@ -23,10 +23,10 @@ export default {
 export const NoSessions = () => {
   return (
     <SessionsPage
-      user={INSIGHT_ADMIN_DTO}
+      user={REBROWSE_ADMIN_DTO}
       sessions={[]}
       sessionCount={0}
-      organization={INSIGHT_ORGANIZATION_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
     />
   );
 };
@@ -34,10 +34,10 @@ export const NoSessions = () => {
 export const WithSessions = () => {
   return (
     <SessionsPage
-      user={INSIGHT_ADMIN_DTO}
-      sessions={INSIGHT_SESSIONS_DTOS}
-      sessionCount={INSIGHT_SESSIONS.length}
-      organization={INSIGHT_ORGANIZATION_DTO}
+      user={REBROWSE_ADMIN_DTO}
+      sessions={REBROWSE_SESSIONS_DTOS}
+      sessionCount={REBROWSE_SESSIONS.length}
+      organization={REBROWSE_ORGANIZATION_DTO}
     />
   );
 };
@@ -71,7 +71,7 @@ WithSessions.story = configureStory({
       .callsFake((on: string) => {
         return Promise.resolve([
           ...new Set(
-            INSIGHT_SESSIONS_DTOS.map((s) => get(s, on)).filter(Boolean)
+            REBROWSE_SESSIONS_DTOS.map((s) => get(s, on)).filter(Boolean)
           ),
         ]);
       });
@@ -80,7 +80,7 @@ WithSessions.story = configureStory({
       .stub(SessionApi, 'getSessions')
       .callsFake((args = {}) => {
         return Promise.resolve(
-          INSIGHT_SESSIONS_DTOS.filter((s) => filter(s, args.search))
+          REBROWSE_SESSIONS_DTOS.filter((s) => filter(s, args.search))
         );
       });
 
@@ -88,7 +88,7 @@ WithSessions.story = configureStory({
       .stub(SessionApi, 'count')
       .callsFake((args = {}) => {
         return Promise.resolve({
-          count: INSIGHT_SESSIONS_DTOS.filter((s) => filter(s, args.search))
+          count: REBROWSE_SESSIONS_DTOS.filter((s) => filter(s, args.search))
             .length,
         });
       });

@@ -12,6 +12,6 @@ data:
     NEXT_PUBLIC_SESSION_API_BASE_URL=https://api.rebrowse.dev
     BILLING_API_BASE_URL=http://billing-api
     NEXT_PUBLIC_BILLING_API_BASE_URL=https://api.rebrowse.dev
-    BOOTSTRAP_SCRIPT=https://static.rebrowse.dev/b/development.insight.js
+    BOOTSTRAP_SCRIPT=https://static.rebrowse.dev/b/development.rebrowse.js
     JAEGER_AGENT_HOST=jaeger-agent.monitoring
     JAEGER_AGENT_PORT=6832

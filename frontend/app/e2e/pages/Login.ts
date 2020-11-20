@@ -49,10 +49,10 @@ class Login extends AbstractPage {
       .notOk('Sign in button is not visible anymore');
   };
 
-  public loginWithInsightUser = (t: TestController) => {
+  public loginWithRebrowseUser = (t: TestController) => {
     return this.login(t, {
-      email: config.insightUserEmail,
-      password: config.insightUserPassword,
+      email: config.rebrowseUserEmail,
+      password: config.rebrowseUserPassword,
     });
   };
 }

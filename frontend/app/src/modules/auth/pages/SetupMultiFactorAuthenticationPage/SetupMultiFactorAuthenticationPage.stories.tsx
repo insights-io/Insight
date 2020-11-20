@@ -1,5 +1,5 @@
 import React from 'react';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ADMIN_DTO } from 'test/data';
 import type { Meta } from '@storybook/react';
 
 import { SetupMultiFactorAuthenticationPage } from './SetupMultiFactorAuthenticationPage';
@@ -10,5 +10,5 @@ export default {
 } as Meta;
 
 export const Base = () => {
-  return <SetupMultiFactorAuthenticationPage user={INSIGHT_ADMIN_DTO} />;
+  return <SetupMultiFactorAuthenticationPage user={REBROWSE_ADMIN_DTO} />;
 };

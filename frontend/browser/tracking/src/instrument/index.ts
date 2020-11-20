@@ -14,7 +14,7 @@ import { GlobalObject } from '../context/Context';
 import { monkeyPatch } from './patch';
 
 interface WrappedXMLHttpRequest extends XMLHttpRequest {
-  __insight_xhr__?: {
+  __rebrowse_xhr__?: {
     url?: string;
     method?: string;
   };
@@ -34,7 +34,7 @@ export function insrumentXMLHttpRequest(
     ) {
       const method = args[0].toUpperCase();
       const url = args[1];
-      this.__insight_xhr__ = { method, url };
+      this.__rebrowse_xhr__ = { method, url };
       return original.apply(this, args);
     };
   });
@@ -48,8 +48,8 @@ export function insrumentXMLHttpRequest(
           enqueue(
             EventType.XHR,
             [
-              xhr.__insight_xhr__?.method as string,
-              xhr.__insight_xhr__?.url as string,
+              xhr.__rebrowse_xhr__?.method as string,
+              xhr.__rebrowse_xhr__?.url as string,
               xhr.status,
               null,
               'xmlhttprequest',

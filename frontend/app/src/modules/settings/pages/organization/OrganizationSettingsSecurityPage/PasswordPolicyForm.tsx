@@ -29,9 +29,13 @@ export const PasswordPolicyForm = ({ initialPasswordPolicy }: Props) => {
     updatePasswordPolicy,
     createPasswordPolicy,
   } = useOrganizationPasswordPolicy(initialPasswordPolicy);
-  const { register, errors, handleSubmit, control, setError } = useForm<
-    PasswordPolicy
-  >({
+  const {
+    register,
+    errors,
+    handleSubmit,
+    control,
+    setError,
+  } = useForm<PasswordPolicy>({
     reValidateMode: 'onChange',
     defaultValues: {
       minCharacters: passwordPolicy?.minCharacters || 8,

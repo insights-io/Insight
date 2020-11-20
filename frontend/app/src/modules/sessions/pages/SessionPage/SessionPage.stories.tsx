@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-  INSIGHT_SESSION,
-  INSIGHT_SESSION_DTO,
+  REBROWSE_SESSION,
+  REBROWSE_SESSION_DTO,
   CONSOLE_EVENTS,
   ERROR_EVENTS,
-  INSIGHT_ADMIN_DTO,
+  REBROWSE_ADMIN_DTO,
+  REBROWSE_ORGANIZATION_DTO,
 } from 'test/data';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { SessionApi } from 'api';
 import { Meta } from '@storybook/react';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 import { SessionPage } from './SessionPage';
 
@@ -22,10 +22,10 @@ export default {
 export const Base = () => {
   return (
     <SessionPage
-      sessionId={INSIGHT_SESSION.id}
-      session={INSIGHT_SESSION_DTO}
-      user={INSIGHT_ADMIN_DTO}
-      organization={INSIGHT_ORGANIZATION_DTO}
+      sessionId={REBROWSE_SESSION.id}
+      session={REBROWSE_SESSION_DTO}
+      user={REBROWSE_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
     />
   );
 };
@@ -34,7 +34,7 @@ Base.story = configureStory({
     return {
       getSessions: sandbox
         .stub(SessionApi, 'getSessions')
-        .resolves([INSIGHT_SESSION_DTO]),
+        .resolves([REBROWSE_SESSION_DTO]),
       getEvents: sandbox
         .stub(SessionApi.events, 'search')
         .resolves([

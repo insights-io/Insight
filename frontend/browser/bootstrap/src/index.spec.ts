@@ -24,7 +24,7 @@ describe('bootstrap', () => {
 
     await page.goto(`file:${pagePath}`);
 
-    const bundledScriptTag = path.join(process.cwd(), 'dist', 'insight.js');
+    const bundledScriptTag = path.join(process.cwd(), 'dist', 'rebrowse.js');
     await page.addScriptTag({ path: bundledScriptTag });
 
     const windowHandle = await page.evaluateHandle(() => window);
@@ -57,7 +57,7 @@ describe('bootstrap', () => {
     }, headHandle);
 
     expect(injectedScriptResult).toEqual({
-      src: 'https://static.rebrowse.dev/s/insight.js',
+      src: 'https://static.rebrowse.dev/s/rebrowse.js',
       async: true,
       crossOrigin: 'anonymous',
     });

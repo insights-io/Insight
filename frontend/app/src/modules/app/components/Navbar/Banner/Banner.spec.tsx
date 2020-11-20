@@ -7,16 +7,16 @@ import {
   LOGIN_PAGE,
   ORGANIZATION_SETTINGS_MEMBERS_PAGE,
 } from 'shared/constants/routes';
-import { INSIGHT_ADMIN } from 'test/data';
+import { REBROWSE_ADMIN } from 'test/data';
 
 import { Base, NamelessUserAndOrganization } from './Banner.stories';
 
 describe('<NavbarBanner />', () => {
   it('User should see organization name & user full name & be able to navigate to "Members" section', async () => {
     const { getByText, findByText, push } = render(<Base />);
-    userEvent.click(getByText('Insight'));
+    userEvent.click(getByText('Rebrowse'));
 
-    await findByText(INSIGHT_ADMIN.email);
+    await findByText(REBROWSE_ADMIN.email);
 
     userEvent.click(getByText('Members'));
 
@@ -38,7 +38,7 @@ describe('<NavbarBanner />', () => {
     userEvent.click(getByText('My Organization'));
 
     await findByText('My Account');
-    expect((await findAllByText(INSIGHT_ADMIN.email)).length).toEqual(3);
+    expect((await findAllByText(REBROWSE_ADMIN.email)).length).toEqual(3);
 
     userEvent.click(getByText('Sign Out'));
 

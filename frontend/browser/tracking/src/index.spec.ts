@@ -7,12 +7,12 @@ import fs from 'fs';
 import { CreatePageResponse } from '@rebrowse/types';
 import { chromium, Response, Page } from 'playwright';
 import Identity from 'identity';
-import type { InsightWindow } from 'types';
+import type { RebrowseWindow } from 'types';
 import type { EventData } from 'event';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface Window extends InsightWindow {}
+  interface Window extends RebrowseWindow {}
 }
 
 const SERVE_PORT = process.env.SERVE_PORT || 5000;
@@ -42,8 +42,8 @@ const setupPage = async (page: Page) => {
     { organizationId: I_ORGANIZATION, host: I_HOST }
   );
 
-  const insightScript = path.join(process.cwd(), 'dist', 'local.insight.js');
-  await page.addScriptTag({ path: insightScript });
+  const trackingScript = path.join(process.cwd(), 'dist', 'local.rebrowse.js');
+  await page.addScriptTag({ path: trackingScript });
 };
 
 const BROWSERS = [

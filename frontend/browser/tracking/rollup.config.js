@@ -10,7 +10,7 @@ const input = path.join('src', 'index.ts');
 const environments = ['local', 'development', 'staging', 'production'];
 
 const envConfig = (env) => {
-  const baseName = 'insight.js';
+  const baseName = 'rebrowse.js';
   const fileName = `${env}.${baseName}`;
 
   switch (env) {

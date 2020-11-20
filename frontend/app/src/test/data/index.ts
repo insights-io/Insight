@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { subSeconds, subDays, subMonths } from 'date-fns';
 import { mapSession } from '@rebrowse/sdk';
 
-import { INSIGHT_ADMIN } from './user';
+import { REBROWSE_ADMIN_DTO } from './user';
 
 export const DESKTOP_USER_AGENT: UserAgentDTO = {
   deviceClass: 'Desktop',
@@ -17,7 +17,7 @@ export const MOBILE_USER_AGENT: UserAgentDTO = {
   browserName: 'Chrome',
 };
 
-export const INSIGHT_SESSION_DTO: SessionDTO = {
+export const REBROWSE_SESSION_DTO: SessionDTO = {
   id: uuid(),
   createdAt: new Date().toUTCString(),
   deviceId: '123',
@@ -30,13 +30,13 @@ export const INSIGHT_SESSION_DTO: SessionDTO = {
     countryName: 'Slovenia',
     regionName: 'Ljubljana',
   },
-  organizationId: INSIGHT_ADMIN.organizationId,
+  organizationId: REBROWSE_ADMIN_DTO.organizationId,
   userAgent: DESKTOP_USER_AGENT,
 };
 
-export const INSIGHT_SESSION: Session = mapSession(INSIGHT_SESSION_DTO);
+export const REBROWSE_SESSION: Session = mapSession(REBROWSE_SESSION_DTO);
 
-export const INSIGHT_SESSION_HOUR_AGO_DTO: SessionDTO = {
+export const REBROWSE_SESSION_HOUR_AGO_DTO: SessionDTO = {
   id: uuid(),
   createdAt: subSeconds(new Date(), 3600).toUTCString(),
   deviceId: '123',
@@ -49,55 +49,56 @@ export const INSIGHT_SESSION_HOUR_AGO_DTO: SessionDTO = {
     countryName: 'United States',
     regionName: 'Virginia',
   },
-  organizationId: INSIGHT_ADMIN.organizationId,
+  organizationId: REBROWSE_ADMIN_DTO.organizationId,
   userAgent: DESKTOP_USER_AGENT,
 };
 
-export const INSIGHT_SESSION_HOUR_AGO: Session = mapSession(
-  INSIGHT_SESSION_HOUR_AGO_DTO
+export const REBROWSE_SESSION_HOUR_AGO: Session = mapSession(
+  REBROWSE_SESSION_HOUR_AGO_DTO
 );
 
-export const INSIGHT_SESSION_DAY_AGO_NO_LOCATION_DTO: SessionDTO = {
+export const REBROWSE_SESSION_DAY_AGO_NO_LOCATION_DTO: SessionDTO = {
   id: uuid(),
   createdAt: subDays(new Date(), 1).toUTCString(),
   deviceId: '123',
   location: { ip: '13.77.88.76' },
-  organizationId: INSIGHT_ADMIN.organizationId,
+  organizationId: REBROWSE_ADMIN_DTO.organizationId,
   userAgent: MOBILE_USER_AGENT,
 };
 
-export const INSIGHT_SESSION_DAY_AGO_NO_LOCATION: Session = mapSession(
-  INSIGHT_SESSION_DAY_AGO_NO_LOCATION_DTO
+export const REBROWSE_SESSION_DAY_AGO_NO_LOCATION: Session = mapSession(
+  REBROWSE_SESSION_DAY_AGO_NO_LOCATION_DTO
 );
 
-export const INSIGHT_SESSION_MONTH_AGO_NO_LOCATION_DTO: SessionDTO = {
+export const REBROWSE_SESSION_MONTH_AGO_NO_LOCATION_DTO: SessionDTO = {
   id: uuid(),
   createdAt: subMonths(new Date(), 1).toUTCString(),
   deviceId: '123',
   location: { ip: '13.77.88.76' },
-  organizationId: INSIGHT_ADMIN.organizationId,
+  organizationId: REBROWSE_ADMIN_DTO.organizationId,
   userAgent: MOBILE_USER_AGENT,
 };
 
-export const INSIGHT_SESSION_MONTH_AGO_NO_LOCATION: Session = mapSession(
-  INSIGHT_SESSION_MONTH_AGO_NO_LOCATION_DTO
+export const REBROWSE_SESSION_MONTH_AGO_NO_LOCATION: Session = mapSession(
+  REBROWSE_SESSION_MONTH_AGO_NO_LOCATION_DTO
 );
 
-export const INSIGHT_SESSIONS_DTOS = [
-  INSIGHT_SESSION_DTO,
-  INSIGHT_SESSION_HOUR_AGO_DTO,
-  INSIGHT_SESSION_DAY_AGO_NO_LOCATION_DTO,
-  INSIGHT_SESSION_MONTH_AGO_NO_LOCATION_DTO,
+export const REBROWSE_SESSIONS_DTOS = [
+  REBROWSE_SESSION_DTO,
+  REBROWSE_SESSION_HOUR_AGO_DTO,
+  REBROWSE_SESSION_DAY_AGO_NO_LOCATION_DTO,
+  REBROWSE_SESSION_MONTH_AGO_NO_LOCATION_DTO,
 ];
 
-export const INSIGHT_SESSIONS = [
-  INSIGHT_SESSION,
-  INSIGHT_SESSION_HOUR_AGO,
-  INSIGHT_SESSION_DAY_AGO_NO_LOCATION,
-  INSIGHT_SESSION_MONTH_AGO_NO_LOCATION,
+export const REBROWSE_SESSIONS = [
+  REBROWSE_SESSION,
+  REBROWSE_SESSION_HOUR_AGO,
+  REBROWSE_SESSION_DAY_AGO_NO_LOCATION,
+  REBROWSE_SESSION_MONTH_AGO_NO_LOCATION,
 ];
 
 export * from './events';
 export * from './user';
+export * from './organization';
 
 export const TFA_METHODS: TfaMethod[] = ['totp', 'sms'];

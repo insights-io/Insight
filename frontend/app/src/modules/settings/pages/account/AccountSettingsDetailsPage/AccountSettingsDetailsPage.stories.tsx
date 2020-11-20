@@ -1,8 +1,7 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from 'test/data';
 import type { Meta } from '@storybook/react';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
 
 import { AccountSettingsDetailsPage } from './AccountSettingsDetailsPage';
 
@@ -15,8 +14,8 @@ export default {
 export const Base = () => {
   return (
     <AccountSettingsDetailsPage
-      user={INSIGHT_ADMIN_DTO}
-      organization={INSIGHT_ORGANIZATION_DTO}
+      user={REBROWSE_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
     />
   );
 };

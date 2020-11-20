@@ -19,7 +19,7 @@ type Props = {
   stylesheets: Sheet[];
 };
 
-class InsightDocument extends Document<Props> {
+class RebrowseDocument extends Document<Props> {
   static async getInitialProps(ctx: DocumentContext) {
     const page = ctx.renderPage({
       enhanceApp: (App) => (props) => (
@@ -64,4 +64,4 @@ class InsightDocument extends Document<Props> {
   }
 }
 
-export default InsightDocument;
+export default RebrowseDocument;

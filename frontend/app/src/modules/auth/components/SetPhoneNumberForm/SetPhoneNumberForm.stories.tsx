@@ -1,7 +1,7 @@
 import React from 'react';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
-import type { Meta } from '@storybook/react';
+import { REBROWSE_ADMIN_DTO } from 'test/data';
 import { action } from '@storybook/addon-actions';
+import type { Meta } from '@storybook/react';
 
 import { SetPhoneNumberForm } from './SetPhoneNumberForm';
 
@@ -14,7 +14,7 @@ export const Base = () => {
   return (
     <SetPhoneNumberForm
       initialValue={null}
-      updatePhoneNumber={() => Promise.resolve(INSIGHT_ADMIN_DTO)}
+      updatePhoneNumber={() => Promise.resolve(REBROWSE_ADMIN_DTO)}
       onContinue={action('onContinue')}
     />
   );

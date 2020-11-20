@@ -30,9 +30,12 @@ export const AcceptTeamInvitePage = ({
   const router = useRouter();
   const [apiError, setApiError] = useState<APIError>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, errors, setError } = useForm<
-    AcceptTeamInviteDTO
-  >();
+  const {
+    register,
+    handleSubmit,
+    errors,
+    setError,
+  } = useForm<AcceptTeamInviteDTO>();
 
   const onSubmit = handleSubmit((values) => {
     setIsSubmitting(true);

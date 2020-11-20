@@ -2,8 +2,7 @@ import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
 import { Meta } from '@storybook/react';
 import { AuthTokenDTO } from '@rebrowse/types';
-import { INSIGHT_ADMIN_DTO } from 'test/data';
-import { INSIGHT_ORGANIZATION_DTO } from 'test/data/organization';
+import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from 'test/data';
 
 import { AccountSettingsAuthTokensPage } from './AccountSettingsAuthTokensPage';
 
@@ -22,9 +21,9 @@ const AUTH_TOKEN_DTO: AuthTokenDTO = {
 export const Base = () => {
   return (
     <AccountSettingsAuthTokensPage
-      user={INSIGHT_ADMIN_DTO}
+      user={REBROWSE_ADMIN_DTO}
       authTokens={[AUTH_TOKEN_DTO]}
-      organization={INSIGHT_ORGANIZATION_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
     />
   );
 };
