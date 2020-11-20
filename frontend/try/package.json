@@ -41,10 +41,10 @@
     "@rebrowse/sdk": "0.0.0-development",
     "@rebrowse/elements": "0.0.0-development",
     "baseui": "9.105.0",
-    "next": "10.0.1",
+    "next": "10.0.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-hook-form": "6.11.2",
+    "react-hook-form": "6.11.3",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7"
   },
@@ -54,8 +54,8 @@
     "@rebrowse/types": "0.0.0-development",
     "@rebrowse/testing": "0.0.0-development",
     "@rebrowse/next-testing": "0.0.0-development",
-    "@next/bundle-analyzer": "10.0.1",
-    "@types/react": "16.9.56",
+    "@next/bundle-analyzer": "10.0.2",
+    "@types/react": "16.14.0",
     "@types/react-dom": "16.9.9",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2"
