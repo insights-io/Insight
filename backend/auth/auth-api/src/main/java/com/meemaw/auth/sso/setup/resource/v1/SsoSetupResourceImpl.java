@@ -2,7 +2,7 @@ package com.meemaw.auth.sso.setup.resource.v1;
 
 import com.meemaw.auth.core.EmailUtils;
 import com.meemaw.auth.sso.IdentityProviderRegistry;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.sso.setup.datasource.SsoSetupDatasource;
 import com.meemaw.auth.sso.setup.model.SsoMethod;
 import com.meemaw.auth.sso.setup.model.dto.CreateSsoSetupParams;
@@ -32,7 +32,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
 
   @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject SsoSetupService ssoSetupService;
-  @Inject InsightPrincipal insightPrincipal;
+  @Inject AuthPrincipal authPrincipal;
   @Inject IdentityProviderRegistry identityProviderRegistry;
   @Context UriInfo info;
   @Context HttpServerRequest request;
@@ -40,7 +40,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
 
   @Override
   public CompletionStage<Response> create(CreateSsoSetupParams body) {
-    AuthUser user = insightPrincipal.user();
+    AuthUser user = authPrincipal.user();
     SsoMethod method = body.getMethod();
 
     if (SsoMethod.SAML.equals(method)) {
@@ -69,7 +69,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
 
   @Override
   public CompletionStage<Response> get() {
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
     log.info("[AUTH] SSO setup get request organization={}", organizationId);
     return ssoSetupDatasource
         .get(organizationId)
@@ -86,7 +86,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
 
   @Override
   public CompletionStage<Response> delete() {
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
 
     log.info("[AUTH] SSO setup delete request organizationId={}", organizationId);
     return ssoSetupDatasource

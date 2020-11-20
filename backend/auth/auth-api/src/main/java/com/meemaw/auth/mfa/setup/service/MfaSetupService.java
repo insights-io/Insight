@@ -4,7 +4,7 @@ import com.meemaw.auth.mfa.MfaMethod;
 import com.meemaw.auth.mfa.MfaProvider;
 import com.meemaw.auth.mfa.MfaProvidersRegistry;
 import com.meemaw.auth.mfa.model.MfaConfiguration;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.datasource.UserMfaDatasource;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.rest.response.Boom;
@@ -36,7 +36,7 @@ public class MfaSetupService {
             });
   }
 
-  public CompletionStage<?> mfaSetupStart(MfaMethod method, InsightPrincipal principal) {
+  public CompletionStage<?> mfaSetupStart(MfaMethod method, AuthPrincipal principal) {
     MfaProvider<?> mfaProvider = mfaProvidersRegistry.get(method);
     log.debug("[AUTH]: {} MFA setup start for user={}", method, principal.user().getId());
     return mfaProvider.setupStart(principal.user(), principal.challengeId() != null);

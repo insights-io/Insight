@@ -1,6 +1,6 @@
 package com.meemaw.session.sessions.resource.v1;
 
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.session.sessions.service.SessionService;
 import com.meemaw.shared.context.RequestUtils;
@@ -21,7 +21,7 @@ public class SessionResourceImpl implements SessionResource {
 
   @Context HttpServletRequest request;
   @Context UriInfo uriInfo;
-  @Inject InsightPrincipal principal;
+  @Inject AuthPrincipal principal;
   @Inject SessionService sessionService;
 
   @Override

@@ -33,4 +33,3 @@ releases:
 {{ toYaml .Values.ingressAnnotationsInternal | indent 14 }}
 
 {{ end }}
-

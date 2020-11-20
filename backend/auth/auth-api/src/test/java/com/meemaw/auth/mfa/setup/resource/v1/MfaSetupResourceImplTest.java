@@ -90,7 +90,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
     String path = String.join("/", MfaSetupResource.PATH, method, "complete");
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .post(path)
         .then()
         .statusCode(415)
@@ -106,7 +106,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .post(path)
         .then()
         .statusCode(400)
@@ -122,7 +122,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body("{}")
         .post(path)
         .then()
@@ -135,7 +135,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void complete_totp_tfa_setup__should_throw__when_missing_qr_request()
       throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +157,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void list_tfa_setups__should_return_empty_list__when_no_tfa_configured() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -178,7 +178,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void get_tfa_setup__should_throw__when_random_method() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -193,7 +193,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   @ParameterizedTest
   @ValueSource(strings = {"totp", "sms"})
   public void get_tfa_setup__should_throw__when_tfa_no_configured(String method) {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -216,7 +216,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   @ParameterizedTest
   @ValueSource(strings = {"totp", "sms"})
   public void delete_tfa__should_throw__when_user_without_tfa(String method) {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)

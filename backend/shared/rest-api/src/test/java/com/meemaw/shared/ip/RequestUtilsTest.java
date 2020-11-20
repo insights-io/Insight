@@ -21,9 +21,9 @@ public class RequestUtilsTest {
 
   @Test
   public void should_parse_tld() {
-    assertEquals(Optional.of("insight.io"), RequestUtils.parseTLD("http://app.insight.io"));
-    assertEquals(Optional.of("insight.io"), RequestUtils.parseTLD("https://app.insight.io"));
-    assertEquals(Optional.of("insight.io"), RequestUtils.parseTLD("https://insight.io"));
+    assertEquals(Optional.of("rebrowse.dev"), RequestUtils.parseTLD("http://app.rebrowse.dev"));
+    assertEquals(Optional.of("rebrowse.dev"), RequestUtils.parseTLD("https://app.rebrowse.dev"));
+    assertEquals(Optional.of("rebrowse.dev"), RequestUtils.parseTLD("https://rebrowse.dev"));
     assertEquals(Optional.empty(), RequestUtils.parseTLD("app"));
     assertEquals(Optional.empty(), RequestUtils.parseTLD("http://localhost:3000"));
     assertEquals(Optional.empty(), RequestUtils.parseTLD(""));

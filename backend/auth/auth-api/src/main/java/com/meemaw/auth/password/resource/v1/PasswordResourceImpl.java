@@ -4,7 +4,7 @@ import com.meemaw.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.meemaw.auth.password.model.dto.PasswordResetRequestDTO;
 import com.meemaw.auth.password.service.PasswordService;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.sso.session.service.SsoService;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestUtils;
@@ -24,7 +24,7 @@ public class PasswordResourceImpl implements PasswordResource {
 
   @Inject PasswordService passwordService;
   @Inject SsoService ssoService;
-  @Inject InsightPrincipal insightPrincipal;
+  @Inject AuthPrincipal authPrincipal;
   @Context UriInfo info;
   @Context HttpServerRequest request;
 
@@ -63,7 +63,7 @@ public class PasswordResourceImpl implements PasswordResource {
   @Override
   public CompletionStage<Response> change(PasswordChangeRequestDTO body) {
     body.validate();
-    AuthUser user = insightPrincipal.user();
+    AuthUser user = authPrincipal.user();
     return passwordService
         .changePassword(
             user.getId(),

@@ -2,7 +2,7 @@ package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
-import static com.meemaw.shared.SharedConstants.INSIGHT_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -180,22 +180,22 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
     // GET newly created page
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .get(String.format(SESSION_PAGE_PATH_TEMPLATE, sessionId, pageId))
         .then()
         .statusCode(200)
-        .body("data.organizationId", is(INSIGHT_ORGANIZATION_ID))
+        .body("data.organizationId", is(GENESIS_ORGANIZATION_ID))
         .body("data.sessionId", is(sessionId.toString()));
 
     // GET newly created session
     DataResponse<SessionDTO> sessionDataResponse =
         given()
             .when()
-            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
             .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
             .then()
             .statusCode(200)
-            .body("data.organizationId", is(INSIGHT_ORGANIZATION_ID))
+            .body("data.organizationId", is(GENESIS_ORGANIZATION_ID))
             .body("data.deviceId", is(deviceId.toString()))
             .body("data.id", is(sessionId.toString()))
             .extract()
@@ -205,7 +205,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
     // GET sessions
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .get(
             String.format(
                 "%s?created_at=gte:%s",
@@ -238,7 +238,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
     // GET sessions again to confirm no new sessions has been created
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .get(
             String.format(
                 "%s?created_at=gte:%s",
@@ -293,7 +293,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
     DataResponse<SessionDTO> firstSessionDataResponse =
         given()
             .when()
-            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
             .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
             .then()
             .statusCode(200)
@@ -305,7 +305,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
     DataResponse<List<SessionDTO>> sessions =
         given()
             .when()
-            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+            .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
             .get(
                 String.format(
                     "%s?created_at=gte:%s",

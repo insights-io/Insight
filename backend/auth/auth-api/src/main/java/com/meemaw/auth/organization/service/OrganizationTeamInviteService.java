@@ -13,9 +13,10 @@ import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.auth.password.model.PasswordPolicyValidator;
 import com.meemaw.auth.password.model.PasswordValidationException;
 import com.meemaw.auth.password.service.PasswordService;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.model.AuthUser;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.query.SearchDTO;
@@ -43,6 +44,9 @@ import org.slf4j.MDC;
 @ApplicationScoped
 @Slf4j
 public class OrganizationTeamInviteService {
+
+  private static final String USER_INVITED_EMAIL_SUBJECT =
+      String.format("You've been invited to %s", SharedConstants.NAME);
 
   @Inject ReactiveMailer mailer;
   @Inject SqlPool sqlPool;
@@ -268,7 +272,7 @@ public class OrganizationTeamInviteService {
 
   @Traced
   public CompletionStage<TeamInviteDTO> sendTeamInvite(
-      UUID token, InsightPrincipal principal, String acceptInviteURL) {
+      UUID token, AuthPrincipal principal, String acceptInviteURL) {
     String creatorFullName = principal.user().getFullName();
 
     return teamInviteDatasource
@@ -293,7 +297,7 @@ public class OrganizationTeamInviteService {
   }
 
   @Traced
-  public CompletionStage<Boolean> deleteTeamInvite(UUID token, InsightPrincipal principal) {
+  public CompletionStage<Boolean> deleteTeamInvite(UUID token, AuthPrincipal principal) {
     AuthUser user = principal.user();
     log.debug("[AUTH]: Delete team invite attempt for token={} user={}", token, user.getId());
     return teamInviteDatasource
@@ -310,14 +314,14 @@ public class OrganizationTeamInviteService {
 
   @Traced
   public CompletionStage<List<TeamInviteDTO>> listTeamInvites(
-      InsightPrincipal principal, SearchDTO search) {
+      AuthPrincipal principal, SearchDTO search) {
     AuthUser user = principal.user();
     log.debug("[AUTH]: List team invites for organizationId={}", user.getOrganizationId());
     return teamInviteDatasource.list(user.getOrganizationId(), search);
   }
 
   @Traced
-  public CompletionStage<Integer> count(InsightPrincipal principal, SearchDTO search) {
+  public CompletionStage<Integer> count(AuthPrincipal principal, SearchDTO search) {
     AuthUser user = principal.user();
     log.debug("[AUTH]: Count team invites for organizationId={}", user.getOrganizationId());
     return teamInviteDatasource.count(user.getOrganizationId(), search);
@@ -325,7 +329,6 @@ public class OrganizationTeamInviteService {
 
   private CompletionStage<Void> sendInviteEmail(
       UUID token, TeamInviteTemplateData templateData, String acceptLink) {
-    String subject = "You've been invited to Insight";
     log.info(
         "[AUTH]: Sending team invite email to user={} token={} acceptLink={}",
         templateData.getRecipientEmail(),
@@ -343,7 +346,8 @@ public class OrganizationTeamInviteService {
             html ->
                 mailer
                     .send(
-                        Mail.withHtml(templateData.getRecipientEmail(), subject, html)
+                        Mail.withHtml(
+                                templateData.getRecipientEmail(), USER_INVITED_EMAIL_SUBJECT, html)
                             .setFrom(MailingConstants.FROM_SUPPORT))
                     .subscribeAsCompletionStage());
   }

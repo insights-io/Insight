@@ -11,6 +11,7 @@ import com.meemaw.auth.mfa.totp.impl.TotpUtils;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.resource.v1.UserResource;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.sms.MockSmsbox;
 import com.meemaw.shared.sms.SmsMessage;
 import com.meemaw.test.rest.mappers.JacksonMapper;
@@ -33,7 +34,10 @@ public final class AuthApiSetupUtils {
   public static int getLastSmsMessageVerificationCode(MockSmsbox mockSmsbox, String sentTo) {
     List<SmsMessage> messages = mockSmsbox.getMessagesSentTo(sentTo);
     SmsMessage message = messages.get(messages.size() - 1);
-    Pattern pattern = Pattern.compile("^.*\\[Insight\\] Verification code: (.*).*$");
+    Pattern pattern =
+        Pattern.compile(
+            String.format("^.*\\[%s\\] Verification code: (.*).*$", SharedConstants.NAME));
+
     Matcher matcher = pattern.matcher(message.getBody());
     matcher.matches();
     return Integer.parseInt(matcher.group(1));

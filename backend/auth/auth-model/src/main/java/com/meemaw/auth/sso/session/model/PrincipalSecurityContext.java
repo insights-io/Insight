@@ -7,13 +7,13 @@ import javax.ws.rs.core.SecurityContext;
 import lombok.Value;
 
 @Value
-public class InsightSecurityContext implements SecurityContext {
+public class PrincipalSecurityContext implements SecurityContext {
 
   Principal userPrincipal;
   UserRole userRole;
   boolean secure;
 
-  public InsightSecurityContext(AuthUser ssoUser, boolean isSecure) {
+  public PrincipalSecurityContext(AuthUser ssoUser, boolean isSecure) {
     this.userRole = ssoUser.getRole();
     this.userPrincipal = () -> ssoUser.getId().toString();
     this.secure = isSecure;

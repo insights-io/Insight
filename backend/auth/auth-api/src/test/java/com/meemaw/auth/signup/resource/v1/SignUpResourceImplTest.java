@@ -9,9 +9,11 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.signup.model.dto.SignUpRequestDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.EmailTestUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
@@ -101,7 +103,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   public void sign_up__should_fail__when_empty_invalid_payload() throws JsonProcessingException {
     SignUpRequestDTO signUpRequestDTO =
         new SignUpRequestDTO(
-            "email", "short", "Marko Novak", "Insight", new PhoneNumberDTO(null, null));
+            "email", "short", "Marko Novak", SharedConstants.NAME, new PhoneNumberDTO(null, null));
 
     given()
         .when()
@@ -119,9 +121,10 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   public void sign_up__should_redirect_back_to_referer__when_valid_payload()
       throws JsonProcessingException {
     String referer = "http://localhost:3000";
-    String signUpEmail = "marko.skace@insight.io";
+    String signUpEmail = "marko.skace@rebrowse.dev";
     SignUpRequestDTO signUpRequestDTO =
-        new SignUpRequestDTO(signUpEmail, "not_short_123", "Marko Novak", "Insight", null);
+        new SignUpRequestDTO(
+            signUpEmail, "not_short_123", "Marko Novak", SharedConstants.NAME, null);
 
     given()
         .when()
@@ -171,7 +174,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
     assertEquals(1, sent.size());
 
     Mail completeSignUpMail = sent.get(0);
-    assertEquals("Rebrowse Support <support@rebrowse.dev>", completeSignUpMail.getFrom());
+    assertEquals(MailingConstants.FROM_SUPPORT, completeSignUpMail.getFrom());
     String token = EmailTestUtils.parseConfirmationToken(completeSignUpMail);
 
     assertThat(

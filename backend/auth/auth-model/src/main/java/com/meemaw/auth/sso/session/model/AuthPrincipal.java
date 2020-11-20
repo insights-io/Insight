@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 @RequestScoped
 @Data
 @Accessors(fluent = true)
-public class InsightPrincipal {
+public class AuthPrincipal {
 
   private AuthUser user;
   private String apiKey;

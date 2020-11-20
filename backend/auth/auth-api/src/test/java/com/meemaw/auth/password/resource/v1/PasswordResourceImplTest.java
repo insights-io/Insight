@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meemaw.auth.core.MailingConstants;
 import com.meemaw.auth.mfa.challenge.resource.v1.MfaChallengeResourceImpl;
 import com.meemaw.auth.mfa.model.SsoChallenge;
 import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
@@ -76,7 +77,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(email));
 
     return given()
-        .header("referer", "https://www.insight.io")
+        .header("referer", "https://www.rebrowse.dev")
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
@@ -320,8 +321,8 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void password_reset_flow__should_succeed__after_sign_up() throws JsonProcessingException {
-    String signUpEmail = "reset-password-flow@gmail.com";
-    String oldPassword = "superHardPassword";
+    String oldPassword = UUID.randomUUID().toString();
+    String signUpEmail = String.format("%s@gmail.com", oldPassword);
     authApi().signUpAndLogin(signUpEmail, oldPassword);
     PasswordResourceImplTest.passwordForgot(signUpEmail, objectMapper);
 
@@ -340,7 +341,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     List<Mail> sent = mailbox.getMessagesSentTo(signUpEmail);
     assertEquals(2, sent.size());
     Mail actual = sent.get(1);
-    assertEquals("Rebrowse Support <support@rebrowse.dev>", actual.getFrom());
+    assertEquals(MailingConstants.FROM_SUPPORT, actual.getFrom());
 
     Document doc = Jsoup.parse(actual.getHtml());
     Elements link = doc.select("a");
@@ -350,7 +351,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     tokenMatcher.matches();
     String token = tokenMatcher.group(1);
 
-    assertEquals(passwordForgotLink, "https://www.insight.io/password-reset?token=" + token);
+    assertEquals(passwordForgotLink, "https://www.rebrowse.dev/password-reset?token=" + token);
 
     // reset request should exist
     given()
@@ -360,7 +361,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .statusCode(200)
         .body(sameJson("{\"data\":true}"));
 
-    String newPassword = "superDuperNewFancyPassword";
+    String newPassword = UUID.randomUUID().toString();
     String resetPasswordPayload =
         objectMapper.writeValueAsString(new PasswordResetRequestDTO(newPassword));
 
@@ -435,7 +436,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
 
   @Test
   public void password_change__should_fail__when_missing_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -465,7 +466,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body("{}")
         .post(PASSWORD_CHANGE_PATH)
         .then()
@@ -482,7 +483,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()
@@ -501,7 +502,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()
@@ -521,7 +522,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithInsightAdmin())
+        .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .body(objectMapper.writeValueAsString(passwordChangeRequestDTO))
         .post(PASSWORD_CHANGE_PATH)
         .then()

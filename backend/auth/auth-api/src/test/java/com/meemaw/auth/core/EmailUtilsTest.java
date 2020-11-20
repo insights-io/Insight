@@ -14,7 +14,7 @@ public class EmailUtilsTest {
     assertFalse(EmailUtils.isBusinessDomain("yahoo.com"));
 
     assertTrue(EmailUtils.isBusinessDomain("snuderls.eu"));
-    assertTrue(EmailUtils.isBusinessDomain("insight.io"));
+    assertTrue(EmailUtils.isBusinessDomain("rebrowse.dev"));
     assertTrue(EmailUtils.isBusinessDomain("cognite.com"));
     assertTrue(EmailUtils.isBusinessDomain("revolut.com"));
     assertTrue(EmailUtils.isBusinessDomain("bitstamp.net"));

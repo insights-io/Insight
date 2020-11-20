@@ -38,7 +38,7 @@ public class OrganizationPasswordPolicyResourceTest extends AbstractAuthApiTest 
 
   @Test
   public void create__should_throw__when_no_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -53,7 +53,7 @@ public class OrganizationPasswordPolicyResourceTest extends AbstractAuthApiTest 
 
   @Test
   public void create__should_throw__when_empty_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -69,7 +69,7 @@ public class OrganizationPasswordPolicyResourceTest extends AbstractAuthApiTest 
 
   @Test
   public void create__should_throw__when_constraint_violations() throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -156,7 +156,7 @@ public class OrganizationPasswordPolicyResourceTest extends AbstractAuthApiTest 
 
   @Test
   public void update__should_throw__when_no_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -171,7 +171,7 @@ public class OrganizationPasswordPolicyResourceTest extends AbstractAuthApiTest 
 
   @Test
   public void update__should_throw__when_empty_body() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -187,7 +187,7 @@ public class OrganizationPasswordPolicyResourceTest extends AbstractAuthApiTest 
 
   @Test
   public void update__should_throw__when_constraint_violations() throws JsonProcessingException {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -209,7 +209,7 @@ public class OrganizationPasswordPolicyResourceTest extends AbstractAuthApiTest 
 
   @Test
   public void get__should_throw__when_not_found() {
-    String sessionId = authApi().loginWithInsightAdmin();
+    String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyDatasource;
 import com.meemaw.auth.organization.datasource.OrganizationPasswordPolicyTable;
 import com.meemaw.auth.organization.model.dto.PasswordPolicyDTO;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
@@ -20,13 +20,13 @@ import javax.ws.rs.core.Response;
 public class OrganizationPasswordPolicyResourceImpl implements OrganizationPasswordPolicyResource {
 
   @Inject ObjectMapper objectMapper;
-  @Inject InsightPrincipal insightPrincipal;
+  @Inject AuthPrincipal authPrincipal;
   @Inject OrganizationPasswordPolicyDatasource passwordPolicyDatasource;
   @Inject Validator validator;
 
   @Override
   public CompletionStage<Response> retrieve() {
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
     return passwordPolicyDatasource
         .retrieve(organizationId)
         .thenApply(
@@ -37,7 +37,7 @@ public class OrganizationPasswordPolicyResourceImpl implements OrganizationPassw
   @Override
   public CompletionStage<Response> create(Map<String, Object> body) {
     UpdateDTO update = validateBody(body);
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
     return passwordPolicyDatasource
         .create(organizationId, update.getParams())
         .thenApply(DataResponse::created);
@@ -46,7 +46,7 @@ public class OrganizationPasswordPolicyResourceImpl implements OrganizationPassw
   @Override
   public CompletionStage<Response> update(Map<String, Object> body) {
     UpdateDTO update = validateBody(body);
-    String organizationId = insightPrincipal.user().getOrganizationId();
+    String organizationId = authPrincipal.user().getOrganizationId();
     return passwordPolicyDatasource
         .update(organizationId, update)
         .thenApply(

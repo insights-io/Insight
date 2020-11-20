@@ -1,7 +1,7 @@
 package com.meemaw.auth.sso.cookie;
 
 import com.meemaw.auth.mfa.model.SsoChallenge;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.shared.logging.LoggingConstants;
 
 public abstract class AbstractChallengeSecurityRequirementDynamicFeature
@@ -12,6 +12,6 @@ public abstract class AbstractChallengeSecurityRequirementDynamicFeature
         SsoChallenge.COOKIE_NAME,
         SsoChallenge.SIZE,
         LoggingConstants.CHALLENGE_SESSION_ID,
-        InsightPrincipal::challengeId);
+        AuthPrincipal::challengeId);
   }
 }

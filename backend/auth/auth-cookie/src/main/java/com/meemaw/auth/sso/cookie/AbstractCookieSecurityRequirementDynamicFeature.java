@@ -2,8 +2,8 @@ package com.meemaw.auth.sso.cookie;
 
 import com.meemaw.auth.sso.AbstractAuthDynamicFeature;
 import com.meemaw.auth.sso.AuthSchemeResolver;
-import com.meemaw.auth.sso.session.model.InsightPrincipal;
-import com.meemaw.auth.sso.session.model.InsightSecurityContext;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
+import com.meemaw.auth.sso.session.model.PrincipalSecurityContext;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.shared.context.RequestContextUtils;
 import com.meemaw.shared.rest.response.Boom;
@@ -31,13 +31,13 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
   private final String cookieName;
   private final int cookieSize;
   private final String identifier;
-  private final BiFunction<InsightPrincipal, String, InsightPrincipal> cookieProvider;
+  private final BiFunction<AuthPrincipal, String, AuthPrincipal> cookieProvider;
 
   public AbstractCookieSecurityRequirementDynamicFeature(
       String cookieName,
       int cookieSize,
       String identifier,
-      BiFunction<InsightPrincipal, String, InsightPrincipal> cookieProvider) {
+      BiFunction<AuthPrincipal, String, AuthPrincipal> cookieProvider) {
     this.cookieName = cookieName;
     this.cookieSize = cookieSize;
     this.identifier = identifier;
@@ -88,7 +88,7 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
     AuthUser user = maybeUser.orElseThrow(() -> Boom.unauthorized().exception());
     setUserContext(span, user);
     boolean isSecure = RequestContextUtils.getServerBaseURL(context).startsWith("https");
-    context.setSecurityContext(new InsightSecurityContext(user, isSecure));
+    context.setSecurityContext(new PrincipalSecurityContext(user, isSecure));
     cookieProvider.apply(principal.user(user), cookieValue);
     log.debug(
         "[AUTH]: Successfully authenticated user={} {}={}", user.getId(), cookieName, cookieValue);
