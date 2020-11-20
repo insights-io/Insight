@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  .env.production: |
+    NEXT_PUBLIC_TRY_BASE_URL=https://try.rebrowse.dev
+    AUTH_API_BASE_URL=http://auth-api
+    NEXT_PUBLIC_AUTH_API_BASE_URL=https://api.rebrowse.dev
+    SESSION_API_BASE_URL=http://session-api
+    NEXT_PUBLIC_SESSION_API_BASE_URL=https://api.rebrowse.dev
+    BILLING_API_BASE_URL=http://billing-api
+    NEXT_PUBLIC_BILLING_API_BASE_URL=https://api.rebrowse.dev
+    BOOTSTRAP_SCRIPT=https://static.rebrowse.dev/b/development.insight.js
+    JAEGER_AGENT_HOST=jaeger-agent.monitoring
+    JAEGER_AGENT_PORT=6832
