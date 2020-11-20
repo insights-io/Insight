@@ -27,7 +27,7 @@ describe('pages/_document', () => {
       'getBoostrapScript'
     ).resolves(`((s, e, t) => {
       s._i_debug = !1;
-      s._i_host = 'insight.com';
+      s._i_host = 'rebrowse.dev';
       s._i_org = '<ORG>';
       s._i_ns = 'IS';
       const n = e.createElement(t);
@@ -47,7 +47,7 @@ describe('pages/_document', () => {
       stylesheets: [{ attrs: {}, css: '' }],
       bootstrapScript: `((s, e, t) => {
       s._i_debug = !1;
-      s._i_host = 'insight.com';
+      s._i_host = 'rebrowse.dev';
       s._i_org = '000000';
       s._i_ns = 'IS';
       const n = e.createElement(t);

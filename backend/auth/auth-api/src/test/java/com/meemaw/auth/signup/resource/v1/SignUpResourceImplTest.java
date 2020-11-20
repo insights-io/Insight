@@ -171,7 +171,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
     assertEquals(1, sent.size());
 
     Mail completeSignUpMail = sent.get(0);
-    assertEquals("Insight Support <support@insight.com>", completeSignUpMail.getFrom());
+    assertEquals("Rebrowse Support <support@rebrowse.dev>", completeSignUpMail.getFrom());
     String token = EmailTestUtils.parseConfirmationToken(completeSignUpMail);
 
     assertThat(

@@ -30,8 +30,8 @@ describe('<SessionsPage />', () => {
   it('Should render recording snippet on no sessions', async () => {
     const { findByText } = render(<NoSessions />);
 
-    await findByText("s._i_org = '000000';", { exact: false });
-    await findByText("n.src = 'https://static.rebrowse.dev/s/insight.js';", {
+    await findByText("._i_org = '000000';", { exact: false });
+    await findByText(".src = 'https://static.rebrowse.dev/s/insight.js';", {
       exact: false,
     });
   });

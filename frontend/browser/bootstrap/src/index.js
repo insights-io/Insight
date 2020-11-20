@@ -3,7 +3,7 @@
 
 ((window, doc, scriptTag) => {
   window._i_debug = !1;
-  window._i_host = 'insight.com';
+  window._i_host = 'rebrowse.dev';
   window._i_org = '<ORG>';
   window._i_ns = 'IS';
 

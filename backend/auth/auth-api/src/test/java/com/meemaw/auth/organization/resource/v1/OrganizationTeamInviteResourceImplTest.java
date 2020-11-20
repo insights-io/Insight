@@ -277,7 +277,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     List<Mail> sent = mailbox.getMessagesSentTo(email);
     assertEquals(1, sent.size());
     Mail actual = sent.get(0);
-    assertEquals("Insight Support <support@insight.com>", actual.getFrom());
+    assertEquals("Rebrowse Support <support@rebrowse.dev>", actual.getFrom());
 
     UUID token = UUID.fromString(EmailTestUtils.parseConfirmationToken(actual));
 

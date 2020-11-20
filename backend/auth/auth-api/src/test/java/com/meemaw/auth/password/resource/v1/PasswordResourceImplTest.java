@@ -280,7 +280,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     List<Mail> sent = mailbox.getMessagesSentTo(user.getEmail());
     assertEquals(2, sent.size());
     Mail actual = sent.get(1);
-    assertEquals("Insight Support <support@insight.com>", actual.getFrom());
+    assertEquals("Rebrowse Support <support@rebrowse.dev>", actual.getFrom());
 
     Document doc = Jsoup.parse(actual.getHtml());
     Elements link = doc.select("a");
@@ -340,7 +340,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
     List<Mail> sent = mailbox.getMessagesSentTo(signUpEmail);
     assertEquals(2, sent.size());
     Mail actual = sent.get(1);
-    assertEquals("Insight Support <support@insight.com>", actual.getFrom());
+    assertEquals("Rebrowse Support <support@rebrowse.dev>", actual.getFrom());
 
     Document doc = Jsoup.parse(actual.getHtml());
     Elements link = doc.select("a");

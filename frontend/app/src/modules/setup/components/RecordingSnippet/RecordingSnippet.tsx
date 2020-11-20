@@ -8,14 +8,14 @@ import { H3, Paragraph3 } from 'baseui/typography';
 import { Button, SIZE, SHAPE } from 'baseui/button';
 import { Check } from 'baseui/icon';
 
-type Props = {
-  snipetURI: string;
+export type Props = {
+  snippetUri: string;
   organizationId: string;
   overrides?: { Root?: BlockOverrides };
 };
 
 export const RecordingSnippet = ({
-  snipetURI,
+  snippetUri,
   organizationId,
   overrides,
 }: Props) => {
@@ -24,7 +24,7 @@ export const RecordingSnippet = ({
   const [copied, setCopied] = useState(false);
   const { data: recordingSnippet } = useSWR('recordingSnippet', () =>
     ky
-      .get(snipetURI)
+      .get(snippetUri)
       .text()
       .then((text) =>
         `<script>\n${text.trim()}\n</script>`.replace('<ORG>', organizationId)

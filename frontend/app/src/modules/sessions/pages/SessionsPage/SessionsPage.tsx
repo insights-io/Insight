@@ -83,7 +83,7 @@ export const SessionsPage = ({
         user && (
           <RecordingSnippet
             organizationId={user.organizationId}
-            snipetURI={BOOTSTRAP_SCRIPT_URI}
+            snippetUri={BOOTSTRAP_SCRIPT_URI}
           />
         )
       )}
