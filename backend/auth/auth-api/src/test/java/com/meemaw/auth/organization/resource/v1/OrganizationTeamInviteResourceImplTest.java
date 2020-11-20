@@ -12,6 +12,7 @@ import com.meemaw.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.meemaw.auth.organization.model.dto.TeamInviteDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.EmailTestUtils;
@@ -277,7 +278,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     List<Mail> sent = mailbox.getMessagesSentTo(email);
     assertEquals(1, sent.size());
     Mail actual = sent.get(0);
-    assertEquals("Rebrowse Support <support@rebrowse.dev>", actual.getFrom());
+    assertEquals(MailingConstants.FROM_SUPPORT, actual.getFrom());
 
     UUID token = UUID.fromString(EmailTestUtils.parseConfirmationToken(actual));
 
@@ -467,7 +468,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     String invitePayload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
 
-    String referer = "https://www.rebrowse.dev";
+    String referer = String.format("https://www.%s", SharedConstants.REBROWSE_STAGING_DOMAIN);
 
     // Invite the user
     given()

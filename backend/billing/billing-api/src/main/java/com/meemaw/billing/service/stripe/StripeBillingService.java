@@ -1,6 +1,6 @@
 package com.meemaw.billing.service.stripe;
 
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
@@ -65,7 +65,7 @@ public class StripeBillingService implements BillingService {
 
   @Override
   public CompletionStage<PlanDTO> getActivePlan(String organizationId) {
-    if (GENESIS_ORGANIZATION_ID.equals(organizationId)) {
+    if (REBROWSE_ORGANIZATION_ID.equals(organizationId)) {
       return CompletableFuture.completedStage(PlanDTO.genesis());
     }
 

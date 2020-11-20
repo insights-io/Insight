@@ -1,6 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
@@ -311,7 +311,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 firstSessionId,
                                 UUID.randomUUID(),
-                                GENESIS_ORGANIZATION_ID,
+                                REBROWSE_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("New York")
                                     .countryName("United States")
@@ -325,7 +325,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                GENESIS_ORGANIZATION_ID,
+                                REBROWSE_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("Otawa")
                                     .countryName("Canada")
@@ -338,7 +338,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                GENESIS_ORGANIZATION_ID,
+                                REBROWSE_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("Maribor")
                                     .countryName("Slovenia")
@@ -352,7 +352,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                GENESIS_ORGANIZATION_ID,
+                                REBROWSE_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .countryName("Slovenia")
                                     .continentName("Europe")
@@ -364,7 +364,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
                             .createSession(
                                 UUID.randomUUID(),
                                 UUID.randomUUID(),
-                                GENESIS_ORGANIZATION_ID,
+                                REBROWSE_ORGANIZATION_ID,
                                 LocationDTO.builder()
                                     .city("Zagreb")
                                     .countryName("Croatia")
@@ -379,7 +379,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
     createdAt =
         sessionDatasource
-            .getSession(firstSessionId, GENESIS_ORGANIZATION_ID)
+            .getSession(firstSessionId, REBROWSE_ORGANIZATION_ID)
             .toCompletableFuture()
             .join()
             .get()

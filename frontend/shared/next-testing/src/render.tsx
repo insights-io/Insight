@@ -49,7 +49,6 @@ export const render = <Props, T, S extends StoryConfiguration<T>>(
     App: (null as unknown) as NextApp,
     Component: (null as unknown) as ComponentType,
     wrapApp: (null as unknown) as (App: NextApp) => unknown,
-    initialStyleSheets: [],
   });
 
   clientRouter.push = push;

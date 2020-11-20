@@ -2,6 +2,7 @@ package com.meemaw.shared.ip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.context.RequestUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,9 +22,18 @@ public class RequestUtilsTest {
 
   @Test
   public void should_parse_tld() {
-    assertEquals(Optional.of("rebrowse.dev"), RequestUtils.parseTLD("http://app.rebrowse.dev"));
-    assertEquals(Optional.of("rebrowse.dev"), RequestUtils.parseTLD("https://app.rebrowse.dev"));
-    assertEquals(Optional.of("rebrowse.dev"), RequestUtils.parseTLD("https://rebrowse.dev"));
+    assertEquals(
+        Optional.of(SharedConstants.REBROWSE_STAGING_DOMAIN),
+        RequestUtils.parseTLD(
+            String.format("http://app.%s", SharedConstants.REBROWSE_STAGING_DOMAIN)));
+    assertEquals(
+        Optional.of(SharedConstants.REBROWSE_STAGING_DOMAIN),
+        RequestUtils.parseTLD(
+            String.format("https://app.%s", SharedConstants.REBROWSE_STAGING_DOMAIN)));
+    assertEquals(
+        Optional.of(SharedConstants.REBROWSE_STAGING_DOMAIN),
+        RequestUtils.parseTLD(
+            String.format("https://%s", SharedConstants.REBROWSE_STAGING_DOMAIN)));
     assertEquals(Optional.empty(), RequestUtils.parseTLD("app"));
     assertEquals(Optional.empty(), RequestUtils.parseTLD("http://localhost:3000"));
     assertEquals(Optional.empty(), RequestUtils.parseTLD(""));

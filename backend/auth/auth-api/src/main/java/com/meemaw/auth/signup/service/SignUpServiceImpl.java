@@ -132,7 +132,7 @@ public class SignUpServiceImpl implements SignUpService {
         .data("email", email)
         .data("token", token)
         .data("completeSignUpURL", completeSignUpLocation)
-        .data("name", SharedConstants.NAME)
+        .data("name", SharedConstants.ORGANIZATION_NAME)
         .renderAsync()
         .thenCompose(
             html ->

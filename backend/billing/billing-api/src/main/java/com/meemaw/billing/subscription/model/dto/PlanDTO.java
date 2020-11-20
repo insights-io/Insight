@@ -1,6 +1,6 @@
 package com.meemaw.billing.subscription.model.dto;
 
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import java.time.OffsetDateTime;
@@ -30,6 +30,6 @@ public class PlanDTO {
   }
 
   public static PlanDTO genesis() {
-    return free("∞", GENESIS_ORGANIZATION_ID, SubscriptionPlan.ENTERPRISE);
+    return free("∞", REBROWSE_ORGANIZATION_ID, SubscriptionPlan.ENTERPRISE);
   }
 }

@@ -15,7 +15,7 @@ export const useSubscriptions = (initialData: SubscriptionDTO[]) => {
 
   const updateSubscription = (updatedSubscription: SubscriptionDTO) => {
     mutate((currentSubscriptions) =>
-      currentSubscriptions.map((existingSubscription) =>
+      currentSubscriptions?.map((existingSubscription) =>
         existingSubscription.id === updatedSubscription.id
           ? updatedSubscription
           : existingSubscription

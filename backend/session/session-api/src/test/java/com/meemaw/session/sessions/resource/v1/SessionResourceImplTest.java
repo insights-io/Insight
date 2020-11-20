@@ -2,7 +2,7 @@ package com.meemaw.session.sessions.resource.v1;
 
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -184,7 +184,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
         .get(String.format(SESSION_PAGE_PATH_TEMPLATE, sessionId, pageId))
         .then()
         .statusCode(200)
-        .body("data.organizationId", is(GENESIS_ORGANIZATION_ID))
+        .body("data.organizationId", is(REBROWSE_ORGANIZATION_ID))
         .body("data.sessionId", is(sessionId.toString()));
 
     // GET newly created session
@@ -195,7 +195,7 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
             .get(String.format(SESSION_PATH_TEMPLATE, sessionId))
             .then()
             .statusCode(200)
-            .body("data.organizationId", is(GENESIS_ORGANIZATION_ID))
+            .body("data.organizationId", is(REBROWSE_ORGANIZATION_ID))
             .body("data.deviceId", is(deviceId.toString()))
             .body("data.id", is(sessionId.toString()))
             .extract()

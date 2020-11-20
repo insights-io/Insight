@@ -3,5 +3,5 @@
   "compilerOptions": {
     "jsx": "react"
   },
-  "exclude": ["**/*.spec.*", "dist", "src/test"]
+  "exclude": ["**/*.spec.*", "dist", "src/test", "jest.config.ts"]
 }

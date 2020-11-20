@@ -39,7 +39,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class PasswordServiceImpl implements PasswordService {
 
   private static final String PASSWORD_RESET_EMAIL_SENT_SUBJECT =
-      String.format("Reset your %s password", SharedConstants.NAME);
+      String.format("Reset your %s password", SharedConstants.ORGANIZATION_NAME);
 
   @Inject PasswordDatasource passwordDatasource;
   @Inject PasswordResetDatasource passwordResetDatasource;

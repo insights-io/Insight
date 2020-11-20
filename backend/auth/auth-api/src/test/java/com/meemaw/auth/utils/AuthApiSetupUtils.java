@@ -36,7 +36,8 @@ public final class AuthApiSetupUtils {
     SmsMessage message = messages.get(messages.size() - 1);
     Pattern pattern =
         Pattern.compile(
-            String.format("^.*\\[%s\\] Verification code: (.*).*$", SharedConstants.NAME));
+            String.format(
+                "^.*\\[%s\\] Verification code: (.*).*$", SharedConstants.ORGANIZATION_NAME));
 
     Matcher matcher = pattern.matcher(message.getBody());
     matcher.matches();

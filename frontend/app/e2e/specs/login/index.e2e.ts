@@ -44,7 +44,7 @@ test('User should see a nice error message when trying to login using SAML SSO w
     .expect(getLocation())
     .eql(`${LoginPage.path}?redirect=%2F`)
     .click(LoginPage.tabs.sso)
-    .typeText(LoginPage.workEmailInput, 'matej.snuderl@rebrowse.io')
+    .typeText(LoginPage.workEmailInput, 'matej.snuderl@biz.only')
     .click(LoginPage.signInButton)
     .expect(LoginPage.samlSsoDisabledErrorMessage.visible)
     .ok('Should display nice error message');

@@ -1,6 +1,6 @@
 package com.meemaw.session.events.resource.v1;
 
-import static com.meemaw.shared.SharedConstants.GENESIS_ORGANIZATION_ID;
+import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
 import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
@@ -81,7 +81,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
                                         PAGE_ID,
                                         SESSION_ID,
                                         DEVICE_ID,
-                                        GENESIS_ORGANIZATION_ID)
+                                        REBROWSE_ORGANIZATION_ID)
                                     .index()),
                         RequestOptions.DEFAULT);
               } catch (IOException ex) {

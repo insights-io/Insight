@@ -5,7 +5,7 @@ on:
       - '.github/workflows/frontend:browser:tracking.yml'
       - 'backend/**'
       - 'frontend/browser/tracking/**'
-      - 'jest.config.js'
+      - 'jest.config.ts'
       - 'lerna.json'
       - 'package.json'
       - 'tsconfig.json'

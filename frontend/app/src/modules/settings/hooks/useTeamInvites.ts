@@ -22,7 +22,7 @@ const useTeamInvites = (initialData: TeamInviteDTO[]) => {
       return AuthApi.organization.teamInvite
         .delete(token, email)
         .then((resp) => {
-          mutate((prev) => prev.filter((invite) => invite.token !== token));
+          mutate((prev) => prev?.filter((invite) => invite.token !== token));
           return resp;
         });
     },

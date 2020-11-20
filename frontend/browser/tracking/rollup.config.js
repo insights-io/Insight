@@ -8,6 +8,8 @@ import replace from '@rollup/plugin-replace';
 const input = path.join('src', 'index.ts');
 
 const environments = ['local', 'development', 'staging', 'production'];
+const stagingDomain = 'rebrowse.dev';
+const productionDomain = 'rebrowse.io';
 
 const envConfig = (env) => {
   const baseName = 'rebrowse.js';
@@ -24,22 +26,22 @@ const envConfig = (env) => {
     case 'development': {
       return {
         fileName,
-        beaconApiBaseURL: 'https://api.rebrowse.dev',
-        sessionApiBaseURL: 'https://api.rebrowse.dev',
+        beaconApiBaseURL: `https://api.${stagingDomain}`,
+        sessionApiBaseURL: `https://api.${stagingDomain}`,
       };
     }
     case 'staging': {
       return {
         fileName,
-        beaconApiBaseURL: 'https://api.rebrowse.dev',
-        sessionApiBaseURL: 'https://api.rebrowse.dev',
+        beaconApiBaseURL: `https://api.${stagingDomain}`,
+        sessionApiBaseURL: `https://api.${stagingDomain}`,
       };
     }
     case 'production': {
       return {
         fileName: baseName,
-        beaconApiBaseURL: 'https://api.rebrowse.io',
-        sessionApiBaseURL: 'https://api.rebrowse.io',
+        beaconApiBaseURL: `https://api.${productionDomain}`,
+        sessionApiBaseURL: `https://api.${productionDomain}`,
       };
     }
     default: {
