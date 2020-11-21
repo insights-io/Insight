@@ -5,6 +5,7 @@ import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.ChallengeSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.shared.SharedConstants;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
@@ -24,8 +25,8 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
             contact =
                 @Contact(
                     name = "Support",
-                    url = "mailto:support@rebrowse.dev",
-                    email = "support@rebrowse.dev")),
+                    url = "mailto:support@" + SharedConstants.REBROWSE_STAGING_DOMAIN,
+                    email = "support@" + SharedConstants.REBROWSE_STAGING_DOMAIN)),
     servers = @Server(url = App.SERVER))
 @SecurityScheme(
     securitySchemeName = BearerTokenSecurityScheme.NAME,

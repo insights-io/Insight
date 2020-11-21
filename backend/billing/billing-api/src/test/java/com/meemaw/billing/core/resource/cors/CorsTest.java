@@ -15,7 +15,11 @@ public class CorsTest {
 
   @ParameterizedTest
   @ValueSource(
-      strings = {"http://localhost:3000", "https://app." + SharedConstants.REBROWSE_STAGING_DOMAIN})
+      strings = {
+        "http://localhost:3000",
+        "https://app." + SharedConstants.REBROWSE_STAGING_DOMAIN,
+        "https://www.app." + SharedConstants.REBROWSE_STAGING_DOMAIN
+      })
   public void returns_appropriate_headers__when_known_origin(String origin) {
     given()
         .header("Origin", origin)
