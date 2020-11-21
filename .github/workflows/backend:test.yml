@@ -24,8 +24,9 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 15
-      - run: ./gradlew test --continue jacocoTestReport
+      - name: Run tests 🚀
         working-directory: backend
+        run: ./gradlew test --continue jacocoTestReport
       - uses: actions/upload-artifact@v2
         if: always()
         with:
