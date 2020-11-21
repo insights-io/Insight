@@ -38,7 +38,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn workspace @rebrowse/app pretest
           yarn workspace @rebrowse/app storybook:build
-          npx sb extract
+        #  npx sb extract
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete

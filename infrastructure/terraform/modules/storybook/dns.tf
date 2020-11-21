@@ -1,22 +1,18 @@
 locals {
-  domain                    = "${var.project}.storybook.${var.domain}"
+  domain                    = var.domain
   subject_alternative_names = ["www.${local.domain}"]
   aliases                   = concat([local.domain], local.subject_alternative_names)
-}
-
-data "aws_route53_zone" "zone" {
-  name = "${var.domain}."
 }
 
 module "certificate" {
   source                    = "../certificate"
   domain                    = local.domain
   subject_alternative_names = local.subject_alternative_names
-  zone_id                   = data.aws_route53_zone.zone.zone_id
+  zone_id                   = var.zone_id
 }
 
 resource "aws_route53_record" "cdn_records" {
-  zone_id  = data.aws_route53_zone.zone.zone_id
+  zone_id  = var.zone_id
   for_each = toset(local.aliases)
   name     = each.value
   type     = "A"

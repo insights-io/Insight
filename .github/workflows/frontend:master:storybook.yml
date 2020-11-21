@@ -1,13 +1,12 @@
 ---
 on:
   push:
+  push:
     branches:
       - master
     paths:
-      - '.github/workflows/frontend:try:master.yml'
-      - 'frontend/try/**'
-      - 'frontend/shared/**'
-      - 'jest.config.ts'
+      - '.github/workflows/frontend:master:storybook.yml'
+      - 'frontend/**'
       - 'lerna.json'
       - 'package.json'
       - 'tsconfig.json'
@@ -17,10 +16,8 @@ env:
   CI: true
 
 jobs:
-  deploy-storybook:
-    name: Deploy storybook
+  pr-deploy-storybook:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Get yarn cache directory path
@@ -36,15 +33,13 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @rebrowse/try pretest
-          yarn workspace @rebrowse/try storybook:build
-        #  npx sb extract
+          yarn workspace @rebrowse/storybook storybook:build
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_TRY_STORYBOOK }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_COMPOSITION_STORYBOOK }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: frontend/try/storybook-static
+          SOURCE_DIR: frontend/shared/storybook/storybook-static
