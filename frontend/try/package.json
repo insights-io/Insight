@@ -56,7 +56,7 @@
     "@rebrowse/next-testing": "0.0.0-development",
     "@next/bundle-analyzer": "10.0.2",
     "@types/react": "17.0.0",
-    "@types/react-dom": "16.9.9",
+    "@types/react-dom": "17.0.0",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2"
   }
