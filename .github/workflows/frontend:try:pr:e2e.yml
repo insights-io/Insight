@@ -1,8 +1,8 @@
 ---
 on:
-  push:
+  pull_request:
     paths:
-      - '.github/workflows/frontend:try.yml'
+      - '.github/workflows/frontend:try:pr:e2e.yml'
       - 'backend/**'
       - 'frontend/try/**'
       - 'frontend/shared/**'
