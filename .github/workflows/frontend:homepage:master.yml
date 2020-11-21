@@ -37,6 +37,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn workspace @rebrowse/homepage prebuild
           yarn workspace @rebrowse/homepage storybook:build
+          npx sb extract
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete
@@ -46,10 +47,3 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SOURCE_DIR: frontend/homepage/storybook-static
-      - name: Comment PR 💬
-        uses: unsplash/comment-on-pr@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          msg: '🚀 Storybook preview of frontend/homepage available at https://${{ secrets.HOMEPAGE_STORYBOOK_DOMAIN_NAME }}/index.html! 🚀'
-          check_for_duplicate_msg: true

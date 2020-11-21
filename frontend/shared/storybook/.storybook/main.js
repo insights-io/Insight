@@ -3,15 +3,15 @@ module.exports = {
   refs: {
     app: {
       title: 'App',
-      url: 'https://d33tzh5r2qonag.cloudfront.net/storybook-cloudfront',
+      url: 'https://app.storybook.rebrowse.dev',
     },
     try: {
       title: 'Try',
-      url: 'https://d1btgen1w2ilqz.cloudfront.net/storybook-cloudfront',
+      url: 'https://try.storybook.rebrowse.dev',
     },
     homepage: {
       title: 'Homepage',
-      url: 'https://d227tvtsmdutmh.cloudfront.net/storybook-cloudfront',
+      url: 'https://homepage.storybook.rebrowse.dev',
     },
   },
 };
