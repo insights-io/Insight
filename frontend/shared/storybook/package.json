@@ -31,10 +31,10 @@
     "@rebrowse/types": "0.0.0-development"
   },
   "dependencies": {
-    "@storybook/addons": "6.1.1",
+    "@storybook/addons": "6.1.2",
     "@storybook/addon-actions": "6.1.2",
-    "@storybook/addon-essentials": "6.1.1",
-    "@storybook/addon-links": "6.1.1",
+    "@storybook/addon-essentials": "6.1.2",
+    "@storybook/addon-links": "6.1.2",
     "@storybook/react": "6.1.2",
     "@storybook/addon-controls": "6.1.2",
     "@storybook/addon-storysource": "6.1.2"
