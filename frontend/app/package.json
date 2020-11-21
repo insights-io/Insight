@@ -74,7 +74,7 @@
     "@rebrowse/types": "0.0.0-development",
     "@next/bundle-analyzer": "10.0.2",
     "@types/jaeger-client": "3.15.4",
-    "@types/react": "16.14.0",
+    "@types/react": "16.14.1",
     "@types/react-dom": "16.9.9",
     "@types/uuid": "8.3.0",
     "@types/styletron-engine-atomic": "1.1.0",
