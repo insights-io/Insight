@@ -1,9 +1,14 @@
 ---
 on:
-  push:
+  pull_request:
     paths:
       - 'backend/**'
       - '.github/workflows/backend:test.yml'
+
+env:
+  CI: true
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
   test:
@@ -19,13 +24,8 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 15
-      - uses: eskatos/gradle-command-action@v1
-        with:
-          arguments: test --continue jacocoTestReport
-          build-root-directory: backend
-          wrapper-directory: backend
-        env:
-          DOCKER_BUILDKIT: 1
+      - run: ./gradlew test --continue jacocoTestReport
+        working-directory: backend
       - uses: actions/upload-artifact@v2
         if: always()
         with:
