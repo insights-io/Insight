@@ -29,9 +29,6 @@ import org.eclipse.microprofile.opentracing.Traced;
 @Slf4j
 public class HazelcastSsoSessionDatasource implements SsoSessionDatasource {
 
-  private IMap<String, SsoUser> sessionToUserMap;
-  private IMap<UUID, Set<String>> userToSessionsMap;
-
   @Inject HazelcastProvider hazelcastProvider;
 
   @ConfigProperty(name = "hazelcast.auth.session-to-user-map")
@@ -40,13 +37,11 @@ public class HazelcastSsoSessionDatasource implements SsoSessionDatasource {
   @ConfigProperty(name = "hazelcast.auth.user-to-sessions-map")
   String userToSessionsMapName;
 
+  private IMap<String, SsoUser> sessionToUserMap;
+  private IMap<UUID, Set<String>> userToSessionsMap;
+
   @PostConstruct
   public void init() {
-    log.info(
-        "Initializing HazelcastSsoDatasource sessionToUserMap: {} userToSessionsMap: {}",
-        sessionToUserMapName,
-        userToSessionsMapName);
-
     sessionToUserMap = hazelcastProvider.getInstance().getMap(sessionToUserMapName);
     userToSessionsMap = hazelcastProvider.getInstance().getMap(userToSessionsMapName);
   }
@@ -119,17 +114,23 @@ public class HazelcastSsoSessionDatasource implements SsoSessionDatasource {
 
   @Override
   public CompletionStage<Void> deleteAllForOrganization(String organizationId) {
-    Set<Entry<String, SsoUser>> users =
-        sessionToUserMap.entrySet(
-            data -> data.getValue().getOrganizationId().equals(organizationId));
-
+    Set<Entry<String, SsoUser>> users = retrieveOrganizationUsers(organizationId);
     Set<String> sessionIds = users.stream().map(Entry::getKey).collect(Collectors.toSet());
     Set<UUID> userIds =
         users.stream().map(Entry::getValue).map(SsoUser::getId).collect(Collectors.toSet());
 
-    return CompletableFuture.allOf(
-        deleteSessionsToUser(sessionIds).toCompletableFuture(),
-        deleteUsersToSessions(userIds).toCompletableFuture());
+    return Uni.combine()
+        .all()
+        .unis(
+            Uni.createFrom().completionStage(deleteSessionsToUser(sessionIds)),
+            Uni.createFrom().completionStage(deleteUsersToSessions(userIds)))
+        .discardItems()
+        .subscribeAsCompletionStage();
+  }
+
+  private Set<Entry<String, SsoUser>> retrieveOrganizationUsers(String organizationId) {
+    return sessionToUserMap.entrySet(
+        data -> data.getValue().getOrganizationId().equals(organizationId));
   }
 
   private CompletionStage<Set<String>> setValueOnAllSessionsForUser(UUID userId, SsoUser value) {

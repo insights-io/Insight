@@ -31,7 +31,7 @@ public class IpStackLocationDTO implements Location {
   String regionName;
 
   @JsonIgnore
-  public Location toInternalRepresentation() {
+  public Location dto() {
     return LocationDTO.builder()
         .ip(ip)
         .zip(zip)

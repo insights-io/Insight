@@ -111,22 +111,21 @@ public class BeaconService {
         .thenApply(
             exists -> {
               if (!exists) {
-                log.warn("[BEACON]: Unlinked beacon, ignoring ...");
+                log.debug("[BEACON]: Unlinked beacon, ignoring sessionId={}", sessionId);
                 throw Boom.badRequest().message("Unlinked beacon").exception();
               }
-              log.info("[BEACON]: Sending beacon events to Kafka");
 
+              log.debug("[BEACON]: Sending beacon events to Kafka sessionId={}", sessionId);
               Stream<Uni<Void>> operations =
-                  events.stream().map(event -> sendEvent(eventsEmitter, identify, event));
+                  events.stream().map(event -> sendEvent(identify, event));
 
               // BrowserUnloadEvent always comes last!
               AbstractBrowserEvent<?> maybeUnloadEvent = events.get(events.size() - 1);
               if (maybeUnloadEvent instanceof BrowserUnloadEvent) {
-                log.info("[BEACON]: Sending BrowserUnloadEvent to Kafka");
+                log.debug("[BEACON]: Sending BrowserUnloadEvent to Kafka sessionId={}", sessionId);
                 operations =
                     Stream.concat(
-                        operations,
-                        Stream.of(sendEvent(unloadEventsEmitter, identify, maybeUnloadEvent)));
+                        operations, Stream.of(sendUnloadEvent(identify, maybeUnloadEvent)));
               }
 
               return Uni.combine()
@@ -137,6 +136,16 @@ public class BeaconService {
   }
 
   private Uni<Void> sendEvent(
+      Function<AbstractBrowserEvent<?>, UserEvent<?>> identify, AbstractBrowserEvent<?> event) {
+    return sendEventToChannel(eventsEmitter, identify, event);
+  }
+
+  private Uni<Void> sendUnloadEvent(
+      Function<AbstractBrowserEvent<?>, UserEvent<?>> identify, AbstractBrowserEvent<?> event) {
+    return sendEventToChannel(unloadEventsEmitter, identify, event);
+  }
+
+  private Uni<Void> sendEventToChannel(
       Emitter<UserEvent<?>> channel,
       Function<AbstractBrowserEvent<?>, UserEvent<?>> identify,
       AbstractBrowserEvent<?> event) {

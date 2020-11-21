@@ -54,7 +54,7 @@ public class SamlResourceImpl implements SamlResource {
   public CompletionStage<Response> callback(
       String samlResponse, String relayState, String sessionState) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(relayState)) {
-      log.warn("[AUTH]: SAML state miss-match, expected={}, actual={}", relayState, sessionState);
+      log.debug("[AUTH]: SAML state miss-match, expected={}, actual={}", relayState, sessionState);
       return CompletableFuture.completedStage(
           Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").response());
     }

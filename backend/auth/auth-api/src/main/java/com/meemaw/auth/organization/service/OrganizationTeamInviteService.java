@@ -85,8 +85,12 @@ public class OrganizationTeamInviteService {
         .thenCompose(
             maybeValidInvite -> {
               if (maybeValidInvite.isPresent()) {
-                transaction.rollback();
-                throw teamInviteCreateConflictException(invitedEmail);
+                return transaction
+                    .rollback()
+                    .thenApply(
+                        ignored -> {
+                          throw teamInviteCreateConflictException(invitedEmail);
+                        });
               }
 
               return userDatasource
@@ -99,24 +103,34 @@ public class OrganizationTeamInviteService {
                             .map(AuthUser::getOrganizationId)
                             .orElse("")
                             .equals(organizationId)) {
-                          transaction.rollback();
-                          throw teamInviteCreateUserExistsException(invitedEmail, organizationId);
+                          return transaction
+                              .rollback()
+                              .thenApply(
+                                  ignored -> {
+                                    throw teamInviteCreateUserExistsException(
+                                        invitedEmail, organizationId);
+                                  });
                         }
 
                         return organizationDatasource
                             .findOrganization(organizationId, transaction)
                             .thenCompose(
                                 maybeOrganization -> {
-                                  Organization organization =
-                                      maybeOrganization.orElseThrow(
-                                          () -> Boom.notFound().exception());
+                                  if (maybeOrganization.isEmpty()) {
+                                    return transaction
+                                        .rollback()
+                                        .thenApply(
+                                            ignored -> {
+                                              throw Boom.notFound().exception();
+                                            });
+                                  }
 
                                   TeamInviteTemplateData teamInviteTemplateData =
                                       new TeamInviteTemplateData(
                                           invitedEmail,
                                           invite.getRole(),
                                           creator.getFullName(),
-                                          organization.getName());
+                                          maybeOrganization.get().getName());
 
                                   return teamInviteDatasource
                                       .create(
@@ -143,15 +157,21 @@ public class OrganizationTeamInviteService {
                                                             teamInvite.getOrganizationId());
                                                         return teamInvite;
                                                       })
-                                                  .exceptionally(
+                                                  .exceptionallyCompose(
                                                       throwable -> {
                                                         log.error(
                                                             "[AUTH]: Failed to accept team invite={} creator={}",
                                                             invite,
                                                             creator,
                                                             throwable);
-                                                        transaction.rollback();
-                                                        throw (CompletionException) throwable;
+
+                                                        return transaction
+                                                            .rollback()
+                                                            .thenApply(
+                                                                ignored -> {
+                                                                  throw (CompletionException)
+                                                                      throwable;
+                                                                });
                                                       }));
                                 });
                       });
@@ -258,14 +278,19 @@ public class OrganizationTeamInviteService {
                             teamInviteDatasource.delete(
                                 user.getEmail(), user.getOrganizationId(), transaction))
                     .thenCompose(deleted -> transaction.commit().thenApply(ignored -> user))
-                    .exceptionally(
+                    .exceptionallyCompose(
                         throwable -> {
                           log.error(
                               "[AUTH]: Failed to accept team invite={} token={}",
                               inviteAccept,
                               token);
-                          transaction.rollback();
-                          throw (CompletionException) throwable;
+
+                          return transaction
+                              .rollback()
+                              .thenApply(
+                                  ignored -> {
+                                    throw (CompletionException) throwable;
+                                  });
                         })
                     .thenApply(ignored -> user));
   }
