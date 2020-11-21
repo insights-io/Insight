@@ -22,7 +22,7 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
   public static final String NETWORK_ALIAS = "elasticsearch";
 
-  private static final String DOCKER_TAG = "docker.elastic.co/elasticsearch/elasticsearch:7.9.3";
+  private static final String DOCKER_TAG = "docker.elastic.co/elasticsearch/elasticsearch:7.10.0";
 
   private ElasticsearchTestContainer() {
     super(DOCKER_TAG);

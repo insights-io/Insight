@@ -9,7 +9,6 @@ import com.meemaw.shared.ip.IpUtils;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -22,15 +21,14 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public class LocationServiceImpl implements LocationService {
 
   private static final Map<String, Location> CACHE = new HashMap<>();
-  private static final Optional<String> ACCESS_KEY =
-      Optional.ofNullable(System.getenv("LOCATION_LOOKUP_SERVICE_ACCESS_KEY"));
+  private static final String ACCESS_KEY = System.getenv("LOCATION_LOOKUP_SERVICE_ACCESS_KEY");
 
   @Inject @RestClient LocationLookupResource locationLookupResource;
   @Inject @RestClient WhatIsMyIpResource whatIsMyIpResource;
 
   @Traced
   private Location lookupByIpRemotely(String ip) {
-    if (ACCESS_KEY.isEmpty()) {
+    if (ACCESS_KEY == null) {
       log.warn("[LOCATION]: Access key not configured ... skipping lookup for IP={}", ip);
       return LocationDTO.builder().ip(ip).build();
     }
@@ -45,7 +43,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     log.info("[LOCATION]: Looking up location for IP={}", ip);
-    return locationLookupResource.lookupByIp(ip, ACCESS_KEY.get()).toInternalRepresentation();
+    return locationLookupResource.lookupByIp(ip, ACCESS_KEY).dto();
   }
 
   @Override
