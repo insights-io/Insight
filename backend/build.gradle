@@ -64,6 +64,9 @@ subprojects {
         systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
         testLogging {
             showStandardStreams = true
+            showCauses = true
+            showExceptions = true
+            showStackTraces = true
             exceptionFormat "full"
         }
     }
