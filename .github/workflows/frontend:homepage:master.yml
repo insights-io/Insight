@@ -1,8 +1,10 @@
 ---
 on:
-  pull_request:
+  push:
+    branches:
+      - master
     paths:
-      - '.github/workflows/frontend:homepage:pr.yml'
+      - '.github/workflows/frontend:homepage:master.yml'
       - 'frontend/homepage/**'
       - 'frontend/shared/**'
       - 'lerna.json'
@@ -14,39 +16,12 @@ env:
   CI: true
 
 jobs:
-  pr-size:
-    name: Pull request size
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-      - name: Get yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - uses: insights-io/compressed-size-action@v0.0.5
-        with:
-          repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          build-script: 'frontend:homepage:build'
-          compression: 'gzip'
-          pattern: 'frontend/homepage/.next/static/**/*.js'
-          strip-hash: "(?:runtime/\\w+-(\\w{20}).js$|chunks/\\w{40}\\.(\\w{20})\\.js$|static/(\\w{20,21})/)"
-          title: 'frontend/homepage bundle size'
-
-  pr-deploy-storybook:
+  deploy-storybook:
     name: Deploy storybook
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - uses: rlespinasse/github-slug-action@v2.x
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -70,12 +45,11 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          DEST_DIR: ${{ env.GITHUB_HEAD_REF_SLUG }}
           SOURCE_DIR: frontend/homepage/storybook-static
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: '🚀 Storybook preview of frontend/homepage available at https://${{ secrets.HOMEPAGE_STORYBOOK_DOMAIN_NAME }}/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
+          msg: '🚀 Storybook preview of frontend/homepage available at https://${{ secrets.HOMEPAGE_STORYBOOK_DOMAIN_NAME }}/index.html! 🚀'
           check_for_duplicate_msg: true
