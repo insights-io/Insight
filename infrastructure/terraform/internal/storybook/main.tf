@@ -13,6 +13,8 @@ module "storybooks" {
   repository = module.global_vars.monorepo_repository
   domain     = "${each.key}.storybook.${module.project_vars.domain}"
   zone_id = data.aws_route53_zone.zone.zone_id
+  organization_name = module.global_vars.organization_name
+  environment = module.project_vars.environment
 }
 
 module "composition_storybook" {
@@ -21,4 +23,6 @@ module "composition_storybook" {
   repository = module.global_vars.monorepo_repository
   domain     = "storybook.${module.project_vars.domain}"
   zone_id = data.aws_route53_zone.zone.zone_id
+  organization_name = module.global_vars.organization_name
+  environment = module.project_vars.environment
 }

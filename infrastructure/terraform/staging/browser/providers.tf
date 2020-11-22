@@ -3,5 +3,5 @@ provider "aws" {
 }
 
 provider "github" {
-  organization = module.global_vars.organization_name
+  organization = module.global_vars.github_organization_name
 }

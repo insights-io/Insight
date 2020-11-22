@@ -1,9 +1,9 @@
 locals {
-  bucket_name      = "insight-${var.project}-storybook"
-  bucket_origin_id = "insight-${var.project}-storybook-origin"
+  bucket_name      = "${lower(var.organization_name)}-${var.project}-storybook"
+  bucket_origin_id = "${lower(var.organization_name)}-${var.project}-storybook-origin"
   tags = {
     name        = "Storybook"
-    environment = "Internal"
+    environment = var.environment
   }
 }
 

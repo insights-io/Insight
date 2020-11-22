@@ -1,4 +1,8 @@
 output "organization_name" {
+  value = "Rebrowse"
+}
+
+output "github_organization_name" {
   value = "insights-io"
 }
 
@@ -12,4 +16,8 @@ output "gitops_repository" {
 
 output "aws_region" {
   value = "us-east-1"
+}
+
+output "staging_domain" {
+  value = "rebrowse.dev"
 }

@@ -13,3 +13,11 @@ variable "domain" {
 variable "zone_id" {
   type = string
 }
+
+variable "organization_name" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
