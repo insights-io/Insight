@@ -28,7 +28,7 @@ spec:
           name: billing-api
           env:
             - name: JAEGER_AGENT_HOST
-              value: jaeger-agent.monitoring:6831
+              value: jaeger-agent.tracing:6831
             - name: STRIPE_WEBHOOK_SECRET
               valueFrom:
                 secretKeyRef:
