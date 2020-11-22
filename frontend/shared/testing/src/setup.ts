@@ -1,8 +1,13 @@
 /* eslint-disable no-console */
 
+import sandbox from './sandbox';
+
 export const setupEnvironment = () => {
   const originalConsoleWarn = console.warn;
   const originalConsoleError = console.error;
+
+  // Error: Not implemented: window.scrollTo
+  sandbox.stub(window, 'scrollTo');
 
   console.error = (...args: unknown[]) => {
     const msg = args.join(' ');

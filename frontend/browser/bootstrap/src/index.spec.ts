@@ -16,6 +16,10 @@ declare global {
 }
 
 describe('bootstrap', () => {
+  beforeAll(() => {
+    jest.setTimeout(15000);
+  });
+
   it('injects variables and loads tracking script into the page', async () => {
     const browser = await playwright.chromium.launch();
     const context = await browser.newContext();
