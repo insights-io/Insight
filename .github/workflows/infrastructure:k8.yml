@@ -20,6 +20,8 @@ jobs:
         working-directory: infrastructure/k8/tracing
       - run: helmfile template
         working-directory: infrastructure/k8/recording
+      - run: helmfile template
+        working-directory: infrastructure/k8/monitoring
 
   kustomize:
     runs-on: ubuntu-latest
@@ -33,9 +35,8 @@ jobs:
           enable_alpha_plugins: true
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o ci rendered.yml > kube-score-results.txt
+      - run: docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o human rendered.yml > kube-score-results.txt || echo ""
       - name: Comment PR 💬
-        if: failure()
         uses: machine-learning-apps/pr-comment@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

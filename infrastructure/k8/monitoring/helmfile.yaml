@@ -1,0 +1,69 @@
+---
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+
+bases:
+  - ../bases/environments.yaml
+
+---
+releases:
+  - name: grafana
+    chart: grafana/grafana
+    version: 6.1.8
+    namespace: monitoring
+    values:
+      - grafana.yaml
+      - persistence:
+          storageClassName: {{ .Values.storageClassName }}
+{{ if eq .Environment.Name "staging" }}
+      - ingress:
+          enabled: true
+          tls:
+            - hosts:
+              - "grafana.{{ .Values.domain }}"
+              - "www.grafana.{{ .Values.domain }}"
+              secretName: grafana-tls
+          hosts:
+            - "grafana.{{ .Values.domain }}"
+            - "www.grafana.{{ .Values.domain }}"
+          annotations:
+{{ toYaml .Values.ingressAnnotationsInternal | indent 12 }}
+{{ end }}
+  - name: prometheus
+    chart: prometheus-community/prometheus
+    version: 11.16.9
+    namespace: monitoring
+    values:
+      - prometheus.yaml
+      - server:
+          env:
+            - name: JAEGER_AGENT_PORT
+              value: "5775"
+{{ if eq .Environment.Name "staging" }}
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "prometheus.{{ .Values.domain }}"
+                - "www.prometheus.{{ .Values.domain }}"
+                secretName: prometheus-tls
+            hosts:
+              - "prometheus.{{ .Values.domain }}"
+              - "www.prometheus.{{ .Values.domain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotationsInternal | indent 14 }}
+      - alertmanager:
+          ingress:
+            enabled: true
+            tls:
+              - hosts:
+                - "alertmanager.{{ .Values.domain }}"
+                secretName: alertmanager-tls
+            hosts:
+              - "alertmanager.{{ .Values.domain }}"
+            annotations:
+{{ toYaml .Values.ingressAnnotationsInternal | indent 14 }}
+{{ end }}
