@@ -34,6 +34,9 @@ jobs:
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: |
+          pwd
+          ls
+          cat rendered.yml
           docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o ci ./project/rendered.yml > kube-score-results.txt
           echo "KUBE_SCORE_RESULTS=$(cat kube-score-results.txt)" >> $GITHUB_ENV
       - name: Comment PR 💬
