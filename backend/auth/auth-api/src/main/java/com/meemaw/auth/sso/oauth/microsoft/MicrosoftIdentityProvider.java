@@ -2,12 +2,12 @@ package com.meemaw.auth.sso.oauth.microsoft;
 
 import com.meemaw.auth.sso.oauth.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftErrorResponse;
+import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftScope;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.meemaw.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
@@ -24,10 +24,16 @@ public class MicrosoftIdentityProvider
     extends AbstractOAuthIdentityProvider<
         MicrosoftTokenResponse, MicrosoftUserInfoResponse, MicrosoftErrorResponse> {
 
-  private static final Collection<String> SCOPE_LIST = List.of("openid", "email", "profile");
-  private static final String SCOPES = String.join(" ", SCOPE_LIST);
   private static final String AUTHORIZATION_SERVER_URL =
       "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
+
+  private static final String SCOPES =
+      String.join(
+          " ",
+          List.of(
+              MicrosoftScope.OPENID.getValue(),
+              MicrosoftScope.EMAIL.getValue(),
+              MicrosoftScope.PROFILE.getValue()));
 
   @Inject MicrosoftOAuthClient client;
 

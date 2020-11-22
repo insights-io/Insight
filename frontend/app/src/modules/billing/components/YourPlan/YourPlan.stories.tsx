@@ -1,12 +1,14 @@
 import React from 'react';
 import { action } from '@storybook/addon-actions';
 import { addDays } from 'date-fns';
+import type { Meta } from '@storybook/react';
 
-import YourPlan from './YourPlan';
+import { YourPlan } from './YourPlan';
 
 export default {
   title: 'billing/components/YourPlan',
-};
+  component: YourPlan,
+} as Meta;
 
 const baseProps = {
   dataRetention: '1m',

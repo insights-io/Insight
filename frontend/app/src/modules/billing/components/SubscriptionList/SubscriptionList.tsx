@@ -13,6 +13,7 @@ import Link from 'next/link';
 import type { StyleObject } from 'styletron-react';
 import type { Subscription } from '@rebrowse/types';
 import { Block } from 'baseui/block';
+import { format } from 'date-fns';
 
 type SubscriptionListElementProps = PropsWithChildren<{
   link: string;
@@ -50,11 +51,14 @@ export const SubscriptionList = ({ subscriptions }: Props) => {
   const [css, theme] = useStyletron();
 
   return (
-    <Block as="ul" className="subscriptions" paddingLeft={0} paddingRight={0}>
+    <Block as="ul" className="subscriptions" padding={0} margin={0}>
       {subscriptions.map((subscription) => {
         const status = subscriptionStatusText(subscription.status);
         const label = subscriptionPlanText(subscription.plan);
-        const description = `Created: ${subscription.createdAt.toLocaleDateString()}`;
+        const description = `Created: ${format(
+          subscription.createdAt,
+          'MMM d, yyyy, HH:mm'
+        )}`;
         const artwork = subscriptionStatusIcon[subscription.status](theme);
         const link = `${ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE}/${subscription.id}`;
 
@@ -80,7 +84,9 @@ export const SubscriptionList = ({ subscriptions }: Props) => {
             )}
             endEnhancer={() => <ChevronRight />}
           >
-            <ListItemLabel description={description}>{label}</ListItemLabel>
+            <ListItemLabel description={description}>
+              {label} - {subscription.id}
+            </ListItemLabel>
           </ListItem>
         );
       })}

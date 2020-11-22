@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { Card, StyledBody, StyledAction } from 'baseui/card';
 import {
   subscriptionPlanText,
   subscriptionStatusIcon,
   subscriptionStatusText,
 } from 'modules/billing/utils';
-import { Button, SHAPE, SIZE } from 'baseui/button';
+import { SIZE } from 'baseui/button';
 import { useStyletron } from 'baseui';
-import Divider from 'shared/components/Divider';
 import { Block } from 'baseui/block';
-import { Accordion, Panel } from 'baseui/accordion';
+import { Accordion, Panel as BaseuiPanel } from 'baseui/accordion';
 import { BillingApi } from 'api';
 import type {
   APIError,
@@ -19,6 +17,8 @@ import type {
   SubscriptionDTO,
 } from '@rebrowse/types';
 import { toaster } from 'baseui/toast';
+import { Panel, Button, VerticalAligned, Flex } from '@rebrowse/elements';
+import { format } from 'date-fns';
 
 import { InvoiceList } from '../InvoiceList';
 
@@ -37,7 +37,6 @@ export const SubscriptionDetails = ({
   const [_formError, setFormError] = useState<APIError>();
 
   const [_css, theme] = useStyletron();
-  const title = subscriptionPlanText(subscription.plan);
 
   const cancelSubscription = async () => {
     if (isCanceling) {
@@ -61,52 +60,72 @@ export const SubscriptionDetails = ({
   };
 
   return (
-    <Card title={title}>
-      <Divider />
-      <StyledBody>
-        <Block>Status: {subscriptionStatusText(subscription.status)}</Block>
-        <Block>Created on: {subscription.createdAt.toLocaleDateString()}</Block>
+    <Panel>
+      <Panel.Header>Subscription details</Panel.Header>
+      <Panel.Item>
+        <Flex>{`Plan: ${subscriptionPlanText(subscription.plan)}`}</Flex>
+        <Flex marginTop={theme.sizing.scale300}>
+          <VerticalAligned>
+            {`Status: ${subscriptionStatusText(subscription.status)}`}
+          </VerticalAligned>{' '}
+          <VerticalAligned>
+            {subscriptionStatusIcon[subscription.status](theme)}
+          </VerticalAligned>
+        </Flex>
+        <Flex marginTop={theme.sizing.scale300}>
+          <span>
+            Created on:{' '}
+            <span>{format(subscription.createdAt, 'MMM d, yyyy, HH:mm')}</span>
+          </span>
+        </Flex>
+
         {subscription.canceledAt && (
-          <Block>
-            Canceled on: {subscription.canceledAt.toLocaleDateString()}
+          <Flex marginTop={theme.sizing.scale300}>
+            <span>
+              Canceled on:{' '}
+              <span>
+                {format(subscription.canceledAt, 'MMM d, yyyy, HH:mm')}
+              </span>
+            </span>
+          </Flex>
+        )}
+
+        {invoices.length > 0 && (
+          <Block marginBottom={theme.sizing.scale600}>
+            <Accordion>
+              <BaseuiPanel
+                title="Invoices"
+                overrides={{
+                  Content: {
+                    style: {
+                      paddingLeft: 0,
+                      paddingRight: 0,
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                    },
+                  },
+                }}
+              >
+                <InvoiceList invoices={invoices} />
+              </BaseuiPanel>
+            </Accordion>
           </Block>
         )}
-      </StyledBody>
-      <Divider />
 
-      <Block marginBottom={theme.sizing.scale600}>
-        <Accordion>
-          <Panel
-            title="Invoices"
-            overrides={{
-              Content: {
-                style: {
-                  paddingLeft: 0,
-                  paddingRight: 0,
-                  paddingTop: 0,
-                  paddingBottom: 0,
-                },
-              },
-            }}
-          >
-            <InvoiceList invoices={invoices} />
-          </Panel>
-        </Accordion>
-      </Block>
-
-      {subscription.status === 'active' && (
-        <StyledAction>
-          <Button
-            kind="secondary"
-            size={SIZE.compact}
-            shape={SHAPE.pill}
-            isLoading={isCanceling}
-            onClick={cancelSubscription}
-          >
-            {subscriptionStatusIcon.canceled(theme)} Cancel
-          </Button>
-        </StyledAction>
-      )}
-    </Card>
+        {subscription.status === 'active' && (
+          <Block marginTop={theme.sizing.scale600}>
+            <Button
+              kind="secondary"
+              size={SIZE.compact}
+              isLoading={isCanceling}
+              disabled={isCanceling}
+              onClick={cancelSubscription}
+            >
+              {subscriptionStatusIcon.canceled(theme)} Terminate
+            </Button>
+          </Block>
+        )}
+      </Panel.Item>
+    </Panel>
   );
 };

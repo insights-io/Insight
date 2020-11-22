@@ -6,6 +6,7 @@ import static org.jooq.impl.DSL.table;
 import com.meemaw.billing.subscription.datasource.BillingSubscriptionTable;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jooq.Field;
@@ -51,6 +52,9 @@ public class SqlBillingSubscriptionTable {
               Stream.of(CANCELED_AT),
               Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream()))
           .collect(Collectors.toList());
+
+  public static final Map<String, Field<?>> FIELD_MAPPINGS =
+      FIELDS.stream().collect(Collectors.toMap(Field::getName, f -> f));
 
   private SqlBillingSubscriptionTable() {}
 }

@@ -43,7 +43,7 @@ public abstract class AbstractOAuthIdentityProvider<
       String code,
       URI serverBaseUri) {
     if (!Optional.ofNullable(sessionState).orElse("").equals(state)) {
-      log.debug("[AUTH]: OAuth state miss-match, session: {}, query: {}", sessionState, state);
+      log.debug("[AUTH]: OAuth state miss-match, session={}, query={}", sessionState, state);
       throw Boom.status(Status.UNAUTHORIZED).message("Invalid state parameter").exception();
     }
 

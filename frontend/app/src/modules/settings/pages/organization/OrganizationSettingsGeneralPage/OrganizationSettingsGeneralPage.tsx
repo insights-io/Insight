@@ -248,7 +248,10 @@ export const OrganizationSettingsGeneralPage = ({
         <Panel.Header>Termination</Panel.Header>
         <Panel.Item>
           <SpacedBetween>
-            <ExplainedLabel explanation="Removing organization will delete all data including projects and their associated events">
+            <ExplainedLabel
+              width="50%"
+              explanation="Removing organization will delete all data including projects and their associated events"
+            >
               Delete organization
             </ExplainedLabel>
             <VerticalAligned width="50%">

@@ -9,7 +9,8 @@ const CACHE_KEY = 'BillingApi.subscriptions.list';
 export const useSubscriptions = (initialData: SubscriptionDTO[]) => {
   const { data, error, mutate, revalidate } = useSWRQuery(
     CACHE_KEY,
-    () => BillingApi.subscriptions.list(),
+    () =>
+      BillingApi.subscriptions.list({ search: { sort_by: ['-created_at'] } }),
     { initialData }
   );
 

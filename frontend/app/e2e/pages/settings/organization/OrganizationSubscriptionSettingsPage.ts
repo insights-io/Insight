@@ -33,6 +33,9 @@ export class OrganizationSubscriptionSettingsPage extends AbstractOrganizationSe
     },
   };
 
+  public readonly terminateButton = queryByText('Terminate');
+  public readonly invoicesTab = queryByText('Invoices');
+
   public readonly invoiceDetails = {
     downloadButton: queryByText('Download...'),
     downloadReceipt: queryByText('Receipt PDF'),

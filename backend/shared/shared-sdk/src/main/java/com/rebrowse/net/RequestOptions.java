@@ -17,6 +17,10 @@ public class RequestOptions {
     return new RequestOptions.Builder().build();
   }
 
+  public static RequestOptions.Builder sessionId(String sessionId) {
+    return new Builder().sessionId(sessionId);
+  }
+
   public static final class Builder {
 
     private final Duration timeout;

@@ -64,7 +64,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-dev_secret}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-whsec_t0zlNMwQVl0gfl67W6qYXT5FJjOwQrzJ}
     depends_on:
       - auth-api
       - billing-api-postgres-migrations

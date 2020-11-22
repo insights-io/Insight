@@ -1,13 +1,11 @@
 import React, { useMemo } from 'react';
-import { Card, StyledAction, StyledBody } from 'baseui/card';
 import { H4, ParagraphSmall } from 'baseui/typography';
 import { Block } from 'baseui/block';
-import Divider from 'shared/components/Divider';
-import { SpacedBetween } from '@rebrowse/elements';
+import { SpacedBetween, Panel, Button } from '@rebrowse/elements';
 import { ProgressBar, ProgressBarProps } from 'baseui/progress-bar';
 import { useStyletron } from 'baseui';
 import { format } from 'date-fns';
-import { Button, SHAPE, SIZE } from 'baseui/button';
+import { SIZE } from 'baseui/button';
 import type { Plan } from '@rebrowse/types';
 
 type Props = {
@@ -21,7 +19,7 @@ type Props = {
   ) => void;
 };
 
-const YourPlan = ({
+export const YourPlan = ({
   plan,
   sessionsUsed,
   resetsOn,
@@ -55,9 +53,9 @@ const YourPlan = ({
   );
 
   return (
-    <Card title="Your plan">
-      <Divider />
-      <StyledBody>
+    <Panel>
+      <Panel.Header>Your plan</Panel.Header>
+      <Panel.Item>
         <SpacedBetween>
           <H4 marginTop={0} marginBottom={theme.sizing.scale500}>
             Rebrowse {plan ? plan[0].toUpperCase() + plan.substring(1) : ''}
@@ -107,29 +105,22 @@ const YourPlan = ({
         </Block>
         <Block>
           <ParagraphSmall>
-            Data history: <b>{dataRetention}</b>
+            Data history:{' '}
+            <b>{dataRetention === '1m' ? '1 month' : dataRetention}</b>
           </ParagraphSmall>
         </Block>
-      </StyledBody>
 
-      {plan !== 'enterprise' && (
-        <>
-          <Divider />
-          <StyledAction>
-            <Button
-              size={SIZE.compact}
-              shape={SHAPE.pill}
-              $style={{ width: '100%', maxWidth: '300px' }}
-              onClick={onUpgradeClick}
-              disabled={isLoading}
-            >
-              Upgrade
-            </Button>
-          </StyledAction>
-        </>
-      )}
-    </Card>
+        {plan !== 'enterprise' && (
+          <Button
+            size={SIZE.compact}
+            $style={{ width: '100%', maxWidth: '300px', marginTop: '16px' }}
+            onClick={onUpgradeClick}
+            disabled={isLoading}
+          >
+            Upgrade
+          </Button>
+        )}
+      </Panel.Item>
+    </Panel>
   );
 };
-
-export default React.memo(YourPlan);

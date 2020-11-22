@@ -17,6 +17,7 @@ import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.meemaw.billing.subscription.model.dto.PlanDTO;
 import com.meemaw.billing.subscription.model.dto.PriceDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
@@ -93,10 +94,11 @@ public class StripeBillingService implements BillingService {
   }
 
   @Override
-  public CompletionStage<List<SubscriptionDTO>> listSubscriptionsByOrganizationId(
-      String organizationId) {
+  public CompletionStage<List<SubscriptionDTO>> searchSubscriptions(
+      String organizationId, SearchDTO search) {
+
     return billingSubscriptionDatasource
-        .listSubscriptionsByCustomerInternalId(organizationId)
+        .searchSubscriptions(organizationId, search)
         .thenApply(
             subscriptions ->
                 subscriptions.stream().map(BillingSubscription::dto).collect(Collectors.toList()));

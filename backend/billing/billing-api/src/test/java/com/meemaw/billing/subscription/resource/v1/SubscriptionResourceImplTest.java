@@ -3,14 +3,14 @@ package com.meemaw.billing.subscription.resource.v1;
 import static com.meemaw.billing.BillingTestUtils.createVisaTestPaymentMethod;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.wildfly.common.Assert.assertFalse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.auth.user.model.UserRole;
-import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
-import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.billing.AbstractStripeTest;
-import com.meemaw.billing.service.stripe.StripeBillingService;
+import com.meemaw.billing.subscription.datasource.BillingSubscriptionTable;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.dto.CreateSubscriptionDTO;
 import com.meemaw.billing.subscription.model.dto.SubscriptionDTO;
@@ -18,19 +18,22 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.api.query.SortParam;
+import com.rebrowse.model.billing.Subscription;
+import com.rebrowse.model.billing.SubscriptionSearchParams;
 import com.rebrowse.model.user.User;
+import com.rebrowse.net.RequestOptions;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentMethod;
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
+import java.net.URL;
 import java.util.List;
-import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +43,7 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class SubscriptionResourceImplTest extends AbstractStripeTest {
 
-  @Inject StripeBillingService billingService;
+  @TestHTTPResource URL baseUrl;
 
   @Test
   public void create__should_fail__when_invalid_content_type() {
@@ -223,26 +226,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     User user = authApi().retrieveUserData(sessionId).getUser();
 
-    PaymentMethod visaTestPaymentMethod = createVisaTestPaymentMethod();
-    billingService
-        .createSubscription(
-            new UserDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getFullName(),
-                UserRole.fromString(user.getRole().getKey()),
-                user.getOrganizationId(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getPhoneNumber() != null
-                    ? new PhoneNumberDTO(
-                        user.getPhoneNumber().getCountryCode(), user.getPhoneNumber().getDigits())
-                    : null,
-                user.isPhoneNumberVerified()),
-            SubscriptionPlan.ENTERPRISE,
-            visaTestPaymentMethod)
-        .toCompletableFuture()
-        .join();
+    createSubscription(user, createVisaTestPaymentMethod()).toCompletableFuture().join();
 
     DataResponse<List<SubscriptionDTO>> listDataResponse =
         given()
@@ -252,7 +236,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
             .as(new TypeRef<>() {});
 
     SubscriptionDTO subscription = listDataResponse.getData().get(0);
-    Assertions.assertEquals("active", subscription.getStatus());
+    assertEquals("active", subscription.getStatus());
 
     String cancelSubscriptionPath =
         SubscriptionResource.PATH + "/" + subscription.getId() + "/cancel";
@@ -264,7 +248,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
             .patch(cancelSubscriptionPath)
             .as(new TypeRef<>() {});
 
-    Assertions.assertEquals("canceled", deleteDataResponse.getData().getStatus());
+    assertEquals("canceled", deleteDataResponse.getData().getStatus());
 
     // Trying to cancel same subscription again should throw
     given()
@@ -289,6 +273,53 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
                 String.format(
                     "{\"data\":{\"organizationId\":\"%s\",\"type\":\"free\",\"dataRetention\":\"1m\",\"price\":{\"amount\":0,\"interval\":\"month\"}}}",
                     user.getOrganizationId())));
+  }
+
+  @Test
+  public void list__should_returned_sorted_subscriptions__when_sort_by_query()
+      throws JsonProcessingException, StripeException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    User user = authApi().retrieveUserData(sessionId).getUser();
+
+    String apiBaseUrl = baseUrl.toString();
+    apiBaseUrl = apiBaseUrl.substring(0, apiBaseUrl.length() - 1);
+
+    RequestOptions requestOptions =
+        RequestOptions.sessionId(sessionId).apiBaseUrl(apiBaseUrl).build();
+
+    // Create first subscription
+    createSubscription(user, createVisaTestPaymentMethod()).toCompletableFuture().join();
+
+    // Search for created subscription
+    Subscription subscription =
+        Subscription.search(requestOptions).toCompletableFuture().join().get(0);
+
+    subscription.cancel(requestOptions).toCompletableFuture().join();
+
+    // Create second subscription
+    createSubscription(user, createVisaTestPaymentMethod()).toCompletableFuture().join();
+
+    List<Subscription> subscriptions =
+        Subscription.search(
+                SubscriptionSearchParams.builder()
+                    .sortBy(SortParam.asc(BillingSubscriptionTable.CREATED_AT))
+                    .build(),
+                requestOptions)
+            .toCompletableFuture()
+            .join();
+
+    assertTrue(subscriptions.get(0).getCreatedAt().isBefore(subscriptions.get(1).getCreatedAt()));
+
+    subscriptions =
+        Subscription.search(
+                SubscriptionSearchParams.builder()
+                    .sortBy(SortParam.desc(BillingSubscriptionTable.CREATED_AT))
+                    .build(),
+                requestOptions)
+            .toCompletableFuture()
+            .join();
+
+    assertFalse(subscriptions.get(0).getCreatedAt().isBefore(subscriptions.get(1).getCreatedAt()));
   }
 
   @Test
