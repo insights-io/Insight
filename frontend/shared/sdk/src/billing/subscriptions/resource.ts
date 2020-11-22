@@ -7,7 +7,14 @@ import type {
   PlanDTO,
 } from '@rebrowse/types';
 
-import { RequestOptions, withCredentials, getData } from '../../core';
+import {
+  RequestOptions,
+  withCredentials,
+  getData,
+  querystring,
+} from '../../core';
+
+import type { SubscriptionSearchRequestOptions } from './types';
 
 export const subscriptionResource = (billingApiBaseURL: string) => {
   return {
@@ -37,9 +44,16 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
         .then(getData);
     },
 
-    list: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
+    list: ({
+      baseURL = billingApiBaseURL,
+      search,
+      ...rest
+    }: SubscriptionSearchRequestOptions = {}) => {
       return ky
-        .get(`${baseURL}/v1/billing/subscriptions`, withCredentials(rest))
+        .get(
+          `${baseURL}/v1/billing/subscriptions${querystring(search)}`,
+          withCredentials(rest)
+        )
         .json<DataResponse<SubscriptionDTO[]>>()
         .then(getData);
     },

@@ -82,7 +82,7 @@ public class SqlSessionDatasource implements SessionDatasource {
 
     Query query =
         SQLSearchDTO.of(searchDTO)
-            .apply(
+            .query(
                 sqlPool
                     .getContext()
                     .select(sqlGroupByQuery.fieldsWithCount())
@@ -101,7 +101,7 @@ public class SqlSessionDatasource implements SessionDatasource {
 
     Query query =
         SQLSearchDTO.of(searchDTO)
-            .apply(
+            .query(
                 sqlPool
                     .getContext()
                     .selectDistinct(fields)
@@ -167,7 +167,7 @@ public class SqlSessionDatasource implements SessionDatasource {
       String organizationId, SearchDTO searchDTO) {
     Query query =
         SQLSearchDTO.of(searchDTO)
-            .apply(
+            .query(
                 sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 

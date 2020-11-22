@@ -7,6 +7,7 @@ import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscript
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CUSTOMER_EXTERNAL_ID;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.CUSTOMER_INTERNAL_ID;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.FIELDS;
+import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.FIELD_MAPPINGS;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.ID;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.INSERT_FIELDS;
 import static com.meemaw.billing.subscription.datasource.sql.SqlBillingSubscriptionTable.PLAN;
@@ -19,8 +20,10 @@ import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.CreateBillingSubscriptionParams;
 import com.meemaw.billing.subscription.model.SubscriptionPlan;
 import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
@@ -37,6 +40,20 @@ import org.jooq.Query;
 public class SqlBillingSubscriptionDatasource implements BillingSubscriptionDatasource {
 
   @Inject SqlPool sqlPool;
+
+  public static BillingSubscription mapBillingSubscription(Row row) {
+    return new BillingSubscription(
+        row.getString(ID.getName()),
+        SubscriptionPlan.fromString(row.getString(PLAN.getName())),
+        row.getString(CUSTOMER_EXTERNAL_ID.getName()),
+        row.getString(CUSTOMER_INTERNAL_ID.getName()),
+        row.getString(STATUS.getName()),
+        row.getString(PRICE_ID.getName()),
+        row.getLong(CURRENT_PERIOD_START.getName()),
+        row.getLong(CURRENT_PERIOD_END.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()),
+        row.getOffsetDateTime(CANCELED_AT.getName()));
+  }
 
   @Override
   public CompletionStage<Optional<BillingSubscription>> get(String subscriptionId) {
@@ -124,10 +141,17 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
   }
 
   @Override
-  public CompletionStage<List<BillingSubscription>> listSubscriptionsByCustomerInternalId(
-      String customerInternalId) {
+  public CompletionStage<List<BillingSubscription>> searchSubscriptions(
+      String customerInternalId, SearchDTO search) {
     Query query =
-        sqlPool.getContext().selectFrom(TABLE).where(CUSTOMER_INTERNAL_ID.eq(customerInternalId));
+        SQLSearchDTO.of(search)
+            .query(
+                sqlPool
+                    .getContext()
+                    .selectFrom(TABLE)
+                    .where(CUSTOMER_INTERNAL_ID.eq(customerInternalId)),
+                FIELD_MAPPINGS);
+
     return sqlPool.execute(query).thenApply(this::onListBillingSubscriptions);
   }
 
@@ -149,19 +173,5 @@ public class SqlBillingSubscriptionDatasource implements BillingSubscriptionData
 
     Row row = rows.iterator().next();
     return Optional.of(mapBillingSubscription(row));
-  }
-
-  public static BillingSubscription mapBillingSubscription(Row row) {
-    return new BillingSubscription(
-        row.getString(ID.getName()),
-        SubscriptionPlan.fromString(row.getString(PLAN.getName())),
-        row.getString(CUSTOMER_EXTERNAL_ID.getName()),
-        row.getString(CUSTOMER_INTERNAL_ID.getName()),
-        row.getString(STATUS.getName()),
-        row.getString(PRICE_ID.getName()),
-        row.getLong(CURRENT_PERIOD_START.getName()),
-        row.getLong(CURRENT_PERIOD_END.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()),
-        row.getOffsetDateTime(CANCELED_AT.getName()));
   }
 }

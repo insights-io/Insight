@@ -55,6 +55,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
     const subscriptionsPromise = BillingApi.subscriptions.list({
       baseURL: process.env.BILLING_API_BASE_URL,
+      search: {
+        sort_by: ['-created_at'],
+      },
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
         cookie: `SessionId=${authResponse.SessionId}`,

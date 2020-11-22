@@ -125,7 +125,12 @@ export const SignUpForm = ({
         </FormControl>
       </Block>
 
-      <Button type="submit" $style={{ width: '100%' }} isLoading={isSubmitting}>
+      <Button
+        type="submit"
+        $style={{ width: '100%' }}
+        isLoading={isSubmitting}
+        disabled={isSubmitting}
+      >
         Get started
       </Button>
 

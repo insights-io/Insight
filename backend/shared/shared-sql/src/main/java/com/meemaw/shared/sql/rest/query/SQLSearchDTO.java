@@ -13,19 +13,19 @@ public class SQLSearchDTO {
 
   SearchDTO searchDTO;
 
+  public static SQLSearchDTO of(SearchDTO searchDTO) {
+    return new SQLSearchDTO(searchDTO);
+  }
+
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public SelectForUpdateStep<?> apply(SelectJoinStep<?> query, Map<String, Field<?>> mappings) {
-    return apply((SelectConditionStep) query, mappings);
+  public SelectForUpdateStep<?> query(SelectJoinStep<?> query, Map<String, Field<?>> mappings) {
+    return query((SelectConditionStep) query, mappings);
   }
 
-  public SelectForUpdateStep<?> applyFilter(
+  public SelectForUpdateStep<?> query(
       SelectConditionStep<?> query, Map<String, Field<?>> mappings) {
-    return SQLFilterExpression.of(searchDTO.getFilter()).sql(query, mappings);
-  }
-
-  public SelectForUpdateStep<?> apply(
-      SelectConditionStep<?> query, Map<String, Field<?>> mappings) {
-    SelectForUpdateStep<?> select = applyFilter(query, mappings);
+    SelectForUpdateStep<?> select =
+        SQLFilterExpression.of(searchDTO.getFilter()).sql(query, mappings);
 
     if (!searchDTO.getGroupBy().getFields().isEmpty()) {
       select =
@@ -43,9 +43,5 @@ public class SQLSearchDTO {
     }
 
     return select;
-  }
-
-  public static SQLSearchDTO of(SearchDTO searchDTO) {
-    return new SQLSearchDTO(searchDTO);
   }
 }

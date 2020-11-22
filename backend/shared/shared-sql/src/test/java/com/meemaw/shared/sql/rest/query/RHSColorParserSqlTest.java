@@ -33,7 +33,8 @@ public class RHSColorParserSqlTest {
         RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)), allowedFields);
 
     Query query =
-        SQLSearchDTO.of(searchDTO).apply(select().from(table("session.session")), mappings);
+        SQLSearchDTO.of(searchDTO).query(select().from(table("session.session")), mappings);
+
     assertEquals(
         "select * from session.session where (field1 <= '123' and field1 >= '100' and field2 >= '200' and location ->> 'city' = '10') limit 25",
         query.getSQL(ParamType.INLINED));
@@ -51,7 +52,8 @@ public class RHSColorParserSqlTest {
         RHSColonParser.parse(RHSColonParser.queryParams(new URL(input)), allowedFields);
 
     Query query =
-        SQLSearchDTO.of(searchDTO).apply(select().from(table("session.session")), mappings);
+        SQLSearchDTO.of(searchDTO).query(select().from(table("session.session")), mappings);
+
     assertEquals(
         "select * from session.session where (field1 <= '123' and field2 >= 'matej') order by field2 asc, age desc",
         query.getSQL(ParamType.INLINED));
@@ -65,7 +67,8 @@ public class RHSColorParserSqlTest {
 
     Query query =
         SQLSearchDTO.of(searchDTO)
-            .apply(select().from(table("session.session")), Collections.emptyMap());
+            .query(select().from(table("session.session")), Collections.emptyMap());
+
     assertEquals("select * from session.session", query.getSQL(ParamType.INLINED));
   }
 
@@ -82,7 +85,7 @@ public class RHSColorParserSqlTest {
                 RHSColonParser.parse(
                     RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=+created_at")),
                     allowedFields))
-            .apply(select().from(table("session.session")), mappings)
+            .query(select().from(table("session.session")), mappings)
             .getSQL(ParamType.INLINED));
 
     assertEquals(
@@ -91,7 +94,7 @@ public class RHSColorParserSqlTest {
                 RHSColonParser.parse(
                     RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=createdAt")),
                     allowedFields))
-            .apply(select().from(table("session.session")), mappings)
+            .query(select().from(table("session.session")), mappings)
             .getSQL(ParamType.INLINED));
 
     assertEquals(
@@ -100,7 +103,7 @@ public class RHSColorParserSqlTest {
                 RHSColonParser.parse(
                     RHSColonParser.queryParams(new URL("http://www.abc.com?sort_by=-created_at")),
                     allowedFields))
-            .apply(select().from(table("session.session")), mappings)
+            .query(select().from(table("session.session")), mappings)
             .getSQL(ParamType.INLINED));
   }
 }

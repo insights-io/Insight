@@ -22,6 +22,7 @@ import {
 } from '@rebrowse/elements';
 import { Block } from 'baseui/block';
 import { useUpdateField } from 'shared/hooks/useUpdateField';
+import { useStyletron } from 'baseui';
 
 import { PasswordPolicyForm } from './PasswordPolicyForm';
 
@@ -42,6 +43,7 @@ export const OrganizationSettingsSecurityPage = ({
   organization: initialOrganization,
   passwordPolicy: initialPasswordPolicy,
 }: Props) => {
+  const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
   const { organization, updateOrganization } = useOrganization(
     initialOrganization
@@ -89,15 +91,36 @@ export const OrganizationSettingsSecurityPage = ({
           </VerticalAligned>
         </Panel.Item>
 
-        <Panel.Item display="flex" justifyContent="space-between">
+        <Panel.Item
+          display="flex"
+          justifyContent="space-between"
+          $style={{
+            [`@media screen and (max-width: ${theme.breakpoints.medium}px)`]: {
+              flexDirection: 'column',
+            },
+          }}
+        >
           <ExplainedLabel
             explanation="Password policy is a set of rules that define complexity requirements for your organization members"
             width="50%"
+            $style={{
+              [`@media screen and (max-width: ${theme.breakpoints.medium}px)`]: {
+                width: '100%',
+              },
+            }}
           >
             Set password policy
           </ExplainedLabel>
 
-          <FlexColumn width="50%">
+          <FlexColumn
+            width="50%"
+            $style={{
+              [`@media screen and (max-width: ${theme.breakpoints.medium}px)`]: {
+                width: '100%',
+                marginTop: theme.sizing.scale800,
+              },
+            }}
+          >
             <Block width="fit-content">
               <PasswordPolicyForm
                 initialPasswordPolicy={initialPasswordPolicy}

@@ -2,12 +2,12 @@ package com.meemaw.auth.sso.oauth.google;
 
 import com.meemaw.auth.sso.oauth.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.oauth.google.model.GoogleErrorResponse;
+import com.meemaw.auth.sso.oauth.google.model.GoogleScope;
 import com.meemaw.auth.sso.oauth.google.model.GoogleTokenResponse;
 import com.meemaw.auth.sso.oauth.google.model.GoogleUserInfoResponse;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
@@ -24,10 +24,15 @@ public class GoogleIdentityProvider
     extends AbstractOAuthIdentityProvider<
         GoogleTokenResponse, GoogleUserInfoResponse, GoogleErrorResponse> {
 
-  private static final Collection<String> SCOPE_LIST = List.of("openid", "email", "profile");
-  private static final String SCOPES = String.join(" ", SCOPE_LIST);
   private static final String AUTHORIZATION_SERVER_URL =
       "https://accounts.google.com/o/oauth2/auth";
+  private static final String SCOPES =
+      String.join(
+          " ",
+          List.of(
+              GoogleScope.OPENID.getValue(),
+              GoogleScope.EMAIL.getValue(),
+              GoogleScope.PROFILE.getValue()));
 
   @Inject GoogleOAuthClient client;
 

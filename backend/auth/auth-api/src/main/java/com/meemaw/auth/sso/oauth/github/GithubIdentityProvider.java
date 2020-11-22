@@ -2,12 +2,12 @@ package com.meemaw.auth.sso.oauth.github;
 
 import com.meemaw.auth.sso.oauth.AbstractOAuthIdentityProvider;
 import com.meemaw.auth.sso.oauth.github.model.GithubErrorResponse;
+import com.meemaw.auth.sso.oauth.github.model.GithubScope;
 import com.meemaw.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.meemaw.auth.sso.oauth.github.model.GithubUserInfoResponse;
 import com.meemaw.auth.sso.session.model.LoginMethod;
 import com.meemaw.auth.sso.session.model.SsoLoginResult;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
@@ -24,11 +24,12 @@ public class GithubIdentityProvider
     extends AbstractOAuthIdentityProvider<
         GithubTokenResponse, GithubUserInfoResponse, GithubErrorResponse> {
 
-  @Inject GithubOAuthClient client;
-
   private static final String AUTHORIZATION_SERVER_URL = "https://github.com/login/oauth/authorize";
-  private static final Collection<String> SCOPE_LIST = List.of("read:user", "user:email");
-  private static final String SCOPES = String.join(" ", SCOPE_LIST);
+  private static final String SCOPES =
+      String.join(
+          " ", List.of(GithubScope.READ_USER.getValue(), GithubScope.USER_EMAIL.getValue()));
+
+  @Inject GithubOAuthClient client;
 
   @Override
   public LoginMethod getLoginMethod() {

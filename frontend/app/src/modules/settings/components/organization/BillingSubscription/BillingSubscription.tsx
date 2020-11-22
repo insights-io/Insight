@@ -1,10 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Block } from 'baseui/block';
-import YourPlan from 'modules/billing/components/YourPlan';
+import { YourPlan } from 'modules/billing/components/YourPlan';
 import { addDays } from 'date-fns';
 import { Modal } from 'baseui/modal';
 import { CheckoutForm } from 'modules/billing/components/CheckoutForm';
-import { Card, StyledBody } from 'baseui/card';
 import { SubscriptionList } from 'modules/billing/components/SubscriptionList';
 import { toaster } from 'baseui/toast';
 import type {
@@ -13,6 +12,7 @@ import type {
   Subscription,
   SubscriptionPlan,
 } from '@rebrowse/types';
+import { Panel } from '@rebrowse/elements';
 
 type Props = {
   subscriptions: Subscription[];
@@ -78,6 +78,7 @@ export const BillingSubscription = ({
         onUpgradeClick={onUpgradeClick}
         isLoading={false}
       />
+
       {plan?.type !== 'enterprise' && (
         <Modal isOpen={isUpgrading} onClose={() => setIsUpgrading(false)}>
           <CheckoutForm
@@ -87,14 +88,14 @@ export const BillingSubscription = ({
         </Modal>
       )}
 
-      <Card
-        title="Subscriptions"
-        overrides={{ Root: { style: { marginTop: '20px' } } }}
-      >
-        <StyledBody>
-          <SubscriptionList subscriptions={subscriptions} />
-        </StyledBody>
-      </Card>
+      {subscriptions.length > 0 && (
+        <Panel $style={{ marginTop: '32px' }}>
+          <Panel.Header>Subscriptions</Panel.Header>
+          <Panel.Item>
+            <SubscriptionList subscriptions={subscriptions} />
+          </Panel.Item>
+        </Panel>
+      )}
     </Block>
   );
 };

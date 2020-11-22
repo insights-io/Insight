@@ -107,7 +107,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
             search);
 
     return sqlPool
-        .execute(SQLSearchDTO.of(search).apply(baseQuery, FIELD_MAPPINGS))
+        .execute(SQLSearchDTO.of(search).query(baseQuery, FIELD_MAPPINGS))
         .thenApply(
             pgRowSet ->
                 StreamSupport.stream(pgRowSet.spliterator(), false)
@@ -127,7 +127,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
             search);
 
     return sqlPool
-        .execute(SQLSearchDTO.of(search).applyFilter(baseQuery, FIELD_MAPPINGS))
+        .execute(SQLSearchDTO.of(search).query(baseQuery, FIELD_MAPPINGS))
         .thenApply(rows -> rows.iterator().next().getInteger(0));
   }
 

@@ -9,7 +9,7 @@ import { loadStripe, PaymentIntent, StripeError } from '@stripe/stripe-js';
 import { BillingApi } from 'api';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
-import { Button, SIZE, SHAPE } from 'baseui/button';
+import { SIZE } from 'baseui/button';
 import FormError from 'shared/components/FormError';
 import type {
   APIError,
@@ -17,6 +17,7 @@ import type {
   PlanDTO,
   SubscriptionPlan,
 } from '@rebrowse/types';
+import { Button } from '@rebrowse/elements';
 
 import { confirmCardPayment, createCardPaymentMethod } from './stripe';
 
@@ -111,7 +112,6 @@ const StripeChekoutForm = ({
             type="submit"
             disabled={!stripe}
             size={SIZE.compact}
-            shape={SHAPE.pill}
             isLoading={isSubmitting}
             $style={{ width: '100%' }}
           >

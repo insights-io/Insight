@@ -16,7 +16,7 @@ export const subscriptionStatusText = (status: SubscriptionStatus) => {
 };
 
 export const subscriptionPlanText = (plan: SubscriptionPlan) => {
-  return `Rebrowse ${capitalize(plan)} subscription`;
+  return `Rebrowse ${capitalize(plan)}`;
 };
 
 export const subscriptionStatusIcon: Record<

@@ -24,7 +24,7 @@ public class RebrowseRequest {
   public RebrowseRequest(
       RequestMethod method, String path, RequestOptions maybeOptions, ApiRequestParams params) {
     this.method = method;
-    this.bodyPublisher = bodyPublisher(params);
+    this.bodyPublisher = bodyPublisher(method, params);
     this.options = Optional.ofNullable(maybeOptions).orElseGet(RequestOptions::createDefault);
     this.headers = buildHeaders(this.options, bodyPublisher);
     this.uri = buildURI(options.getApiBaseUrl(), path, method, params);
@@ -75,9 +75,11 @@ public class RebrowseRequest {
     return URI.create(sb.toString());
   }
 
-  private <P extends ApiRequestParams> HttpRequest.BodyPublisher bodyPublisher(P params) {
-    return params == null
-        ? HttpRequest.BodyPublishers.noBody()
-        : HttpRequest.BodyPublishers.ofString(params.writeValueAsString(), ApiResource.CHARSET);
+  private <P extends ApiRequestParams> HttpRequest.BodyPublisher bodyPublisher(
+      RequestMethod method, P params) {
+    if (params == null || method.equals(RequestMethod.GET)) {
+      return HttpRequest.BodyPublishers.noBody();
+    }
+    return HttpRequest.BodyPublishers.ofString(params.writeValueAsString(), ApiResource.CHARSET);
   }
 }

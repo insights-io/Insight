@@ -103,7 +103,7 @@ export const SidebarMenu = memo(
               <SidebarMenuHeader>{header}</SidebarMenuHeader>
               <ul className={css({ listStyle: 'none', margin: 0, padding: 0 })}>
                 {items.map((sectionItem) => {
-                  const isActive = sectionItem.link === pathname;
+                  const isActive = pathname.startsWith(sectionItem.link);
 
                   return (
                     <SidebarMenuListItem

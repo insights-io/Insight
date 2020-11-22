@@ -10,7 +10,7 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
   const { data, error, mutate, revalidate } = useSWRQuery(
     CACHE_KEY,
     () => BillingApi.subscriptions.get(initialData.id),
-    { initialData }
+    { initialData, refreshInterval: 7500 }
   );
 
   const setSubscription = useCallback(

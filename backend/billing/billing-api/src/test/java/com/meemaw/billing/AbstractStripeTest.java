@@ -4,9 +4,14 @@ import com.google.gson.JsonObject;
 import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
+import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.billing.payment.provider.stripe.StripePaymentProvider;
+import com.meemaw.billing.service.stripe.StripeBillingService;
+import com.meemaw.billing.subscription.model.SubscriptionPlan;
+import com.meemaw.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
+import com.rebrowse.model.user.User;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentMethod;
 import com.stripe.net.ApiResource;
@@ -17,9 +22,32 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import lombok.SneakyThrows;
 
 public abstract class AbstractStripeTest extends ExternalAuthApiProvidedTest {
+
+  @Inject StripeBillingService billingService;
+
+  protected CompletionStage<CreateSubscriptionResponseDTO> createSubscription(
+      User user, PaymentMethod paymentMethod) {
+    return billingService.createSubscription(
+        new UserDTO(
+            user.getId(),
+            user.getEmail(),
+            user.getFullName(),
+            UserRole.fromString(user.getRole().getKey()),
+            user.getOrganizationId(),
+            user.getCreatedAt(),
+            user.getUpdatedAt(),
+            user.getPhoneNumber() != null
+                ? new PhoneNumberDTO(
+                    user.getPhoneNumber().getCountryCode(), user.getPhoneNumber().getDigits())
+                : null,
+            user.isPhoneNumberVerified()),
+        SubscriptionPlan.ENTERPRISE,
+        paymentMethod);
+  }
 
   protected AuthUser testBillingUser() {
     return new UserDTO(

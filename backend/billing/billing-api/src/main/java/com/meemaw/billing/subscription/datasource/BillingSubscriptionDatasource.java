@@ -3,6 +3,7 @@ package com.meemaw.billing.subscription.datasource;
 import com.meemaw.billing.subscription.model.BillingSubscription;
 import com.meemaw.billing.subscription.model.CreateBillingSubscriptionParams;
 import com.meemaw.billing.subscription.model.UpdateBillingSubscriptionParams;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +25,8 @@ public interface BillingSubscriptionDatasource {
   CompletionStage<Optional<BillingSubscription>> get(
       String subscriptionId, SqlTransaction transaction);
 
-  CompletionStage<List<BillingSubscription>> listSubscriptionsByCustomerInternalId(
-      String customerInternalId);
+  CompletionStage<List<BillingSubscription>> searchSubscriptions(
+      String customerInternalId, SearchDTO search);
 
   CompletionStage<Optional<BillingSubscription>> getByCustomerInternalId(
       String subscriptionId, String customerInternalId);
