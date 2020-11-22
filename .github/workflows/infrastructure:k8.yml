@@ -33,10 +33,11 @@ jobs:
           enable_alpha_plugins: true
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o ci rendered.yml > kube-score-results.txt
-          echo "KUBE_SCORE_RESULTS=$(cat kube-score-results.txt)" >> $GITHUB_ENV
+      - run: docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o ci rendered.yml > kube-score-results.txt
+      - run: echo "KUBE_SCORE_RESULTS=$(cat kube-score-results.txt)" >> $GITHUB_ENV
+        if: failure()
       - name: Comment PR 💬
+        if: failure()
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
