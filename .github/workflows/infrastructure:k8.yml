@@ -27,17 +27,19 @@ jobs:
       - uses: actions/checkout@v2
       - uses: karancode/kustomize-github-action@master
         with:
-          kustomize_version: 3.8.7
+          kustomize_version: '3.8.7'
           kustomize_comment: true
           kustomize_output_file: rendered.yml
           enable_alpha_plugins: true
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o ci ./project/rendered.yml > kube-score-results.txt
+      - run: |
+          docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o ci ./project/rendered.yml > kube-score-results.txt
+          echo "KUBE_SCORE_RESULTS=$(cat kube-score-results.txt)" >> $GITHUB_ENV
       - name: Comment PR 💬
-        if: failure()
-        uses: harupy/comment-on-pr@master
+        uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          filename: /home/runner/work/Insight/Insight/kube-score-results.txt
+          msg: '${{ env.KUBE_SCORE_RESULTS }}'
+          check_for_duplicate_msg: true
