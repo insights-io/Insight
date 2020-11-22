@@ -1,0 +1,47 @@
+---
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: elastic
+    url: https://helm.elastic.co
+
+
+environments:
+  default:
+    missingFileHandler: Error
+    values:
+      - defaults.yaml
+      - elasticsearch-defaults.yaml
+  staging:
+    missingFileHandler: Error
+    values:
+      - defaults.yaml
+      - elasticsearch-staging.yaml
+
+---
+releases:
+  - name: postgres
+    chart: bitnami/postgresql
+    version: 10.1.0
+    namespace: {{ .Values.namespace }}
+    values:
+      - postgres.yaml
+
+  - name: kafka
+    chart: bitnami/kafka
+    version: 12.1.0
+    namespace: {{ .Values.namespace }}
+    values:
+      - kafka.yaml
+
+  - name: es5
+    chart: elastic/elasticsearch
+    version: 7.9.2
+    namespace: {{ .Values.namespace }}
+    values:
+      - elasticsearch.yaml
+      - esJavaOpts: "{{ .Values.esJavaOpts }}"
+      - resources:
+{{ toYaml .Values.esResources | indent 10 }}
+      - volumeClaimTemplate:
+          storageClassName: "{{ .Values.storageClassName }}"
