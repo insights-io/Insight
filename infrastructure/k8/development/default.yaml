@@ -9,18 +9,6 @@ infraNamespace: infra
 
 fluentbitParser: docker
 
-# Shrink default JVM heap.
-esJavaOpts: '-Xmx128m -Xms128m'
-
-# Allocate smaller chunks of memory per pod.
-esResources:
-  requests:
-    cpu: '100m'
-    memory: '512M'
-  limits:
-    cpu: '1000m'
-    memory: '512M'
-
 ingressAnnotations:
   cert-manager.io/cluster-issuer: letsencrypt
   kubernetes.io/ingress.class: nginx

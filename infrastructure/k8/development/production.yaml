@@ -7,15 +7,6 @@ infraNamespace: infra
 
 fluentbitParser: cri-2
 
-esJavaOpts: '-Xmx1g -Xms1g'
-esResources:
-  requests:
-    cpu: '100m'
-    memory: '4G'
-  limits:
-    cpu: '2000m'
-    memory: '4G'
-
 ingressAnnotationsHttps:
   cert-manager.io/cluster-issuer: letsencrypt
   kubernetes.io/ingress.class: nginx

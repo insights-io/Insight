@@ -12,28 +12,32 @@ jobs:
       - uses: actions/checkout@v2
       - uses: mamezou-tech/setup-helmfile@v0.6.0
         with:
-          helmfile-version: v0.118.7
-          helm-version: v3.2.0
-      - name: Build infra
-        run: cd infrastructure/k8/development && helmfile template
+          helmfile-version: v0.135.0
+          helm-version: v3.4.0
+      - run: helmfile template
+        working-directory: infrastructure/k8/development
+      - run: helmfile template
+        working-directory: infrastructure/k8/tracing
+      - run: helmfile template
+        working-directory: infrastructure/k8/recording
 
   kustomize:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: karancode/kustomize-github-action@master
+      - uses: karancode/kustomize-github-action@v1.2.0
         with:
-          kustomize_version: 3.2.0
+          kustomize_version: '3.2.0'
           kustomize_comment: true
           kustomize_output_file: rendered.yml
           enable_alpha_plugins: true
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      - run: docker run -v $(pwd):/project zegl/kube-score:v1.7.0 score -o ci ./project/rendered.yml > kube-score-results.txt
-#      - name: Comment PR 💬
-#        if: failure()
-#        uses: harupy/comment-on-pr@master
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          filename: /home/runner/work/Insight/Insight/kube-score-results.txt
+      - run: docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o ci rendered.yml > kube-score-results.txt
+      - name: Comment PR 💬
+        if: failure()
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: kube-score-results.txt
