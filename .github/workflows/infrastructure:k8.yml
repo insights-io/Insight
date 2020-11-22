@@ -20,6 +20,8 @@ jobs:
         working-directory: infrastructure/k8/tracing
       - run: helmfile template
         working-directory: infrastructure/k8/recording
+      - run: helmfile template
+        working-directory: infrastructure/k8/monitoring
 
   kustomize:
     runs-on: ubuntu-latest

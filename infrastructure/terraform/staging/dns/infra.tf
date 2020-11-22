@@ -109,3 +109,19 @@ resource "aws_route53_record" "argo" {
   ttl     = "300"
   records = ["213.161.29.246"] # Point to Kubernetes cluster
 }
+
+resource "aws_route53_record" "alertmanager" {
+  zone_id = aws_route53_zone.staging.zone_id
+  name    = "alertmanager.${module.project_vars.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = ["213.161.29.246"] # Point to Kubernetes cluster
+}
+
+resource "aws_route53_record" "alertmanager_www" {
+  zone_id = aws_route53_zone.staging.zone_id
+  name    = "www.alertmanager.${module.project_vars.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = ["213.161.29.246"] # Point to Kubernetes cluster
+}

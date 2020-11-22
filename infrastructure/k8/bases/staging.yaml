@@ -1,2 +1,4 @@
 ---
 domain: rebrowse.dev
+
+storageClassName: 'local-path'

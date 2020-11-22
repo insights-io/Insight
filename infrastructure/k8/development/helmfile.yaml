@@ -10,14 +10,10 @@ repositories:
     url: https://kubernetes.github.io/dashboard/
   - name: incubator
     url: https://charts.helm.sh/incubator
-  - name: grafana
-    url: https://grafana.github.io/helm-charts
   - name: runatlantis
     url: https://runatlantis.github.io/helm-charts
   - name: ingress-nginx
     url: https://kubernetes.github.io/ingress-nginx
-  - name: prometheus-community
-    url: https://prometheus-community.github.io/helm-charts
 
 helmfiles:
  {{ if eq .Environment.Name "production" }}- path: "./releases/cert-manager.yaml"{{ end }}
@@ -29,7 +25,12 @@ releases:
     namespace: {{ .Values.infraNamespace }}
     values:
      - ingress-nginx.yaml
-     
+  - name: postgres
+    chart: bitnami/postgresql
+    version: 10.0.2
+    namespace: {{ .Values.appNamespace }}
+    values:
+      - postgres.yaml
   - name: metabase
     chart: stable/metabase
     version: 0.13.0
@@ -48,6 +49,25 @@ releases:
             - "www.metabase.{{ .Values.infraDomain }}"
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
+
+  - name: kafka
+    chart: bitnami/kafka
+    version: 12.1.0
+    namespace: {{ .Values.appNamespace }}
+    values:
+      - kafka.yaml
+
+  - name: es5
+    chart: elastic/elasticsearch
+    version: 7.9.2
+    namespace: {{ .Values.appNamespace }}
+    values:
+      - es.yaml
+      - esJavaOpts: "{{ .Values.esJavaOpts }}"
+      - resources:
+{{ toYaml .Values.esResources | indent 10 }}
+      - volumeClaimTemplate:
+          storageClassName: "{{ .Values.storageClassName }}"
 
   - name: fluentbit
     chart: stable/fluent-bit
@@ -94,59 +114,6 @@ releases:
           hosts:
             - "dashboard.{{ .Values.infraDomain }}"
             - "www.dashboard.{{ .Values.infraDomain }}"
-          annotations:
-{{ toYaml .Values.ingressAnnotations | indent 12 }}
-
-  - name: prometheus
-    chart: prometheus-community/prometheus
-    version: 11.16.9
-    namespace: prometheus
-    values:
-      - prometheus.yaml
-      - server:
-          ingress:
-            enabled: true
-            tls:
-              - hosts:
-                - "prometheus.{{ .Values.infraDomain }}"
-                - "www.prometheus.{{ .Values.infraDomain }}"
-                secretName: prometheus-tls
-            hosts:
-              - "prometheus.{{ .Values.infraDomain }}"
-              - "www.prometheus.{{ .Values.infraDomain }}"
-            annotations:
-{{ toYaml .Values.ingressAnnotations | indent 14 }}
-
-      - alertmanager:
-          ingress:
-            enabled: true
-            tls:
-              - hosts:
-                - "alertmanager.{{ .Values.infraDomain }}"
-                secretName: alertmanager-tls
-            hosts:
-              - "alertmanager.{{ .Values.infraDomain }}"
-            annotations:
-{{ toYaml .Values.ingressAnnotations | indent 14 }}
-
-  - name: grafana
-    chart: grafana/grafana
-    version: 6.1.7
-    namespace: {{ .Values.infraNamespace }}
-    values:
-      - grafana.yaml
-      - persistence:
-          storageClassName: {{ .Values.storageClassName }}
-      - ingress:
-          enabled: true
-          tls:
-            - hosts:
-              - "grafana.{{ .Values.infraDomain }}"
-              - "www.grafana.{{ .Values.infraDomain }}"
-              secretName: grafana-tls
-          hosts:
-            - "grafana.{{ .Values.infraDomain }}"
-            - "www.grafana.{{ .Values.infraDomain }}"
           annotations:
 {{ toYaml .Values.ingressAnnotations | indent 12 }}
 
