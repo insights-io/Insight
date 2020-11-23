@@ -6,7 +6,7 @@ locals {
     "www.api.${module.project_vars.domain}",
     "app.${module.project_vars.domain}",
     "www.app.${module.project_vars.domain}",
-     "try.${module.project_vars.domain}",
+    "try.${module.project_vars.domain}",
     "www.try.${module.project_vars.domain}"
   ]
 }
@@ -31,9 +31,9 @@ module "wildcard_certificate" {
 
 resource "aws_route53_record" "app_records" {
   for_each = toset(local.kubernetes_app_records)
-  zone_id = aws_route53_zone.staging.zone_id
+  zone_id  = aws_route53_zone.staging.zone_id
   name     = each.value
-  type    = "A"
-  ttl     = "300"
-  records = ["213.161.29.246"] # Point to Kubernetes cluster
+  type     = "A"
+  ttl      = "300"
+  records  = ["213.161.29.246"] # Point to Kubernetes cluster
 }
