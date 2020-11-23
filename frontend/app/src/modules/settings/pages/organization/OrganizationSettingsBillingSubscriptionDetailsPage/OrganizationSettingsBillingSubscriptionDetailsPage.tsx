@@ -6,7 +6,7 @@ import {
 } from 'shared/constants/routes';
 import { OrganizationSettingsPageLayout } from 'modules/settings/components/organization/OrganizationSettingsPageLayout';
 import { SubscriptionDetails } from 'modules/billing/components/SubscriptionDetails';
-import useInvoices from 'modules/billing/hooks/useInvoices';
+import { useInvoices } from 'modules/billing/hooks/useInvoices';
 import { useSubscription } from 'modules/billing/hooks/useSubscription';
 import type {
   InvoiceDTO,

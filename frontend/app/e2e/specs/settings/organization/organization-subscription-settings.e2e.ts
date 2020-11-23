@@ -82,10 +82,6 @@ test('As a user I can subscribe again after canceling my first subscription usin
 
   await t
     .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
-    // eslint-disable-next-line no-restricted-globals
-    .eval(() => location.reload()); // TODO should be removed with react-query
-
-  await t
     .expect(queryByText('Rebrowse Free').with({ timeout: 15000 }).visible)
     .ok('Should be back on Free plan')
     .click(upgradeButton)
@@ -175,10 +171,6 @@ test('As a user, I can subscribe using a 3DS payment method and then cancel my s
 
   await t
     .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
-    // eslint-disable-next-line no-restricted-globals
-    .eval(() => location.reload()); // TODO should be removed with react-query
-
-  await t
     .expect(queryByText('Rebrowse Free').visible)
     .ok('Should be back on Free plan');
 });

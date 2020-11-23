@@ -1,33 +1,49 @@
 import { BillingApi } from 'api';
-import useSWRQuery from 'shared/hooks/useSWRQuery';
 import type { SubscriptionDTO } from '@rebrowse/types';
 import { useCallback, useMemo } from 'react';
 import { mapSubscription } from '@rebrowse/sdk';
+import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
 
-const CACHE_KEY = 'BillingApi.subscriptions.get';
+import { setSubscription as setSubscriptionInSubscriptions } from './useSubscriptions';
+
+export const cacheKey = (id: string) => {
+  return ['subscriptions', 'retrieve', id];
+};
 
 export const useSubscription = (initialData: SubscriptionDTO) => {
-  const { data, error, mutate, revalidate } = useSWRQuery(
-    CACHE_KEY,
-    () => BillingApi.subscriptions.get(initialData.id),
-    { initialData, refreshInterval: 7500 }
-  );
+  const subscriptionCache = useSubscriptionCache();
 
-  const setSubscription = useCallback(
-    (updatedSubscription: SubscriptionDTO) => {
-      mutate(updatedSubscription);
-    },
-    [mutate]
+  const { data } = useQuery(
+    cacheKey(initialData.id),
+    () => BillingApi.subscriptions.get(initialData.id),
+    {
+      initialData: () => {
+        return initialData;
+      },
+    }
   );
 
   const subscription = useMemo(() => mapSubscription(data as SubscriptionDTO), [
     data,
   ]);
 
-  return {
-    subscription,
-    setSubscription,
-    error,
-    revalidateSubscriptions: revalidate,
-  };
+  return { subscription, ...subscriptionCache };
+};
+
+export const useSubscriptionCache = () => {
+  const cache = useQueryCache();
+
+  const setSubscription = useCallback(
+    (subscription: SubscriptionDTO) => {
+      cache.setQueryData<SubscriptionDTO>(
+        cacheKey(subscription.id),
+        subscription
+      );
+      setSubscriptionInSubscriptions(cache, subscription);
+      cache.notifyGlobalListeners();
+    },
+    [cache]
+  );
+
+  return { setSubscription };
 };
