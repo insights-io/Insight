@@ -1,9 +1,9 @@
+import React from 'react';
+import Head from 'next/head';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { Button, SHAPE } from 'baseui/button';
 import { H6 } from 'baseui/typography';
-import { Head } from 'next/document';
-import React from 'react';
 import UnstyledA from 'shared/components/UnstyledA';
 import { APP_BASE_URL, TRY_BASE_URL } from 'shared/constants';
 

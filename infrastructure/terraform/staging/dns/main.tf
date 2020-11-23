@@ -1,3 +1,16 @@
+locals {
+  kubernetes_app_records = [
+    module.project_vars.domain,
+    "www.${module.project_vars.domain}",
+    "api.${module.project_vars.domain}",
+    "www.api.${module.project_vars.domain}",
+    "app.${module.project_vars.domain}",
+    "www.app.${module.project_vars.domain}",
+     "try.${module.project_vars.domain}",
+    "www.try.${module.project_vars.domain}"
+  ]
+}
+
 resource "aws_route53_zone" "staging" {
   name = module.project_vars.domain
 }
@@ -16,49 +29,10 @@ module "wildcard_certificate" {
   zone_id = aws_route53_zone.staging.zone_id
 }
 
-resource "aws_route53_record" "api" {
+resource "aws_route53_record" "app_records" {
+  for_each = toset(local.kubernetes_app_records)
   zone_id = aws_route53_zone.staging.zone_id
-  name    = "api.${module.project_vars.domain}"
-  type    = "A"
-  ttl     = "300"
-  records = ["213.161.29.246"] # Point to Kubernetes cluster
-}
-
-resource "aws_route53_record" "api_www" {
-  zone_id = aws_route53_zone.staging.zone_id
-  name    = "www.api.${module.project_vars.domain}"
-  type    = "A"
-  ttl     = "300"
-  records = ["213.161.29.246"] # Point to Kubernetes cluster
-}
-
-resource "aws_route53_record" "app" {
-  zone_id = aws_route53_zone.staging.zone_id
-  name    = "app.${module.project_vars.domain}"
-  type    = "A"
-  ttl     = "300"
-  records = ["213.161.29.246"] # Point to Kubernetes cluster
-}
-
-resource "aws_route53_record" "app_www" {
-  zone_id = aws_route53_zone.staging.zone_id
-  name    = "www.app.${module.project_vars.domain}"
-  type    = "A"
-  ttl     = "300"
-  records = ["213.161.29.246"] # Point to Kubernetes cluster
-}
-
-resource "aws_route53_record" "try" {
-  zone_id = aws_route53_zone.staging.zone_id
-  name    = "try.${module.project_vars.domain}"
-  type    = "A"
-  ttl     = "300"
-  records = ["213.161.29.246"] # Point to Kubernetes cluster
-}
-
-resource "aws_route53_record" "try_www" {
-  zone_id = aws_route53_zone.staging.zone_id
-  name    = "www.try.${module.project_vars.domain}"
+  name     = each.value
   type    = "A"
   ttl     = "300"
   records = ["213.161.29.246"] # Point to Kubernetes cluster
