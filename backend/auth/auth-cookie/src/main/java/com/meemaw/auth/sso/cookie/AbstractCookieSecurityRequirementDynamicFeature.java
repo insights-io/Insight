@@ -58,7 +58,7 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
   }
 
   @Override
-  @Traced(operationName = "AbstractCookieSecurityRequirementAuthDynamicFeature.tryAuthenticate")
+  @Traced
   public void tryAuthenticate(ContainerRequestContext context) {
     Span span = tracer.activeSpan();
     Map<String, Cookie> cookies = context.getCookies();

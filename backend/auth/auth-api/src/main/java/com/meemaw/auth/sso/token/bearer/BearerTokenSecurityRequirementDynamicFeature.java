@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @Provider
 public class BearerTokenSecurityRequirementDynamicFeature
@@ -15,6 +16,7 @@ public class BearerTokenSecurityRequirementDynamicFeature
   @Inject AuthTokenDatasource authTokenDatasource;
 
   @Override
+  @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String token) {
     return authTokenDatasource.getTokenUser(token);
   }

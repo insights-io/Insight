@@ -1,6 +1,6 @@
 import React from 'react';
 import App from 'next/app';
-import AppProviders from 'shared/containers/AppProviders';
+import { AppProviders } from 'shared/containers/AppProviders';
 
 class RebrowseApp extends App {
   render() {

@@ -42,6 +42,9 @@ class RebrowseDocument extends Document<Props> {
                 height: 100%;
                 margin: 0px;
               }
+              *, *::before, *::after {
+                box-sizing: border-box;
+              }
             `}
           </style>
 
@@ -55,6 +58,7 @@ class RebrowseDocument extends Document<Props> {
             />
           ))}
         </Head>
+
         <body>
           <Main />
           <NextScript />

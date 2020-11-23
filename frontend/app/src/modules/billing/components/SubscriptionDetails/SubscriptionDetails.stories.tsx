@@ -1,6 +1,8 @@
 import React from 'react';
-import { ACTIVE_BUSINESS_SUBSCRIPTION, PAID_INVOICE } from 'test/data/billing';
-import { action } from '@storybook/addon-actions';
+import {
+  ACTIVE_BUSINESS_SUBSCRIPTION_DTO,
+  PAID_INVOICE_DTO,
+} from 'test/data/billing';
 import type { Meta } from '@storybook/react';
 
 import { SubscriptionDetails } from './SubscriptionDetails';
@@ -12,8 +14,7 @@ export default {
 
 export const Active = () => (
   <SubscriptionDetails
-    subscription={ACTIVE_BUSINESS_SUBSCRIPTION}
-    invoices={[PAID_INVOICE]}
-    onSubscriptionCanceled={action('onSubscriptionUpdated')}
+    subscription={ACTIVE_BUSINESS_SUBSCRIPTION_DTO}
+    invoices={[PAID_INVOICE_DTO]}
   />
 );

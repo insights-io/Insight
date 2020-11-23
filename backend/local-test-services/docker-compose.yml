@@ -1,6 +1,17 @@
 version: '3.7'
 
 services:
+  homepage:
+    build:
+      context: ../..
+      dockerfile: frontend/homepage/docker/Dockerfile
+    ports:
+      - '3001:3000'
+    depends_on:
+      - auth-api
+    volumes:
+      - ../../frontend/homepage/.env.development.docker:/usr/app/.env.production
+
   try:
     build:
       context: ../..

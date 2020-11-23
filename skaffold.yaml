@@ -11,6 +11,10 @@ build:
     gitCommit:
       variant: CommitSha
   artifacts:
+    - image: insightio/frontend-homepage
+      context: .
+      docker:
+        dockerfile: frontend/homepage/docker/Dockerfile
     - image: insightio/frontend-app
       context: .
       docker:

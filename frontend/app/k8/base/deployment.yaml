@@ -15,8 +15,6 @@ spec:
       maxUnavailable: 25%
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: 'true'
       labels:
         app: app
         team: frontend

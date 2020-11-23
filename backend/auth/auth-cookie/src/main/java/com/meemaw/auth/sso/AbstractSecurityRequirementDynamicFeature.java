@@ -11,6 +11,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.opentracing.Traced;
 
 public abstract class AbstractSecurityRequirementDynamicFeature
     extends AbstractAuthDynamicFeature<SecurityRequirements, AuthenticatedFilter> {
@@ -44,6 +45,7 @@ public abstract class AbstractSecurityRequirementDynamicFeature
     }
 
     @Override
+    @Traced
     public void filter(ContainerRequestContext context) {
       BoomException thrownException = Boom.unauthorized().exception();
       SecurityRequirement[] securityRequirements = requirements.value();

@@ -13,7 +13,6 @@ import {
   Table,
 } from '@rebrowse/elements';
 import { Avatar } from 'baseui/avatar';
-import { capitalize } from 'modules/billing/utils';
 import { SIZE } from 'baseui/button';
 import { Delete, Plus } from 'baseui/icon';
 import { AuthApi } from 'api';
@@ -21,6 +20,7 @@ import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { mapTeamInvite } from '@rebrowse/sdk';
 import { useStyletron } from 'baseui';
 import { StyledSpinnerNext } from 'baseui/spinner';
+import { capitalize } from 'shared/utils/string';
 
 import TeamInviteModal from '../TeamInviteModal';
 

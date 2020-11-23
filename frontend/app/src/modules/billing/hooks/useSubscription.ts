@@ -3,6 +3,7 @@ import type { SubscriptionDTO } from '@rebrowse/types';
 import { useCallback, useMemo } from 'react';
 import { mapSubscription } from '@rebrowse/sdk';
 import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
+import { useMutation } from 'react-query';
 
 import { setSubscription as setSubscriptionInSubscriptions } from './useSubscriptions';
 
@@ -23,11 +24,23 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
     }
   );
 
+  const [cancelSubscription] = useMutation(
+    () => BillingApi.subscriptions.cancel(initialData.id),
+    {
+      onSuccess: (updatedSubscription) => {
+        subscriptionCache.setSubscription(updatedSubscription);
+      },
+      onError: (error) => {
+        throw error;
+      },
+    }
+  );
+
   const subscription = useMemo(() => mapSubscription(data as SubscriptionDTO), [
     data,
   ]);
 
-  return { subscription, ...subscriptionCache };
+  return { subscription, cancelSubscription, ...subscriptionCache };
 };
 
 export const useSubscriptionCache = () => {

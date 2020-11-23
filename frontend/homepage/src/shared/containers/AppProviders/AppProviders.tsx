@@ -1,21 +1,34 @@
 import React from 'react';
-import { Client, Server } from 'styletron-engine-atomic';
-import { Provider as StyletronProvider } from 'styletron-react';
+import { createLightTheme, BaseProvider } from 'baseui';
+import { Provider as StyletronProvider, StandardEngine } from 'styletron-react';
 import { styletron, debug } from 'shared/styles/styletron';
 
-import ThemeProvider from '../ThemeProvider';
-
 export type Props = {
-  children: JSX.Element;
-  engine?: Client | Server;
+  children: React.ReactNode;
+  engine?: StandardEngine;
 };
 
-const AppProviders = ({ children, engine = styletron }: Props) => {
+const theme = createLightTheme({
+  primaryFontFamily: 'Rubik,Avenir Next,Helvetica Neue,sans-serif',
+});
+
+export const AppProviders = ({ children, engine = styletron }: Props) => {
   return (
     <StyletronProvider value={engine} debug={debug} debugAfterHydration>
-      <ThemeProvider>{children}</ThemeProvider>
+      <BaseProvider
+        theme={theme}
+        overrides={{
+          AppContainer: {
+            style: {
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            },
+          },
+        }}
+      >
+        {children}
+      </BaseProvider>
     </StyletronProvider>
   );
 };
-
-export default AppProviders;

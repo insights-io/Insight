@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: homepage
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - rebrowse.dev
+        - www.rebrowse.dev
+      secretName: homepage-rebrowse-dev-tls
+  rules:
+    - host: rebrowse.dev
+      http:
+        paths:
+          - backend:
+              serviceName: homepage
+              servicePort: 80
+    - host: www.rebrowse.dev
+      http:
+        paths:
+          - backend:
+              serviceName: homepage
+              servicePort: 80

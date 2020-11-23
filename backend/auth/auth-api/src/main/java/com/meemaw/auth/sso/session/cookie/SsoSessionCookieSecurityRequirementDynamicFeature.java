@@ -16,8 +16,8 @@ public class SsoSessionCookieSecurityRequirementDynamicFeature
 
   @Inject SsoSessionDatasource ssoSessionDatasource;
 
-  @Traced
   @Override
+  @Traced
   protected CompletionStage<Optional<AuthUser>> findSession(String cookieValue) {
     return ssoSessionDatasource
         .retrieve(cookieValue)

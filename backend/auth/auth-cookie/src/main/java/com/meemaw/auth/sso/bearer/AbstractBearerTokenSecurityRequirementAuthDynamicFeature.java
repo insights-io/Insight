@@ -54,8 +54,7 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
   }
 
   @Override
-  @Traced(
-      operationName = "AbstractBearerTokenSecurityRequirementAuthDynamicFeature.tryAuthenticate")
+  @Traced
   public void tryAuthenticate(ContainerRequestContext context) {
     Span span = tracer.activeSpan();
     String authorization = context.getHeaderString(HttpHeaders.AUTHORIZATION);

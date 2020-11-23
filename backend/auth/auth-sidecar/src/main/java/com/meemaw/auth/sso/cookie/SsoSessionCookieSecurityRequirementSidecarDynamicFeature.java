@@ -11,6 +11,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.Provider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @Provider
 @ApplicationScoped
@@ -21,9 +22,9 @@ public class SsoSessionCookieSecurityRequirementSidecarDynamicFeature
   String authApiBaseUrl;
 
   @Override
+  @Traced
   protected CompletionStage<Optional<AuthUser>> findSession(String cookieValue) {
-    return User.retrieve(
-            new RequestOptions.Builder().apiBaseUrl(authApiBaseUrl).sessionId(cookieValue).build())
+    return User.retrieve(requestOptions(cookieValue))
         .thenApply(
             user ->
                 Optional.of(
@@ -41,5 +42,9 @@ public class SsoSessionCookieSecurityRequirementSidecarDynamicFeature
                                 user.getPhoneNumber().getDigits())
                             : null,
                         user.isPhoneNumberVerified())));
+  }
+
+  private RequestOptions requestOptions(String sessionId) {
+    return new RequestOptions.Builder().apiBaseUrl(authApiBaseUrl).sessionId(sessionId).build();
   }
 }

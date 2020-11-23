@@ -8,7 +8,7 @@ type Props = {
   statusCode: number;
 };
 
-const ErrorPage = (_props: Props) => {
+export const ErrorPage = (_props: Props) => {
   return (
     <VerticalAligned
       width="100%"
@@ -32,5 +32,3 @@ const ErrorPage = (_props: Props) => {
     </VerticalAligned>
   );
 };
-
-export default ErrorPage;
