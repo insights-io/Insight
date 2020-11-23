@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @Provider
 public class SsoSessionCookieSecurityRequirementDynamicFeature
@@ -16,6 +17,7 @@ public class SsoSessionCookieSecurityRequirementDynamicFeature
   @Inject SsoSessionDatasource ssoSessionDatasource;
 
   @Override
+  @Traced
   protected CompletionStage<Optional<AuthUser>> findSession(String cookieValue) {
     return ssoSessionDatasource
         .retrieve(cookieValue)
