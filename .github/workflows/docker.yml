@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Reclaim Disk Space
+        run: scripts/ci/ci-prerequisites.sh
       - uses: imranismail/setup-kustomize@v1
         with:
           kustomize-version: '3.8.6'
