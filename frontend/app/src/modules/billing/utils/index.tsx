@@ -6,10 +6,7 @@ import type {
 } from '@rebrowse/types';
 import type { Theme } from 'baseui/theme';
 import { Alert, Check, Delete } from 'baseui/icon';
-
-export const capitalize = (value: string) => {
-  return value.charAt(0).toUpperCase() + value.substring(1, value.length);
-};
+import { capitalize } from 'shared/utils/string';
 
 export const subscriptionStatusText = (status: SubscriptionStatus) => {
   return capitalize(status);

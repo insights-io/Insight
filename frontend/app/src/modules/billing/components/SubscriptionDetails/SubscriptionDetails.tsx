@@ -8,49 +8,46 @@ import { SIZE } from 'baseui/button';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { Accordion, Panel as BaseuiPanel } from 'baseui/accordion';
-import { BillingApi } from 'api';
 import type {
   APIError,
   APIErrorDataResponse,
-  Invoice,
-  Subscription,
+  InvoiceDTO,
   SubscriptionDTO,
 } from '@rebrowse/types';
 import { toaster } from 'baseui/toast';
 import { Panel, Button, VerticalAligned, Flex } from '@rebrowse/elements';
 import { format } from 'date-fns';
+import { useInvoices } from 'modules/billing/hooks/useInvoices';
+import { useSubscription } from 'modules/billing/hooks/useSubscription';
 
 import { InvoiceList } from '../InvoiceList';
 
 type Props = {
-  subscription: Subscription;
-  invoices: Invoice[];
-  onSubscriptionCanceled: (subscription: SubscriptionDTO) => void;
+  subscription: SubscriptionDTO;
+  invoices: InvoiceDTO[];
 };
 
 export const SubscriptionDetails = ({
-  subscription,
-  invoices,
-  onSubscriptionCanceled,
+  subscription: initialSubscription,
+  invoices: initialInvoices,
 }: Props) => {
+  const { subscription, cancelSubscription } = useSubscription(
+    initialSubscription
+  );
+  const { invoices } = useInvoices(subscription.id, initialInvoices);
   const [isCanceling, setIsCanceling] = useState(false);
   const [_formError, setFormError] = useState<APIError>();
 
   const [_css, theme] = useStyletron();
 
-  const cancelSubscription = async () => {
+  const onCancel = async () => {
     if (isCanceling) {
       return;
     }
 
     setIsCanceling(true);
-
-    BillingApi.subscriptions
-      .cancel(subscription.id)
-      .then((canceledSubscription) => {
-        onSubscriptionCanceled(canceledSubscription);
-        toaster.positive('Successfully canceled subscription', {});
-      })
+    cancelSubscription()
+      .then(() => toaster.positive('Successfully canceled subscription', {}))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
@@ -119,7 +116,7 @@ export const SubscriptionDetails = ({
               size={SIZE.compact}
               isLoading={isCanceling}
               disabled={isCanceling}
-              onClick={cancelSubscription}
+              onClick={onCancel}
             >
               {subscriptionStatusIcon.canceled(theme)} Terminate
             </Button>

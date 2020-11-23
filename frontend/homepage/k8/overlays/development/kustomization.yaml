@@ -1,0 +1,6 @@
+---
+resources:
+  - ../../base
+patchesStrategicMerge:
+  - never-pull-image-policy.yaml
+  - single-replica.yaml

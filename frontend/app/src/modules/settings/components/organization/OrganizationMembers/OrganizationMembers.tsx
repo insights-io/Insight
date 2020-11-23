@@ -8,7 +8,6 @@ import {
   Table,
 } from '@rebrowse/elements';
 import { Avatar } from 'baseui/avatar';
-import { capitalize } from 'modules/billing/utils';
 import { SIZE } from 'baseui/button';
 import { Delete } from 'baseui/icon';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
@@ -18,6 +17,7 @@ import { useStyletron } from 'baseui';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { StyledSpinnerNext } from 'baseui/spinner';
 import type { SearchBean, User, UserDTO } from '@rebrowse/types';
+import { capitalize } from 'shared/utils/string';
 
 type Props = {
   members: UserDTO[];

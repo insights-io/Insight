@@ -8,8 +8,6 @@ export type Props = {
   engine?: Client | Server;
 };
 
-const AppProviders = ({ children, engine = styletron }: Props) => {
+export const AppProviders = ({ children, engine = styletron }: Props) => {
   return <UIProvider engine={engine}>{children}</UIProvider>;
 };
-
-export default AppProviders;

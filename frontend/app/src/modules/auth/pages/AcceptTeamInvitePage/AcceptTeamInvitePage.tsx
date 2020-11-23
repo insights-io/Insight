@@ -6,7 +6,7 @@ import type {
   AcceptTeamInviteDTO,
   APIErrorDataResponse,
 } from '@rebrowse/types';
-import { capitalize } from 'modules/billing/utils';
+import { capitalize } from 'shared/utils/string';
 import { useForm } from 'react-hook-form';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
