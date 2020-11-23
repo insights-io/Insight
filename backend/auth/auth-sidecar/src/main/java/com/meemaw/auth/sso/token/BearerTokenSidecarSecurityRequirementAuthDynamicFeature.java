@@ -12,7 +12,6 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.Provider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.opentracing.Traced;
 
 @Provider
 @ApplicationScoped
@@ -23,7 +22,6 @@ public class BearerTokenSidecarSecurityRequirementAuthDynamicFeature
   String authApiBaseUrl;
 
   @Override
-  @Traced
   public CompletionStage<Optional<AuthUser>> findUser(String apiKey) {
     return ApiKey.retrieveUser(
             new RequestOptions.Builder().apiBaseUrl(authApiBaseUrl).apiKey(apiKey).build())

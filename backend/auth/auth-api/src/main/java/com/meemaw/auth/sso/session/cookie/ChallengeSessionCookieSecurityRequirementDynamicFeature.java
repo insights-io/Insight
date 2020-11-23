@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.ext.Provider;
-import org.eclipse.microprofile.opentracing.Traced;
 
 @Provider
 public class ChallengeSessionCookieSecurityRequirementDynamicFeature
@@ -16,7 +15,6 @@ public class ChallengeSessionCookieSecurityRequirementDynamicFeature
   @Inject MfaChallengeService challengeService;
 
   @Override
-  @Traced
   protected CompletionStage<Optional<AuthUser>> findSession(String cookieValue) {
     return challengeService.retrieveUser(cookieValue);
   }

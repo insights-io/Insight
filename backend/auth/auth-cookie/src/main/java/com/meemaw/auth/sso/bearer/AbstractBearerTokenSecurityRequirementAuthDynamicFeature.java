@@ -20,6 +20,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.opentracing.Traced;
 
 @Slf4j
 public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
@@ -53,6 +54,7 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
   }
 
   @Override
+  @Traced
   public void tryAuthenticate(ContainerRequestContext context) {
     Span span = tracer.activeSpan();
     String authorization = context.getHeaderString(HttpHeaders.AUTHORIZATION);
