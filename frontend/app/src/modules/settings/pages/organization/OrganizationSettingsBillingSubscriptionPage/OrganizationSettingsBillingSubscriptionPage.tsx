@@ -38,10 +38,10 @@ export const OrganizationSettingsBillingSubscriptionPage = ({
   user: initialUser,
 }: Props) => {
   const { user } = useUser(initialUser);
-  const { plan, setActivePlan, revalidateActivePlan } = useActivePlan(
+  const { plan, setActivePlan, refetch: refetchActivePlan } = useActivePlan(
     initialPlan
   );
-  const { subscriptions, revalidateSubscriptions } = useSubscriptions(
+  const { subscriptions, refetch: refetchSubscriptions } = useSubscriptions(
     initialSubscriptions
   );
   const { organization } = useOrganization(initialOrganization);
@@ -57,8 +57,8 @@ export const OrganizationSettingsBillingSubscriptionPage = ({
         subscriptions={subscriptions}
         plan={plan}
         organization={organization}
-        revalidateSubscriptions={revalidateSubscriptions}
-        revalidateActivePlan={revalidateActivePlan}
+        refetchSubscriptions={refetchSubscriptions}
+        refetchActivePlan={refetchActivePlan}
         setActivePlan={setActivePlan}
       />
     </OrganizationSettingsPageLayout>

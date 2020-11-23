@@ -1,35 +1,31 @@
 import { BillingApi } from 'api';
-import useSWRQuery from 'shared/hooks/useSWRQuery';
+import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
 import type { PlanDTO } from '@rebrowse/types';
 import { useCallback } from 'react';
-import { mutate as globalMutate } from 'swr';
 
-const CACHE_KEY = 'BillingApi.subscriptions.getActivePlan';
-
-export const mutateActivePlan = (plan: PlanDTO) => {
-  globalMutate(CACHE_KEY, plan);
-};
+export const cacheKey = ['subscriptions', 'getActivePlan'];
 
 export const useActivePlan = (initialData: PlanDTO) => {
-  const { data, error, mutate, revalidate: revalidateActivePlan } = useSWRQuery(
-    CACHE_KEY,
+  const { data, refetch } = useQuery(
+    cacheKey,
     () => BillingApi.subscriptions.getActivePlan(),
-    {
-      initialData,
-    }
+    { initialData: () => initialData }
   );
+
+  const activePlanCache = useActivePlanCache();
+
+  return { plan: data as PlanDTO, refetch, ...activePlanCache };
+};
+
+export const useActivePlanCache = () => {
+  const cache = useQueryCache();
 
   const setActivePlan = useCallback(
-    (upgradedPlan: PlanDTO) => {
-      mutate(upgradedPlan);
+    (plan: PlanDTO) => {
+      cache.setQueryData<PlanDTO>(cacheKey, plan);
     },
-    [mutate]
+    [cache]
   );
 
-  return {
-    plan: data as PlanDTO,
-    error,
-    setActivePlan,
-    revalidateActivePlan,
-  };
+  return { setActivePlan };
 };

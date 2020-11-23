@@ -18,8 +18,8 @@ type Props = {
   subscriptions: Subscription[];
   organization: Organization;
   plan: PlanDTO;
-  revalidateSubscriptions: () => void;
-  revalidateActivePlan: () => void;
+  refetchSubscriptions: () => void;
+  refetchActivePlan: () => void;
   setActivePlan: (plan: PlanDTO) => void;
 };
 
@@ -27,8 +27,8 @@ export const BillingSubscription = ({
   organization,
   plan,
   subscriptions,
-  revalidateSubscriptions,
-  revalidateActivePlan,
+  refetchSubscriptions,
+  refetchActivePlan,
   setActivePlan,
 }: Props) => {
   const [isUpgrading, setIsUpgrading] = useState(false);
@@ -39,7 +39,7 @@ export const BillingSubscription = ({
 
   const onPaymentIntentSucceeded = useCallback(
     (planType: SubscriptionPlan) => {
-      revalidateSubscriptions();
+      refetchSubscriptions();
       setIsUpgrading(false);
       toaster.positive(
         `Successfully upgraded to ${planType} plan. It might take a moment for the change to propagete through our systems.`,
@@ -49,23 +49,23 @@ export const BillingSubscription = ({
       // After 10 seconds webhook should surely be processed
       // TODO: find more elegant solution to this, e.g. websockets
       setTimeout(() => {
-        revalidateSubscriptions();
-        revalidateActivePlan();
+        refetchSubscriptions();
+        refetchActivePlan();
       }, 10000);
     },
-    [revalidateActivePlan, revalidateSubscriptions]
+    [refetchActivePlan, refetchSubscriptions]
   );
 
   const onPlanUpgraded = useCallback(
     (upgradedPlan: PlanDTO) => {
-      revalidateSubscriptions();
+      refetchSubscriptions();
       setActivePlan(upgradedPlan);
       setIsUpgrading(false);
       toaster.positive(`Successfully upgraded to ${upgradedPlan.type} plan`, {
         autoHideDuration: 10000,
       });
     },
-    [setActivePlan, revalidateSubscriptions]
+    [setActivePlan, refetchSubscriptions]
   );
 
   return (
