@@ -1,6 +1,6 @@
 locals {
-  bucket_name      = "${lower(var.organization_name)}-${var.project}-storybook"
-  bucket_origin_id = "${lower(var.organization_name)}-${var.project}-storybook-origin"
+  bucket_name      = "${var.organization_slug}-${var.project}-storybook"
+  bucket_origin_id = "${var.organization_slug}-${var.project}-storybook-origin"
   tags = {
     name        = "Storybook"
     environment = var.environment

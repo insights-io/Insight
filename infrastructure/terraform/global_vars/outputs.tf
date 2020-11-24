@@ -1,5 +1,14 @@
+locals {
+  organization_name = "Rebrowse"
+  organization_slug = lower(local.organization_name)
+}
+
 output "organization_name" {
-  value = "Rebrowse"
+  value = local.organization_name
+}
+
+output "organization_slug" {
+  value = local.organization_slug
 }
 
 output "github_organization_name" {

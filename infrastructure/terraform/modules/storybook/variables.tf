@@ -14,7 +14,7 @@ variable "zone_id" {
   type = string
 }
 
-variable "organization_name" {
+variable "organization_slug" {
   type = string
 }
 
