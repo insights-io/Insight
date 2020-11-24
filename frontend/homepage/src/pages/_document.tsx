@@ -36,6 +36,26 @@ class RebrowseDocument extends Document<Props> {
     return (
       <Html>
         <Head>
+          <meta name="application-name" content="Rebrowse" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="default"
+          />
+          <meta
+            name="Description"
+            content="Find insights into your frontend applications."
+          />
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="theme-color" content="#000000" />
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover"
+          />
+
+          <link rel="shortcut icon" href="/assets/favicon.ico" />
+          <link rel="manifest" href="/assets/manifest.json" />
+
           <style>
             {`
               html, body, #__next {
