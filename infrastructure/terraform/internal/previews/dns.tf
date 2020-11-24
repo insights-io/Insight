@@ -37,3 +37,14 @@ resource "github_actions_secret" "try_previews_wildcard_certificate_arn" {
   secret_name     = "AWS_TRY_PREVIEW_CERTIFICATE_ARN"
   plaintext_value = module.try_previews_wildcard_certificate.arn
 }
+
+data "aws_acm_certificate" "wildcard_certificate" {
+  domain = "*.${module.project_vars.domain}"
+}
+
+resource "github_actions_secret" "homepage_previews_wildcard_certificate_arn" {
+  repository      = module.global_vars.monorepo_repository
+  secret_name     = "AWS_HOMEPAGE_PREVIEW_CERTIFICATE_ARN"
+  plaintext_value = data.aws_acm_certificate.wildcard_certificate.arn
+}
+

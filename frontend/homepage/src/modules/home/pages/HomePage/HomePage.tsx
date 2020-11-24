@@ -13,7 +13,7 @@ type Props = {
 
 export const HomePage = ({ loggedIn }: Props) => {
   const [_css, theme] = useStyletron();
-  const href = loggedIn ? TRY_BASE_URL : APP_BASE_URL;
+  const href = loggedIn ? APP_BASE_URL : TRY_BASE_URL;
 
   return (
     <>
@@ -23,9 +23,9 @@ export const HomePage = ({ loggedIn }: Props) => {
       <Block padding={theme.sizing.scale300}>
         <Block display="flex" justifyContent="space-between">
           <H6 margin={0}>Rebrowse</H6>
-          <UnstyledA href={href} target="_blank" rel="noreferrer noopener">
+          <UnstyledA href={href}>
             <Button shape={SHAPE.pill} size="compact">
-              {loggedIn ? 'Go to app' : 'Sign up'}
+              {loggedIn ? 'Go to app' : 'Get started'}
             </Button>
           </UnstyledA>
         </Block>
