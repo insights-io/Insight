@@ -12,6 +12,9 @@ $NAME:
       aliases: ['$PR_DEPLOYMENT_DOMAIN']
       comment: '$PR_DEPLOYMENT_DOMAIN (Managed by @sls-next/serverless-component)'
       api/*:
+        minTTL: 10
+        maxTTL: 10
+        defaultTTL: 10
         forward:
           headers: [Host, Referer]
       certificate:
