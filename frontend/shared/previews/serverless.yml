@@ -1,5 +1,5 @@
 $NAME:
-  component: '@sls-next/serverless-component@1.18.0-alpha.27'
+  component: '@sls-next/serverless-component@1.19.0-alpha.11'
   inputs:
     bucketRegion: '$AWS_REGION'
     name:
