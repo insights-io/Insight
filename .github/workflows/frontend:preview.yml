@@ -59,6 +59,7 @@ jobs:
         working-directory: frontend/${{ matrix.target.name }}
         run: |
           PR_DEPLOYMENT_DOMAIN=${PR_DEPLOYMENT_DOMAIN//".homepage"/}
+          echo "PR_DEPLOYMENT_DOMAIN=$PR_DEPLOYMENT_DOMAIN" >> $GITHUB_ENV 
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
@@ -82,7 +83,7 @@ jobs:
           aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch 'file://route53-change-set.json'
         env:
           ACTION: UPSERT
-          NAME: pr-${{ github.event.number }}.${{ matrix.target.name }}.${{ secrets.DEV_DOMAIN_NAME }}
+          NAME: ${{ env.PR_DEPLOYMENT_DOMAIN }}
           DNSName: ${{ env.DISTRIBUTION_DOMAIN }}
 
   comment_previews:
