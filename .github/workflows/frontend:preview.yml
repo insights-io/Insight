@@ -58,11 +58,13 @@ jobs:
       - name: Serverless Deploy
         working-directory: frontend/${{ matrix.target.name }}
         run: |
+          PR_DEPLOYMENT_DOMAIN=${PR_DEPLOYMENT_DOMAIN//".homepage"/}
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
           sed -i 's,http://localhost:3002,https://pr-${{ github.event.number }}.try.${{ secrets.DEV_DOMAIN_NAME }},g' .env.production
           sed -i 's,http://localhost:3000,https://pr-${{ github.event.number }}.app.${{ secrets.DEV_DOMAIN_NAME }},g' .env.production
+          sed -i 's,http://localhost:3001,https://pr-${{ github.event.number }}.${{ secrets.DEV_DOMAIN_NAME }},g' .env.production
           npx serverless
           DISTRIBUTION_URL=$(cat .serverless/Template.$NAME.CloudFront.json | jq -r '.url')
           DISTRIBUTION_DOMAIN=$(echo "$DISTRIBUTION_URL" | awk -F/ '{print $3}')
