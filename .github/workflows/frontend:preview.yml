@@ -6,6 +6,7 @@ on:
       - '.github/workflows/frontend:preview.yml'
       - 'frontend/app/**'
       - 'frontend/try/**'
+      - 'frontend/homepage/**'
       - 'frontend/shared/**'
       - 'jest.config.ts'
       - 'lerna.json'
@@ -36,6 +37,10 @@ jobs:
           [
             { name: 'app', cert_arn_lookup: 'AWS_APP_PREVIEW_CERTIFICATE_ARN' },
             { name: 'try', cert_arn_lookup: 'AWS_TRY_PREVIEW_CERTIFICATE_ARN' },
+            {
+              name: 'homepage',
+              cert_arn_lookup: 'AWS_HOMEPAGE_PREVIEW_CERTIFICATE_ARN',
+            },
           ]
 
     steps:
@@ -90,6 +95,7 @@ jobs:
           check_for_duplicate_msg: true
           msg: |
             Available previews:
+            - homepage: https://pr-${{ github.event.number }}.${{ secrets.DEV_DOMAIN_NAME }} 🚀
             - app: https://pr-${{ github.event.number }}.app.${{ secrets.DEV_DOMAIN_NAME }} 🚀
             - try: https://pr-${{ github.event.number }}.try.${{ secrets.DEV_DOMAIN_NAME }} 🚀
 
@@ -100,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: ['app', 'try']
+        target: ['app', 'try', 'homepage']
 
     steps:
       - uses: actions/checkout@v2
