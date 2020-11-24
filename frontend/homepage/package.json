@@ -15,6 +15,7 @@
   },
   "scripts": {
     "dev": "next -p 3001",
+    "dev:proxy:staging": "PROXY=staging yarn dev",
     "build": "next build",
     "start": "next start",
     "test": "jest",

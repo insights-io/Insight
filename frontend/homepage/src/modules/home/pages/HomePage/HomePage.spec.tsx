@@ -8,17 +8,13 @@ describe('<HomePage />', () => {
     const { getByText } = render(<LoggedIn />);
     const navigateButton = getByText('Go to app');
     const link = navigateButton.parentNode as HTMLLinkElement;
-    expect(link.href).toEqual('http://localhost:3002/');
-    expect(link.target).toEqual('_blank');
-    expect(link.rel).toEqual('noreferrer noopener');
+    expect(link.href).toEqual('http://localhost:3000/');
   });
 
   it('Should render link to sign up', () => {
     const { getByText } = render(<NotLoggedIn />);
-    const navigateButton = getByText('Sign up');
+    const navigateButton = getByText('Get started');
     const link = navigateButton.parentNode as HTMLLinkElement;
-    expect(link.href).toEqual('http://localhost:3000/');
-    expect(link.target).toEqual('_blank');
-    expect(link.rel).toEqual('noreferrer noopener');
+    expect(link.href).toEqual('http://localhost:3002/');
   });
 });

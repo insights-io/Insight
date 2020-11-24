@@ -21,6 +21,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const response = await ssoResource.get(SessionId, {
     baseURL: process.env.AUTH_API_BASE_URL,
   });
+
   return { props: { loggedIn: response.status === 200 } };
 };
 
