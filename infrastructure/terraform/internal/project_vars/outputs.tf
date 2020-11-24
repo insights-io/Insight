@@ -1,3 +1,7 @@
+output "environment" {
+  value = "internal"
+}
+
 output "domain" {
-  value = "rebrowse.dev"
+  value = module.global_vars.staging_domain
 }
