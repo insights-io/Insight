@@ -37,7 +37,7 @@
     "prebuild": "yarn build:deps"
   },
   "dependencies": {
-    "@amcharts/amcharts4": "4.10.11",
+    "@amcharts/amcharts4": "4.10.12",
     "@amcharts/amcharts4-geodata": "4.1.19",
     "@stripe/stripe-js": "1.11.0",
     "@stripe/react-stripe-js": "1.1.2",
