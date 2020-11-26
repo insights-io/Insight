@@ -31,13 +31,13 @@
     "@rebrowse/types": "0.0.0-development"
   },
   "dependencies": {
-    "@storybook/addons": "6.1.6",
-    "@storybook/addon-actions": "6.1.6",
-    "@storybook/addon-essentials": "6.1.6",
-    "@storybook/addon-links": "6.1.6",
-    "@storybook/react": "6.1.6",
-    "@storybook/addon-controls": "6.1.6",
-    "@storybook/addon-storysource": "6.1.6"
+    "@storybook/addons": "6.1.7",
+    "@storybook/addon-actions": "6.1.7",
+    "@storybook/addon-essentials": "6.1.7",
+    "@storybook/addon-links": "6.1.7",
+    "@storybook/react": "6.1.7",
+    "@storybook/addon-controls": "6.1.7",
+    "@storybook/addon-storysource": "6.1.7"
   },
   "peerDependencies": {
     "react": "17.0.1",
