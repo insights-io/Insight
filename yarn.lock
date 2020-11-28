@@ -13891,15 +13891,16 @@ next-cookies@2.0.3:
   dependencies:
     universal-cookie "^4.0.2"
 
-next-page-tester@0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/next-page-tester/-/next-page-tester-0.7.1.tgz#8841b184e6d4af4400f7c9a10603ca47120e0e89"
-  integrity sha512-28pNfZ2rmTHyzvmCRdBNR2EO3JOysC6kbFrs9GLSsqTN4xnnnP6wv8pToK1R1Xm/bJdRJa0tCg9tX00/pohdxw==
+next-page-tester@0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/next-page-tester/-/next-page-tester-0.8.1.tgz#d373119e1c5c4bb4738f39c28783ba64898abf89"
+  integrity sha512-rFqpZliAdABFzEoGb4zvItwYj77DSr06x4/UxeH8eD8++YaAuwf7280YtR47Y9ahY6p6TnVod7f9v38GMt75Hg==
   dependencies:
     "@types/express" "^4.17.8"
     fast-glob "^3.2.4"
     find-root "^1.1.0"
     node-mocks-http "^1.9.0"
+    normalize-path "^3.0.0"
 
 next-pwa@3.1.5:
   version "3.1.5"
