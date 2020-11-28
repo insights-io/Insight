@@ -30,7 +30,10 @@ test('[AUTH-TOKENS]: As a user I want to create Auth Token, use it to make authe
 
   const organizationId = await OrganizationGeneralSettingsPage.idInput.value;
 
-  await t.click(AccountSettingsAuthTokensPage.sidebar.authTokens);
+  await t
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.authTokens);
+
   const initialAuthTokenCount = await AccountSettingsAuthTokensPage.getTokenCount();
 
   await t
