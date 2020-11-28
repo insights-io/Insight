@@ -9,8 +9,8 @@ const getLocation = ClientFunction(() => window.location.href);
 fixture('/').page(config.baseURL);
 
 test('Can sign up', async (t) => {
-  const emailInput = getByPlaceholderText('Email');
-  const passwordInput = getByPlaceholderText('Password');
+  const emailInput = getByPlaceholderText('john.doe@gmail.com');
+  const passwordInput = getByPlaceholderText('*'.repeat(8));
   const getStartedButton = getByText('Get started');
 
   await t

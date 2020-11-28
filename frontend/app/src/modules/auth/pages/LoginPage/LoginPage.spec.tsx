@@ -75,8 +75,8 @@ describe('<LoginPage />', () => {
     const locationAsignStub = sandbox.stub(windowUtils, 'locationAssign');
     WithSsoRedirect.story.setupMocks(sandbox);
     const { getByText, getByPlaceholderText } = render(<WithSsoRedirect />);
-    const emailInput = getByPlaceholderText('Email');
-    const passwordInput = getByPlaceholderText('Password');
+    const emailInput = getByPlaceholderText(EMAIL_PLACEHOLDER);
+    const passwordInput = getByPlaceholderText(PASSWORD_PLACEHOLDER);
     const submitButton = getByText('Sign in');
 
     await userEvent.type(emailInput, 'user@example.com');
