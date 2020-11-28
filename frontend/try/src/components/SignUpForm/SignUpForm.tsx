@@ -10,7 +10,13 @@ import {
 } from '@rebrowse/types';
 import FormError from 'shared/components/FormError';
 import Router from 'next/router';
-import { PhoneNumberInput, Button, Input, Label } from '@rebrowse/elements';
+import {
+  PhoneNumberInput,
+  Button,
+  Input,
+  Label,
+  PasswordInput,
+} from '@rebrowse/elements';
 
 type SignUpFormValues = SignUpRequestDTO;
 
@@ -53,7 +59,12 @@ export const SignUpForm = ({
   return (
     <form onSubmit={onSubmit} noValidate>
       <FormControl
-        label={<Label required>Full name</Label>}
+        htmlFor="fullName"
+        label={
+          <Label required as="span">
+            Full name
+          </Label>
+        }
         error={errors.fullName?.message}
       >
         <Input
@@ -66,7 +77,12 @@ export const SignUpForm = ({
       </FormControl>
 
       <FormControl
-        label={<Label required>Company</Label>}
+        htmlFor="company"
+        label={
+          <Label required as="span">
+            Company
+          </Label>
+        }
         error={errors.company?.message}
       >
         <Input
@@ -78,7 +94,8 @@ export const SignUpForm = ({
       </FormControl>
 
       <FormControl
-        label={<Label>Phone number</Label>}
+        htmlFor="phoneNumber"
+        label={<Label as="span">Phone number</Label>}
         error={(errors.phoneNumber as FieldError)?.message}
       >
         <Controller
@@ -91,7 +108,12 @@ export const SignUpForm = ({
       </FormControl>
 
       <FormControl
-        label={<Label required>Email</Label>}
+        htmlFor="email"
+        label={
+          <Label required as="span">
+            Email
+          </Label>
+        }
         error={errors.email?.message}
       >
         <Input
@@ -111,13 +133,15 @@ export const SignUpForm = ({
       </FormControl>
 
       <FormControl
-        label={<Label required>Password</Label>}
+        label={
+          <Label required as="span">
+            Password
+          </Label>
+        }
+        htmlFor="password"
         error={errors.password?.message}
       >
-        <Input
-          placeholder={'*'.repeat(minPasswordLength)}
-          name="password"
-          type="password"
+        <PasswordInput
           ref={register}
           inputRef={register({
             required: 'Required',

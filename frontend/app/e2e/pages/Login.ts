@@ -6,7 +6,6 @@ import {
   EMAIL_PLACEHOLDER,
   WORK_EMAIL_PLACEHOLDER,
 } from '../../src/modules/auth/validation/email';
-import { PASSWORD_PLACEHOLDER } from '../../src/modules/auth/validation/password';
 
 import { AbstractPage } from './AbstractPage';
 
@@ -19,7 +18,7 @@ class Login extends AbstractPage {
   public readonly samlSsoDisabledErrorMessage = queryByText(
     'That email or domain isn’t registered for SSO.'
   );
-  public readonly passwordInput = getByPlaceholderText(PASSWORD_PLACEHOLDER);
+  public readonly passwordInput = getByPlaceholderText('Password');
   public readonly signInButton = queryByText('Sign in');
   public readonly forgotPasswordButton = queryByText('Forgot?');
   public readonly createFreeAccount = queryByText('Create a free account');

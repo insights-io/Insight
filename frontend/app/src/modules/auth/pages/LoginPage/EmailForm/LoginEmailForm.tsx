@@ -4,7 +4,12 @@ import { FormControl } from 'baseui/form-control';
 import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
-import { Input, SpacedBetween, Button } from '@rebrowse/elements';
+import {
+  Input,
+  SpacedBetween,
+  Button,
+  PasswordInput,
+} from '@rebrowse/elements';
 import {
   EMAIL_PLACEHOLDER,
   EMAIL_VALIDATION,
@@ -93,11 +98,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
           }
           error={errors.password?.message}
         >
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder={'*'.repeat(PASSWORD_VALIDATION.minLength.value)}
+          <PasswordInput
             ref={register}
             inputRef={register(PASSWORD_VALIDATION)}
             error={Boolean(errors.password)}

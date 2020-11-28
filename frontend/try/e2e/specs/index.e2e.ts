@@ -10,7 +10,7 @@ fixture('/').page(config.baseURL);
 
 test('Can sign up', async (t) => {
   const emailInput = queryByPlaceholderText('john.doe@gmail.com');
-  const passwordInput = queryByPlaceholderText('*'.repeat(8));
+  const passwordInput = queryByPlaceholderText('Password');
   const fullNameInput = queryByPlaceholderText('John Doe');
   const companyInput = queryByPlaceholderText('Example');
   const getStartedButton = queryByText('Get started');

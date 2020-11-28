@@ -3,7 +3,6 @@ import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import { EMAIL_PLACEHOLDER } from 'modules/auth/validation/email';
-import { PASSWORD_PLACEHOLDER } from 'modules/auth/validation/password';
 import React from 'react';
 import { render } from 'test/utils';
 
@@ -23,7 +22,7 @@ describe('<LoginEmailForm />', () => {
     const email = 'user@gmail.com';
     const password = 'superPassword';
     await userEvent.type(getByPlaceholderText(EMAIL_PLACEHOLDER), email);
-    await userEvent.type(getByPlaceholderText(PASSWORD_PLACEHOLDER), password);
+    await userEvent.type(getByPlaceholderText('Password'), password);
 
     userEvent.click(getByText('Sign in'));
 

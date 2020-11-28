@@ -9,7 +9,10 @@ import { AuthApi } from 'api/auth';
 import Link from 'next/link';
 import Head from 'next/head';
 import FormError from 'shared/components/FormError';
-import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
+import {
+  EMAIL_PLACEHOLDER,
+  EMAIL_VALIDATION,
+} from 'modules/auth/validation/email';
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import { Button, Flex, SpacedBetween, Input } from '@rebrowse/elements';
 import { LOGIN_PAGE } from 'shared/constants/routes';
@@ -83,7 +86,7 @@ export const PasswordForgotPage = () => {
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="Email"
+                  placeholder={EMAIL_PLACEHOLDER}
                   required
                   inputRef={register(EMAIL_VALIDATION)}
                   error={Boolean(errors.email)}

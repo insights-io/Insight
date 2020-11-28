@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { FormControl } from 'baseui/form-control';
-import { Input } from 'baseui/input';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { useForm } from 'react-hook-form';
-import { Button } from 'baseui/button';
-import { createInputOverrides } from 'shared/styles/input';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { AuthApi } from 'api/auth';
@@ -14,6 +11,7 @@ import FormError from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import { INDEX_PAGE } from 'shared/constants/routes';
+import { Button, Label, PasswordInput } from '@rebrowse/elements';
 
 type Props = {
   token: string;
@@ -28,7 +26,6 @@ export const PasswordResetPage = ({ token }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
   const { register, handleSubmit, errors } = useForm<PasswordResetFormData>();
-  const inputOverrides = createInputOverrides(theme);
   const [formError, setFormError] = useState<APIError | undefined>();
 
   const onSubmit = handleSubmit((formData) => {
@@ -54,27 +51,27 @@ export const PasswordResetPage = ({ token }: Props) => {
       </Head>
 
       <form onSubmit={onSubmit} noValidate>
-        <Block marginBottom={theme.sizing.scale1200}>
-          <FormControl error={errors.password?.message}>
-            <Input
-              overrides={inputOverrides}
-              placeholder="Password"
-              name="password"
-              type="password"
-              ref={register}
-              inputRef={register(PASSWORD_VALIDATION)}
-              error={Boolean(errors.password)}
-            />
-          </FormControl>
-        </Block>
-
-        <Button
-          type="submit"
-          $style={{ width: '100%' }}
-          isLoading={isSubmitting}
+        <FormControl
+          error={errors.password?.message}
+          htmlFor="password"
+          label={<Label as="span">Password</Label>}
         >
-          Reset password and sign in
-        </Button>
+          <PasswordInput
+            ref={register}
+            inputRef={register(PASSWORD_VALIDATION)}
+            error={Boolean(errors.password)}
+          />
+        </FormControl>
+
+        <Block marginTop={theme.sizing.scale1200}>
+          <Button
+            type="submit"
+            $style={{ width: '100%' }}
+            isLoading={isSubmitting}
+          >
+            Reset password and sign in
+          </Button>
+        </Block>
 
         {formError && <FormError error={formError} />}
       </form>

@@ -21,7 +21,7 @@ describe('<SignUpForm />', () => {
     const firstNameInput = getByPlaceholderText('John Doe');
     const companyInput = getByPlaceholderText('Example');
     const emailInput = getByPlaceholderText('john.doe@gmail.com');
-    const passwordInput = getByPlaceholderText('*'.repeat(8));
+    const passwordInput = getByPlaceholderText('Password');
     const phoneNumberInput = getByPlaceholderText('51111222');
 
     userEvent.click(submitButton);

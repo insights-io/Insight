@@ -2,10 +2,10 @@ import React from 'react';
 import { StatefulPopover, PLACEMENT } from 'baseui/popover';
 import { OptionList, OptionListProps } from 'baseui/menu';
 import { StatefulCalendar } from 'baseui/datepicker';
-import { Input, SIZE } from 'baseui/input';
+import { SIZE } from 'baseui/input';
 import { Block } from 'baseui/block';
-import { createInputOverrides } from 'shared/styles/input';
 import { Theme } from 'baseui/theme';
+import { Input } from '@rebrowse/elements';
 
 import { OptionItem } from './utils';
 
@@ -60,7 +60,6 @@ const DateOption = React.forwardRef<HTMLElement, DateOptionProps>(
                 <Block flex={1}>
                   <Input
                     positive={selectingFrom}
-                    overrides={createInputOverrides(theme)}
                     size={SIZE.mini}
                     placeholder="From date"
                     value={fromDate.toLocaleDateString()}
@@ -70,7 +69,6 @@ const DateOption = React.forwardRef<HTMLElement, DateOptionProps>(
                 <Block flex={1}>
                   <Input
                     positive={!selectingFrom}
-                    overrides={createInputOverrides(theme)}
                     size={SIZE.mini}
                     placeholder="To date"
                     value={toDate.toLocaleDateString()}

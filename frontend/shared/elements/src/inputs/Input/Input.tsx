@@ -3,7 +3,7 @@ import { Input as BaseUiInput, InputProps } from 'baseui/input';
 
 import { expandBorderRadius } from '../../helpers';
 
-type Props = InputProps;
+export type Props = InputProps;
 
 export const inputBorderRadius = expandBorderRadius('8px');
 
