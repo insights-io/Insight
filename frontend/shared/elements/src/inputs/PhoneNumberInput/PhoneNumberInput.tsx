@@ -23,6 +23,7 @@ export type Props = Pick<
   | 'size'
   | 'onBlur'
   | 'disabled'
+  | 'name'
 > & {
   error?: boolean;
   value?: Value;

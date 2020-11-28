@@ -37,6 +37,7 @@ export const SignUpForm = ({
     if (isSubmitting) {
       return;
     }
+
     setIsSubmitting(true);
     setFormError(undefined);
 
@@ -81,14 +82,11 @@ export const SignUpForm = ({
         error={(errors.phoneNumber as FieldError)?.message}
       >
         <Controller
+          as={PhoneNumberInput}
           name="phoneNumber"
           control={control}
-          as={
-            <PhoneNumberInput
-              error={Boolean(errors.phoneNumber)}
-              placeholder="5111122"
-            />
-          }
+          error={Boolean(errors.phoneNumber)}
+          placeholder="51111222"
         />
       </FormControl>
 
