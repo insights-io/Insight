@@ -5,7 +5,8 @@ import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 
-describe('pages/login', () => {
+// eslint-disable-next-line jest/valid-title
+describe(LOGIN_PAGE, () => {
   it('As a user I should be able to start password reset flow from login page', async () => {
     const passwordForgotStub = sandbox
       .stub(AuthApi.password, 'forgot')
@@ -19,7 +20,10 @@ describe('pages/login', () => {
     await screen.findByText('Remember password?');
 
     const email = 'user@gmail.com';
-    await userEvent.type(screen.getByPlaceholderText('Email'), email);
+    await userEvent.type(
+      screen.getByPlaceholderText('john.doe@gmail.com'),
+      email
+    );
 
     userEvent.click(screen.getByText('Reset password'));
 
