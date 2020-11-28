@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { render } from 'test/utils';
 import * as windowUtils from 'shared/utils/window';
+import { WORK_EMAIL_PLACEHOLDER } from 'modules/auth/validation/email';
 
 import { Base, SsoNotEnabled } from './LoginSamlSsoForm.stories';
 
@@ -12,7 +13,7 @@ describe('<LoginSamlSsoForm />', () => {
     Base.story.setupMocks(sandbox);
     const locationAssignStub = sandbox.stub(windowUtils, 'locationAssign');
     const { getByPlaceholderText, getByText, findByText } = render(<Base />);
-    const input = getByPlaceholderText('user@company.com');
+    const input = getByPlaceholderText(WORK_EMAIL_PLACEHOLDER);
     const submitButton = getByText('Sign in');
 
     expect(submitButton).toBeDisabled();
@@ -39,7 +40,7 @@ describe('<LoginSamlSsoForm />', () => {
     const { getByPlaceholderText, getByText, findByText } = render(
       <SsoNotEnabled />
     );
-    const input = getByPlaceholderText('user@company.com');
+    const input = getByPlaceholderText(WORK_EMAIL_PLACEHOLDER);
     const submitButton = getByText('Sign in');
 
     await userEvent.type(input, 'matej.snuderl@snuderls.eu');

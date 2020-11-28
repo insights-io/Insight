@@ -57,7 +57,7 @@ export const SignUpForm = ({
       >
         <Input
           name="fullName"
-          placeholder="John doe"
+          placeholder="John Doe"
           required
           inputRef={register({ required: 'Required' })}
           error={Boolean(errors.fullName)}

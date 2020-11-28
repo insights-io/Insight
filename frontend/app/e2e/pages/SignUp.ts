@@ -18,7 +18,7 @@ class SignUp extends AbstractPage {
   /* Selectors */
   public readonly emailInput = Login.emailInput;
   public readonly passwordInput = Login.passwordInput;
-  public readonly fullNameInput = getByPlaceholderText('John doe');
+  public readonly fullNameInput = getByPlaceholderText('John Doe');
   public readonly companyInput = getByPlaceholderText('Example');
   public readonly getStartedButton = getByText('Get started');
   public readonly phoneNumberInput = getByPlaceholderText('51111222');

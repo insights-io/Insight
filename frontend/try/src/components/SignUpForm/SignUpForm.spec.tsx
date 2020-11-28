@@ -17,7 +17,7 @@ describe('<SignUpForm />', () => {
       findAllByText,
     } = render(<Base onSubmit={onSubmit} />);
     const submitButton = getByText('Get started');
-    const firstNameInput = getByPlaceholderText('Full name');
+    const firstNameInput = getByPlaceholderText('Jon Doe');
     const companyInput = getByPlaceholderText('Company');
     const emailInput = getByPlaceholderText('Email');
     const passwordInput = getByPlaceholderText('Password');
