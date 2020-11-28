@@ -1,79 +1,96 @@
-import React from 'react';
-import { Block } from 'baseui/block';
-import { FormControl } from 'baseui/form-control';
-import { useStyletron } from 'baseui';
-import { Controller, Control, FieldError, FieldValues } from 'react-hook-form';
+import React, { useMemo } from 'react';
 import {
   PhoneInputNext,
   CountrySelectDropdown,
   Country,
+  COUNTRIES,
 } from 'baseui/phone-input';
+import type { PhoneNumber } from '@rebrowse/types';
+import type { InputProps } from 'baseui/input';
 
 import { Input, inputBorderRadius } from '../Input';
 
-export type Values = {
-  phoneNumber: string | undefined;
+import { getCountryFromCountryCode } from './utils';
+
+export type Value = PhoneNumber;
+
+export type Props = Pick<
+  InputProps,
+  | 'placeholder'
+  | 'endEnhancer'
+  | 'required'
+  | 'clearable'
+  | 'size'
+  | 'onBlur'
+  | 'disabled'
+  | 'name'
+> & {
+  error?: boolean;
+  value?: Value;
+  onChange?: (value: Value) => void;
+  onSelectBlur?: (event: React.MouseEvent<HTMLInputElement>) => void;
 };
 
-export type Props<V> = {
-  country: Country;
-  setCountry: (country: Country) => void;
-  error: FieldError | undefined;
-  control: Control<V>;
+const DEFAULT_VALUE: PhoneNumber = {
+  digits: '',
+  countryCode: COUNTRIES.US.dialCode,
 };
 
-export const PhoneNumberInput = <TFieldValues extends Values = Values>({
-  country,
-  setCountry,
-  error,
-  control,
-}: Props<TFieldValues>) => {
-  const [_css, theme] = useStyletron();
+export const PhoneNumberInput = ({
+  required,
+  value: { digits, countryCode } = DEFAULT_VALUE,
+  onChange,
+  onSelectBlur,
+  ...rest
+}: Props) => {
+  const country = useMemo(() => getCountryFromCountryCode(countryCode), [
+    countryCode,
+  ]);
+
   return (
-    <Block>
-      <FormControl
-        error={error?.message}
-        label={() => (
-          <Block>
-            Phone{' '}
-            <Block as="span" color={theme.colors.primary400}>
-              (optional)
-            </Block>
-          </Block>
-        )}
-      >
-        <Controller
-          control={control as Control<FieldValues>}
-          name="phoneNumber"
-          defaultValue=""
-          rules={{
-            pattern: {
-              value: /^(?![+]).*$/,
-              message:
-                'Please enter a phone number without the country dial code.',
+    <PhoneInputNext
+      {...rest}
+      required={required}
+      country={country}
+      onCountryChange={
+        onChange
+          ? ({ option }) => {
+              const nextCountry = option as Country;
+              onChange({ countryCode: nextCountry.dialCode, digits });
+            }
+          : undefined
+      }
+      overrides={{
+        Input: {
+          component: Input,
+          props: {
+            required,
+            type: 'number',
+            value: digits,
+            step: 1,
+            onKeyPress: (event) => {
+              if (event.key === '+') {
+                event.preventDefault();
+              }
             },
-          }}
-          as={
-            <PhoneInputNext
-              placeholder="Phone number"
-              country={country}
-              onCountryChange={({ option }) => setCountry(option as Country)}
-              error={Boolean(error)}
-              overrides={{
-                Input: { component: Input },
-                CountrySelect: {
-                  props: {
-                    overrides: {
-                      Dropdown: { component: CountrySelectDropdown },
-                      ControlContainer: { style: inputBorderRadius },
-                    },
-                  },
-                },
-              }}
-            />
-          }
-        />
-      </FormControl>
-    </Block>
+            onChange: onChange
+              ? (event) => {
+                  const { value } = event.currentTarget;
+                  onChange({ digits: value, countryCode });
+                }
+              : undefined,
+          } as InputProps,
+        },
+        CountrySelect: {
+          props: {
+            onBlur: onSelectBlur,
+            overrides: {
+              Dropdown: { component: CountrySelectDropdown },
+              ControlContainer: { style: inputBorderRadius },
+            },
+          },
+        },
+      }}
+    />
   );
 };

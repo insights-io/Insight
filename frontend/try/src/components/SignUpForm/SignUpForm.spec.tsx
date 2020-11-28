@@ -16,11 +16,13 @@ describe('<SignUpForm />', () => {
       findByText,
       findAllByText,
     } = render(<Base onSubmit={onSubmit} />);
+
     const submitButton = getByText('Get started');
-    const firstNameInput = getByPlaceholderText('Full name');
-    const companyInput = getByPlaceholderText('Company');
-    const emailInput = getByPlaceholderText('Email');
+    const firstNameInput = getByPlaceholderText('John Doe');
+    const companyInput = getByPlaceholderText('Example');
+    const emailInput = getByPlaceholderText('john.doe@gmail.com');
     const passwordInput = getByPlaceholderText('Password');
+    const phoneNumberInput = getByPlaceholderText('51111222');
 
     userEvent.click(submitButton);
     expect((await findAllByText('Required')).length).toEqual(4);
@@ -47,12 +49,13 @@ describe('<SignUpForm />', () => {
         company: 'Rebrowse',
         email: 'user@example.com',
         password: 'veryHardPassword',
+        phoneNumber: undefined,
       });
     });
 
     // can also include phone number
-    const phoneNumberInput = getByPlaceholderText('Phone number');
-    await userEvent.type(phoneNumberInput, '51222333');
+    const phoneNumber = '51111222';
+    await userEvent.type(phoneNumberInput, phoneNumber);
 
     userEvent.click(submitButton);
     await waitFor(() => {
@@ -61,7 +64,7 @@ describe('<SignUpForm />', () => {
         company: 'Rebrowse',
         email: 'user@example.com',
         password: 'veryHardPassword',
-        phoneNumber: { countryCode: '+1', digits: '51222333' },
+        phoneNumber: { countryCode: '+1', digits: phoneNumber },
       });
     });
   });

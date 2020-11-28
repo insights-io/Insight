@@ -8,13 +8,14 @@ import {
 
 fixture('/settings/account/details').page(AccountSettingsDetailsPage.path);
 
-test('[ACCOUNT-DETAILS]: As a user I want to be able to see details about my account & configure phone number', async (t) => {
+test('As a user I want to change my full name and verify my new phone number', async (t) => {
   const { password, email } = SignUpPage.generateRandomCredentials();
+  const fullName = 'Marko Skace';
   await SignUpPage.signUpAndLogin(t, {
     email,
     password,
     company: 'My super company 2',
-    fullName: 'Marko Skace',
+    fullName,
   });
 
   await t
@@ -22,21 +23,42 @@ test('[ACCOUNT-DETAILS]: As a user I want to be able to see details about my acc
     .click(Sidebar.banner.menu.account.settings);
 
   await t
-    .expect(AccountSettingsDetailsPage.fullName.innerText)
-    .eql('Marko Skace', 'Full name matches')
-    .expect(AccountSettingsDetailsPage.email.innerText)
+    .expect(AccountSettingsDetailsPage.fullNameInput.value)
+    .eql(fullName, 'Full name matches')
+    .typeText(AccountSettingsDetailsPage.fullNameInput, ' extra')
+    .click(AccountSettingsDetailsPage.title) // blur input
+    .expect(
+      queryByText(
+        `Successfully changed user full name from "${fullName}" to "${fullName} extra"`
+      ).visible
+    )
+    .ok('Can change full name')
+    .expect(AccountSettingsDetailsPage.emailInput.value)
     .eql(email, 'Email matches')
-    .click(AccountSettingsDetailsPage.phoneNumberConfigureButton)
+    .expect(AccountSettingsDetailsPage.roleInput.value)
+    .eql('Admin', 'Role matches')
     .click(AccountSettingsDetailsPage.phoneNumberCountryPicker)
     .typeText(AccountSettingsDetailsPage.phoneNumberCountryPicker, 'Slove')
     .click(queryByText('Slovenia (Slovenija)'))
     .typeText(AccountSettingsDetailsPage.phoneNumberInput, '51222333')
-    .click(AccountSettingsDetailsPage.phoneNumberNextStep);
+    .click(AccountSettingsDetailsPage.title) // blur input
+    .expect(
+      queryByText('Successfully changed user phone number to "+38651222333"')
+        .visible
+    )
+    .ok('Can change phone number')
+    .click(AccountSettingsDetailsPage.phoneNumberVerifyButton);
 
   await AccountSettingsDetailsPage.completeSmsChallenge(t);
   await t
     .expect(AccountSettingsDetailsPage.phoneNumberVerifiedMessage.visible)
     .ok('Success message is visible')
-    .expect(AccountSettingsDetailsPage.phoneNumber.innerText)
-    .eql('+38651222333', 'American phone number visible in the data table');
+    .expect(AccountSettingsDetailsPage.phoneNumberVerifyButton.visible)
+    .notOk(
+      'Phone number verify button should not be visible after verification'
+    )
+    .click(AccountSettingsDetailsPage.phoneNumberInputClear)
+    .click(AccountSettingsDetailsPage.title) // blur input
+    .expect(queryByText('Successfully cleared user phone number').visible)
+    .ok('Can clear phone number');
 });

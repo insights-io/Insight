@@ -1,7 +1,7 @@
 {
   "id": "36e628dd-fc0b-4959-aadd-a38f3ec2b82a",
-  "email": "name@example.com",
-  "fullName": "John doe",
+  "email": "john.doe@example.com",
+  "fullName": "John Doe",
   "role": "admin",
   "organizationId": "000000",
   "createdAt": "2020-09-29T19:37:32.371114Z",

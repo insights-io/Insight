@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, ModalBody, ModalHeader } from 'baseui/modal';
-import { TimeBasedMultiFactorAuthenticationForm } from 'modules/auth/components/TimeBasedMultiFactorAuthenticationForm';
+import { TotpMfaSetupForm } from 'modules/auth/components/TotpMfaSetupForm';
 
 import type { Props } from './types';
 
@@ -13,7 +13,7 @@ const TimeBasedMultiFactorAuthenticationSetupModal = ({
     <Modal onClose={onClose} isOpen={isOpen}>
       <ModalHeader>Setup multi-factor authentication</ModalHeader>
       <ModalBody>
-        <TimeBasedMultiFactorAuthenticationForm onCompleted={onTfaConfigured} />
+        <TotpMfaSetupForm onCompleted={onTfaConfigured} />
       </ModalBody>
     </Modal>
   );

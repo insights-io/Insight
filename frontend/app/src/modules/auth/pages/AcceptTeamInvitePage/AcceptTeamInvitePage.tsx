@@ -10,7 +10,7 @@ import { capitalize } from 'shared/utils/string';
 import { useForm } from 'react-hook-form';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
-import { Button, Input } from '@rebrowse/elements';
+import { Button, Input, Label, PasswordInput } from '@rebrowse/elements';
 import FormError from 'shared/components/FormError';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
@@ -63,8 +63,13 @@ export const AcceptTeamInvitePage = ({
     >
       <form onSubmit={onSubmit} noValidate>
         <Block>
-          <FormControl label="Full name" error={errors.fullName?.message}>
+          <FormControl
+            htmlFor="fullName"
+            label={<Label as="span">Full name</Label>}
+            error={errors.fullName?.message}
+          >
             <Input
+              id="fullName"
               name="fullName"
               placeholder="Full name"
               required
@@ -75,11 +80,12 @@ export const AcceptTeamInvitePage = ({
         </Block>
 
         <Block>
-          <FormControl label="Password" error={errors.password?.message}>
-            <Input
-              placeholder="Password"
-              name="password"
-              type="password"
+          <FormControl
+            htmlFor="password"
+            label={<Label as="span">Password</Label>}
+            error={errors.password?.message}
+          >
+            <PasswordInput
               ref={register}
               inputRef={register(PASSWORD_VALIDATION)}
               error={Boolean(errors.password)}

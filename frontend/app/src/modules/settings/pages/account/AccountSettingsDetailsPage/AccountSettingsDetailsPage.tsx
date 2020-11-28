@@ -5,7 +5,7 @@ import {
   SETTINGS_PATH_PART,
   ACCOUNT_SETTINGS_PATH_PART,
 } from 'shared/constants/routes';
-import { AccountInfoTable } from 'modules/settings/components/account/AccountInfoTable';
+import { AccountInfoPanel } from 'modules/settings/components/account/AccountInfoPanel';
 import { useUser } from 'shared/hooks/useUser';
 import type { Path } from 'modules/settings/types';
 import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
@@ -26,7 +26,7 @@ export const AccountSettingsDetailsPage = ({
   user: initialUser,
   organization: initialOrganization,
 }: Props) => {
-  const { user, updatePhoneNumber, setUser } = useUser(initialUser);
+  const { user, setUser, updateUser, updatePhoneNumber } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
 
   return (
@@ -37,10 +37,11 @@ export const AccountSettingsDetailsPage = ({
       header="Account details"
       title="Details"
     >
-      <AccountInfoTable
+      <AccountInfoPanel
         user={user}
-        updatePhoneNumber={updatePhoneNumber}
         setUser={setUser}
+        updateUser={updateUser}
+        updatePhoneNumber={updatePhoneNumber}
       />
     </AccountSettingsPageLayout>
   );

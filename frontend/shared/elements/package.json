@@ -42,7 +42,6 @@
   },
   "peerDependencies": {
     "baseui": "9.105.0",
-    "react-hook-form": "6.12.0",
     "styletron-react": "5.2.7",
     "react": "17.0.1"
   }

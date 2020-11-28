@@ -7,7 +7,7 @@ import type {
 
 import {
   AccountSettingsAuthTokensPage,
-  AccountSettingsDetailsPage,
+  OrganizationGeneralSettingsPage,
   Sidebar,
   SignUpPage,
 } from '../../../pages';
@@ -26,12 +26,14 @@ test('[AUTH-TOKENS]: As a user I want to create Auth Token, use it to make authe
 
   await t
     .click(Sidebar.banner.trigger)
-    .click(Sidebar.banner.menu.account.settings);
+    .click(Sidebar.banner.menu.organization.settings);
 
-  const organizationId = await AccountSettingsDetailsPage.organizationId
-    .innerText;
+  const organizationId = await OrganizationGeneralSettingsPage.idInput.value;
 
-  await t.click(AccountSettingsAuthTokensPage.sidebar.authTokens);
+  await t
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.authTokens);
+
   const initialAuthTokenCount = await AccountSettingsAuthTokensPage.getTokenCount();
 
   await t

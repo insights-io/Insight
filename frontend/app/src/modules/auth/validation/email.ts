@@ -9,3 +9,6 @@ export const EMAIL_VALIDATION = {
   ...REQUIRED_VALIDATION,
   pattern: EMAIL_PATTERN,
 };
+
+export const EMAIL_PLACEHOLDER = 'john.doe@gmail.com';
+export const WORK_EMAIL_PLACEHOLDER = 'john.doe@company.com';

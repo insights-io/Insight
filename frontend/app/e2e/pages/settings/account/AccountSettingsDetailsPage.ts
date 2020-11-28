@@ -1,4 +1,4 @@
-import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
+import { queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 
 import { ACCOUNT_SETTINGS_DETAILS_PAGE } from '../../../../src/shared/constants/routes';
@@ -9,39 +9,31 @@ import { AbstractAccountSettingsPage } from './AbstractAccountSettingsPage';
 export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
   public readonly title = this.withinContainer.queryByText('Account details');
 
-  public readonly fullName = this.withinContainer
-    .queryByText('Full name')
-    .parent()
-    .child(1);
+  public readonly fullNameInput = this.withinContainer.queryByPlaceholderText(
+    'Full name'
+  );
+  public readonly emailInput = this.withinContainer.queryByPlaceholderText(
+    'Email'
+  );
+  public readonly roleInput = this.withinContainer.queryByPlaceholderText(
+    'Role'
+  );
+  public readonly memberSinceInput = this.withinContainer.queryByPlaceholderText(
+    'Created at'
+  );
+  public readonly phoneNumberInput = this.withinContainer.queryByPlaceholderText(
+    '51111222'
+  );
+  public readonly phoneNumberInputClear = this.withinContainer
+    .queryByRole('button')
+    .withAttribute('title', 'Clear value');
 
-  public readonly email = this.withinContainer
-    .queryByText('Email')
-    .parent()
-    .child(1);
-  public readonly organizationId = this.withinContainer
-    .queryByText('Organization ID')
-    .parent()
-    .child(1);
-
-  public readonly memberSince = this.withinContainer
-    .queryByText('Member since')
-    .parent()
-    .child(1);
-
-  public readonly phoneNumber = this.withinContainer
-    .queryByText('Phone number')
-    .parent()
-    .child(1)
-    .child(0);
-
-  public readonly phoneNumberConfigureButton = this.withinContainer
-    .queryByText('Phone number')
-    .parent()
-    .child(1)
-    .child(1);
+  public readonly phoneNumberVerifyButton = this.container
+    .find('button')
+    .withAttribute('aria-haspopup', 'true');
 
   public readonly phoneNumberVerifiedMessage = queryByText(
-    'Phone number verified'
+    'Phone number successfully verified'
   );
 
   public readonly phoneNumberCountryPicker = Selector('input')
@@ -49,7 +41,6 @@ export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
     .parent()
     .parent();
 
-  public readonly phoneNumberInput = queryByPlaceholderText('Phone number');
   public readonly phoneNumberNextStep = queryByText('Continue');
 
   public completeSmsChallenge = (t: TestController) => {
@@ -57,10 +48,7 @@ export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
   };
 
   public verifyCurrentPhoneNumber = async (t: TestController) => {
-    await t
-      .click(this.phoneNumberConfigureButton)
-      .click(this.phoneNumberNextStep);
-
+    await t.click(this.phoneNumberVerifyButton);
     await this.completeSmsChallenge(t);
     return t
       .expect(this.phoneNumberVerifiedMessage.visible)

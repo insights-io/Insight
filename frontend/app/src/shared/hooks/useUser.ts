@@ -32,7 +32,7 @@ export const useUser = (initialData: UserDTO) => {
   );
 
   const updatePhoneNumber = useCallback(
-    (phoneNumber: PhoneNumber | null) => {
+    (phoneNumber: PhoneNumber | undefined | null) => {
       return AuthApi.user.updatePhoneNumber(phoneNumber).then((updatedUser) => {
         setUser(updatedUser);
         return updatedUser;

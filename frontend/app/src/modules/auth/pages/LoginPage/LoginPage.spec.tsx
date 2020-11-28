@@ -4,6 +4,7 @@ import { waitFor } from '@testing-library/react';
 import { sandbox } from '@rebrowse/testing';
 import userEvent from '@testing-library/user-event';
 import * as windowUtils from 'shared/utils/window';
+import { EMAIL_PLACEHOLDER } from 'modules/auth/validation/email';
 
 import { Base, InvalidPassword, WithSsoRedirect } from './LoginPage.stories';
 
@@ -17,7 +18,7 @@ describe('<LoginPage />', () => {
       findAllByText,
       replace,
     } = render(<Base />);
-    const emailInput = getByPlaceholderText('Email');
+    const emailInput = getByPlaceholderText(EMAIL_PLACEHOLDER);
     const passwordInput = getByPlaceholderText('Password');
     const submitButton = getByText('Sign in');
 
@@ -53,7 +54,7 @@ describe('<LoginPage />', () => {
     const { getByPlaceholderText, getByText, findByText } = render(
       <InvalidPassword />
     );
-    const emailInput = getByPlaceholderText('Email');
+    const emailInput = getByPlaceholderText(EMAIL_PLACEHOLDER);
     const passwordInput = getByPlaceholderText('Password');
     const submitButton = getByText('Sign in');
 
@@ -73,7 +74,7 @@ describe('<LoginPage />', () => {
     const locationAsignStub = sandbox.stub(windowUtils, 'locationAssign');
     WithSsoRedirect.story.setupMocks(sandbox);
     const { getByText, getByPlaceholderText } = render(<WithSsoRedirect />);
-    const emailInput = getByPlaceholderText('Email');
+    const emailInput = getByPlaceholderText(EMAIL_PLACEHOLDER);
     const passwordInput = getByPlaceholderText('Password');
     const submitButton = getByText('Sign in');
 

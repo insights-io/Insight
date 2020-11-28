@@ -10,6 +10,6 @@ public class JacksonObjectMapperCustomizer implements ObjectMapperCustomizer {
 
   @Override
   public void customize(ObjectMapper mapper) {
-    JacksonUtils.configure(mapper);
+    JacksonUtils.configureServer(mapper);
   }
 }

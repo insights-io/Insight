@@ -11,7 +11,10 @@ describe('<PasswordForgotPage />', () => {
     const forgotPasswordStub = Base.story.setupMocks(sandbox);
     const { getByText, findByText, getByPlaceholderText } = render(<Base />);
 
-    await userEvent.type(getByPlaceholderText('Email'), 'test-user@gmail.com');
+    await userEvent.type(
+      getByPlaceholderText('john.doe@gmail.com'),
+      'test-user@gmail.com'
+    );
     await userEvent.click(getByText('Reset password'));
 
     sandbox.assert.calledWithExactly(forgotPasswordStub, 'test-user@gmail.com');

@@ -12,6 +12,16 @@ import { getData, withCredentials } from '../../core/utils';
 import type { UpdateUserPayload } from './types';
 
 export const userResource = (authApiBaseURL: string) => {
+  const update = (
+    json: UpdateUserPayload,
+    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+  ) => {
+    return ky
+      .patch(`${baseURL}/v1/user`, withCredentials({ json, ...rest }))
+      .json<DataResponse<UserDTO>>()
+      .then(getData);
+  };
+
   return {
     me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
@@ -19,19 +29,15 @@ export const userResource = (authApiBaseURL: string) => {
         .json<DataResponse<UserDTO>>()
         .then(getData);
     },
-    update: (
-      json: UpdateUserPayload,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
-    ) => {
-      return ky
-        .patch(`${baseURL}/v1/user`, withCredentials({ json, ...rest }))
-        .json<DataResponse<UserDTO>>()
-        .then(getData);
-    },
+    update,
     updatePhoneNumber: (
       json: PhoneNumber | null | undefined,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
+      if (!json || !json.countryCode || !json.digits) {
+        return update({ phone_number: null });
+      }
+
       return ky
         .patch(
           `${baseURL}/v1/user/phone_number`,

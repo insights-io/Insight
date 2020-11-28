@@ -6,7 +6,7 @@ import { StatefulTooltip } from 'baseui/tooltip';
 import React, { useState } from 'react';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { toaster } from 'baseui/toast';
-import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
+import { SmsMfaInputMethod } from 'modules/auth/components/SmsMfaInputMethod';
 
 import DisableMultiFactorAuthenticationModal from '../DisableMultiFactorAuthenticationModal';
 
@@ -98,7 +98,7 @@ const SmsMultiFactorAuthentication = ({
             }}
           >
             <ModalBody>
-              <TfaSmsInputMethod
+              <SmsMfaInputMethod
                 code={code}
                 error={codeError}
                 handleChange={handleChange}

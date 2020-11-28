@@ -1,5 +1,4 @@
 export * from './Button';
-export * from './ExplainedLabel';
 export * from './ExternalLink';
 export * from './Flex';
 export * from './FlexColumn';

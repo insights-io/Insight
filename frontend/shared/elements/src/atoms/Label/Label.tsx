@@ -7,7 +7,7 @@ type Props = BlockProps & {
   for?: string;
 };
 
-const REQUIRED_CONTENT = {
+export const LABEL_REQUIRED_STYLE = {
   marginLeft: '4px',
   content: `'*'`,
   color: 'red',
@@ -21,7 +21,7 @@ export const Label = forwardRef<HTMLDivElement, Props>(
         as="label"
         $style={{
           ...$style,
-          ':after': required ? REQUIRED_CONTENT : undefined,
+          ':after': required ? LABEL_REQUIRED_STYLE : undefined,
         }}
         {...rest}
       />

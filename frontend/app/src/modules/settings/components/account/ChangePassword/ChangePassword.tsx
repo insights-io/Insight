@@ -11,7 +11,7 @@ import type {
 import { AuthApi } from 'api/auth';
 import FormError from 'shared/components/FormError';
 import { toaster } from 'baseui/toast';
-import { Input, Button } from '@rebrowse/elements';
+import { Button, PasswordInput } from '@rebrowse/elements';
 
 type Props = {
   overrides?: CardOverrides;
@@ -61,11 +61,11 @@ export const ChangePassword = ({ overrides }: Props) => {
     <Card title="Change password" overrides={overrides}>
       <form onSubmit={onSubmit} noValidate>
         <FormControl error={errors.currentPassword?.message}>
-          <Input
-            placeholder="Current password"
+          <PasswordInput
+            id="currentPassword"
             name="currentPassword"
-            type="password"
             autoComplete="current-password"
+            placeholder="Current password"
             ref={register}
             inputRef={register(PASSWORD_VALIDATION)}
             error={Boolean(errors.currentPassword)}
@@ -73,11 +73,11 @@ export const ChangePassword = ({ overrides }: Props) => {
         </FormControl>
 
         <FormControl error={errors.newPassword?.message}>
-          <Input
-            placeholder="New password"
+          <PasswordInput
+            id="newPassword"
             name="newPassword"
-            type="password"
             autoComplete="new-password"
+            placeholder="New password"
             ref={register}
             inputRef={register({
               ...PASSWORD_VALIDATION,
@@ -92,11 +92,11 @@ export const ChangePassword = ({ overrides }: Props) => {
         </FormControl>
 
         <FormControl error={errors.confirmNewPassword?.message}>
-          <Input
-            placeholder="Confirm new password"
+          <PasswordInput
+            id="confirmNewPassword"
             name="confirmNewPassword"
-            type="password"
             autoComplete="new-password"
+            placeholder="Confirm new password"
             ref={register}
             inputRef={register({
               ...PASSWORD_VALIDATION,

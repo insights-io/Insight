@@ -4,8 +4,16 @@ import { FormControl } from 'baseui/form-control';
 import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
-import { Input, SpacedBetween, Button } from '@rebrowse/elements';
-import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
+import {
+  Input,
+  SpacedBetween,
+  Button,
+  PasswordInput,
+} from '@rebrowse/elements';
+import {
+  EMAIL_PLACEHOLDER,
+  EMAIL_VALIDATION,
+} from 'modules/auth/validation/email';
 import Link from 'next/link';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import FormError from 'shared/components/FormError';
@@ -71,7 +79,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
             id="email"
             name="email"
             type="email"
-            placeholder="Email"
+            placeholder={EMAIL_PLACEHOLDER}
             required
             inputRef={register(EMAIL_VALIDATION)}
             error={Boolean(errors.email)}
@@ -90,11 +98,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
           }
           error={errors.password?.message}
         >
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Password"
+          <PasswordInput
             ref={register}
             inputRef={register(PASSWORD_VALIDATION)}
             error={Boolean(errors.password)}

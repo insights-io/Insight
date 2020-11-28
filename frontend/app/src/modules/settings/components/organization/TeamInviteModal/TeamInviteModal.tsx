@@ -4,7 +4,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { FormControl } from 'baseui/form-control';
 import { useStyletron } from 'baseui';
 import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
-import { createInputOverrides } from 'shared/styles/input';
 import { toaster } from 'baseui/toast';
 import FormError from 'shared/components/FormError';
 import { RadioGroup, Radio } from 'baseui/radio';
@@ -41,7 +40,6 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
     setError,
     reset,
   } = useForm<TeamInviteCreateDTO>();
-  const inputOverrides = createInputOverrides(theme);
 
   const close = () => {
     setIsOpen(false);
@@ -84,7 +82,6 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
           <ModalBody>
             <FormControl label="Email" error={errors.email?.message}>
               <Input
-                overrides={inputOverrides}
                 name="email"
                 type="email"
                 placeholder="Email"

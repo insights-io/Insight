@@ -10,6 +10,7 @@ type UseUpdateFieldOptions<
   fieldName: K;
   resource: string;
   update: (update: U) => Promise<R>;
+  displayValue?: (v: R[K]) => string;
 };
 
 const snakeCaseToNiceCase = (snakeCaseValue: string) => {
@@ -31,7 +32,8 @@ const buildUpdateTextMessage = <
   resource: string,
   fieldName: K,
   updatedResource: R,
-  currentValue: C
+  currentValue: C,
+  displayValue: (v: C | R[K]) => string = (v) => String(v)
 ) => {
   const nextValue = updatedResource[fieldName];
   const niceFieldName = snakeCaseToNiceCase(fieldName as string);
@@ -45,8 +47,12 @@ const buildUpdateTextMessage = <
   let message = `Successfully cleared ${resource} ${niceFieldName}`;
   if (nextValue) {
     message = currentValue
-      ? `Successfully changed ${resource} ${niceFieldName} from "${currentValue}" to "${nextValue}"`
-      : `Successfully changed ${resource} ${niceFieldName} to "${nextValue}"`;
+      ? `Successfully changed ${resource} ${niceFieldName} from "${displayValue(
+          currentValue
+        )}" to "${displayValue(nextValue)}"`
+      : `Successfully changed ${resource} ${niceFieldName} to "${displayValue(
+          nextValue
+        )}"`;
   }
 
   return message;
@@ -61,6 +67,7 @@ export const useUpdateField = <
   resource,
   currentValue,
   update,
+  displayValue,
 }: UseUpdateFieldOptions<U, K, R>) => {
   const [updating, setUpdating] = useState(false);
   const [value, setValue] = useState<R[K]>(currentValue);
@@ -78,7 +85,8 @@ export const useUpdateField = <
             resource,
             fieldName,
             updatedResource,
-            currentValue
+            currentValue,
+            displayValue
           ),
           {}
         );

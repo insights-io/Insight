@@ -28,7 +28,7 @@ class Verification extends AbstractPage {
     sms: {
       title: queryByText('Text message'),
       sendCode: queryByText('Send Code'),
-      sendCodeSuccessMessage: queryByText('Success'),
+      sendCodeSuccessMessage: queryByText('Code sent'),
     },
   };
 

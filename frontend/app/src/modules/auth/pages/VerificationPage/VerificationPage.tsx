@@ -8,8 +8,8 @@ import { useRouter } from 'next/router';
 import FormError from 'shared/components/FormError';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
-import { TfaTotpInputMethod } from 'modules/auth/components/TfaTotpInputMethod';
-import { TfaSmsInputMethod } from 'modules/auth/components/TfaSmsInputMethod';
+import { TotpMfaInputMethod } from 'modules/auth/components/TotpMfaInputMethod';
+import { SmsMfaInputMethod } from 'modules/auth/components/SmsMfaInputMethod';
 import type { TfaMethod } from '@rebrowse/types';
 import { Button } from '@rebrowse/elements';
 
@@ -20,11 +20,11 @@ type Props = {
 const TFA_METHOD_TO_TITLE_MAPPING = {
   sms: {
     title: 'Text message',
-    component: TfaSmsInputMethod,
+    component: SmsMfaInputMethod,
   },
   totp: {
     title: 'Authy',
-    component: TfaTotpInputMethod,
+    component: TotpMfaInputMethod,
   },
 } as const;
 

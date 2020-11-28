@@ -2,7 +2,10 @@ import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
-import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
+import {
+  EMAIL_VALIDATION,
+  WORK_EMAIL_PLACEHOLDER,
+} from 'modules/auth/validation/email';
 import React, { useState, useMemo } from 'react';
 import FormError from 'shared/components/FormError';
 import { locationAssign } from 'shared/utils/window';
@@ -74,7 +77,7 @@ const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
             id="email"
             name="email"
             type="email"
-            placeholder="user@company.com"
+            placeholder={WORK_EMAIL_PLACEHOLDER}
             required
             value={email}
             onChange={(event) => setEmail(event.currentTarget.value)}

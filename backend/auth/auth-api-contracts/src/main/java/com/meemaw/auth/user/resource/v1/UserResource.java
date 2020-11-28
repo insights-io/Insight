@@ -170,7 +170,8 @@ public interface UserResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  CompletionStage<Response> updatePhoneNumber(PhoneNumberDTO phoneNumber);
+  CompletionStage<Response> updatePhoneNumber(
+      @NotNull(message = "Required") @Valid PhoneNumberDTO phoneNumber);
 
   @PATCH
   @Consumes(MediaType.APPLICATION_JSON)
