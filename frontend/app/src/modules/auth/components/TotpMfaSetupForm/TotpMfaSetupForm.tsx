@@ -12,14 +12,14 @@ import FormError from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';
 
-type Props = {
-  completeSetup?: typeof AuthApi.tfa.setup.complete;
+export type Props = {
+  completeSetup?: (code: number) => Promise<TfaSetupDTO>;
   onCompleted?: (tfaSetup: TfaSetupDTO) => void;
 };
 
 export const TotpMfaSetupForm = ({
   onCompleted,
-  completeSetup = AuthApi.tfa.setup.complete,
+  completeSetup = (code: number) => AuthApi.tfa.setup.complete('totp', code),
 }: Props) => {
   const [setupStartError, setSetupStartError] = useState<APIError>();
   const [qrImage, setQrImage] = useState<string>();
@@ -32,8 +32,8 @@ export const TotpMfaSetupForm = ({
     isSubmitting,
     apiError,
   } = useCodeInput({
-    submitAction: (data) => {
-      return completeSetup('totp', data).then(onCompleted);
+    submitAction: (paramCode) => {
+      return completeSetup(paramCode).then(onCompleted);
     },
     handleError: (error, setError) => {
       setError(error.error);

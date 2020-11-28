@@ -145,10 +145,16 @@ export const AccountSettingsAuthTokensPage = ({
           <Button
             kind="tertiary"
             onClick={() => setSelectedAuthToken(undefined)}
+            size={SIZE.compact}
           >
             Cancel
           </Button>
-          <Button onClick={deleteAuthToken} isLoading={deletingAuthToken}>
+          <Button
+            onClick={deleteAuthToken}
+            isLoading={deletingAuthToken}
+            size={SIZE.compact}
+            $style={{ marginLeft: '8px' }}
+          >
             Yes
           </Button>
         </ModalFooter>

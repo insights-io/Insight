@@ -4,3 +4,4 @@ export * from './AutocompleteInput';
 export * from './Input';
 export * from './Toggle';
 export * from './PasswordInput';
+export * from './EmailInput';

@@ -9,7 +9,7 @@ import {
 import React, { useState, useMemo } from 'react';
 import FormError from 'shared/components/FormError';
 import { locationAssign } from 'shared/utils/window';
-import { Input, Button } from '@rebrowse/elements';
+import { Button, EmailInput } from '@rebrowse/elements';
 
 import { ssoIntegrationHrefBuilder } from '../utils';
 
@@ -73,10 +73,7 @@ const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
     <form onSubmit={onSubmit} noValidate>
       <Block>
         <FormControl label="Work Email" error={validationError}>
-          <Input
-            id="email"
-            name="email"
-            type="email"
+          <EmailInput
             placeholder={WORK_EMAIL_PLACEHOLDER}
             required
             value={email}

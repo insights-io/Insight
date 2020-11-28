@@ -26,7 +26,7 @@ type Props = {
   ) => Promise<UserDTO>;
 };
 
-export const AccountInfoPanel = ({
+export const AccountDetailsPanel = ({
   user,
   setUser,
   updateUser,
@@ -151,6 +151,7 @@ export const AccountInfoPanel = ({
 
         <VerticalAligned width="50%">
           <PhoneNumberInput
+            size={SIZE.compact}
             value={phoneNumber}
             onChange={setPhoneNumber}
             placeholder="51111222"

@@ -4,19 +4,13 @@ import { TotpMfaSetupForm } from 'modules/auth/components/TotpMfaSetupForm';
 
 import type { Props } from './types';
 
-const TimeBasedMultiFactorAuthenticationSetupModal = ({
-  isOpen,
-  onClose,
-  onTfaConfigured,
-}: Props) => {
+export const TotpMfaSetupModal = ({ isOpen, onClose, ...rest }: Props) => {
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <ModalHeader>Setup multi-factor authentication</ModalHeader>
       <ModalBody>
-        <TotpMfaSetupForm onCompleted={onTfaConfigured} />
+        <TotpMfaSetupForm {...rest} />
       </ModalBody>
     </Modal>
   );
 };
-
-export default React.memo(TimeBasedMultiFactorAuthenticationSetupModal);

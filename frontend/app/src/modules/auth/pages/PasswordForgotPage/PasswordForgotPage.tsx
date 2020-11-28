@@ -14,7 +14,7 @@ import {
   EMAIL_VALIDATION,
 } from 'modules/auth/validation/email';
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
-import { Button, Flex, SpacedBetween, Input } from '@rebrowse/elements';
+import { Button, Flex, SpacedBetween, EmailInput } from '@rebrowse/elements';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 
 type FormData = {
@@ -82,10 +82,7 @@ export const PasswordForgotPage = () => {
                 }
                 error={errors.email?.message}
               >
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
+                <EmailInput
                   placeholder={EMAIL_PLACEHOLDER}
                   required
                   inputRef={register(EMAIL_VALIDATION)}

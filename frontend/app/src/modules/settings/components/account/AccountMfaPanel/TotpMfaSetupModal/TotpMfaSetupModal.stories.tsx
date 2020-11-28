@@ -5,19 +5,19 @@ import { AuthApi } from 'api/auth';
 import { TFA_SETUP_QR_IMAGE } from 'test/data';
 import type { Meta } from '@storybook/react';
 
-import TfaSetupModal, { Props } from './index';
+import { TotpMfaSetupModal, Props } from './index';
 
 export default {
-  title: 'settings/components/TfaSetupModal',
-  component: TfaSetupModal,
+  title: 'settings/components/TotpMfaSetupModal',
+  component: TotpMfaSetupModal,
 } as Meta;
 
 export const Base = (props: Partial<Props>) => {
   return (
-    <TfaSetupModal
+    <TotpMfaSetupModal
       isOpen
       onClose={action('onClose')}
-      onTfaConfigured={action('onTfaConfigured')}
+      onCompleted={action('onCompleted')}
       {...props}
     />
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Block } from 'baseui/block';
 import { ChangePassword } from 'modules/settings/components/account/ChangePassword';
-import { TwoFactorAuthentication } from 'modules/settings/components/account/TwoFactorAuthentication';
+import { AccountMfaPanel } from 'modules/settings/components/account/AccountMfaPanel';
 import { AccountSettingsPageLayout } from 'modules/settings/components/account/AccountSettingsPageLayout';
 import {
   SETTINGS_PATH_PART,
@@ -38,7 +38,7 @@ export const AccountSettingsSecurityPage = ({
       path={PATH}
       header="Security"
     >
-      <TwoFactorAuthentication user={user} />
+      <AccountMfaPanel user={user} />
       <Block marginTop="24px">
         <ChangePassword />
       </Block>

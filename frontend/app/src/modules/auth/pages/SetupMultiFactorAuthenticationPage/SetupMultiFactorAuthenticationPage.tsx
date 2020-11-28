@@ -43,14 +43,18 @@ export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
       >
         <Tab title="Authy" key="totp">
           <TotpMfaSetupForm
-            completeSetup={AuthApi.tfa.setup.completeEnforced}
+            completeSetup={(code) =>
+              AuthApi.tfa.setup.completeEnforced('totp', code)
+            }
             onCompleted={onCompleted}
           />
         </Tab>
         <Tab title="Text message" key="sms">
           <SmsMfaSetupForm
             phoneNumber={user.phoneNumber}
-            completeSetup={AuthApi.tfa.setup.completeEnforced}
+            completeSetup={(code) =>
+              AuthApi.tfa.setup.completeEnforced('sms', code)
+            }
             onCompleted={onCompleted}
           />
         </Tab>

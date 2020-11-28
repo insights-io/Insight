@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
-import type { PhoneNumber, TfaSetupDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { PhoneNumberSetForm } from 'modules/auth/components/PhoneNumberSetForm';
 import { PhoneNumberVerifyForm } from 'modules/auth/components/PhoneNumberVerifyForm';
+import type { PhoneNumber, TfaSetupDTO } from '@rebrowse/types';
 
 type Props = {
   phoneNumber: PhoneNumber | undefined;
-  completeSetup?: typeof AuthApi.tfa.setup.complete;
+  completeSetup?: (code: number) => Promise<TfaSetupDTO>;
   onCompleted?: (tfaSetup: TfaSetupDTO) => void;
 };
 
 export const SmsMfaSetupForm = ({
   phoneNumber: initialPhoneNumber,
-  completeSetup = AuthApi.tfa.setup.complete,
+  completeSetup = (code: number) => AuthApi.tfa.setup.complete('sms', code),
   onCompleted,
 }: Props) => {
   const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber);
+
   if (!phoneNumber) {
     return (
       <PhoneNumberSetForm
@@ -32,7 +33,7 @@ export const SmsMfaSetupForm = ({
 
   return (
     <PhoneNumberVerifyForm
-      verify={(code) => completeSetup('sms', code).then(onCompleted)}
+      verify={(code) => completeSetup(code).then(onCompleted)}
       sendCode={AuthApi.tfa.setup.sms.sendCode}
     />
   );

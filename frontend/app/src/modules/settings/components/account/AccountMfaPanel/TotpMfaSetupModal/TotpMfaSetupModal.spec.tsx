@@ -1,16 +1,16 @@
 import React from 'react';
 import { render } from 'test/utils';
-import { StoryConfiguration } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
 import userEvent from '@testing-library/user-event';
-import { RenderableComponent } from '@rebrowse/next-testing';
+import type { StoryConfiguration } from '@rebrowse/storybook';
+import type { RenderableComponent } from '@rebrowse/next-testing';
 
 import {
   Base,
   WithSetupStartError,
   WithInvalidCodeError,
   WithQrCodeExpiredError,
-} from './TimeBasedMultiFactorAuthenticationSetupModal.stories';
+} from './TotpMfaSetupModal.stories';
 
 describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
   const renderTfaSetupModal = <Props, T, S extends StoryConfiguration<T>>(
@@ -32,7 +32,7 @@ describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
   it('Base', async () => {
     Base.story.setupMocks(sandbox);
     const onClose = sandbox.stub();
-    const onTfaConfigured = sandbox.stub();
+    const completeSetup = sandbox.stub();
 
     const {
       submitButton,
@@ -41,7 +41,7 @@ describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
       queryByText,
       closeButton,
     } = renderTfaSetupModal(
-      <Base onClose={onClose} onTfaConfigured={onTfaConfigured} />
+      <Base onClose={onClose} completeSetup={completeSetup} />
     );
 
     userEvent.click(closeButton);
@@ -51,11 +51,12 @@ describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
     userEvent.click(submitButton);
     await findByText('Required');
 
-    await userEvent.type(codeInput, '123456');
+    const code = '123456';
+    await userEvent.type(codeInput, code);
     expect(queryByText('Required')).toBeNull();
 
     await userEvent.click(submitButton);
-    sandbox.assert.calledOnce(onTfaConfigured);
+    sandbox.assert.calledWithExactly(completeSetup, Number(code));
   });
 
   it('WithSetupStartError', async () => {

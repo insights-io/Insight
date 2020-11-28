@@ -1,1 +1,1 @@
-export { TotpMfaSetupForm } from './TotpMfaSetupForm';
+export * from './TotpMfaSetupForm';

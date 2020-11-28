@@ -5,7 +5,7 @@ import {
   SETTINGS_PATH_PART,
   ACCOUNT_SETTINGS_PATH_PART,
 } from 'shared/constants/routes';
-import { AccountInfoPanel } from 'modules/settings/components/account/AccountInfoPanel';
+import { AccountDetailsPanel } from 'modules/settings/components/account/AccountDetailsPanel';
 import { useUser } from 'shared/hooks/useUser';
 import type { Path } from 'modules/settings/types';
 import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
@@ -37,7 +37,7 @@ export const AccountSettingsDetailsPage = ({
       header="Account details"
       title="Details"
     >
-      <AccountInfoPanel
+      <AccountDetailsPanel
         user={user}
         setUser={setUser}
         updateUser={updateUser}

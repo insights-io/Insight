@@ -5,10 +5,11 @@ import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import {
-  Input,
   SpacedBetween,
   Button,
   PasswordInput,
+  EmailInput,
+  Label,
 } from '@rebrowse/elements';
 import {
   EMAIL_PLACEHOLDER,
@@ -74,11 +75,11 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
   return (
     <form onSubmit={onSubmit} noValidate>
       <Block>
-        <FormControl label="Email" error={errors.email?.message}>
-          <Input
-            id="email"
-            name="email"
-            type="email"
+        <FormControl
+          label={<Label as="span">Email</Label>}
+          error={errors.email?.message}
+        >
+          <EmailInput
             placeholder={EMAIL_PLACEHOLDER}
             required
             inputRef={register(EMAIL_VALIDATION)}

@@ -3,19 +3,19 @@ import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import { REBROWSE_ADMIN, TFA_SETUP_QR_IMAGE } from 'test/data';
 import { SWRConfig } from 'swr';
-import { Meta } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 
-import { TwoFactorAuthentication } from './TwoFactorAuthentication';
+import { AccountMfaPanel } from './AccountMfaPanel';
 
 export default {
-  title: 'settings/components/account/TwoFactorAuthentication',
-  component: TwoFactorAuthentication,
+  title: 'settings/components/account/AccountMfaPanel',
+  component: AccountMfaPanel,
 } as Meta;
 
 export const TfaEnabled = () => {
   return (
     <SWRConfig value={{ dedupingInterval: 0 }}>
-      <TwoFactorAuthentication user={REBROWSE_ADMIN} />
+      <AccountMfaPanel user={REBROWSE_ADMIN} />
     </SWRConfig>
   );
 };
