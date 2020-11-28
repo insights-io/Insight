@@ -1,1 +1,0 @@
-export { AccountInfoTable } from './AccountInfoTable';

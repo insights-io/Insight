@@ -16,6 +16,7 @@ import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import { MEMBERS_SECTION } from 'shared/constants/copy';
 import type { Path } from 'modules/settings/types';
+import { useStyletron } from 'baseui';
 
 import { SettingsSectionCard } from './SettingsSectionCard';
 
@@ -32,11 +33,12 @@ export const SettingsPage = ({
 }: Props) => {
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
+  const [_css, theme] = useStyletron();
 
   return (
     <AppLayout user={user} organization={organization}>
       <SettingsLayout searchOptions={SETTINGS_SEARCH_OPTIONS} path={PATH}>
-        <Flex flexWrap>
+        <Flex padding={theme.sizing.scale200} flexWrap>
           <SettingsSectionCard
             header="My account"
             headerLink={ACCOUNT_SETTINGS_DETAILS_PAGE}

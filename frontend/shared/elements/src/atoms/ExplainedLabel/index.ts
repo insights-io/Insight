@@ -1,1 +1,0 @@
-export { ExplainedLabel } from './ExplainedLabel';

@@ -7,12 +7,14 @@ import static com.meemaw.test.setup.AuthApiTestProvider.REBROWSE_ADMIN_ID;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.mfa.model.dto.MfaChallengeCompleteDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
+import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
 import com.meemaw.auth.user.model.dto.UserDTO;
@@ -27,11 +29,13 @@ import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.model.user.PhoneNumberUpdateParams;
 import com.rebrowse.model.user.User;
+import com.rebrowse.net.RequestOptions;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -241,18 +245,53 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
+  public void update_user_phone_number__should_throw__when_invalid_body() {
+    String sessionId = authApi().loginWithAdminUser();
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .body("{}")
+        .patch(UserResource.PATH + "/phone_number")
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"countryCode\":\"Required\",\"digits\":\"Required\"}}}"));
+  }
+
+  @Test
   public void update_user_phone_number__should_work__when_valid_body()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    RequestOptions requestOptions = authApi().sdkRequest().sessionId(sessionId).build();
 
-    User updated =
+    User afterFirstUpdate =
         User.updatePhoneNumber(
                 PhoneNumberUpdateParams.builder().countryCode("+386").digits("51123456").build(),
-                authApi().sdkRequest().sessionId(sessionId).build())
+                requestOptions)
             .toCompletableFuture()
             .join();
 
-    assertEquals("+38651123456", updated.getPhoneNumber().getNumber());
+    assertEquals("+38651123456", afterFirstUpdate.getPhoneNumber().getNumber());
+
+    Map<String, ?> update = new LinkedHashMap<>(1);
+    update.put(UserTable.PHONE_NUMBER, null);
+
+    DataResponse<User> dataResponse =
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(SsoSession.COOKIE_NAME, sessionId)
+            .body(clientObjectMapper.writeValueAsString(update))
+            .patch(UserResource.PATH)
+            .then()
+            .statusCode(200)
+            .extract()
+            .as(new TypeRef<>() {});
+
+    assertNull(dataResponse.getData().getPhoneNumber());
+    assertEquals(afterFirstUpdate.getFullName(), dataResponse.getData().getFullName());
   }
 
   @ParameterizedTest

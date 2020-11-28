@@ -9,15 +9,19 @@ public final class JacksonUtils {
 
   private JacksonUtils() {}
 
-  public static ObjectMapper createObjectMapper() {
-    return configure(new ObjectMapper());
-  }
-
   public static ObjectMapper configure(ObjectMapper mapper) {
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.registerModule(new JavaTimeModule());
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     return mapper;
+  }
+
+  public static ObjectMapper configureServer(ObjectMapper mapper) {
+    return configure(mapper);
+  }
+
+  public static ObjectMapper configureClient(ObjectMapper mapper) {
+    return configure(mapper);
   }
 }

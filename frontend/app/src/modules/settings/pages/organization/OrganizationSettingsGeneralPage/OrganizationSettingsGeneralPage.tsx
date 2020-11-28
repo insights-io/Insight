@@ -13,7 +13,6 @@ import {
   Input,
   SpacedBetween,
   AutocompleteInput,
-  ExplainedLabel,
   Toggle,
 } from '@rebrowse/elements';
 import { useUpdateField } from 'shared/hooks/useUpdateField';
@@ -93,13 +92,13 @@ export const OrganizationSettingsGeneralPage = ({
       <Panel>
         <Panel.Header>General</Panel.Header>
         <Panel.Item display="flex" justifyContent="space-between">
-          <ExplainedLabel
+          <Panel.Label
             width="50%"
             explanation="A unique ID used to identify this organization"
             for="id"
           >
             Organization ID
-          </ExplainedLabel>
+          </Panel.Label>
 
           <VerticalAligned width="50%">
             <Input
@@ -114,13 +113,13 @@ export const OrganizationSettingsGeneralPage = ({
         </Panel.Item>
 
         <Panel.Item display="flex" justifyContent="space-between">
-          <ExplainedLabel
+          <Panel.Label
             width="50%"
             explanation="A human-friendly name for the organization"
             for="name"
           >
             Display Name
-          </ExplainedLabel>
+          </Panel.Label>
 
           <VerticalAligned width="50%">
             <Input
@@ -137,13 +136,13 @@ export const OrganizationSettingsGeneralPage = ({
         </Panel.Item>
 
         <Panel.Item display="flex" justifyContent="space-between">
-          <ExplainedLabel
+          <Panel.Label
             width="50%"
             explanation="Date of creation"
             for="createdAt"
           >
             Created at
-          </ExplainedLabel>
+          </Panel.Label>
 
           <VerticalAligned width="50%">
             <Input
@@ -158,13 +157,13 @@ export const OrganizationSettingsGeneralPage = ({
         </Panel.Item>
 
         <Panel.Item display="flex" justifyContent="space-between">
-          <ExplainedLabel
+          <Panel.Label
             explanation="Date of last update"
             for="updatedAt"
             width="50%"
           >
             Updated at
-          </ExplainedLabel>
+          </Panel.Label>
 
           <VerticalAligned width="50%">
             <Input
@@ -183,13 +182,13 @@ export const OrganizationSettingsGeneralPage = ({
         <Panel.Header>Membership</Panel.Header>
         <Panel.Item>
           <SpacedBetween>
-            <ExplainedLabel
+            <Panel.Label
               width="50%"
               explanation="The default role new members will receive"
               for="defaultRole"
             >
               Default role
-            </ExplainedLabel>
+            </Panel.Label>
 
             <VerticalAligned width="50%">
               <AutocompleteInput
@@ -211,13 +210,13 @@ export const OrganizationSettingsGeneralPage = ({
 
         <Panel.Item>
           <SpacedBetween>
-            <ExplainedLabel
+            <Panel.Label
               width="50%"
               for="openMembership"
               explanation="Allow users to freely join the organization using SSO instead of requiring an invite"
             >
               Open membership
-            </ExplainedLabel>
+            </Panel.Label>
 
             <VerticalAligned width="50%">
               <Block width="fit-content">
@@ -248,12 +247,12 @@ export const OrganizationSettingsGeneralPage = ({
         <Panel.Header>Termination</Panel.Header>
         <Panel.Item>
           <SpacedBetween>
-            <ExplainedLabel
+            <Panel.Label
               width="50%"
               explanation="Removing organization will delete all data including projects and their associated events"
             >
               Delete organization
-            </ExplainedLabel>
+            </Panel.Label>
             <VerticalAligned width="50%">
               <Block width="fit-content">
                 <DeleteOrganization />

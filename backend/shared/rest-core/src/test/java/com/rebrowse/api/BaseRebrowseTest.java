@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 public abstract class BaseRebrowseTest {
 
-  protected final ObjectMapper objectMapper = JacksonUtils.createObjectMapper();
+  protected final ObjectMapper objectMapper = JacksonUtils.configureClient(new ObjectMapper());
 
   protected String readFixture(String path) throws URISyntaxException, IOException {
     return Files.readString(Path.of(getClass().getResource(path).toURI()));

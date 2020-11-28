@@ -71,7 +71,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
             id="email"
             name="email"
             type="email"
-            placeholder="Email"
+            placeholder="john.doe@gmail.com"
             required
             inputRef={register(EMAIL_VALIDATION)}
             error={Boolean(errors.email)}
@@ -94,7 +94,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
             id="password"
             name="password"
             type="password"
-            placeholder="Password"
+            placeholder={'*'.repeat(PASSWORD_VALIDATION.minLength.value)}
             ref={register}
             inputRef={register(PASSWORD_VALIDATION)}
             error={Boolean(errors.password)}

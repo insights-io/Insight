@@ -21,7 +21,7 @@ public class JsonObjectBinding implements Binding<Object, JsonObject> {
       new Converter<>() {
         @Override
         public JsonObject from(Object databaseJsonObject) {
-          return JsonObject.mapFrom(databaseJsonObject);
+          return (JsonObject) databaseJsonObject;
         }
 
         @Override

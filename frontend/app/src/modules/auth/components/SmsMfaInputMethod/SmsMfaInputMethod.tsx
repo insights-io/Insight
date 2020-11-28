@@ -4,13 +4,13 @@ import { Block } from 'baseui/block';
 import { toaster } from 'baseui/toast';
 import { Flex, CodeInput, FlexColumn, Button } from '@rebrowse/elements';
 
-import { TfaInputMethodProps } from '../types';
+import { MfaInputMethodProps } from '../types';
 
-type Props = TfaInputMethodProps & {
+type Props = MfaInputMethodProps & {
   sendCode: () => Promise<CodeValidityDTO>;
 };
 
-export const TfaSmsInputMethod = ({
+export const SmsMfaInputMethod = ({
   code,
   handleChange,
   error,
@@ -40,7 +40,7 @@ export const TfaSmsInputMethod = ({
 
     sendCode()
       .then((response) => {
-        toaster.positive('Success', {});
+        toaster.positive('Code sent', {});
         setValiditySeconds(response.validitySeconds);
 
         countdownInterval.current = window.setInterval(() => {

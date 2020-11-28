@@ -44,13 +44,22 @@ public class UserService {
     UUID userId = user.getId();
 
     if (params.containsKey(UserTable.PHONE_NUMBER)) {
-      JsonObject phoneNumber = JsonObject.mapFrom(params.get(UserTable.PHONE_NUMBER));
-      if (!phoneNumber.mapTo(PhoneNumberDTO.class).equals(user.getPhoneNumber())) {
-        // TODO: this should probably be done using a DB trigger
-        params.put(UserTable.PHONE_NUMBER_VERIFIED, false);
-        params.put(UserTable.PHONE_NUMBER, phoneNumber);
-        log.debug(
-            "[AUTH]: Phone number change for user={} -- set phone_number_verified=false", userId);
+      Object maybePhoneNumber = params.get(UserTable.PHONE_NUMBER);
+      if (maybePhoneNumber == null) {
+        if (user.getPhoneNumber() != null) {
+          params.put(UserTable.PHONE_NUMBER_VERIFIED, false);
+          log.debug(
+              "[AUTH]: Phone number change for user={} -- set phone_number_verified=false", userId);
+        }
+      } else {
+        JsonObject phoneNumber = JsonObject.mapFrom(maybePhoneNumber);
+        if (!phoneNumber.mapTo(PhoneNumberDTO.class).equals(user.getPhoneNumber())) {
+          // TODO: this should probably be done using a DB trigger
+          params.put(UserTable.PHONE_NUMBER_VERIFIED, false);
+          params.put(UserTable.PHONE_NUMBER, phoneNumber);
+          log.debug(
+              "[AUTH]: Phone number change for user={} -- set phone_number_verified=false", userId);
+        }
       }
     }
 

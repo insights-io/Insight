@@ -11,7 +11,7 @@ import java.util.concurrent.CompletionStage;
 public final class ApiResource {
 
   public static final Charset CHARSET = RebrowseApi.CHARSET;
-  public static final ObjectMapper OBJECT_MAPPER = JacksonUtils.createObjectMapper();
+  public static final ObjectMapper OBJECT_MAPPER = JacksonUtils.configureClient(new ObjectMapper());
 
   private static HttpClient httpClient = new RebrowseHttpClient();
 

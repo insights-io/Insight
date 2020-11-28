@@ -1,11 +1,11 @@
 import React from 'react';
 import { CodeInput } from '@rebrowse/elements';
 
-import { TfaInputMethodProps } from '../types';
+import { MfaInputMethodProps } from '../types';
 
-type Props = TfaInputMethodProps;
+type Props = MfaInputMethodProps;
 
-export const TfaTotpInputMethod = ({ code, handleChange, error }: Props) => {
+export const TotpMfaInputMethod = ({ code, handleChange, error }: Props) => {
   return (
     <CodeInput
       label="Google verification code"

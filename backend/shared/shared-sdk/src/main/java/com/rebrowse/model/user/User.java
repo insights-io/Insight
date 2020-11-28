@@ -41,6 +41,10 @@ public class User {
         RequestMethod.GET, String.format("/v1/user/%s", id), User.class, options);
   }
 
+  public static CompletionStage<User> update(UserUpdateParams params) {
+    return update(params, null);
+  }
+
   public static CompletionStage<User> update(UserUpdateParams params, RequestOptions options) {
     return ApiResource.request(RequestMethod.PATCH, "/v1/user", params, User.class, options);
   }

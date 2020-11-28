@@ -11,7 +11,7 @@ public final class JacksonMapper {
 
   public static ObjectMapper get() {
     if (INSTANCE == null) {
-      INSTANCE = JacksonUtils.configure(new ObjectMapper());
+      INSTANCE = JacksonUtils.configureServer(new ObjectMapper());
     }
     return INSTANCE;
   }

@@ -17,7 +17,7 @@ export type UserDTO = {
   createdAt: string;
   updatedAt: string;
   organizationId: string;
-  phoneNumber: PhoneNumber | null;
+  phoneNumber: PhoneNumber | undefined;
   phoneNumberVerified: boolean;
 };
 

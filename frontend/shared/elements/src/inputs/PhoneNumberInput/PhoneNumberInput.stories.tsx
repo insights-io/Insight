@@ -1,22 +1,74 @@
 import React, { useState } from 'react';
+import { Controller, FieldError, useForm } from 'react-hook-form';
+import { Button } from 'atoms/Button';
+import type { PhoneNumber } from '@rebrowse/types';
 import type { Meta } from '@storybook/react';
-import { COUNTRIES, Country } from 'baseui/phone-input';
-import { useForm } from 'react-hook-form';
+import { Block } from 'baseui/block';
+import { action } from '@storybook/addon-actions';
+import { FormControl } from 'baseui/form-control';
 
-import { PhoneNumberInput, Values } from './PhoneNumberInput';
+import { PhoneNumberInput, Value } from './PhoneNumberInput';
 
 export default {
   title: 'inputs/PhoneNumberInput',
   component: PhoneNumberInput,
 } as Meta;
 
-const usePhoneNumberInput = () => {
-  const { control } = useForm<Values>();
-  const [country, setCountry] = useState<Country>(COUNTRIES.AF);
+export const ControlledOptionalWithError = () => {
+  const [phoneNumber, setPhoneNumber] = useState<Value>();
 
-  return { control, country, setCountry };
+  return (
+    <FormControl error="Something went wrong">
+      <PhoneNumberInput
+        value={phoneNumber}
+        onChange={setPhoneNumber}
+        onBlur={action('onBlur')}
+        onSelectBlur={action('onSelectBlur')}
+        error
+      />
+    </FormControl>
+  );
 };
 
-export const Base = () => {
-  return <PhoneNumberInput {...usePhoneNumberInput()} error={undefined} />;
+export const UncontrolledRequired = () => {
+  const { control, handleSubmit, setError, errors } = useForm<{
+    phoneNumber: Partial<PhoneNumber>;
+  }>();
+
+  const onSubmit = handleSubmit((values) => {
+    if (!values.phoneNumber?.digits) {
+      setError('phoneNumber', { message: 'Required' });
+      return;
+    }
+
+    if (values.phoneNumber.digits.charAt(0) === '+') {
+      setError('phoneNumber', {
+        message: 'Please enter a phone number without the country dial code',
+      });
+    }
+  });
+
+  return (
+    <form onSubmit={onSubmit} noValidate>
+      <FormControl
+        label="Phone number"
+        error={(errors.phoneNumber as FieldError)?.message}
+      >
+        <Controller
+          name="phoneNumber"
+          control={control}
+          as={
+            <PhoneNumberInput
+              error={Boolean((errors.phoneNumber as FieldError)?.message)}
+              required
+            />
+          }
+        />
+      </FormControl>
+
+      <Block marginTop="16px">
+        <Button type="submit">Submit</Button>
+      </Block>
+    </form>
+  );
 };

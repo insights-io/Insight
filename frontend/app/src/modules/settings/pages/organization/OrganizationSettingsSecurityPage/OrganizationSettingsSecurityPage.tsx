@@ -13,13 +13,7 @@ import {
 } from '@rebrowse/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
-import {
-  ExplainedLabel,
-  FlexColumn,
-  Panel,
-  Toggle,
-  VerticalAligned,
-} from '@rebrowse/elements';
+import { FlexColumn, Panel, Toggle, VerticalAligned } from '@rebrowse/elements';
 import { Block } from 'baseui/block';
 import { useUpdateField } from 'shared/hooks/useUpdateField';
 import { useStyletron } from 'baseui';
@@ -70,13 +64,13 @@ export const OrganizationSettingsSecurityPage = ({
       <Panel>
         <Panel.Header>Security</Panel.Header>
         <Panel.Item display="flex" justifyContent="space-between">
-          <ExplainedLabel
+          <Panel.Label
             for="enforce2fa"
             explanation="Require and enforce multi-factor authentication for all members"
             width="50%"
           >
             Require Multi-Factor Authentication
-          </ExplainedLabel>
+          </Panel.Label>
 
           <VerticalAligned width="50%">
             <Block width="fit-content">
@@ -100,7 +94,7 @@ export const OrganizationSettingsSecurityPage = ({
             },
           }}
         >
-          <ExplainedLabel
+          <Panel.Label
             explanation="Password policy is a set of rules that define complexity requirements for your organization members"
             width="50%"
             $style={{
@@ -110,7 +104,7 @@ export const OrganizationSettingsSecurityPage = ({
             }}
           >
             Set password policy
-          </ExplainedLabel>
+          </Panel.Label>
 
           <FlexColumn
             width="50%"

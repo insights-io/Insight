@@ -16,7 +16,7 @@ export const REBROWSE_ADMIN_DTO: UserDTO = {
 export const REBROWSE_ADMIN_NO_PHONE_NUMBER: User = mapUser({
   ...REBROWSE_ADMIN_DTO,
   id: '7c071176-d186-40ac-aaf8-ac9779ab047c',
-  phoneNumber: null,
+  phoneNumber: undefined,
   phoneNumberVerified: false,
 });
 

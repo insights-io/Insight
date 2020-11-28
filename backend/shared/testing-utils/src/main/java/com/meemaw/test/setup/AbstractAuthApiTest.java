@@ -11,6 +11,7 @@ public abstract class AbstractAuthApiTest {
 
   @Inject protected MockMailbox mailbox;
   @Inject protected ObjectMapper objectMapper;
+  protected ObjectMapper clientObjectMapper = new ObjectMapper();
   @TestHTTPResource protected URI baseUri;
 
   public AuthApiTestProvider authApi() {

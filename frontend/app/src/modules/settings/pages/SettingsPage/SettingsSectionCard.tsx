@@ -31,6 +31,7 @@ export const SettingsSectionCard = ({
             width: '100%',
             maxWidth: '350px',
             borderRadius: '8px',
+            margin: theme.sizing.scale200,
           },
         },
       }}

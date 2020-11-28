@@ -4,11 +4,11 @@ import Head from 'next/head';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
-import { TfaMethod, UserDTO } from '@rebrowse/types';
-import { TimeBasedMultiFactorAuthenticationForm } from 'modules/auth/components/TimeBasedMultiFactorAuthenticationForm';
+import { TotpMfaSetupForm } from 'modules/auth/components/TotpMfaSetupForm';
 import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
-import { SmsTwoFactorAuthenticationForm } from 'modules/auth/components/SmsTwoFactorAuthenticationForm';
+import { SmsMfaSetupForm } from 'modules/auth/components/SmsMfaSetupForm';
+import type { TfaMethod, UserDTO } from '@rebrowse/types';
 
 type Props = {
   user: UserDTO;
@@ -42,13 +42,13 @@ export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
         activateOnFocus
       >
         <Tab title="Authy" key="totp">
-          <TimeBasedMultiFactorAuthenticationForm
+          <TotpMfaSetupForm
             completeSetup={AuthApi.tfa.setup.completeEnforced}
             onCompleted={onCompleted}
           />
         </Tab>
         <Tab title="Text message" key="sms">
-          <SmsTwoFactorAuthenticationForm
+          <SmsMfaSetupForm
             phoneNumber={user.phoneNumber}
             completeSetup={AuthApi.tfa.setup.completeEnforced}
             onCompleted={onCompleted}

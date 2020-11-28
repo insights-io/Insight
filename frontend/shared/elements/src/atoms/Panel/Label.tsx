@@ -3,28 +3,30 @@ import { ParagraphXSmall } from 'baseui/typography';
 import type { BlockProps } from 'baseui/block';
 
 import { FlexColumn } from '../FlexColumn';
-import { Label } from '../Label';
+import { Label as LabelBase } from '../Label';
 
 type Props = BlockProps & {
   children: React.ReactNode;
-  explanation: string;
+  explanation?: string;
   for?: string;
 };
 
-export const ExplainedLabel = ({
+export const Label = ({
   children,
   explanation,
-  for: labelFor,
+  for: htmlFor,
   ...rest
 }: Props) => {
   return (
     <FlexColumn
       as="label"
-      overrides={{ Block: { props: { for: labelFor } } }}
+      overrides={{ Block: { props: { htmlFor } } }}
       {...rest}
     >
-      <Label as="div">{children}</Label>
-      <ParagraphXSmall margin={0}>{explanation}</ParagraphXSmall>
+      <LabelBase as="div">{children}</LabelBase>
+      {explanation && (
+        <ParagraphXSmall margin={0}>{explanation}</ParagraphXSmall>
+      )}
     </FlexColumn>
   );
 };

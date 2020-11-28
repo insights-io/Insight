@@ -17,7 +17,7 @@ type Props = {
   onCompleted?: (tfaSetup: TfaSetupDTO) => void;
 };
 
-export const TimeBasedMultiFactorAuthenticationForm = ({
+export const TotpMfaSetupForm = ({
   onCompleted,
   completeSetup = AuthApi.tfa.setup.complete,
 }: Props) => {

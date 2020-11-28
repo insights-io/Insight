@@ -1,1 +1,0 @@
-export { TfaSmsInputMethod } from './TfaSmsInputMethod';

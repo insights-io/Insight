@@ -9,12 +9,12 @@ export type LoginCredentials = { email: string; password: string };
 
 class Login extends AbstractPage {
   /* Selectors */
-  public readonly emailInput = getByPlaceholderText('Email');
-  public readonly workEmailInput = getByPlaceholderText('user@company.com');
+  public readonly emailInput = getByPlaceholderText('john.doe@gmail.com');
+  public readonly workEmailInput = getByPlaceholderText('john.doe@company.com');
   public readonly samlSsoDisabledErrorMessage = queryByText(
     'That email or domain isn’t registered for SSO.'
   );
-  public readonly passwordInput = getByPlaceholderText('Password');
+  public readonly passwordInput = getByPlaceholderText('********');
   public readonly signInButton = queryByText('Sign in');
   public readonly forgotPasswordButton = queryByText('Forgot?');
   public readonly createFreeAccount = queryByText('Create a free account');
