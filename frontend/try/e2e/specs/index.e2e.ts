@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { getByText, getByPlaceholderText } from '@testing-library/testcafe';
+import { queryByText, queryByPlaceholderText } from '@testing-library/testcafe';
 import { ClientFunction } from 'testcafe';
 
 import config from '../config';
@@ -9,21 +9,23 @@ const getLocation = ClientFunction(() => window.location.href);
 fixture('/').page(config.baseURL);
 
 test('Can sign up', async (t) => {
-  const emailInput = getByPlaceholderText('john.doe@gmail.com');
-  const passwordInput = getByPlaceholderText('*'.repeat(8));
-  const getStartedButton = getByText('Get started');
+  const emailInput = queryByPlaceholderText('john.doe@gmail.com');
+  const passwordInput = queryByPlaceholderText('*'.repeat(8));
+  const fullNameInput = queryByPlaceholderText('John Doe');
+  const companyInput = queryByPlaceholderText('Example');
+  const getStartedButton = queryByText('Get started');
 
   await t
-    .typeText(getByPlaceholderText('Full name'), 'Joe Makarena')
-    .typeText(getByPlaceholderText('Company'), 'Rebrowse')
+    .typeText(fullNameInput, 'Joe Makarena')
+    .typeText(companyInput, 'Rebrowse')
     .typeText(emailInput, 'random')
     .typeText(passwordInput, 'short')
     .click(getStartedButton);
 
   await t
-    .expect(getByText('Invalid email address').visible)
+    .expect(queryByText('Invalid email address').visible)
     .ok('Email input is validated')
-    .expect(getByText('Password must be at least 8 characters long').visible)
+    .expect(queryByText('Password must be at least 8 characters long').visible)
     .ok('Password input is validated');
 
   await t
@@ -35,7 +37,7 @@ test('Can sign up', async (t) => {
     .typeText(passwordInput, `super_password_123`)
     .click(getStartedButton)
     .expect(
-      getByText(
+      queryByText(
         'We have sent an email with a confirmation link to your email address.'
       ).visible
     )
