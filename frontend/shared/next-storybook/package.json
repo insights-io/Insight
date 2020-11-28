@@ -28,11 +28,11 @@
   "devDependencies": {},
   "dependencies": {},
   "peerDependencies": {
-    "@storybook/addons": "6.1.4",
-    "@storybook/addon-actions": "6.1.4",
+    "@storybook/addons": "6.1.8",
+    "@storybook/addon-actions": "6.1.8",
     "@rebrowse/storybook": "0.0.0-development",
     "@testing-library/react": "11.2.2",
-    "next": "10.0.2",
+    "next": "10.0.3",
     "react": "17.0.1"
   }
 }

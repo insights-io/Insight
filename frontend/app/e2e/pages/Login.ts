@@ -2,6 +2,11 @@ import { getByPlaceholderText, queryByText } from '@testing-library/testcafe';
 
 import config from '../config';
 import { LOGIN_PAGE } from '../../src/shared/constants/routes';
+import {
+  EMAIL_PLACEHOLDER,
+  WORK_EMAIL_PLACEHOLDER,
+} from '../../src/modules/auth/validation/email';
+import { PASSWORD_PLACEHOLDER } from '../../src/modules/auth/validation/password';
 
 import { AbstractPage } from './AbstractPage';
 
@@ -9,12 +14,12 @@ export type LoginCredentials = { email: string; password: string };
 
 class Login extends AbstractPage {
   /* Selectors */
-  public readonly emailInput = getByPlaceholderText('john.doe@gmail.com');
-  public readonly workEmailInput = getByPlaceholderText('john.doe@company.com');
+  public readonly emailInput = getByPlaceholderText(EMAIL_PLACEHOLDER);
+  public readonly workEmailInput = getByPlaceholderText(WORK_EMAIL_PLACEHOLDER);
   public readonly samlSsoDisabledErrorMessage = queryByText(
     'That email or domain isn’t registered for SSO.'
   );
-  public readonly passwordInput = getByPlaceholderText('********');
+  public readonly passwordInput = getByPlaceholderText(PASSWORD_PLACEHOLDER);
   public readonly signInButton = queryByText('Sign in');
   public readonly forgotPasswordButton = queryByText('Forgot?');
   public readonly createFreeAccount = queryByText('Create a free account');

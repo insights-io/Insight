@@ -5,7 +5,10 @@ import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { Input, SpacedBetween, Button } from '@rebrowse/elements';
-import { EMAIL_VALIDATION } from 'modules/auth/validation/email';
+import {
+  EMAIL_PLACEHOLDER,
+  EMAIL_VALIDATION,
+} from 'modules/auth/validation/email';
 import Link from 'next/link';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import FormError from 'shared/components/FormError';
@@ -71,7 +74,7 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
             id="email"
             name="email"
             type="email"
-            placeholder="john.doe@gmail.com"
+            placeholder={EMAIL_PLACEHOLDER}
             required
             inputRef={register(EMAIL_VALIDATION)}
             error={Boolean(errors.email)}

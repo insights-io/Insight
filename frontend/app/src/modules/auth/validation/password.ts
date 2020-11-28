@@ -9,3 +9,5 @@ export const PASSWORD_VALIDATION = {
     message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters long`,
   },
 };
+
+export const PASSWORD_PLACEHOLDER = '*'.repeat(PASSWORD_MIN_LENGTH);
