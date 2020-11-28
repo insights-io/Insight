@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
+import { LOGIN_PAGE } from 'shared/constants/routes';
 
 describe('pages/login', () => {
   it('As a user I should be able to start password reset flow from login page', async () => {
@@ -10,7 +11,7 @@ describe('pages/login', () => {
       .stub(AuthApi.password, 'forgot')
       .resolves();
 
-    const page = await getPage({ route: '/login' });
+    const { page } = await getPage({ route: LOGIN_PAGE });
     render(page);
 
     userEvent.click(screen.getByText('Forgot?'));

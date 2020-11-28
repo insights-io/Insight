@@ -8,6 +8,9 @@ const config: Config.InitialOptions = {
   testEnvironment: 'node',
   coveragePathIgnorePatterns: ['/node_modules/'],
   moduleDirectories: ['node_modules', 'src'],
+  moduleNameMapper: {
+    '\\.(css|less|scss)$': 'identity-obj-proxy',
+  },
 };
 
 export default config;
