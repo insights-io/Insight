@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  configureStory,
-  fullHeightDecorator,
-  mockApiError,
-} from '@rebrowse/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import {
   REBROWSE_ADMIN_DTO,
   REBROWSE_ORGANIZATION_DTO,
@@ -28,6 +24,7 @@ export const MfaEnabled = () => {
     <AccountSettingsSecurityPage
       user={REBROWSE_ADMIN_DTO}
       organization={REBROWSE_ORGANIZATION_DTO}
+      mfaSetups={[TOTP_MFA_SETUP_DTO, SMS_MFA_SETUP_DTO]}
     />
   );
 };
@@ -41,6 +38,7 @@ MfaEnabled.story = configureStory({
       setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
+
       setupComplete: sandbox
         .stub(AuthApi.mfa.setup, 'complete')
         .resolves(TOTP_MFA_SETUP_DTO),
@@ -60,6 +58,7 @@ export const MfaDisabled = () => {
     <AccountSettingsSecurityPage
       user={REBROWSE_ADMIN_DTO}
       organization={REBROWSE_ORGANIZATION_DTO}
+      mfaSetups={[]}
     />
   );
 };
@@ -73,28 +72,6 @@ MfaDisabled.story = configureStory({
       setupComplete: sandbox
         .stub(AuthApi.mfa.setup, 'complete')
         .resolves(TOTP_MFA_SETUP_DTO),
-    };
-  },
-});
-
-export const WithError = () => {
-  return (
-    <AccountSettingsSecurityPage
-      user={REBROWSE_ADMIN_DTO}
-      organization={REBROWSE_ORGANIZATION_DTO}
-    />
-  );
-};
-WithError.story = configureStory({
-  setupMocks: (sandbox) => {
-    return {
-      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').rejects(
-        mockApiError({
-          message: 'Internal Server Error',
-          reason: 'Internal Server Error',
-          statusCode: 500,
-        })
-      ),
     };
   },
 });

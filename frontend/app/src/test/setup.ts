@@ -6,4 +6,5 @@ setupEnvironment();
 
 dotenv.config({ path: '.env.development' });
 
-jest.setTimeout(15000);
+// TODO: investigate why baseweb Modal rendering is so slow
+jest.setTimeout(60000);

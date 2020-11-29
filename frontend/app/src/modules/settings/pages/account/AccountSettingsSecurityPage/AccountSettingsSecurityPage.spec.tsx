@@ -1,14 +1,10 @@
 import React from 'react';
 import { sandbox } from '@rebrowse/testing';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { render } from 'test/utils';
 import userEvent from '@testing-library/user-event';
 
-import {
-  MfaDisabled,
-  MfaEnabled,
-  WithError,
-} from './AccountSettingsSecurityPage.stories';
+import { MfaDisabled, MfaEnabled } from './AccountSettingsSecurityPage.stories';
 
 const getToggleByText = (text: string) => {
   return screen
@@ -19,18 +15,14 @@ const getToggleByText = (text: string) => {
 };
 
 describe('<AccountSettingsSecurityPage />', () => {
-  it('Should render enabled', async () => {
-    const { listSetups } = MfaEnabled.story.setupMocks(sandbox);
+  it('As a user I should be able to disable TOTP MFA setup', async () => {
+    const { disable } = MfaEnabled.story.setupMocks(sandbox);
     render(<MfaEnabled />);
 
     const authenticatorAppToggle = getToggleByText(
       'Authy / Google Authenticator'
     );
     const textMessageToggle = getToggleByText('Text message');
-
-    await waitFor(() => {
-      sandbox.assert.calledWithExactly(listSetups);
-    });
 
     expect(authenticatorAppToggle).toHaveAttribute('aria-checked', 'true');
     expect(textMessageToggle).toHaveAttribute('aria-checked', 'true');
@@ -40,20 +32,24 @@ describe('<AccountSettingsSecurityPage />', () => {
     await screen.findByText(
       'Are you sure you want to disable multi-factor authentication method?'
     );
+
+    userEvent.click(screen.getByText('Disable'));
+
+    await screen.findByText(
+      'Authy / Google Authenticator multi-factor authentication disabled'
+    );
+    sandbox.assert.calledWithExactly(disable, 'totp');
+    expect(authenticatorAppToggle).toHaveAttribute('aria-checked', 'false');
   });
 
-  it('Should render disabled', async () => {
-    const { listSetups } = MfaDisabled.story.setupMocks(sandbox);
-    render(<MfaDisabled />);
+  it('As a user I should be able to enable TOTP MFA setup', async () => {
+    MfaDisabled.story.setupMocks(sandbox);
+    const { container } = render(<MfaDisabled />);
 
     const authenticatorAppCheckbox = getToggleByText(
       'Authy / Google Authenticator'
     );
     const textMessageCheckbox = getToggleByText('Text message');
-
-    await waitFor(() => {
-      sandbox.assert.calledWithExactly(listSetups);
-    });
 
     expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
     expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
@@ -61,25 +57,18 @@ describe('<AccountSettingsSecurityPage />', () => {
     userEvent.click(authenticatorAppCheckbox);
 
     await screen.findByText('Scan QR code to start');
-  });
 
-  it('Should render disabled on error', async () => {
-    const { listSetups } = WithError.story.setupMocks(sandbox);
-    render(<WithError />);
-
-    const authenticatorAppToggle = getToggleByText(
-      'Authy / Google Authenticator'
+    await userEvent.type(
+      container.querySelector(
+        'input[aria-label="Please enter your pin code"]'
+      ) as HTMLInputElement,
+      '123456'
     );
-    const textMessageToggle = getToggleByText('Text message');
+    userEvent.click(screen.getByText('Submit'));
 
-    await waitFor(() => {
-      sandbox.assert.calledWithExactly(listSetups);
-    });
-
-    expect(authenticatorAppToggle).toHaveAttribute('disabled');
-    expect(authenticatorAppToggle).toHaveAttribute('aria-checked', 'false');
-
-    expect(textMessageToggle).toHaveAttribute('disabled');
-    expect(textMessageToggle).toHaveAttribute('aria-checked', 'false');
+    await screen.findByText(
+      'Authy / Google Authenticator multi-factor authentication enabled'
+    );
+    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'true');
   });
 });

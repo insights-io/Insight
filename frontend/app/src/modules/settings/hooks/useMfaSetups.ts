@@ -1,5 +1,5 @@
-// TODO: custom useMutation hook throwing by defualt
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { mapMfaSetup } from '@rebrowse/sdk';
 import type {
   APIErrorDataResponse,
   MfaMethod,
@@ -11,27 +11,23 @@ import { useMutation } from 'react-query';
 import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['tfa', 'setup', 'list'];
-const EMPTY_LIST: MfaSetupDTO[] = [];
 
-export const useMfaSetups = (initialData?: MfaSetupDTO[]) => {
+export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   const queryCache = useQueryCache();
   const { data, error } = useQuery(cacheKey, () => AuthApi.mfa.setup.list(), {
-    initialData: () => initialData,
+    initialData,
   });
 
-  const loading = useMemo(() => data === undefined, [data]);
-  const setups = useMemo(() => data || EMPTY_LIST, [data]);
+  const setups = useMemo(() => data!.map(mapMfaSetup), [data]);
 
   const [disableMethod] = useMutation(
     (method: MfaMethod) => AuthApi.mfa.setup.disable(method),
     {
+      throwOnError: true,
       onSuccess: (_, method) => {
         queryCache.setQueryData<MfaSetupDTO[] | undefined>(cacheKey, (prev) => {
           return prev?.filter((setup) => setup.method !== method);
         });
-      },
-      onError: (error) => {
-        throw error;
       },
     }
   );
@@ -40,13 +36,11 @@ export const useMfaSetups = (initialData?: MfaSetupDTO[]) => {
     ({ method, code }: { method: MfaMethod; code: number }) =>
       AuthApi.mfa.setup.complete(method, code),
     {
+      throwOnError: true,
       onSuccess: (setup: MfaSetupDTO) => {
         queryCache.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
           return [...(prev || []), setup];
         });
-      },
-      onError: (error) => {
-        throw error;
       },
     }
   );
@@ -79,7 +73,6 @@ export const useMfaSetups = (initialData?: MfaSetupDTO[]) => {
   return {
     data: setups,
     error: error as APIErrorDataResponse,
-    loading,
     disableTotpMethod,
     disableSmsMethod,
     totpMethodEnabled,

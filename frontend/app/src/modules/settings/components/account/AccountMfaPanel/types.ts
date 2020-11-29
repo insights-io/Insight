@@ -2,6 +2,7 @@ import type { MfaSetupDTO, User } from '@rebrowse/types';
 
 export type Props = {
   user: User;
+  mfaSetups: MfaSetupDTO[];
 };
 
 export type AccountMfaModalProps = {

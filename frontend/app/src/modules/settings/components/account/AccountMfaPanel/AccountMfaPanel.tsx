@@ -7,17 +7,19 @@ import { TotpMfaModal, TOTP_LABEL } from './TotpMfaModal';
 import { SmsMfaModal, SMS_LABEL } from './SmsMfaModal';
 import type { Props } from './types';
 
-export const AccountMfaPanel = ({ user }: Props) => {
+export const AccountMfaPanel = ({
+  user,
+  mfaSetups: initialMfaSetups,
+}: Props) => {
   const {
     totpMethodEnabled,
     smsMethodEnabled,
-    loading,
     error,
     disableTotpMethod,
     completeTotpSetup,
     disableSmsMethod,
     completeSmsSetup,
-  } = useMfaSetups();
+  } = useMfaSetups(initialMfaSetups);
 
   return (
     <Panel>
@@ -40,7 +42,7 @@ export const AccountMfaPanel = ({ user }: Props) => {
               {(open) => (
                 <Toggle
                   onChange={open}
-                  disabled={Boolean(loading || error)}
+                  disabled={Boolean(error)}
                   checked={totpMethodEnabled}
                 />
               )}
@@ -69,7 +71,7 @@ export const AccountMfaPanel = ({ user }: Props) => {
                 <Toggle
                   checked={smsMethodEnabled}
                   onChange={open}
-                  disabled={Boolean(loading || error)}
+                  disabled={Boolean(error)}
                 />
               )}
             </SmsMfaModal>
