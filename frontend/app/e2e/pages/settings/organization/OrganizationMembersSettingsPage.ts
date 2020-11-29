@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { queryByText, within } from '@testing-library/testcafe';
 
+import { EMAIL_PLACEHOLDER } from '../../../../src/modules/auth/validation/email';
 import { ORGANIZATION_SETTINGS_MEMBERS_PAGE } from '../../../../src/shared/constants/routes';
 
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';
@@ -13,7 +14,7 @@ class InviteNewMemberModal {
     'Invite new member'
   );
   public readonly emailInput = this.withinContainer.queryByPlaceholderText(
-    'Email'
+    EMAIL_PLACEHOLDER
   );
   public readonly inviteButton = this.withinContainer.queryByText('Invite');
   public readonly cancelButton = this.withinContainer.queryByText('Cancel');
