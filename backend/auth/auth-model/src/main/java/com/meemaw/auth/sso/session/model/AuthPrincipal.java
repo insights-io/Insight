@@ -22,4 +22,17 @@ public class AuthPrincipal {
   boolean isSsoSession() {
     return sessionId != null;
   }
+
+  public String getIdentifier() {
+    if (apiKey != null) {
+      return apiKey;
+    }
+    if (sessionId != null) {
+      return sessionId;
+    }
+    if (challengeId != null) {
+      return challengeId;
+    }
+    throw new IllegalStateException("Unauthorized");
+  }
 }

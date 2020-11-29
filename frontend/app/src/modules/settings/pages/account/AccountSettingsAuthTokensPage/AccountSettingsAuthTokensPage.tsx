@@ -6,8 +6,11 @@ import {
 } from 'shared/constants/routes';
 import { AccountSettingsPageLayout } from 'modules/settings/components/account/AccountSettingsPageLayout';
 import type { Path } from 'modules/settings/types';
-import { AuthTokenDTO, OrganizationDTO, UserDTO } from '@rebrowse/types';
-import { useAuthTokens } from 'modules/settings/hooks/useAuthTokens';
+import type { AuthTokenDTO, OrganizationDTO, UserDTO } from '@rebrowse/types';
+import {
+  useAuthTokenMutations,
+  useAuthTokens,
+} from 'modules/settings/hooks/useAuthTokens';
 import { Block } from 'baseui/block';
 import { Delete, Plus } from 'baseui/icon';
 import { Button } from '@rebrowse/elements';
@@ -21,7 +24,6 @@ import {
 } from 'baseui/table';
 import { StatefulTooltip } from 'baseui/tooltip';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
-import { AuthApi } from 'api';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import { SIZE } from 'baseui/button';
@@ -45,10 +47,10 @@ export const AccountSettingsAuthTokensPage = ({
 }: Props) => {
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
+  const { authTokens } = useAuthTokens(initialAuthTokens);
+  const { create, revoke } = useAuthTokenMutations();
   const [selectedAuthToken, setSelectedAuthToken] = useState<string>();
-  const { authTokens, removeAuthToken, addAuthToken } = useAuthTokens(
-    initialAuthTokens
-  );
+
   const [deletingAuthToken, setDeletingAuthToken] = useState(false);
   const [creatingAuthToken, setCreatingAuthToken] = useState(false);
 
@@ -57,10 +59,7 @@ export const AccountSettingsAuthTokensPage = ({
       return;
     }
     setCreatingAuthToken(true);
-    AuthApi.sso.token
-      .create()
-      .then(addAuthToken)
-      .finally(() => setCreatingAuthToken(false));
+    create().finally(() => setCreatingAuthToken(false));
   };
 
   const deleteAuthToken = useCallback(() => {
@@ -70,16 +69,10 @@ export const AccountSettingsAuthTokensPage = ({
 
     setDeletingAuthToken(true);
 
-    AuthApi.sso.token
-      .delete(selectedAuthToken)
-      .then(() => {
-        setSelectedAuthToken(undefined);
-        removeAuthToken(selectedAuthToken);
-      })
-      .finally(() => {
-        setDeletingAuthToken(false);
-      });
-  }, [selectedAuthToken, deletingAuthToken, removeAuthToken]);
+    revoke(selectedAuthToken)
+      .then(() => setSelectedAuthToken(undefined))
+      .finally(() => setDeletingAuthToken(false));
+  }, [selectedAuthToken, deletingAuthToken, revoke]);
 
   return (
     <AccountSettingsPageLayout

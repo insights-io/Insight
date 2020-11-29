@@ -126,7 +126,7 @@ public class UserResourceImpl implements UserResource {
         userId,
         phoneNumber);
 
-    String codeKey = MfaSmsProvider.verifyCodeKey(userId);
+    String codeKey = MfaSmsProvider.verifyCodeKey(principal);
     return userPhoneCodeService
         .sendVerificationCode(codeKey, phoneNumber)
         .thenApply(MfaChallengeCodeDetailsDTO::new)

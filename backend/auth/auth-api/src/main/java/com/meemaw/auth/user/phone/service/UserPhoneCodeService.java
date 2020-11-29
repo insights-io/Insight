@@ -3,6 +3,7 @@ package com.meemaw.auth.user.phone.service;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.phone.datasource.UserPhoneCodeDatasource;
 import com.meemaw.shared.SharedConstants;
+import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.sms.SmsMessage;
 import com.meemaw.shared.sms.SmsService;
 import java.security.SecureRandom;
@@ -33,7 +34,7 @@ public class UserPhoneCodeService {
         .thenApply(
             maybeCode -> {
               if (maybeCode.isEmpty()) {
-                return false;
+                throw Boom.notFound().message("Code expired").exception();
               }
 
               return maybeCode.get() == actualCode;
