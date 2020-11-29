@@ -6,6 +6,7 @@ import { Button, SIZE, SHAPE } from 'baseui/button';
 import { useStyletron } from 'baseui';
 import { StatefulTooltip } from 'baseui/tooltip';
 import { FaTerminal } from 'react-icons/fa';
+import { useIsOpen } from 'shared/hooks/useIsOpen';
 
 type Props = {
   sessionId: string;
@@ -18,7 +19,7 @@ const NetworkTab = dynamic(
 
 const DevTools = ({ sessionId }: Props) => {
   const [activeKey, setActiveKey] = useState<string | number>('0');
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, open, close } = useIsOpen();
   const [_css, theme] = useStyletron();
 
   const tabOverrides: TabOverrides<SharedProps> = {
@@ -45,7 +46,7 @@ const DevTools = ({ sessionId }: Props) => {
               top: theme.sizing.scale400,
               right: theme.sizing.scale400,
             }}
-            onClick={() => setIsOpen(true)}
+            onClick={open}
           >
             <FaTerminal id="devtools" />
           </Button>
@@ -55,7 +56,7 @@ const DevTools = ({ sessionId }: Props) => {
         isOpen={isOpen}
         autoFocus={false}
         renderAll={false}
-        onClose={() => setIsOpen(false)}
+        onClose={close}
         overrides={{
           Root: { style: { display: 'flex' } },
           DrawerBody: {

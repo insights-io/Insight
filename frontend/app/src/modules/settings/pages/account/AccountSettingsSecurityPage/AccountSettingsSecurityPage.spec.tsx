@@ -1,80 +1,74 @@
 import React from 'react';
 import { sandbox } from '@rebrowse/testing';
-import { BoundFunction, GetByText, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { render } from 'test/utils';
+import userEvent from '@testing-library/user-event';
 
-import {
-  TfaDisabled,
-  TfaEnabled,
-  WithError,
-} from './AccountSettingsSecurityPage.stories';
+import { MfaDisabled, MfaEnabled } from './AccountSettingsSecurityPage.stories';
 
-const getCheckboxByText = (
-  getByText: BoundFunction<GetByText>,
-  text: string
-) => {
-  return getByText(text).parentElement?.querySelector(
-    'input'
-  ) as HTMLInputElement;
+const getToggleByText = (text: string) => {
+  return screen
+    .getByText(text)
+    .parentElement?.parentElement?.querySelector(
+      'input[type="checkbox"]'
+    ) as HTMLInputElement;
 };
 
 describe('<AccountSettingsSecurityPage />', () => {
-  it('Should render enabled checkbox', async () => {
-    const { listSetups } = TfaEnabled.story.setupMocks(sandbox);
-    const { getByText } = render(<TfaEnabled />);
+  it('As a user I should be able to disable TOTP MFA setup', async () => {
+    const { disable } = MfaEnabled.story.setupMocks(sandbox);
+    render(<MfaEnabled />);
 
-    const authenticatorAppCheckbox = getCheckboxByText(
-      getByText,
+    const authenticatorAppToggle = getToggleByText(
       'Authy / Google Authenticator'
     );
-    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
+    const textMessageToggle = getToggleByText('Text message');
 
-    await waitFor(() => {
-      sandbox.assert.calledWithExactly(listSetups);
-    });
+    expect(authenticatorAppToggle).toHaveAttribute('aria-checked', 'true');
+    expect(textMessageToggle).toHaveAttribute('aria-checked', 'true');
 
+    userEvent.click(authenticatorAppToggle);
+
+    await screen.findByText(
+      'Are you sure you want to disable multi-factor authentication method?'
+    );
+
+    userEvent.click(screen.getByText('Disable'));
+
+    await screen.findByText(
+      'Authy / Google Authenticator multi-factor authentication disabled'
+    );
+    sandbox.assert.calledWithExactly(disable, 'totp');
+    expect(authenticatorAppToggle).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('As a user I should be able to enable TOTP MFA setup', async () => {
+    MfaDisabled.story.setupMocks(sandbox);
+    const { container } = render(<MfaDisabled />);
+
+    const authenticatorAppCheckbox = getToggleByText(
+      'Authy / Google Authenticator'
+    );
+    const textMessageCheckbox = getToggleByText('Text message');
+
+    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
+    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
+
+    userEvent.click(authenticatorAppCheckbox);
+
+    await screen.findByText('Scan QR code to start');
+
+    await userEvent.type(
+      container.querySelector(
+        'input[aria-label="Please enter your pin code"]'
+      ) as HTMLInputElement,
+      '123456'
+    );
+    userEvent.click(screen.getByText('Submit'));
+
+    await screen.findByText(
+      'Authy / Google Authenticator multi-factor authentication enabled'
+    );
     expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'true');
-    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
-  });
-
-  it('Should render checkbox disabled', async () => {
-    const { listSetups } = TfaDisabled.story.setupMocks(sandbox);
-    const { getByText } = render(<TfaDisabled />);
-
-    const authenticatorAppCheckbox = getCheckboxByText(
-      getByText,
-      'Authy / Google Authenticator'
-    );
-    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
-
-    await waitFor(() => {
-      sandbox.assert.calledWithExactly(listSetups);
-    });
-
-    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
-    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
-  });
-
-  it('Should render error and checkboxes disabled', async () => {
-    const { listSetups } = WithError.story.setupMocks(sandbox);
-    const { getByText, findByText } = render(<WithError />);
-
-    const authenticatorAppCheckbox = getCheckboxByText(
-      getByText,
-      'Authy / Google Authenticator'
-    );
-    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
-
-    await waitFor(() => {
-      sandbox.assert.calledWithExactly(listSetups);
-    });
-
-    await findByText('Internal Server Error');
-
-    expect(authenticatorAppCheckbox).toHaveAttribute('disabled');
-    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
-
-    expect(textMessageCheckbox).toHaveAttribute('disabled');
-    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
   });
 });

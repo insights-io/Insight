@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Modal, ModalBody, ModalHeader, SIZE } from 'baseui/modal';
 import { PhoneNumberVerifyForm } from 'modules/auth/components/PhoneNumberVerifyForm';
 import { AuthApi } from 'api';
 import { toaster } from 'baseui/toast';
 import type { UserDTO } from '@rebrowse/types';
+import { useIsOpen } from 'shared/hooks/useIsOpen';
 
 type Props = {
   setUser: (user: UserDTO) => void;
@@ -11,10 +12,7 @@ type Props = {
 };
 
 export const PhoneNumberVerifyModal = ({ setUser, children }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
+  const { isOpen, open, close } = useIsOpen();
 
   return (
     <>

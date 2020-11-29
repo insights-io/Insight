@@ -8,14 +8,14 @@ import { TotpMfaSetupForm } from 'modules/auth/components/TotpMfaSetupForm';
 import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { SmsMfaSetupForm } from 'modules/auth/components/SmsMfaSetupForm';
-import type { TfaMethod, UserDTO } from '@rebrowse/types';
+import type { MfaMethod, UserDTO } from '@rebrowse/types';
 
 type Props = {
   user: UserDTO;
 };
 
 export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
-  const [activeMethod, setActiveMethod] = useState<TfaMethod>('totp');
+  const [activeMethod, setActiveMethod] = useState<MfaMethod>('totp');
   const router = useRouter();
 
   const onCompleted = useCallback(() => {
@@ -38,19 +38,23 @@ export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
       <Tabs
         fill={FILL.fixed}
         activeKey={activeMethod}
-        onChange={(params) => setActiveMethod(params.activeKey as TfaMethod)}
+        onChange={(params) => setActiveMethod(params.activeKey as MfaMethod)}
         activateOnFocus
       >
         <Tab title="Authy" key="totp">
           <TotpMfaSetupForm
-            completeSetup={AuthApi.tfa.setup.completeEnforced}
+            completeSetup={(code) =>
+              AuthApi.mfa.setup.completeEnforced('totp', code)
+            }
             onCompleted={onCompleted}
           />
         </Tab>
         <Tab title="Text message" key="sms">
           <SmsMfaSetupForm
             phoneNumber={user.phoneNumber}
-            completeSetup={AuthApi.tfa.setup.completeEnforced}
+            completeSetup={(code) =>
+              AuthApi.mfa.setup.completeEnforced('sms', code)
+            }
             onCompleted={onCompleted}
           />
         </Tab>

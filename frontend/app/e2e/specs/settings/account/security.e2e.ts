@@ -7,14 +7,16 @@ import {
   SignUpPage,
   LoginPage,
 } from '../../../pages';
+import Login from '../../../pages/Login';
 
-fixture('/settings/account').page(AccountSettingsSecurityPage.path);
+fixture('/settings/account/security').page(AccountSettingsSecurityPage.path);
 
-test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) => {
+test('As a user I want to change my password and be able to login with it', async (t) => {
   const {
     password: currentPassword,
     email,
   } = SignUpPage.generateRandomCredentials();
+
   await SignUpPage.signUpAndLogin(t, { email, password: currentPassword });
   await t
     .click(Sidebar.banner.trigger)
@@ -61,18 +63,18 @@ test('[CHANGE-PASSWORD]: User should be able to change its password', async (t) 
     .ok('Should display notification that password was changed');
 
   await Sidebar.signOut(t);
-  await LoginPage.login(t, { email, password: newPassword })
+
+  // ERROR: Cannot login with old password
+  await LoginPage.loginActions(t, { email, password: currentPassword })
+    .expect(Login.errorMessages.invalidCredentials.visible)
+    .ok('Should not be able to login with old password');
+
+  await t
+    .selectText(LoginPage.passwordInput)
+    .pressKey('delete')
+    .typeText(LoginPage.passwordInput, newPassword)
+    .click(LoginPage.signInButton)
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security);
-
-  // SUCCESS: Change password back to initial one
-  await AccountSettingsSecurityPage.changePassword
-    .changePassword(t, {
-      currentPassword: newPassword,
-      newPassword: currentPassword,
-      newPasswordConfirm: currentPassword,
-    })
-    .expect(passwordChangedMessage.visible)
-    .ok('Should display notification that password was changed');
 });

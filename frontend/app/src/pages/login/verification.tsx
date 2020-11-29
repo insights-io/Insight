@@ -7,12 +7,12 @@ import nextCookie from 'next-cookies';
 import { VerificationPage } from 'modules/auth/pages/VerificationPage';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import { AuthApi } from 'api/auth';
-import type { APIErrorDataResponse, TfaMethod, UserDTO } from '@rebrowse/types';
+import type { APIErrorDataResponse, MfaMethod, UserDTO } from '@rebrowse/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SetupMultiFactorAuthenticationPage } from 'modules/auth/pages/SetupMultiFactorAuthenticationPage';
 
 type Props =
-  | { methods: TfaMethod[]; user?: undefined }
+  | { methods: MfaMethod[]; user?: undefined }
   | { methods?: undefined; user: UserDTO };
 
 const Verification = (props: Props) => {
@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     }
 
     try {
-      const methods = await AuthApi.tfa.challenge.get(ChallengeId, {
+      const methods = await AuthApi.mfa.challenge.get(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });
@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         return { props: { methods } };
       }
 
-      const user = await AuthApi.tfa.challenge.retrieveUser(ChallengeId, {
+      const user = await AuthApi.mfa.challenge.retrieveUser(ChallengeId, {
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       });

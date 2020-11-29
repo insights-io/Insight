@@ -14,7 +14,7 @@ import {
 
 fixture('/login/verification').page(VerificationPage.path);
 
-test('[TFA](TOTP): User should be able to complete full TFA flow after password reset', async (t) => {
+test('As a user I want to be challenged by TOTP MFA on password reset', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
@@ -25,27 +25,22 @@ test('[TFA](TOTP): User should be able to complete full TFA flow after password 
     .expect(getLocation())
     .eql(AccountSettingsDetailsPage.path)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
     .typeText(
-      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.codeInput,
+      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.codeInput,
       '111111'
     )
-    .click(AccountSettingsSecurityPage.tfa.authenticatorSetupModal.submitButton)
+    .click(AccountSettingsSecurityPage.mfa.authenticatorSetupModal.submitButton)
     .expect(
-      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.invalidCodeError
+      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.invalidCodeError
         .visible
     )
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(
-    t
-  );
-
+  const secret = await AccountSettingsSecurityPage.mfa.setupAuthenticatorMfa(t);
   await t
-    .expect(
-      AccountSettingsSecurityPage.tfa.authenticatorTfaEnabledToast.visible
-    )
-    .ok('TFA enabled message')
+    .expect(AccountSettingsSecurityPage.mfa.authenticatorEnabledToast.visible)
+    .ok('TOTP MFA enabled message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut)
     .click(LoginPage.forgotPasswordButton)
@@ -67,24 +62,22 @@ test('[TFA](TOTP): User should be able to complete full TFA flow after password 
     .expect(getTitle())
     .eql('Verification')
     .expect(VerificationPage.tabs.totp.title.visible)
-    .ok('TOTP TFA tab visible')
+    .ok('TOTP MFA tab visible')
     .expect(VerificationPage.tabs.sms.title.visible)
-    .notOk('SMS TFA tab visible');
+    .notOk('SMS MFA tab visible');
 
-  await VerificationPage.completeTotpChallenge(t, tfaSecret);
+  await VerificationPage.completeTotpChallenge(t, secret);
   await t
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
-    .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
-    .expect(
-      AccountSettingsSecurityPage.tfa.authenticatorTfaDisabledToast.visible
-    )
-    .ok('Should display message that TOTP TFA is disabled');
+    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
+    .expect(AccountSettingsSecurityPage.mfa.authenticatorDisabledToast.visible)
+    .ok('Should display message that TOTP MFA is disabled');
 });
 
-test('[TFA](TOTP): Should be able to complete full TFA flow', async (t) => {
+test('As a user I want to be challenged by TOTP MFA on login', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { email, password } = SignUpPage.generateRandomCredentials();
 
@@ -93,26 +86,22 @@ test('[TFA](TOTP): Should be able to complete full TFA flow', async (t) => {
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
     .typeText(
-      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.codeInput,
+      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.codeInput,
       '111111'
     )
-    .click(AccountSettingsSecurityPage.tfa.authenticatorSetupModal.submitButton)
+    .click(AccountSettingsSecurityPage.mfa.authenticatorSetupModal.submitButton)
     .expect(
-      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.invalidCodeError
+      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.invalidCodeError
         .visible
     )
     .ok('Should display invalid code error');
 
-  const tfaSecret = await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(
-    t
-  );
+  const secret = await AccountSettingsSecurityPage.mfa.setupAuthenticatorMfa(t);
   await t
-    .expect(
-      AccountSettingsSecurityPage.tfa.authenticatorTfaEnabledToast.visible
-    )
-    .ok('TFA enabled message')
+    .expect(AccountSettingsSecurityPage.mfa.authenticatorEnabledToast.visible)
+    .ok('TOTP MFA enabled message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut);
 
@@ -122,24 +111,22 @@ test('[TFA](TOTP): Should be able to complete full TFA flow', async (t) => {
     .expect(getLocation())
     .eql(`${VerificationPage.path}?redirect=%2F`)
     .expect(VerificationPage.tabs.totp.title.visible)
-    .ok('TOTP TFA tab visible')
+    .ok('TOTP MFA tab visible')
     .expect(VerificationPage.tabs.sms.title.visible)
-    .notOk('SMS TFA tab visible');
+    .notOk('SMS MFA tab visible');
 
-  await VerificationPage.completeTotpChallenge(t, tfaSecret);
+  await VerificationPage.completeTotpChallenge(t, secret);
   await t
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox)
-    .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
-    .expect(
-      AccountSettingsSecurityPage.tfa.authenticatorTfaDisabledToast.visible
-    )
-    .ok('Should display message that TOTP TFA is disabled');
+    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
+    .expect(AccountSettingsSecurityPage.mfa.authenticatorDisabledToast.visible)
+    .ok('Should display message that TOTP MFA is disabled');
 });
 
-test('[TFA](SMS): User should be able to complete full TFA flow after password reset', async (t) => {
+test('As a user I want to be challenged by SMS MFA on password reset', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
@@ -153,35 +140,24 @@ test('[TFA](SMS): User should be able to complete full TFA flow after password r
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .hover(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
-    .expect(
-      AccountSettingsSecurityPage.tfa.textMessageDisabledTooltipText.visible
-    )
-    .ok('Should be disabled')
-    .click(AccountSettingsSecurityPage.sidebar.details);
-
-  await AccountSettingsDetailsPage.verifyCurrentPhoneNumber(t);
-
-  await t
-    .click(AccountSettingsSecurityPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox)
     .typeText(
-      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.codeInput,
+      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.codeInput,
       '111111'
     )
-    .click(AccountSettingsSecurityPage.tfa.authenticatorSetupModal.submitButton)
+    .click(AccountSettingsSecurityPage.mfa.authenticatorSetupModal.submitButton)
     .expect(
-      AccountSettingsSecurityPage.tfa.authenticatorSetupModal.invalidCodeError
+      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.invalidCodeError
         .visible
     )
     .ok('Should display invalid code error');
 
-  await AccountSettingsSecurityPage.tfa.setupTextMessageTFA(t);
+  await AccountSettingsSecurityPage.mfa.setupTextMessageMfa(t);
   await t
     .expect(
-      AccountSettingsSecurityPage.tfa.textMessageEnabledToastMessage.visible
+      AccountSettingsSecurityPage.mfa.textMessageEnabledToastMessage.visible
     )
-    .ok('TFA enabled message')
+    .ok('SMS MFA enabled message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut)
     .click(LoginPage.forgotPasswordButton)
@@ -201,24 +177,24 @@ test('[TFA](SMS): User should be able to complete full TFA flow after password r
     .expect(getLocation())
     .eql(`${VerificationPage.path}?redirect=%2F`)
     .expect(VerificationPage.tabs.sms.title.visible)
-    .ok('SMS TFA tab visible')
+    .ok('SMS MFA tab visible')
     .expect(VerificationPage.tabs.totp.title.visible)
-    .notOk('TOTP TFA tab not visible');
+    .notOk('TOTP MFA tab not visible');
 
   await VerificationPage.completeSmsChallenge(t);
   await t
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.tfa.textMessageCheckbox)
-    .click(AccountSettingsSecurityPage.tfa.disableModal.confirmButton)
+    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
     .expect(
-      AccountSettingsSecurityPage.tfa.textMessageDisabledToastMessage.visible
+      AccountSettingsSecurityPage.mfa.textMessageDisabledToastMessage.visible
     )
-    .ok('Should display message that SMS TFA is disabled');
+    .ok('Should display message that SMS MFA is disabled');
 });
 
-test('[TFA](SMS + TOTP): User should be able to complete full TFA flow', async (t) => {
+test('As a user I want to be challenged by TOTP & SMS MFA on login', async (t) => {
   await t.expect(getLocation()).eql(`${LoginPage.path}?redirect=%2F`);
   const { password, email } = SignUpPage.generateRandomCredentials();
 
@@ -235,14 +211,12 @@ test('[TFA](SMS + TOTP): User should be able to complete full TFA flow', async (
   await AccountSettingsDetailsPage.verifyCurrentPhoneNumber(t);
   await t
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.tfa.textMessageCheckbox);
+    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox);
 
-  await AccountSettingsSecurityPage.tfa.setupTextMessageTFA(t);
+  await AccountSettingsSecurityPage.mfa.setupTextMessageMfa(t);
 
-  await t.click(AccountSettingsSecurityPage.tfa.authenticatorTfaCheckbox);
-  const tfaSecret = await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(
-    t
-  );
+  await t.click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox);
+  const secret = await AccountSettingsSecurityPage.mfa.setupAuthenticatorMfa(t);
   await Sidebar.signOut(t);
 
   await LoginPage.login(t, { email, password })
@@ -261,5 +235,20 @@ test('[TFA](SMS + TOTP): User should be able to complete full TFA flow', async (
 
   // TOTP verification
   await t.click(VerificationPage.tabs.totp.title);
-  await VerificationPage.completeTotpChallenge(t, tfaSecret);
+  await VerificationPage.completeTotpChallenge(t, secret);
+
+  await t
+    .click(Sidebar.banner.trigger)
+    .click(Sidebar.banner.menu.account.settings)
+    .click(AccountSettingsDetailsPage.sidebar.security)
+    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
+    .expect(AccountSettingsSecurityPage.mfa.authenticatorDisabledToast.visible)
+    .ok('TOTP MFA disabled')
+    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
+    .expect(
+      AccountSettingsSecurityPage.mfa.textMessageDisabledToastMessage.visible
+    )
+    .ok('SMS MFA disabled');
 });

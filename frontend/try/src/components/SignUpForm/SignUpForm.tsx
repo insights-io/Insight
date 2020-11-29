@@ -16,6 +16,7 @@ import {
   Input,
   Label,
   PasswordInput,
+  EmailInput,
 } from '@rebrowse/elements';
 
 type SignUpFormValues = SignUpRequestDTO;
@@ -116,9 +117,7 @@ export const SignUpForm = ({
         }
         error={errors.email?.message}
       >
-        <Input
-          name="email"
-          type="email"
+        <EmailInput
           placeholder="john.doe@gmail.com"
           required
           inputRef={register({

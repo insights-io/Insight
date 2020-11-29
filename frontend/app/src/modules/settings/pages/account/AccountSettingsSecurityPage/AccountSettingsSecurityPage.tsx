@@ -1,14 +1,14 @@
 import React from 'react';
 import { Block } from 'baseui/block';
 import { ChangePassword } from 'modules/settings/components/account/ChangePassword';
-import { TwoFactorAuthentication } from 'modules/settings/components/account/TwoFactorAuthentication';
+import { AccountMfaPanel } from 'modules/settings/components/account/AccountMfaPanel';
 import { AccountSettingsPageLayout } from 'modules/settings/components/account/AccountSettingsPageLayout';
 import {
   SETTINGS_PATH_PART,
   ACCOUNT_SETTINGS_SECURITY_PAGE_PART,
   ACCOUNT_SETTINGS_PATH_PART,
 } from 'shared/constants/routes';
-import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
+import type { MfaSetupDTO, OrganizationDTO, UserDTO } from '@rebrowse/types';
 import type { Path } from 'modules/settings/types';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
@@ -22,11 +22,13 @@ const PATH: Path = [
 type Props = {
   user: UserDTO;
   organization: OrganizationDTO;
+  mfaSetups: MfaSetupDTO[];
 };
 
 export const AccountSettingsSecurityPage = ({
   user: initialUser,
   organization: initialOrganization,
+  mfaSetups: initialMfaSetups,
 }: Props) => {
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
@@ -38,7 +40,7 @@ export const AccountSettingsSecurityPage = ({
       path={PATH}
       header="Security"
     >
-      <TwoFactorAuthentication user={user} />
+      <AccountMfaPanel user={user} mfaSetups={initialMfaSetups} />
       <Block marginTop="24px">
         <ChangePassword />
       </Block>

@@ -56,4 +56,5 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     requestSpan.finish();
   }
 };
+
 export default AccountSettingsAuthTokens;

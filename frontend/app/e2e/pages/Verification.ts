@@ -1,4 +1,4 @@
-import { queryByText } from '@testing-library/testcafe';
+import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { totp as _totp } from 'speakeasy';
 
@@ -13,7 +13,7 @@ class Verification extends AbstractPage {
     'To protect your account, please complete the following verification.'
   );
 
-  public readonly tfaEnforcedMessage = queryByText(
+  public readonly mfaEnforcedMessage = queryByText(
     'Your organization has enforced multi-factor authentication for all members.'
   );
 
@@ -29,6 +29,7 @@ class Verification extends AbstractPage {
       title: queryByText('Text message'),
       sendCode: queryByText('Send Code'),
       sendCodeSuccessMessage: queryByText('Code sent'),
+      phoneNumberInput: queryByPlaceholderText('51111222'),
     },
   };
 
@@ -37,7 +38,7 @@ class Verification extends AbstractPage {
     return _totp({ secret, encoding: 'base32' });
   };
 
-  private tfaLogin = async (t: TestController, codeProvider: () => string) => {
+  private mfaLogin = async (t: TestController, codeProvider: () => string) => {
     let isValid = false;
     let tryCount = 0;
     while (!isValid) {
@@ -47,7 +48,7 @@ class Verification extends AbstractPage {
       isValid = !(await this.invalidCodeError.visible);
       tryCount++;
       if (tryCount > 10) {
-        throw new Error('TFA Login failed after 10 attempts');
+        throw new Error('MFA Login failed after 10 attempts');
       }
     }
     return t
@@ -56,7 +57,7 @@ class Verification extends AbstractPage {
   };
 
   public completeTotpChallenge = async (t: TestController, secret: string) => {
-    return this.tfaLogin(t, () => this.totp(secret));
+    return this.mfaLogin(t, () => this.totp(secret));
   };
 
   public completeSmsChallenge = async (t: TestController) => {
@@ -67,7 +68,7 @@ class Verification extends AbstractPage {
 
     const smsPattern = /.*\[Rebrowse\] Verification code: (.*).*$/;
     const verificationCode = findPatternInDockerLogs(smsPattern);
-    return this.tfaLogin(t, () => verificationCode);
+    return this.mfaLogin(t, () => verificationCode);
   };
 }
 

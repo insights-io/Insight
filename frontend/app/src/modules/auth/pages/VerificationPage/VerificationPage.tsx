@@ -10,14 +10,14 @@ import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { TotpMfaInputMethod } from 'modules/auth/components/TotpMfaInputMethod';
 import { SmsMfaInputMethod } from 'modules/auth/components/SmsMfaInputMethod';
-import type { TfaMethod } from '@rebrowse/types';
+import type { MfaMethod } from '@rebrowse/types';
 import { Button } from '@rebrowse/elements';
 
 type Props = {
-  methods: TfaMethod[];
+  methods: MfaMethod[];
 };
 
-const TFA_METHOD_TO_TITLE_MAPPING = {
+const METHOD_TO_TITLE_MAPPING = {
   sms: {
     title: 'Text message',
     component: SmsMfaInputMethod,
@@ -43,13 +43,13 @@ export const VerificationPage = ({ methods }: Props) => {
     apiError,
   } = useCodeInput({
     submitAction: (data) => {
-      return AuthApi.tfa.challenge
+      return AuthApi.mfa.challenge
         .complete(activeMethod, data)
         .then((_) => router.replace(relativeRedirect));
     },
     handleError: (errorDTO, setError) => {
       if (
-        errorDTO.error.message === 'TFA challenge session expired' ||
+        errorDTO.error.message === 'Challenge session expired' ||
         errorDTO.error?.errors?.challengeId === 'Required'
       ) {
         router.replace(
@@ -85,23 +85,24 @@ export const VerificationPage = ({ methods }: Props) => {
             <Tabs
               activeKey={activeMethod}
               onChange={(params) =>
-                setActiveMethod(params.activeKey as TfaMethod)
+                setActiveMethod(params.activeKey as MfaMethod)
               }
               activateOnFocus
               fill={FILL.fixed}
             >
               {methods.map((method) => {
                 const {
-                  component: TfaInputMethodComponent,
+                  component: MfaInputComponent,
                   title: tabTitle,
-                } = TFA_METHOD_TO_TITLE_MAPPING[method];
+                } = METHOD_TO_TITLE_MAPPING[method];
+
                 return (
                   <Tab title={tabTitle} key={method}>
-                    <TfaInputMethodComponent
+                    <MfaInputComponent
                       error={codeError}
                       handleChange={handleChange}
                       code={code}
-                      sendCode={AuthApi.tfa.challenge.sensSmsChallengeCode}
+                      sendCode={AuthApi.mfa.challenge.sensSmsChallengeCode}
                     />
                   </Tab>
                 );

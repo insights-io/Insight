@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Button, SIZE, SHAPE } from 'baseui/button';
+import { SIZE, SHAPE } from 'baseui/button';
 import { Filter } from 'baseui/icon';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
-import { createBorderRadius } from 'shared/styles/input';
-import { Flex } from '@rebrowse/elements';
+import { Flex, Button, expandBorderRadius } from '@rebrowse/elements';
 
 import DateSearch from './DateSearch';
 import SessionFilters from './SessionFilters';
@@ -31,7 +30,7 @@ export const SessionSearch = ({
     <Block
       backgroundColor={theme.colors.white}
       padding={theme.sizing.scale400}
-      $style={createBorderRadius(theme)}
+      $style={expandBorderRadius(theme.sizing.scale100)}
     >
       <Flex>
         <DateSearch theme={theme} onDateRangeChange={onDateRangeChange} />

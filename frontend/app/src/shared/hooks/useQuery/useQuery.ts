@@ -1,1 +1,1 @@
-export { useQuery, useQueryCache, QueryCache } from 'react-query';
+export { useQuery, useQueryCache, useMutation, QueryCache } from 'react-query';
