@@ -6,7 +6,7 @@ import {
 } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import type { ResponsePromise } from 'ky';
-import { TFA_METHODS } from 'test/data';
+import { MFA_METHODS } from 'test/data';
 import type { Meta } from '@storybook/react';
 
 import { VerificationPage } from './VerificationPage';
@@ -18,13 +18,13 @@ export default {
 } as Meta;
 
 export const Base = () => {
-  return <VerificationPage methods={TFA_METHODS} />;
+  return <VerificationPage methods={MFA_METHODS} />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa.challenge, 'complete')
+        .stub(AuthApi.mfa.challenge, 'complete')
         .resolves({} as Response),
     };
   },
@@ -41,13 +41,13 @@ export const WithSmsOnly = () => {
 WithSmsOnly.story = Base.story;
 
 export const WithMissingChallengeIdError = () => {
-  return <VerificationPage methods={TFA_METHODS} />;
+  return <VerificationPage methods={MFA_METHODS} />;
 };
 WithMissingChallengeIdError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa.challenge, 'complete')
+        .stub(AuthApi.mfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,
@@ -67,18 +67,18 @@ WithMissingChallengeIdError.story = configureStory({
 });
 
 export const WithExpiredChallengeError = () => {
-  return <VerificationPage methods={TFA_METHODS} />;
+  return <VerificationPage methods={MFA_METHODS} />;
 };
 WithExpiredChallengeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa.challenge, 'complete')
+        .stub(AuthApi.mfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,
             reason: 'Bad Request',
-            message: 'TFA challenge session expired',
+            message: 'Challenge session expired',
           });
 
           return new Promise((_resolve, reject) => {
@@ -90,13 +90,13 @@ WithExpiredChallengeError.story = configureStory({
 });
 
 export const WithInvalidCodeError = () => {
-  return <VerificationPage methods={TFA_METHODS} />;
+  return <VerificationPage methods={MFA_METHODS} />;
 };
 WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.tfa.challenge, 'complete')
+        .stub(AuthApi.mfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,

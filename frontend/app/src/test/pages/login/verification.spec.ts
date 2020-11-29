@@ -9,7 +9,7 @@ describe('pages/login/verification', () => {
   it('Injects correct server side data when existing MFA methods', async () => {
     sandbox.stub(document, 'cookie').value('ChallengeId=123');
     const getChallengeStub = sandbox
-      .stub(AuthApi.tfa.challenge, 'get')
+      .stub(AuthApi.mfa.challenge, 'get')
       .resolves(['totp']);
 
     const { req, res, writeHead } = mockServerSideRequest();
@@ -31,11 +31,11 @@ describe('pages/login/verification', () => {
   it('Injects correct server side data when no existing MFA methods', async () => {
     sandbox.stub(document, 'cookie').value('ChallengeId=123');
     const getChallengeStub = sandbox
-      .stub(AuthApi.tfa.challenge, 'get')
+      .stub(AuthApi.mfa.challenge, 'get')
       .resolves([]);
 
     const retrieveUserStub = sandbox
-      .stub(AuthApi.tfa.challenge, 'retrieveUser')
+      .stub(AuthApi.mfa.challenge, 'retrieveUser')
       .resolves(REBROWSE_ADMIN_DTO);
 
     const { req, res, writeHead } = mockServerSideRequest();
@@ -76,7 +76,7 @@ describe('pages/login/verification', () => {
 
   it('Should redirect to login when challenge not found server side', async () => {
     sandbox.stub(document, 'cookie').value('ChallengeId=123');
-    const getChallengeStub = sandbox.stub(AuthApi.tfa.challenge, 'get').rejects(
+    const getChallengeStub = sandbox.stub(AuthApi.mfa.challenge, 'get').rejects(
       mockApiError({
         message: 'Not Found',
         reason: 'Not Found',

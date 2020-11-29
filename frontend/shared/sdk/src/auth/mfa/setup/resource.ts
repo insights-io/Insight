@@ -1,23 +1,23 @@
 import ky from 'ky-universal';
 import type {
   DataResponse,
-  TfaMethod,
-  TfaSetupDTO,
+  MfaMethod,
+  MfaTotpSetupStartDTO,
+  MfaSetupStartDTO,
   CodeValidityDTO,
+  MfaSetupDTO,
 } from '@rebrowse/types';
 
 import { getData, withCredentials } from '../../../core/utils';
 import type { RequestOptions } from '../../../core/types';
 
-import type { TfaSetupStart, TfaTotpSetupStart } from './types';
-
-export const tfaSetupResource = (authApiBaseURL: string) => {
+export const mfaSetupResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
     return `${apiBaseURL}/v1/mfa/setup`;
   };
 
-  const tfaSetupStart = <T extends TfaSetupStart>(
-    method: TfaMethod,
+  const mfaSetupStart = <T extends MfaSetupStartDTO>(
+    method: MfaMethod,
     { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
   ) => {
     return ky
@@ -28,8 +28,8 @@ export const tfaSetupResource = (authApiBaseURL: string) => {
       .json<DataResponse<T>>();
   };
 
-  const tfaChallengeComplete = (
-    method: TfaMethod,
+  const mfaChallengeComplete = (
+    method: MfaMethod,
     code: number,
     { baseURL = authApiBaseURL, ...rest }: RequestOptions = {},
     path = ''
@@ -39,30 +39,30 @@ export const tfaSetupResource = (authApiBaseURL: string) => {
         `${resourceBaseURL(baseURL)}/${method}/complete${path}`,
         withCredentials({ json: { code }, ...rest })
       )
-      .json<DataResponse<TfaSetupDTO>>()
+      .json<DataResponse<MfaSetupDTO>>()
       .then(getData);
   };
 
   return {
     get: (
-      method: TfaMethod,
+      method: MfaMethod,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky
         .get(`${resourceBaseURL(baseURL)}/${method}`, withCredentials(rest))
-        .json<DataResponse<TfaSetupDTO>>()
+        .json<DataResponse<MfaSetupDTO>>()
         .then(getData);
     },
     list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
       return ky
         .get(resourceBaseURL(baseURL), withCredentials(rest))
-        .json<DataResponse<TfaSetupDTO[]>>()
+        .json<DataResponse<MfaSetupDTO[]>>()
         .then(getData);
     },
 
     sms: {
       start: (options?: RequestOptions) =>
-        tfaSetupStart<CodeValidityDTO>('sms', options),
+        mfaSetupStart<CodeValidityDTO>('sms', options),
       sendCode: ({
         baseURL = authApiBaseURL,
         ...rest
@@ -79,21 +79,21 @@ export const tfaSetupResource = (authApiBaseURL: string) => {
 
     totp: {
       start: (options?: RequestOptions) =>
-        tfaSetupStart<TfaTotpSetupStart>('totp', options),
+        mfaSetupStart<MfaTotpSetupStartDTO>('totp', options),
     },
 
-    complete: (method: TfaMethod, code: number, options?: RequestOptions) => {
-      return tfaChallengeComplete(method, code, options);
+    complete: (method: MfaMethod, code: number, options?: RequestOptions) => {
+      return mfaChallengeComplete(method, code, options);
     },
     completeEnforced: (
-      method: TfaMethod,
+      method: MfaMethod,
       code: number,
       options?: RequestOptions
     ) => {
-      return tfaChallengeComplete(method, code, options, '/enforced');
+      return mfaChallengeComplete(method, code, options, '/enforced');
     },
     disable: (
-      method: TfaMethod,
+      method: MfaMethod,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return ky.delete(

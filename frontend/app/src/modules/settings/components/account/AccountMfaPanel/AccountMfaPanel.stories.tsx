@@ -1,7 +1,11 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
-import { REBROWSE_ADMIN, TFA_SETUP_QR_IMAGE } from 'test/data';
+import {
+  REBROWSE_ADMIN,
+  TFA_SETUP_QR_IMAGE,
+  TOTP_MFA_SETUP_DTO,
+} from 'test/data';
 import { SWRConfig } from 'swr';
 import type { Meta } from '@storybook/react';
 
@@ -23,16 +27,19 @@ TfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       listSetups: sandbox
-        .stub(AuthApi.tfa.setup, 'list')
-        .resolves([{ createdAt: new Date().toUTCString(), method: 'totp' }]),
-      setupStart: sandbox.stub(AuthApi.tfa.setup.totp, 'start').resolves({
+        .stub(AuthApi.mfa.setup, 'list')
+        .resolves([TOTP_MFA_SETUP_DTO]),
+
+      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
+
       setupComplete: sandbox
-        .stub(AuthApi.tfa.setup, 'complete')
-        .resolves({ createdAt: new Date().toISOString(), method: 'totp' }),
+        .stub(AuthApi.mfa.setup, 'complete')
+        .resolves(TOTP_MFA_SETUP_DTO),
+
       setupSendSmsCode: sandbox
-        .stub(AuthApi.tfa.setup.sms, 'sendCode')
+        .stub(AuthApi.mfa.setup.sms, 'sendCode')
         .resolves({ validitySeconds: 60 }),
     };
   },

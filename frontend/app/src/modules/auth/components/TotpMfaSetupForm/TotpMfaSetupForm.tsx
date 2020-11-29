@@ -6,20 +6,23 @@ import { useCodeInput } from 'shared/hooks/useCodeInput';
 import type {
   APIError,
   APIErrorDataResponse,
-  TfaSetupDTO,
+  MfaSetupDTO,
 } from '@rebrowse/types';
 import FormError from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';
 
 export type Props = {
-  completeSetup?: (code: number) => Promise<TfaSetupDTO>;
-  onCompleted?: (tfaSetup: TfaSetupDTO) => void;
+  completeSetup?: (code: number) => Promise<MfaSetupDTO>;
+  onCompleted?: (value: MfaSetupDTO) => void;
 };
+
+const completeTotpSetup = (code: number) =>
+  AuthApi.mfa.setup.complete('totp', code);
 
 export const TotpMfaSetupForm = ({
   onCompleted,
-  completeSetup = (code: number) => AuthApi.tfa.setup.complete('totp', code),
+  completeSetup = completeTotpSetup,
 }: Props) => {
   const [setupStartError, setSetupStartError] = useState<APIError>();
   const [qrImage, setQrImage] = useState<string>();
@@ -42,7 +45,7 @@ export const TotpMfaSetupForm = ({
 
   useEffect(() => {
     if (!qrImage) {
-      AuthApi.tfa.setup.totp
+      AuthApi.mfa.setup.totp
         .start()
         .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
         .catch(async (error) => {

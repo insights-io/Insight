@@ -1,51 +1,55 @@
 import React from 'react';
 import { sandbox } from '@rebrowse/testing';
-import { BoundFunction, GetByText, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { render } from 'test/utils';
+import userEvent from '@testing-library/user-event';
 
 import {
-  TfaDisabled,
-  TfaEnabled,
+  MfaDisabled,
+  MfaEnabled,
   WithError,
 } from './AccountSettingsSecurityPage.stories';
 
-const getCheckboxByText = (
-  getByText: BoundFunction<GetByText>,
-  text: string
-) => {
-  return getByText(text).parentElement?.querySelector(
-    'input'
-  ) as HTMLInputElement;
+const getToggleByText = (text: string) => {
+  return screen
+    .getByText(text)
+    .parentElement?.parentElement?.querySelector(
+      'input[type="checkbox"]'
+    ) as HTMLInputElement;
 };
 
 describe('<AccountSettingsSecurityPage />', () => {
-  it('Should render enabled checkbox', async () => {
-    const { listSetups } = TfaEnabled.story.setupMocks(sandbox);
-    const { getByText } = render(<TfaEnabled />);
+  it('Should render enabled', async () => {
+    const { listSetups } = MfaEnabled.story.setupMocks(sandbox);
+    render(<MfaEnabled />);
 
-    const authenticatorAppCheckbox = getCheckboxByText(
-      getByText,
+    const authenticatorAppToggle = getToggleByText(
       'Authy / Google Authenticator'
     );
-    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
+    const textMessageToggle = getToggleByText('Text message');
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(listSetups);
     });
 
-    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'true');
-    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
+    expect(authenticatorAppToggle).toHaveAttribute('aria-checked', 'true');
+    expect(textMessageToggle).toHaveAttribute('aria-checked', 'true');
+
+    userEvent.click(authenticatorAppToggle);
+
+    await screen.findByText(
+      'Are you sure you want to disable multi-factor authentication method?'
+    );
   });
 
-  it('Should render checkbox disabled', async () => {
-    const { listSetups } = TfaDisabled.story.setupMocks(sandbox);
-    const { getByText } = render(<TfaDisabled />);
+  it('Should render disabled', async () => {
+    const { listSetups } = MfaDisabled.story.setupMocks(sandbox);
+    render(<MfaDisabled />);
 
-    const authenticatorAppCheckbox = getCheckboxByText(
-      getByText,
+    const authenticatorAppCheckbox = getToggleByText(
       'Authy / Google Authenticator'
     );
-    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
+    const textMessageCheckbox = getToggleByText('Text message');
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(listSetups);
@@ -53,28 +57,29 @@ describe('<AccountSettingsSecurityPage />', () => {
 
     expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
     expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
+
+    userEvent.click(authenticatorAppCheckbox);
+
+    await screen.findByText('Scan QR code to start');
   });
 
-  it('Should render error and checkboxes disabled', async () => {
+  it('Should render disabled on error', async () => {
     const { listSetups } = WithError.story.setupMocks(sandbox);
-    const { getByText, findByText } = render(<WithError />);
+    render(<WithError />);
 
-    const authenticatorAppCheckbox = getCheckboxByText(
-      getByText,
+    const authenticatorAppToggle = getToggleByText(
       'Authy / Google Authenticator'
     );
-    const textMessageCheckbox = getCheckboxByText(getByText, 'Text message');
+    const textMessageToggle = getToggleByText('Text message');
 
     await waitFor(() => {
       sandbox.assert.calledWithExactly(listSetups);
     });
 
-    await findByText('Internal Server Error');
+    expect(authenticatorAppToggle).toHaveAttribute('disabled');
+    expect(authenticatorAppToggle).toHaveAttribute('aria-checked', 'false');
 
-    expect(authenticatorAppCheckbox).toHaveAttribute('disabled');
-    expect(authenticatorAppCheckbox).toHaveAttribute('aria-checked', 'false');
-
-    expect(textMessageCheckbox).toHaveAttribute('disabled');
-    expect(textMessageCheckbox).toHaveAttribute('aria-checked', 'false');
+    expect(textMessageToggle).toHaveAttribute('disabled');
+    expect(textMessageToggle).toHaveAttribute('aria-checked', 'false');
   });
 });

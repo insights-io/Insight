@@ -6,6 +6,6 @@ export * from './password';
 export * from './signup';
 export * from './organization';
 export * from './sessions';
-export * from './tfa';
+export * from './mfa';
 export * from './billing';
 export * from './token';

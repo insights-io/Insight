@@ -1,7 +1,7 @@
 import ky from 'ky-universal';
 import type {
   DataResponse,
-  TfaMethod,
+  MfaMethod,
   CodeValidityDTO,
   UserDTO,
 } from '@rebrowse/types';
@@ -9,14 +9,14 @@ import type {
 import { getData, withCredentials } from '../../../core/utils';
 import type { RequestOptions } from '../../../core/types';
 
-export const tfaChallengeResource = (authApiBaseURL: string) => {
+export const mfaChallengeResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
     return `${apiBaseURL}/v1/mfa/challenge`;
   };
 
   return {
     complete: (
-      method: TfaMethod,
+      method: MfaMethod,
       code: number,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
@@ -53,7 +53,7 @@ export const tfaChallengeResource = (authApiBaseURL: string) => {
     ) => {
       return ky
         .get(`${resourceBaseURL(baseURL)}/${id}`, rest)
-        .json<DataResponse<TfaMethod[]>>()
+        .json<DataResponse<MfaMethod[]>>()
         .then(getData);
     },
   };

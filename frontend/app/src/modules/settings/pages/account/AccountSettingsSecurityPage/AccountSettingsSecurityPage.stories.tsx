@@ -7,11 +7,13 @@ import {
 import {
   REBROWSE_ADMIN_DTO,
   REBROWSE_ORGANIZATION_DTO,
+  SMS_MFA_SETUP_DTO,
   TFA_SETUP_QR_IMAGE,
+  TOTP_MFA_SETUP_DTO,
 } from 'test/data';
-import { SWRConfig } from 'swr';
 import { AuthApi } from 'api';
 import type { Meta } from '@storybook/react';
+import type { ResponsePromise } from 'ky';
 
 import { AccountSettingsSecurityPage } from './AccountSettingsSecurityPage';
 
@@ -21,73 +23,72 @@ export default {
   decorators: [fullHeightDecorator],
 } as Meta;
 
-export const TfaEnabled = () => {
+export const MfaEnabled = () => {
   return (
-    <SWRConfig value={{ dedupingInterval: 0 }}>
-      <AccountSettingsSecurityPage
-        user={REBROWSE_ADMIN_DTO}
-        organization={REBROWSE_ORGANIZATION_DTO}
-      />
-    </SWRConfig>
+    <AccountSettingsSecurityPage
+      user={REBROWSE_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
+    />
   );
 };
-TfaEnabled.story = configureStory({
+MfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
-    return {
-      listSetups: sandbox
-        .stub(AuthApi.tfa.setup, 'list')
-        .resolves([{ createdAt: new Date().toUTCString(), method: 'totp' }]),
+    let list = [TOTP_MFA_SETUP_DTO, SMS_MFA_SETUP_DTO];
 
-      setupStart: sandbox.stub(AuthApi.tfa.setup.totp, 'start').resolves({
+    return {
+      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves(list),
+
+      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox.stub(AuthApi.tfa.setup, 'complete').resolves({
-        createdAt: new Date().toISOString(),
-        method: 'totp',
-      }),
+      setupComplete: sandbox
+        .stub(AuthApi.mfa.setup, 'complete')
+        .resolves(TOTP_MFA_SETUP_DTO),
+
+      disable: sandbox
+        .stub(AuthApi.mfa.setup, 'disable')
+        .callsFake((method) => {
+          list = list.filter((s) => s.method !== method);
+          return {} as ResponsePromise;
+        }),
     };
   },
 });
 
-export const TfaDisabled = () => {
+export const MfaDisabled = () => {
   return (
-    <SWRConfig value={{ dedupingInterval: 0 }}>
-      <AccountSettingsSecurityPage
-        user={REBROWSE_ADMIN_DTO}
-        organization={REBROWSE_ORGANIZATION_DTO}
-      />
-    </SWRConfig>
+    <AccountSettingsSecurityPage
+      user={REBROWSE_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
+    />
   );
 };
-TfaDisabled.story = configureStory({
+MfaDisabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      listSetups: sandbox.stub(AuthApi.tfa.setup, 'list').resolves([]),
-      setupStart: sandbox.stub(AuthApi.tfa.setup.totp, 'start').resolves({
+      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves([]),
+      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
         data: { qrImage: TFA_SETUP_QR_IMAGE },
       }),
-      setupComplete: sandbox.stub(AuthApi.tfa.setup, 'complete').resolves({
-        createdAt: new Date().toISOString(),
-        method: 'totp',
-      }),
+      setupComplete: sandbox
+        .stub(AuthApi.mfa.setup, 'complete')
+        .resolves(TOTP_MFA_SETUP_DTO),
     };
   },
 });
 
 export const WithError = () => {
   return (
-    <SWRConfig value={{ dedupingInterval: 0 }}>
-      <AccountSettingsSecurityPage
-        user={REBROWSE_ADMIN_DTO}
-        organization={REBROWSE_ORGANIZATION_DTO}
-      />
-    </SWRConfig>
+    <AccountSettingsSecurityPage
+      user={REBROWSE_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
+    />
   );
 };
 WithError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      listSetups: sandbox.stub(AuthApi.tfa.setup, 'list').rejects(
+      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').rejects(
         mockApiError({
           message: 'Internal Server Error',
           reason: 'Internal Server Error',

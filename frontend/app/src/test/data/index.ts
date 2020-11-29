@@ -1,4 +1,4 @@
-import { Session, SessionDTO, UserAgentDTO, TfaMethod } from '@rebrowse/types';
+import type { Session, SessionDTO, UserAgentDTO } from '@rebrowse/types';
 import { v4 as uuid } from 'uuid';
 import { subSeconds, subDays, subMonths } from 'date-fns';
 import { mapSession } from '@rebrowse/sdk';
@@ -100,5 +100,4 @@ export const REBROWSE_SESSIONS = [
 export * from './events';
 export * from './user';
 export * from './organization';
-
-export const TFA_METHODS: TfaMethod[] = ['totp', 'sms'];
+export * from './mfa';

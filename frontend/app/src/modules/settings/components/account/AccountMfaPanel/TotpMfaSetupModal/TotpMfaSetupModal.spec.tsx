@@ -4,6 +4,8 @@ import { sandbox } from '@rebrowse/testing';
 import userEvent from '@testing-library/user-event';
 import type { StoryConfiguration } from '@rebrowse/storybook';
 import type { RenderableComponent } from '@rebrowse/next-testing';
+import { screen, waitFor } from '@testing-library/react';
+import { TOTP_MFA_SETUP_DTO } from 'test/data';
 
 import {
   Base,
@@ -12,8 +14,8 @@ import {
   WithQrCodeExpiredError,
 } from './TotpMfaSetupModal.stories';
 
-describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
-  const renderTfaSetupModal = <Props, T, S extends StoryConfiguration<T>>(
+describe('<TotpMfaSetupModal />', () => {
+  const renderModal = <Props, T, S extends StoryConfiguration<T>>(
     component: RenderableComponent<Props, T, S>
   ) => {
     const result = render(component);
@@ -21,50 +23,49 @@ describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
     const closeButton = result.container.querySelector(
       'button[aria-label="Close"]'
     ) as HTMLButtonElement;
+
     const codeInput = result.container.querySelector(
       'input[aria-label="Please enter your pin code"]'
     ) as HTMLInputElement;
 
-    const submitButton = result.getByText('Submit');
-    return { submitButton, codeInput, closeButton, ...result };
+    const submitButton = screen.getByText('Submit');
+    return { submitButton, codeInput, closeButton };
   };
 
   it('Base', async () => {
-    Base.story.setupMocks(sandbox);
+    const { completeSetup, setupStart } = Base.story.setupMocks(sandbox);
     const onClose = sandbox.stub();
-    const completeSetup = sandbox.stub();
+    const onCompleted = sandbox.stub();
 
-    const {
-      submitButton,
-      codeInput,
-      findByText,
-      queryByText,
-      closeButton,
-    } = renderTfaSetupModal(
-      <Base onClose={onClose} completeSetup={completeSetup} />
+    const { submitButton, codeInput, closeButton } = renderModal(
+      <Base onClose={onClose} onCompleted={onCompleted} />
     );
 
     userEvent.click(closeButton);
     sandbox.assert.calledOnce(onClose);
 
+    sandbox.assert.calledWithExactly(setupStart);
+
     await userEvent.type(codeInput, '12');
     userEvent.click(submitButton);
-    await findByText('Required');
+    await screen.findByText('Required');
 
     const code = '123456';
     await userEvent.type(codeInput, code);
-    expect(queryByText('Required')).toBeNull();
+    expect(screen.queryByText('Required')).toBeNull();
 
-    await userEvent.click(submitButton);
-    sandbox.assert.calledWithExactly(completeSetup, Number(code));
+    userEvent.click(submitButton);
+    sandbox.assert.calledWithExactly(completeSetup, 'totp', Number(code));
+
+    await waitFor(() => {
+      sandbox.assert.calledWithExactly(onCompleted, TOTP_MFA_SETUP_DTO);
+    });
   });
 
   it('WithSetupStartError', async () => {
     WithSetupStartError.story.setupMocks(sandbox);
-    const { submitButton, codeInput, findByText } = renderTfaSetupModal(
-      <WithSetupStartError />
-    );
-    await findByText('Internal Server Error');
+    const { submitButton, codeInput } = renderModal(<WithSetupStartError />);
+    await screen.findByText('Internal Server Error');
 
     expect(submitButton).toBeDisabled();
     expect(codeInput).toBeDisabled();
@@ -72,12 +73,10 @@ describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
 
   it('WithInvalidCodeError', async () => {
     WithInvalidCodeError.story.setupMocks(sandbox);
-    const { submitButton, codeInput, findByText } = renderTfaSetupModal(
-      <WithInvalidCodeError />
-    );
+    const { submitButton, codeInput } = renderModal(<WithInvalidCodeError />);
     await userEvent.type(codeInput, '123456');
     userEvent.click(submitButton);
-    await findByText('Invalid code');
+    await screen.findByText('Invalid code');
 
     expect(submitButton).not.toBeDisabled();
     expect(codeInput).not.toBeDisabled();
@@ -85,12 +84,10 @@ describe('<TimeBasedTwoFactorAuthenticationSetupModal />', () => {
 
   it('WithQrCodeExpiredError', async () => {
     WithQrCodeExpiredError.story.setupMocks(sandbox);
-    const { submitButton, codeInput, findByText } = renderTfaSetupModal(
-      <WithQrCodeExpiredError />
-    );
+    const { submitButton, codeInput } = renderModal(<WithQrCodeExpiredError />);
     await userEvent.type(codeInput, '123456');
     userEvent.click(submitButton);
-    await findByText('QR code expired');
+    await screen.findByText('QR code expired');
 
     expect(submitButton).not.toBeDisabled();
     expect(codeInput).not.toBeDisabled();

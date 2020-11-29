@@ -1,17 +1,21 @@
 // TODO: custom useMutation hook throwing by defualt
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { TfaMethod, TfaSetupDTO } from '@rebrowse/types';
+import type {
+  APIErrorDataResponse,
+  MfaMethod,
+  MfaSetupDTO,
+} from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useCallback, useMemo } from 'react';
 import { useMutation } from 'react-query';
 import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['tfa', 'setup', 'list'];
-const EMPTY_LIST: TfaSetupDTO[] = [];
+const EMPTY_LIST: MfaSetupDTO[] = [];
 
-export const useMfaSetups = (initialData?: TfaSetupDTO[]) => {
+export const useMfaSetups = (initialData?: MfaSetupDTO[]) => {
   const queryCache = useQueryCache();
-  const { data, error } = useQuery(cacheKey, () => AuthApi.tfa.setup.list(), {
+  const { data, error } = useQuery(cacheKey, () => AuthApi.mfa.setup.list(), {
     initialData: () => initialData,
   });
 
@@ -19,10 +23,10 @@ export const useMfaSetups = (initialData?: TfaSetupDTO[]) => {
   const setups = useMemo(() => data || EMPTY_LIST, [data]);
 
   const [disableMethod] = useMutation(
-    (method: TfaMethod) => AuthApi.tfa.setup.disable(method),
+    (method: MfaMethod) => AuthApi.mfa.setup.disable(method),
     {
       onSuccess: (_, method) => {
-        queryCache.setQueryData<TfaSetupDTO[] | undefined>(cacheKey, (prev) => {
+        queryCache.setQueryData<MfaSetupDTO[] | undefined>(cacheKey, (prev) => {
           return prev?.filter((setup) => setup.method !== method);
         });
       },
@@ -33,13 +37,11 @@ export const useMfaSetups = (initialData?: TfaSetupDTO[]) => {
   );
 
   const [completeSetup] = useMutation(
-    ({ method, code }: { method: TfaMethod; code: number }) =>
-      AuthApi.tfa.setup.complete(method, code),
+    ({ method, code }: { method: MfaMethod; code: number }) =>
+      AuthApi.mfa.setup.complete(method, code),
     {
-      onSuccess: (setup: TfaSetupDTO) => {
-        console.log({ setup });
-
-        queryCache.setQueryData<TfaSetupDTO[]>(cacheKey, (prev) => {
+      onSuccess: (setup: MfaSetupDTO) => {
+        queryCache.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
           return [...(prev || []), setup];
         });
       },
@@ -76,7 +78,7 @@ export const useMfaSetups = (initialData?: TfaSetupDTO[]) => {
 
   return {
     data: setups,
-    error,
+    error: error as APIErrorDataResponse,
     loading,
     disableTotpMethod,
     disableSmsMethod,
