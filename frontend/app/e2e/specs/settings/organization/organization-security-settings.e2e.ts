@@ -227,18 +227,18 @@ test('[/settings/organization/security]: As a user with no MFA, in organization 
     .click(OrganizationGeneralSettingsPage.sidebar.security)
     .click(OrganizationSecuritySettingsPage.enforceMfaToggle)
     .expect(OrganizationSecuritySettingsPage.enforceMfaEnabledMessage.visible)
-    .ok('MFA is enforced')
+    .ok('MFA enforced message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut);
 
   await LoginPage.login(t, credentials)
     .expect(Verification.mfaEnforcedMessage.visible)
-    .ok('MFA enforced message visible')
+    .ok('MFA enforced message visible on login')
     .click(Verification.tabs.sms.title)
     .click(AccountSettingsDetailsPage.phoneNumberCountryPicker)
     .typeText(AccountSettingsDetailsPage.phoneNumberCountryPicker, 'Slove')
     .click(queryByText('Slovenia (Slovenija)'))
-    .typeText(AccountSettingsDetailsPage.phoneNumberInput, '51222333')
+    .typeText(Verification.tabs.sms.phoneNumberInput, '51222333')
     .click(AccountSettingsDetailsPage.phoneNumberNextStep);
 
   await AccountSettingsSecurityPage.mfa.setupTextMessageMfa(t);

@@ -1,4 +1,4 @@
-import { queryByText } from '@testing-library/testcafe';
+import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { totp as _totp } from 'speakeasy';
 
@@ -29,6 +29,7 @@ class Verification extends AbstractPage {
       title: queryByText('Text message'),
       sendCode: queryByText('Send Code'),
       sendCodeSuccessMessage: queryByText('Code sent'),
+      phoneNumberInput: queryByPlaceholderText('51111222'),
     },
   };
 
