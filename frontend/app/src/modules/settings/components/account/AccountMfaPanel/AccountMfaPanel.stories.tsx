@@ -4,7 +4,7 @@ import { AuthApi } from 'api/auth';
 import {
   REBROWSE_ADMIN,
   SMS_MFA_SETUP_DTO,
-  TFA_SETUP_QR_IMAGE,
+  TOTP_MFA_SETUP_QR_IMAGE,
   TOTP_MFA_SETUP_DTO,
 } from 'test/data';
 import type { Meta } from '@storybook/react';
@@ -16,7 +16,7 @@ export default {
   component: AccountMfaPanel,
 } as Meta;
 
-export const TfaEnabled = () => {
+export const MfaEnabled = () => {
   return (
     <AccountMfaPanel
       user={REBROWSE_ADMIN}
@@ -24,7 +24,7 @@ export const TfaEnabled = () => {
     />
   );
 };
-TfaEnabled.story = configureStory({
+MfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       listSetups: sandbox
@@ -32,7 +32,7 @@ TfaEnabled.story = configureStory({
         .resolves([TOTP_MFA_SETUP_DTO]),
 
       setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TFA_SETUP_QR_IMAGE },
+        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
       }),
 
       setupComplete: sandbox

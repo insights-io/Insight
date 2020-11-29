@@ -1,8 +1,8 @@
 import { queryByText } from '@testing-library/testcafe';
 
-export class DisableTwoFactorAuthenticationModal {
-  public readonly confirmButton = queryByText('Yes');
-  public readonly cancelButton = queryByText('Cancel');
+export class DisableMfaModal {
+  public readonly confirmButton = queryByText('Disable');
+  public readonly cancelButton = queryByText('Maybe later');
 }
 
-export default new DisableTwoFactorAuthenticationModal();
+export default new DisableMfaModal();

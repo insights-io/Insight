@@ -209,10 +209,10 @@ test('[/settings/organization/security]: As a user with no MFA, in organization 
     .click(Sidebar.banner.menu.account.signOut);
 
   await LoginPage.login(t, credentials)
-    .expect(Verification.tfaEnforcedMessage.visible)
+    .expect(Verification.mfaEnforcedMessage.visible)
     .ok('MFA enforced message visible');
 
-  await AccountSettingsSecurityPage.tfa.setupAuthenticatorTFA(t);
+  await AccountSettingsSecurityPage.mfa.setupAuthenticatorMfa(t);
 
   await t.expect(Sidebar.banner.trigger.visible).ok('Is logged in');
 });
@@ -232,7 +232,7 @@ test('[/settings/organization/security]: As a user with no MFA, in organization 
     .click(Sidebar.banner.menu.account.signOut);
 
   await LoginPage.login(t, credentials)
-    .expect(Verification.tfaEnforcedMessage.visible)
+    .expect(Verification.mfaEnforcedMessage.visible)
     .ok('MFA enforced message visible')
     .click(Verification.tabs.sms.title)
     .click(AccountSettingsDetailsPage.phoneNumberCountryPicker)
@@ -241,7 +241,7 @@ test('[/settings/organization/security]: As a user with no MFA, in organization 
     .typeText(AccountSettingsDetailsPage.phoneNumberInput, '51222333')
     .click(AccountSettingsDetailsPage.phoneNumberNextStep);
 
-  await AccountSettingsSecurityPage.tfa.setupTextMessageTFA(t);
+  await AccountSettingsSecurityPage.mfa.setupTextMessageMfa(t);
 
   await t.expect(Sidebar.banner.trigger.visible).ok('Is logged in');
 });

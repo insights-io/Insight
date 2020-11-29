@@ -17,7 +17,7 @@ type Props = {
   methods: MfaMethod[];
 };
 
-const TFA_METHOD_TO_TITLE_MAPPING = {
+const METHOD_TO_TITLE_MAPPING = {
   sms: {
     title: 'Text message',
     component: SmsMfaInputMethod,
@@ -92,13 +92,13 @@ export const VerificationPage = ({ methods }: Props) => {
             >
               {methods.map((method) => {
                 const {
-                  component: TfaInputMethodComponent,
+                  component: MfaInputComponent,
                   title: tabTitle,
-                } = TFA_METHOD_TO_TITLE_MAPPING[method];
+                } = METHOD_TO_TITLE_MAPPING[method];
 
                 return (
                   <Tab title={tabTitle} key={method}>
-                    <TfaInputMethodComponent
+                    <MfaInputComponent
                       error={codeError}
                       handleChange={handleChange}
                       code={code}

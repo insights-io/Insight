@@ -12,26 +12,26 @@ import DisableTwoFactorAuthenticationModal from './DisableTwoFactorAuthenticatio
 class TwoFactorAuthentication {
   public readonly disableModal = DisableTwoFactorAuthenticationModal;
 
-  public readonly authenticatorTfaCheckbox: SelectorPromise;
+  public readonly authenticatorCheckbox: Selector;
 
-  public readonly authenticatorTfaDisabledToast = queryByText(
+  public readonly authenticatorDisabledToast = queryByText(
     /Authy \/ Google Authenticator multi-factor authentication disabled/
   );
 
-  public readonly authenticatorTfaEnabledToast = queryByText(
+  public readonly authenticatorEnabledToast = queryByText(
     /Authy \/ Google Authenticator multi-factor authentication enabled/
   );
   public readonly authenticatorSetupModal = TimeBasedTwoFactorAuthenticationSetupModal;
 
-  public setupAuthenticatorTFA = (t: TestController) => {
+  public setupAuthenticatorMfa = (t: TestController) => {
     return this.authenticatorSetupModal
-      .extractAuthenticatorTfaCode(t)
+      .extractAuthenticatorMfaCode(t)
       .then((secret) =>
         VerificationPage.completeTotpChallenge(t, secret).then(() => secret)
       );
   };
 
-  public readonly textMessageCheckbox: SelectorPromise;
+  public readonly textMessageCheckbox: Selector;
   public readonly textMessageDisabledTooltipText = queryByText(
     'Verify your phone number to enable text message multi-factor authentication'
   );
@@ -41,15 +41,28 @@ class TwoFactorAuthentication {
   public readonly textMessageEnabledToastMessage = queryByText(
     'Text message multi-factor authentication enabled'
   );
-  public setupTextMessageTFA = (t: TestController) =>
+  public setupTextMessageMfa = (t: TestController) =>
     VerificationPage.completeSmsChallenge(t);
 
   constructor(container: TestcafeBoundFunctions<typeof queries>) {
-    this.authenticatorTfaCheckbox = container.queryByText(
+    this.authenticatorCheckbox = this.getToggleByText(
+      container,
       'Authy / Google Authenticator'
     );
-    this.textMessageCheckbox = container.queryByText('Text message');
+    this.textMessageCheckbox = this.getToggleByText(container, 'Text message');
   }
+
+  private getToggleByText = (
+    container: TestcafeBoundFunctions<typeof queries>,
+    text: string
+  ) => {
+    return container
+      .queryByText(text)
+      .parent()
+      .parent()
+      .find('input[type="checkbox"]')
+      .parent();
+  };
 }
 
 type ChangePasswordParams = {
@@ -109,7 +122,7 @@ class ChangePassword {
 export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
   public readonly title = this.withinContainer.queryByText('Security');
 
-  public readonly tfa = new TwoFactorAuthentication(this.withinContainer);
+  public readonly mfa = new TwoFactorAuthentication(this.withinContainer);
   public readonly changePassword = new ChangePassword(this.withinContainer);
 }
 

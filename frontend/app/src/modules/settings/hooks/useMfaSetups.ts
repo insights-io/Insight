@@ -10,7 +10,7 @@ import { useCallback, useMemo } from 'react';
 import { useMutation } from 'react-query';
 import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
 
-export const cacheKey = ['tfa', 'setup', 'list'];
+export const cacheKey = ['mfa', 'setup', 'list'];
 
 export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   const queryCache = useQueryCache();

@@ -4,7 +4,7 @@ import {
   REBROWSE_ADMIN_DTO,
   REBROWSE_ORGANIZATION_DTO,
   SMS_MFA_SETUP_DTO,
-  TFA_SETUP_QR_IMAGE,
+  TOTP_MFA_SETUP_QR_IMAGE,
   TOTP_MFA_SETUP_DTO,
 } from 'test/data';
 import { AuthApi } from 'api';
@@ -36,7 +36,7 @@ MfaEnabled.story = configureStory({
       listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves(list),
 
       setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TFA_SETUP_QR_IMAGE },
+        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
       }),
 
       setupComplete: sandbox
@@ -67,7 +67,7 @@ MfaDisabled.story = configureStory({
     return {
       listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves([]),
       setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TFA_SETUP_QR_IMAGE },
+        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
       }),
       setupComplete: sandbox
         .stub(AuthApi.mfa.setup, 'complete')
