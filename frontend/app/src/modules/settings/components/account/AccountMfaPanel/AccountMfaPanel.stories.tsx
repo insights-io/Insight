@@ -3,10 +3,10 @@ import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import {
   REBROWSE_ADMIN,
+  SMS_MFA_SETUP_DTO,
   TFA_SETUP_QR_IMAGE,
   TOTP_MFA_SETUP_DTO,
 } from 'test/data';
-import { SWRConfig } from 'swr';
 import type { Meta } from '@storybook/react';
 
 import { AccountMfaPanel } from './AccountMfaPanel';
@@ -18,9 +18,10 @@ export default {
 
 export const TfaEnabled = () => {
   return (
-    <SWRConfig value={{ dedupingInterval: 0 }}>
-      <AccountMfaPanel user={REBROWSE_ADMIN} />
-    </SWRConfig>
+    <AccountMfaPanel
+      user={REBROWSE_ADMIN}
+      mfaSetups={[TOTP_MFA_SETUP_DTO, SMS_MFA_SETUP_DTO]}
+    />
   );
 };
 TfaEnabled.story = configureStory({
