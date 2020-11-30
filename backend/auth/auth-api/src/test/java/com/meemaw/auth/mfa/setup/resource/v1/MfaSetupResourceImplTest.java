@@ -24,6 +24,7 @@ import com.meemaw.auth.mfa.totp.model.dto.MfaTotpSetupStartDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.auth.sso.session.resource.v1.SsoSessionResource;
 import com.meemaw.auth.user.model.dto.PhoneNumberDTO;
+import com.meemaw.auth.user.resource.v1.UserResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sms.impl.mock.MockSmsboxImpl;
 import com.meemaw.test.setup.AbstractAuthApiTest;
@@ -136,6 +137,8 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   public void complete_totp_tfa_setup__should_throw__when_missing_qr_request()
       throws JsonProcessingException {
     String sessionId = authApi().loginWithAdminUser();
+
+    // 404 before any code is sent
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -143,10 +146,10 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
         .body(objectMapper.writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .post(MfaSetupResource.PATH + "/totp/complete")
         .then()
-        .statusCode(400)
+        .statusCode(404)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Code expired\"}}"));
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Code expired\"}}"));
   }
 
   @Test
@@ -283,7 +286,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void setup_tfa__should_work__on_full_totp_flow()
+  public void setup_mfa__should_work__on_full_totp_flow()
       throws IOException, GeneralSecurityException, NotFoundException {
     String password = UUID.randomUUID().toString();
     String email = password + "@gmail.com";
@@ -333,6 +336,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
     DataResponse<MfaSetupDTO> responseData = response.as(new TypeRef<>() {});
     response.then().statusCode(200).body(sameJson(objectMapper.writeValueAsString(responseData)));
 
+    // 404 before any code is sent
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -340,10 +344,10 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
         .body(objectMapper.writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .post(MfaSetupResource.PATH + "/totp/complete")
         .then()
-        .statusCode(400)
+        .statusCode(404)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Code expired\"}}"));
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Code expired\"}}"));
 
     given()
         .when()
@@ -426,7 +430,56 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void setup_mfa__should_work__on_full_sms_flow() throws JsonProcessingException {
+  public void complete_sms_mfa_setup__should_throw__when_invalid_auth_identifier()
+      throws JsonProcessingException {
+    String password = UUID.randomUUID().toString();
+    String email = String.format("%s@gmail.com", password);
+    PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222333");
+    String sessionId = authApi().signUpAndLogin(email, password, phoneNumber);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(UserResource.PATH + "/phone_number/verify/send_code")
+        .then()
+        .statusCode(200);
+
+    int phoneNumberVerificationCode = getLastSmsMessageVerificationCode(mockSmsbox, phoneNumber);
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(
+            objectMapper.writeValueAsString(
+                new MfaChallengeCompleteDTO(phoneNumberVerificationCode)))
+        .patch(UserResource.PATH + "/phone_number/verify")
+        .then()
+        .statusCode(200);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .post(MfaSetupResource.PATH + "/sms/start")
+        .then()
+        .statusCode(200);
+
+    String secondSessionId = authApi().login(email, password);
+    int code = getLastSmsMessageVerificationCode(mockSmsbox, phoneNumber);
+    given()
+        .when()
+        .contentType(MediaType.APPLICATION_JSON)
+        .cookie(SsoSession.COOKIE_NAME, secondSessionId)
+        .body(objectMapper.writeValueAsString(new MfaChallengeCompleteDTO(code)))
+        .post(MfaSetupResource.PATH + "/sms/complete")
+        .then()
+        .statusCode(404)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Code expired\"}}"));
+  }
+
+  @Test
+  public void setup_sms_mfa__should_work__on_full_flow() throws JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = String.format("%s@gmail.com", password);
     PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "51222333");
@@ -460,10 +513,10 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
         .body(objectMapper.writeValueAsString(new MfaChallengeCompleteDTO(123)))
         .post(MfaChallengeResource.PATH + "/sms/complete")
         .then()
-        .statusCode(400)
+        .statusCode(404)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Code expired\"}}"));
 
     given()
         .when()
@@ -500,7 +553,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void setup_tfa__should_work__on_full_sms_and_totp_flow()
+  public void setup_mfa__should_work__on_full_sms_and_totp_flow()
       throws JsonProcessingException, GeneralSecurityException {
     String password = UUID.randomUUID().toString();
     String email = String.format("%s@gmail.com", password);
@@ -660,7 +713,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void user__should_be_able_to_setup_totp_tfa_and_login__when_mfa_enforced()
+  public void user__should_be_able_to_setup_totp_mfa_and_login__when_mfa_enforced()
       throws JsonProcessingException {
     String password = UUID.randomUUID().toString();
     String email = String.format("%s@gmail.com", password);

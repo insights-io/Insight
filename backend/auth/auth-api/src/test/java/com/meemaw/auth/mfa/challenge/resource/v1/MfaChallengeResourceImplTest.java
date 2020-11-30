@@ -241,7 +241,7 @@ public class MfaChallengeResourceImplTest extends AbstractAuthApiTest {
         .statusCode(200)
         .body(SameJSON.sameJson("{\"data\":{\"validitySeconds\":60}}"));
 
-    String verifyCodeKey = MfaSmsProvider.verifyCodeKey(user.getId());
+    String verifyCodeKey = MfaSmsProvider.verifyCodeKey(sessionId, user.getId());
     int verifyCode =
         userPhoneCodeDatasource.getCode(verifyCodeKey).toCompletableFuture().join().get();
 
@@ -259,7 +259,7 @@ public class MfaChallengeResourceImplTest extends AbstractAuthApiTest {
         .then()
         .statusCode(200);
 
-    String setupCodeKey = MfaSmsProvider.setupCodeKey(user.getId());
+    String setupCodeKey = MfaSmsProvider.setupCodeKey(sessionId, user.getId());
     int setupCode =
         userPhoneCodeDatasource.getCode(setupCodeKey).toCompletableFuture().join().get();
 

@@ -174,11 +174,12 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void phone_number_verify__should_throw__when_invalid_code()
+  public void phone_number_verify__should_throw__when_no_send_code_session()
       throws JsonProcessingException {
     PhoneNumberDTO phoneNumber = new PhoneNumberDTO("+386", "512121");
     String sessionId = authApi().signUpAndLoginWithRandomCredentials(phoneNumber);
 
+    // 404 before send_code session
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
@@ -186,11 +187,12 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
-        .statusCode(400)
+        .statusCode(404)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Code expired\"}}"));
 
+    // 404 before send_code session
     String authToken = authApi().createApiKey(sessionId);
     given()
         .when()
@@ -199,10 +201,10 @@ public class UserResourceImplTest extends AbstractAuthApiTest {
         .body(JacksonMapper.get().writeValueAsString(new MfaChallengeCompleteDTO(10)))
         .patch(PHONE_NUMBER_VERIFY_PATH)
         .then()
-        .statusCode(400)
+        .statusCode(404)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"code\":\"Invalid code\"}}}"));
+                "{\"error\":{\"statusCode\":404,\"reason\":\"Not Found\",\"message\":\"Code expired\"}}"));
   }
 
   @Test

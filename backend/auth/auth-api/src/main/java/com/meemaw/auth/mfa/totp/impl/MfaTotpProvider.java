@@ -80,7 +80,7 @@ public class MfaTotpProvider extends AbstractMfaProvider<MfaTotpSetupStartDTO> {
             maybeSecret -> {
               if (maybeSecret.isEmpty()) {
                 log.debug("[AUTH]: MFA TOTP setup complete session expired for user={}", userId);
-                throw Boom.badRequest().message("Code expired").exception();
+                throw Boom.notFound().message("Code expired").exception();
               }
 
               try {

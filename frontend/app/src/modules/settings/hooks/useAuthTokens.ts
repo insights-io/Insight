@@ -1,33 +1,46 @@
 import { mapAuthToken } from '@rebrowse/sdk';
 import { AuthTokenDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
-import { useCallback, useMemo } from 'react';
-import useSWRQuery from 'shared/hooks/useSWRQuery';
+import { useMemo } from 'react';
+import { useMutation, useQuery, useQueryCache } from 'shared/hooks/useQuery';
 
-const CACHE_KEY = 'AuthApi.sso.token.list';
+export const cacheKey = ['sso', 'token', 'list'];
 
 export const useAuthTokens = (initialData: AuthTokenDTO[]) => {
-  const { mutate, data = initialData } = useSWRQuery(
-    CACHE_KEY,
+  const { data = initialData } = useQuery(
+    cacheKey,
     () => AuthApi.sso.token.list(),
     { initialData }
   );
 
   const authTokens = useMemo(() => data.map(mapAuthToken), [data]);
 
-  const addAuthToken = useCallback(
-    (authToken: AuthTokenDTO) => {
-      mutate([...data, authToken]);
+  return { authTokens };
+};
+
+export const useAuthTokenMutations = () => {
+  const queryCache = useQueryCache();
+
+  const [create] = useMutation(() => AuthApi.sso.token.create(), {
+    throwOnError: true,
+    onSuccess: (authToken) => {
+      queryCache.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
+        return [...(prev || []), authToken];
+      });
     },
-    [mutate, data]
+  });
+
+  const [revoke] = useMutation(
+    (token: string) => AuthApi.sso.token.delete(token),
+    {
+      throwOnError: true,
+      onSuccess: (_result, token) => {
+        queryCache.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
+          return (prev || [])?.filter((t) => t.token !== token);
+        });
+      },
+    }
   );
 
-  const removeAuthToken = useCallback(
-    (token: string) => {
-      mutate(data.filter((authToken) => authToken.token !== token));
-    },
-    [mutate, data]
-  );
-
-  return { authTokens, addAuthToken, removeAuthToken };
+  return { create, revoke };
 };

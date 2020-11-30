@@ -103,7 +103,7 @@ public class MfaSetupResourceImpl implements MfaSetupResource {
   public CompletionStage<Response> sendSmsCode() {
     AuthUser user = principal.user();
     PhoneNumber phoneNumber = user.getPhoneNumber();
-    String codeKey = MfaSmsProvider.setupCodeKey(user.getId());
-    return smsProvider.sendVerificationCode(codeKey, phoneNumber).thenApply(DataResponse::ok);
+    String setupCodeKey = MfaSmsProvider.setupCodeKey(principal);
+    return smsProvider.sendVerificationCode(setupCodeKey, phoneNumber).thenApply(DataResponse::ok);
   }
 }

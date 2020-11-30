@@ -3,6 +3,7 @@ package com.meemaw.auth.user.service;
 import com.meemaw.auth.mfa.challenge.service.MfaChallengeService;
 import com.meemaw.auth.mfa.sms.impl.MfaSmsProvider;
 import com.meemaw.auth.sso.session.datasource.SsoSessionDatasource;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.datasource.UserDatasource;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
@@ -33,6 +34,7 @@ public class UserService {
   @Inject SsoSessionDatasource ssoSessionDatasource;
   @Inject UserPhoneCodeService userPhoneCodeService;
   @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
+  @Inject AuthPrincipal principal;
 
   @Traced
   public CompletionStage<Optional<AuthUser>> getUser(UUID userId) {
@@ -100,7 +102,7 @@ public class UserService {
     }
 
     log.info("[AUTH]: Trying to verify phone number user={} code={}", userId, code);
-    String key = MfaSmsProvider.verifyCodeKey(userId);
+    String key = MfaSmsProvider.verifyCodeKey(principal);
     return userPhoneCodeService
         .validate(code, key)
         .thenCompose(

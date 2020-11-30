@@ -5,6 +5,7 @@ import com.meemaw.auth.mfa.MfaMethod;
 import com.meemaw.auth.mfa.challenge.service.MfaChallengeService;
 import com.meemaw.auth.mfa.dto.MfaChallengeCodeDetailsDTO;
 import com.meemaw.auth.mfa.model.MfaConfiguration;
+import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.datasource.UserMfaDatasource;
 import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.datasource.UserTable.Errors;
@@ -35,16 +36,23 @@ public class MfaSmsProvider extends AbstractMfaProvider<MfaChallengeCodeDetailsD
   @Inject SqlPool sqlPool;
   @Inject UserPhoneCodeService userPhoneCodeService;
   @Inject UserService userService;
+  @Inject AuthPrincipal principal;
 
   // TODO: should be 3 separate caches
-  // TODO: should be tied to sessionId
-  public static String verifyCodeKey(UUID userId) {
-    return String.format("%s-verify", userId);
+  public static String verifyCodeKey(AuthPrincipal principal) {
+    return verifyCodeKey(principal.getIdentifier(), principal.user().getId());
   }
 
-  // TODO: should be tied to sessionId
-  public static String setupCodeKey(UUID userId) {
-    return String.format("%s-setup", userId);
+  public static String verifyCodeKey(String authIdentifier, UUID userId) {
+    return String.format("%s-%s-verify", authIdentifier, userId);
+  }
+
+  public static String setupCodeKey(AuthPrincipal principal) {
+    return String.format("%s-%s-setup", principal.getIdentifier(), principal.user().getId());
+  }
+
+  public static String setupCodeKey(String authIdentifier, UUID userId) {
+    return String.format("%s-%s-setup", authIdentifier, userId);
   }
 
   public static String challengeCodeKey(String challengeId) {
@@ -76,7 +84,7 @@ public class MfaSmsProvider extends AbstractMfaProvider<MfaChallengeCodeDetailsD
   public CompletionStage<Pair<MfaConfiguration, AuthUser>> setupComplete(
       AuthUser user, int actualCode) {
     UUID userId = user.getId();
-    String codeKey = setupCodeKey(userId);
+    String codeKey = setupCodeKey(principal);
     return userPhoneCodeService
         .validate(actualCode, codeKey)
         .thenCompose(
@@ -136,7 +144,7 @@ public class MfaSmsProvider extends AbstractMfaProvider<MfaChallengeCodeDetailsD
 
     UUID userId = user.getId();
     return assertCanSetupMfa(userId)
-        .thenCompose(i1 -> sendVerificationCode(setupCodeKey(userId), user.getPhoneNumber()));
+        .thenCompose(i1 -> sendVerificationCode(setupCodeKey(principal), user.getPhoneNumber()));
   }
 
   public CompletionStage<MfaChallengeCodeDetailsDTO> sendVerificationCode(
