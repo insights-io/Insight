@@ -30,7 +30,7 @@ public class SQLGroupByQuery {
 
   private Stream<Field<?>> fields() {
     return groupBy.getFields().stream()
-        .map(field -> SQLFilterExpression.sqlFilterField(field, String.class).as(field));
+        .map(field -> SQLFilterExpression.jsonText(field, String.class).as(field));
   }
 
   public List<Field<?>> fieldsWithCount() {

@@ -32,7 +32,7 @@ public class SessionSocketService {
   }
 
   public void pageStart(UUID pageID) {
-    log.info("Notifying sockets about page start pageID={}", pageID);
+    log.debug("Notifying sockets about page start pageID={}", pageID);
     sessions.values().forEach(session -> sendText(session, "PAGE START"));
   }
 

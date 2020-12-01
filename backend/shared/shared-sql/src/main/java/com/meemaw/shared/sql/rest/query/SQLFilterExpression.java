@@ -20,7 +20,7 @@ public interface SQLFilterExpression extends FilterExpression {
     }
   }
 
-  static <T> Field<T> sqlField(String field, Class<T> dataType, String separator) {
+  static <T> Field<T> selectField(String field, Class<T> dataType, String separator) {
     String[] split = field.split("\\.");
     String result = split[0];
 
@@ -30,16 +30,16 @@ public interface SQLFilterExpression extends FilterExpression {
     return DSL.field(result, dataType);
   }
 
-  static <T> Field<T> sqlField(String field, Class<T> dataType) {
-    return sqlField(field, dataType, "->");
+  static <T> Field<T> filterField(Field<T> field) {
+    return jsonText(field.getName(), field.getType());
   }
 
-  static <T> Field<T> sqlFilterField(String field, Class<T> dataType) {
-    return sqlField(field, dataType, "->>");
+  static <T> Field<T> jsonb(String field, Class<T> dataType) {
+    return selectField(field, dataType, "->");
   }
 
-  static <T> Field<T> sqlFilterField(Field<T> field) {
-    return sqlFilterField(field.getName(), field.getType());
+  static <T> Field<T> jsonText(String field, Class<T> dataType) {
+    return selectField(field, dataType, "->>");
   }
 
   /**

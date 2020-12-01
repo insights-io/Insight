@@ -20,7 +20,7 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"Reactive PostgreSQL connection health check\",\"status\":\"UP\"},{\"name\":\"Hazelcast\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"Hazelcast\",\"status\":\"UP\"},{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
   }
 
   @Test
@@ -44,6 +44,6 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"Reactive PostgreSQL connection health check\",\"status\":\"UP\"},{\"name\":\"Hazelcast\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"Hazelcast\",\"status\":\"UP\"},{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
   }
 }

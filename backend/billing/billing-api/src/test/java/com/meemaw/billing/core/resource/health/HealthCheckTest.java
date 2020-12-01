@@ -20,7 +20,7 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"Reactive PostgreSQL connection health check\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
   }
 
   @Test
@@ -42,6 +42,6 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"Reactive PostgreSQL connection health check\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
   }
 }

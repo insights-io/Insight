@@ -19,6 +19,3 @@ dependencies {
     testImplementation project(':shared:testing-data')
 }
 
-configurations {
-    testRuntimeClasspath.exclude group: "io.smallrye.reactive", module: "smallrye-reactive-streams-operators"
-}

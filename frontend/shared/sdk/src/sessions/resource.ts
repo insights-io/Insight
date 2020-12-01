@@ -50,11 +50,8 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
           `${baseURL}/v1/sessions/insights/distinct${searchQuery}`,
           withCredentials(rest)
         )
-        .json<DataResponse<(string | null)[]>>()
-        .then(
-          (dataResponse) =>
-            dataResponse.data.filter((v) => v !== null) as string[]
-        );
+        .json<DataResponse<string[]>>()
+        .then((dataResponse) => dataResponse.data);
     },
 
     countByLocation: (params: RequestOptions = {}) => {

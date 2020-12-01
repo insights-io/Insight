@@ -169,7 +169,7 @@ public class PageService {
                   .createPageAndNewSession(pageId, sessionId, deviceId, userAgent, location, page)
                   .thenApply(
                       identity -> {
-                        log.info(
+                        log.debug(
                             "[SESSION]: Created session id={} organizationId={}",
                             sessionId,
                             organizationId);

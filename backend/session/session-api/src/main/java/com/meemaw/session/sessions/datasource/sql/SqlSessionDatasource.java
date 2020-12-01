@@ -10,7 +10,8 @@ import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATIO
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
-import static com.meemaw.shared.sql.rest.query.SQLFilterExpression.sqlField;
+import static com.meemaw.shared.sql.rest.query.SQLFilterExpression.jsonText;
+import static com.meemaw.shared.sql.rest.query.SQLFilterExpression.jsonb;
 import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,10 +36,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Query;
 
@@ -96,17 +97,20 @@ public class SqlSessionDatasource implements SessionDatasource {
   @Override
   public CompletionStage<Collection<String>> distinct(
       Collection<String> on, String organizationId, SearchDTO searchDTO) {
-    List<Field<?>> fields =
-        on.stream().map(f -> sqlField(f, String.class)).collect(Collectors.toList());
+    List<Field<?>> fields = new ArrayList<>(on.size());
+    List<Condition> conditions = new ArrayList<>(on.size() + 1);
+
+    for (String fieldName : on) {
+      conditions.add(jsonText(fieldName, String.class).isNotNull());
+      fields.add(jsonb(fieldName, String.class));
+    }
+
+    conditions.add(ORGANIZATION_ID.eq(organizationId));
 
     Query query =
         SQLSearchDTO.of(searchDTO)
             .query(
-                sqlPool
-                    .getContext()
-                    .selectDistinct(fields)
-                    .from(TABLE)
-                    .where(ORGANIZATION_ID.eq(organizationId)),
+                sqlPool.getContext().selectDistinct(fields).from(TABLE).where(conditions),
                 FIELD_MAPPINGS);
 
     return sqlPool
