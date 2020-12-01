@@ -51,8 +51,6 @@ test('As a user I want to change my full name and verify my new phone number', a
 
   await AccountSettingsDetailsPage.completeSmsChallenge(t);
   await t
-    .expect(AccountSettingsDetailsPage.phoneNumberVerifiedMessage.visible)
-    .ok('Success message is visible')
     .expect(AccountSettingsDetailsPage.phoneNumberVerifyButton.visible)
     .notOk(
       'Phone number verify button should not be visible after verification'
