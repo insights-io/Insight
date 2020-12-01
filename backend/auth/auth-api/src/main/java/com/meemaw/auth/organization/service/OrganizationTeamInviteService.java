@@ -291,8 +291,7 @@ public class OrganizationTeamInviteService {
                                   ignored -> {
                                     throw (CompletionException) throwable;
                                   });
-                        })
-                    .thenApply(ignored -> user));
+                        }));
   }
 
   @Traced

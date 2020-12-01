@@ -11,27 +11,6 @@ import org.jooq.impl.DSL;
 
 public interface SQLFilterExpression extends FilterExpression {
 
-  /**
-   * Update query with filter expression.
-   *
-   * @param query existing select condition query
-   * @param mappings field mappings
-   * @return query with applied filter conditions
-   */
-  SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> mappings);
-
-  /**
-   * Update query with filter expression.
-   *
-   * @param query existing select join query
-   * @param mappings fields mappings
-   * @return query with applied filter conditions
-   */
-  @SuppressWarnings({"rawtypes"})
-  default SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> mappings) {
-    return sql((SelectConditionStep) query, mappings);
-  }
-
   @SuppressWarnings({"unchecked", "rawtypes"})
   static SQLFilterExpression of(FilterExpression filterExpression) {
     if (filterExpression instanceof BooleanFilterExpression) {
@@ -51,7 +30,7 @@ public interface SQLFilterExpression extends FilterExpression {
     return DSL.field(result, dataType);
   }
 
-  static <T> Field<T> sqlSelectField(String field, Class<T> dataType) {
+  static <T> Field<T> sqlField(String field, Class<T> dataType) {
     return sqlField(field, dataType, "->");
   }
 
@@ -61,5 +40,26 @@ public interface SQLFilterExpression extends FilterExpression {
 
   static <T> Field<T> sqlFilterField(Field<T> field) {
     return sqlFilterField(field.getName(), field.getType());
+  }
+
+  /**
+   * Update query with filter expression.
+   *
+   * @param query existing select condition query
+   * @param mappings field mappings
+   * @return query with applied filter conditions
+   */
+  SelectConditionStep<?> sql(SelectConditionStep<?> query, Map<String, Field<?>> mappings);
+
+  /**
+   * Update query with filter expression.
+   *
+   * @param query existing select join query
+   * @param mappings fields mappings
+   * @return query with applied filter conditions
+   */
+  @SuppressWarnings({"rawtypes"})
+  default SelectConditionStep<?> sql(SelectJoinStep<?> query, Map<String, Field<?>> mappings) {
+    return sql((SelectConditionStep) query, mappings);
   }
 }

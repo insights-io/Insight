@@ -10,7 +10,7 @@ import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.LOCATIO
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
-import static com.meemaw.shared.sql.rest.query.SQLFilterExpression.sqlSelectField;
+import static com.meemaw.shared.sql.rest.query.SQLFilterExpression.sqlField;
 import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -97,7 +97,7 @@ public class SqlSessionDatasource implements SessionDatasource {
   public CompletionStage<Collection<String>> distinct(
       Collection<String> on, String organizationId, SearchDTO searchDTO) {
     List<Field<?>> fields =
-        on.stream().map(f -> sqlSelectField(f, String.class)).collect(Collectors.toList());
+        on.stream().map(f -> sqlField(f, String.class)).collect(Collectors.toList());
 
     Query query =
         SQLSearchDTO.of(searchDTO)
