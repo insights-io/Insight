@@ -25,7 +25,7 @@ test('As a user I want to be challenged by TOTP MFA on password reset', async (t
     .expect(getLocation())
     .eql(AccountSettingsDetailsPage.path)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.authyToggle.parent())
     .typeText(
       AccountSettingsSecurityPage.mfa.authenticatorSetupModal.codeInput,
       '111111'
@@ -39,8 +39,8 @@ test('As a user I want to be challenged by TOTP MFA on password reset', async (t
 
   const secret = await AccountSettingsSecurityPage.mfa.setupAuthenticatorMfa(t);
   await t
-    .expect(AccountSettingsSecurityPage.mfa.authenticatorEnabledToast.visible)
-    .ok('TOTP MFA enabled message')
+    .expect(AccountSettingsSecurityPage.mfa.authyToggle.checked)
+    .eql(true, 'TOTP MFA enabled message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut)
     .click(LoginPage.forgotPasswordButton)
@@ -71,7 +71,7 @@ test('As a user I want to be challenged by TOTP MFA on password reset', async (t
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.authyToggle.parent())
     .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
     .expect(AccountSettingsSecurityPage.mfa.authenticatorDisabledToast.visible)
     .ok('Should display message that TOTP MFA is disabled');
@@ -86,7 +86,7 @@ test('As a user I want to be challenged by TOTP MFA on login', async (t) => {
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.authyToggle.parent())
     .typeText(
       AccountSettingsSecurityPage.mfa.authenticatorSetupModal.codeInput,
       '111111'
@@ -120,7 +120,7 @@ test('As a user I want to be challenged by TOTP MFA on login', async (t) => {
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.authyToggle.parent())
     .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
     .expect(AccountSettingsSecurityPage.mfa.authenticatorDisabledToast.visible)
     .ok('Should display message that TOTP MFA is disabled');
@@ -140,7 +140,7 @@ test('As a user I want to be challenged by SMS MFA on password reset', async (t)
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.textMessageToggle.parent())
     .typeText(
       AccountSettingsSecurityPage.mfa.authenticatorSetupModal.codeInput,
       '111111'
@@ -154,9 +154,7 @@ test('As a user I want to be challenged by SMS MFA on password reset', async (t)
 
   await AccountSettingsSecurityPage.mfa.setupTextMessageMfa(t);
   await t
-    .expect(
-      AccountSettingsSecurityPage.mfa.textMessageCheckbox.find('input').checked
-    )
+    .expect(AccountSettingsSecurityPage.mfa.textMessageToggle.checked)
     .eql(true, 'SMS MFA enabled message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut)
@@ -186,7 +184,7 @@ test('As a user I want to be challenged by SMS MFA on password reset', async (t)
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.textMessageToggle.parent())
     .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
     .expect(
       AccountSettingsSecurityPage.mfa.textMessageDisabledToastMessage.visible
@@ -211,11 +209,11 @@ test('As a user I want to be challenged by TOTP & SMS MFA on login', async (t) =
   await AccountSettingsDetailsPage.verifyCurrentPhoneNumber(t);
   await t
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox);
+    .click(AccountSettingsSecurityPage.mfa.textMessageToggle.parent());
 
   await AccountSettingsSecurityPage.mfa.setupTextMessageMfa(t);
 
-  await t.click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox);
+  await t.click(AccountSettingsSecurityPage.mfa.authyToggle.parent());
   const secret = await AccountSettingsSecurityPage.mfa.setupAuthenticatorMfa(t);
   await Sidebar.signOut(t);
 
@@ -241,11 +239,11 @@ test('As a user I want to be challenged by TOTP & SMS MFA on login', async (t) =
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.settings)
     .click(AccountSettingsDetailsPage.sidebar.security)
-    .click(AccountSettingsSecurityPage.mfa.authenticatorCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.authyToggle.parent())
     .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
     .expect(AccountSettingsSecurityPage.mfa.authenticatorDisabledToast.visible)
     .ok('TOTP MFA disabled')
-    .click(AccountSettingsSecurityPage.mfa.textMessageCheckbox)
+    .click(AccountSettingsSecurityPage.mfa.textMessageToggle.parent())
     .click(AccountSettingsSecurityPage.mfa.disableModal.confirmButton)
     .expect(
       AccountSettingsSecurityPage.mfa.textMessageDisabledToastMessage.visible

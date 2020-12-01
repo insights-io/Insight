@@ -12,7 +12,7 @@ import DisableTwoFactorAuthenticationModal from './DisableTwoFactorAuthenticatio
 class TwoFactorAuthentication {
   public readonly disableModal = DisableTwoFactorAuthenticationModal;
 
-  public readonly authenticatorCheckbox: Selector;
+  public readonly authyToggle: Selector;
 
   public readonly authenticatorDisabledToast = queryByText(
     /Authy \/ Google Authenticator multi-factor authentication disabled/
@@ -31,7 +31,8 @@ class TwoFactorAuthentication {
       );
   };
 
-  public readonly textMessageCheckbox: Selector;
+  public readonly textMessageToggle: Selector;
+
   public readonly textMessageDisabledTooltipText = queryByText(
     'Verify your phone number to enable text message multi-factor authentication'
   );
@@ -45,11 +46,11 @@ class TwoFactorAuthentication {
     VerificationPage.completeSmsChallenge(t);
 
   constructor(container: TestcafeBoundFunctions<typeof queries>) {
-    this.authenticatorCheckbox = this.getToggleByText(
+    this.authyToggle = this.getToggleByText(
       container,
       'Authy / Google Authenticator'
     );
-    this.textMessageCheckbox = this.getToggleByText(container, 'Text message');
+    this.textMessageToggle = this.getToggleByText(container, 'Text message');
   }
 
   private getToggleByText = (
@@ -60,8 +61,7 @@ class TwoFactorAuthentication {
       .queryByText(text)
       .parent()
       .parent()
-      .find('input[type="checkbox"]')
-      .parent();
+      .find('input[type="checkbox"]');
   };
 }
 
