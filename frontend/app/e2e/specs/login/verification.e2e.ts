@@ -147,7 +147,7 @@ test('As a user I want to be challenged by SMS MFA on password reset', async (t)
     )
     .click(AccountSettingsSecurityPage.mfa.authenticatorSetupModal.submitButton)
     .expect(
-      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.invalidCodeError
+      AccountSettingsSecurityPage.mfa.authenticatorSetupModal.expiredCodeError
         .visible
     )
     .ok('Should display invalid code error');
@@ -155,9 +155,9 @@ test('As a user I want to be challenged by SMS MFA on password reset', async (t)
   await AccountSettingsSecurityPage.mfa.setupTextMessageMfa(t);
   await t
     .expect(
-      AccountSettingsSecurityPage.mfa.textMessageEnabledToastMessage.visible
+      AccountSettingsSecurityPage.mfa.textMessageCheckbox.find('input').checked
     )
-    .ok('SMS MFA enabled message')
+    .eql(true, 'SMS MFA enabled message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut)
     .click(LoginPage.forgotPasswordButton)
