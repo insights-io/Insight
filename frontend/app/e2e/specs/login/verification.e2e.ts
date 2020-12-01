@@ -100,8 +100,8 @@ test('As a user I want to be challenged by TOTP MFA on login', async (t) => {
 
   const secret = await AccountSettingsSecurityPage.mfa.setupAuthenticatorMfa(t);
   await t
-    .expect(AccountSettingsSecurityPage.mfa.authenticatorEnabledToast.visible)
-    .ok('TOTP MFA enabled message')
+    .expect(AccountSettingsSecurityPage.mfa.authyToggle.checked)
+    .eql(true, 'TOTP MFA enabled message')
     .click(Sidebar.banner.trigger)
     .click(Sidebar.banner.menu.account.signOut);
 

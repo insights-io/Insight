@@ -18,9 +18,6 @@ class TwoFactorAuthentication {
     /Authy \/ Google Authenticator multi-factor authentication disabled/
   );
 
-  public readonly authenticatorEnabledToast = queryByText(
-    /Authy \/ Google Authenticator multi-factor authentication enabled/
-  );
   public readonly authenticatorSetupModal = TimeBasedTwoFactorAuthenticationSetupModal;
 
   public setupAuthenticatorMfa = (t: TestController) => {
@@ -38,9 +35,6 @@ class TwoFactorAuthentication {
   );
   public readonly textMessageDisabledToastMessage = queryByText(
     'Text message multi-factor authentication disabled'
-  );
-  public readonly textMessageEnabledToastMessage = queryByText(
-    'Text message multi-factor authentication enabled'
   );
   public setupTextMessageMfa = (t: TestController) =>
     VerificationPage.completeSmsChallenge(t);
