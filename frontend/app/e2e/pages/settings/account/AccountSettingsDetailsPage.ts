@@ -32,10 +32,6 @@ export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
     .find('button')
     .withAttribute('aria-haspopup', 'true');
 
-  public readonly phoneNumberVerifiedMessage = queryByText(
-    'Phone number successfully verified'
-  );
-
   public readonly phoneNumberCountryPicker = Selector('input')
     .withAttribute('aria-label', 'Select country')
     .parent()
@@ -49,10 +45,7 @@ export class AccountSettingsDetailsPage extends AbstractAccountSettingsPage {
 
   public verifyCurrentPhoneNumber = async (t: TestController) => {
     await t.click(this.phoneNumberVerifyButton);
-    await this.completeSmsChallenge(t);
-    return t
-      .expect(this.phoneNumberVerifiedMessage.visible)
-      .ok('Success message');
+    return this.completeSmsChallenge(t);
   };
 }
 

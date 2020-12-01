@@ -12,15 +12,12 @@ import DisableTwoFactorAuthenticationModal from './DisableTwoFactorAuthenticatio
 class TwoFactorAuthentication {
   public readonly disableModal = DisableTwoFactorAuthenticationModal;
 
-  public readonly authenticatorCheckbox: Selector;
+  public readonly authyToggle: Selector;
 
   public readonly authenticatorDisabledToast = queryByText(
     /Authy \/ Google Authenticator multi-factor authentication disabled/
   );
 
-  public readonly authenticatorEnabledToast = queryByText(
-    /Authy \/ Google Authenticator multi-factor authentication enabled/
-  );
   public readonly authenticatorSetupModal = TimeBasedTwoFactorAuthenticationSetupModal;
 
   public setupAuthenticatorMfa = (t: TestController) => {
@@ -31,25 +28,23 @@ class TwoFactorAuthentication {
       );
   };
 
-  public readonly textMessageCheckbox: Selector;
+  public readonly textMessageToggle: Selector;
+
   public readonly textMessageDisabledTooltipText = queryByText(
     'Verify your phone number to enable text message multi-factor authentication'
   );
   public readonly textMessageDisabledToastMessage = queryByText(
     'Text message multi-factor authentication disabled'
   );
-  public readonly textMessageEnabledToastMessage = queryByText(
-    'Text message multi-factor authentication enabled'
-  );
   public setupTextMessageMfa = (t: TestController) =>
     VerificationPage.completeSmsChallenge(t);
 
   constructor(container: TestcafeBoundFunctions<typeof queries>) {
-    this.authenticatorCheckbox = this.getToggleByText(
+    this.authyToggle = this.getToggleByText(
       container,
       'Authy / Google Authenticator'
     );
-    this.textMessageCheckbox = this.getToggleByText(container, 'Text message');
+    this.textMessageToggle = this.getToggleByText(container, 'Text message');
   }
 
   private getToggleByText = (
@@ -60,8 +55,7 @@ class TwoFactorAuthentication {
       .queryByText(text)
       .parent()
       .parent()
-      .find('input[type="checkbox"]')
-      .parent();
+      .find('input[type="checkbox"]');
   };
 }
 

@@ -111,6 +111,11 @@ public class SsoSessionResourceImpl implements SsoSessionResource {
   }
 
   @Override
+  public CompletionStage<Response> retrieveUserDataByCookieParam(String sessionId) {
+    return retrieveUserData(sessionId);
+  }
+
+  @Override
   public CompletionStage<Response> listAssociatedSessions(String sessionId) {
     return ssoService.findSessions(sessionId).thenApply(DataResponse::ok);
   }

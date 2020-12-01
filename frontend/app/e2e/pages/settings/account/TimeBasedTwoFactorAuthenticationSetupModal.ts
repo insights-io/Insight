@@ -22,6 +22,7 @@ export class TimeBasedTwoFactorAuthenticationSetupModal {
   public readonly codeInput = VerificationPage.codeInput;
   public readonly submitButton = VerificationPage.submitButton;
   public readonly invalidCodeError = VerificationPage.invalidCodeError;
+  public readonly expiredCodeError = VerificationPage.expiredCodeError;
 }
 
 export default new TimeBasedTwoFactorAuthenticationSetupModal();

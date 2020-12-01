@@ -204,10 +204,8 @@ public interface SsoSessionResource {
                     mediaType = MediaType.APPLICATION_JSON,
                     example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
-  default CompletionStage<Response> retrieveUserDataByCookieParam(
-      @NotNull(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId) {
-    return retrieveUserData(sessionId);
-  }
+  CompletionStage<Response> retrieveUserDataByCookieParam(
+      @NotNull(message = "Required") @CookieParam(SsoSession.COOKIE_NAME) String sessionId);
 
   class UserDataDataResponse extends RebrowseApiDataResponse<UserDataDTO> {}
 

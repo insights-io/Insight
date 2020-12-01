@@ -18,10 +18,14 @@ public class CorsTest {
   @ValueSource(
       strings = {
         "https://app." + SharedConstants.REBROWSE_STAGING_DOMAIN,
+        "https://www.app." + SharedConstants.REBROWSE_STAGING_DOMAIN,
+        "https://" + SharedConstants.REBROWSE_STAGING_DOMAIN,
+        "https://www." + SharedConstants.REBROWSE_STAGING_DOMAIN,
         "https://www.google.com",
+        "https://facebook.com",
         "http://localhost:3000"
       })
-  public void cors_on_create_page__should_be_enabled_for_all_origins(String origin) {
+  public void cors__should_be_enabled_for_all_origin__when_create_page(String origin) {
     List.of("GET", "POST", "OPTIONS")
         .forEach(
             method ->

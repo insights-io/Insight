@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
 import { Selector } from 'testcafe';
 import { totp as _totp } from 'speakeasy';
@@ -21,6 +22,7 @@ class Verification extends AbstractPage {
     'input[aria-label="Please enter your pin code"]'
   );
   public readonly invalidCodeError = queryByText('Invalid code');
+  public readonly expiredCodeError = queryByText('Code expired');
   public readonly submitButton = queryByText('Submit');
 
   public readonly tabs = {
@@ -38,19 +40,26 @@ class Verification extends AbstractPage {
     return _totp({ secret, encoding: 'base32' });
   };
 
-  private mfaLogin = async (t: TestController, codeProvider: () => string) => {
+  private mfaLogin = async (
+    t: TestController,
+    codeProvider: (attempt: number) => Promise<string>,
+    maxAttempts = 10
+  ) => {
     let isValid = false;
-    let tryCount = 0;
+    let attempt = 0;
     while (!isValid) {
-      // eslint-disable-next-line no-await-in-loop
-      await t.typeText(this.codeInput, codeProvider()).click(this.submitButton);
-      // eslint-disable-next-line no-await-in-loop
-      isValid = !(await this.invalidCodeError.visible);
-      tryCount++;
-      if (tryCount > 10) {
-        throw new Error('MFA Login failed after 10 attempts');
+      const code = await codeProvider(attempt);
+      await t.typeText(this.codeInput, code).click(this.submitButton);
+      isValid = !(
+        (await this.invalidCodeError.visible) ||
+        (await this.expiredCodeError.visible)
+      );
+      attempt++;
+      if (attempt > maxAttempts) {
+        throw new Error(`MFA Login failed after ${maxAttempts} attempts`);
       }
     }
+
     return t
       .expect(this.codeInput.visible)
       .notOk('Code input should not be visible anymore');
@@ -61,14 +70,20 @@ class Verification extends AbstractPage {
   };
 
   public completeSmsChallenge = async (t: TestController) => {
-    await t
-      .click(this.tabs.sms.sendCode)
-      .expect(this.tabs.sms.sendCodeSuccessMessage.visible)
-      .ok('Sucessfuly sent message');
-
     const smsPattern = /.*\[Rebrowse\] Verification code: (.*).*$/;
-    const verificationCode = findPatternInDockerLogs(smsPattern);
-    return this.mfaLogin(t, () => verificationCode);
+    const maxAttempts = 2;
+    return this.mfaLogin(
+      t,
+      async () => {
+        await t
+          .click(this.tabs.sms.sendCode.with({ timeout: 60000 })) // in case retry is needed we need to wait for 60s to re-send code
+          .expect(this.tabs.sms.sendCodeSuccessMessage.visible)
+          .ok('Sucessfuly sent message');
+
+        return findPatternInDockerLogs(smsPattern);
+      },
+      maxAttempts
+    );
   };
 }
 
