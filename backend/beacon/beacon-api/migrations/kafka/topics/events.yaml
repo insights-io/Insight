@@ -1,0 +1,13 @@
+meta:
+  name: events
+  cluster: development-cluster
+  environment: development
+  region: local-region
+  description: |
+    Events topic
+
+spec:
+  partitions: 1
+  replicationFactor: 1
+  placement:
+    strategy: any
