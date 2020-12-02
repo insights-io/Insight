@@ -1,4 +1,4 @@
-FROM segment/topicctl
+FROM segment/topicctl:v0.0.3
 
 WORKDIR /usr/app
 

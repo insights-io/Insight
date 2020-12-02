@@ -39,11 +39,11 @@ public class KafkaTestContainer extends KafkaContainer {
     Path absolutePath = migrationsPath.toAbsolutePath();
 
     if (!Files.exists(migrationsPath)) {
-      System.out.printf("[TEST-SETUP]: Skipping applyMigrations from=%s%n", absolutePath);
+      System.out.printf("[TEST-SETUP]: Skipping apply kafka migrations from=%s%n", absolutePath);
       return;
     }
 
-    System.out.printf("[TEST-SETUP]: Applying migrations from=%s%n", absolutePath);
+    System.out.printf("[TEST-SETUP]: Applying kafka migrations from=%s%n", absolutePath);
     new KafkaMigrationsTestContainer<>(migrationsPath).start();
   }
 }
