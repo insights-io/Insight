@@ -84,7 +84,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - name: Setup & wait for containers
+      - name: Setup & wait for docker containers
         run: |
           mkdir -p $ARTIFACTS_PATH
           export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="$STRIPE_SECRET_KEY")

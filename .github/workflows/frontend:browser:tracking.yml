@@ -44,14 +44,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - uses: microsoft/playwright-github-action@v1
-      - name: Install xvfb
+      - name: Install dependencies
         run: |
           sudo apt-get install xvfb
-      - name: Install dependencies  and run tests
-        run: |
           yarn install --frozen-lockfile
-          node_modules/wait-on/bin/wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health --timeout 600000
-          xvfb-run --auto-servernum yarn workspace @rebrowse/browser-tracking test --coverage --forceExit
+      - name: Wait for docker containers
+        run: node_modules/wait-on/bin/wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health --timeout 600000
+      - name: Run tests
+        run: xvfb-run --auto-servernum yarn workspace @rebrowse/browser-tracking test --coverage --forceExit
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
