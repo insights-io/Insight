@@ -174,7 +174,7 @@ services:
 
   # Postgres
   db:
-    image: postgres:12.4
+    image: postgres:12.5
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     environment:
