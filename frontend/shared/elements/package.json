@@ -37,7 +37,7 @@
     "@rebrowse/testing": "0.0.0-development",
     "@rebrowse/storybook": "0.0.0-development",
     "baseui": "9.106.0",
-    "react-hook-form": "6.12.1",
+    "react-hook-form": "6.12.2",
     "styletron-react": "5.2.7"
   },
   "peerDependencies": {
