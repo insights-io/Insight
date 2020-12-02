@@ -101,12 +101,24 @@ services:
     depends_on:
       - session-api
       - kafka
+      - beacon-api-kafka-migrations
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
       - POSTGRES_HOST=db
       - JAEGER_AGENT_HOST=jaeger:6831
       - SESSION_SERVICE_BASE_URL=http://session-api
+
+  beacon-api-kafka-migrations:
+    image: segment/topicctl
+    command: --cluster-config=cluster.yaml apply --skip-confirm topics/events.yaml topics/events-unload.yaml
+    restart: unless-stopped
+    volumes:
+      - ./kafka/cluster.yaml:/cluster.yaml
+      - ../beacon/beacon-api/migrations/kafka/topics:/topics
+    depends_on:
+      - kafka
+      - zookeeper
 
   session-api:
     build:
@@ -119,6 +131,7 @@ services:
       - auth-api
       - session-api-postgres-migrations
       - session-api-elasticsearch-migrations
+      - beacon-api-kafka-migrations
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
@@ -187,6 +200,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
   zookeeper:
     image: strimzi/kafka:0.19.0-kafka-2.5.0
     command:

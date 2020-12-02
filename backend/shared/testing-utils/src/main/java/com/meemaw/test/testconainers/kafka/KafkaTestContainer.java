@@ -33,6 +33,7 @@ public class KafkaTestContainer extends KafkaContainer {
             AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers()));
   }
 
+  // TODO: use segment/topicctl
   public void createTopics() {
     List<NewTopic> topics = List.of(new NewTopic("events", 1, (short) 1));
 

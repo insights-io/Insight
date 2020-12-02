@@ -1,0 +1,15 @@
+---
+meta:
+  name: development-cluster
+  environment: development
+  region: local-region
+  description: |
+    Development cluster
+
+spec:
+  versionMajor: v2
+  bootstrapAddrs:
+    - kafka:9092
+  zkAddrs:
+    - zookeeper:2181
+  zkLockPath: /topicctl/locks

@@ -36,10 +36,10 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(AuthApiTestResource.class)
 public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
-  private static OffsetDateTime createdAt;
   private static final AtomicBoolean hasBeenSetup = new AtomicBoolean(false);
   private static final String DISTINCT_PATH = String.join("/", InsightsResource.PATH, "distinct");
   private static final String COUNT_PATH = String.join("/", InsightsResource.PATH, "count");
+  private static OffsetDateTime createdAt;
 
   @Inject SessionDatasource sessionDatasource;
   @Inject SqlPool sqlPool;
@@ -187,7 +187,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
         .get(DISTINCT_PATH)
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":[null,\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
+        .body(sameJson("{\"data\":[\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
 
     String apiKey = authApi().createApiKey(sessionId);
     given()
@@ -198,7 +198,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
         .get(DISTINCT_PATH)
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":[null,\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
+        .body(sameJson("{\"data\":[\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
   }
 
   @Test
@@ -237,7 +237,7 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
         .get(DISTINCT_PATH)
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":[null,\"Podravska\",\"Washington\"]}"));
+        .body(sameJson("{\"data\":[\"Podravska\",\"Washington\"]}"));
   }
 
   @Test

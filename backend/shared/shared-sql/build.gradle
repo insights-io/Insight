@@ -6,6 +6,7 @@ dependencies {
     api project(":shared:rest")
     api "org.jooq:jooq:${jooqVersion}"
     api "io.quarkus:quarkus-reactive-pg-client"
+    
     implementation "io.quarkus:quarkus-smallrye-opentracing"
 
     testImplementation "io.quarkus:quarkus-junit5"

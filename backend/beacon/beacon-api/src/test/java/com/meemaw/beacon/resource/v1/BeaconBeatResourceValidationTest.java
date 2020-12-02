@@ -3,7 +3,7 @@ package com.meemaw.beacon.resource.v1;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.auth.organization.model.Organization;
+import com.meemaw.shared.SharedConstants;
 import com.meemaw.test.testconainers.api.session.SessionApiTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -46,7 +46,7 @@ public class BeaconBeatResourceValidationTest {
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
         .queryParam("pageId", UUID.randomUUID().toString())
-        .queryParam("organizationId", Organization.identifier())
+        .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
         .statusCode(422)
@@ -64,7 +64,7 @@ public class BeaconBeatResourceValidationTest {
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
         .queryParam("pageId", UUID.randomUUID().toString())
-        .queryParam("organizationId", Organization.identifier())
+        .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .body("{}")
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
@@ -87,7 +87,7 @@ public class BeaconBeatResourceValidationTest {
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
         .queryParam("pageId", UUID.randomUUID().toString())
-        .queryParam("organizationId", Organization.identifier())
+        .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
@@ -109,7 +109,7 @@ public class BeaconBeatResourceValidationTest {
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
         .queryParam("pageId", UUID.randomUUID().toString())
-        .queryParam("organizationId", Organization.identifier())
+        .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()

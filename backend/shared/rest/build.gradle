@@ -9,6 +9,7 @@ dependencies {
     api "io.quarkus:quarkus-smallrye-opentracing"
     api "org.apache.commons:commons-lang3:3.11"
     api "com.google.guava:guava:30.0-jre"
+    
     api project(":shared:rest-core")
     compileOnly "io.quarkus:quarkus-resteasy-jackson"
 

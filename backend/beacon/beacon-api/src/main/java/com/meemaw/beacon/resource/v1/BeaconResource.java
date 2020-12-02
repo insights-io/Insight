@@ -1,9 +1,10 @@
 package com.meemaw.beacon.resource.v1;
 
-import com.meemaw.auth.organization.model.validation.OrganizationId;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,7 +21,10 @@ public interface BeaconResource {
   @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
   @Path("/beat")
   CompletionStage<Response> beacon(
-      @OrganizationId @QueryParam("organizationId") String organizationId,
+      @NotBlank(message = "Required")
+          @Size(min = 6, max = 6, message = "Has to be " + 6 + " characters long")
+          @QueryParam("organizationId")
+          String organizationId,
       @NotNull(message = "Required") @QueryParam("sessionId") UUID sessionId,
       @NotNull(message = "Required") @QueryParam("deviceId") UUID deviceId,
       @NotNull(message = "Required") @QueryParam("pageId") UUID pageId,
