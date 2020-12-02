@@ -13,11 +13,6 @@ public class KafkaTestExtension implements BeforeAllCallback {
     return KAFKA;
   }
 
-  @Override
-  public void beforeAll(ExtensionContext context) {
-    start(KAFKA).forEach(System::setProperty);
-  }
-
   public static Map<String, String> start() {
     return start(KAFKA);
   }
@@ -26,7 +21,7 @@ public class KafkaTestExtension implements BeforeAllCallback {
     if (!KAFKA.isRunning()) {
       System.out.println("[TEST-SETUP]: Starting kafka container ...");
       kafka.start();
-      kafka.createTopics();
+      kafka.applyMigrations();
     }
     String bootstrapServers = kafka.getBootstrapServers();
     System.out.println(
@@ -36,5 +31,10 @@ public class KafkaTestExtension implements BeforeAllCallback {
 
   public static void stop() {
     KAFKA.stop();
+  }
+
+  @Override
+  public void beforeAll(ExtensionContext context) {
+    start(KAFKA).forEach(System::setProperty);
   }
 }

@@ -36,7 +36,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
   private static String imageFromDockerfile(Api api) {
     Path dockerfile = api.dockerfile();
     String imageName = api.imageName();
-    Path context = ProjectUtils.backendPath();
+    Path context = ProjectUtils.getFromBackend();
     System.out.printf(
         "[TEST-SETUP]: Building %s api dockerfile=%s context=%s imageName=%s%n",
         api.name().toLowerCase(), dockerfile.toString(), context.toAbsolutePath(), imageName);

@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 public final class ProjectUtils {
 
   private static final String BACKEND = "backend";
+  private static final String INFRASTRUCTURE = "infrastructure";
 
   private ProjectUtils() {}
 
@@ -18,12 +19,20 @@ public final class ProjectUtils {
     return new File(getUserDirectory().split(BACKEND)[0]);
   }
 
-  public static Path backendPath() {
+  private static Path backendPath() {
     return Paths.get(root().toString(), BACKEND).toAbsolutePath();
   }
 
+  private static Path infrastructurePath() {
+    return Paths.get(root().toString(), INFRASTRUCTURE).toAbsolutePath();
+  }
+
+  public static Path getFromInfrastructure(String... args) {
+    return Paths.get(infrastructurePath().toString(), args);
+  }
+
   public static Path getFromBackend(String... args) {
-    return Paths.get(ProjectUtils.backendPath().toString(), args);
+    return Paths.get(backendPath().toString(), args);
   }
 
   public static Path getFromModule(String... args) {
