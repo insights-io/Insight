@@ -11,8 +11,3 @@ dependencies {
     testImplementation project(":shared:testing-utils")
     testImplementation project(":shared:testing-data")
 }
-
-// TODO: remove this?
-configurations {
-    testRuntimeClasspath.exclude group: "io.smallrye.reactive", module: "smallrye-reactive-streams-operators"
-}
