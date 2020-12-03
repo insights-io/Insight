@@ -1,18 +1,19 @@
 package com.meemaw.test.testconainers.kafka;
 
+import com.meemaw.test.project.ProjectUtils;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 
 public class KafkaTestContainer extends KafkaContainer {
 
-  public static final String NETWORK_ALIAS = "kafka";
+  public static final String KAFKA_NETWORK_ALIAS = "kafka";
+  public static final String ZOOKEEPER_NETWORK_ALIAS = "zookeeper";
 
   private static final DockerImageName IMAGE_NAME =
       DockerImageName.parse("confluentinc/cp-kafka").withTag("5.5.1");
@@ -20,7 +21,7 @@ public class KafkaTestContainer extends KafkaContainer {
   private KafkaTestContainer() {
     super(IMAGE_NAME);
     withNetwork(Network.SHARED);
-    withNetworkAliases(NETWORK_ALIAS);
+    withNetworkAliases(KAFKA_NETWORK_ALIAS, ZOOKEEPER_NETWORK_ALIAS);
   }
 
   public static KafkaTestContainer newInstance() {
@@ -33,19 +34,16 @@ public class KafkaTestContainer extends KafkaContainer {
             AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers()));
   }
 
-  // TODO: use segment/topicctl
-  public void createTopics() {
-    List<NewTopic> topics = List.of(new NewTopic("events", 1, (short) 1));
+  public void applyMigrations() {
+    Path migrationsPath = ProjectUtils.getFromInfrastructure("kafka");
+    Path absolutePath = migrationsPath.toAbsolutePath();
 
-    System.out.printf(
-        "[TEST-SETUP]: Creating kafka topics bootstrap.servers=%s topics=%s%n",
-        getBootstrapServers(), topics);
-
-    try {
-      adminClient().createTopics(topics).all().get();
-    } catch (InterruptedException | ExecutionException ex) {
-      System.out.printf("[TEST-SETUP]: Failed to create kafka topics=%s%n", topics);
-      throw new RuntimeException(ex);
+    if (!Files.exists(migrationsPath)) {
+      System.out.printf("[TEST-SETUP]: Skipping apply kafka migrations from=%s%n", absolutePath);
+      return;
     }
+
+    System.out.printf("[TEST-SETUP]: Applying kafka migrations from=%s%n", absolutePath);
+    new KafkaMigrationsTestContainer<>(migrationsPath).start();
   }
 }

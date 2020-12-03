@@ -110,12 +110,11 @@ services:
       - SESSION_SERVICE_BASE_URL=http://session-api
 
   beacon-api-kafka-migrations:
-    image: segment/topicctl
-    command: --cluster-config=cluster.yaml apply --skip-confirm topics/events.yaml topics/events-unload.yaml
+    build:
+      context: ../../infrastructure/kafka
+      dockerfile: Dockerfile
+    command: --cluster-config=cluster.yaml apply --skip-confirm topics/*.yaml
     restart: unless-stopped
-    volumes:
-      - ./kafka/cluster.yaml:/cluster.yaml
-      - ../beacon/beacon-api/migrations/kafka/topics:/topics
     depends_on:
       - kafka
       - zookeeper
