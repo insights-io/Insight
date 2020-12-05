@@ -13,7 +13,7 @@ spec:
       containers:
         - name: kafka-migrations
           image: insightio/kafka-migrations
-          command:
+          args:
             [
               '--cluster-config=cluster.yaml',
               'apply',
