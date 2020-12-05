@@ -11,5 +11,5 @@ spec:
   bootstrapAddrs:
     - kafka:9092
   zkAddrs:
-    - zookeeper:2181
+    - kafka-zookeeper:2181
   zkLockPath: /topicctl/locks
