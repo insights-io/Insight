@@ -1,0 +1,27 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-migrations
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      containers:
+        - name: kafka-migrations
+          image: insightio/kafka-migrations
+          command:
+            [
+              '--cluster-config=cluster.yaml',
+              'apply',
+              '--skip-confirm',
+              'topics/*.yaml',
+            ]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 400Mi
+      restartPolicy: Never

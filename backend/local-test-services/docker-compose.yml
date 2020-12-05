@@ -101,7 +101,7 @@ services:
     depends_on:
       - session-api
       - kafka
-      - beacon-api-kafka-migrations
+      - kafka-migrations
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
@@ -109,7 +109,7 @@ services:
       - JAEGER_AGENT_HOST=jaeger:6831
       - SESSION_SERVICE_BASE_URL=http://session-api
 
-  beacon-api-kafka-migrations:
+  kafka-migrations:
     build:
       context: ../../infrastructure/kafka
       dockerfile: Dockerfile
@@ -130,7 +130,7 @@ services:
       - auth-api
       - session-api-postgres-migrations
       - session-api-elasticsearch-migrations
-      - beacon-api-kafka-migrations
+      - kafka-migrations
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - KAFKA_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092

@@ -39,6 +39,8 @@ build:
         buildCommand: ./custom_build.sh auth/auth-api/docker/Dockerfile.jvm
     - image: insightio/auth-api-postgres-migrations
       context: backend/auth/auth-api/migrations/postgres
+    - image: insightio/kafka-migrations
+      context: infrastructure/kafka
     - image: insightio/billing-api
       context: backend
       custom:
