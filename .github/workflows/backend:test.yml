@@ -29,7 +29,9 @@ jobs:
       - name: Run tests 🚀
         working-directory: backend
         run: ./gradlew clean test -i -S --stacktrace --no-daemon --continue jacocoTestReport
-        timeout-minutes: 25
+        timeout-minutes: 20
+        env:
+          GRADLE_OPTS: -Xmx1408m
       - uses: actions/upload-artifact@v2
         if: always()
         with:
