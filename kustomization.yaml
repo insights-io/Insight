@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - backend/k8/base
   - frontend/k8/base
+  - infrastructure
 
 patchesJson6902:
   - target:
