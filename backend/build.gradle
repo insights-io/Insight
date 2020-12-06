@@ -8,6 +8,11 @@ plugins {
     id "com.diffplug.spotless"
 }
 
+// We are ignoring this folder in Dockerfile
+if (new File("$rootDir/gradle/ci-support.gradle").exists()) {
+    apply from: "$rootDir/gradle/ci-support.gradle"
+}
+
 allprojects {
     repositories {
         mavenLocal()

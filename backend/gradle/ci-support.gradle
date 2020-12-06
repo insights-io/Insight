@@ -1,0 +1,50 @@
+import groovy.json.JsonOutput
+
+import java.nio.file.Files
+import java.nio.file.Paths
+
+// Emit a JSON-formatted list of check tasks to be run in CI
+task testMatrix {
+    project.afterEvaluate {
+        def testTasks = subprojects.findAll {
+            File testDirectory = new File(it.getBuildDir().parent, "src/test/java")
+            it.buildFile.exists() && testDirectory.isDirectory() && Files.list(Paths.get(testDirectory.getPath())).findAny().isPresent()
+        }.collect {
+            it.tasks.findByName("test")
+        }.findAll {
+            it != null
+        }
+
+        dependsOn(testTasks)
+        doLast {
+            def checkTaskPaths = testTasks
+                    .collect { it.path }
+
+            println(JsonOutput.toJson(checkTaskPaths))
+        }
+    }
+}
+
+// If we're executing the `taskMatrix` task, disable tests and other slow tasks
+//  so that we can get a result quickly.
+gradle.taskGraph.whenReady {
+    if (it.hasTask(tasks.testMatrix)) {
+        for (subproject in subprojects) {
+            subproject.tasks.withType(Test).all {
+                enabled = false;
+            }
+            subproject.tasks.findByName("pmdMain")?.enabled = false
+            subproject.tasks.findByName("spotbugsTest")?.enabled = false
+            subproject.tasks.findByName("spotbugsMain")?.enabled = false
+            subproject.tasks.findByName("checkstyleMain")?.enabled = false
+            subproject.tasks.findByName("ckeckstyleTest")?.enabled = false
+            subproject.tasks.findByName("shadowJar")?.enabled = false
+            subproject.tasks.findByName("javadoc")?.enabled = false
+            subproject.tasks.findByName("delombok")?.enabled = false
+            subproject.tasks.findByName("japicmp")?.enabled = false
+            subproject.tasks.findByName("jacocoTestReport")?.enabled = false
+            subproject.tasks.findByName("quarkusGenerateCode")?.enabled = false
+            subproject.tasks.findByName("quarkusGenerateCodeTests")?.enabled = false
+        }
+    }
+}
