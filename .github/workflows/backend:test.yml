@@ -35,27 +35,38 @@ jobs:
   test:
     needs: find_gradle_jobs
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.find_gradle_jobs.outputs.matrix) }}
+
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - name: Cache Gradle Home files
+        uses: actions/cache@v2
+        continue-on-error: true
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          key: ${{ runner.os }}-gradle-home-${{matrix.gradle_args}}_check-${{ hashFiles('**/*.gradle') }}
       - uses: actions/setup-java@v1
         with:
           java-version: 15
-      - name: Run tests 🚀
+      - name: Clear existing docker image cache
+        run: docker image prune -af
+      - name: Build and test with Gradle (${{matrix.gradle_args}}) 🚀
         working-directory: backend
-        run: ./gradlew test --continue jacocoTestReport
-        timeout-minutes: 25
+        timeout-minutes: 15
+        run: |
+          ./gradlew --no-daemon --continue jacocoTestReport --scan ${{matrix.gradle_args}}
+        env:
+          GRADLE_OPTS: -Xmx1408m
       - uses: actions/upload-artifact@v2
         if: always()
+        continue-on-error: true
         with:
           name: test-reports
           path: backend/**/build/reports/tests/**
       - uses: codecov/codecov-action@v1
+        continue-on-error: true
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: backend/**/build/reports/jacoco/test/jacocoTestReport.xml
