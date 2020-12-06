@@ -1,10 +1,15 @@
 import groovy.json.JsonOutput
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 // Emit a JSON-formatted list of check tasks to be run in CI
 task testMatrix {
     project.afterEvaluate {
         def testTasks = subprojects.findAll {
-            it.buildFile.exists() && new File(it.getBuildDir().getPath(), "classes/java/test").exists()
+            File testDirectory = new File(it.getBuildDir().getPath(), "../src/test/java")
+            it.buildFile.exists() &&
+                    testDirectory.isDirectory() && Files.list(Paths.get(testDirectory.getPath())).findAny().isPresent()
         }.collect {
             it.tasks.findByName("test")
         }.findAll {
@@ -38,6 +43,7 @@ gradle.taskGraph.whenReady {
             subproject.tasks.findByName("javadoc")?.enabled = false
             subproject.tasks.findByName("delombok")?.enabled = false
             subproject.tasks.findByName("japicmp")?.enabled = false
+            subproject.tasks.findByName("jacocoTestReport")?.enabled = false
         }
     }
 }
