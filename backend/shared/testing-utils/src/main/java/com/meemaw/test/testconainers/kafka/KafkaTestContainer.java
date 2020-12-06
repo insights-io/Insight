@@ -13,7 +13,8 @@ import org.testcontainers.utility.DockerImageName;
 public class KafkaTestContainer extends KafkaContainer {
 
   public static final String KAFKA_NETWORK_ALIAS = "kafka";
-  public static final String ZOOKEEPER_NETWORK_ALIAS = "zookeeper";
+  public static final String ZOOKEEPER_NETWORK_ALIAS =
+      String.format("%s-zookeeper", KAFKA_NETWORK_ALIAS);
 
   private static final DockerImageName IMAGE_NAME =
       DockerImageName.parse("confluentinc/cp-kafka").withTag("5.5.1");

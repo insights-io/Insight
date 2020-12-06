@@ -50,9 +50,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 15
-      - name: Clear existing docker image cache
-        run: docker image prune -af
-      - name: Build and test with Gradle (${{matrix.gradle_args}}) 🚀
+      - name: Run tests (${{matrix.gradle_args}}) 🚀
         working-directory: backend
         timeout-minutes: 15
         run: |
