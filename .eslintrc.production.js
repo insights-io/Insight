@@ -31,6 +31,7 @@ module.exports = {
     es6: true,
   },
   rules: {
+    'arrow-body-style': ['off'],
     'no-plusplus': ['off'],
     'react/prop-types': ['off'],
     'react/jsx-props-no-spreading': ['off'],
