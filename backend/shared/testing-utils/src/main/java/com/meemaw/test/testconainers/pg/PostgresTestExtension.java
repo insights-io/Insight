@@ -18,11 +18,6 @@ public class PostgresTestExtension implements BeforeAllCallback {
     return POSTGRES;
   }
 
-  @Override
-  public void beforeAll(ExtensionContext context) {
-    start(POSTGRES).forEach(System::setProperty);
-  }
-
   public static void stop() {
     POSTGRES.stop();
   }
@@ -44,9 +39,13 @@ public class PostgresTestExtension implements BeforeAllCallback {
       postgres.start();
     }
     postgres.applyMigrations();
-    System.out.println(
-        String.format(
-            "[TEST-SETUP]: Connecting to postgres datasource.url=%s", postgres.getDatasourceURL()));
+    System.out.printf(
+        "[TEST-SETUP]: Connecting to postgres datasource.url=%s%n", postgres.getDatasourceURL());
     return Collections.singletonMap("quarkus.datasource.reactive.url", postgres.getDatasourceURL());
+  }
+
+  @Override
+  public void beforeAll(ExtensionContext context) {
+    start(POSTGRES).forEach(System::setProperty);
   }
 }

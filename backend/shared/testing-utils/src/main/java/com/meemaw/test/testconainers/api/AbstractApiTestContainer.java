@@ -18,7 +18,8 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     extends GenericContainer<SELF> {
 
   protected static final int EXPOSED_PORT = 80;
-  protected final Api api;
+
+  public final Api api;
 
   public AbstractApiTestContainer(Api api) {
     super(imageFromDockerfile(Objects.requireNonNull(api)));
@@ -106,7 +107,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
 
     if (container instanceof TestContainerApiDependency) {
       TestContainerApiDependency dependency = (TestContainerApiDependency) container;
-      dependency.inject(api, this);
+      dependency.inject(this);
     }
   }
 }

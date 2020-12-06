@@ -1,9 +1,8 @@
 package com.meemaw.test.testconainers;
 
-import com.meemaw.test.testconainers.api.Api;
-import org.testcontainers.containers.GenericContainer;
+import com.meemaw.test.testconainers.api.AbstractApiTestContainer;
 
 public interface TestContainerApiDependency {
 
-  void inject(Api api, GenericContainer<?> apiContainer);
+  void inject(AbstractApiTestContainer<?> apiContainer);
 }

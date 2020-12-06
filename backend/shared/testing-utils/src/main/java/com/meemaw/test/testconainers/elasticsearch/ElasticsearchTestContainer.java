@@ -4,7 +4,7 @@ import static org.awaitility.Awaitility.await;
 
 import com.meemaw.test.project.ProjectUtils;
 import com.meemaw.test.testconainers.TestContainerApiDependency;
-import com.meemaw.test.testconainers.api.Api;
+import com.meemaw.test.testconainers.api.AbstractApiTestContainer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +17,6 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -30,8 +29,7 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer
 
   private ElasticsearchTestContainer() {
     super(DOCKER_TAG);
-    withNetwork(Network.SHARED);
-    withNetworkAliases(NETWORK_ALIAS);
+    withNetwork(Network.SHARED).withNetworkAliases(NETWORK_ALIAS);
   }
 
   public static ElasticsearchTestContainer newInstance() {
@@ -98,7 +96,5 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer
   }
 
   @Override
-  public void inject(Api api, GenericContainer<?> apiContainer) {
-    apiContainer.withEnv("ELASTICSEARCH_HOSTS", getDockerBaseUri());
-  }
+  public void inject(AbstractApiTestContainer<?> apiContainer) {}
 }

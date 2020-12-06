@@ -9,6 +9,7 @@ import static org.jooq.impl.DSL.table;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.project.ProjectUtils;
 import com.meemaw.test.testconainers.TestContainerApiDependency;
+import com.meemaw.test.testconainers.api.AbstractApiTestContainer;
 import com.meemaw.test.testconainers.api.Api;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
@@ -20,7 +21,6 @@ import java.util.UUID;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
 import org.mindrot.jbcrypt.BCrypt;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -125,8 +125,8 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
   }
 
   @Override
-  public void inject(Api api, GenericContainer<?> apiContainer) {
-    applyFlywayMigrations(api.pathToPostgresMigrations());
-    apiContainer.withEnv("POSTGRES_HOST", NETWORK_ALIAS);
+  public void inject(AbstractApiTestContainer<?> container) {
+    applyFlywayMigrations(container.api.pathToPostgresMigrations());
+    container.withEnv("POSTGRES_HOST", NETWORK_ALIAS);
   }
 }
