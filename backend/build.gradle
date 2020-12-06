@@ -8,6 +8,8 @@ plugins {
     id "com.diffplug.spotless"
 }
 
+apply from: "$rootDir/gradle/ci-support.gradle"
+
 allprojects {
     repositories {
         mavenLocal()
