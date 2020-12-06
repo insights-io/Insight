@@ -43,6 +43,7 @@ export function insrumentXMLHttpRequest(
     return function (this: WrappedXMLHttpRequest, ...args) {
       const xhr = this;
 
+      // eslint-disable-next-line prefer-arrow-callback
       xhr.addEventListener('readystatechange', function () {
         if (xhr.readyState === 4) {
           enqueue(
