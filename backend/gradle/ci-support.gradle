@@ -8,8 +8,12 @@ task testMatrix {
     project.afterEvaluate {
         def testTasks = subprojects.findAll {
             File testDirectory = new File(it.getBuildDir().getPath(), "../src/test/java")
-            it.buildFile.exists() &&
-                    testDirectory.isDirectory() && Files.list(Paths.get(testDirectory.getPath())).findAny().isPresent()
+
+            System.out.println(it.buildFile.getPath() + " exists: " + it.buildFile.exists());
+            System.out.println(testDirectory.getPath() + " is directory: " + testDirectory.isDirectory());
+
+
+            it.buildFile.exists() && testDirectory.isDirectory() && Files.list(Paths.get(testDirectory.getPath())).findAny().isPresent()
         }.collect {
             it.tasks.findByName("test")
         }.findAll {
