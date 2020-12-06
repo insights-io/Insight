@@ -8,6 +8,7 @@ import static org.jooq.impl.DSL.table;
 
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.TestContainerApiDependency;
 import com.meemaw.test.testconainers.api.Api;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
@@ -19,10 +20,12 @@ import java.util.UUID;
 import org.jooq.Query;
 import org.jooq.conf.ParamType;
 import org.mindrot.jbcrypt.BCrypt;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestContainer> {
+public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestContainer>
+    implements TestContainerApiDependency {
 
   public static final String NETWORK_ALIAS = "db";
 
@@ -46,10 +49,6 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
         .withExposedPorts(PORT);
   }
 
-  public PgPool client() {
-    return PostgresTestContainer.client(this);
-  }
-
   public static PgPool client(PostgresTestContainer container) {
     PgConnectOptions connectOptions =
         new PgConnectOptions()
@@ -61,6 +60,10 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
     PoolOptions poolOptions = new PoolOptions().setMaxSize(5);
     return PgPool.pool(connectOptions, poolOptions);
+  }
+
+  public PgPool client() {
+    return PostgresTestContainer.client(this);
   }
 
   public int getPort() {
@@ -119,5 +122,11 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
     client()
         .preparedQuery(query.getSQL(ParamType.NAMED))
         .executeAndAwait(Tuple.tuple(query.getBindValues()));
+  }
+
+  @Override
+  public void inject(Api api, GenericContainer<?> apiContainer) {
+    applyFlywayMigrations(api.pathToPostgresMigrations());
+    apiContainer.withEnv("POSTGRES_HOST", NETWORK_ALIAS);
   }
 }

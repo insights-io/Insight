@@ -1,16 +1,19 @@
 package com.meemaw.test.testconainers.kafka;
 
 import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.TestContainerApiDependency;
+import com.meemaw.test.testconainers.api.Api;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 
-public class KafkaTestContainer extends KafkaContainer {
+public class KafkaTestContainer extends KafkaContainer implements TestContainerApiDependency {
 
   public static final String KAFKA_NETWORK_ALIAS = "kafka";
   public static final String ZOOKEEPER_NETWORK_ALIAS =
@@ -52,5 +55,11 @@ public class KafkaTestContainer extends KafkaContainer {
     new KafkaMigrationsTestContainer<>(migrationsPath).start();
     System.out.printf(
         "[TEST-SETUP]: Successfully applied kafka migrations from=%s%n", absolutePath);
+  }
+
+  @Override
+  public void inject(Api api, GenericContainer<?> container) {
+    applyMigrations();
+    container.withEnv("KAFKA_BOOTSTRAP_SERVERS", getDockerBaseUri());
   }
 }

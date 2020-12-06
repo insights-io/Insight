@@ -43,7 +43,7 @@ public enum Api {
         name().toLowerCase(), fullName(), "docker", "Dockerfile.jvm");
   }
 
-  public Path postgresMigrations() {
+  public Path pathToPostgresMigrations() {
     return ProjectUtils.getFromBackend(name().toLowerCase(), fullName(), "migrations", "postgres");
   }
 

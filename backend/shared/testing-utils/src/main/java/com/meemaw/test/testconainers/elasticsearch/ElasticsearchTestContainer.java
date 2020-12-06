@@ -3,6 +3,8 @@ package com.meemaw.test.testconainers.elasticsearch;
 import static org.awaitility.Awaitility.await;
 
 import com.meemaw.test.project.ProjectUtils;
+import com.meemaw.test.testconainers.TestContainerApiDependency;
+import com.meemaw.test.testconainers.api.Api;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,10 +17,12 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-public class ElasticsearchTestContainer extends ElasticsearchContainer {
+public class ElasticsearchTestContainer extends ElasticsearchContainer
+    implements TestContainerApiDependency {
 
   public static final String NETWORK_ALIAS = "elasticsearch";
 
@@ -36,6 +40,10 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
   public static RestHighLevelClient restHighLevelClient(ElasticsearchTestContainer container) {
     return new RestHighLevelClient(RestClient.builder(container.getHttpHosts()));
+  }
+
+  public static String getDockerBaseUri() {
+    return String.format("http://%s:9200", NETWORK_ALIAS);
   }
 
   public RestHighLevelClient restHighLevelClient() {
@@ -78,14 +86,19 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
     applyMigrations(elasticsearchMigrationsPath);
   }
 
-  public void applyMigrations(Path migrationsSqlPath) {
-    Path absolutePath = migrationsSqlPath.toAbsolutePath();
-    if (!Files.exists(migrationsSqlPath)) {
+  public void applyMigrations(Path migrationsPath) {
+    Path absolutePath = migrationsPath.toAbsolutePath();
+    if (!Files.exists(migrationsPath)) {
       System.out.printf("[TEST-SETUP]: Skipping applyMigrations from=%s%n", absolutePath);
       return;
     }
 
     System.out.printf("[TEST-SETUP]: Applying migrations from=%s%n", absolutePath);
-    new ElasticsearchMigrationsTestContainer<>(migrationsSqlPath).start();
+    new ElasticsearchMigrationsTestContainer<>(migrationsPath).start();
+  }
+
+  @Override
+  public void inject(Api api, GenericContainer<?> apiContainer) {
+    apiContainer.withEnv("ELASTICSEARCH_HOSTS", getDockerBaseUri());
   }
 }
