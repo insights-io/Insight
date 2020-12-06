@@ -29,6 +29,10 @@ public class KafkaTestContainer extends KafkaContainer {
     return new KafkaTestContainer();
   }
 
+  public static String getDockerBaseUri() {
+    return String.format("PLAINTEXT://%s:9092", KAFKA_NETWORK_ALIAS);
+  }
+
   public AdminClient adminClient() {
     return AdminClient.create(
         Collections.singletonMap(
@@ -46,5 +50,7 @@ public class KafkaTestContainer extends KafkaContainer {
 
     System.out.printf("[TEST-SETUP]: Applying kafka migrations from=%s%n", absolutePath);
     new KafkaMigrationsTestContainer<>(migrationsPath).start();
+    System.out.printf(
+        "[TEST-SETUP]: Successfully applied kafka migrations from=%s%n", absolutePath);
   }
 }

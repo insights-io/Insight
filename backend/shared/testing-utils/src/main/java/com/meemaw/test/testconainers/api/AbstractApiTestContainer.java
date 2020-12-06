@@ -2,6 +2,7 @@ package com.meemaw.test.testconainers.api;
 
 import com.meemaw.test.project.ProjectUtils;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestContainer;
+import com.meemaw.test.testconainers.kafka.KafkaTestContainer;
 import com.meemaw.test.testconainers.pg.PostgresTestContainer;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -84,7 +85,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     return getBaseURI(getContainerIpAddress(), getPort());
   }
 
-  public String getDockerBaseURI() {
+  public String getDockerBaseUri() {
     return getBaseURI(api.fullName(), EXPOSED_PORT);
   }
 
@@ -111,7 +112,11 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
       withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
     } else if (container instanceof AuthApiTestContainer) {
       AuthApiTestContainer authApiTestContainer = (AuthApiTestContainer) container;
-      withEnv("auth-api/mp-rest/url", authApiTestContainer.getDockerBaseURI());
+      withEnv("auth-api/mp-rest/url", authApiTestContainer.getDockerBaseUri());
+    } else if (container instanceof KafkaTestContainer) {
+      KafkaTestContainer kafkaTestContainer = (KafkaTestContainer) container;
+      kafkaTestContainer.applyMigrations();
+      withEnv("KAFKA_BOOTSTRAP_SERVERS", KafkaTestContainer.getDockerBaseUri());
     }
   }
 }
