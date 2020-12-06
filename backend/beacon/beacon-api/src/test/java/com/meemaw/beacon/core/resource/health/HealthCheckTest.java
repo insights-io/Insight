@@ -20,7 +20,7 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"SmallRye Reactive Messaging - liveness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\",\"events\":\"[OK]\"}},{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"SmallRye Reactive Messaging - readiness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\",\"events\":\"[OK]\"}},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
   }
 
   @Test
@@ -32,7 +32,7 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"SmallRye Reactive Messaging - liveness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\",\"events\":\"[OK]\"}},{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"}]}"));
   }
 
   @Test
@@ -44,6 +44,6 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"SmallRye Reactive Messaging - readiness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\",\"events\":\"[OK]\"}},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"}]}"));
   }
 }

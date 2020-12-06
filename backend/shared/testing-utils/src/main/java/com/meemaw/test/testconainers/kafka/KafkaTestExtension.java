@@ -24,8 +24,7 @@ public class KafkaTestExtension implements BeforeAllCallback {
       kafka.applyMigrations();
     }
     String bootstrapServers = kafka.getBootstrapServers();
-    System.out.println(
-        String.format("[TEST-SETUP]: Connecting to kafka bootstrap.servers=%s", bootstrapServers));
+    System.out.printf("[TEST-SETUP]: Connecting to kafka bootstrap.servers=%s%n", bootstrapServers);
     return Collections.singletonMap("kafka.bootstrap.servers", bootstrapServers);
   }
 

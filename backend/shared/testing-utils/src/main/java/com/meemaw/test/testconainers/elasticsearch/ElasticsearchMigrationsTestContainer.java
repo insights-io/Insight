@@ -17,9 +17,7 @@ public class ElasticsearchMigrationsTestContainer<
   public ElasticsearchMigrationsTestContainer(Path path) {
     super(new ImageFromDockerfile().withFileFromPath(".", path));
     withNetwork(Network.SHARED)
-        .withEnv(
-            "ELASTICSEARCH_HOSTS",
-            String.format("http://%s:9200", ElasticsearchTestContainer.NETWORK_ALIAS))
+        .withEnv("ELASTICSEARCH_HOSTS", ElasticsearchTestContainer.getDockerBaseUri())
         .withLogConsumer(new Slf4jLogConsumer(log))
         .waitingFor(forLogMessage("^.*All done!.*$", 1));
   }

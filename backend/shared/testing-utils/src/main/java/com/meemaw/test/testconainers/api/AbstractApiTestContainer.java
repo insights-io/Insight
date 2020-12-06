@@ -1,8 +1,7 @@
 package com.meemaw.test.testconainers.api;
 
 import com.meemaw.test.project.ProjectUtils;
-import com.meemaw.test.testconainers.api.auth.AuthApiTestContainer;
-import com.meemaw.test.testconainers.pg.PostgresTestContainer;
+import com.meemaw.test.testconainers.TestContainerApiDependency;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,7 +18,8 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     extends GenericContainer<SELF> {
 
   protected static final int EXPOSED_PORT = 80;
-  protected final Api api;
+
+  public final Api api;
 
   public AbstractApiTestContainer(Api api) {
     super(imageFromDockerfile(Objects.requireNonNull(api)));
@@ -84,7 +84,7 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
     return getBaseURI(getContainerIpAddress(), getPort());
   }
 
-  public String getDockerBaseURI() {
+  public String getDockerBaseUri() {
     return getBaseURI(api.fullName(), EXPOSED_PORT);
   }
 
@@ -94,24 +94,20 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
 
   @Override
   public void start() {
-    api.dependencies().forEach(this::startDependantContainer);
+    api.dependencies().forEach(this::startDependency);
     super.start();
   }
 
-  private void startDependantContainer(GenericContainer<?> container) {
+  private void startDependency(GenericContainer<?> container) {
     System.out.printf(
         "[TEST-SETUP]: Starting %s as a dependency of %s%n",
         container.getDockerImageName(), api.fullName());
 
     container.start();
 
-    if (container instanceof PostgresTestContainer) {
-      PostgresTestContainer postgresTestContainer = (PostgresTestContainer) container;
-      postgresTestContainer.applyFlywayMigrations(api.postgresMigrations());
-      withEnv("POSTGRES_HOST", PostgresTestContainer.NETWORK_ALIAS);
-    } else if (container instanceof AuthApiTestContainer) {
-      AuthApiTestContainer authApiTestContainer = (AuthApiTestContainer) container;
-      withEnv("auth-api/mp-rest/url", authApiTestContainer.getDockerBaseURI());
+    if (container instanceof TestContainerApiDependency) {
+      TestContainerApiDependency dependency = (TestContainerApiDependency) container;
+      dependency.inject(this);
     }
   }
 }
