@@ -142,6 +142,7 @@ jobs:
           NAME: ${{ matrix.target }}
       - name: Delete AWS route53 DNS records
         run: |
+          NAME=${NAME//".homepage"/}
           envsubst < frontend/shared/previews/route53-change-set.json > route53-change-set.json
           aws route53 change-resource-record-sets --region $AWS_REGION --hosted-zone-id $AWS_DEV_HOSTED_ZONE_ID --change-batch 'file://route53-change-set.json'
         env:
