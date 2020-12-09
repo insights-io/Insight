@@ -40,7 +40,7 @@
     "@rebrowse/service-proxy": "0.0.0-development",
     "@rebrowse/sdk": "0.0.0-development",
     "@rebrowse/elements": "0.0.0-development",
-    "baseui": "9.106.0",
+    "baseui": "9.106.1",
     "next": "10.0.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
