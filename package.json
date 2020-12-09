@@ -24,7 +24,7 @@
     "@ffmpeg-installer/ffmpeg": "1.0.20",
     "@testing-library/jest-dom": "5.11.6",
     "@testing-library/react": "11.2.2",
-    "@testing-library/react-hooks": "3.6.0",
+    "@testing-library/react-hooks": "3.7.0",
     "@testing-library/testcafe": "4.3.1",
     "@testing-library/user-event": "12.5.0",
     "@types/jest": "26.0.17",
