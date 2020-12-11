@@ -32,7 +32,7 @@
     "@rebrowse/types": "0.0.0-development"
   },
   "dependencies": {
-    "ky": "0.25.0",
+    "ky": "0.25.1",
     "ky-universal": "0.8.2"
   }
 }
