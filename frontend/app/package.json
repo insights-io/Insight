@@ -59,7 +59,7 @@
     "react-window-infinite-loader": "1.0.5",
     "react-virtualized-auto-sizer": "1.0.2",
     "react-query": "2.26.4",
-    "use-debounce": "5.1.0",
+    "use-debounce": "5.2.0",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7",
     "swr": "0.3.9",
