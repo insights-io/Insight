@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@rebrowse/sdk": "0.0.0-development",
-    "baseui": "9.106.1",
+    "baseui": "9.106.2",
     "next": "10.0.3",
     "next-cookies": "2.0.3",
     "react": "17.0.1",
