@@ -80,14 +80,15 @@ public class SqlSessionDatasource implements SessionDatasource {
 
   @Override
   public CompletionStage<JsonNode> count(String organizationId, SearchDTO searchDTO) {
-    SQLGroupByQuery sqlGroupByQuery = SQLGroupByQuery.of(searchDTO.getGroupBy());
+    SQLGroupByQuery sqlGroupByQuery =
+        SQLGroupByQuery.of(searchDTO.getGroupBy(), searchDTO.getDateTrunc());
 
     Query query =
         SQLSearchDTO.of(searchDTO)
             .query(
                 sqlPool
                     .getContext()
-                    .select(sqlGroupByQuery.fieldsWithCount())
+                    .select(sqlGroupByQuery.count())
                     .from(TABLE)
                     .where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);

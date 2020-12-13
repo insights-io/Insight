@@ -15,6 +15,7 @@ public class SearchDTO {
   SortQuery sort;
   int limit;
   String query;
+  TimePrecision dateTrunc;
 
   public static SearchBuilder withAllowedFields(Set<String> allowedFields) {
     return new SearchBuilder(allowedFields);

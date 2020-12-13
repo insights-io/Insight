@@ -19,6 +19,7 @@ public abstract class AbstractQueryParser {
   public static final String LIMIT_PARAM = "limit";
   public static final String SORT_BY_PARAM = "sort_by";
   public static final String GROUP_BY_PARAM = "group_by";
+  public static final String DATA_TRUNC_PARAM = "date_trunc";
 
   protected static final String SORT_BY_PARAM_ERROR =
       String.format("Unexpected field in %s query", SORT_BY_PARAM);
@@ -26,6 +27,7 @@ public abstract class AbstractQueryParser {
       String.format("Unexpected field in %s query", GROUP_BY_PARAM);
 
   protected static final String UNEXPECTED_FIELD_ERROR = "Unexpected field in search query";
+  protected static final String UNEXPECTED_DATE_TRUNC_ERROR = "Unexpected date_trunc value";
   protected static final String NUMBER_FORMAT_EXCEPTION_ERROR = "Number expected";
 
   protected final List<FilterExpression> expressions;
@@ -35,12 +37,13 @@ public abstract class AbstractQueryParser {
   protected List<String> groupBy;
   protected int limit = 0;
   protected String query;
+  protected TimePrecision dateTrunc;
 
   public AbstractQueryParser(Set<String> allowedFields) {
-    expressions = new ArrayList<>();
-    sorts = Collections.emptyList();
-    groupBy = Collections.emptyList();
-    errors = new HashMap<>();
+    this.expressions = new ArrayList<>();
+    this.sorts = Collections.emptyList();
+    this.groupBy = Collections.emptyList();
+    this.errors = new HashMap<>();
     this.allowedFields = Objects.requireNonNull(allowedFields);
   }
 
@@ -59,6 +62,11 @@ public abstract class AbstractQueryParser {
         new BooleanFilterExpression<>(BooleanOperation.AND, expressions);
 
     return new SearchDTO(
-        rootFilterExpression, new GroupByQuery(groupBy), new SortQuery(sorts), limit, query);
+        rootFilterExpression,
+        new GroupByQuery(groupBy),
+        new SortQuery(sorts),
+        limit,
+        query,
+        dateTrunc);
   }
 }

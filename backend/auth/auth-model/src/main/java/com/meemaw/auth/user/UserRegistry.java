@@ -4,8 +4,8 @@ import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.SharedConstants;
+import com.rebrowse.api.RebrowseApi;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public final class UserRegistry {
@@ -17,8 +17,8 @@ public final class UserRegistry {
           "Internal S2S User",
           UserRole.ADMIN,
           "internal-s2s",
-          OffsetDateTime.parse("2020-12-03T10:15:30+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-          OffsetDateTime.parse("2020-12-03T10:15:30+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+          OffsetDateTime.parse("2020-12-03T10:15:30+01:00", RebrowseApi.DATE_TIME_FORMATTER),
+          OffsetDateTime.parse("2020-12-03T10:15:30+01:00", RebrowseApi.DATE_TIME_FORMATTER),
           null,
           false);
 

@@ -1,6 +1,7 @@
 package com.meemaw.session.sessions.resource.v1;
 
 import com.meemaw.auth.sso.session.model.AuthPrincipal;
+import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.session.sessions.datasource.SessionTable;
 import com.meemaw.session.sessions.service.SessionService;
 import com.meemaw.shared.context.RequestUtils;
@@ -23,6 +24,7 @@ public class SessionResourceImpl implements SessionResource {
   @Context UriInfo uriInfo;
   @Inject AuthPrincipal principal;
   @Inject SessionService sessionService;
+  @Inject SessionDatasource sessionDatasource;
 
   @Override
   public CompletionStage<Response> retrieve(UUID sessionId) {
@@ -31,6 +33,16 @@ public class SessionResourceImpl implements SessionResource {
         .getSession(sessionId, organizationId)
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
+  }
+
+  @Override
+  public CompletionStage<Response> count() {
+    String organizationId = principal.user().getOrganizationId();
+    SearchDTO search =
+        SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS)
+            .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
+
+    return sessionDatasource.count(organizationId, search).thenApply(DataResponse::ok);
   }
 
   @Override

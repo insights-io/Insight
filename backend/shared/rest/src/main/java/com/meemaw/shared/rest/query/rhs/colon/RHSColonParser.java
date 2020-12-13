@@ -8,6 +8,7 @@ import com.meemaw.shared.rest.query.BooleanOperation;
 import com.meemaw.shared.rest.query.FilterExpression;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.TermFilterExpression;
+import com.meemaw.shared.rest.query.TimePrecision;
 import com.rebrowse.api.query.QueryParam;
 import com.rebrowse.api.query.SortDirection;
 import com.rebrowse.api.query.TermCondition;
@@ -88,6 +89,12 @@ public final class RHSColonParser extends AbstractQueryParser {
 
     if (QUERY_PARAM.equals(fieldName)) {
       query = entry.getValue().get(0);
+    } else if (DATA_TRUNC_PARAM.equals(fieldName)) {
+      try {
+        dateTrunc = TimePrecision.fromString(entry.getValue().get(0));
+      } catch (IllegalArgumentException ex) {
+        errors.put(DATA_TRUNC_PARAM, UNEXPECTED_DATE_TRUNC_ERROR);
+      }
     } else if (LIMIT_PARAM.equals(fieldName)) {
       try {
         limit = Integer.parseInt(entry.getValue().get(0));

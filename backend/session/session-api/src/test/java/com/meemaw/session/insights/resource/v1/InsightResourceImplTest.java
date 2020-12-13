@@ -1,9 +1,6 @@
 package com.meemaw.session.insights.resource.v1;
 
 import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
-import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
-import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
-import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
 import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
@@ -38,123 +35,10 @@ public class InsightResourceImplTest extends ExternalAuthApiProvidedTest {
 
   private static final AtomicBoolean hasBeenSetup = new AtomicBoolean(false);
   private static final String DISTINCT_PATH = String.join("/", InsightsResource.PATH, "distinct");
-  private static final String COUNT_PATH = String.join("/", InsightsResource.PATH, "count");
   private static OffsetDateTime createdAt;
 
   @Inject SessionDatasource sessionDatasource;
   @Inject SqlPool sqlPool;
-
-  @Test
-  public void get_session_insights_count__should_throw__on_unauthorized() {
-    ssoSessionCookieTestCases(Method.GET, COUNT_PATH);
-    ssoBearerTokenTestCases(Method.GET, COUNT_PATH);
-  }
-
-  @Test
-  public void get_session_insights_count__should_throw__on_unsupported_fields() {
-    String sessionId = authApi().loginWithAdminUser();
-
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("random", "gte:aba")
-        .queryParam("aba", "gtecaba")
-        .queryParam(GROUP_BY_PARAM, "another")
-        .queryParam(SORT_BY_PARAM, "hehe")
-        .queryParam(LIMIT_PARAM, "not_string")
-        .get(COUNT_PATH)
-        .then()
-        .statusCode(400)
-        .body(
-            sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"hehe\":\"Unexpected field in sort_by query\"}}}}"));
-  }
-
-  @Test
-  public void get_session_insights_count__should_return_count__on_empty_request() {
-    String sessionId = authApi().loginWithAdminUser();
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("created_at", String.format("gte:%s", createdAt))
-        .get(COUNT_PATH)
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":{\"count\":5}}"));
-
-    String apiKey = authApi().createApiKey(sessionId);
-    given()
-        .when()
-        .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-        .queryParam("created_at", String.format("gte:%s", createdAt))
-        .get(COUNT_PATH)
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":{\"count\":5}}"));
-  }
-
-  @Test
-  public void get_session_insights_count__should_return_count__on_request_with_filters() {
-    String sessionId = authApi().loginWithAdminUser();
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("created_at", String.format("gte:%s", createdAt))
-        .queryParam("location.city", "eq:Maribor")
-        .get(COUNT_PATH)
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":{\"count\":1}}"));
-  }
-
-  @Test
-  public void get_session_insights_count__should_return_counts__on_group_by_country() {
-    String sessionId = authApi().loginWithAdminUser();
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("group_by", "location.countryName")
-        .queryParam("created_at", String.format("gte:%s", createdAt))
-        .get(COUNT_PATH)
-        .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":[{\"count\":1,\"location.countryName\":\"Canada\"},{\"count\":1,\"location.countryName\":\"Croatia\"},{\"count\":2,\"location.countryName\":\"Slovenia\"},{\"count\":1,\"location.countryName\":\"United States\"}]}"));
-  }
-
-  @Test
-  public void
-      get_session_insights_count__should_return_counts__on_group_by_country_and_continent() {
-    String sessionId = authApi().loginWithAdminUser();
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("group_by", "location.countryName,location.continentName")
-        .queryParam("created_at", String.format("gte:%s", createdAt))
-        .get(COUNT_PATH)
-        .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":[{\"count\":1,\"location.countryName\":\"Canada\",\"location.continentName\":\"North America\"},{\"count\":1,\"location.countryName\":\"Croatia\",\"location.continentName\":\"Europe\"},{\"count\":2,\"location.countryName\":\"Slovenia\",\"location.continentName\":\"Europe\"},{\"count\":1,\"location.countryName\":\"United States\",\"location.continentName\":\"North America\"}]}"));
-  }
-
-  @Test
-  public void get_session_insights_count__should_return_counts__on_group_by_device() {
-    String sessionId = authApi().loginWithAdminUser();
-    given()
-        .when()
-        .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("group_by", "user_agent.deviceClass")
-        .queryParam("created_at", String.format("gte:%s", createdAt))
-        .get(COUNT_PATH)
-        .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":[{\"count\":1,\"user_agent.deviceClass\":\"Desktop\"},{\"count\":4,\"user_agent.deviceClass\":\"Phone\"}]}"));
-  }
 
   @Test
   public void get_session_insights_distinct__should_throw__on_unauthorized() {

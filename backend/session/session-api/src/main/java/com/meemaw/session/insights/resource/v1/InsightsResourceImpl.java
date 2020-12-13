@@ -24,16 +24,6 @@ public class InsightsResourceImpl implements InsightsResource {
   @Context UriInfo uriInfo;
 
   @Override
-  public CompletionStage<Response> count() {
-    String organizationId = authPrincipal.user().getOrganizationId();
-    SearchDTO search =
-        SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS)
-            .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
-
-    return sessionDatasource.count(organizationId, search).thenApply(DataResponse::ok);
-  }
-
-  @Override
   public CompletionStage<Response> distinct(List<String> on) {
     Map<String, String> errors = new HashMap<>();
     for (String field : on) {
