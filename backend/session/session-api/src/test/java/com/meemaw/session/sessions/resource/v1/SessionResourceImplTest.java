@@ -508,7 +508,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
 
   @Test
   public void get_v1_session_count__should_return_counts__on_group_by_created_at_date_trunc_second()
-      throws JsonProcessingException, InterruptedException {
+      throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
     SessionDTO sessionFirstBatch = createTestSessions(organizationId).get(0);
