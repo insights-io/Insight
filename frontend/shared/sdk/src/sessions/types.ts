@@ -1,6 +1,6 @@
 import type { QueryParam, SearchBean } from '@rebrowse/types';
 
-import type { RequestOptions } from '../core/types';
+import type { RequestOptions } from '../types';
 
 export type SessionSearchBean = SearchBean & {
   // eslint-disable-next-line camelcase

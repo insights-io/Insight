@@ -1,7 +1,6 @@
 import ky from 'ky-universal';
 import type { DataResponse, SignUpRequestDTO } from '@rebrowse/types';
-
-import type { RequestOptions } from '../../core/types';
+import type { RequestOptions } from 'types';
 
 export const signupResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {

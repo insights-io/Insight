@@ -7,12 +7,8 @@ import type {
   PlanDTO,
 } from '@rebrowse/types';
 
-import {
-  RequestOptions,
-  withCredentials,
-  getData,
-  querystring,
-} from '../../core';
+import type { RequestOptions } from '../../types';
+import { withCredentials, getData, querystring } from '../../utils';
 
 import type { SubscriptionSearchRequestOptions } from './types';
 

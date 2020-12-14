@@ -24,11 +24,26 @@ export type QueryParam =
   | boolean[]
   | null;
 
+export enum TimePrecision {
+  MICROSECONDS = 'microseconds',
+  MILLISECONDS = 'milliseconds',
+  SECOND = 'second',
+  MINUTE = 'minute',
+  HOUR = 'hour',
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
+}
+
 export type SearchBean = {
   query?: string;
   limit?: number;
-  // eslint-disable-next-line camelcase
-  sort_by?: string[];
-  // eslint-disable-next-line camelcase
-  group_by?: string[];
+  sortBy?: string[];
+  groupBy?: string[];
+  dateTrunc?: TimePrecision;
 } & Record<string, QueryParam>;
+
+export enum SortDirection {
+  ASC = '+',
+  DESC = '-',
+}

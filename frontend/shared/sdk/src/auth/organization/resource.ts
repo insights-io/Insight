@@ -11,9 +11,8 @@ import type {
   PasswordPolicyUpdateParams,
   AcceptTeamInviteDTO,
 } from '@rebrowse/types';
-
-import type { RequestOptions } from '../../core/types';
-import { getData, querystring, withCredentials } from '../../core/utils';
+import type { RequestOptions } from 'types';
+import { getData, querystring, withCredentials } from 'utils';
 
 import type { MembersSearchOptions, TeamInviteSearchOptions } from './types';
 

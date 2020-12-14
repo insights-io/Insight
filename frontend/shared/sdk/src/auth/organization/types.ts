@@ -1,5 +1,5 @@
 import type { QueryParam, SearchBean } from '@rebrowse/types';
-import type { RequestOptions } from 'core';
+import type { RequestOptions } from 'types';
 
 export type MemberSearchBean = SearchBean & {
   // eslint-disable-next-line camelcase

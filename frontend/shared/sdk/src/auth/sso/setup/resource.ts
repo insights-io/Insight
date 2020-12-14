@@ -6,8 +6,8 @@ import type {
   SamlConfigurationDTO,
 } from '@rebrowse/types';
 
-import { getData, withCredentials } from '../../../core';
-import type { RequestOptions } from '../../../core/types';
+import { getData, withCredentials } from '../../../utils';
+import type { RequestOptions } from '../../../types';
 
 export const ssoSetupResource = (authApiBaseURL: string) => {
   return {

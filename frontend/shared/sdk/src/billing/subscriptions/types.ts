@@ -1,5 +1,6 @@
 import type { SearchBean } from '@rebrowse/types';
-import type { RequestOptions } from 'core';
+
+import type { RequestOptions } from '../../types';
 
 export type SubscriptionSearchBean = SearchBean;
 

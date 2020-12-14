@@ -1,20 +1,15 @@
-/* eslint-disable lodash/prefer-lodash-typecheck */
+import type { ClientConfig } from 'types';
+
 import { createBillingClient } from './billing';
 import { createAuthClient } from './auth';
 import { createSessionsClient } from './sessions';
-
-export type ClientConfig =
-  | string
-  | {
-      authApiBaseURL: string;
-      sessionApiBaseURL: string;
-      billingApiBaseURL: string;
-    };
 
 export const createClient = (clientConfig: ClientConfig) => {
   let authApiBaseURL: string;
   let sessionApiBaseURL: string;
   let billingApiBaseURL: string;
+
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
   if (typeof clientConfig === 'string') {
     authApiBaseURL = clientConfig;
     sessionApiBaseURL = clientConfig;
@@ -34,6 +29,6 @@ export const createClient = (clientConfig: ClientConfig) => {
 
 export * from './auth';
 export * from './sessions';
-export * from './core';
+export * from './types';
 export * from './tracking';
 export * from './billing';

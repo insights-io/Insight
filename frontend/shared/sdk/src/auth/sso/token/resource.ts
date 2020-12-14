@@ -1,7 +1,8 @@
 import ky from 'ky-universal';
 import type { DataResponse, AuthTokenDTO } from '@rebrowse/types';
 
-import { RequestOptions, withCredentials, getData } from '../../../core';
+import type { RequestOptions } from '../../../types';
+import { withCredentials, getData } from '../../../utils';
 
 export const ssoTokenResource = (authApiBaseURL: string) => {
   return {

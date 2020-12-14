@@ -5,8 +5,8 @@ import type {
   BrowserEventDTO,
 } from '@rebrowse/types';
 
-import { getData, querystring, withCredentials } from '../core/utils';
-import type { RequestOptions } from '../core/types';
+import { getData, querystring, withCredentials } from '../utils';
+import type { RequestOptions } from '../types';
 
 import type {
   SearchEventsRequestOptions,

@@ -4,9 +4,8 @@ import type {
   LoginResponseDTO,
   SessionInfoDTO,
 } from '@rebrowse/types';
-
-import { getData, withCredentials } from '../../../core/utils';
-import type { RequestOptions } from '../../../core/types';
+import { getData, withCredentials } from 'utils';
+import type { RequestOptions } from 'types';
 
 export const ssoSessionResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {

@@ -1,8 +1,8 @@
 import { ChangePasswordDTO, DataResponse } from '@rebrowse/types';
 import ky from 'ky-universal';
 
-import { withCredentials } from '../../core';
-import type { RequestOptions } from '../../core/types';
+import { withCredentials } from '../../utils';
+import type { RequestOptions } from '../../types';
 
 export const passwordResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
