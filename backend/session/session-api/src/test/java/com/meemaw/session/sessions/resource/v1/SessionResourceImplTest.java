@@ -3,33 +3,42 @@ package com.meemaw.session.sessions.resource.v1;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.meemaw.shared.SharedConstants.REBROWSE_ORGANIZATION_ID;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.DATA_TRUNC_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.GROUP_BY_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.LIMIT_PARAM;
+import static com.meemaw.shared.rest.query.AbstractQueryParser.SORT_BY_PARAM;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoBearerTokenTestCases;
+import static com.meemaw.test.setup.RestAssuredUtils.ssoSessionCookieTestCases;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.location.model.Location;
-import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.CreatePageDTO;
 import com.meemaw.session.model.PageIdentity;
 import com.meemaw.session.model.SessionDTO;
+import com.meemaw.session.sessions.datasource.SessionTable;
+import com.meemaw.shared.rest.query.TimePrecision;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.rest.data.UserAgentData;
-import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
-import com.meemaw.useragent.model.UserAgentDTO;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.organization.Organization;
 import io.quarkus.test.Mock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.restassured.http.Method;
 import io.restassured.response.ValidatableResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.pgclient.PgPool;
@@ -57,26 +66,11 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 @QuarkusTestResource(PostgresTestResource.class)
 @QuarkusTestResource(AuthApiTestResource.class)
-public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
+public class SessionResourceImplTest extends AbstractSessionResourceTest {
 
   public static final String SESSION_PATH_TEMPLATE = String.join("/", SessionResource.PATH, "%s");
-
   public static final String SESSION_PAGE_PATH_TEMPLATE =
       String.join("/", SESSION_PATH_TEMPLATE, "pages", "%s");
-
-  private static final Location MOCKED_LOCATION =
-      LocationDTO.builder()
-          .ip("127.0.0.1")
-          .city("Boydton")
-          .countryName("United States")
-          .regionName("Virginia")
-          .continentName("North America")
-          .latitude(36.667999267578125)
-          .longitude(-78.38899993896484)
-          .build();
-
-  private static final UserAgentDTO MOCKED_USER_AGENT =
-      new UserAgentDTO("Desktop", "Mac OS X", "Chrome");
 
   @Inject PgPool pgPool;
 
@@ -371,6 +365,172 @@ public class SessionResourceImplTest extends ExternalAuthApiProvidedTest {
 
     assertNotEquals(dataResponse.getData().getSessionId(), sessionId);
     assertEquals(dataResponse.getData().getDeviceId(), deviceId);
+  }
+
+  @Test
+  public void get_v1_sessions_count__should_throw__on_unauthorized() {
+    ssoSessionCookieTestCases(Method.GET, COUNT_PATH);
+    ssoBearerTokenTestCases(Method.GET, COUNT_PATH);
+  }
+
+  @Test
+  public void get_v1_sessions_count__should_throw__on_unsupported_fields() {
+    String sessionId = authApi().loginWithAdminUser();
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam("random", "gte:aba")
+        .queryParam("aba", "gtecaba")
+        .queryParam(GROUP_BY_PARAM, "another")
+        .queryParam(SORT_BY_PARAM, "hehe")
+        .queryParam(LIMIT_PARAM, "not_string")
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(400)
+        .body(
+            sameJson(
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"hehe\":\"Unexpected field in sort_by query\"}}}}"));
+  }
+
+  @Test
+  public void get_v1_sessions_count__should_return_count__on_empty_request()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    List<SessionDTO> sessions = createTestSessions(organizationId);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(
+            SessionTable.CREATED_AT, String.format("gte:%s", sessions.get(0).getCreatedAt()))
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":{\"count\":5}}"));
+
+    String apiKey = authApi().createApiKey(sessionId);
+    given()
+        .when()
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+        .queryParam(
+            SessionTable.CREATED_AT, String.format("gte:%s", sessions.get(0).getCreatedAt()))
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":{\"count\":5}}"));
+  }
+
+  @Test
+  public void get_v1_sessions_count__should_return_count__on_request_with_filters()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    List<SessionDTO> sessions = createTestSessions(organizationId);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(
+            SessionTable.CREATED_AT, String.format("gte:%s", sessions.get(0).getCreatedAt()))
+        .queryParam(SessionTable.LOCATION__CITY, "eq:Maribor")
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(sameJson("{\"data\":{\"count\":1}}"));
+  }
+
+  @Test
+  public void get_v1_session_count__should_return_counts__on_group_by_country()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    List<SessionDTO> sessions = createTestSessions(organizationId);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(GROUP_BY_PARAM, SessionTable.LOCATION__COUNTRY)
+        .queryParam(
+            SessionTable.CREATED_AT, String.format("gte:%s", sessions.get(0).getCreatedAt()))
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":[{\"count\":1,\"location.countryName\":\"Canada\"},{\"count\":1,\"location.countryName\":\"Croatia\"},{\"count\":2,\"location.countryName\":\"Slovenia\"},{\"count\":1,\"location.countryName\":\"United States\"}]}"));
+  }
+
+  @Test
+  public void get_v1_session_count__should_return_counts__on_group_by_country_and_continent()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    List<SessionDTO> sessions = createTestSessions(organizationId);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(
+            GROUP_BY_PARAM,
+            String.join(",", SessionTable.LOCATION__COUNTRY, SessionTable.LOCATION__CONTINENT))
+        .queryParam(
+            SessionTable.CREATED_AT, String.format("gte:%s", sessions.get(0).getCreatedAt()))
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":[{\"count\":1,\"location.countryName\":\"Canada\",\"location.continentName\":\"North America\"},{\"count\":1,\"location.countryName\":\"Croatia\",\"location.continentName\":\"Europe\"},{\"count\":2,\"location.countryName\":\"Slovenia\",\"location.continentName\":\"Europe\"},{\"count\":1,\"location.countryName\":\"United States\",\"location.continentName\":\"North America\"}]}"));
+  }
+
+  @Test
+  public void get_v1_session_count__should_return_counts__on_group_by_device()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    List<SessionDTO> sessions = createTestSessions(organizationId);
+
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(GROUP_BY_PARAM, SessionTable.USER_AGENT__DEVICE_CLASS)
+        .queryParam(
+            SessionTable.CREATED_AT, String.format("gte:%s", sessions.get(0).getCreatedAt()))
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                "{\"data\":[{\"count\":1,\"user_agent.deviceClass\":\"Desktop\"},{\"count\":4,\"user_agent.deviceClass\":\"Phone\"}]}"));
+  }
+
+  @Test
+  public void get_v1_session_count__should_return_counts__on_group_by_created_at_date_trunc_second()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    SessionDTO sessionFirstBatch = createTestSessions(organizationId).get(0);
+    SessionDTO sessionSecondBatch = createTestSessions(organizationId).get(0);
+
+    assertTrue(sessionSecondBatch.getCreatedAt().isAfter(sessionFirstBatch.getCreatedAt()));
+    given()
+        .when()
+        .cookie(SsoSession.COOKIE_NAME, sessionId)
+        .queryParam(GROUP_BY_PARAM, SessionTable.CREATED_AT)
+        .queryParam(DATA_TRUNC_PARAM, TimePrecision.MICROSECONDS.getKey())
+        .queryParam(
+            SessionTable.CREATED_AT, String.format("gte:%s", sessionFirstBatch.getCreatedAt()))
+        .get(COUNT_PATH)
+        .then()
+        .statusCode(200)
+        .body(
+            sameJson(
+                String.format(
+                    "{\"data\":[{\"count\":5,\"created_at\":\"%s\"},{\"count\":5,\"created_at\":\"%s\"}]}",
+                    sessionFirstBatch.getCreatedAt().format(RebrowseApi.DATE_TIME_FORMATTER),
+                    sessionSecondBatch.getCreatedAt().format(RebrowseApi.DATE_TIME_FORMATTER))));
   }
 
   @Mock

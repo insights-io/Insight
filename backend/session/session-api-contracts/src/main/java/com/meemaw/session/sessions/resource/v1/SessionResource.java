@@ -42,6 +42,17 @@ public interface SessionResource {
         @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
       })
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve session")
+  @Operation(summary = "Retrieve a session")
   CompletionStage<Response> retrieve(@PathParam("sessionId") UUID sessionId);
+
+  @GET
+  @Path("count")
+  @Tag(name = TAG)
+  @Operation(summary = "Count sessions")
+  @SecurityRequirements(
+      value = {
+        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
+        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
+      })
+  CompletionStage<Response> count();
 }

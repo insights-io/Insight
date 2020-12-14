@@ -27,17 +27,6 @@ public interface InsightsResource {
   String ON = "on";
 
   @GET
-  @Path("count")
-  @SecurityRequirements(
-      value = {
-        @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
-        @SecurityRequirement(name = SsoSessionCookieSecurityScheme.NAME)
-      })
-  @Tag(name = TAG)
-  @Operation(summary = "Count")
-  CompletionStage<Response> count();
-
-  @GET
   @Path("distinct")
   @SecurityRequirements(
       value = {

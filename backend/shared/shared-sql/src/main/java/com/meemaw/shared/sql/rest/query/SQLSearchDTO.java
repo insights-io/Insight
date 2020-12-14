@@ -30,7 +30,8 @@ public class SQLSearchDTO {
     if (!searchDTO.getGroupBy().getFields().isEmpty()) {
       select =
           ((SelectConditionStep<?>) select)
-              .groupBy(SQLGroupByQuery.of(searchDTO.getGroupBy()).apply());
+              .groupBy(
+                  SQLGroupByQuery.of(searchDTO.getGroupBy(), searchDTO.getDateTrunc()).apply());
     }
 
     if (!searchDTO.getSort().getOrders().isEmpty()) {

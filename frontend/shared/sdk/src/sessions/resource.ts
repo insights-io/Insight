@@ -21,10 +21,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
   }: SessionsSearchRequestOptions = {}) {
     const searchQuery = querystring(search);
     return ky
-      .get(
-        `${baseURL}/v1/sessions/insights/count${searchQuery}`,
-        withCredentials(rest)
-      )
+      .get(`${baseURL}/v1/sessions/count${searchQuery}`, withCredentials(rest))
       .json<DataResponse<T>>()
       .then(getData);
   }
