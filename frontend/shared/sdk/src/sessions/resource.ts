@@ -60,13 +60,13 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
         }[]
       >({
         ...params,
-        search: { group_by: ['location.countryName,location.continentName'] },
+        search: { groupBy: ['location.countryName', 'location.continentName'] },
       });
     },
     countByDeviceClass: (options: RequestOptions = {}) => {
       return count<{ count: number; 'user_agent.deviceClass': string }[]>({
         ...options,
-        search: { group_by: ['user_agent.deviceClass'] },
+        search: { groupBy: ['user_agent.deviceClass'] },
       }).then((dataResponse) => {
         return dataResponse.reduce((acc, entry) => {
           return { ...acc, [entry['user_agent.deviceClass']]: entry.count };

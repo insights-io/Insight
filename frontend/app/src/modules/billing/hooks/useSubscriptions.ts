@@ -9,8 +9,7 @@ export const cacheKey = ['subscriptions', 'list'];
 export const useSubscriptions = (initialData: SubscriptionDTO[]) => {
   const { data, refetch } = useQuery(
     cacheKey,
-    () =>
-      BillingApi.subscriptions.list({ search: { sort_by: ['-created_at'] } }),
+    () => BillingApi.subscriptions.list({ search: { sortBy: ['-createdAt'] } }),
     { initialData: () => initialData }
   );
 

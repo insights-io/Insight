@@ -14,6 +14,7 @@ import com.rebrowse.api.query.SortDirection;
 import com.rebrowse.api.query.TermCondition;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -41,16 +42,22 @@ public final class RHSColonParser extends AbstractQueryParser {
   }
 
   private static List<String> parseGroupBy(
-      Entry<String, List<String>> entry, Set<String> allowedFields)
+      List<String> groupBy, Entry<String, List<String>> entry, Set<String> allowedFields)
       throws GroupBySearchParseException {
-    List<String> groupBy = List.of(entry.getValue().get(0).split(","));
+
     Map<String, String> groupByErrors = new HashMap<>();
-    groupBy.forEach(
-        groupByField -> {
-          if (!allowedFields.contains(groupByField)) {
-            groupByErrors.put(groupByField, GROUP_BY_PARAM_ERROR);
+    for (String entryValue : entry.getValue()) {
+      for (String groupByField : entryValue.split((","))) {
+        if (!allowedFields.contains(groupByField)) {
+          groupByErrors.put(groupByField, GROUP_BY_PARAM_ERROR);
+        } else {
+          if (groupBy == Collections.EMPTY_LIST) {
+            groupBy = new LinkedList<>();
           }
-        });
+          groupBy.add(groupByField);
+        }
+      }
+    }
 
     if (!groupByErrors.isEmpty()) {
       throw new GroupBySearchParseException(groupByErrors);
@@ -109,7 +116,7 @@ public final class RHSColonParser extends AbstractQueryParser {
       }
     } else if (GROUP_BY_PARAM.equals(fieldName)) {
       try {
-        groupBy = parseGroupBy(entry, allowedFields);
+        groupBy = parseGroupBy(groupBy, entry, allowedFields);
       } catch (GroupBySearchParseException ex) {
         errors.put(GROUP_BY_PARAM, ex.getErrors());
       }

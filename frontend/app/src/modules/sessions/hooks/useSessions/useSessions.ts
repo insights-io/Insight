@@ -88,7 +88,7 @@ const getSearchQuery = ({ dateRange, filters }: Filter) => {
   }
 
   if (createdAt.length > 0) {
-    searchBean.created_at = createdAt;
+    searchBean.createdAt = createdAt;
   }
 
   filters.forEach((f) => {
@@ -131,7 +131,7 @@ export const useSessions = (
         }).then((resp) => resp.count);
 
         search.limit = 20;
-        search.sort_by = ['-created_at'];
+        search.sortBy = ['-createdAt'];
 
         const sessionsPromise = SessionApi.getSessions({ search }).then((s) =>
           s.map(mapSession)
@@ -171,7 +171,7 @@ export const useSessions = (
       });
 
       const search = getSearchQuery(filter);
-      search.sort_by = ['-created_at'];
+      search.sortBy = ['-createdAt'];
       search.limit = endIndex - startIndex + 1;
 
       if (sessions.length > 0) {
@@ -179,10 +179,10 @@ export const useSessions = (
           sessions.length - 1
         ].createdAt.toISOString()}`;
 
-        if (!search.created_at) {
-          search.created_at = [lastSessionCreatedAt];
+        if (!search.createdAt) {
+          search.createdAt = [lastSessionCreatedAt];
         } else {
-          const createdAtFilter = search.created_at as string[];
+          const createdAtFilter = search.createdAt as string[];
           const createdAtLteIndex = createdAtFilter.findIndex((v) =>
             v.startsWith('lte:')
           );

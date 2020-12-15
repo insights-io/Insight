@@ -35,15 +35,17 @@ export enum TimePrecision {
   MONTH = 'month',
 }
 
-export type SearchBean = {
-  query?: string;
-  limit?: number;
-  sortBy?: string[];
-  groupBy?: string[];
-  dateTrunc?: TimePrecision;
-} & Record<string, QueryParam>;
-
 export enum SortDirection {
   ASC = '+',
   DESC = '-',
 }
+
+type SortByQueryParam<S extends string> = S | `${SortDirection}${S}`;
+
+export type SearchBean<R extends Record<string, unknown>> = {
+  query?: string;
+  limit?: number;
+  sortBy?: SortByQueryParam<keyof R & string>[];
+  groupBy?: (keyof R)[];
+  dateTrunc?: TimePrecision;
+} & Partial<Record<keyof R, QueryParam>>;

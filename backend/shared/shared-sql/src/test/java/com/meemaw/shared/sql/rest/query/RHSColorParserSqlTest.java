@@ -106,4 +106,32 @@ public class RHSColorParserSqlTest {
             .query(select().from(table("session.session")), mappings)
             .getSQL(ParamType.INLINED));
   }
+
+  @Test
+  public void parse__should_handle_group_by__when_multiple_entries() throws MalformedURLException {
+    Set<String> allowedFields = Set.of("created_at", "updated_at", "id");
+    Map<String, Field<?>> mappings =
+        allowedFields.stream().collect(Collectors.toMap(v -> v, v -> field(v, String.class)));
+
+    assertEquals(
+        "select * from session.session group by \"created_at\", \"id\", \"updated_at\"",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(
+                        new URL(
+                            "http://www.abc.com?group_by=created_at&groupBy=updated_at&group_by=id")),
+                    allowedFields))
+            .query(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
+
+    assertEquals(
+        "select * from session.session group by \"created_at\", \"id\", \"updated_at\"",
+        SQLSearchDTO.of(
+                RHSColonParser.parse(
+                    RHSColonParser.queryParams(
+                        new URL("http://www.abc.com?group_by=created_at,id,updated_at")),
+                    allowedFields))
+            .query(select().from(table("session.session")), mappings)
+            .getSQL(ParamType.INLINED));
+  }
 }
