@@ -26,7 +26,7 @@
     "@testing-library/react": "11.2.2",
     "@testing-library/react-hooks": "3.7.0",
     "@testing-library/testcafe": "4.3.1",
-    "@testing-library/user-event": "12.5.0",
+    "@testing-library/user-event": "12.6.0",
     "@types/jest": "26.0.19",
     "@types/sinon": "9.0.9",
     "@typescript-eslint/eslint-plugin": "4.9.1",
