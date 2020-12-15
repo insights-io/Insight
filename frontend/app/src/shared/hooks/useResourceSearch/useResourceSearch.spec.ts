@@ -42,21 +42,21 @@ describe('useResourceSearch', () => {
     const search = sandbox
       .stub()
       .callsFake(
-        async ({ query, createdAt }: SearchBean & { createdAt?: string }) => {
+        async ({ query, createdAt }: SearchBean<{ createdAt?: string }>) => {
           return users
             .filter((user) =>
               query
                 ? user.role.toLowerCase().includes(query.toLowerCase())
                 : true
             )
-            .filter((user) => filterByCreatedAt(user, createdAt))
+            .filter((user) => filterByCreatedAt(user, createdAt as string))
             .slice(0, numItemsPerPage);
         }
       );
 
     const searchCount = sandbox
       .stub()
-      .callsFake(async ({ query }: SearchBean) => {
+      .callsFake(async ({ query }: SearchBean<never>) => {
         return users.filter((user) =>
           query ? user.role.toLowerCase().includes(query.toLowerCase()) : true
         ).length;
@@ -86,7 +86,7 @@ describe('useResourceSearch', () => {
       sandbox.assert.calledWithExactly(search, {
         query: 'E',
         limit: numItemsPerPage,
-        sort_by: ['+createdAt'],
+        sortBy: ['+createdAt'],
       });
 
       sandbox.assert.calledWithExactly(searchCount, {
@@ -106,7 +106,7 @@ describe('useResourceSearch', () => {
       sandbox.assert.calledWithExactly(search, {
         query: 'E',
         limit: numItemsPerPage,
-        sort_by: ['+createdAt'],
+        sortBy: ['+createdAt'],
         createdAt: `gt:${result.current.items[numItemsPerPage - 1].createdAt}`,
       });
 
@@ -128,7 +128,7 @@ describe('useResourceSearch', () => {
       sandbox.assert.calledWithExactly(search, {
         query: 'Er',
         limit: numItemsPerPage,
-        sort_by: ['+createdAt'],
+        sortBy: ['+createdAt'],
       });
 
       sandbox.assert.calledWithExactly(searchCount, {
