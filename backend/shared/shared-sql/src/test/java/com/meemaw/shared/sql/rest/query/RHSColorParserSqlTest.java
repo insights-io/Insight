@@ -178,10 +178,10 @@ public class RHSColorParserSqlTest {
             AbstractQueryParser.GROUP_BY_PARAM,
             Map.of(
                 "managedAt",
-                AbstractQueryParser.GROUP_BY_PARAM_ERROR,
+                AbstractQueryParser.UNEXPECTED_FIELD_ERROR,
                 "id",
-                AbstractQueryParser.GROUP_BY_PARAM_ERROR,
+                AbstractQueryParser.UNEXPECTED_FIELD_ERROR,
                 "updated_at",
-                AbstractQueryParser.GROUP_BY_PARAM_ERROR)));
+                AbstractQueryParser.UNEXPECTED_FIELD_ERROR)));
   }
 }

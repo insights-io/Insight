@@ -14,7 +14,7 @@ import { CountByLocation } from 'modules/insights/components/charts/CountByLocat
 import { TimePrecision } from '@rebrowse/types';
 import { addDays } from 'date-fns';
 
-type Props = AuthenticatedServerSideProps & {
+export type Props = AuthenticatedServerSideProps & {
   countByLocation: CountByLocation;
   countByDeviceClass: Record<string, number>;
   countSessionsByDate: CountByDateDataPoint[];
