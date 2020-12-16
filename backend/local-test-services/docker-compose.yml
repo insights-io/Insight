@@ -183,12 +183,12 @@ services:
 
   # Kafka
   kafka:
-    image: strimzi/kafka:0.19.0-kafka-2.5.0
+    image: strimzi/kafka:0.20.1-kafka-2.5.0
     command:
       [
-        'sh',
-        '-c',
-        'bin/kafka-server-start.sh config/server.properties --override listeners=$${KAFKA_LISTENERS} --override advertised.listeners=$${KAFKA_ADVERTISED_LISTENERS} --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}',
+          'sh',
+          '-c',
+          'bin/kafka-server-start.sh config/server.properties --override listeners=$${KAFKA_LISTENERS} --override advertised.listeners=$${KAFKA_ADVERTISED_LISTENERS} --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}',
       ]
     depends_on:
       - kafka-zookeeper
@@ -201,7 +201,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper:2181
 
   kafka-zookeeper:
-    image: strimzi/kafka:0.19.0-kafka-2.5.0
+    image: strimzi/kafka:0.20.1-kafka-2.5.0
     command:
       ['sh', '-c', 'bin/zookeeper-server-start.sh config/zookeeper.properties']
     ports:
