@@ -3,6 +3,7 @@ package com.meemaw.session.pages.datasource.sql;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.COMPILED_TIMESTAMP;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.CREATED_AT;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.DOCTYPE;
+import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.FIELD_MAPPINGS;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.HEIGHT;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.ID;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.INSERT_FIELDS;
@@ -14,7 +15,6 @@ import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.SESSION_
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.TABLE;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.URL;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.WIDTH;
-import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELD_MAPPINGS;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +24,6 @@ import com.meemaw.session.model.PageVisitDTO;
 import com.meemaw.session.model.PageVisitSessionLink;
 import com.meemaw.session.pages.datasource.PageVisitDatasource;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
-import com.meemaw.session.sessions.datasource.sql.SqlSessionTable;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
@@ -110,8 +109,8 @@ public class SqlPageVisitDatasource implements PageVisitDatasource {
                 sqlPool
                     .getContext()
                     .select(columns)
-                    .from(SqlSessionTable.TABLE)
-                    .where(SqlSessionTable.ORGANIZATION_ID.eq(organizationId)),
+                    .from(TABLE)
+                    .where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
     return sqlPool

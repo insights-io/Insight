@@ -15,6 +15,7 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.session.events.datasource.EventTable;
 import com.meemaw.session.sessions.resource.v1.SessionResource;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import com.meemaw.test.rest.data.EventTestData;
@@ -48,7 +49,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
       String.join("/", SessionResource.PATH, "%s/events/search");
 
   private static final UUID SESSION_ID = UUID.randomUUID();
-  private static final UUID PAGE_ID = UUID.randomUUID();
+  private static final UUID PAGE_VISIT_ID = UUID.randomUUID();
   private static final UUID DEVICE_ID = UUID.randomUUID();
 
   @SuppressWarnings("rawtypes")
@@ -79,7 +80,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
                             .source(
                                 new UserEvent<>(
                                         browserEvent,
-                                        PAGE_ID,
+                                        PAGE_VISIT_ID,
                                         SESSION_ID,
                                         DEVICE_ID,
                                         REBROWSE_ORGANIZATION_ID)
@@ -132,12 +133,12 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
   @Test
   public void events_search__should_return_all_events__on_big_limit()
       throws IOException, URISyntaxException {
-    String path = String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?limit=100";
     String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(path)
+        .queryParam(LIMIT_PARAM, 100)
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body("data.size()", is(loadIncomingEvents().size()));
@@ -146,7 +147,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-        .get(path)
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body("data.size()", is(loadIncomingEvents().size()));
@@ -158,7 +159,8 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:4")
+        .queryParam(EventTable.TYPE, TermCondition.EQ.rhs(4))
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body(
@@ -180,7 +182,8 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.t=lt:1250")
+        .queryParam(EventTable.TIMESTAMP, TermCondition.LT.rhs(1250))
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body(
@@ -198,12 +201,13 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void events_search__should_return_matching_events__when_complex_type_filter() {
-    String searchQuery = "?event.e=gte:11&event.e=lte:12";
     String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + searchQuery)
+        .queryParam(EventTable.TYPE, TermCondition.GTE.rhs(11))
+        .queryParam(EventTable.TYPE, TermCondition.LTE.rhs(12))
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body(

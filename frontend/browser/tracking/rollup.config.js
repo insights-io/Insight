@@ -7,7 +7,7 @@ import replace from '@rollup/plugin-replace';
 
 const input = path.join('src', 'index.ts');
 
-const environments = ['local', 'development', 'staging', 'production'];
+const environments = ['localhost', 'development', 'staging', 'production'];
 const stagingDomain = 'rebrowse.dev';
 const productionDomain = 'rebrowse.io';
 
@@ -16,7 +16,7 @@ const envConfig = (env) => {
   const fileName = `${env}.${baseName}`;
 
   switch (env) {
-    case 'local': {
+    case 'localhost': {
       return {
         fileName,
         beaconApiBaseURL: 'http://localhost:8081',

@@ -3,6 +3,7 @@ package com.meemaw.beacon.resource.v1;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.events.index.UserEventTable;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
 import com.meemaw.session.model.CreatePageVisitDTO;
@@ -104,10 +105,10 @@ public class BeaconBeatResourceProcessingTest {
     given()
         .when()
         .contentType(contentType)
-        .queryParam("sessionId", sessionId)
-        .queryParam("deviceId", deviceId)
-        .queryParam("pageVisitId", pageVisitId)
-        .queryParam("organizationId", ORGANIZATION_ID)
+        .queryParam(UserEventTable.SESSION_ID, sessionId)
+        .queryParam(UserEventTable.DEVICE_ID, deviceId)
+        .queryParam(UserEventTable.PAGE_VISIT_ID, pageVisitId)
+        .queryParam(UserEventTable.ORGANIZATION_ID, ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
@@ -138,10 +139,10 @@ public class BeaconBeatResourceProcessingTest {
       given()
           .when()
           .contentType(contentType)
-          .queryParam("sessionId", sessionId)
-          .queryParam("deviceId", deviceId)
-          .queryParam("pageVisitId", pageVisitId)
-          .queryParam("organizationId", ORGANIZATION_ID)
+          .queryParam(UserEventTable.SESSION_ID, sessionId)
+          .queryParam(UserEventTable.DEVICE_ID, deviceId)
+          .queryParam(UserEventTable.PAGE_VISIT_ID, pageVisitId)
+          .queryParam(UserEventTable.ORGANIZATION_ID, ORGANIZATION_ID)
           .body(body)
           .post(BEACON_RESOURCE_BEAT_PATH)
           .then()
@@ -172,10 +173,10 @@ public class BeaconBeatResourceProcessingTest {
     given()
         .when()
         .contentType(contentType)
-        .queryParam("sessionId", sessionId)
-        .queryParam("deviceId", deviceId)
-        .queryParam("pageVisitId", pageVisitId)
-        .queryParam("organizationId", ORGANIZATION_ID)
+        .queryParam(UserEventTable.SESSION_ID, sessionId)
+        .queryParam(UserEventTable.DEVICE_ID, deviceId)
+        .queryParam(UserEventTable.PAGE_VISIT_ID, pageVisitId)
+        .queryParam(UserEventTable.ORGANIZATION_ID, ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()

@@ -114,7 +114,7 @@ services:
       context: ../../infrastructure/kafka
       dockerfile: Dockerfile
     command: --cluster-config=cluster.yaml apply --skip-confirm topics/*.yaml
-    restart: unless-stopped
+    restart: on-failure
     depends_on:
       - kafka
       - kafka-zookeeper

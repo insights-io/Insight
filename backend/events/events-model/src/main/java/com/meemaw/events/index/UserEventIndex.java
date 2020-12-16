@@ -9,12 +9,16 @@ public final class UserEventIndex {
   public static final String NAME = "events";
 
   public static final IndexField SESSION_ID =
-      new IndexField("sessionId", Map.of("type", "keyword"));
+      new IndexField(UserEventTable.SESSION_ID, Map.of("type", "keyword"));
+
   public static final IndexField ORGANIZATION_ID =
-      new IndexField("organizationId", Map.of("type", "keyword"));
-  public static final IndexField DEVICE_ID = new IndexField("deviceId", Map.of("type", "keyword"));
+      new IndexField(UserEventTable.ORGANIZATION_ID, Map.of("type", "keyword"));
+
+  public static final IndexField DEVICE_ID =
+      new IndexField(UserEventTable.DEVICE_ID, Map.of("type", "keyword"));
+
   public static final IndexField PAGE_VISIT_ID =
-      new IndexField("pageVisitId", Map.of("type", "keyword"));
+      new IndexField(UserEventTable.PAGE_VISIT_ID, Map.of("type", "keyword"));
 
   public static final IndexField EVENT_TIMESTAMP =
       new IndexField(Recorded.TIMESTAMP, Map.of("type", "long"));

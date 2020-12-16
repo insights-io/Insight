@@ -47,7 +47,10 @@ public class SQLGroupByQuery implements QueryPart {
           for (int i = 0; i < columns.size() - 1; i++) {
             String column = columns.get(i).getName();
             Object value = row.getValue(column);
-            if (value instanceof OffsetDateTime) {
+
+            if (value == null) {
+              node.put(column, (String) null);
+            } else if (value instanceof OffsetDateTime) {
               node.put(column, ((OffsetDateTime) value).format(RebrowseApi.DATE_TIME_FORMATTER));
             } else {
               node.put(column, value.toString());

@@ -6,7 +6,10 @@ import static org.jooq.impl.DSL.table;
 import com.meemaw.session.pages.datasource.PageVisitTable;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jooq.Field;
 import org.jooq.Table;
 
@@ -32,6 +35,8 @@ public final class SqlPageVisitTable {
   public static final Field<OffsetDateTime> CREATED_AT =
       field(PageVisitTable.CREATED_AT, OffsetDateTime.class);
 
+  public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(CREATED_AT);
+
   public static final List<Field<?>> INSERT_FIELDS =
       List.of(
           ID,
@@ -45,6 +50,13 @@ public final class SqlPageVisitTable {
           SCREEN_HEIGHT,
           SCREEN_WIDTH,
           COMPILED_TIMESTAMP);
+
+  public static final List<Field<?>> FIELDS =
+      Stream.concat(INSERT_FIELDS.stream(), AUTO_GENERATED_FIELDS.stream())
+          .collect(Collectors.toList());
+
+  public static final Map<String, Field<?>> FIELD_MAPPINGS =
+      FIELDS.stream().collect(Collectors.toMap(Field::getName, f -> f));
 
   private SqlPageVisitTable() {}
 }

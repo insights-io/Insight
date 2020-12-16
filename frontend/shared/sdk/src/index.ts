@@ -4,6 +4,8 @@ import { createBillingClient } from './billing';
 import { createAuthClient } from './auth';
 import { createSessionsClient } from './sessions';
 
+export { createPagesClient } from './pages';
+
 export const createClient = (clientConfig: ClientConfig) => {
   let authApiBaseURL: string;
   let sessionApiBaseURL: string;
@@ -23,12 +25,14 @@ export const createClient = (clientConfig: ClientConfig) => {
   const auth = createAuthClient(authApiBaseURL);
   const sessions = createSessionsClient(sessionApiBaseURL);
   const billing = createBillingClient(billingApiBaseURL);
+  const pages = createSessionsClient(sessionApiBaseURL);
 
-  return { auth, sessions, billing };
+  return { auth, sessions, billing, pages };
 };
 
 export * from './auth';
 export * from './sessions';
 export * from './types';
 export * from './tracking';
+export * from './pages';
 export * from './billing';

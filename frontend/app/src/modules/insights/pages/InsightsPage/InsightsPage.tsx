@@ -20,7 +20,8 @@ export type InsightsPageProps = {
   organization: OrganizationDTO;
   countByLocation: CountByLocation;
   countByDeviceClass: Record<string, number>;
-  countByDate: CountByDateDataPoint[];
+  countSessionsByDate: CountByDateDataPoint[];
+  countPageVisitsByDate: CountByDateDataPoint[];
 };
 
 const countByCardOverrides = {
@@ -37,7 +38,8 @@ const countByCardOverrides = {
 export const InsightsPage = ({
   user: initialUser,
   organization: initialOrganization,
-  countByDate: initialCountByDate,
+  countSessionsByDate: initialCountSessionsByDate,
+  countPageVisitsByDate: initialCountPageVisitsByDate,
   countByDeviceClass,
   countByLocation,
 }: InsightsPageProps) => {
@@ -45,13 +47,22 @@ export const InsightsPage = ({
   const { organization } = useOrganization(initialOrganization);
   const [_css, theme] = useStyletron();
 
-  const countByDate = useMemo(
+  const countSessionsByDate = useMemo(
     () =>
-      initialCountByDate.map((v) => ({
+      initialCountSessionsByDate.map((v) => ({
         value: v.count,
         date: new Date(v.createdAt),
       })),
-    [initialCountByDate]
+    [initialCountSessionsByDate]
+  );
+
+  const countPageVisitsByDate = useMemo(
+    () =>
+      initialCountPageVisitsByDate.map((v) => ({
+        value: v.count,
+        date: new Date(v.createdAt),
+      })),
+    [initialCountPageVisitsByDate]
   );
 
   return (
@@ -77,7 +88,12 @@ export const InsightsPage = ({
         gridTemplateColumns="repeat(auto-fit, minmax(400px, 1fr))"
       >
         <StatCard
-          data={countByDate}
+          data={countPageVisitsByDate}
+          title="Page Visits"
+          timeRange="Last 30 days"
+        />
+        <StatCard
+          data={countSessionsByDate}
           title="Sessions"
           timeRange="Last 30 days"
         />
