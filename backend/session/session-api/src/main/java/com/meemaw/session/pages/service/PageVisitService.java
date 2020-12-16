@@ -46,8 +46,8 @@ public class PageVisitService {
   String s2sApiKey;
 
   /**
-   * Create a new page. This method is called as a first action of the tracking script to link
-   * sessions.
+   * Create a new page visit. This method is called as a first action of the tracking script to link
+   * page visits into sessions.
    *
    * <p>1. Check if the organization exists. 2. Increment the session usage counter 3. Check if
    * organization is on free plan and if it has exceeded the free usage 4. If device id is missing,
@@ -55,26 +55,30 @@ public class PageVisitService {
    * included, we try to link it to a existing session active in last 45 minutes. In case such
    * session is not found (doesn't exist or it is more than 45 minutes old), new session is created.
    *
-   * @param page containing all information about the page visit
+   * @param pageVisit containing all information about the page visit
    * @param userAgentString obtained from User-Agent header
    * @param ipAddress page visit request ip address
    * @return PageIdentity
    */
-  @Timed(name = "createPage", description = "A measure of how long it takes to create a page")
+  @Timed(
+      name = "createPageVisit",
+      description = "A measure of how long it takes to create a page visit")
   @Traced
   public CompletionStage<PageVisitSessionLink> create(
-      CreatePageVisitDTO page, String userAgentString, String ipAddress) {
+      CreatePageVisitDTO pageVisit, String userAgentString, String ipAddress) {
     UserAgent userAgent = userAgentService.parse(userAgentString);
     if (userAgent.isRobot() || userAgent.isHacker()) {
       log.debug(
-          "[SESSION]: Create page attempt by robot ip={} userAgent={}", ipAddress, userAgentString);
+          "[SESSION]: Create page visit attempt by robot ip={} userAgent={}",
+          ipAddress,
+          userAgentString);
       throw Boom.badRequest().message("You're a robot").exception();
     }
 
-    String organizationId = page.getOrganizationId();
-    UUID pageId = UUID.randomUUID();
-    UUID deviceId = Optional.ofNullable(page.getDeviceId()).orElseGet(UUID::randomUUID);
-    MDC.put(LoggingConstants.PAGE_VISIT_ID, pageId.toString());
+    String organizationId = pageVisit.getOrganizationId();
+    UUID pageVisitId = UUID.randomUUID();
+    UUID deviceId = Optional.ofNullable(pageVisit.getDeviceId()).orElseGet(UUID::randomUUID);
+    MDC.put(LoggingConstants.PAGE_VISIT_ID, pageVisitId.toString());
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
@@ -98,41 +102,42 @@ public class PageVisitService {
               }
 
               Organization organization = dataResponse.getData();
-              if (!deviceId.equals(page.getDeviceId())) {
+              if (!deviceId.equals(pageVisit.getDeviceId())) {
                 log.debug(
                     "[SESSION]: Unrecognized device -- starting a new session organizationId={}",
                     organizationId);
                 return createPageSession(
-                    pageId, deviceId, userAgent, ipAddress, page, organization);
+                    pageVisitId, deviceId, userAgent, ipAddress, pageVisit, organization);
               }
 
               // recognized device; try to link it with an existing session
               return sessionDatasource
-                  .findSessionDeviceLink(page.getOrganizationId(), deviceId)
+                  .findSessionDeviceLink(organizationId, deviceId)
                   .thenCompose(
                       maybeSessionId -> {
                         if (maybeSessionId.isEmpty()) {
                           log.debug(
-                              "[SESSION]: Could not link to an existing session -- starting new session");
+                              "[SESSION]: Could not link page visit to an existing session -- starting new session");
                           return createPageSession(
-                              pageId, deviceId, userAgent, ipAddress, page, organization);
+                              pageVisitId, deviceId, userAgent, ipAddress, pageVisit, organization);
                         }
                         UUID sessionId = maybeSessionId.get();
                         MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
                         log.info(
-                            "[SESSION]: Linking page to an existing session pageId={} sessionId={} organizationId={}",
-                            pageId,
+                            "[SESSION]: Linking page visit to an existing session pageVisitId={} sessionId={} organizationId={}",
+                            pageVisitId,
                             sessionId,
                             organizationId);
 
-                        return pageVisitDatasource.create(pageId, sessionId, deviceId, page);
+                        return pageVisitDatasource.create(
+                            pageVisitId, sessionId, deviceId, pageVisit);
                       });
             });
   }
 
   @Traced
   private CompletionStage<PageVisitSessionLink> createPageSession(
-      UUID pageId,
+      UUID pageVisitId,
       UUID deviceId,
       UserAgent userAgent,
       String ipAddress,
@@ -166,7 +171,8 @@ public class PageVisitService {
               Located location = locationService.lookupByIp(ipAddress);
 
               return pageVisitDatasource
-                  .createPageAndNewSession(pageId, sessionId, deviceId, userAgent, location, page)
+                  .createPageAndNewSession(
+                      pageVisitId, sessionId, deviceId, userAgent, location, page)
                   .thenApply(
                       identity -> {
                         log.debug(
@@ -182,7 +188,7 @@ public class PageVisitService {
   public CompletionStage<Optional<PageVisitDTO>> retrieve(UUID id, String organizationId) {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
     MDC.put(LoggingConstants.PAGE_VISIT_ID, id.toString());
-    log.debug("[SESSION]: get page by id={} organizationId={}", id, organizationId);
+    log.debug("[SESSION]: Retrieve page visit by id={} organizationId={}", id, organizationId);
     return pageVisitDatasource.retrieve(id, organizationId);
   }
 }

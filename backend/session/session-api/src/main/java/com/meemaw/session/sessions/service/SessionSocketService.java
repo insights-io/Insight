@@ -31,8 +31,8 @@ public class SessionSocketService {
     log.error("onError {}", session.getId(), throwable);
   }
 
-  public void pageStart(UUID pageID) {
-    log.debug("Notifying sockets about page start pageID={}", pageID);
+  public void pageStart(UUID pageVisitId) {
+    log.debug("Notifying sockets about page start pageVisitId={}", pageVisitId);
     sessions.values().forEach(session -> sendText(session, "PAGE START"));
   }
 
