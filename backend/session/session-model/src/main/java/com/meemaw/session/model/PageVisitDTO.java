@@ -10,7 +10,7 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class PageDTO {
+public class PageVisitDTO {
 
   UUID id;
   UUID sessionId;

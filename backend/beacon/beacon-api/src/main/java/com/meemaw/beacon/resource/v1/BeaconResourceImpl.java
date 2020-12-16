@@ -29,7 +29,7 @@ public class BeaconResourceImpl implements BeaconResource {
 
   @Override
   public CompletionStage<Response> beacon(
-      String organizationId, UUID sessionId, UUID deviceId, UUID pageId, String payload) {
+      String organizationId, UUID sessionId, UUID deviceId, UUID pageVisitId, String payload) {
     BeaconDTO beaconDTO;
     try {
       beaconDTO = objectMapper.readValue(payload, BeaconDTO.class);
@@ -46,13 +46,13 @@ public class BeaconResourceImpl implements BeaconResource {
       throw new ConstraintViolationException(constraintViolations);
     }
 
-    return beacon(organizationId, sessionId, deviceId, pageId, beaconDTO);
+    return beacon(organizationId, sessionId, deviceId, pageVisitId, beaconDTO);
   }
 
   private CompletionStage<Response> beacon(
-      String organizationId, UUID sessionId, UUID deviceId, UUID pageId, BeaconDTO beaconDTO) {
+      String organizationId, UUID sessionId, UUID deviceId, UUID pageVisitId, BeaconDTO beacon) {
     return beaconService
-        .process(organizationId, sessionId, deviceId, pageId, Beacon.from(beaconDTO))
+        .process(organizationId, sessionId, deviceId, pageVisitId, Beacon.from(beacon))
         .thenApply(nothing -> Response.noContent().build());
   }
 }

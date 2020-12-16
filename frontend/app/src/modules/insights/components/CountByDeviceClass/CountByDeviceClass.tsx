@@ -16,7 +16,7 @@ const CountByDeviceClassChart = dynamic(
   { ssr: false }
 );
 
-const CountByCountry = ({ data, overrides }: Props) => {
+export const CountByDeviceClass = ({ data, overrides }: Props) => {
   return (
     <GroupByCard
       heading="Device distribution"
@@ -26,5 +26,3 @@ const CountByCountry = ({ data, overrides }: Props) => {
     />
   );
 };
-
-export default CountByCountry;

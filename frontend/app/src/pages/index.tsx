@@ -5,13 +5,19 @@ import {
 } from 'modules/auth/middleware/authMiddleware';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
-import { InsightsPage } from 'modules/insights/pages/InsightsPage';
+import {
+  InsightsPage,
+  CountByDateDataPoint,
+} from 'modules/insights/pages/InsightsPage';
 import { SessionApi } from 'api';
 import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
+import { TimePrecision } from '@rebrowse/types';
+import { addDays } from 'date-fns';
 
 type Props = AuthenticatedServerSideProps & {
   countByLocation: CountByLocation;
   countByDeviceClass: Record<string, number>;
+  countByDate: CountByDateDataPoint[];
 };
 
 const Home = ({
@@ -19,6 +25,7 @@ const Home = ({
   countByLocation,
   organization,
   countByDeviceClass,
+  countByDate,
 }: Props) => {
   return (
     <InsightsPage
@@ -26,6 +33,7 @@ const Home = ({
       countByLocation={countByLocation}
       countByDeviceClass={countByDeviceClass}
       organization={organization}
+      countByDate={countByDate}
     />
   );
 };
@@ -39,6 +47,19 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     if (!authResponse) {
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
+
+    const countByDatePromise = SessionApi.count<CountByDateDataPoint[]>({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers: {
+        ...prepareCrossServiceHeaders(requestSpan),
+        cookie: `SessionId=${authResponse.SessionId}`,
+      },
+      search: {
+        groupBy: ['createdAt'],
+        dateTrunc: TimePrecision.DAY,
+        createdAt: `gte:${addDays(new Date(), -30).toISOString()}`,
+      },
+    });
 
     const countByLocationPromise = SessionApi.countByLocation({
       baseURL: process.env.SESSION_API_BASE_URL,
@@ -62,7 +83,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       },
     });
 
-    const [countByLocation, countByDeviceClass] = await Promise.all([
+    const [
+      countByDate,
+      countByLocation,
+      countByDeviceClass,
+    ] = await Promise.all([
+      countByDatePromise,
       countByLocationPromise,
       countByDeviceClassPromise,
     ]);
@@ -73,6 +99,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         organization: authResponse.organization,
         countByLocation,
         countByDeviceClass,
+        countByDate,
       },
     };
   } finally {

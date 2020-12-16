@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class SsoSessionTest {
 
   @Test
-  public void sso_session_identifier__should_be_50_characters_ong() {
+  public void sso_session_identifier__should_be_50_characters_long() {
     assertEquals(50, SsoSession.newIdentifier().length());
   }
 

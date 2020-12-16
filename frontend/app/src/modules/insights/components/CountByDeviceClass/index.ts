@@ -1,1 +1,1 @@
-export { default } from './CountByDeviceClass';
+export { CountByDeviceClass } from './CountByDeviceClass';

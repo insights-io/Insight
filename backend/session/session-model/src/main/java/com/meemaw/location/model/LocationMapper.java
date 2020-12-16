@@ -1,6 +1,7 @@
-package com.meemaw.location.model.dto;
+package com.meemaw.location.model;
 
-import com.meemaw.location.model.Location;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,8 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Builder
-public class LocationDTO implements Location {
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+public class LocationMapper implements Located {
 
   String ip;
   String countryName;

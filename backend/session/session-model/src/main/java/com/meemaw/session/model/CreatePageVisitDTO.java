@@ -12,7 +12,7 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class CreatePageDTO {
+public class CreatePageVisitDTO {
 
   @OrganizationId String organizationId;
 

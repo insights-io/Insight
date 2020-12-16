@@ -27,6 +27,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public final class RHSColonParser extends AbstractQueryParser {
 
+  private static final String ENTRY_SEPARATOR = ",";
+
   RHSColonParser(Set<String> allowedFields) {
     super(allowedFields);
   }
@@ -44,15 +46,20 @@ public final class RHSColonParser extends AbstractQueryParser {
   private static List<String> parseGroupBy(
       List<String> groupBy, Entry<String, List<String>> entry, Set<String> allowedFields)
       throws GroupBySearchParseException {
+    Map<String, String> groupByErrors = Collections.emptyMap();
 
-    Map<String, String> groupByErrors = new HashMap<>();
     for (String entryValue : entry.getValue()) {
-      for (String groupByField : entryValue.split((","))) {
-        if (!allowedFields.contains(groupByField)) {
-          groupByErrors.put(groupByField, GROUP_BY_PARAM_ERROR);
+      for (String groupByField : entryValue.split((ENTRY_SEPARATOR))) {
+        String groupBySnakeCaseField = snakeCase(groupByField);
+
+        if (!allowedFields.contains(groupBySnakeCaseField)) {
+          if (groupByErrors == Collections.EMPTY_MAP) {
+            groupByErrors = new HashMap<>();
+          }
+          groupByErrors.put(groupByField, UNEXPECTED_FIELD_ERROR);
         } else {
           if (groupBy == Collections.EMPTY_LIST) {
-            groupBy = new LinkedList<>();
+            groupBy = new ArrayList<>();
           }
           groupBy.add(groupByField);
         }
@@ -92,38 +99,40 @@ public final class RHSColonParser extends AbstractQueryParser {
 
   @Override
   public void process(Entry<String, List<String>> entry) {
-    String fieldName = snakeCase(entry.getKey());
+    String fieldName = entry.getKey();
+    String snakeCaseFieldName = snakeCase(fieldName);
 
-    if (QUERY_PARAM.equals(fieldName)) {
+    if (QUERY_PARAM.equals(snakeCaseFieldName)) {
       query = entry.getValue().get(0);
-    } else if (DATA_TRUNC_PARAM.equals(fieldName)) {
+    } else if (DATA_TRUNC_PARAM.equals(snakeCaseFieldName)) {
       try {
         dateTrunc = TimePrecision.fromString(entry.getValue().get(0));
       } catch (IllegalArgumentException ex) {
-        errors.put(DATA_TRUNC_PARAM, UNEXPECTED_DATE_TRUNC_ERROR);
+        errors.put(fieldName, UNEXPECTED_DATE_TRUNC_ERROR);
       }
-    } else if (LIMIT_PARAM.equals(fieldName)) {
+    } else if (LIMIT_PARAM.equals(snakeCaseFieldName)) {
       try {
         limit = Integer.parseInt(entry.getValue().get(0));
       } catch (NumberFormatException ex) {
-        errors.put(LIMIT_PARAM, NUMBER_FORMAT_EXCEPTION_ERROR);
+        errors.put(fieldName, NUMBER_FORMAT_EXCEPTION_ERROR);
       }
-    } else if (SORT_BY_PARAM.equals(fieldName)) {
+    } else if (SORT_BY_PARAM.equals(snakeCaseFieldName)) {
       try {
         sorts = parseSorts(entry.getValue().get(0), allowedFields);
       } catch (SortBySearchParseException ex) {
-        errors.put(SORT_BY_PARAM, ex.getErrors());
+        errors.put(fieldName, ex.getErrors());
       }
-    } else if (GROUP_BY_PARAM.equals(fieldName)) {
+    } else if (GROUP_BY_PARAM.equals(snakeCaseFieldName)) {
       try {
         groupBy = parseGroupBy(groupBy, entry, allowedFields);
       } catch (GroupBySearchParseException ex) {
-        errors.put(GROUP_BY_PARAM, ex.getErrors());
+        errors.put(fieldName, ex.getErrors());
       }
-    } else if (allowedFields.contains(fieldName)) {
+    } else if (allowedFields.contains(snakeCaseFieldName)) {
       List<FilterExpression> termFilterExpressions =
           entry.getValue().stream()
-              .map(value -> new TermFilterExpression<>(fieldName, extractQueryParam(value)))
+              .map(
+                  value -> new TermFilterExpression<>(snakeCaseFieldName, extractQueryParam(value)))
               .collect(Collectors.toList());
 
       expressions.add(new BooleanFilterExpression<>(BooleanOperation.AND, termFilterExpressions));
@@ -134,7 +143,7 @@ public final class RHSColonParser extends AbstractQueryParser {
 
   private List<Pair<String, SortDirection>> parseSorts(String text, Set<String> allowedFields)
       throws SortBySearchParseException {
-    String[] fields = text.split(",");
+    String[] fields = text.split(ENTRY_SEPARATOR);
     List<Pair<String, SortDirection>> sorts = new ArrayList<>(fields.length);
     Map<String, String> errors = new HashMap<>();
 
@@ -153,7 +162,7 @@ public final class RHSColonParser extends AbstractQueryParser {
       }
 
       if (!allowedFields.contains(field)) {
-        errors.put(field, SORT_BY_PARAM_ERROR);
+        errors.put(field, UNEXPECTED_FIELD_ERROR);
       } else {
         sorts.add(Pair.of(field, sortDirection));
       }

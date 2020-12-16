@@ -43,7 +43,9 @@ export const StatCard = ({ data, title, timeRange }: Props) => {
 
         <Block>
           <H5 margin={0} as="p" color="white" $style={{ textAlign: 'right' }}>
-            {data.length === 0 ? 'No data' : data[data.length - 1].value}
+            {data.length === 0
+              ? 'No data'
+              : data.reduce((acc, v) => acc + v.value, 0)}
           </H5>
 
           {percentageDiff && (

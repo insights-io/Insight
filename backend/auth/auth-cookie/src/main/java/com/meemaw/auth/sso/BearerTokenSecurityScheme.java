@@ -1,6 +1,6 @@
 package com.meemaw.auth.sso;
 
-public class BearerTokenSecurityScheme {
+public final class BearerTokenSecurityScheme {
 
   public static final String NAME = "Bearer Token";
   public static final String DESCRIPTION =

@@ -1,6 +1,7 @@
 package com.meemaw.auth.sso;
 
 import com.meemaw.auth.sso.AbstractSecurityRequirementDynamicFeature.AuthenticatedFilter;
+import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.response.Boom;
 import java.util.Map;
@@ -12,6 +13,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.opentracing.Traced;
+import org.slf4j.MDC;
 
 public abstract class AbstractSecurityRequirementDynamicFeature
     extends AbstractAuthDynamicFeature<SecurityRequirements, AuthenticatedFilter> {
@@ -55,6 +57,7 @@ public abstract class AbstractSecurityRequirementDynamicFeature
         AuthSchemeResolver resolver = authSchemeResolvers.get(scheme);
         try {
           resolver.tryAuthenticate(context);
+          MDC.put(LoggingConstants.AUTH_SCHEME, resolver.getAuthScheme().name());
           return;
         } catch (BoomException boomException) {
           thrownException = boomException;

@@ -4,19 +4,19 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
-import com.meemaw.location.model.Location;
+import com.meemaw.location.model.Located;
 import com.meemaw.session.location.service.LocationService;
-import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.session.model.PageDTO;
-import com.meemaw.session.model.PageIdentity;
-import com.meemaw.session.pages.datasource.PageDatasource;
+import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.model.PageVisitDTO;
+import com.meemaw.session.model.PageVisitSessionLink;
+import com.meemaw.session.pages.datasource.PageVisitDatasource;
 import com.meemaw.session.sessions.datasource.SessionCountDatasource;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.session.useragent.service.UserAgentService;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
-import com.meemaw.useragent.model.UserAgentDTO;
+import com.meemaw.useragent.model.UserAgent;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -33,12 +33,12 @@ import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
-public class PageService {
+public class PageVisitService {
 
   @Inject UserAgentService userAgentService;
   @Inject LocationService locationService;
   @Inject SessionDatasource sessionDatasource;
-  @Inject PageDatasource pageDatasource;
+  @Inject PageVisitDatasource pageVisitDatasource;
   @Inject SessionCountDatasource sessionCountDatasource;
   @Inject @RestClient OrganizationResource organizationResource;
 
@@ -62,9 +62,9 @@ public class PageService {
    */
   @Timed(name = "createPage", description = "A measure of how long it takes to create a page")
   @Traced
-  public CompletionStage<PageIdentity> createPage(
-      CreatePageDTO page, String userAgentString, String ipAddress) {
-    UserAgentDTO userAgent = userAgentService.parse(userAgentString);
+  public CompletionStage<PageVisitSessionLink> create(
+      CreatePageVisitDTO page, String userAgentString, String ipAddress) {
+    UserAgent userAgent = userAgentService.parse(userAgentString);
     if (userAgent.isRobot() || userAgent.isHacker()) {
       log.debug(
           "[SESSION]: Create page attempt by robot ip={} userAgent={}", ipAddress, userAgentString);
@@ -74,7 +74,7 @@ public class PageService {
     String organizationId = page.getOrganizationId();
     UUID pageId = UUID.randomUUID();
     UUID deviceId = Optional.ofNullable(page.getDeviceId()).orElseGet(UUID::randomUUID);
-    MDC.put(LoggingConstants.PAGE_ID, pageId.toString());
+    MDC.put(LoggingConstants.PAGE_VISIT_ID, pageId.toString());
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
@@ -125,18 +125,18 @@ public class PageService {
                             sessionId,
                             organizationId);
 
-                        return pageDatasource.insertPage(pageId, sessionId, deviceId, page);
+                        return pageVisitDatasource.create(pageId, sessionId, deviceId, page);
                       });
             });
   }
 
   @Traced
-  private CompletionStage<PageIdentity> createPageSession(
+  private CompletionStage<PageVisitSessionLink> createPageSession(
       UUID pageId,
       UUID deviceId,
-      UserAgentDTO userAgent,
+      UserAgent userAgent,
       String ipAddress,
-      CreatePageDTO page,
+      CreatePageVisitDTO page,
       Organization organization) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
@@ -163,9 +163,9 @@ public class PageService {
               }
 
               // TODO: move this to a async queue processing
-              Location location = locationService.lookupByIp(ipAddress);
+              Located location = locationService.lookupByIp(ipAddress);
 
-              return pageDatasource
+              return pageVisitDatasource
                   .createPageAndNewSession(pageId, sessionId, deviceId, userAgent, location, page)
                   .thenApply(
                       identity -> {
@@ -179,16 +179,10 @@ public class PageService {
             });
   }
 
-  public CompletionStage<Optional<PageDTO>> getPage(
-      UUID id, UUID sessionId, String organizationId) {
-    MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
+  public CompletionStage<Optional<PageVisitDTO>> retrieve(UUID id, String organizationId) {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
-    MDC.put(LoggingConstants.PAGE_ID, id.toString());
-    log.debug(
-        "[SESSION]: get page by id={} sessionId={} organizationId={}",
-        id,
-        sessionId,
-        organizationId);
-    return pageDatasource.getPage(id, sessionId, organizationId);
+    MDC.put(LoggingConstants.PAGE_VISIT_ID, id.toString());
+    log.debug("[SESSION]: get page by id={} organizationId={}", id, organizationId);
+    return pageVisitDatasource.retrieve(id, organizationId);
   }
 }

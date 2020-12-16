@@ -1,4 +1,4 @@
-import { UserRole } from './user';
+import type { UserRole } from './user';
 
 export type AvatarDTO =
   | { type: 'initials' }

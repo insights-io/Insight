@@ -1,12 +1,13 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
+import type { Meta } from '@storybook/react';
 
-import LocationDistribution from './LocationDistribution';
+import { LocationDistribution } from './LocationDistribution';
 
 export default {
   title: 'insights/components/LocationDistribution',
   decorators: [fullHeightDecorator],
-};
+} as Meta;
 
 export const Base = () => {
   return (

@@ -1,6 +1,8 @@
 package com.meemaw.session.pages.datasource;
 
-public final class PageTable {
+import java.util.Set;
+
+public final class PageVisitTable {
 
   public static final String ID = "id";
   public static final String SESSION_ID = "session_id";
@@ -15,5 +17,7 @@ public final class PageTable {
   public static final String COMPILED_TIMESTAMP = "compiled_timestamp";
   public static final String CREATED_AT = "created_at";
 
-  private PageTable() {}
+  public static final Set<String> QUERYABLE_FIELDS = Set.of(ID, ORGANIZATION_ID, CREATED_AT);
+
+  private PageVisitTable() {}
 }

@@ -11,9 +11,9 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-public class PageIdentity {
+public class PageVisitSessionLink {
 
   UUID deviceId;
   UUID sessionId;
-  UUID pageId;
+  UUID pageVisitId;
 }

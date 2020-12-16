@@ -1,4 +1,4 @@
-import { PhoneNumber } from './user';
+import type { PhoneNumber } from './user';
 
 export type SignUpRequestDTO = {
   fullName: string;

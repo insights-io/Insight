@@ -3,10 +3,13 @@ package com.meemaw.session.sessions.resource.v1;
 import com.meemaw.auth.permissions.AccessManager;
 import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.session.pages.service.PageService;
+import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.pages.datasource.PageVisitDatasource;
+import com.meemaw.session.pages.datasource.PageVisitTable;
+import com.meemaw.session.pages.service.PageVisitService;
 import com.meemaw.session.sessions.service.SessionSocketService;
 import com.meemaw.shared.context.RequestUtils;
+import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.response.DataResponse;
 import java.util.Optional;
@@ -19,40 +22,50 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-public class SessionPageResourceImpl implements SessionPageResource {
+public class PageVisitResourceImpl implements PageVisitResource {
 
   @Context HttpServletRequest request;
   @Context UriInfo uriInfo;
   @Inject AuthPrincipal principal;
-  @Inject PageService pageService;
+  @Inject PageVisitService pageVisitService;
+  @Inject PageVisitDatasource pageVisitDatasource;
   @Inject SessionSocketService sessionSocketService;
 
   @Override
-  public CompletionStage<Response> create(CreatePageDTO body, String userAgent) {
+  public CompletionStage<Response> create(CreatePageVisitDTO body, String userAgent) {
     String ipAddress = RequestUtils.getRemoteAddress(request);
 
-    return pageService
-        .createPage(body, userAgent, ipAddress)
+    return pageVisitService
+        .create(body, userAgent, ipAddress)
         .thenApply(
             pageIdentity -> {
               // TODO: should be done in service not resource
               // TODO: notify with session object
-              sessionSocketService.pageStart(pageIdentity.getPageId());
+              sessionSocketService.pageStart(pageIdentity.getPageVisitId());
               return DataResponse.ok(pageIdentity);
             });
   }
 
   @Override
-  public CompletionStage<Response> retrieve(
-      UUID sessionId, UUID pageId, @Nullable String organizationId) {
+  public CompletionStage<Response> retrieve(UUID pageId, @Nullable String organizationId) {
     AuthUser user = principal.user();
     String actualOrganizationId =
         Optional.ofNullable(organizationId).orElseGet(user::getOrganizationId);
 
     AccessManager.assertCanReadOrganization(user, actualOrganizationId);
-    return pageService
-        .getPage(pageId, sessionId, actualOrganizationId)
+    return pageVisitService
+        .retrieve(pageId, actualOrganizationId)
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
+  }
+
+  @Override
+  public CompletionStage<Response> count() {
+    String organizationId = principal.user().getOrganizationId();
+    SearchDTO search =
+        SearchDTO.withAllowedFields(PageVisitTable.QUERYABLE_FIELDS)
+            .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
+
+    return pageVisitDatasource.count(organizationId, search).thenApply(DataResponse::ok);
   }
 }

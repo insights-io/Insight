@@ -6,7 +6,7 @@ Main Rebrowse application.
 
 ## Storybook
 
-You can find up to date Storybooks [here](https://insights-io.github.io/Insight/app/storybook/master/).
+You can find up to date Storybooks [here](https://app.storybook.rebrowse.dev/index.html).
 
 ## Testing with locally build tracking script
 
@@ -21,7 +21,7 @@ If you also want to use the locally build bootstrap script, you can do the follo
 ```sh
 yarn workspace @rebrowse/browser-bootstrap serve
 yarn workspace @rebrowse/browser-tracking serve
-BOOTSTRAP_SCRIPT=http://localhost:5001/localhost.rebrowse.js yarn dev
+BOOTSTRAP_SCRIPT=http://localhost:5001/localhost.insight.js yarn dev
 ```
 
 ## Environment

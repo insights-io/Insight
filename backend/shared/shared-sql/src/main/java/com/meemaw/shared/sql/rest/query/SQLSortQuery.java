@@ -4,25 +4,27 @@ import com.meemaw.shared.rest.query.SortQuery;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Value;
+import org.jooq.SelectConditionStep;
+import org.jooq.SelectForUpdateStep;
 import org.jooq.SortField;
 
 @Value
-public class SQLSortQuery {
+public class SQLSortQuery implements QueryPart {
 
   SortQuery sortQuery;
 
-  /**
-   * Returns list of sort SQL sort fields.
-   *
-   * @return list of sort fields
-   */
-  public List<SortField<?>> apply() {
+  public static SQLSortQuery of(SortQuery sortQuery) {
+    return new SQLSortQuery(sortQuery);
+  }
+
+  @Override
+  public SelectForUpdateStep<?> apply(SelectForUpdateStep<?> select) {
+    return ((SelectConditionStep<?>) select).orderBy(sortByFields());
+  }
+
+  private List<SortField<?>> sortByFields() {
     return sortQuery.getOrders().stream()
         .map(order -> SQLSortDirection.of(order.getRight()).apply(order.getLeft()))
         .collect(Collectors.toList());
-  }
-
-  public static SQLSortQuery of(SortQuery sortQuery) {
-    return new SQLSortQuery(sortQuery);
   }
 }

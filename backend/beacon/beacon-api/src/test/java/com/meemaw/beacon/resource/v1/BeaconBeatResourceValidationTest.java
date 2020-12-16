@@ -34,7 +34,7 @@ public class BeaconBeatResourceValidationTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Required\",\"sessionId\":\"Required\",\"pageId\":\"Required\",\"deviceId\":\"Required\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"organizationId\":\"Required\",\"sessionId\":\"Required\",\"pageVisitId\":\"Required\",\"deviceId\":\"Required\"}}}"));
   }
 
   @ParameterizedTest
@@ -45,7 +45,7 @@ public class BeaconBeatResourceValidationTest {
         .contentType(contentType)
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
-        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("pageVisitId", UUID.randomUUID().toString())
         .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
@@ -63,7 +63,7 @@ public class BeaconBeatResourceValidationTest {
         .contentType(contentType)
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
-        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("pageVisitId", UUID.randomUUID().toString())
         .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .body("{}")
         .post(BEACON_RESOURCE_BEAT_PATH)
@@ -86,7 +86,7 @@ public class BeaconBeatResourceValidationTest {
         .contentType(contentType)
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
-        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("pageVisitId", UUID.randomUUID().toString())
         .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
@@ -108,7 +108,7 @@ public class BeaconBeatResourceValidationTest {
         .contentType(contentType)
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
-        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("pageVisitId", UUID.randomUUID().toString())
         .queryParam("organizationId", SharedConstants.REBROWSE_ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
@@ -130,7 +130,7 @@ public class BeaconBeatResourceValidationTest {
         .contentType(contentType)
         .queryParam("deviceId", UUID.randomUUID().toString())
         .queryParam("sessionId", UUID.randomUUID().toString())
-        .queryParam("pageId", UUID.randomUUID().toString())
+        .queryParam("pageVisitId", UUID.randomUUID().toString())
         .queryParam("organizationId", UUID.randomUUID().toString())
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)

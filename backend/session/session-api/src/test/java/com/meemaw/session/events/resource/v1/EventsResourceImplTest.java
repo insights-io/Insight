@@ -22,6 +22,7 @@ import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestResource;
+import com.rebrowse.api.query.TermCondition;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Method;
@@ -114,7 +115,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
-        .queryParam("random", "gte:aba")
+        .queryParam("random", TermCondition.GTE.rhs("aba"))
         .queryParam("aba", "gtecaba")
         .queryParam(GROUP_BY_PARAM, "another")
         .queryParam(SORT_BY_PARAM, "hehe")
@@ -125,7 +126,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"hehe\":\"Unexpected field in sort_by query\"}}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field\",\"random\":\"Unexpected field\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field\"},\"sort_by\":{\"hehe\":\"Unexpected field\"}}}}"));
   }
 
   @Test

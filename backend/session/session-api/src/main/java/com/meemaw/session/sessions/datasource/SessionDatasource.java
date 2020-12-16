@@ -1,11 +1,11 @@
 package com.meemaw.session.sessions.datasource;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.meemaw.location.model.Location;
+import com.meemaw.location.model.Located;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlTransaction;
-import com.meemaw.useragent.model.UserAgentDTO;
+import com.meemaw.useragent.model.HasUserAgent;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,9 +19,16 @@ public interface SessionDatasource {
       UUID sessionId,
       UUID deviceId,
       String organizationId,
-      Location location,
-      UserAgentDTO userAgent,
+      Located location,
+      HasUserAgent userAgent,
       SqlTransaction transaction);
+
+  CompletionStage<SessionDTO> createSession(
+      UUID sessionId,
+      UUID deviceId,
+      String organizationId,
+      Located location,
+      HasUserAgent userAgent);
 
   CompletionStage<Optional<SessionDTO>> getSession(UUID id, String organizationId);
 

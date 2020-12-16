@@ -1,0 +1,50 @@
+package com.meemaw.session.pages.datasource.sql;
+
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
+
+import com.meemaw.session.pages.datasource.PageVisitTable;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
+import org.jooq.Field;
+import org.jooq.Table;
+
+public final class SqlPageVisitTable {
+
+  public static final Table<?> TABLE = table("session.page_visit");
+
+  public static final Field<UUID> ID = field(PageVisitTable.ID, UUID.class);
+  public static final Field<UUID> SESSION_ID = field(PageVisitTable.SESSION_ID, UUID.class);
+  public static final Field<String> ORGANIZATION_ID =
+      field(PageVisitTable.ORGANIZATION_ID, String.class);
+  public static final Field<String> DOCTYPE = field(PageVisitTable.DOCTYPE, String.class);
+  public static final Field<String> URL = field(PageVisitTable.URL, String.class);
+  public static final Field<String> REFERRER = field(PageVisitTable.REFERRER, String.class);
+  public static final Field<Integer> HEIGHT = field(PageVisitTable.HEIGHT, Integer.class);
+  public static final Field<Integer> WIDTH = field(PageVisitTable.WIDTH, Integer.class);
+  public static final Field<Integer> SCREEN_HEIGHT =
+      field(PageVisitTable.SCREEN_HEIGHT, Integer.class);
+  public static final Field<Integer> SCREEN_WIDTH =
+      field(PageVisitTable.SCREEN_WIDTH, Integer.class);
+  public static final Field<Long> COMPILED_TIMESTAMP =
+      field(PageVisitTable.COMPILED_TIMESTAMP, Long.class);
+  public static final Field<OffsetDateTime> CREATED_AT =
+      field(PageVisitTable.CREATED_AT, OffsetDateTime.class);
+
+  public static final List<Field<?>> INSERT_FIELDS =
+      List.of(
+          ID,
+          SESSION_ID,
+          ORGANIZATION_ID,
+          DOCTYPE,
+          URL,
+          REFERRER,
+          HEIGHT,
+          WIDTH,
+          SCREEN_HEIGHT,
+          SCREEN_WIDTH,
+          COMPILED_TIMESTAMP);
+
+  private SqlPageVisitTable() {}
+}

@@ -21,12 +21,7 @@ public abstract class AbstractQueryParser {
   public static final String GROUP_BY_PARAM = "group_by";
   public static final String DATA_TRUNC_PARAM = "date_trunc";
 
-  protected static final String SORT_BY_PARAM_ERROR =
-      String.format("Unexpected field in %s query", SORT_BY_PARAM);
-  protected static final String GROUP_BY_PARAM_ERROR =
-      String.format("Unexpected field in %s query", GROUP_BY_PARAM);
-
-  protected static final String UNEXPECTED_FIELD_ERROR = "Unexpected field in search query";
+  public static final String UNEXPECTED_FIELD_ERROR = "Unexpected field";
   protected static final String UNEXPECTED_DATE_TRUNC_ERROR = "Unexpected date_trunc value";
   protected static final String NUMBER_FORMAT_EXCEPTION_ERROR = "Number expected";
 
@@ -47,8 +42,12 @@ public abstract class AbstractQueryParser {
     this.allowedFields = Objects.requireNonNull(allowedFields);
   }
 
-  protected static String snakeCase(String field) {
+  public static String snakeCase(String field) {
     return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field);
+  }
+
+  public static String camelCase(String field) {
+    return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field);
   }
 
   public abstract void process(Entry<String, List<String>> entry);

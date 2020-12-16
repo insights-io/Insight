@@ -1,6 +1,7 @@
 package com.meemaw.auth.sso.bearer;
 
 import com.meemaw.auth.sso.AbstractAuthDynamicFeature;
+import com.meemaw.auth.sso.AuthScheme;
 import com.meemaw.auth.sso.AuthSchemeResolver;
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature.BearerTokenAuthFilter;
 import com.meemaw.auth.sso.session.model.PrincipalSecurityContext;
@@ -88,6 +89,11 @@ public abstract class AbstractBearerTokenSecurityRequirementAuthDynamicFeature
     context.setSecurityContext(new PrincipalSecurityContext(user, isSecure));
     principal.user(user).apiKey(apiKey);
     log.debug("[AUTH]: Successfully authenticated user={}", user.getId());
+  }
+
+  @Override
+  public AuthScheme getAuthScheme() {
+    return AuthScheme.BEARER_TOKEN;
   }
 
   @Priority(Priorities.AUTHENTICATION)

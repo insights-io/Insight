@@ -32,6 +32,7 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Tag;
@@ -187,7 +188,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
 
   @Test
   public void cancel__should_throw_error__when_unauthorized() {
-    String path = SubscriptionResource.PATH + "/random/cancel";
+    String path = String.format(SubscriptionResource.PATH + "/%s/cancel", UUID.randomUUID());
     RestAssuredUtils.ssoSessionCookieTestCases(Method.PATCH, path);
     RestAssuredUtils.ssoBearerTokenTestCases(Method.PATCH, path);
   }
@@ -195,7 +196,7 @@ public class SubscriptionResourceImplTest extends AbstractStripeTest {
   @Test
   public void cancel__should_throw_error__when_not_existing_subscription()
       throws JsonProcessingException {
-    String path = SubscriptionResource.PATH + "/random/cancel";
+    String path = String.format(SubscriptionResource.PATH + "/%s/cancel", UUID.randomUUID());
 
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     given()

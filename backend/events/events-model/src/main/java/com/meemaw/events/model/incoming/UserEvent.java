@@ -17,7 +17,7 @@ import lombok.Value;
 public class UserEvent<T extends AbstractBrowserEvent<?>> {
 
   T event;
-  UUID pageId;
+  UUID pageVisitId;
   UUID sessionId;
   UUID deviceId;
   String organizationId;
@@ -25,7 +25,7 @@ public class UserEvent<T extends AbstractBrowserEvent<?>> {
   public Map<String, Object> index() {
     Map<String, Object> index = new HashMap<>(5);
     index.put(UserEventIndex.EVENT.getName(), event.index());
-    index.put(UserEventIndex.PAGE_ID.getName(), pageId.toString());
+    index.put(UserEventIndex.PAGE_VISIT_ID.getName(), pageVisitId.toString());
     index.put(UserEventIndex.SESSION_ID.getName(), sessionId.toString());
     index.put(UserEventIndex.DEVICE_ID.getName(), deviceId.toString());
     index.put(UserEventIndex.ORGANIZATION_ID.getName(), organizationId);

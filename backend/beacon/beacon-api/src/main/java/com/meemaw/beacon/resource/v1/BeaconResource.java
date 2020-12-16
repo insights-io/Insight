@@ -27,6 +27,6 @@ public interface BeaconResource {
           String organizationId,
       @NotNull(message = "Required") @QueryParam("sessionId") UUID sessionId,
       @NotNull(message = "Required") @QueryParam("deviceId") UUID deviceId,
-      @NotNull(message = "Required") @QueryParam("pageId") UUID pageId,
+      @NotNull(message = "Required") @QueryParam("pageVisitId") UUID pageVisitId,
       String body);
 }

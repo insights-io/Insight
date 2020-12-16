@@ -6,7 +6,7 @@ Sign up page for Rebrowse. Deployed on a separate domain: https://try.rebrowse.<
 
 ## Storybook
 
-You can find up to date Storybooks [here](https://insights-io.github.io/Insight/try/storybook/master/).
+You can find up to date Storybooks [here](https://try.storybook.rebrowse.dev/index.html).
 
 ## Testing with locally build tracking script
 

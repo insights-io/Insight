@@ -1,8 +1,8 @@
 package com.meemaw.session.useragent.service;
 
-import com.meemaw.useragent.model.UserAgentDTO;
+import com.meemaw.useragent.model.UserAgent;
 
 public interface UserAgentService {
 
-  UserAgentDTO parse(String userAgentString);
+  UserAgent parse(String userAgentString);
 }

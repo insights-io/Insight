@@ -1,7 +1,7 @@
 package com.meemaw.session.location.service.impl;
 
+import com.meemaw.location.model.Located;
 import com.meemaw.location.model.Location;
-import com.meemaw.location.model.dto.LocationDTO;
 import com.meemaw.session.location.resource.LocationLookupResource;
 import com.meemaw.session.location.resource.WhatIsMyIpResource;
 import com.meemaw.session.location.service.LocationService;
@@ -20,17 +20,17 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class LocationServiceImpl implements LocationService {
 
-  private static final Map<String, Location> CACHE = new HashMap<>();
+  private static final Map<String, Located> CACHE = new HashMap<>();
   private static final String ACCESS_KEY = System.getenv("LOCATION_LOOKUP_SERVICE_ACCESS_KEY");
 
   @Inject @RestClient LocationLookupResource locationLookupResource;
   @Inject @RestClient WhatIsMyIpResource whatIsMyIpResource;
 
   @Traced
-  private Location lookupByIpRemotely(String ip) {
+  private Located lookupByIpRemotely(String ip) {
     if (ACCESS_KEY == null) {
       log.warn("[LOCATION]: Access key not configured ... skipping lookup for IP={}", ip);
-      return LocationDTO.builder().ip(ip).build();
+      return Location.builder().ip(ip).build();
     }
 
     try {
@@ -43,11 +43,11 @@ public class LocationServiceImpl implements LocationService {
     }
 
     log.info("[LOCATION]: Looking up location for IP={}", ip);
-    return locationLookupResource.lookupByIp(ip, ACCESS_KEY).dto();
+    return locationLookupResource.lookupByIp(ip, ACCESS_KEY);
   }
 
   @Override
-  public Location lookupByIp(String ip) {
+  public Located lookupByIp(String ip) {
     return CACHE.computeIfAbsent(ip, this::lookupByIpRemotely);
   }
 }
