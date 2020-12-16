@@ -151,14 +151,14 @@ describe('tracking script', () => {
 
       expect(sessionCreateFetchEvent.a).toEqual([
         'POST',
-        createSessionURI,
+        pageVisitUrl,
         200,
         'cors',
         'fetch',
         'http/1.1',
       ]);
       expect(sessionCreatePerformanceResourceEvent.a.slice(0, 1)).toEqual([
-        createSessionURI,
+        pageVisitUrl,
       ]);
       expect(sessionCreatePerformanceResourceEvent.a.slice(3)).toEqual([
         'fetch',
