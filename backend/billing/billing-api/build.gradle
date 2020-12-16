@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation "com.stripe:stripe-java:20.32.0"
+    implementation "com.stripe:stripe-java:20.33.0"
     implementation "io.quarkus:quarkus-smallrye-context-propagation"
     implementation project(":auth:auth-sidecar")
     implementation project(":shared:rest-api")
