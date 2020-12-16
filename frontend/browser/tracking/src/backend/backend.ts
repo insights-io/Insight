@@ -4,8 +4,8 @@ import type { BrowserEvent } from 'event';
 import type { Connected } from 'identity/types';
 import type {
   CreatePageResponse,
-  PageIdentity,
-  CreatePageDTO,
+  PageVisitSessionLink,
+  CreatePageVisitDTO,
 } from '@rebrowse/types';
 import Context from 'context';
 
@@ -63,9 +63,9 @@ class Backend implements Connected {
     return this._sendEvents(this._maybeBeaconTransport, e);
   };
 
-  public connect = (identity: PageIdentity) => {
-    const { sessionId, deviceId, pageId } = identity;
-    this._beaconURL = `${this._beaconURL}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageId}`;
+  public connect = (identity: PageVisitSessionLink) => {
+    const { sessionId, deviceId, pageVisitId } = identity;
+    this._beaconURL = `${this._beaconURL}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
   };
 
   // TODO: better error handling
@@ -80,7 +80,7 @@ class Backend implements Connected {
   };
 
   // TODO: better error handling
-  public page = (pageDTO: CreatePageDTO) => {
+  public page = (pageDTO: CreatePageVisitDTO) => {
     return this._requestResponseTransport
       .post<CreatePageResponse>(this._pageVisitURL, JSON.stringify(pageDTO))
       .then((response) => {

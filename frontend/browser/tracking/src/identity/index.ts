@@ -3,7 +3,7 @@
 /* eslint-disable no-underscore-dangle */
 
 import { logger } from 'logger';
-import { PageIdentity } from '@rebrowse/types';
+import type { PageVisitSessionLink } from '@rebrowse/types';
 import {
   MILLIS_IN_SECOND,
   currentTimeSeconds,
@@ -108,7 +108,7 @@ class Identity implements Connected {
     return `${this._cookie.host}#${this._cookie.organizationId}#${this._cookie.deviceId}:${this._cookie.sessionId}/${expiresSeconds}`;
   };
 
-  public connect = (identity: PageIdentity) => {
+  public connect = (identity: PageVisitSessionLink) => {
     this._cookie.deviceId = identity.deviceId;
     this._cookie.sessionId = identity.sessionId;
     this.writeIdentity();

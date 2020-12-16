@@ -1,4 +1,4 @@
-import { PageIdentity } from '@rebrowse/types';
+import type { PageVisitSessionLink } from '@rebrowse/types';
 
 export type RebrowseIdentity = {
   organizationId: string;
@@ -11,5 +11,5 @@ export type RebrowseIdentity = {
 export type Cookie = Partial<RebrowseIdentity>;
 
 export interface Connected {
-  connect(identity: PageIdentity): void;
+  connect(identity: PageVisitSessionLink): void;
 }

@@ -42,7 +42,11 @@ const setupPage = async (page: Page) => {
     { organizationId: I_ORGANIZATION, host: I_HOST }
   );
 
-  const trackingScript = path.join(process.cwd(), 'dist', 'local.rebrowse.js');
+  const trackingScript = path.join(
+    process.cwd(),
+    'dist',
+    'localhost.rebrowse.js'
+  );
   await page.addScriptTag({ path: trackingScript });
 };
 
