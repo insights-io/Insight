@@ -26,7 +26,6 @@ import { FileUploader } from 'baseui/file-uploader';
 import dynamic from 'next/dynamic';
 import Divider from 'shared/components/Divider';
 import type { Crop } from 'react-image-crop';
-import { AuthApi } from 'api';
 import { toaster } from 'baseui/toast';
 import { Controller, useForm } from 'react-hook-form';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
@@ -45,14 +44,14 @@ type SetupAvatarFormValues = {
 
 type Props = {
   organization: Organization;
-  setOrganization: (organization: OrganizationDTO) => void;
+  updateAvatar: (avatar: AvatarDTO) => Promise<OrganizationDTO>;
   minSize?: number;
   maxSize?: number;
 };
 
 export const SetupAvatar = ({
   organization,
-  setOrganization,
+  updateAvatar,
   minSize = 258,
   maxSize = 2048,
 }: Props) => {
@@ -121,12 +120,8 @@ export const SetupAvatar = ({
 
     setIsSubmitting(true);
 
-    AuthApi.organization
-      .setupAvatar(avatarSetup)
-      .then((updatedOrganization) => {
-        setOrganization(updatedOrganization);
-        toaster.positive('Successfuly saved avatar preferences', {});
-      })
+    updateAvatar(avatarSetup)
+      .then(() => toaster.positive('Successfuly saved avatar preferences', {}))
       .finally(() => setIsSubmitting(false));
   });
 

@@ -42,7 +42,7 @@ export const OrganizationSettingsGeneralPage = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
-  const { organization, updateOrganization, setOrganization } = useOrganization(
+  const { organization, update, updateAvatar } = useOrganization(
     initialOrganization
   );
 
@@ -55,7 +55,7 @@ export const OrganizationSettingsGeneralPage = ({
     fieldName: 'name',
     currentValue: organization.name,
     resource: 'organization',
-    update: updateOrganization,
+    update,
   });
 
   const {
@@ -67,7 +67,7 @@ export const OrganizationSettingsGeneralPage = ({
     fieldName: 'defaultRole',
     currentValue: organization.defaultRole,
     resource: 'organization',
-    update: updateOrganization,
+    update,
   });
 
   const {
@@ -78,7 +78,7 @@ export const OrganizationSettingsGeneralPage = ({
     fieldName: 'openMembership',
     currentValue: organization.openMembership,
     resource: 'organization',
-    update: updateOrganization,
+    update,
   });
 
   return (
@@ -238,7 +238,7 @@ export const OrganizationSettingsGeneralPage = ({
         <Panel.Item>
           <SetupAvatar
             organization={organization}
-            setOrganization={setOrganization}
+            updateAvatar={updateAvatar}
           />
         </Panel.Item>
       </Panel>

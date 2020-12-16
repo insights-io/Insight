@@ -41,7 +41,7 @@ export const AccountSettingsDetailsPage = ({
     >
       <AccountDetailsPanel
         user={user}
-        setUser={verifyPhoneNumber}
+        verifyPhoneNumber={verifyPhoneNumber}
         updateUser={updateUser}
         updatePhoneNumber={updatePhoneNumber}
       />

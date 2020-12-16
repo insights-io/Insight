@@ -39,9 +39,7 @@ export const OrganizationSettingsSecurityPage = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
-  const { organization, updateOrganization } = useOrganization(
-    initialOrganization
-  );
+  const { organization, update } = useOrganization(initialOrganization);
 
   const {
     value: enforceMfa,
@@ -51,7 +49,7 @@ export const OrganizationSettingsSecurityPage = ({
     fieldName: 'enforceMultiFactorAuthentication',
     currentValue: organization.enforceMultiFactorAuthentication,
     resource: 'organization',
-    update: updateOrganization,
+    update,
   });
 
   return (
