@@ -13932,10 +13932,10 @@ next-cookies@2.0.3:
   dependencies:
     universal-cookie "^4.0.2"
 
-next-page-tester@0.10.1:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/next-page-tester/-/next-page-tester-0.10.1.tgz#ab7e6623b73d8a9fc9049caf866808054363ddcb"
-  integrity sha512-W6LEcNC9Oq70vLARBK2dC7cEEcltkkAaq3pjzo9wk0RnTOONwxNik2meNLyWCai37shP/jume1TJZD9FGKWuIg==
+next-page-tester@0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/next-page-tester/-/next-page-tester-0.12.0.tgz#7ed701a93195af2f14db8b561daa7001f0b29fd6"
+  integrity sha512-/nbuwd4ediSWUevhfrLCxWiRUs/ORh6HenzkOaUyDWtwHRzp9wUFDzV/d0GJO/2p/gndWyHw0dkD14hrlEA44w==
   dependencies:
     "@types/express" "^4.17.8"
     fast-glob "^3.2.4"
