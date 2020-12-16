@@ -6,7 +6,7 @@ dependencies {
     implementation "io.quarkus:quarkus-undertow-websockets"
     implementation "io.quarkus:quarkus-reactive-pg-client"
     implementation "io.quarkus:quarkus-rest-client-jackson"
-    implementation "nl.basjes.parse.useragent:yauaa:5.20"
+    implementation "nl.basjes.parse.useragent:yauaa:5.21"
     implementation project(":events:events-model")
     implementation project(":auth:auth-sidecar")
     implementation project(":auth:auth-api-contracts")
