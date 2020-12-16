@@ -93,9 +93,9 @@ describe('tracking script', () => {
       expect(pageRequest.resourceType()).toEqual('fetch');
 
       const {
-        data: { sessionId, deviceId, pageId },
+        data: { sessionId, deviceId, pageVisitId },
       } = await parsePageResponse(pageResponse);
-      const beaconBeatURI = `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`;
+      const beaconBeatURI = `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageVisitId}`;
 
       const { cookie, localStorage } = await page.evaluate(() => {
         return {
