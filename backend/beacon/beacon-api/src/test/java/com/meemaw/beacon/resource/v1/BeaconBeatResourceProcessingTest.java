@@ -3,11 +3,12 @@ package com.meemaw.beacon.resource.v1;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.meemaw.events.index.UserEventTable;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
-import com.meemaw.session.model.CreatePageDTO;
-import com.meemaw.session.model.PageIdentity;
-import com.meemaw.session.sessions.resource.v1.SessionPageResource;
+import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.model.PageVisitSessionLink;
+import com.meemaw.session.sessions.resource.v1.PageVisitResource;
 import com.meemaw.shared.SharedConstants;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.data.UserAgentData;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -42,11 +44,10 @@ public class BeaconBeatResourceProcessingTest {
   // TODO: create new organization -- dont reuse
   private static final String ORGANIZATION_ID = SharedConstants.REBROWSE_ORGANIZATION_ID;
   private static final String BEACON_RESOURCE_BEAT_PATH = BeaconResource.PATH + "/beat";
-
-  @Inject @RestClient SessionPageResource sessionPageResource;
-
   private static List<UserEvent<?>> events;
   private static List<UserEvent<?>> unloadEvents;
+
+  @Inject @RestClient PageVisitResource pageVisitResource;
 
   @Incoming(EventsStream.ALL)
   public void process(UserEvent<?> event) {
@@ -65,9 +66,9 @@ public class BeaconBeatResourceProcessingTest {
   }
 
   @Traced
-  protected Uni<PageIdentity> insertPage(UUID deviceId) {
-    CreatePageDTO payload =
-        new CreatePageDTO(
+  protected Uni<PageVisitSessionLink> insertPage(UUID deviceId) {
+    CreatePageVisitDTO payload =
+        new CreatePageVisitDTO(
             ORGANIZATION_ID,
             deviceId,
             "testURL",
@@ -81,32 +82,33 @@ public class BeaconBeatResourceProcessingTest {
 
     return Uni.createFrom()
         .completionStage(
-            sessionPageResource
+            pageVisitResource
                 .create(payload, UserAgentData.DESKTOP_MAC_CHROME)
                 .thenApply(
                     response -> {
-                      DataResponse<PageIdentity> dataResponse =
+                      DataResponse<PageVisitSessionLink> dataResponse =
                           response.readEntity(new GenericType<>() {});
                       return dataResponse.getData();
                     }));
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"application/json", "text/plain"})
-  public void shouldProcessLargeBeacon(String contentType) throws IOException, URISyntaxException {
+  @ValueSource(strings = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+  public void post_v1_beacon_beat__should_process__when_single_large_beacon(String contentType)
+      throws IOException, URISyntaxException {
     UUID deviceId = UUID.randomUUID();
-    PageIdentity pageIdentity = insertPage(deviceId).await().indefinitely();
-    UUID sessionID = pageIdentity.getSessionId();
-    UUID pageID = pageIdentity.getPageId();
+    PageVisitSessionLink pageVisitSessionLink = insertPage(deviceId).await().indefinitely();
+    UUID sessionId = pageVisitSessionLink.getSessionId();
+    UUID pageVisitId = pageVisitSessionLink.getPageVisitId();
     String body = Files.readString(Path.of(getClass().getResource("/beacon/initial.json").toURI()));
 
     given()
         .when()
         .contentType(contentType)
-        .queryParam("sessionId", sessionID)
-        .queryParam("deviceId", deviceId)
-        .queryParam("pageId", pageID)
-        .queryParam("organizationId", ORGANIZATION_ID)
+        .queryParam(UserEventTable.SESSION_ID, sessionId)
+        .queryParam(UserEventTable.DEVICE_ID, deviceId)
+        .queryParam(UserEventTable.PAGE_VISIT_ID, pageVisitId)
+        .queryParam(UserEventTable.ORGANIZATION_ID, ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
@@ -116,39 +118,39 @@ public class BeaconBeatResourceProcessingTest {
     assertEquals(0, unloadEvents.size());
     events.forEach(
         e -> {
-          assertEquals(pageID, e.getPageId());
-          assertEquals(sessionID, e.getSessionId());
+          assertEquals(pageVisitId, e.getPageVisitId());
+          assertEquals(sessionId, e.getSessionId());
           assertEquals(deviceId, e.getDeviceId());
           assertEquals(ORGANIZATION_ID, e.getOrganizationId());
         });
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"application/json", "text/plain"})
-  public void shouldProcessMultipleSmallBeacons(String contentType)
+  @ValueSource(strings = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+  public void post_v1_beacon_beat__should_process__when_multiple_small_beacons(String contentType)
       throws IOException, URISyntaxException {
     UUID deviceId = UUID.randomUUID();
-    PageIdentity pageIdentity = insertPage(deviceId).await().indefinitely();
-    UUID sessionID = pageIdentity.getSessionId();
-    UUID pageID = pageIdentity.getPageId();
+    PageVisitSessionLink pageVisitSessionLink = insertPage(deviceId).await().indefinitely();
+    UUID sessionId = pageVisitSessionLink.getSessionId();
+    UUID pageVisitId = pageVisitSessionLink.getPageVisitId();
     String body = Files.readString(Path.of(getClass().getResource("/beacon/small.json").toURI()));
 
     for (int i = 0; i < 100; i++) {
       given()
           .when()
           .contentType(contentType)
-          .queryParam("sessionId", sessionID)
-          .queryParam("deviceId", deviceId)
-          .queryParam("pageId", pageID)
-          .queryParam("organizationId", ORGANIZATION_ID)
+          .queryParam(UserEventTable.SESSION_ID, sessionId)
+          .queryParam(UserEventTable.DEVICE_ID, deviceId)
+          .queryParam(UserEventTable.PAGE_VISIT_ID, pageVisitId)
+          .queryParam(UserEventTable.ORGANIZATION_ID, ORGANIZATION_ID)
           .body(body)
           .post(BEACON_RESOURCE_BEAT_PATH)
           .then()
           .statusCode(204);
 
       assertEquals(i + 1, events.size());
-      assertEquals(pageID, events.get(i).getPageId());
-      assertEquals(sessionID, events.get(i).getSessionId());
+      assertEquals(pageVisitId, events.get(i).getPageVisitId());
+      assertEquals(sessionId, events.get(i).getSessionId());
       assertEquals(ORGANIZATION_ID, events.get(i).getOrganizationId());
       assertEquals(deviceId, events.get(i).getDeviceId());
     }
@@ -157,13 +159,13 @@ public class BeaconBeatResourceProcessingTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"application/json", "text/plain"})
-  public void shouldEndPageOnUnloadEvent(String contentType)
+  @ValueSource(strings = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+  public void post_v1_beacon_beat__should_end_page__when_unload_event(String contentType)
       throws IOException, URISyntaxException {
     UUID deviceId = UUID.randomUUID();
-    PageIdentity pageIdentity = insertPage(deviceId).await().indefinitely();
-    UUID sessionID = pageIdentity.getSessionId();
-    UUID pageID = pageIdentity.getPageId();
+    PageVisitSessionLink pageVisitSessionLink = insertPage(deviceId).await().indefinitely();
+    UUID sessionId = pageVisitSessionLink.getSessionId();
+    UUID pageVisitId = pageVisitSessionLink.getPageVisitId();
 
     String body =
         Files.readString(Path.of(getClass().getResource("/beacon/withUnloadEvent.json").toURI()));
@@ -171,10 +173,10 @@ public class BeaconBeatResourceProcessingTest {
     given()
         .when()
         .contentType(contentType)
-        .queryParam("sessionId", sessionID)
-        .queryParam("deviceId", deviceId)
-        .queryParam("pageId", pageID)
-        .queryParam("organizationId", ORGANIZATION_ID)
+        .queryParam(UserEventTable.SESSION_ID, sessionId)
+        .queryParam(UserEventTable.DEVICE_ID, deviceId)
+        .queryParam(UserEventTable.PAGE_VISIT_ID, pageVisitId)
+        .queryParam(UserEventTable.ORGANIZATION_ID, ORGANIZATION_ID)
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
@@ -184,15 +186,16 @@ public class BeaconBeatResourceProcessingTest {
     assertEquals(1, unloadEvents.size());
     events.forEach(
         e -> {
-          assertEquals(pageID, e.getPageId());
-          assertEquals(sessionID, e.getSessionId());
+          assertEquals(pageVisitId, e.getPageVisitId());
+          assertEquals(sessionId, e.getSessionId());
           assertEquals(deviceId, e.getDeviceId());
           assertEquals(ORGANIZATION_ID, e.getOrganizationId());
         });
+
     unloadEvents.forEach(
         e -> {
-          assertEquals(pageID, e.getPageId());
-          assertEquals(sessionID, e.getSessionId());
+          assertEquals(pageVisitId, e.getPageVisitId());
+          assertEquals(sessionId, e.getSessionId());
           assertEquals(deviceId, e.getDeviceId());
           assertEquals(ORGANIZATION_ID, e.getOrganizationId());
         });

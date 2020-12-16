@@ -19,6 +19,8 @@ export const Base = () => {
       countByLocation={COUNT_BY_LOCATION}
       organization={REBROWSE_ORGANIZATION_DTO}
       countByDeviceClass={COUNT_BY_DEVICE}
+      countPageVisitsByDate={[]}
+      countSessionsByDate={[]}
     />
   );
 };

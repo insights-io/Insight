@@ -68,7 +68,7 @@ describe('<SessionsPage />', () => {
         search: {
           limit: 20,
           'location.city': 'eq:Maribor',
-          sort_by: ['-created_at'],
+          sortBy: ['-createdAt'],
         },
       });
       sandbox.assert.calledWithExactly(getSessionCountStub, {
@@ -91,7 +91,7 @@ describe('<SessionsPage />', () => {
         search: {
           limit: 20,
           'location.city': 'eq:Ljubljana',
-          sort_by: ['-created_at'],
+          sortBy: ['-createdAt'],
         },
       });
       sandbox.assert.calledWithExactly(getSessionCountStub, {
@@ -112,7 +112,7 @@ describe('<SessionsPage />', () => {
       sandbox.assert.calledWithExactly(getSessionsStub, {
         search: {
           limit: 20,
-          sort_by: ['-created_at'],
+          sortBy: ['-createdAt'],
         },
       });
       sandbox.assert.calledWithExactly(getSessionCountStub, {

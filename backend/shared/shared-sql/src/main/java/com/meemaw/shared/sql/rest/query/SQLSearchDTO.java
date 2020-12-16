@@ -28,19 +28,15 @@ public class SQLSearchDTO {
         SQLFilterExpression.of(searchDTO.getFilter()).sql(query, mappings);
 
     if (!searchDTO.getGroupBy().getFields().isEmpty()) {
-      select =
-          ((SelectConditionStep<?>) select)
-              .groupBy(
-                  SQLGroupByQuery.of(searchDTO.getGroupBy(), searchDTO.getDateTrunc()).apply());
+      select = SQLGroupByQuery.of(searchDTO.getGroupBy(), searchDTO.getDateTrunc()).apply(select);
     }
 
     if (!searchDTO.getSort().getOrders().isEmpty()) {
-      select =
-          ((SelectConditionStep<?>) select).orderBy(SQLSortQuery.of(searchDTO.getSort()).apply());
+      select = SQLSortQuery.of(searchDTO.getSort()).apply(select);
     }
 
     if (searchDTO.getLimit() != 0) {
-      return ((SelectConditionStep<?>) select).limit(searchDTO.getLimit());
+      select = SQLLimitQuery.of(searchDTO.getLimit()).apply(select);
     }
 
     return select;

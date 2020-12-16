@@ -25,7 +25,7 @@ public class SQLBooleanFilterExpression implements SQLFilterExpression {
     for (int i = 1; i < children.size(); i++) {
       SQLFilterExpression filterExpression = SQLFilterExpression.of(children.get(i));
       if (filterExpression instanceof SQLBooleanFilterExpression) {
-        subQuery = ((SQLBooleanFilterExpression) filterExpression).sql(query, mappings);
+        subQuery = filterExpression.sql(query, mappings);
       } else if (filterExpression instanceof SQLTermFilterExpression) {
         SQLTermFilterExpression termFilterExpression = (SQLTermFilterExpression) filterExpression;
         String fieldName = termFilterExpression.getExpression().getField();

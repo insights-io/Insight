@@ -37,7 +37,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
     const sessionsPromise = await SessionApi.getSessions({
       baseURL: process.env.SESSION_API_BASE_URL,
-      search: { sort_by: ['-created_at'], limit: 20 },
+      search: { sortBy: ['-createdAt'], limit: 20 },
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
         cookie: `SessionId=${authResponse.SessionId}`,

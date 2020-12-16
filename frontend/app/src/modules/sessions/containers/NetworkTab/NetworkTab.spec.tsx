@@ -10,7 +10,7 @@ describe('<NetworkTabContainer />', () => {
     const { findByText, findAllByText } = render(<Base />);
 
     await findByText(
-      'beat?organizationId=000000&sessionId=d1ae54f7-e285-4bbf-bbeb-3bdc0bc7b0ba&deviceId=1978361a-dfae-4801-8d84-89dd6af21740&pageId=032ba89d-0d8b-4f4e-b60f-516f8291e739'
+      'beat?organizationId=000000&sessionId=d1ae54f7-e285-4bbf-bbeb-3bdc0bc7b0ba&deviceId=1978361a-dfae-4801-8d84-89dd6af21740&pageVisitId=032ba89d-0d8b-4f4e-b60f-516f8291e739'
     );
     await findByText('sessions');
     await findByText('d1ae54f7-e285-4bbf-bbeb-3bdc0bc7b0ba');

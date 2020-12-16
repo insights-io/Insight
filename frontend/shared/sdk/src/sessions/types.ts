@@ -1,19 +1,18 @@
-import type { QueryParam, SearchBean } from '@rebrowse/types';
+import type { SearchBean } from '@rebrowse/types';
 
-import type { RequestOptions } from '../core/types';
+import type { RequestOptions } from '../types';
 
-export type SessionSearchBean = SearchBean & {
-  // eslint-disable-next-line camelcase
-  created_at?: QueryParam;
-  'location.countryName'?: QueryParam;
-  'location.continentName'?: QueryParam;
-  'location.city'?: QueryParam;
-  'location.regionName'?: QueryParam;
-  'location.ip'?: QueryParam;
-  'user_agent.browserName'?: QueryParam;
-  'user_agent.operatingSystemName'?: QueryParam;
-  'user_agent.deviceClass'?: QueryParam;
-};
+export type SessionSearchBean = SearchBean<{
+  createdAt?: unknown;
+  'location.countryName'?: unknown;
+  'location.continentName'?: unknown;
+  'location.city'?: unknown;
+  'location.regionName'?: unknown;
+  'location.ip'?: unknown;
+  'user_agent.browserName'?: unknown;
+  'user_agent.operatingSystemName'?: unknown;
+  'user_agent.deviceClass'?: unknown;
+}>;
 
 export type SessionsSearchRequestOptions = Omit<
   RequestOptions,
@@ -22,7 +21,7 @@ export type SessionsSearchRequestOptions = Omit<
   search?: SessionSearchBean;
 };
 
-export type EventSeachBean = SearchBean & { 'event.e'?: QueryParam };
+export type EventSeachBean = SearchBean<{ 'event.e'?: unknown }>;
 
 export type SearchEventsRequestOptions = Omit<
   RequestOptions,

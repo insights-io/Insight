@@ -1,7 +1,7 @@
 package com.meemaw.session.events.resource.v1;
 
 import com.meemaw.auth.sso.session.model.AuthPrincipal;
-import com.meemaw.session.events.datasource.EventsTable;
+import com.meemaw.session.events.datasource.EventTable;
 import com.meemaw.session.events.service.EventsSearchService;
 import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
@@ -23,7 +23,7 @@ public class EventResourceImpl implements EventsResource {
   public CompletionStage<Response> search(UUID sessionId) {
     String organizationId = authPrincipal.user().getOrganizationId();
     SearchDTO searchDTO =
-        SearchDTO.withAllowedFields(EventsTable.QUERYABLE_FIELD)
+        SearchDTO.withAllowedFields(EventTable.QUERYABLE_FIELD)
             .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
 
     return eventsSearchService

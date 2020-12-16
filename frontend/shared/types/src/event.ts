@@ -1,5 +1,6 @@
 type SequenceID = number;
 type Timestamp = number;
+
 export type XhrInitiatorType = 'fetch' | 'xmlhttprequest';
 
 export const enum EventType {

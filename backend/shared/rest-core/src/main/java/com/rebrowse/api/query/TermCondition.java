@@ -13,4 +13,8 @@ public enum TermCondition {
   public String getKey() {
     return name().toLowerCase();
   }
+
+  public String rhs(Object value) {
+    return String.format("%s:%s", getKey(), value);
+  }
 }

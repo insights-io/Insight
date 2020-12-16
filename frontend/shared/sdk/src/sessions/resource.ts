@@ -5,17 +5,17 @@ import type {
   BrowserEventDTO,
 } from '@rebrowse/types';
 
-import { getData, querystring, withCredentials } from '../core/utils';
-import type { RequestOptions } from '../core/types';
+import { getData, querystring, withCredentials } from '../utils';
+import type { RequestOptions } from '../types';
 
 import type {
   SearchEventsRequestOptions,
   SessionsSearchRequestOptions,
 } from './types';
 
-export const createSessionsClient = (sessionApiBaseURL: string) => {
+export const createSessionsClient = (sessionApiBaseUrl: string) => {
   function count<T = { count: number }>({
-    baseURL = sessionApiBaseURL,
+    baseURL = sessionApiBaseUrl,
     search,
     ...rest
   }: SessionsSearchRequestOptions = {}) {
@@ -29,7 +29,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
   const SessionApi = {
     getSession: (
       sessionId: string,
-      { baseURL = sessionApiBaseURL, ...rest }: RequestOptions = {}
+      { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
     ) => {
       return ky
         .get(`${baseURL}/v1/sessions/${sessionId}`, withCredentials(rest))
@@ -39,12 +39,12 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
     count,
     distinct: (
       on: string,
-      { baseURL = sessionApiBaseURL, ...rest }: RequestOptions = {}
+      { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
     ) => {
       const searchQuery = querystring({ on });
       return ky
         .get(
-          `${baseURL}/v1/sessions/insights/distinct${searchQuery}`,
+          `${baseURL}/v1/sessions/distinct${searchQuery}`,
           withCredentials(rest)
         )
         .json<DataResponse<string[]>>()
@@ -60,13 +60,13 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
         }[]
       >({
         ...params,
-        search: { group_by: ['location.countryName,location.continentName'] },
+        search: { groupBy: ['location.countryName', 'location.continentName'] },
       });
     },
     countByDeviceClass: (options: RequestOptions = {}) => {
       return count<{ count: number; 'user_agent.deviceClass': string }[]>({
         ...options,
-        search: { group_by: ['user_agent.deviceClass'] },
+        search: { groupBy: ['user_agent.deviceClass'] },
       }).then((dataResponse) => {
         return dataResponse.reduce((acc, entry) => {
           return { ...acc, [entry['user_agent.deviceClass']]: entry.count };
@@ -74,7 +74,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
       });
     },
     getSessions: ({
-      baseURL = sessionApiBaseURL,
+      baseURL = sessionApiBaseUrl,
       search,
       ...rest
     }: SessionsSearchRequestOptions = {}) => {
@@ -90,7 +90,7 @@ export const createSessionsClient = (sessionApiBaseURL: string) => {
     search: (
       sessionId: string,
       {
-        baseURL = sessionApiBaseURL,
+        baseURL = sessionApiBaseUrl,
         search,
         ...rest
       }: SearchEventsRequestOptions = {}

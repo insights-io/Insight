@@ -1,10 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Block } from 'baseui/block';
-import type {
-  SearchBean,
-  TeamInviteCreateDTO,
-  TeamInviteDTO,
-} from '@rebrowse/types';
+import type { TeamInviteCreateDTO, TeamInviteDTO } from '@rebrowse/types';
 import {
   Button,
   Flex,
@@ -17,7 +13,7 @@ import { SIZE } from 'baseui/button';
 import { Delete, Plus } from 'baseui/icon';
 import { AuthApi } from 'api';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
-import { mapTeamInvite } from '@rebrowse/sdk';
+import { mapTeamInvite, TeamInviteSearchBean } from '@rebrowse/sdk';
 import { useStyletron } from 'baseui';
 import { StyledSpinnerNext } from 'baseui/spinner';
 import { capitalize } from 'shared/utils/string';
@@ -37,11 +33,11 @@ export const TeamInvites = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
 
-  const search = useCallback(async (search: SearchBean) => {
+  const search = useCallback(async (search: TeamInviteSearchBean) => {
     return AuthApi.organization.teamInvite.list({ search });
   }, []);
 
-  const searchCount = useCallback(async (search: SearchBean) => {
+  const searchCount = useCallback(async (search: TeamInviteSearchBean) => {
     return AuthApi.organization.teamInvite.count({ search });
   }, []);
 

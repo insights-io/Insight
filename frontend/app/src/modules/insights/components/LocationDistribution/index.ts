@@ -1,1 +1,1 @@
-export { default } from './LocationDistribution';
+export { LocationDistribution } from './LocationDistribution';

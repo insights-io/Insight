@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { SortDirection } from '@rebrowse/sdk';
-import type { SearchBean } from '@rebrowse/types';
+import { SearchBean, SortDirection } from '@rebrowse/types';
 import { usePaginatedQuery, useQueryCache } from 'react-query';
 import { usePrevious } from 'shared/hooks/usePrevious';
 import { useDebounce } from 'use-debounce';
@@ -27,8 +26,8 @@ type UserPaginatedSearchConfig<
   resource: Resource;
   field: Key;
   numItemsPerPage?: number;
-  search: (search: SearchBean) => Promise<SearchResult<Item>>;
-  searchCount: (search: SearchBean) => Promise<number>;
+  search: (search: SearchBean<Item>) => Promise<SearchResult<Item>>;
+  searchCount: (search: SearchBean<Item>) => Promise<number>;
   initialData?: SearchData<Item>;
   debounce?: number;
 };
@@ -70,7 +69,7 @@ export const useResourceSearch = <
   );
 
   const createSearchQuery = () => {
-    const searchBean: SearchBean = {};
+    const searchBean: SearchBean<Item> = {};
     if (query) {
       searchBean.query = query;
     }
@@ -98,22 +97,26 @@ export const useResourceSearch = <
         const previousItems = queryCache.getQueryData<Item[]>(previousCacheKey);
 
         if (previousItems) {
-          const fieldName = field as string;
+          const fieldName = field as keyof Item;
           if (page >= previousPage) {
             const lastItem = previousItems[previousItems.length - 1];
-            searchBean[fieldName] = `gt:${lastItem[fieldName]}`;
+            searchBean[
+              fieldName
+            ] = `gt:${lastItem[fieldName]}` as SearchBean<Item>[keyof Item];
           } else {
             const firstItem = previousItems[0];
-            searchBean[fieldName] = `lt:${firstItem[fieldName]}`;
+            searchBean[
+              fieldName
+            ] = `lt:${firstItem[fieldName]}` as SearchBean<Item>[keyof Item];
           }
         }
       }
 
       searchBean.limit = numItemsPerPage;
       if (page > 1 && page < previousPage) {
-        searchBean.sort_by = [`-${field}`];
+        searchBean.sortBy = [`-${field}`];
       } else {
-        searchBean.sort_by = [`+${field}`];
+        searchBean.sortBy = [`+${field}`];
       }
 
       return search(searchBean);

@@ -5,9 +5,8 @@ import type {
   PhoneNumber,
   UserDTO,
 } from '@rebrowse/types';
-
-import type { RequestOptions } from '../../core/types';
-import { getData, withCredentials } from '../../core/utils';
+import { getData, withCredentials } from 'utils';
+import type { RequestOptions } from 'types';
 
 import type { UpdateUserPayload } from './types';
 

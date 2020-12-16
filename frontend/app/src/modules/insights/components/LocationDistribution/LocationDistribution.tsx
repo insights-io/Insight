@@ -32,7 +32,7 @@ type Props = {
   countByLocation: CountByLocation;
 };
 
-const LocationDistribution = ({ countByLocation }: Props) => {
+export const LocationDistribution = ({ countByLocation }: Props) => {
   const { width = 0 } = useWindowSize();
   const [_css, theme] = useStyletron();
   const [activeKey, setActiveKey] = useState<ReactText>('0');
@@ -144,4 +144,3 @@ const LocationDistribution = ({ countByLocation }: Props) => {
     </Card>
   );
 };
-export default LocationDistribution;

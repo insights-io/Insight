@@ -5,10 +5,9 @@ import static nl.basjes.parse.useragent.UserAgent.DEVICE_CLASS;
 import static nl.basjes.parse.useragent.UserAgent.OPERATING_SYSTEM_NAME;
 
 import com.meemaw.session.useragent.service.UserAgentService;
-import com.meemaw.useragent.model.UserAgentDTO;
+import com.meemaw.useragent.model.UserAgent;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.eclipse.microprofile.opentracing.Traced;
 
@@ -30,9 +29,9 @@ public class UserAgentServiceImpl implements UserAgentService {
 
   @Override
   @Traced
-  public UserAgentDTO parse(String userAgentString) {
-    UserAgent userAgent = uaa.parse(userAgentString);
-    return new UserAgentDTO(
+  public UserAgent parse(String userAgentString) {
+    nl.basjes.parse.useragent.UserAgent userAgent = uaa.parse(userAgentString);
+    return new UserAgent(
         userAgent.getValue(DEVICE_CLASS),
         userAgent.getValue(OPERATING_SYSTEM_NAME),
         userAgent.getValue(AGENT_NAME));

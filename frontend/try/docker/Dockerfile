@@ -36,6 +36,9 @@ COPY --from=builder /tmp/node_modules/ ./node_modules/
 
 COPY --from=builder /src/frontend/try/.next ./.next
 
+COPY --from=builder /src/frontend/shared/types/package.json ./node_modules/@rebrowse/types/package.json
+COPY --from=builder /src/frontend/shared/types/dist ./node_modules/@rebrowse/types/dist
+
 COPY --from=builder /src/frontend/shared/sdk/package.json ./node_modules/@rebrowse/sdk/package.json
 COPY --from=builder /src/frontend/shared/sdk/dist ./node_modules/@rebrowse/sdk/dist
 

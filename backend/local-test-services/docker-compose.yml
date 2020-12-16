@@ -114,7 +114,7 @@ services:
       context: ../../infrastructure/kafka
       dockerfile: Dockerfile
     command: --cluster-config=cluster.yaml apply --skip-confirm topics/*.yaml
-    restart: unless-stopped
+    restart: on-failure
     depends_on:
       - kafka
       - kafka-zookeeper
@@ -183,7 +183,7 @@ services:
 
   # Kafka
   kafka:
-    image: strimzi/kafka:0.19.0-kafka-2.5.0
+    image: strimzi/kafka:0.20.1-kafka-2.5.0
     command:
       [
         'sh',
@@ -201,7 +201,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper:2181
 
   kafka-zookeeper:
-    image: strimzi/kafka:0.19.0-kafka-2.5.0
+    image: strimzi/kafka:0.20.1-kafka-2.5.0
     command:
       ['sh', '-c', 'bin/zookeeper-server-start.sh config/zookeeper.properties']
     ports:

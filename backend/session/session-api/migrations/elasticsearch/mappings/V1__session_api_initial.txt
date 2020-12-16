@@ -19,7 +19,7 @@ PUT /events
       "organizationId": {
         "type": "keyword"
       },
-      "pageId": {
+      "pageVisitId": {
         "type": "keyword"
       },
       "sessionId": {

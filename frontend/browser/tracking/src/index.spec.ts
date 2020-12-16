@@ -19,9 +19,9 @@ const SERVE_PORT = process.env.SERVE_PORT || 5000;
 // TODO: should probably use some other organization to not abuse
 const I_ORGANIZATION = '000000';
 const I_HOST = `localhost:${SERVE_PORT}`;
-const beaconApiBaseURL =
+const beaconApiBaseUrl =
   process.env.BEACON_API_BASE_URL || 'http://localhost:8081';
-const sessionApiBaseURL =
+const sessionApiBaseUrl =
   process.env.SESSION_API_BASE_URL || 'http://localhost:8082';
 
 const parsePageResponse = (response: Response) => {
@@ -42,7 +42,11 @@ const setupPage = async (page: Page) => {
     { organizationId: I_ORGANIZATION, host: I_HOST }
   );
 
-  const trackingScript = path.join(process.cwd(), 'dist', 'local.rebrowse.js');
+  const trackingScript = path.join(
+    process.cwd(),
+    'dist',
+    'localhost.rebrowse.js'
+  );
   await page.addScriptTag({ path: trackingScript });
 };
 
@@ -80,9 +84,9 @@ describe('tracking script', () => {
       await setupPage(page);
 
       console.log('Waiting for session api response...');
-      const createSessionURI = `${sessionApiBaseURL}/v1/sessions`;
+      const pageVisitUrl = `${sessionApiBaseUrl}/v1/pages`;
       const pageResponse = await page.waitForResponse(
-        (resp: Response) => resp.url() === createSessionURI
+        (resp: Response) => resp.url() === pageVisitUrl
       );
 
       const pageRequest = pageResponse.request();
@@ -93,9 +97,9 @@ describe('tracking script', () => {
       expect(pageRequest.resourceType()).toEqual('fetch');
 
       const {
-        data: { sessionId, deviceId, pageId },
+        data: { sessionId, deviceId, pageVisitId },
       } = await parsePageResponse(pageResponse);
-      const beaconBeatURI = `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`;
+      const beaconBeatUrl = `${beaconApiBaseUrl}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
 
       const { cookie, localStorage } = await page.evaluate(() => {
         return {
@@ -117,7 +121,7 @@ describe('tracking script', () => {
 
       console.log('Waiting for beacon api response...');
       let beaconResponse = await page.waitForResponse(
-        (resp: Response) => resp.url() === beaconBeatURI
+        (resp: Response) => resp.url() === beaconBeatUrl
       );
 
       const beaconRequestHeaders = responseRequestHeaders(beaconResponse);
@@ -147,14 +151,14 @@ describe('tracking script', () => {
 
       expect(sessionCreateFetchEvent.a).toEqual([
         'POST',
-        createSessionURI,
+        pageVisitUrl,
         200,
         'cors',
         'fetch',
         'http/1.1',
       ]);
       expect(sessionCreatePerformanceResourceEvent.a.slice(0, 1)).toEqual([
-        createSessionURI,
+        pageVisitUrl,
       ]);
       expect(sessionCreatePerformanceResourceEvent.a.slice(3)).toEqual([
         'fetch',
@@ -232,7 +236,7 @@ describe('tracking script', () => {
 
       console.log('Waiting for beacon api response...');
       beaconResponse = await page.waitForResponse(
-        (resp: Response) => resp.url() === beaconBeatURI
+        (resp: Response) => resp.url() === beaconBeatUrl
       );
       beaconRequest = beaconResponse.request();
       postData = JSON.parse(beaconRequest.postData() || '') as EventData;
@@ -253,14 +257,14 @@ describe('tracking script', () => {
 
       expect(beaconBeatFetchEvent.a).toEqual([
         'POST',
-        beaconBeatURI,
+        beaconBeatUrl,
         204,
         'cors',
         'fetch',
         'http/1.1',
       ]);
       expect(beaconBeatPerformanceResourceEvent.a.slice(0, 1)).toEqual([
-        beaconBeatURI,
+        beaconBeatUrl,
       ]);
       expect(beaconBeatPerformanceResourceEvent.a.slice(3)).toEqual([
         'fetch',

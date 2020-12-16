@@ -49,7 +49,7 @@ describe('pages/sessions', () => {
     sandbox.assert.calledWithMatch(getSessionsStub, {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
-      search: { limit: 20, sort_by: ['-created_at'] },
+      search: { limit: 20, sortBy: ['-createdAt'] },
     });
 
     sandbox.assert.calledWithMatch(getSessionCountStub, {

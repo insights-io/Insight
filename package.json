@@ -77,5 +77,8 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "resolutions": {
+    "typescript": "4.1.3"
   }
 }

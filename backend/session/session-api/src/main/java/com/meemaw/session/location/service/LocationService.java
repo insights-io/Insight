@@ -1,8 +1,8 @@
 package com.meemaw.session.location.service;
 
-import com.meemaw.location.model.Location;
+import com.meemaw.location.model.Located;
 
 public interface LocationService {
 
-  Location lookupByIp(String ip);
+  Located lookupByIp(String ip);
 }

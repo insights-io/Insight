@@ -15,6 +15,7 @@ import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.events.index.UserEventIndex;
 import com.meemaw.events.model.incoming.AbstractBrowserEvent;
 import com.meemaw.events.model.incoming.UserEvent;
+import com.meemaw.session.events.datasource.EventTable;
 import com.meemaw.session.sessions.resource.v1.SessionResource;
 import com.meemaw.shared.elasticsearch.ElasticsearchUtils;
 import com.meemaw.test.rest.data.EventTestData;
@@ -22,6 +23,7 @@ import com.meemaw.test.rest.mappers.JacksonMapper;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
 import com.meemaw.test.testconainers.api.auth.AuthApiTestResource;
 import com.meemaw.test.testconainers.elasticsearch.ElasticsearchTestResource;
+import com.rebrowse.api.query.TermCondition;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Method;
@@ -47,7 +49,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
       String.join("/", SessionResource.PATH, "%s/events/search");
 
   private static final UUID SESSION_ID = UUID.randomUUID();
-  private static final UUID PAGE_ID = UUID.randomUUID();
+  private static final UUID PAGE_VISIT_ID = UUID.randomUUID();
   private static final UUID DEVICE_ID = UUID.randomUUID();
 
   @SuppressWarnings("rawtypes")
@@ -78,7 +80,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
                             .source(
                                 new UserEvent<>(
                                         browserEvent,
-                                        PAGE_ID,
+                                        PAGE_VISIT_ID,
                                         SESSION_ID,
                                         DEVICE_ID,
                                         REBROWSE_ORGANIZATION_ID)
@@ -114,7 +116,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
-        .queryParam("random", "gte:aba")
+        .queryParam("random", TermCondition.GTE.rhs("aba"))
         .queryParam("aba", "gtecaba")
         .queryParam(GROUP_BY_PARAM, "another")
         .queryParam(SORT_BY_PARAM, "hehe")
@@ -125,18 +127,18 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field in search query\",\"random\":\"Unexpected field in search query\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field in group_by query\"},\"sort_by\":{\"hehe\":\"Unexpected field in sort_by query\"}}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Bad Request\",\"errors\":{\"aba\":\"Unexpected field\",\"random\":\"Unexpected field\",\"limit\":\"Number expected\",\"group_by\":{\"another\":\"Unexpected field\"},\"sort_by\":{\"hehe\":\"Unexpected field\"}}}}"));
   }
 
   @Test
   public void events_search__should_return_all_events__on_big_limit()
       throws IOException, URISyntaxException {
-    String path = String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?limit=100";
     String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(path)
+        .queryParam(LIMIT_PARAM, 100)
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body("data.size()", is(loadIncomingEvents().size()));
@@ -145,7 +147,8 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-        .get(path)
+        .queryParam(LIMIT_PARAM, 100)
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body("data.size()", is(loadIncomingEvents().size()));
@@ -157,7 +160,8 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.e=eq:4")
+        .queryParam(EventTable.TYPE, TermCondition.EQ.rhs(4))
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body(
@@ -179,7 +183,8 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + "?event.t=lt:1250")
+        .queryParam(EventTable.TIMESTAMP, TermCondition.LT.rhs(1250))
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body(
@@ -197,12 +202,13 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
 
   @Test
   public void events_search__should_return_matching_events__when_complex_type_filter() {
-    String searchQuery = "?event.e=gte:11&event.e=lte:12";
     String sessionId = authApi().loginWithAdminUser();
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID) + searchQuery)
+        .queryParam(EventTable.TYPE, TermCondition.GTE.rhs(11))
+        .queryParam(EventTable.TYPE, TermCondition.LTE.rhs(12))
+        .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
         .body(

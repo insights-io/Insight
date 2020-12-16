@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS session.session
     PRIMARY KEY (id, device_id, organization_id, created_at)
 );
 
-CREATE TABLE IF NOT EXISTS session.page
+CREATE TABLE IF NOT EXISTS session.page_visit
 (
     id                 UUID        NOT NULL UNIQUE,
     session_id         UUID        NOT NULL,

@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     const { user, organization } = authResponse;
     const teamInvitesPromise = AuthApi.organization.teamInvite.list({
       baseURL: process.env.AUTH_API_BASE_URL,
-      search: { limit: 20, sort_by: ['+created_at'] },
+      search: { limit: 20, sortBy: ['+createdAt'] },
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
         cookie: `SessionId=${authResponse.SessionId}`,

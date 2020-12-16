@@ -1,18 +1,23 @@
 package com.meemaw.location.model;
 
-public interface Location {
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-  String getIp();
+@Value
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Builder
+public class Location implements Located {
 
-  String getCountryName();
-
-  String getRegionName();
-
-  String getCity();
-
-  String getZip();
-
-  double getLatitude();
-
-  double getLongitude();
+  String ip;
+  String countryName;
+  String regionName;
+  String city;
+  String zip;
+  String continentName;
+  double latitude;
+  double longitude;
 }

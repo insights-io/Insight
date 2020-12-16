@@ -1,18 +1,18 @@
-import { DataResponse } from './api';
+import type { DataResponse } from './api';
 
 type SessionID = string;
-type PageID = string;
+type PageVisitId = string;
 type DeviceId = string;
 
-export type PageIdentity = {
+export type PageVisitSessionLink = {
   deviceId: DeviceId;
   sessionId: SessionID;
-  pageId: PageID;
+  pageVisitId: PageVisitId;
 };
 
-export type CreatePageResponse = DataResponse<PageIdentity>;
+export type CreatePageResponse = DataResponse<PageVisitSessionLink>;
 
-export type CreatePageDTO = {
+export type CreatePageVisitDTO = {
   organizationId: string;
   deviceId?: string;
   url: string;

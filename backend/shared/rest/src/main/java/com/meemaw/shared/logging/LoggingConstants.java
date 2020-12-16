@@ -18,8 +18,8 @@ public final class LoggingConstants {
   /* Device */
   public static final String DEVICE_ID = "device.id";
 
-  /* Page */
-  public static final String PAGE_ID = "page.id";
+  /* Page Visit */
+  public static final String PAGE_VISIT_ID = "page.visit.id";
 
   /* Session */
   public static final String SESSION_ID = "session.id";

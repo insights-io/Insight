@@ -49,17 +49,12 @@ public class BeaconService {
 
   @Traced
   @Timed(
-      name = "pageExists",
-      description = "A measure of how long it takes to check if page exists")
-  CompletionStage<Boolean> pageExists(UUID sessionId, UUID pageId, String organizationId) {
+      name = "pageVisitExists",
+      description = "A measure of how long it takes to check if page visit exists")
+  CompletionStage<Boolean> pageVisitExists(UUID id, String organizationId) {
     return SessionPage.retrieve(
-            pageId,
-            sessionId,
-            organizationId,
-            new RequestOptions.Builder().apiBaseUrl(sessionApiBaseUrl).build())
-        .thenApply(
-            sessionPage ->
-                sessionPage.getId().equals(pageId) && sessionPage.getSessionId().equals(sessionId))
+            id, organizationId, new RequestOptions.Builder().apiBaseUrl(sessionApiBaseUrl).build())
+        .thenApply(sessionPage -> sessionPage.getId().equals(id))
         .exceptionally(
             throwable -> {
               CompletionException completionException = (CompletionException) throwable;
@@ -80,17 +75,17 @@ public class BeaconService {
    * @param organizationId String organization id
    * @param sessionId String session id
    * @param deviceId String user (device) id
-   * @param pageId String page id
+   * @param pageVisitId String page visit id
    * @param beacon Beacon
    * @return CompletionStage if successful processing
    */
   @Traced
   @Timed(name = "processBeacon", description = "A measure of how long it takes to process beacon")
   public CompletionStage<?> process(
-      String organizationId, UUID sessionId, UUID deviceId, UUID pageId, Beacon beacon) {
+      String organizationId, UUID sessionId, UUID deviceId, UUID pageVisitId, Beacon beacon) {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
-    MDC.put(LoggingConstants.PAGE_ID, pageId.toString());
+    MDC.put(LoggingConstants.PAGE_VISIT_ID, pageVisitId.toString());
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
 
     Function<AbstractBrowserEvent<?>, UserEvent<?>> identify =
@@ -99,7 +94,7 @@ public class BeaconService {
                 .event(event)
                 .organizationId(organizationId)
                 .sessionId(sessionId)
-                .pageId(pageId)
+                .pageVisitId(pageVisitId)
                 .deviceId(deviceId)
                 .build();
 
@@ -107,7 +102,7 @@ public class BeaconService {
     log.info(
         "[BEACON]: Processing beacon sequence: {} size: {}", beacon.getSequence(), events.size());
 
-    return pageExists(sessionId, pageId, organizationId)
+    return pageVisitExists(pageVisitId, organizationId)
         .thenApply(
             exists -> {
               if (!exists) {

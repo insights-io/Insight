@@ -6,7 +6,7 @@ Main Rebrowse application.
 
 ## Storybook
 
-You can find up to date Storybooks [here](https://insights-io.github.io/Insight/app/storybook/master/).
+You can find up to date Storybooks [here](https://app.storybook.rebrowse.dev/index.html).
 
 ## Testing with locally build tracking script
 

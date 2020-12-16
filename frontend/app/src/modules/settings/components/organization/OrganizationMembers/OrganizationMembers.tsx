@@ -11,12 +11,12 @@ import { Avatar } from 'baseui/avatar';
 import { SIZE } from 'baseui/button';
 import { Delete } from 'baseui/icon';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import { mapUser } from '@rebrowse/sdk';
+import { mapUser, MemberSearchBean } from '@rebrowse/sdk';
 import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { StyledSpinnerNext } from 'baseui/spinner';
-import type { SearchBean, User, UserDTO } from '@rebrowse/types';
+import type { User, UserDTO } from '@rebrowse/types';
 import { capitalize } from 'shared/utils/string';
 
 type Props = {
@@ -34,11 +34,11 @@ export const OrganizationMembers = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
 
-  const search = useCallback(async (search: SearchBean) => {
+  const search = useCallback(async (search: MemberSearchBean) => {
     return AuthApi.organization.members({ search });
   }, []);
 
-  const searchCount = useCallback(async (search: SearchBean) => {
+  const searchCount = useCallback(async (search: MemberSearchBean) => {
     return AuthApi.organization.memberCount({ search });
   }, []);
 

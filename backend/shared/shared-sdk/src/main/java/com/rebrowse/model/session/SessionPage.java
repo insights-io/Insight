@@ -27,16 +27,15 @@ public class SessionPage {
   long compiledTimestamp;
   OffsetDateTime pageStart;
 
-  public static CompletionStage<SessionPage> retrieve(
-      UUID id, UUID sessionId, String organizationId) {
-    return retrieve(id, sessionId, organizationId, null);
+  public static CompletionStage<SessionPage> retrieve(UUID id, String organizationId) {
+    return retrieve(id, organizationId, null);
   }
 
   public static CompletionStage<SessionPage> retrieve(
-      UUID id, UUID sessionId, String organizationId, RequestOptions requestOptions) {
+      UUID id, String organizationId, RequestOptions requestOptions) {
     return ApiResource.request(
         RequestMethod.GET,
-        String.format("/v1/sessions/%s/pages/%s?organizationId=%s", sessionId, id, organizationId),
+        String.format("/v1/pages/%s?organizationId=%s", id, organizationId),
         SessionPage.class,
         requestOptions);
   }

@@ -28,9 +28,9 @@ describe('useSessions', () => {
     sandbox.assert.calledWithExactly(searchSessionsStub, {
       search: {
         limit: 1,
-        sort_by: ['-created_at'],
+        sortBy: ['-createdAt'],
         'location.city': 'eq:Maribor',
-        created_at: ['gte:1995-12-04T00:12:00.000Z'],
+        createdAt: ['gte:1995-12-04T00:12:00.000Z'],
       },
     });
 
@@ -42,9 +42,9 @@ describe('useSessions', () => {
     sandbox.assert.calledWithExactly(searchSessionsStub, {
       search: {
         limit: 1,
-        sort_by: ['-created_at'],
+        sortBy: ['-createdAt'],
         'location.city': 'eq:Maribor',
-        created_at: [
+        createdAt: [
           'gte:1995-12-04T00:12:00.000Z',
           `lte:${REBROWSE_SESSION.createdAt.toISOString()}`,
         ],

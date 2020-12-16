@@ -14,7 +14,7 @@ import lombok.Value;
 public class UserEventDTO<T extends AbstractBrowserEventDTO> {
 
   T event;
-  UUID pageId;
+  UUID pageVisitId;
   UUID sessionId;
   UUID deviceId;
   String organizationId;

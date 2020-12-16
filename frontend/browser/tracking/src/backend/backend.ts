@@ -1,14 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import { logger } from 'logger';
-import { BrowserEvent } from 'event';
-import { Connected } from 'identity/types';
-import {
+import type { BrowserEvent } from 'event';
+import type { Connected } from 'identity/types';
+import type {
   CreatePageResponse,
-  PageIdentity,
-  CreatePageDTO,
+  PageVisitSessionLink,
+  CreatePageVisitDTO,
 } from '@rebrowse/types';
-
-import Context from '../context';
+import Context from 'context';
 
 import { BeaconTransport } from './transports/beacon';
 import { BaseTransport, RequestResponseTransport } from './transports/base';
@@ -19,7 +18,7 @@ class Backend implements Connected {
   private readonly _context: Context;
   private readonly _requestResponseTransport: RequestResponseTransport;
   private readonly _maybeBeaconTransport: BaseTransport;
-  private readonly _pageURL: string;
+  private readonly _pageVisitURL: string;
 
   private _beaconURL: string;
 
@@ -31,7 +30,7 @@ class Backend implements Connected {
   ) {
     this._context = context;
     this._beaconURL = `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${organizationId}`;
-    this._pageURL = `${sessionApiBaseURL}/v1/sessions`;
+    this._pageVisitURL = `${sessionApiBaseURL}/v1/pages`;
 
     const globalObject = Context.getGlobalObject();
     if (FetchTranport.isSupported(globalObject)) {
@@ -64,9 +63,9 @@ class Backend implements Connected {
     return this._sendEvents(this._maybeBeaconTransport, e);
   };
 
-  public connect = (identity: PageIdentity) => {
-    const { sessionId, deviceId, pageId } = identity;
-    this._beaconURL = `${this._beaconURL}&sessionId=${sessionId}&deviceId=${deviceId}&pageId=${pageId}`;
+  public connect = (identity: PageVisitSessionLink) => {
+    const { sessionId, deviceId, pageVisitId } = identity;
+    this._beaconURL = `${this._beaconURL}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
   };
 
   // TODO: better error handling
@@ -81,9 +80,9 @@ class Backend implements Connected {
   };
 
   // TODO: better error handling
-  public page = (pageDTO: CreatePageDTO) => {
+  public page = (pageDTO: CreatePageVisitDTO) => {
     return this._requestResponseTransport
-      .post<CreatePageResponse>(this._pageURL, JSON.stringify(pageDTO))
+      .post<CreatePageResponse>(this._pageVisitURL, JSON.stringify(pageDTO))
       .then((response) => {
         if (response.status > 400 && response.status < 600) {
           throw new Error(`Failed to create page status: ${response.status}`);

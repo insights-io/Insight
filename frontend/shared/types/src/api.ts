@@ -24,11 +24,28 @@ export type QueryParam =
   | boolean[]
   | null;
 
-export type SearchBean = {
+export enum TimePrecision {
+  MICROSECONDS = 'microseconds',
+  MILLISECONDS = 'milliseconds',
+  SECOND = 'second',
+  MINUTE = 'minute',
+  HOUR = 'hour',
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
+}
+
+export enum SortDirection {
+  ASC = '+',
+  DESC = '-',
+}
+
+type SortByQueryParam<S extends string> = S | `${SortDirection}${S}`;
+
+export type SearchBean<R extends Record<string, unknown>> = {
   query?: string;
   limit?: number;
-  // eslint-disable-next-line camelcase
-  sort_by?: string[];
-  // eslint-disable-next-line camelcase
-  group_by?: string[];
-} & Record<string, QueryParam>;
+  sortBy?: SortByQueryParam<keyof R & string>[];
+  groupBy?: (keyof R)[];
+  dateTrunc?: TimePrecision;
+} & Partial<Record<keyof R, QueryParam>>;
