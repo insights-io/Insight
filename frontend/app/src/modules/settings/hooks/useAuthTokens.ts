@@ -2,7 +2,7 @@ import { mapAuthToken } from '@rebrowse/sdk';
 import { AuthTokenDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useMemo } from 'react';
-import { useMutation, useQuery, useQueryCache } from 'shared/hooks/useQuery';
+import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['sso', 'token', 'list'];
 
@@ -19,23 +19,26 @@ export const useAuthTokens = (initialData: AuthTokenDTO[]) => {
 };
 
 export const useAuthTokenMutations = () => {
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
-  const [create] = useMutation(() => AuthApi.sso.token.create(), {
-    throwOnError: true,
-    onSuccess: (authToken) => {
-      queryCache.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
-        return [...(prev || []), authToken];
-      });
-    },
-  });
+  const { mutateAsync: create } = useMutation(
+    () => AuthApi.sso.token.create(),
+    {
+      useErrorBoundary: true,
+      onSuccess: (authToken) => {
+        queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
+          return [...(prev || []), authToken];
+        });
+      },
+    }
+  );
 
-  const [revoke] = useMutation(
+  const { mutateAsync: revoke } = useMutation(
     (token: string) => AuthApi.sso.token.delete(token),
     {
-      throwOnError: true,
+      useErrorBoundary: true,
       onSuccess: (_result, token) => {
-        queryCache.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
+        queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
           return (prev || [])?.filter((t) => t.token !== token);
         });
       },

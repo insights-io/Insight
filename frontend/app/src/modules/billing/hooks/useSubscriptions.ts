@@ -1,6 +1,6 @@
 import { BillingApi } from 'api';
 import { useMemo } from 'react';
-import { useQuery, QueryCache } from 'shared/hooks/useQuery';
+import { useQuery, QueryClient } from 'shared/hooks/useQuery';
 import { mapSubscription } from '@rebrowse/sdk';
 import type { SubscriptionDTO } from '@rebrowse/types';
 
@@ -21,10 +21,10 @@ export const useSubscriptions = (initialData: SubscriptionDTO[]) => {
 };
 
 export const setSubscription = (
-  cache: QueryCache,
+  queryClient: QueryClient,
   subscription: SubscriptionDTO
 ) => {
-  return cache.setQueryData<SubscriptionDTO[]>(cacheKey, (cacheValue) => {
+  return queryClient.setQueryData<SubscriptionDTO[]>(cacheKey, (cacheValue) => {
     if (!cacheValue) {
       return [subscription];
     }

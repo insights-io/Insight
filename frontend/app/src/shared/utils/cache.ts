@@ -1,4 +1,4 @@
-import { QueryCache } from 'react-query';
+import { QueryClient } from 'react-query';
 import type { ResponsePromise } from 'ky';
 import type { APIErrorDataResponse } from '@rebrowse/types';
 
@@ -8,11 +8,15 @@ const handleApiError = async (error: unknown) => {
   throw apiError;
 };
 
-export const createQueryCache = (
-  config?: ConstructorParameters<typeof QueryCache>[0]
+export const createQueryClient = (
+  config?: ConstructorParameters<typeof QueryClient>[0]
 ) => {
-  return new QueryCache({
+  return new QueryClient({
     ...config,
-    defaultConfig: { queries: { onError: handleApiError } },
+    defaultOptions: {
+      queries: {
+        onError: handleApiError,
+      },
+    },
   });
 };

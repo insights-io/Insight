@@ -2,8 +2,7 @@ import { BillingApi } from 'api';
 import type { SubscriptionDTO } from '@rebrowse/types';
 import { useCallback, useMemo } from 'react';
 import { mapSubscription } from '@rebrowse/sdk';
-import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
-import { useMutation } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from 'shared/hooks/useQuery';
 
 import { setSubscription as setSubscriptionInSubscriptions } from './useSubscriptions';
 
@@ -17,21 +16,15 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
   const { data } = useQuery(
     cacheKey(initialData.id),
     () => BillingApi.subscriptions.get(initialData.id),
-    {
-      initialData: () => {
-        return initialData;
-      },
-    }
+    { initialData: () => initialData }
   );
 
-  const [cancelSubscription] = useMutation(
+  const { mutateAsync: cancelSubscription } = useMutation(
     () => BillingApi.subscriptions.cancel(initialData.id),
     {
+      useErrorBoundary: true,
       onSuccess: (updatedSubscription) => {
         subscriptionCache.setSubscription(updatedSubscription);
-      },
-      onError: (error) => {
-        throw error;
       },
     }
   );
@@ -44,18 +37,17 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
 };
 
 export const useSubscriptionCache = () => {
-  const cache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const setSubscription = useCallback(
     (subscription: SubscriptionDTO) => {
-      cache.setQueryData<SubscriptionDTO>(
+      queryClient.setQueryData<SubscriptionDTO>(
         cacheKey(subscription.id),
         subscription
       );
-      setSubscriptionInSubscriptions(cache, subscription);
-      cache.notifyGlobalListeners();
+      setSubscriptionInSubscriptions(queryClient, subscription);
     },
-    [cache]
+    [queryClient]
   );
 
   return { setSubscription };

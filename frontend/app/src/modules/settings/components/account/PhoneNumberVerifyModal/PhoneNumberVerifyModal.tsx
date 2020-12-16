@@ -7,11 +7,14 @@ import type { UserDTO } from '@rebrowse/types';
 import { useIsOpen } from 'shared/hooks/useIsOpen';
 
 type Props = {
-  setUser: (user: UserDTO) => void;
+  verifyPhoneNumber: (code: number) => Promise<UserDTO>;
   children: (open: () => void) => React.ReactNode;
 };
 
-export const PhoneNumberVerifyModal = ({ setUser, children }: Props) => {
+export const PhoneNumberVerifyModal = ({
+  verifyPhoneNumber,
+  children,
+}: Props) => {
   const { isOpen, open, close } = useIsOpen();
 
   return (
@@ -23,9 +26,8 @@ export const PhoneNumberVerifyModal = ({ setUser, children }: Props) => {
           <PhoneNumberVerifyForm
             sendCode={AuthApi.user.phoneNumberVerifySendCode}
             verify={(code) =>
-              AuthApi.user.phoneNumberVerify(code).then((user) => {
+              verifyPhoneNumber(code).then(() => {
                 toaster.positive(`Phone number successfully verified`, {});
-                setUser(user);
                 close();
               })
             }
