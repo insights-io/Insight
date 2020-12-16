@@ -147,6 +147,7 @@ public class EventsResourceImplTest extends ExternalAuthApiProvidedTest {
     given()
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+        .queryParam(LIMIT_PARAM, 100)
         .get(String.format(SEARCH_EVENTS_PATH_TEMPLATE, SESSION_ID))
         .then()
         .statusCode(200)
