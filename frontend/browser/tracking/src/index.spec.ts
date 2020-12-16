@@ -84,9 +84,9 @@ describe('tracking script', () => {
       await setupPage(page);
 
       console.log('Waiting for session api response...');
-      const createSessionURI = `${sessionApiBaseURL}/v1/sessions`;
+      const pageVisitUrl = `${sessionApiBaseURL}/v1/pages`;
       const pageResponse = await page.waitForResponse(
-        (resp: Response) => resp.url() === createSessionURI
+        (resp: Response) => resp.url() === pageVisitUrl
       );
 
       const pageRequest = pageResponse.request();
