@@ -25,8 +25,9 @@ test('As a user I should see live data on page visits & sessions', async (t) => 
     location.reload(true);
   });
 
+  const newPageVisitCount = await HomePage.getPageVisitsCount().then(Number);
   await t
-    .expect(HomePage.getPageVisitsCount().then(Number))
+    .expect(newPageVisitCount)
     .gt(
       initialPageVisitsCount,
       'Page visit count should be greater than initially after page reload'
