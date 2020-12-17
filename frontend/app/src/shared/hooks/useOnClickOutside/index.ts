@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-const findEnclosingSvg = (node: HTMLElement): HTMLElement | null => {
+const findEnclosingSvg = (node: Element): Element | null => {
   let next: Node | null = node.parentNode;
   while (next?.nodeName !== 'svg') {
     next = next?.parentNode ?? null;
   }
-  return next as HTMLElement;
+  return next as Element;
 };
 
 const svgShapes = new Set([
@@ -18,14 +18,14 @@ const svgShapes = new Set([
   'polygon',
 ]);
 
-const useOnClickOutside = <T extends HTMLElement>(
+const useOnClickOutside = <T extends Element>(
   handler: (ev: MouseEvent) => void
 ) => {
   const ref = useRef() as React.RefObject<T>;
 
   useEffect(() => {
     const listener = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+      const target = event.target as Element;
       if (!ref.current) {
         return;
       }
@@ -35,7 +35,7 @@ const useOnClickOutside = <T extends HTMLElement>(
         return;
       }
 
-      let maybeSvgTarget: HTMLElement | null = target;
+      let maybeSvgTarget: Element | null = target;
       if (svgShapes.has(target.nodeName)) {
         maybeSvgTarget = findEnclosingSvg(target);
       }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
 import { SessionApi } from 'api/session';
-import { REBROWSE_SESSION, CONSOLE_EVENTS, ERROR_EVENTS } from 'test/data';
+import { REBROWSE_SESSIONS, CONSOLE_EVENTS, ERROR_EVENTS } from 'test/data';
 import type { Meta } from '@storybook/react';
 
 import { SessionDetails } from './SessionDetails';
@@ -12,7 +12,7 @@ export default {
 } as Meta;
 
 export const Base = () => {
-  return <SessionDetails session={REBROWSE_SESSION} />;
+  return <SessionDetails session={REBROWSE_SESSIONS[0]} />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {

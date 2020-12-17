@@ -1,6 +1,5 @@
 import type { SearchBean } from '@rebrowse/types';
-
-import type { RequestOptions } from '../types';
+import type { RequestOptions } from 'types';
 
 export type SessionSearchBean = SearchBean<{
   createdAt?: unknown;
@@ -10,8 +9,11 @@ export type SessionSearchBean = SearchBean<{
   'location.regionName'?: unknown;
   'location.ip'?: unknown;
   'user_agent.browserName'?: unknown;
+  'userAgent.browserName'?: unknown;
   'user_agent.operatingSystemName'?: unknown;
+  'userAgent.operatingSystemName'?: unknown;
   'user_agent.deviceClass'?: unknown;
+  'userAgent.deviceClass'?: unknown;
 }>;
 
 export type SessionsSearchRequestOptions = Omit<

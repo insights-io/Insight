@@ -1,39 +1,32 @@
 import React from 'react';
-import {
-  AuthenticatedServerSideProps,
-  authenticated,
-} from 'modules/auth/middleware/authMiddleware';
+import { authenticated } from 'modules/auth/middleware/authMiddleware';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import {
   InsightsPage,
   CountByDateDataPoint,
+  CountByDeviceClassDataPoint,
+  InsightsPageProps,
 } from 'modules/insights/pages/InsightsPage';
 import { SessionApi, PagesApi } from 'api';
-import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 import { TimePrecision } from '@rebrowse/types';
 import { addDays } from 'date-fns';
 
-export type Props = AuthenticatedServerSideProps & {
-  countByLocation: CountByLocation;
-  countByDeviceClass: Record<string, number>;
-  countSessionsByDate: CountByDateDataPoint[];
-  countPageVisitsByDate: CountByDateDataPoint[];
-};
+type Props = InsightsPageProps;
 
 const Home = ({
   user,
-  countByLocation,
+  countSessionsByLocation,
   organization,
-  countByDeviceClass,
+  countSessionsByDeviceClass,
   countSessionsByDate,
   countPageVisitsByDate,
 }: Props) => {
   return (
     <InsightsPage
       user={user}
-      countByLocation={countByLocation}
-      countByDeviceClass={countByDeviceClass}
+      countSessionsByLocation={countSessionsByLocation}
+      countSessionsByDeviceClass={countSessionsByDeviceClass}
       organization={organization}
       countSessionsByDate={countSessionsByDate}
       countPageVisitsByDate={countPageVisitsByDate}
@@ -81,7 +74,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       }
     );
 
-    const countByLocationPromise = SessionApi.countByLocation({
+    // TODO: Improve
+    const countSessionsByLocationPromise = SessionApi.countByLocation({
       baseURL: process.env.SESSION_API_BASE_URL,
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
@@ -95,7 +89,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       }));
     });
 
-    const countByDeviceClassPromise = SessionApi.countByDeviceClass({
+    const countSessionsByDeviceClassPromise = SessionApi.count<
+      CountByDeviceClassDataPoint[]
+    >({
+      search: { groupBy: ['userAgent.deviceClass'] },
       baseURL: process.env.SESSION_API_BASE_URL,
       headers: {
         ...prepareCrossServiceHeaders(requestSpan),
@@ -106,21 +103,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     const [
       countSessionsByDate,
       countPageVisitsByDate,
-      countByLocation,
-      countByDeviceClass,
+      countSessionsByLocation,
+      countSessionsByDeviceClass,
     ] = await Promise.all([
       countSessionsByDatePromise,
       countPageVisitsByDatePromise,
-      countByLocationPromise,
-      countByDeviceClassPromise,
+      countSessionsByLocationPromise,
+      countSessionsByDeviceClassPromise,
     ]);
 
     return {
       props: {
         user: authResponse.user,
         organization: authResponse.organization,
-        countByLocation,
-        countByDeviceClass,
+        countSessionsByLocation,
+        countSessionsByDeviceClass,
         countSessionsByDate,
         countPageVisitsByDate,
       },

@@ -22,7 +22,6 @@ const {
   planUpgradedToBusinessPropagationMessage,
   terminateButton,
   invoicesTab,
-  invoiceDetails,
 } = OrganizationSubscriptionSettingsPage;
 
 test('As a user I can subscribe again after canceling my first subscription using VISA', async (t) => {
@@ -63,9 +62,14 @@ test('As a user I can subscribe again after canceling my first subscription usin
     .expect(queryAllByText('$15.00').with({ timeout: 3000 }).visible)
     .ok('Displays amount')
     .expect(queryByText('This is a test invoice.', { exact: false }).visible)
-    .ok('Should be a test invoice')
+    .ok('Should be a test invoice');
+
+  /* Stripe keeps breaking UI
     .click(invoiceDetails.downloadButton)
-    .click(invoiceDetails.downloadReceipt)
+    .click(invoiceDetails.downloadReceipt);
+  */
+
+  await t
     .closeWindow()
     .click(terminateButton)
     .expect(queryByText('Successfully canceled subscription').visible)
@@ -152,9 +156,14 @@ test('As a user, I can subscribe using a 3DS payment method and then cancel my s
     .expect(queryAllByText('$15.00').with({ timeout: 3000 }).visible)
     .ok('Displays amount')
     .expect(queryByText('This is a test invoice.', { exact: false }).visible)
-    .ok('Should be a test invoice')
+    .ok('Should be a test invoice');
+
+  /* Stripe keeps breaking UI
     .click(invoiceDetails.downloadButton)
-    .click(invoiceDetails.downloadReceipt)
+    .click(invoiceDetails.downloadReceipt);
+  */
+
+  await t
     .closeWindow()
     .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
     .expect(queryByText('Rebrowse Free').visible)

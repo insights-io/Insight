@@ -1,7 +1,6 @@
 import React from 'react';
 import {
-  REBROWSE_SESSION,
-  REBROWSE_SESSION_DTO,
+  REBROWSE_SESSIONS_DTOS,
   CONSOLE_EVENTS,
   ERROR_EVENTS,
   REBROWSE_ADMIN_DTO,
@@ -22,8 +21,8 @@ export default {
 export const Base = () => {
   return (
     <SessionPage
-      sessionId={REBROWSE_SESSION.id}
-      session={REBROWSE_SESSION_DTO}
+      sessionId={REBROWSE_SESSIONS_DTOS[0].id}
+      session={REBROWSE_SESSIONS_DTOS[0]}
       user={REBROWSE_ADMIN_DTO}
       organization={REBROWSE_ORGANIZATION_DTO}
     />
@@ -33,8 +32,9 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       getSessions: sandbox
-        .stub(SessionApi, 'getSessions')
-        .resolves([REBROWSE_SESSION_DTO]),
+        .stub(SessionApi, 'getSession')
+        .resolves(REBROWSE_SESSIONS_DTOS[0]),
+
       getEvents: sandbox
         .stub(SessionApi.events, 'search')
         .resolves([
