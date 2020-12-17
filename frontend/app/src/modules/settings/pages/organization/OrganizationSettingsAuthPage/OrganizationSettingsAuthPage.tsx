@@ -32,7 +32,9 @@ export const OrganizationSettingsAuthPage = ({
   user: initialUser,
   organization: initialOrganization,
 }: Props) => {
-  const { maybeSsoSetup, setSsoSetup } = useSsoSetup(initialMaybeSsoSetup);
+  const { maybeSsoSetup, deleteSsoSetup, createSsoSetup } = useSsoSetup(
+    initialMaybeSsoSetup
+  );
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
 
@@ -51,7 +53,8 @@ export const OrganizationSettingsAuthPage = ({
             label="Google"
             image={cdnLogo('google.svg')}
             activeSetup={maybeSsoSetup}
-            setActiveSetup={setSsoSetup}
+            deleteSsoSetup={deleteSsoSetup}
+            createSsoSetup={createSsoSetup}
           />
         </Panel.Item>
 
@@ -61,7 +64,8 @@ export const OrganizationSettingsAuthPage = ({
             label="Github"
             image={cdnLogo('github.svg')}
             activeSetup={maybeSsoSetup}
-            setActiveSetup={setSsoSetup}
+            deleteSsoSetup={deleteSsoSetup}
+            createSsoSetup={createSsoSetup}
           />
         </Panel.Item>
 
@@ -71,7 +75,8 @@ export const OrganizationSettingsAuthPage = ({
             label="Active directory"
             image={cdnLogo('microsoft.svg')}
             activeSetup={maybeSsoSetup}
-            setActiveSetup={setSsoSetup}
+            deleteSsoSetup={deleteSsoSetup}
+            createSsoSetup={createSsoSetup}
           />
         </Panel.Item>
 
@@ -82,7 +87,8 @@ export const OrganizationSettingsAuthPage = ({
             label="Okta"
             image={cdnLogo('okta.svg')}
             activeSetup={maybeSsoSetup}
-            setActiveSetup={setSsoSetup}
+            deleteSsoSetup={deleteSsoSetup}
+            createSsoSetup={createSsoSetup}
           />
         </Panel.Item>
 
@@ -93,7 +99,8 @@ export const OrganizationSettingsAuthPage = ({
             label="OneLogin"
             image={cdnLogo('onelogin.svg')}
             activeSetup={maybeSsoSetup}
-            setActiveSetup={setSsoSetup}
+            deleteSsoSetup={deleteSsoSetup}
+            createSsoSetup={createSsoSetup}
           />
         </Panel.Item>
 
@@ -104,7 +111,8 @@ export const OrganizationSettingsAuthPage = ({
             label="Auth0"
             image={cdnLogo('auth0.svg')}
             activeSetup={maybeSsoSetup}
-            setActiveSetup={setSsoSetup}
+            deleteSsoSetup={deleteSsoSetup}
+            createSsoSetup={createSsoSetup}
           />
         </Panel.Item>
       </Panel>

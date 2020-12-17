@@ -15,6 +15,7 @@ export const createQueryClient = (
     ...config,
     defaultOptions: {
       queries: {
+        useErrorBoundary: true,
         onError: handleApiError,
       },
     },

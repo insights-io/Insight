@@ -1,14 +1,15 @@
 import { SessionApi } from 'api';
-import useSWR from 'swr';
+import { useQuery } from 'shared/hooks/useQuery';
 
-const useAutocomplete = (on: string | undefined) => {
-  const {
-    data: autocompleteOptions = [],
-  } = useSWR(`SessionApi.distinct?on=${on}`, () =>
-    on === undefined ? [] : SessionApi.distinct(on)
-  );
-
-  return autocompleteOptions;
+export const cacheKey = (on: string | undefined) => {
+  return ['SessionApi', 'distinct', on];
 };
 
-export default useAutocomplete;
+const queryFn = (on: string | undefined) => {
+  return on === undefined ? [] : SessionApi.distinct(on);
+};
+
+export const useAutocomplete = (on: string | undefined) => {
+  const { data: options = [] } = useQuery(cacheKey(on), () => queryFn(on));
+  return { options };
+};

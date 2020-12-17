@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalFooter, ModalBody } from 'baseui/modal';
 import { Button } from '@rebrowse/elements';
-import type {
-  APIError,
-  APIErrorDataResponse,
-  SsoSetupDTO,
-} from '@rebrowse/types';
+import type { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import FormError from 'shared/components/FormError';
 import { SIZE } from 'baseui/button';
-import { AuthApi } from 'api';
 import { toaster } from 'baseui/toast';
 import { Block } from 'baseui/block';
 
@@ -16,14 +11,14 @@ type Props = {
   label: string;
   isOpen: boolean;
   onClose: () => void;
-  setActiveSetup: (setup: SsoSetupDTO | undefined) => void;
+  disable: () => Promise<Response>;
 };
 
 export const SsoSetupDisableModal = ({
   label,
   isOpen,
   onClose,
-  setActiveSetup,
+  disable,
 }: Props) => {
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,11 +30,9 @@ export const SsoSetupDisableModal = ({
     setIsSubmitting(true);
     setFormError(undefined);
 
-    AuthApi.sso.setup
-      .delete()
+    disable()
       .then(() => {
         toaster.positive(`${label} SSO setup disabled`, {});
-        setActiveSetup(undefined);
         onClose();
       })
       .catch(async (setupError) => {

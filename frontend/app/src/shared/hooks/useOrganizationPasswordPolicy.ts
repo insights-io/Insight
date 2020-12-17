@@ -1,47 +1,46 @@
 import { mapPasswordPolicy } from '@rebrowse/sdk';
 import { AuthApi } from 'api';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import type {
   OrganizationPasswordPolicyDTO,
   PasswordPolicyCreateParams,
   PasswordPolicyUpdateParams,
 } from '@rebrowse/types';
+import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
-import useSWRQuery from './useSWRQuery';
-
-const CACHE_KEY = 'AuthApi.organizations.passwordPolicy.retrieve';
+const CACHE_KEY = ['AuthApi', 'organizations', 'passwordPolicy', 'retrieve'];
+const queryFn = () => AuthApi.organization.passwordPolicy.retrieve();
 
 export const useOrganizationPasswordPolicy = (
   initialData: OrganizationPasswordPolicyDTO | undefined
 ) => {
-  const { data, error, mutate } = useSWRQuery(
-    CACHE_KEY,
-    () => AuthApi.organization.passwordPolicy.retrieve(),
-    { initialData }
+  const queryClient = useQueryClient();
+  const { data } = useQuery(CACHE_KEY, queryFn, { initialData });
+
+  const { mutateAsync: createPasswordPolicy } = useMutation(
+    (params: PasswordPolicyCreateParams) =>
+      AuthApi.organization.passwordPolicy.create(params),
+    {
+      onSuccess: (policy) => {
+        queryClient.setQueryData<OrganizationPasswordPolicyDTO>(
+          CACHE_KEY,
+          policy
+        );
+      },
+    }
   );
 
-  const createPasswordPolicy = useCallback(
-    (params: PasswordPolicyCreateParams) => {
-      return AuthApi.organization.passwordPolicy
-        .create(params)
-        .then((updatedData) => {
-          mutate(updatedData);
-          return updatedData;
-        });
-    },
-    [mutate]
-  );
-
-  const updatePasswordPolicy = useCallback(
-    (params: PasswordPolicyUpdateParams) => {
-      return AuthApi.organization.passwordPolicy
-        .update(params)
-        .then((updatedData) => {
-          mutate(updatedData);
-          return updatedData;
-        });
-    },
-    [mutate]
+  const { mutateAsync: updatePasswordPolicy } = useMutation(
+    (params: PasswordPolicyUpdateParams) =>
+      AuthApi.organization.passwordPolicy.update(params),
+    {
+      onSuccess: (policy) => {
+        queryClient.setQueryData<OrganizationPasswordPolicyDTO>(
+          CACHE_KEY,
+          policy
+        );
+      },
+    }
   );
 
   const passwordPolicy = useMemo(
@@ -51,7 +50,6 @@ export const useOrganizationPasswordPolicy = (
 
   return {
     passwordPolicy,
-    error,
     createPasswordPolicy,
     updatePasswordPolicy,
   };

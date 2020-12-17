@@ -6,17 +6,15 @@ import type { PhoneNumber, UserDTO } from '@rebrowse/types';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'user', 'me'];
+const queryFn = () => AuthApi.user.me();
 
 export const useUser = (initialData: UserDTO) => {
   const queryClient = useQueryClient();
-  const { data = initialData } = useQuery(CACHE_KEY, () => AuthApi.user.me(), {
-    initialData: () => initialData,
-  });
+  const { data = initialData } = useQuery(CACHE_KEY, queryFn, { initialData });
 
   const { mutateAsync: updateUser } = useMutation(
     (payload: UpdateUserPayload) => AuthApi.user.update(payload),
     {
-      useErrorBoundary: true,
       onSuccess: (updatedUser) => {
         queryClient.setQueryData<UserDTO>(CACHE_KEY, updatedUser);
       },
@@ -27,7 +25,6 @@ export const useUser = (initialData: UserDTO) => {
     (phoneNumber: PhoneNumber | undefined | null) =>
       AuthApi.user.updatePhoneNumber(phoneNumber),
     {
-      useErrorBoundary: true,
       onSuccess: (updatedUser) => {
         queryClient.setQueryData<UserDTO>(CACHE_KEY, updatedUser);
       },
@@ -37,7 +34,6 @@ export const useUser = (initialData: UserDTO) => {
   const { mutateAsync: verifyPhoneNumber } = useMutation(
     (code: number) => AuthApi.user.phoneNumberVerify(code),
     {
-      useErrorBoundary: true,
       onSuccess: (updatedUser) => {
         queryClient.setQueryData<UserDTO>(CACHE_KEY, updatedUser);
       },

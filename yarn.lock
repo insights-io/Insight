@@ -8761,11 +8761,6 @@ deprecation@^2.0.0, deprecation@^2.3.1:
   resolved "https://registry.yarnpkg.com/deprecation/-/deprecation-2.3.1.tgz#6368cbdb40abf3373b525ac87e4a260c3a700919"
   integrity sha512-xmHIy4F3scKVwMsQ4WnVaS8bHOx0DmVwRywosKhaILI0ywMDWPtBSku2HNxRvF7jtwDRsoEwYQSfbxj8b7RlJQ==
 
-dequal@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.2.tgz#85ca22025e3a87e65ef75a7a437b35284a7e319d"
-  integrity sha512-q9K8BlJVxK7hQYqa6XISGmBZbtQQWVXSrRrWreHC94rMt1QL/Impruc+7p2CYSYuVIUr+YCt6hjrs1kkdJRTug==
-
 des.js@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/des.js/-/des.js-1.0.1.tgz#5382142e1bdc53f85d86d53e5f4aa7deb91e0843"
@@ -18571,13 +18566,6 @@ svg-to-pdfkit@^0.1.8:
   integrity sha512-QItiGZBy5TstGy+q8mjQTMGRlDDOARXLxH+sgVm1n/LYeo0zFcQlcCh8m4zi8QxctrxB9Kue/lStc/RD5iLadQ==
   dependencies:
     pdfkit ">=0.8.1"
-
-swr@0.3.9:
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/swr/-/swr-0.3.9.tgz#a179a795244c7b68684af6a632f1ad579e6a69e0"
-  integrity sha512-lyN4SjBzpoW4+v3ebT7JUtpzf9XyzrFwXIFv+E8ZblvMa5enSNaUBs4EPkL8gGA/GDMLngEmB53o5LaNboAPfg==
-  dependencies:
-    dequal "2.0.2"
 
 symbol-tree@^3.2.4:
   version "3.2.4"

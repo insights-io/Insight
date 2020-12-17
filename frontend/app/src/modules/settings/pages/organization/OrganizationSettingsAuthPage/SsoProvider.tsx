@@ -7,6 +7,7 @@ import {
   Toggle,
 } from '@rebrowse/elements';
 import {
+  SamlConfigurationDTO,
   SamlMethod,
   SamlSsoSetupDTO,
   SsoMethod,
@@ -24,7 +25,11 @@ type Props = {
   samlMethod?: SamlMethod;
   image: string;
   activeSetup: SsoSetup | undefined;
-  setActiveSetup: (setup: SsoSetupDTO | undefined) => void;
+  deleteSsoSetup: () => Promise<Response>;
+  createSsoSetup: (params: {
+    method: SsoMethod;
+    saml: SamlConfigurationDTO;
+  }) => Promise<SsoSetupDTO>;
 };
 
 export const SsoProvider = ({
@@ -32,11 +37,11 @@ export const SsoProvider = ({
   image,
   method,
   activeSetup,
-  setActiveSetup,
+  deleteSsoSetup,
+  createSsoSetup,
   samlMethod,
 }: Props) => {
   const [setupOpen, setSetupOpen] = useState(false);
-
   const openModel = useCallback(() => setSetupOpen(true), []);
   const closeModal = useCallback(() => setSetupOpen(false), []);
 
@@ -74,7 +79,7 @@ export const SsoProvider = ({
             label={label}
             onClose={closeModal}
             isOpen={setupOpen}
-            setActiveSetup={setActiveSetup}
+            disable={deleteSsoSetup}
           />
         ) : (
           <SsoProviderSetupModal
@@ -82,7 +87,7 @@ export const SsoProvider = ({
             isOpen={setupOpen}
             label={label}
             method={method}
-            setActiveSetup={setActiveSetup}
+            createSsoSetup={createSsoSetup}
             samlMethod={samlMethod}
           />
         )}

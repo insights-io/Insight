@@ -11,7 +11,6 @@ import type {
 } from '@rebrowse/types';
 import FormError from 'shared/components/FormError';
 import { SIZE } from 'baseui/button';
-import { AuthApi } from 'api';
 import { toaster } from 'baseui/toast';
 import { useForm } from 'react-hook-form';
 import { Block } from 'baseui/block';
@@ -25,7 +24,10 @@ type Props = {
   label: string;
   isOpen: boolean;
   onClose: () => void;
-  setActiveSetup: (setup: SsoSetupDTO | undefined) => void;
+  createSsoSetup: (params: {
+    method: SsoMethod;
+    saml: SamlConfigurationDTO;
+  }) => Promise<SsoSetupDTO>;
 };
 
 type FormValues = {
@@ -38,7 +40,7 @@ export const SsoProviderSetupModal = ({
   samlMethod,
   isOpen,
   onClose,
-  setActiveSetup,
+  createSsoSetup,
 }: Props) => {
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,13 +53,14 @@ export const SsoProviderSetupModal = ({
     setIsSubmitting(true);
     setFormError(undefined);
 
-    AuthApi.sso.setup
-      .create(method, {
+    createSsoSetup({
+      method,
+      saml: {
         metadataEndpoint,
         method: samlMethod,
-      } as SamlConfigurationDTO)
-      .then((dataResponse) => {
-        setActiveSetup(dataResponse);
+      } as SamlConfigurationDTO,
+    })
+      .then(() => {
         toaster.positive(`${label} SSO setup enabled`, {});
         onClose();
       })
