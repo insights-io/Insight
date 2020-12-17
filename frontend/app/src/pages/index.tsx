@@ -7,6 +7,7 @@ import {
   CountByDateDataPoint,
   CountByDeviceClassDataPoint,
   InsightsPageProps,
+  CountByLocationDataPoint,
 } from 'modules/insights/pages/InsightsPage';
 import { SessionApi, PagesApi } from 'api';
 import { TimePrecision } from '@rebrowse/types';
@@ -44,61 +45,54 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
+    const createdAtGte = `gte:${addDays(new Date(), -30).toISOString()}`;
+    const headers = {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    };
+
     const countSessionsByDatePromise = SessionApi.count<CountByDateDataPoint[]>(
       {
         baseURL: process.env.SESSION_API_BASE_URL,
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
+        headers,
         search: {
           groupBy: ['createdAt'],
           dateTrunc: TimePrecision.DAY,
-          createdAt: `gte:${addDays(new Date(), -30).toISOString()}`,
+          createdAt: createdAtGte,
         },
       }
     );
-
-    const countPageVisitsByDatePromise = PagesApi.count<CountByDateDataPoint[]>(
-      {
-        baseURL: process.env.SESSION_API_BASE_URL,
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
-        search: {
-          groupBy: ['createdAt'],
-          dateTrunc: TimePrecision.DAY,
-          createdAt: `gte:${addDays(new Date(), -30).toISOString()}`,
-        },
-      }
-    );
-
-    // TODO: Improve
-    const countSessionsByLocationPromise = SessionApi.countByLocation({
-      baseURL: process.env.SESSION_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    }).then((data) => {
-      return data.map((value) => ({
-        ...value,
-        'location.continentName': value['location.continentName'] || 'Unknown',
-        'location.countryName': value['location.countryName'] || 'Unknown',
-      }));
-    });
 
     const countSessionsByDeviceClassPromise = SessionApi.count<
       CountByDeviceClassDataPoint[]
     >({
-      search: { groupBy: ['userAgent.deviceClass'] },
       baseURL: process.env.SESSION_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
+      headers,
+      search: { groupBy: ['userAgent.deviceClass'], createdAt: createdAtGte },
+    });
+
+    const countSessionsByLocationPromise = SessionApi.count<
+      CountByLocationDataPoint[]
+    >({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers,
+      search: {
+        groupBy: ['location.countryName', 'location.continentName'],
+        createdAt: createdAtGte,
       },
     });
+
+    const countPageVisitsByDatePromise = PagesApi.count<CountByDateDataPoint[]>(
+      {
+        baseURL: process.env.SESSION_API_BASE_URL,
+        headers,
+        search: {
+          groupBy: ['createdAt'],
+          dateTrunc: TimePrecision.DAY,
+          createdAt: createdAtGte,
+        },
+      }
+    );
 
     const [
       countSessionsByDate,

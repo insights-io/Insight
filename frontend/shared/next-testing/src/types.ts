@@ -13,6 +13,9 @@ export type RenderableComponent<
   Props,
   T,
   S extends StoryConfiguration<T>
-> = React.ReactElement<Props, JSXElementConstructor<Props> & { story?: S }>;
+> = React.ReactElement<
+  Props,
+  (string | JSXElementConstructor<Props>) & { story?: S }
+>;
 
-export type AppProviders = React.ComponentType<{ children: JSX.Element }>;
+export type AppProviders = React.ComponentType<{ children: React.ReactNode }>;

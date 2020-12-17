@@ -30,7 +30,35 @@ export const Base = () => {
     />
   );
 };
+
 Base.story = configureStory({
+  setupMocks: (sandbox) => {
+    const retrieveOrganization = sandbox
+      .stub(AuthApi.organization, 'get')
+      .resolves(REBROWSE_ORGANIZATION_DTO);
+
+    const retrieveUser = sandbox
+      .stub(AuthApi.user, 'me')
+      .resolves(REBROWSE_ADMIN_DTO);
+
+    return { retrieveOrganization, retrieveUser };
+  },
+});
+
+export const Empty = () => {
+  return (
+    <InsightsPage
+      user={REBROWSE_ADMIN_DTO}
+      organization={REBROWSE_ORGANIZATION_DTO}
+      countSessionsByLocation={[]}
+      countSessionsByDeviceClass={[]}
+      countPageVisitsByDate={[]}
+      countSessionsByDate={[]}
+    />
+  );
+};
+
+Empty.story = configureStory({
   setupMocks: (sandbox) => {
     const retrieveOrganization = sandbox
       .stub(AuthApi.organization, 'get')

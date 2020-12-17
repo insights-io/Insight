@@ -6,6 +6,20 @@ export const setupEnvironment = () => {
   const originalConsoleWarn = console.warn;
   const originalConsoleError = console.error;
 
+  // https://testing-library.com/docs/dom-testing-library/api-helpers#debugging
+  process.env.DEBUG_PRINT_LIMIT = '50000';
+
+  afterEach(() => {
+    // Clear all cookies
+    if (document.cookie !== '') {
+      document.cookie.split(';').forEach((v) => {
+        document.cookie = v
+          .replace(/^ +/, '')
+          .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+      });
+    }
+  });
+
   // Error: Not implemented: window.scrollTo
   sandbox.stub(window, 'scrollTo');
 

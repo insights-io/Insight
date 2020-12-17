@@ -14,18 +14,6 @@ import type {
 } from './types';
 
 export const createSessionsClient = (sessionApiBaseUrl: string) => {
-  function count<T = { count: number }>({
-    baseURL = sessionApiBaseUrl,
-    search,
-    ...rest
-  }: SessionsSearchRequestOptions = {}) {
-    const searchQuery = querystring(search);
-    return ky
-      .get(`${baseURL}/v1/sessions/count${searchQuery}`, withCredentials(rest))
-      .json<DataResponse<T>>()
-      .then(getData);
-  }
-
   const SessionApi = {
     getSession: (
       sessionId: string,
@@ -36,7 +24,20 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
         .json<DataResponse<SessionDTO>>()
         .then(getData);
     },
-    count,
+    count: <T = { count: number }>({
+      baseURL = sessionApiBaseUrl,
+      search,
+      ...rest
+    }: SessionsSearchRequestOptions = {}) => {
+      const searchQuery = querystring(search);
+      return ky
+        .get(
+          `${baseURL}/v1/sessions/count${searchQuery}`,
+          withCredentials(rest)
+        )
+        .json<DataResponse<T>>()
+        .then(getData);
+    },
     distinct: (
       on: string,
       { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
@@ -51,28 +52,6 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
         .then((dataResponse) => dataResponse.data);
     },
 
-    countByLocation: (params: RequestOptions = {}) => {
-      return count<
-        {
-          count: number;
-          'location.countryName': string;
-          'location.continentName': string;
-        }[]
-      >({
-        ...params,
-        search: { groupBy: ['location.countryName', 'location.continentName'] },
-      });
-    },
-    countByDeviceClass: (options: RequestOptions = {}) => {
-      return count<{ count: number; 'user_agent.deviceClass': string }[]>({
-        ...options,
-        search: { groupBy: ['user_agent.deviceClass'] },
-      }).then((dataResponse) => {
-        return dataResponse.reduce((acc, entry) => {
-          return { ...acc, [entry['user_agent.deviceClass']]: entry.count };
-        }, {} as Record<string, number>);
-      });
-    },
     getSessions: ({
       baseURL = sessionApiBaseUrl,
       search,
