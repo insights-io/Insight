@@ -1,6 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { SearchBean } from '@rebrowse/types';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react-hooks';
+import { renderHook } from 'test/utils';
 
 import { useResourceSearch } from './useResourceSearch';
 
@@ -107,7 +108,7 @@ describe('useResourceSearch', () => {
         query: 'E',
         limit: numItemsPerPage,
         sortBy: ['+createdAt'],
-        createdAt: `gt:${result.current.items[numItemsPerPage - 1].createdAt}`,
+        createdAt: `gt:${users[2].createdAt}`,
       });
 
       sandbox.assert.calledOnce(searchCount);

@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
-import useSWR from 'swr';
-import ky from 'ky-universal';
 import { Block, BlockOverrides } from 'baseui/block';
 import { useStyletron } from 'baseui';
 import { Spinner } from 'baseui/spinner';
 import { H3, Paragraph3 } from 'baseui/typography';
-import { Button, SIZE, SHAPE } from 'baseui/button';
+import { SIZE } from 'baseui/button';
 import { Check } from 'baseui/icon';
+import { Button } from '@rebrowse/elements';
+
+import { useRecordingSnippet } from './useRecordingSnippet';
 
 export type Props = {
   snippetUri: string;
@@ -22,13 +23,10 @@ export const RecordingSnippet = ({
   const [css, theme] = useStyletron();
   const codeRef = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
-  const { data: recordingSnippet } = useSWR('recordingSnippet', () =>
-    ky
-      .get(snippetUri)
-      .text()
-      .then((text) =>
-        `<script>\n${text.trim()}\n</script>`.replace('<ORG>', organizationId)
-      )
+
+  const { data: recordingSnippet } = useRecordingSnippet(
+    snippetUri,
+    organizationId
   );
 
   const onCopy = () => {
@@ -75,7 +73,6 @@ export const RecordingSnippet = ({
         </pre>
         <Button
           size={SIZE.mini}
-          shape={SHAPE.pill}
           $style={{
             position: 'absolute',
             top: theme.sizing.scale500,

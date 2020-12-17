@@ -1,5 +1,5 @@
 import { BillingApi } from 'api';
-import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
+import { useQuery, useQueryClient } from 'shared/hooks/useQuery';
 import type { PlanDTO } from '@rebrowse/types';
 import { useCallback } from 'react';
 
@@ -18,13 +18,11 @@ export const useActivePlan = (initialData: PlanDTO) => {
 };
 
 export const useActivePlanCache = () => {
-  const cache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const setActivePlan = useCallback(
-    (plan: PlanDTO) => {
-      cache.setQueryData<PlanDTO>(cacheKey, plan);
-    },
-    [cache]
+    (plan: PlanDTO) => queryClient.setQueryData<PlanDTO>(cacheKey, plan),
+    [queryClient]
   );
 
   return { setActivePlan };

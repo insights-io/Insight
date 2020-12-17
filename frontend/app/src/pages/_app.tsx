@@ -1,12 +1,12 @@
 import React from 'react';
 import App from 'next/app';
 import { AppProviders } from 'shared/containers/AppProviders';
-import { createQueryCache } from 'shared/utils/cache';
+import { createQueryClient } from 'shared/utils/cache';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
-const queryCache = createQueryCache();
+const queryClient = createQueryClient();
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -16,7 +16,7 @@ class RebrowseApp extends App {
   render() {
     const { Component, pageProps } = this.props;
     return (
-      <AppProviders queryCache={queryCache}>
+      <AppProviders queryClient={queryClient}>
         <Component {...pageProps} />
       </AppProviders>
     );

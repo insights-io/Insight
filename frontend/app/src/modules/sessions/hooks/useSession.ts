@@ -1,20 +1,19 @@
 import { SessionApi } from 'api';
 import { mapSession } from '@rebrowse/sdk';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { SessionDTO } from '@rebrowse/types';
-import useSWRQuery from 'shared/hooks/useSWRQuery';
+import { useQuery } from 'shared/hooks/useQuery';
+
+export const cacheKey = (id: string) => {
+  return ['v1', 'sessions', id];
+};
 
 export const useSession = (sessionId: string, initialData: SessionDTO) => {
-  const { data = initialData, mutate } = useSWRQuery(
-    'SessionApi.getSession',
+  const { data = initialData } = useQuery(
+    cacheKey(initialData.id),
     () => SessionApi.getSession(sessionId),
-    { initialData }
+    { initialData: () => initialData }
   );
-
-  // TODO: cache key should probably include session id
-  useEffect(() => {
-    mutate(initialData);
-  }, [initialData, mutate]);
 
   const session = useMemo(() => mapSession(data), [data]);
 

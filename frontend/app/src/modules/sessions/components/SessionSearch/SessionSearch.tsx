@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SIZE, SHAPE } from 'baseui/button';
+import { SIZE } from 'baseui/button';
 import { Filter } from 'baseui/icon';
 import { Block } from 'baseui/block';
 import { useStyletron } from 'baseui';
@@ -39,7 +39,6 @@ export const SessionSearch = ({
           size={SIZE.compact}
           $style={{ marginLeft: theme.sizing.scale600, minWidth: '150px' }}
           onClick={() => setShowFilters((prev) => !prev)}
-          shape={SHAPE.pill}
         >
           {filters.length} Filters
           <Filter

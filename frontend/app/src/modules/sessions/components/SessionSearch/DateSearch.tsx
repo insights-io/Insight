@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StatefulPopover } from 'baseui/popover';
 import { StatefulMenu, ItemsT } from 'baseui/menu';
-import { Button, SIZE, SHAPE } from 'baseui/button';
+import { SIZE } from 'baseui/button';
 import { ArrowDown } from 'baseui/icon';
 import { Theme } from 'baseui/theme';
 import { startOfDay, addMonths } from 'date-fns';
+import { Button } from '@rebrowse/elements';
 
 import DateOption from './DateOption';
 import { OPTIONS, OptionItem, DateRange, createDateRange } from './utils';
@@ -65,11 +66,7 @@ const DateSearch = ({ onDateRangeChange, theme }: Props) => {
         />
       )}
     >
-      <Button
-        size={SIZE.compact}
-        shape={SHAPE.pill}
-        $style={{ minWidth: '150px' }}
-      >
+      <Button size={SIZE.compact} $style={{ minWidth: '150px' }}>
         {text}
         <ArrowDown
           overrides={{

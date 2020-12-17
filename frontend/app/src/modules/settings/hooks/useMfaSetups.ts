@@ -7,39 +7,37 @@ import type {
 } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useCallback, useMemo } from 'react';
-import { useMutation } from 'react-query';
-import { useQuery, useQueryCache } from 'shared/hooks/useQuery';
+import { useQuery, useQueryClient, useMutation } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['mfa', 'setup', 'list'];
+const queryFn = () => AuthApi.mfa.setup.list();
 
 export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
-  const queryCache = useQueryCache();
-  const { data, error } = useQuery(cacheKey, () => AuthApi.mfa.setup.list(), {
+  const queryClient = useQueryClient();
+  const { data = initialData, error } = useQuery(cacheKey, queryFn, {
     initialData,
   });
 
-  const setups = useMemo(() => data!.map(mapMfaSetup), [data]);
-
-  const [disableMethod] = useMutation(
+  const { mutateAsync: disableMethod } = useMutation(
     (method: MfaMethod) => AuthApi.mfa.setup.disable(method),
     {
-      throwOnError: true,
       onSuccess: (_, method) => {
-        queryCache.setQueryData<MfaSetupDTO[] | undefined>(cacheKey, (prev) => {
-          return prev?.filter((setup) => setup.method !== method);
+        queryClient.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
+          return (prev || initialData).filter(
+            (setup) => setup.method !== method
+          );
         });
       },
     }
   );
 
-  const [completeSetup] = useMutation(
+  const { mutateAsync: completeSetup } = useMutation(
     ({ method, code }: { method: MfaMethod; code: number }) =>
       AuthApi.mfa.setup.complete(method, code),
     {
-      throwOnError: true,
       onSuccess: (setup: MfaSetupDTO) => {
-        queryCache.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
-          return [...(prev || []), setup];
+        queryClient.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
+          return [...(prev || initialData), setup];
         });
       },
     }
@@ -64,6 +62,8 @@ export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   const disableTotpMethod = useCallback(() => disableMethod('totp'), [
     disableMethod,
   ]);
+
+  const setups = useMemo(() => data.map(mapMfaSetup), [data]);
 
   const totpMethodEnabled =
     setups.find((s) => s.method === 'totp') !== undefined;

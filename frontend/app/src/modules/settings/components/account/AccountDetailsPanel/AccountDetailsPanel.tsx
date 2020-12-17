@@ -19,7 +19,7 @@ import type { UpdateUserPayload } from '@rebrowse/sdk';
 
 type Props = {
   user: User;
-  setUser: (user: UserDTO) => void;
+  verifyPhoneNumber: (code: number) => Promise<UserDTO>;
   updateUser: (data: UpdateUserPayload) => Promise<UserDTO>;
   updatePhoneNumber: (
     phoneNumber: PhoneNumber | undefined | null
@@ -28,7 +28,7 @@ type Props = {
 
 export const AccountDetailsPanel = ({
   user,
-  setUser,
+  verifyPhoneNumber,
   updateUser,
   updatePhoneNumber,
 }: Props) => {
@@ -164,7 +164,7 @@ export const AccountDetailsPanel = ({
             disabled={updatingPhoneNumber}
             endEnhancer={
               user.phoneNumberVerified || !user.phoneNumber ? null : (
-                <PhoneNumberVerifyModal setUser={setUser}>
+                <PhoneNumberVerifyModal verifyPhoneNumber={verifyPhoneNumber}>
                   {(open) => (
                     <StatefulTooltip
                       content="Verify phone number"

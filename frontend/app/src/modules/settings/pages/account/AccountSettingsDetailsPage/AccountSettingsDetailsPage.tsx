@@ -26,7 +26,9 @@ export const AccountSettingsDetailsPage = ({
   user: initialUser,
   organization: initialOrganization,
 }: Props) => {
-  const { user, setUser, updateUser, updatePhoneNumber } = useUser(initialUser);
+  const { user, verifyPhoneNumber, updateUser, updatePhoneNumber } = useUser(
+    initialUser
+  );
   const { organization } = useOrganization(initialOrganization);
 
   return (
@@ -39,7 +41,7 @@ export const AccountSettingsDetailsPage = ({
     >
       <AccountDetailsPanel
         user={user}
-        setUser={setUser}
+        verifyPhoneNumber={verifyPhoneNumber}
         updateUser={updateUser}
         updatePhoneNumber={updatePhoneNumber}
       />

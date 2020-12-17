@@ -13,7 +13,7 @@ import {
 import { Plus, Delete } from 'baseui/icon';
 import { SIZE, KIND } from 'baseui/button';
 
-import useAutocomplete from './useAutocomplete';
+import { useAutocomplete } from './useAutocomplete';
 import {
   SessionFilter,
   FilterOption,
@@ -58,7 +58,7 @@ const SessionFilterRow = ({
   onUpdateFilter,
   theme,
 }: Props) => {
-  const autocompleteOptions = useAutocomplete(key);
+  const { options: autocompleteOptions } = useAutocomplete(key);
   const option = key === undefined ? undefined : FILTER_LOOKUPS[key];
 
   return (

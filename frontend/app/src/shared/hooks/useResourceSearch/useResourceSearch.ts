@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { SearchBean, SortDirection } from '@rebrowse/types';
-import { usePaginatedQuery, useQueryCache } from 'react-query';
+import { useQuery, useQueryClient } from 'shared/hooks/useQuery';
 import { usePrevious } from 'shared/hooks/usePrevious';
 import { useDebounce } from 'use-debounce';
 
@@ -50,7 +50,7 @@ export const useResourceSearch = <
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const previousPage = usePrevious(page);
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   const [debouncedQuery] = useDebounce(query, debounce);
 
   const onQueryChange = (query: string) => {
@@ -64,7 +64,7 @@ export const useResourceSearch = <
   ]);
 
   const itemsCacheKey = useMemo(
-    () => [resource, { page, query: debouncedQuery }] as const,
+    () => [resource, { page, query: debouncedQuery }],
     [page, debouncedQuery, resource]
   );
 
@@ -81,20 +81,21 @@ export const useResourceSearch = <
     data: items = initialData.items,
     isFetching: isFetchingItems,
     refetch: refetchItems,
-  } = usePaginatedQuery(
+  } = useQuery(
     itemsCacheKey,
-    (...args: typeof itemsCacheKey) => {
-      const items = queryCache.getQueryData<Item[]>(args);
+    () => {
+      const items = queryClient.getQueryData<Item[]>(itemsCacheKey);
       if (items) {
         return items;
       }
 
       const searchBean = createSearchQuery();
-      const [key, { page }] = args;
 
       if (page > 1) {
-        const previousCacheKey = [key, { page: previousPage, query }];
-        const previousItems = queryCache.getQueryData<Item[]>(previousCacheKey);
+        const previousCacheKey = [resource, { page: previousPage, query }];
+        const previousItems = queryClient.getQueryData<Item[]>(
+          previousCacheKey
+        );
 
         if (previousItems) {
           const fieldName = field as keyof Item;
@@ -133,10 +134,10 @@ export const useResourceSearch = <
     data: count = initialData.count,
     isFetching: isFetchingCount,
     refetch: refetchCount,
-  } = usePaginatedQuery(
+  } = useQuery(
     countCacheKey,
-    (...args: typeof countCacheKey) => {
-      const count = queryCache.getQueryData<number>(args);
+    () => {
+      const count = queryClient.getQueryData<number>(countCacheKey);
       if (count !== undefined) {
         return count;
       }
@@ -151,19 +152,17 @@ export const useResourceSearch = <
   );
 
   const onPageChange = useCallback(
-    (nextPage: number) => {
-      setPage(Math.min(Math.max(nextPage, 1), numPages));
-    },
+    (nextPage: number) => setPage(Math.min(Math.max(nextPage, 1), numPages)),
     [numPages]
   );
 
   const revalidate = useCallback(() => {
-    queryCache.setQueryData(itemsCacheKey, undefined);
-    queryCache.setQueryData(countCacheKey, undefined);
+    queryClient.setQueryData(itemsCacheKey, undefined);
+    queryClient.setQueryData(countCacheKey, undefined);
 
     refetchItems();
     refetchCount();
-  }, [refetchCount, refetchItems, queryCache, itemsCacheKey, countCacheKey]);
+  }, [refetchCount, refetchItems, queryClient, itemsCacheKey, countCacheKey]);
 
   return {
     query,
