@@ -14,7 +14,7 @@ describe('pages/sessions', () => {
   authenticatedTestCases(getServerSideProps);
 
   it('Injects correct server side data', async () => {
-    sandbox.stub(document, 'cookie').value('SessionId=123');
+    document.cookie = 'SessionId=123';
     const getSsoSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
       responsePromise({
         status: 200,

@@ -4,7 +4,7 @@ import { styletron } from 'shared/styles/styletron';
 import { UIProvider } from '@rebrowse/elements';
 
 export type Props = {
-  children: JSX.Element;
+  children: React.ReactNode;
   engine?: Client | Server;
 };
 

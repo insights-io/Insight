@@ -12,6 +12,7 @@ import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { Button, Label, PasswordInput } from '@rebrowse/elements';
+import { applyApiFormErrors } from 'shared/utils/form';
 
 type Props = {
   token: string;
@@ -25,7 +26,12 @@ export const PasswordResetPage = ({ token }: Props) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
-  const { register, handleSubmit, errors } = useForm<PasswordResetFormData>();
+  const {
+    register,
+    handleSubmit,
+    errors,
+    setError,
+  } = useForm<PasswordResetFormData>();
   const [formError, setFormError] = useState<APIError | undefined>();
 
   const onSubmit = handleSubmit((formData) => {
@@ -40,6 +46,10 @@ export const PasswordResetPage = ({ token }: Props) => {
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
+        applyApiFormErrors(
+          setError,
+          errorDTO.error.errors as Record<string, string>
+        );
       })
       .finally(() => setIsSubmitting(false));
   });

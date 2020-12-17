@@ -5,7 +5,7 @@ import { useStyletron } from 'baseui';
 import { Button } from 'baseui/button';
 import { Paragraph3 } from 'baseui/typography';
 
-const PasswordResetInvalidPage = () => {
+export const PasswordResetInvalidPage = () => {
   const [css, theme] = useStyletron();
   return (
     <AuthPageLayout subtitle="Oooops.">
@@ -23,5 +23,3 @@ const PasswordResetInvalidPage = () => {
     </AuthPageLayout>
   );
 };
-
-export default PasswordResetInvalidPage;

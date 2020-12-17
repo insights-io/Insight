@@ -24,7 +24,7 @@ export function authenticatedTestCases<T>(
     }),
 
     it('Should redirect to verification if no SessionId but ChallengeId', async () => {
-      sandbox.stub(document, 'cookie').value('ChallengeId=123');
+      document.cookie = 'ChallengeId=123';
       const { req, res, writeHead, end } = mockServerSideRequest();
       const serverSideProps = await getServerSideProps({
         query: {},
@@ -41,7 +41,7 @@ export function authenticatedTestCases<T>(
     }),
 
     it('Should redirect to login on expired session', async () => {
-      sandbox.stub(document, 'cookie').value('SessionId=123');
+      document.cookie = 'SessionId=123';
       const getSessionStub = sandbox
         .stub(AuthApi.sso.session, 'get')
         .resolves(({
@@ -69,7 +69,9 @@ export function authenticatedTestCases<T>(
     }),
 
     it('Should redirect to verification on expired session and ChallengeId', async () => {
-      sandbox.stub(document, 'cookie').value('SessionId=123;ChallengeId=1234');
+      document.cookie = 'SessionId=123';
+      document.cookie = 'ChallengeId=1234';
+
       const getSessionStub = sandbox
         .stub(AuthApi.sso.session, 'get')
         .resolves(({

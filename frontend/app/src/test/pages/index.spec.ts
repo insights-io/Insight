@@ -1,28 +1,23 @@
 import { sandbox } from '@rebrowse/testing';
 import { TimePrecision } from '@rebrowse/types';
 import { screen } from '@testing-library/react';
-import { AuthApi, PagesApi, SessionApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { REBROWSE_SESSION_INFO } from 'test/data';
-import { responsePromise, render } from 'test/utils';
-
-const retrieveUserStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
-  responsePromise({
-    status: 200,
-    data: REBROWSE_SESSION_INFO,
-  })
-);
+import { mockIndexPage } from 'test/mocks';
+import { render } from 'test/utils';
 
 describe('/', () => {
   describe('With no data', () => {
-    const countPagesStub = sandbox.stub(PagesApi, 'count').resolves([]);
-    const countSessionsStub = sandbox.stub(SessionApi, 'count').resolves([]);
-
     test('Should render empty charts', async () => {
+      const {
+        retrieveSessionStub,
+        countPagesStub,
+        countSessionsStub,
+      } = mockIndexPage();
+
       document.cookie = 'SessionId=123';
       const { page } = await getPage({ route: '/' });
 
-      sandbox.assert.calledWithMatch(retrieveUserStub, '123', {
+      sandbox.assert.calledWithMatch(retrieveSessionStub, '123', {
         baseURL: 'http://localhost:8080',
       });
 
