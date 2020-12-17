@@ -11,12 +11,14 @@ class HomePage extends AbstractPage {
     'Sessions'
   );
 
-  public getPageVisitsSum = () => {
-    return this.container.find('p.stat--sum').innerText;
+  public getPageVisitsCount = () => {
+    return this.pageVisitsCardText.parent().parent().find('p.stat--sum')
+      .innerText;
   };
 
-  public getSessionsSum = () => {
-    return this.container.find('p.stat--sum').innerText;
+  public getSessionsCount = () => {
+    return this.sessionsCardText.parent().parent().find('p.stat--sum')
+      .innerText;
   };
 }
 
