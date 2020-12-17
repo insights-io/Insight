@@ -7,6 +7,10 @@
       "managers": ["gradle"],
       "packagePatterns": ["^io.quarkus"],
       "enabled": false
+    },
+    {
+      "groupName": "visx",
+      "packagePatterns": ["^@visx/"]
     }
   ]
 }

@@ -1,7 +1,6 @@
 import { mapSsoSetup } from '@rebrowse/sdk';
 import type {
   SamlConfigurationDTO,
-  SamlMethod,
   SsoMethod,
   SsoSetupDTO,
 } from '@rebrowse/types';
@@ -10,20 +9,17 @@ import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'sso', 'setup', 'get'];
+const queryFn = () =>
+  AuthApi.sso.setup.get().catch((error) => {
+    if ((error.response as Response).status === 404) {
+      return undefined;
+    }
+    throw error;
+  });
 
 export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
   const queryClient = useQueryClient();
-  const { data } = useQuery(
-    CACHE_KEY,
-    () =>
-      AuthApi.sso.setup.get().catch((error) => {
-        if ((error.response as Response).status === 404) {
-          return undefined;
-        }
-        throw error;
-      }),
-    { initialData: () => initialData }
-  );
+  const { data } = useQuery(CACHE_KEY, queryFn, { initialData });
 
   const { mutateAsync: deleteSsoSetup } = useMutation(
     () => AuthApi.sso.setup.delete(),
