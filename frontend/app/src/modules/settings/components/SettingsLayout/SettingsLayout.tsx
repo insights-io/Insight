@@ -84,7 +84,7 @@ export const SettingsLayout = ({
           padding={theme.sizing.scale600}
           overflow="auto"
           width="100%"
-          as="main"
+          as="section"
         >
           {header && (
             <H1

@@ -42,7 +42,13 @@ export const StatCard = ({ data, title, timeRange }: Props) => {
         </Block>
 
         <Block>
-          <H5 margin={0} as="p" color="white" $style={{ textAlign: 'right' }}>
+          <H5
+            margin={0}
+            as="p"
+            color="white"
+            $style={{ textAlign: 'right' }}
+            className="stat--sum"
+          >
             {data.length === 0
               ? 'No data'
               : data.reduce((acc, v) => acc + v.value, 0)}

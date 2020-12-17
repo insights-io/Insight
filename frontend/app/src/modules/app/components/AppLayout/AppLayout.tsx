@@ -115,6 +115,7 @@ export const AppLayout = ({
       {topbar}
       {sidebar}
       <FlexColumn
+        as="main"
         flex="1"
         position="absolute"
         overflow="auto"
