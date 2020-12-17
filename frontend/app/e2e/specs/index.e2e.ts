@@ -12,7 +12,7 @@ test('As a user I should see live data on page visits & sessions', async (t) => 
   const initialPageVisitsCount = await HomePage.getPageVisitsCount().then(
     Number
   );
-  const initialSessionsCount = HomePage.getSessionsCount().then(Number);
+  const initialSessionsCount = await HomePage.getSessionsCount().then(Number);
 
   await t
     .expect(initialPageVisitsCount)
