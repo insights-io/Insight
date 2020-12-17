@@ -12,7 +12,7 @@ import { SessionApi, PagesApi } from 'api';
 import { TimePrecision } from '@rebrowse/types';
 import { addDays } from 'date-fns';
 
-type Props = InsightsPageProps;
+export type Props = InsightsPageProps;
 
 const Home = ({
   user,

@@ -161,8 +161,6 @@ export const COUNT_SESSIONS_BY_LOCATION = (() => {
   }, [] as CountByLocationDataPoint[]);
 })();
 
-console.log({ COUNT_SESSIONS_BY_LOCATION });
-
 export const COUNT_SESSIONS_BY_DEVICE_CLASS = REBROWSE_SESSIONS_DTOS.reduce(
   (acc, item) => {
     // eslint-disable-next-line no-restricted-syntax

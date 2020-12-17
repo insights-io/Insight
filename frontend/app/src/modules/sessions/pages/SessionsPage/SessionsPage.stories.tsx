@@ -6,7 +6,7 @@ import {
   REBROWSE_ORGANIZATION_DTO,
 } from 'test/data';
 import { fullHeightDecorator, configureStory } from '@rebrowse/storybook';
-import { SessionApi } from 'api';
+import { AuthApi, SessionApi } from 'api';
 import type { SessionDTO } from '@rebrowse/types';
 import { SessionSearchBean } from '@rebrowse/sdk/dist/sessions';
 import get from 'lodash/get';
@@ -93,6 +93,20 @@ WithSessions.story = configureStory({
         });
       });
 
-    return { getSessionsStub, getSessionCountStub, getDistinctStub };
+    const retrieveUserStub = sandbox
+      .stub(AuthApi.user, 'me')
+      .resolves(REBROWSE_ADMIN_DTO);
+
+    const retrieveOrganizationStub = sandbox
+      .stub(AuthApi.organization, 'get')
+      .resolves(REBROWSE_ORGANIZATION_DTO);
+
+    return {
+      getSessionsStub,
+      getSessionCountStub,
+      getDistinctStub,
+      retrieveUserStub,
+      retrieveOrganizationStub,
+    };
   },
 });
