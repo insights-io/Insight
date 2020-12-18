@@ -1,12 +1,19 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi, PagesApi, SessionApi } from 'api';
-import { REBROWSE_SESSIONS_DTOS, REBROWSE_SESSION_INFO } from 'test/data';
+import {
+  CONSOLE_EVENTS,
+  ERROR_EVENTS,
+  REBROWSE_EVENTS,
+  REBROWSE_SESSIONS_DTOS,
+  REBROWSE_SESSION_INFO,
+} from 'test/data';
 import { jsonPromise, textPromise } from 'test/utils';
 import ky from 'ky-universal';
 import get from 'lodash/get';
 import type { SessionDTO } from '@rebrowse/types';
-import type { SessionSearchBean } from '@rebrowse/sdk';
 import { mockApiError } from '@rebrowse/storybook';
+
+import { filterBrowserEvent, filterSession } from './filter';
 
 export const mockAuth = () => {
   const retrieveSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
@@ -27,36 +34,36 @@ export const mockAuth = () => {
   return { retrieveSessionStub, retrieveUserStub, retrieveOrganizationStub };
 };
 
-const filterSession = (
-  s: SessionDTO,
-  search: SessionSearchBean | undefined
+export const mockSessionDetailsPage = (
+  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
 ) => {
-  if (!search) {
-    return true;
-  }
+  const authMocks = mockAuth();
 
-  const {
-    location: { city, countryName, continentName },
-  } = s;
+  const retrieveSessionStub = sandbox
+    .stub(SessionApi, 'getSession')
+    .callsFake((id) => {
+      const maybeSession = sessions.find((s) => s.id === id);
+      if (maybeSession) {
+        return Promise.resolve(maybeSession);
+      }
+      return Promise.reject(
+        mockApiError({
+          statusCode: 404,
+          message: 'Not Found',
+          reason: 'Not Found',
+        })
+      );
+    });
 
-  if (search['location.city']) {
-    if (`eq:${city}` !== search['location.city']) {
-      return false;
-    }
-  }
-  if (search['location.countryName']) {
-    if (`eq:${countryName}` !== search['location.countryName']) {
-      return false;
-    }
-  }
+  const searchEventsStub = sandbox
+    .stub(SessionApi.events, 'search')
+    .callsFake((_sessionId, args = {}) => {
+      return Promise.resolve(
+        REBROWSE_EVENTS.filter((e) => filterBrowserEvent(e, args.search))
+      );
+    });
 
-  if (search['location.continentName']) {
-    if (`eq:${continentName}` !== search['location.continentName']) {
-      return false;
-    }
-  }
-
-  return true;
+  return { ...authMocks, retrieveSessionStub, searchEventsStub };
 };
 
 export const mockSessionsPage = (

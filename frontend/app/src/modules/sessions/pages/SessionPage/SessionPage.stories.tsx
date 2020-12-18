@@ -1,14 +1,14 @@
 import React from 'react';
 import {
   REBROWSE_SESSIONS_DTOS,
-  CONSOLE_EVENTS,
-  ERROR_EVENTS,
   REBROWSE_ADMIN_DTO,
   REBROWSE_ORGANIZATION_DTO,
+  REBROWSE_EVENTS,
 } from 'test/data';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
-import { SessionApi } from 'api';
+import { AuthApi, SessionApi } from 'api';
 import { Meta } from '@storybook/react';
+import { filterBrowserEvent } from 'test/mocks/filter';
 
 import { SessionPage } from './SessionPage';
 
@@ -31,20 +31,25 @@ export const Base = () => {
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
+      retrieveUser: sandbox
+        .stub(AuthApi.user, 'me')
+        .resolves(REBROWSE_ADMIN_DTO),
+
+      retrieveOrganization: sandbox
+        .stub(AuthApi.organization, 'get')
+        .resolves(REBROWSE_ORGANIZATION_DTO),
+
       getSessions: sandbox
         .stub(SessionApi, 'getSession')
         .resolves(REBROWSE_SESSIONS_DTOS[0]),
 
-      getEvents: sandbox
+      searchEvents: sandbox
         .stub(SessionApi.events, 'search')
-        .resolves([
-          CONSOLE_EVENTS.FAST_REFRESH_LOG,
-          CONSOLE_EVENTS.STORYBOOK_WARN,
-          CONSOLE_EVENTS.ERROR_LOG,
-          CONSOLE_EVENTS.DEBUG_LOG,
-          ERROR_EVENTS.ERROR,
-          ERROR_EVENTS.SYNTAX_ERROR,
-        ]),
+        .callsFake((_sessionId, args = {}) => {
+          return Promise.resolve(
+            REBROWSE_EVENTS.filter((e) => filterBrowserEvent(e, args.search))
+          );
+        }),
     };
   },
 });

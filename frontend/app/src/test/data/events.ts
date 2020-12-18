@@ -43,13 +43,13 @@ const INFO_NESTED_LOG: BrowserLogEventDTO = {
   t: 1001,
 };
 
-export const CONSOLE_EVENTS = {
+export const CONSOLE_EVENTS = [
   STORYBOOK_WARN,
   FAST_REFRESH_LOG,
   ERROR_LOG,
   DEBUG_LOG,
   INFO_NESTED_LOG,
-} as const;
+];
 
 const ERROR: BrowserErrorEventDTO = {
   e: 10,
@@ -77,11 +77,7 @@ const TYPE_ERROR: BrowserErrorEventDTO = {
   stack: 'TypeError: x is not a function',
 };
 
-export const ERROR_EVENTS = {
-  ERROR,
-  SYNTAX_ERROR,
-  TYPE_ERROR,
-} as const;
+export const ERROR_EVENTS = [ERROR, SYNTAX_ERROR, TYPE_ERROR];
 
 const CREATE_PAGE_EVENT: BrowserXhrEventDTO = {
   method: 'POST',
@@ -128,9 +124,15 @@ const NEXT_STACK_FRAME_EVENT: BrowserXhrEventDTO = {
   initiatorType: 'xmlhttprequest',
 };
 
-export const FETCH_EVENTS = {
+export const FETCH_EVENTS = [
   CREATE_PAGE_EVENT,
   GET_SESSION_EVENT,
   BEACON_BEAT_EVENT,
   NEXT_STACK_FRAME_EVENT,
-} as const;
+];
+
+export const REBROWSE_EVENTS = [
+  ...CONSOLE_EVENTS,
+  ...ERROR_EVENTS,
+  ...FETCH_EVENTS,
+];
