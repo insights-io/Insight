@@ -5,8 +5,7 @@ import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 
-// eslint-disable-next-line jest/valid-title
-describe(LOGIN_PAGE, () => {
+describe('/login', () => {
   it('As a user I should be able to start password reset flow from login page', async () => {
     const passwordForgotStub = sandbox
       .stub(AuthApi.password, 'forgot')

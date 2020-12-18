@@ -6,6 +6,10 @@ export const setupEnvironment = () => {
   const originalConsoleWarn = console.warn;
   const originalConsoleError = console.error;
 
+  // Mock window.scrollTo (Link component triggers it)
+  // eslint-disable-next-line lodash/prefer-constant
+  global.scrollTo = () => null;
+
   // https://testing-library.com/docs/dom-testing-library/api-helpers#debugging
   process.env.DEBUG_PRINT_LIMIT = '50000';
 
