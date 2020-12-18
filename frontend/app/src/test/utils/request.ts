@@ -2,7 +2,7 @@ import type { ResponsePromise } from 'ky';
 
 type ResponsePromiseParams<D> = {
   status: number;
-  data: D;
+  data?: D;
 };
 
 export const responsePromise = <D>({

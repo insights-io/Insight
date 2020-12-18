@@ -1,7 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { render } from 'test/utils';
+import { render, responsePromise } from 'test/utils';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { mockIndexPage } from 'test/mocks';
@@ -16,7 +16,11 @@ describe('/password-reset', () => {
 
       const passwordResetStub = sandbox
         .stub(AuthApi.password, 'reset')
-        .resolves();
+        .callsFake(() => {
+          // Fake set-cookie header from server
+          document.cookie = 'SessionId=1234';
+          return responsePromise({ status: 200 });
+        });
 
       const { page } = await getPage({ route: '/password-reset?token=1234' });
 
@@ -36,10 +40,8 @@ describe('/password-reset', () => {
       );
 
       mockIndexPage();
-      userEvent.click(screen.getByText('Reset password and sign in'));
 
-      // Fake set-cookie header from server
-      document.cookie = 'SessionId=1234';
+      userEvent.click(screen.getByText('Reset password and sign in'));
 
       // Client side navigation to / route
       await screen.findByText('Page Visits');
