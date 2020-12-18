@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install --frozen-lockfile
-      - name:
+      - name: Run tests
         run: |
           yarn workspace @rebrowse/app test --coverage
       - uses: codecov/codecov-action@v1
