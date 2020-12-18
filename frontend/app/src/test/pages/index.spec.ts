@@ -52,8 +52,9 @@ describe('/', () => {
 
       expect(await screen.findByText('Page Visits')).toBeInTheDocument();
       expect(screen.getByText('Sessions')).toBeInTheDocument();
-      expect(screen.getByText('Country distribution')).toBeInTheDocument();
-      expect(screen.getByText('Continent distribution')).toBeInTheDocument();
+      expect(screen.getByText('Country Breakdown')).toBeInTheDocument();
+      expect(screen.getByText('Continent Breakdown')).toBeInTheDocument();
+      expect(screen.getByText('Device Breakdown')).toBeInTheDocument();
 
       // Sessions and Page Visits
       expect(screen.getAllByText('No data').length).toEqual(2);

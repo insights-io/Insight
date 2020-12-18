@@ -8,9 +8,9 @@ describe('<InsightsPage />', () => {
   it('Should render charts', () => {
     render(<Base />);
 
-    expect(screen.getByText('Country distribution')).toBeInTheDocument();
-    expect(screen.getByText('Continent distribution')).toBeInTheDocument();
-    expect(screen.getByText('Device distribution')).toBeInTheDocument();
+    expect(screen.getByText('Country Breakdown')).toBeInTheDocument();
+    expect(screen.getByText('Continent Breakdown')).toBeInTheDocument();
+    expect(screen.getByText('Device Breakdown')).toBeInTheDocument();
     expect(screen.getByText('Page Visits')).toBeInTheDocument();
     expect(screen.getByText('Sessions')).toBeInTheDocument();
 
