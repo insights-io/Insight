@@ -22,6 +22,7 @@ type Props<Datum> = {
   getPieValue: (d: Datum) => number;
   getColor: (d: Datum) => string;
   donutThickness?: number;
+  getTooltipLabel?: (d: Datum) => React.ReactNode;
 };
 
 type ResponsivePieChartProps<Datum> = Omit<Props<Datum>, 'width' | 'height'>;
@@ -46,6 +47,11 @@ export const PieChart = <Datum,>({
   getLabel,
   getPieValue,
   getColor,
+  getTooltipLabel = (d: Datum) => (
+    <>
+      {getLabel(d)}: {getPieValue(d)}
+    </>
+  ),
 }: Props<Datum>) => {
   const [selectedLabel, setSelectedLabel] = useState<string>();
   const radius = Math.min(width, height) / 2;
@@ -127,7 +133,7 @@ export const PieChart = <Datum,>({
             top={tooltipTop}
             style={tooltipStyles}
           >
-            {getLabel(tooltipData)}: {getPieValue(tooltipData)}
+            {getTooltipLabel(tooltipData)}
           </TooltipWithBounds>
         )}
     </>

@@ -44,6 +44,7 @@
     "@visx/tooltip":"1.3.0",
     "@visx/shape": "1.3.0",
     "@visx/scale": "1.3.0",
+    "@visx/legend": "1.0.0",
     "@visx/grid": "1.3.0",
     "@visx/responsive":"1.3.0",
     "@amcharts/amcharts4": "4.10.12",
@@ -72,7 +73,8 @@
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7",
     "nprogress": "0.2.0",
-    "http-proxy": "1.18.1"
+    "http-proxy": "1.18.1",
+    "d3-scale-chromatic": "2.0.0"
   },
   "devDependencies": {
     "@rebrowse/storybook": "0.0.0-development",
@@ -82,6 +84,7 @@
     "@rebrowse/types": "0.0.0-development",
     "@next/bundle-analyzer": "10.0.3",
     "@types/d3-array": "2.8.0",
+    "@types/d3-scale-chromatic": "2.0.0",
     "@types/jaeger-client": "3.15.4",
     "@types/react": "17.0.0",
     "@types/react-dom": "17.0.0",

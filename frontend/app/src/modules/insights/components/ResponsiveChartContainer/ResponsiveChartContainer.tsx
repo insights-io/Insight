@@ -1,5 +1,5 @@
 import { ParentSize } from '@visx/responsive';
-import { Block } from 'baseui/block';
+import { Block, BlockProps } from 'baseui/block';
 import React from 'react';
 
 type ParentSizeState = {
@@ -9,7 +9,12 @@ type ParentSizeState = {
   left: number;
 };
 
-type Props = {
+export type ResponsiveChartContainerProps = Omit<
+  BlockProps,
+  'width' | 'height' | 'position'
+>;
+
+type Props = ResponsiveChartContainerProps & {
   children: (
     args: {
       ref: HTMLDivElement | null;
@@ -18,7 +23,7 @@ type Props = {
   ) => React.ReactNode;
 };
 
-export const ResponsiveChartContainer = ({ children }: Props) => {
+export const ResponsiveChartContainer = ({ children, ...rest }: Props) => {
   return (
     <ParentSize debounceTime={10}>
       {(args) => (
@@ -26,6 +31,7 @@ export const ResponsiveChartContainer = ({ children }: Props) => {
           width={`${args.width}px`}
           height={`${args.height}px`}
           position="relative"
+          {...rest}
         >
           {children(args)}
         </Block>

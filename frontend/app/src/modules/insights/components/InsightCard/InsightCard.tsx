@@ -4,7 +4,7 @@ import { Block, BlockProps } from 'baseui/block';
 import { H6, ParagraphXSmall } from 'baseui/typography';
 import React from 'react';
 
-type Props = FlexColumnProps;
+export type InsightCardProps = FlexColumnProps;
 
 const Title = (props: BlockProps) => {
   return <H6 margin={0} as="p" color="white" {...props} />;
@@ -16,10 +16,15 @@ const Subtitle = (props: BlockProps) => {
 
 const Content = styled(Block, ({ $theme }) => ({
   flex: 1,
-  marginTop: $theme.sizing.scale600,
+  marginTop: $theme.sizing.scale700,
 }));
 
-export const InsightCard = (props: Props) => {
+const Footer = styled(Block, ({ $theme }) => ({
+  display: 'flex',
+  marginTop: $theme.sizing.scale700,
+}));
+
+export const InsightCard = (props: InsightCardProps) => {
   return (
     <FlexColumn
       backgroundColor="#27273f"
@@ -33,3 +38,4 @@ export const InsightCard = (props: Props) => {
 InsightCard.Title = Title;
 InsightCard.Subtitle = Subtitle;
 InsightCard.Content = Content;
+InsightCard.Footer = Footer;
