@@ -39,7 +39,7 @@ jobs:
           yarn install --frozen-lockfile
       - name: Run tests
         run: |
-          yarn workspace @rebrowse/app test --coverage
+          yarn workspace @rebrowse/app test --coverage --forceExit
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
