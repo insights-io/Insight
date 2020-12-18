@@ -63,7 +63,7 @@ describe('useResourceSearch', () => {
         ).length;
       });
 
-    const { result, waitForNextUpdate, waitFor } = renderHook(() =>
+    const { result, waitFor } = renderHook(() =>
       useResourceSearch({
         numItemsPerPage,
         search,
@@ -90,9 +90,7 @@ describe('useResourceSearch', () => {
         sortBy: ['+createdAt'],
       });
 
-      sandbox.assert.calledWithExactly(searchCount, {
-        query: 'E',
-      });
+      sandbox.assert.calledWithExactly(searchCount, { query: 'E' });
     });
 
     expect(result.current.items).toEqual([users[0], users[2]]);
@@ -103,43 +101,41 @@ describe('useResourceSearch', () => {
       result.current.onPageChange(2);
     });
 
-    await waitFor(() => {
-      sandbox.assert.calledWithExactly(search, {
-        query: 'E',
-        limit: numItemsPerPage,
-        sortBy: ['+createdAt'],
-        createdAt: `gt:${users[2].createdAt}`,
-      });
-
-      sandbox.assert.calledOnce(searchCount);
+    sandbox.assert.calledWithExactly(search, {
+      query: 'E',
+      limit: numItemsPerPage,
+      sortBy: ['+createdAt'],
+      createdAt: `gt:${users[2].createdAt}`,
     });
 
-    await waitForNextUpdate();
+    sandbox.assert.calledOnce(searchCount);
 
-    expect(result.current.items).toEqual([users[4]]);
-    expect(result.current.count).toEqual(3);
-    expect(result.current.numPages).toEqual(2);
-    expect(result.current.page).toEqual(2);
+    await waitFor(() => {
+      expect(result.current.items).toEqual([users[4]]);
+      expect(result.current.count).toEqual(3);
+      expect(result.current.numPages).toEqual(2);
+      expect(result.current.page).toEqual(2);
+    });
 
     act(() => {
       result.current.setQuery('Er');
     });
 
     await waitFor(() => {
-      sandbox.assert.calledWithExactly(search, {
-        query: 'Er',
-        limit: numItemsPerPage,
-        sortBy: ['+createdAt'],
-      });
-
-      sandbox.assert.calledWithExactly(searchCount, {
-        query: 'Er',
-      });
+      expect(result.current.page).toEqual(1);
+      expect(result.current.count).toEqual(2);
+      expect(result.current.numPages).toEqual(1);
+      expect(result.current.items).toEqual([users[0], users[2]]);
     });
 
-    expect(result.current.page).toEqual(1);
-    expect(result.current.count).toEqual(2);
-    expect(result.current.numPages).toEqual(1);
-    expect(result.current.items).toEqual([users[0], users[2]]);
+    sandbox.assert.calledWithExactly(search, {
+      query: 'Er',
+      limit: numItemsPerPage,
+      sortBy: ['+createdAt'],
+    });
+
+    sandbox.assert.calledWithExactly(searchCount, {
+      query: 'Er',
+    });
   });
 });

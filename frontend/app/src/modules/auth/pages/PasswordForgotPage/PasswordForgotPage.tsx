@@ -16,6 +16,7 @@ import {
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import { Button, Flex, SpacedBetween, EmailInput } from '@rebrowse/elements';
 import { LOGIN_PAGE } from 'shared/constants/routes';
+import { applyApiFormErrors } from 'shared/utils/form';
 
 type FormData = {
   email: string;
@@ -24,7 +25,7 @@ type FormData = {
 export const PasswordForgotPage = () => {
   const [checkYourInbox, setCheckYourInbox] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
-  const { register, handleSubmit, errors } = useForm<FormData>();
+  const { register, handleSubmit, errors, setError } = useForm<FormData>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [_css, theme] = useStyletron();
 
@@ -40,6 +41,10 @@ export const PasswordForgotPage = () => {
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);
+        applyApiFormErrors(
+          setError,
+          errorDTO.error.errors as Record<string, string>
+        );
       })
       .finally(() => setIsSubmitting(false));
   });

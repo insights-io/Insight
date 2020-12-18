@@ -80,12 +80,10 @@ export const SessionsPage = ({
           </Block>
         </>
       ) : (
-        user && (
-          <RecordingSnippet
-            organizationId={user.organizationId}
-            snippetUri={BOOTSTRAP_SCRIPT_URI}
-          />
-        )
+        <RecordingSnippet
+          organizationId={user.organizationId}
+          snippetUri={BOOTSTRAP_SCRIPT_URI}
+        />
       )}
     </AppLayout>
   );

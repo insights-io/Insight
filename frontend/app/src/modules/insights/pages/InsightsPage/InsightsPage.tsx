@@ -1,38 +1,27 @@
 import React, { useMemo } from 'react';
 import { AppLayout } from 'modules/app/components/AppLayout';
 import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
-import type { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 import { useStyletron } from 'baseui';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import Head from 'next/head';
 import { StatCard } from 'modules/insights/components/StatCard';
 import { Block } from 'baseui/block';
-import { LocationDistribution } from 'modules/insights/components/LocationDistribution';
-import { Flex } from '@rebrowse/elements';
-import { CountByDeviceClass } from 'modules/insights/components/CountByDeviceClass';
-import type { CardProps } from 'baseui/card';
 
-export type CountByDateDataPoint = { count: number; createdAt: string };
+import type {
+  CountByDateDataPoint,
+  CountByDeviceClassDataPoint,
+  CountByLocationDataPoint,
+} from './types';
+import { PieChartBreakdown } from './PieChartBreakdown';
 
 export type InsightsPageProps = {
   user: UserDTO;
   organization: OrganizationDTO;
-  countByLocation: CountByLocation;
-  countByDeviceClass: Record<string, number>;
+  countSessionsByLocation: CountByLocationDataPoint[];
+  countSessionsByDeviceClass: CountByDeviceClassDataPoint[];
   countSessionsByDate: CountByDateDataPoint[];
   countPageVisitsByDate: CountByDateDataPoint[];
-};
-
-const countByCardOverrides = {
-  Root: {
-    overrides: {
-      Contents: {
-        style: { marginTop: 0, marginLeft: 0, marginBottom: 0, marginRight: 0 },
-      },
-      Root: { style: { flex: 1 } },
-    },
-  } as CardProps,
 };
 
 export const InsightsPage = ({
@@ -40,8 +29,8 @@ export const InsightsPage = ({
   organization: initialOrganization,
   countSessionsByDate: initialCountSessionsByDate,
   countPageVisitsByDate: initialCountPageVisitsByDate,
-  countByDeviceClass,
-  countByLocation,
+  countSessionsByDeviceClass,
+  countSessionsByLocation,
 }: InsightsPageProps) => {
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
@@ -84,7 +73,7 @@ export const InsightsPage = ({
 
       <Block
         display="grid"
-        gridGap={theme.sizing.scale800}
+        gridGap={theme.sizing.scale600}
         gridTemplateColumns="repeat(auto-fit, minmax(400px, 1fr))"
       >
         <StatCard
@@ -99,14 +88,35 @@ export const InsightsPage = ({
         />
       </Block>
 
-      <Block marginTop={theme.sizing.scale800}>
-        <LocationDistribution countByLocation={countByLocation} />
-        <Flex width="100%" marginTop={theme.sizing.scale600}>
-          <CountByDeviceClass
-            data={countByDeviceClass}
-            overrides={countByCardOverrides}
-          />
-        </Flex>
+      <Block
+        display="grid"
+        gridGap={theme.sizing.scale600}
+        gridTemplateColumns="repeat(auto-fit, minmax(400px, 1fr))"
+        marginTop={theme.sizing.scale600}
+      >
+        <PieChartBreakdown
+          height="400px"
+          title="Device Breakdown"
+          subtitle="Last 30 days"
+          data={countSessionsByDeviceClass}
+          field="userAgent.deviceClass"
+        />
+
+        <PieChartBreakdown
+          height="400px"
+          title="Country Breakdown"
+          subtitle="Last 30 days"
+          data={countSessionsByLocation}
+          field="location.countryName"
+        />
+
+        <PieChartBreakdown
+          height="400px"
+          title="Continent Breakdown"
+          subtitle="Last 30 days"
+          data={countSessionsByLocation}
+          field="location.continentName"
+        />
       </Block>
     </AppLayout>
   );

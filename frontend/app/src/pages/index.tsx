@@ -1,39 +1,33 @@
 import React from 'react';
-import {
-  AuthenticatedServerSideProps,
-  authenticated,
-} from 'modules/auth/middleware/authMiddleware';
+import { authenticated } from 'modules/auth/middleware/authMiddleware';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import {
   InsightsPage,
   CountByDateDataPoint,
+  CountByDeviceClassDataPoint,
+  InsightsPageProps,
+  CountByLocationDataPoint,
 } from 'modules/insights/pages/InsightsPage';
 import { SessionApi, PagesApi } from 'api';
-import { CountByLocation } from 'modules/insights/components/charts/CountByLocationMapChart/utils';
 import { TimePrecision } from '@rebrowse/types';
 import { addDays } from 'date-fns';
 
-export type Props = AuthenticatedServerSideProps & {
-  countByLocation: CountByLocation;
-  countByDeviceClass: Record<string, number>;
-  countSessionsByDate: CountByDateDataPoint[];
-  countPageVisitsByDate: CountByDateDataPoint[];
-};
+export type Props = InsightsPageProps;
 
 const Home = ({
   user,
-  countByLocation,
+  countSessionsByLocation,
   organization,
-  countByDeviceClass,
+  countSessionsByDeviceClass,
   countSessionsByDate,
   countPageVisitsByDate,
 }: Props) => {
   return (
     <InsightsPage
       user={user}
-      countByLocation={countByLocation}
-      countByDeviceClass={countByDeviceClass}
+      countSessionsByLocation={countSessionsByLocation}
+      countSessionsByDeviceClass={countSessionsByDeviceClass}
       organization={organization}
       countSessionsByDate={countSessionsByDate}
       countPageVisitsByDate={countPageVisitsByDate}
@@ -51,76 +45,73 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
+    const createdAtGte = `gte:${addDays(new Date(), -30).toISOString()}`;
+    const headers = {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    };
+
     const countSessionsByDatePromise = SessionApi.count<CountByDateDataPoint[]>(
       {
         baseURL: process.env.SESSION_API_BASE_URL,
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
+        headers,
         search: {
           groupBy: ['createdAt'],
           dateTrunc: TimePrecision.DAY,
-          createdAt: `gte:${addDays(new Date(), -30).toISOString()}`,
+          createdAt: createdAtGte,
         },
       }
     );
+
+    const countSessionsByDeviceClassPromise = SessionApi.count<
+      CountByDeviceClassDataPoint[]
+    >({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers,
+      search: { groupBy: ['userAgent.deviceClass'], createdAt: createdAtGte },
+    });
+
+    const countSessionsByLocationPromise = SessionApi.count<
+      CountByLocationDataPoint[]
+    >({
+      baseURL: process.env.SESSION_API_BASE_URL,
+      headers,
+      search: {
+        groupBy: ['location.countryName', 'location.continentName'],
+        createdAt: createdAtGte,
+      },
+    });
 
     const countPageVisitsByDatePromise = PagesApi.count<CountByDateDataPoint[]>(
       {
         baseURL: process.env.SESSION_API_BASE_URL,
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
+        headers,
         search: {
           groupBy: ['createdAt'],
           dateTrunc: TimePrecision.DAY,
-          createdAt: `gte:${addDays(new Date(), -30).toISOString()}`,
+          createdAt: createdAtGte,
         },
       }
     );
 
-    const countByLocationPromise = SessionApi.countByLocation({
-      baseURL: process.env.SESSION_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    }).then((data) => {
-      return data.map((value) => ({
-        ...value,
-        'location.continentName': value['location.continentName'] || 'Unknown',
-        'location.countryName': value['location.countryName'] || 'Unknown',
-      }));
-    });
-
-    const countByDeviceClassPromise = SessionApi.countByDeviceClass({
-      baseURL: process.env.SESSION_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
-
     const [
       countSessionsByDate,
       countPageVisitsByDate,
-      countByLocation,
-      countByDeviceClass,
+      countSessionsByLocation,
+      countSessionsByDeviceClass,
     ] = await Promise.all([
       countSessionsByDatePromise,
       countPageVisitsByDatePromise,
-      countByLocationPromise,
-      countByDeviceClassPromise,
+      countSessionsByLocationPromise,
+      countSessionsByDeviceClassPromise,
     ]);
 
     return {
       props: {
         user: authResponse.user,
         organization: authResponse.organization,
-        countByLocation,
-        countByDeviceClass,
+        countSessionsByLocation,
+        countSessionsByDeviceClass,
         countSessionsByDate,
         countPageVisitsByDate,
       },

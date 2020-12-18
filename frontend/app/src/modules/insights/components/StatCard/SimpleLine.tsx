@@ -49,7 +49,7 @@ const getMinMax = <T,>(values: T[], ...getValueAccessors: GetValue<T>[]) => {
   return minMax;
 };
 
-const bisectDate = bisector<DataPoint, Date>((d) => new Date(d.date)).left;
+const bisectDate = bisector<DataPoint, Date>((d) => d.date).left;
 
 export const SimpleLine = ({ data, width, height }: Props) => {
   const getX = useCallback((d: DataPoint) => d.date.valueOf(), []);
@@ -96,8 +96,8 @@ export const SimpleLine = ({ data, width, height }: Props) => {
         y: 0,
       };
       const x0 = xScale.invert(xPoint);
-
       const index = bisectDate(data, x0, 1);
+
       const d0 = data[index - 1];
       const d1 = data[index];
       let d = d0;
@@ -189,7 +189,7 @@ export const SimpleLine = ({ data, width, height }: Props) => {
             top={tooltipTop}
             style={tooltipStyles}
           >
-            {getY(tooltipData)}
+            <div>Count: {getY(tooltipData)}</div>
           </TooltipWithBounds>
         )}
     </div>

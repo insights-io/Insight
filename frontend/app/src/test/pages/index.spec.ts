@@ -1,84 +1,64 @@
 import { sandbox } from '@rebrowse/testing';
-import { AuthApi, PagesApi, SessionApi } from 'api';
-import { COUNT_BY_LOCATION, COUNT_BY_DEVICE } from 'test/data/sessions';
-import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from 'test/data';
-import { authenticatedTestCases } from 'test/utils/next';
-import { getServerSideProps, Props } from 'pages/index';
-import { mockServerSideRequest } from '@rebrowse/next-testing';
-import { responsePromise } from 'test/utils/request';
+import { TimePrecision } from '@rebrowse/types';
+import { screen } from '@testing-library/react';
+import { getPage } from 'next-page-tester';
+import { mockIndexPage } from 'test/mocks';
+import { render } from 'test/utils';
 
-describe('pages/index', () => {
-  authenticatedTestCases(getServerSideProps);
+describe('/', () => {
+  describe('With no data', () => {
+    test('Should render empty charts', async () => {
+      document.cookie = 'SessionId=123';
+      const {
+        retrieveSessionStub,
+        countPagesStub,
+        countSessionsStub,
+      } = mockIndexPage();
 
-  it('Injects correct server side data', async () => {
-    sandbox.stub(document, 'cookie').value('SessionId=123');
-    const getSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
-      responsePromise({
-        status: 200,
-        data: {
-          user: REBROWSE_ADMIN_DTO,
-          organization: REBROWSE_ORGANIZATION_DTO,
+      const { page } = await getPage({ route: '/' });
+
+      sandbox.assert.calledWithMatch(retrieveSessionStub, '123', {
+        baseURL: 'http://localhost:8080',
+      });
+
+      sandbox.assert.calledWithMatch(countPagesStub, {
+        baseURL: 'http://localhost:8082',
+        headers: { cookie: 'SessionId=123' },
+        search: { dateTrunc: TimePrecision.DAY, groupBy: ['createdAt'] },
+      });
+
+      sandbox.assert.calledWithMatch(countSessionsStub.firstCall, {
+        baseURL: 'http://localhost:8082',
+        headers: { cookie: 'SessionId=123' },
+        search: { dateTrunc: TimePrecision.DAY, groupBy: ['createdAt'] },
+      });
+
+      sandbox.assert.calledWithMatch(countSessionsStub.secondCall, {
+        baseURL: 'http://localhost:8082',
+        headers: { cookie: 'SessionId=123' },
+        search: {
+          groupBy: ['userAgent.deviceClass'],
         },
-      })
-    );
+      });
 
-    const countSessionsByDateStub = sandbox
-      .stub(SessionApi, 'count')
-      .resolves([]);
+      sandbox.assert.calledWithMatch(countSessionsStub.thirdCall, {
+        baseURL: 'http://localhost:8082',
+        headers: { cookie: 'SessionId=123' },
+        search: {
+          groupBy: ['location.countryName', 'location.continentName'],
+        },
+      });
 
-    const countPageVisitsByDateStub = sandbox
-      .stub(PagesApi, 'count')
-      .resolves([]);
+      render(page);
 
-    const countByLocationStub = sandbox
-      .stub(SessionApi, 'countByLocation')
-      .resolves(COUNT_BY_LOCATION);
+      expect(await screen.findByText('Page Visits')).toBeInTheDocument();
+      expect(screen.getByText('Sessions')).toBeInTheDocument();
+      expect(screen.getByText('Country Breakdown')).toBeInTheDocument();
+      expect(screen.getByText('Continent Breakdown')).toBeInTheDocument();
+      expect(screen.getByText('Device Breakdown')).toBeInTheDocument();
 
-    const countByDeviceStub = sandbox
-      .stub(SessionApi, 'countByDeviceClass')
-      .resolves(COUNT_BY_DEVICE);
-
-    const { req, res } = mockServerSideRequest();
-    const serverSideProps = await getServerSideProps({
-      query: {},
-      req,
-      res,
-      resolvedUrl: '/',
+      // Sessions and Page Visits
+      expect(screen.getAllByText('No data').length).toEqual(2);
     });
-
-    sandbox.assert.calledWithMatch(getSessionStub, '123', {
-      baseURL: 'http://localhost:8080',
-    });
-
-    sandbox.assert.calledWithMatch(countSessionsByDateStub, {
-      baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
-    });
-
-    sandbox.assert.calledWithMatch(countPageVisitsByDateStub, {
-      baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
-    });
-
-    sandbox.assert.calledWithMatch(countByLocationStub, {
-      baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
-    });
-
-    sandbox.assert.calledWithMatch(countByDeviceStub, {
-      baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
-    });
-
-    const expectedProps: Props = {
-      user: REBROWSE_ADMIN_DTO,
-      organization: REBROWSE_ORGANIZATION_DTO,
-      countByLocation: COUNT_BY_LOCATION,
-      countByDeviceClass: COUNT_BY_DEVICE,
-      countSessionsByDate: [],
-      countPageVisitsByDate: [],
-    };
-
-    expect(serverSideProps).toEqual({ props: expectedProps });
   });
 });

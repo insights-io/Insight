@@ -2,7 +2,15 @@ import { SessionApi } from 'api';
 import { useQuery } from 'shared/hooks/useQuery';
 
 export const cacheKey = (sessionId: string) => {
-  return ['NetworkTab', 'sessions', sessionId, 'events', 'search'];
+  return [
+    'SessionApi',
+    'sessions',
+    sessionId,
+    'events',
+    'search',
+    'event.e',
+    'eq:11',
+  ];
 };
 
 const queryFn = (sessionId: string) => {

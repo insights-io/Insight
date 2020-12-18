@@ -16,7 +16,7 @@ env:
 
 jobs:
   unit_tests:
-    name: Run unit tests
+    name: Unit test
     runs-on: ubuntu-latest
 
     steps:
@@ -34,10 +34,12 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: install and unit test
+      - name: Install dependencies
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @rebrowse/app test --coverage --testTimeout=15000
+      - name: Run tests
+        run: |
+          yarn workspace @rebrowse/app test --coverage --forceExit
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

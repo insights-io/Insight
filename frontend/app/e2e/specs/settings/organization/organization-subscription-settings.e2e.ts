@@ -62,18 +62,15 @@ test('As a user I can subscribe again after canceling my first subscription usin
     .expect(queryAllByText('$15.00').with({ timeout: 3000 }).visible)
     .ok('Displays amount')
     .expect(queryByText('This is a test invoice.', { exact: false }).visible)
-    .ok('Should be a test invoice')
-    .closeWindow();
+    .ok('Should be a test invoice');
 
-  /* Stripe has broken UI in small windows (dropdown wont appear)
-    await t
-      .click(invoiceDetails.downloadButton)
-      .click(invoiceDetails.downloadReceipt)
-      .closeWindow();
-    */
+  /* Stripe keeps breaking UI
+    .click(invoiceDetails.downloadButton)
+    .click(invoiceDetails.downloadReceipt);
+  */
 
-  // Terminate subscription
   await t
+    .closeWindow()
     .click(terminateButton)
     .expect(queryByText('Successfully canceled subscription').visible)
     .ok('Should cancel the subscription')
@@ -159,17 +156,15 @@ test('As a user, I can subscribe using a 3DS payment method and then cancel my s
     .expect(queryAllByText('$15.00').with({ timeout: 3000 }).visible)
     .ok('Displays amount')
     .expect(queryByText('This is a test invoice.', { exact: false }).visible)
-    .ok('Should be a test invoice')
-    .closeWindow();
+    .ok('Should be a test invoice');
 
-  /* Stripe has broken UI in small windows (dropdown wont appear)
-    await t
-      .click(invoiceDetails.downloadButton)
-      .click(invoiceDetails.downloadReceipt)
-      .closeWindow();
-    */
+  /* Stripe keeps breaking UI
+    .click(invoiceDetails.downloadButton)
+    .click(invoiceDetails.downloadReceipt);
+  */
 
   await t
+    .closeWindow()
     .click(OrganizationSubscriptionSettingsPage.sidebar.subscription)
     .expect(queryByText('Rebrowse Free').visible)
     .ok('Should be back on Free plan');
