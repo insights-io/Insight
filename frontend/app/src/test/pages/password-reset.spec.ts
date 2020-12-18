@@ -7,6 +7,9 @@ import { screen } from '@testing-library/react';
 import { mockIndexPage } from 'test/mocks';
 import { mockApiError } from '@rebrowse/storybook';
 
+const token = '1234';
+const password = 'password123';
+
 describe('/password-reset', () => {
   describe('With existing password reset request', () => {
     test('As a user I get logged in after resetting my passsword', async () => {
@@ -18,10 +21,12 @@ describe('/password-reset', () => {
         .stub(AuthApi.password, 'reset')
         .returns(jsonPromise({ status: 200 }));
 
-      const { page } = await getPage({ route: '/password-reset?token=1234' });
+      const { page } = await getPage({
+        route: `/password-reset?token=${token}`,
+      });
       render(page);
 
-      sandbox.assert.calledWithMatch(resetExistsStub, '1234', {
+      sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
 
@@ -29,10 +34,7 @@ describe('/password-reset', () => {
         await screen.findByText('Reset your password')
       ).toBeInTheDocument();
 
-      await userEvent.type(
-        screen.getByPlaceholderText('Password'),
-        'password123'
-      );
+      await userEvent.type(screen.getByPlaceholderText('Password'), password);
 
       mockIndexPage();
 
@@ -41,11 +43,7 @@ describe('/password-reset', () => {
       // Client side navigation to / route
       await screen.findByText('Page Visits');
 
-      sandbox.assert.calledWithExactly(
-        passwordResetStub,
-        '1234',
-        'password123'
-      );
+      sandbox.assert.calledWithExactly(passwordResetStub, token, password);
     });
 
     test('As a user I can see error message if reset request fails', async () => {
@@ -64,9 +62,11 @@ describe('/password-reset', () => {
         })
       );
 
-      const { page } = await getPage({ route: '/password-reset?token=1234' });
+      const { page } = await getPage({
+        route: `/password-reset?token=${token}`,
+      });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, '1234', {
+      sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
 
@@ -76,21 +76,14 @@ describe('/password-reset', () => {
         await screen.findByText('Reset your password')
       ).toBeInTheDocument();
 
-      await userEvent.type(
-        screen.getByPlaceholderText('Password'),
-        'password123'
-      );
+      await userEvent.type(screen.getByPlaceholderText('Password'), password);
 
       userEvent.click(screen.getByText('Reset password and sign in'));
 
       await screen.findByText('Bad Request');
       await screen.findByText('Too Short');
 
-      sandbox.assert.calledWithExactly(
-        passwordResetStub,
-        '1234',
-        'password123'
-      );
+      sandbox.assert.calledWithExactly(passwordResetStub, token, password);
     });
   });
 
@@ -100,9 +93,11 @@ describe('/password-reset', () => {
         .stub(AuthApi.password, 'resetExists')
         .resolves({ data: false });
 
-      const { page } = await getPage({ route: '/password-reset?token=1234' });
+      const { page } = await getPage({
+        route: `/password-reset?token=${token}`,
+      });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, '1234', {
+      sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
 
