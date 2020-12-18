@@ -43,7 +43,6 @@ describe('<TotpMfaSetupModal />', () => {
 
     userEvent.click(closeButton);
     sandbox.assert.calledOnce(onClose);
-
     sandbox.assert.calledWithExactly(setupStart);
 
     await userEvent.type(codeInput, '12');

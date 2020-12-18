@@ -19,10 +19,7 @@ describe('/password-reset', () => {
 
       const passwordResetStub = sandbox
         .stub(AuthApi.password, 'reset')
-        .callsFake(() => {
-          document.cookie = 'SessionId=123';
-          return jsonPromise({ status: 200 });
-        });
+        .returns(jsonPromise({ status: 200 }));
 
       const { page } = await getPage({
         route: `/password-reset?token=${token}`,
@@ -43,6 +40,7 @@ describe('/password-reset', () => {
 
       userEvent.click(screen.getByText('Reset password and sign in'));
 
+      document.cookie = 'SessionId=123';
       // Client side navigation to / route
       await screen.findByText('Page Visits');
 

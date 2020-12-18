@@ -1,5 +1,5 @@
 import { sandbox } from '@rebrowse/testing';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-hooks';
 import { SessionApi } from 'api';
 import { REBROWSE_SESSIONS, REBROWSE_SESSIONS_DTOS } from 'test/data';
 
@@ -11,7 +11,7 @@ describe('useSessions', () => {
       .stub(SessionApi, 'getSessions')
       .resolves(REBROWSE_SESSIONS_DTOS.slice(0, 1));
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result, waitFor } = renderHook(() =>
       useSessions([], 0, {
         filters: [{ id: '1', key: 'location.city', value: 'Maribor' }],
         dateRange: {
@@ -24,7 +24,10 @@ describe('useSessions', () => {
     expect(result.current.count).toEqual(0);
     expect(result.current.sessions).toEqual([]);
 
-    result.current.loadMoreItems(0, 0);
+    act(() => {
+      result.current.loadMoreItems(0, 0);
+    });
+
     sandbox.assert.calledWithExactly(searchSessionsStub, {
       search: {
         limit: 1,
@@ -34,11 +37,14 @@ describe('useSessions', () => {
       },
     });
 
-    await waitForNextUpdate();
+    await waitFor(() => {
+      expect(result.current.sessions).toEqual(REBROWSE_SESSIONS.slice(0, 1));
+    });
 
-    expect(result.current.sessions).toEqual(REBROWSE_SESSIONS.slice(0, 1));
+    act(() => {
+      result.current.loadMoreItems(1, 1);
+    });
 
-    result.current.loadMoreItems(1, 1);
     sandbox.assert.calledWithExactly(searchSessionsStub, {
       search: {
         limit: 1,
@@ -51,10 +57,11 @@ describe('useSessions', () => {
       },
     });
 
-    await waitForNextUpdate();
-    expect(result.current.sessions).toEqual([
-      REBROWSE_SESSIONS[0],
-      REBROWSE_SESSIONS[0],
-    ]);
+    await waitFor(() => {
+      expect(result.current.sessions).toEqual([
+        REBROWSE_SESSIONS[0],
+        REBROWSE_SESSIONS[0],
+      ]);
+    });
   });
 });
