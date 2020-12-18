@@ -1,7 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { render, responsePromise } from 'test/utils';
+import { render, jsonPromise } from 'test/utils';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { mockIndexPage } from 'test/mocks';
@@ -19,7 +19,7 @@ describe('/password-reset', () => {
         .callsFake(() => {
           // Fake set-cookie header from server
           document.cookie = 'SessionId=1234';
-          return responsePromise({ status: 200 });
+          return jsonPromise({ status: 200 });
         });
 
       const { page } = await getPage({ route: '/password-reset?token=1234' });

@@ -35,21 +35,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const sessionsPromise = await SessionApi.getSessions({
+    const headers = {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    };
+
+    const sessionsPromise = SessionApi.getSessions({
       baseURL: process.env.SESSION_API_BASE_URL,
       search: { sortBy: ['-createdAt'], limit: 20 },
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
+      headers,
     });
 
+    // TODO: should probably limit time range
     const sessionCountPromise = SessionApi.count({
       baseURL: process.env.SESSION_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
+      headers,
     }).then((dataResponse) => dataResponse.count);
 
     const [sessions, sessionCount] = await Promise.all([

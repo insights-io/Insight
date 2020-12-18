@@ -1,7 +1,7 @@
 import { useQuery } from 'shared/hooks/useQuery';
 import ky from 'ky-universal';
 
-export const cacheKey = (snippetUri: string) => {
+const cacheKey = (snippetUri: string) => {
   return ['recordingSnippet', snippetUri];
 };
 
