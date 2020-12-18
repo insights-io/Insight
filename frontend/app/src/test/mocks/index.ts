@@ -1,8 +1,6 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi, PagesApi, SessionApi } from 'api';
 import {
-  CONSOLE_EVENTS,
-  ERROR_EVENTS,
   REBROWSE_EVENTS,
   REBROWSE_SESSIONS_DTOS,
   REBROWSE_SESSION_INFO,
