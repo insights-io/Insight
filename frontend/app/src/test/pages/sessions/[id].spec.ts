@@ -1,9 +1,8 @@
-import { mockApiError } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
-import { SessionApi } from 'api';
 import { getPage } from 'next-page-tester';
 import { AutoSizerProps } from 'react-virtualized-auto-sizer';
+import { SESSIONS_PAGE } from 'shared/constants/routes';
 import { mockSessionsPage } from 'test/mocks';
 import { render } from 'test/utils';
 
@@ -19,17 +18,8 @@ jest.mock('react-virtualized-auto-sizer', () => {
 describe('/sessions/[id]', () => {
   test('As a user I should be redirected to /sessions on 404 request', async () => {
     document.cookie = 'SessionId=123';
-    mockSessionsPage();
-
-    const retrieveSessionStub = sandbox.stub(SessionApi, 'getSession').rejects(
-      mockApiError({
-        message: 'Not Found',
-        reason: 'Not Found',
-        statusCode: 404,
-      })
-    );
-
-    const { page } = await getPage({ route: '/sessions/random' });
+    const { retrieveSessionStub } = mockSessionsPage();
+    const { page } = await getPage({ route: `${SESSIONS_PAGE}/random` });
     render(page);
 
     sandbox.assert.calledWithMatch(retrieveSessionStub, 'random', {

@@ -10,13 +10,19 @@ import { REBROWSE_ADMIN_DTO } from 'test/data/user';
 import { differenceInDays, subHours } from 'date-fns';
 import { mapSession } from '@rebrowse/sdk';
 
-export const DESKTOP_USER_AGENT: UserAgentDTO = {
+export const DESKTOP_MAC_OSX_CHROME: UserAgentDTO = {
   deviceClass: 'Desktop',
   operatingSystemName: 'Mac OS X',
   browserName: 'Chrome',
 };
 
-export const MOBILE_USER_AGENT: UserAgentDTO = {
+export const DESKTOP_MAC_OSX_FIREFOX: UserAgentDTO = {
+  deviceClass: 'Desktop',
+  operatingSystemName: 'Mac OS X',
+  browserName: 'Firefox',
+};
+
+export const MOBILE_ANDROID_CHROME: UserAgentDTO = {
   deviceClass: 'Phone',
   operatingSystemName: 'Android',
   browserName: 'Chrome',
@@ -46,7 +52,7 @@ const REBROWSE_SESSIONS_DESKTOP_FROM_LJUBLJANA: SessionDTO[] = Array.from({
       continentName: 'Europe',
     },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: DESKTOP_USER_AGENT,
+    userAgent: DESKTOP_MAC_OSX_CHROME,
   };
 });
 
@@ -70,7 +76,7 @@ const REBROWSE_SESSIONS_PHONE_FROM_ZAGREB: SessionDTO[] = Array.from({
       continentName: 'Europe',
     },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: DESKTOP_USER_AGENT,
+    userAgent: DESKTOP_MAC_OSX_CHROME,
   };
 });
 
@@ -94,7 +100,7 @@ const REBROWSE_SESSIONS_DESKTOP_FROM_VIRGINIA: SessionDTO[] = Array.from({
       continentName: 'North America',
     },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: DESKTOP_USER_AGENT,
+    userAgent: DESKTOP_MAC_OSX_FIREFOX,
   };
 });
 
@@ -109,7 +115,7 @@ const REBROWSE_SESSIONS_PHONE_NO_LOCATION: SessionDTO[] = Array.from({
     deviceId: '123',
     location: { ip: '13.77.88.76' },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: MOBILE_USER_AGENT,
+    userAgent: MOBILE_ANDROID_CHROME,
   };
 });
 

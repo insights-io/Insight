@@ -3,6 +3,10 @@ import { AuthApi, PagesApi, SessionApi } from 'api';
 import { REBROWSE_SESSIONS_DTOS, REBROWSE_SESSION_INFO } from 'test/data';
 import { jsonPromise, textPromise } from 'test/utils';
 import ky from 'ky-universal';
+import get from 'lodash/get';
+import type { SessionDTO } from '@rebrowse/types';
+import type { SessionSearchBean } from '@rebrowse/sdk';
+import { mockApiError } from '@rebrowse/storybook';
 
 export const mockAuth = () => {
   const retrieveSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
@@ -23,18 +27,90 @@ export const mockAuth = () => {
   return { retrieveSessionStub, retrieveUserStub, retrieveOrganizationStub };
 };
 
-export const mockSessionsPage = () => {
+const filterSession = (
+  s: SessionDTO,
+  search: SessionSearchBean | undefined
+) => {
+  if (!search) {
+    return true;
+  }
+
+  const {
+    location: { city, countryName, continentName },
+  } = s;
+
+  if (search['location.city']) {
+    if (`eq:${city}` !== search['location.city']) {
+      return false;
+    }
+  }
+  if (search['location.countryName']) {
+    if (`eq:${countryName}` !== search['location.countryName']) {
+      return false;
+    }
+  }
+
+  if (search['location.continentName']) {
+    if (`eq:${continentName}` !== search['location.continentName']) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+export const mockSessionsPage = (
+  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
+) => {
   const authMocks = mockAuth();
 
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
-    .resolves({ count: REBROWSE_SESSIONS_DTOS.length });
+    .callsFake((args = {}) => {
+      return Promise.resolve({
+        count: sessions.filter((s) => filterSession(s, args.search)).length,
+      });
+    });
+
+  const retrieveSessionStub = sandbox
+    .stub(SessionApi, 'getSession')
+    .callsFake((id) => {
+      const maybeSession = sessions.find((s) => s.id === id);
+      if (maybeSession) {
+        return Promise.resolve(maybeSession);
+      }
+      return Promise.reject(
+        mockApiError({
+          statusCode: 404,
+          message: 'Not Found',
+          reason: 'Not Found',
+        })
+      );
+    });
 
   const listSessionsStub = sandbox
     .stub(SessionApi, 'getSessions')
-    .resolves(REBROWSE_SESSIONS_DTOS);
+    .callsFake((args = {}) => {
+      return Promise.resolve(
+        sessions.filter((s) => filterSession(s, args.search))
+      );
+    });
 
-  return { ...authMocks, listSessionsStub, countSessionsStub };
+  const getDistinctStub = sandbox
+    .stub(SessionApi, 'distinct')
+    .callsFake((on: string) => {
+      return Promise.resolve([
+        ...new Set(sessions.map((s) => get(s, on)).filter(Boolean)),
+      ]);
+    });
+
+  return {
+    ...authMocks,
+    listSessionsStub,
+    countSessionsStub,
+    getDistinctStub,
+    retrieveSessionStub,
+  };
 };
 
 export const mockEmptySessionsPage = () => {
