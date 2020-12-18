@@ -23,7 +23,6 @@ describe('/sessions', () => {
         countSessionsStub,
       } = mockEmptySessionsPage();
 
-      document.cookie = 'SessionId=123';
       const { page } = await getPage({ route: '/sessions' });
       render(page);
 
@@ -62,7 +61,6 @@ describe('/sessions', () => {
   describe('With many sessions', () => {
     test('As a user I see sessions in a paginated list that works smoothly', async () => {
       const { listSessionsStub, countSessionsStub } = mockSessionsPage();
-      document.cookie = 'SessionId=123';
       const { page } = await getPage({ route: '/sessions' });
       render(page);
 

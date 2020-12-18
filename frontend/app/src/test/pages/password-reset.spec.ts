@@ -16,19 +16,14 @@ describe('/password-reset', () => {
 
       const passwordResetStub = sandbox
         .stub(AuthApi.password, 'reset')
-        .callsFake(() => {
-          // Fake set-cookie header from server
-          document.cookie = 'SessionId=1234';
-          return jsonPromise({ status: 200 });
-        });
+        .returns(jsonPromise({ status: 200 }));
 
       const { page } = await getPage({ route: '/password-reset?token=1234' });
+      render(page);
 
       sandbox.assert.calledWithMatch(resetExistsStub, '1234', {
         baseURL: 'http://localhost:8080',
       });
-
-      render(page);
 
       expect(
         await screen.findByText('Reset your password')

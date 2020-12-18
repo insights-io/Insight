@@ -5,6 +5,8 @@ import { jsonPromise, textPromise } from 'test/utils';
 import ky from 'ky-universal';
 
 export const mockAuth = () => {
+  document.cookie = 'SessionId=123';
+
   const retrieveSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
     jsonPromise({
       status: 200,

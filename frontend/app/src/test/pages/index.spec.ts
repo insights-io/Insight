@@ -14,7 +14,6 @@ describe('/', () => {
         countSessionsStub,
       } = mockIndexPage();
 
-      document.cookie = 'SessionId=123';
       const { page } = await getPage({ route: '/' });
 
       sandbox.assert.calledWithMatch(retrieveSessionStub, '123', {

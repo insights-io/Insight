@@ -7,7 +7,7 @@ import { REBROWSE_ADMIN_DTO } from 'test/data';
 
 describe('pages/login/verification', () => {
   it('Injects correct server side data when existing MFA methods', async () => {
-    sandbox.stub(document, 'cookie').value('ChallengeId=123');
+    document.cookie = 'ChallengeId=123';
     const getChallengeStub = sandbox
       .stub(AuthApi.mfa.challenge, 'get')
       .resolves(['totp']);
@@ -29,7 +29,7 @@ describe('pages/login/verification', () => {
   });
 
   it('Injects correct server side data when no existing MFA methods', async () => {
-    sandbox.stub(document, 'cookie').value('ChallengeId=123');
+    document.cookie = 'ChallengeId=123';
     const getChallengeStub = sandbox
       .stub(AuthApi.mfa.challenge, 'get')
       .resolves([]);
@@ -75,7 +75,7 @@ describe('pages/login/verification', () => {
   });
 
   it('Should redirect to login when challenge not found server side', async () => {
-    sandbox.stub(document, 'cookie').value('ChallengeId=123');
+    document.cookie = 'ChallengeId=123';
     const getChallengeStub = sandbox.stub(AuthApi.mfa.challenge, 'get').rejects(
       mockApiError({
         message: 'Not Found',

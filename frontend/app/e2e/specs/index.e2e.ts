@@ -20,10 +20,16 @@ test('As a user I should see live data on page visits & sessions', async (t) => 
     .expect(initialSessionsCount)
     .gt(0, 'Sessions count should be greater than 0');
 
+  // Just reloading the page happens too quickly and can be flaky
+  // Navigate somewhere else, reload there and navigate back to / to make some
+  // more time for page visit to be created
+  // TODO: should be solved with websockets?
+  await t.navigateTo('/sessions');
   await t.eval(() => {
     // eslint-disable-next-line no-restricted-globals
     location.reload(true);
   });
+  await t.navigateTo('/');
 
   const newPageVisitCount = await HomePage.getPageVisitsCount().then(Number);
   await t
