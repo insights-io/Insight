@@ -8,6 +8,7 @@ import { render } from 'test/utils';
 describe('/', () => {
   describe('With no data', () => {
     test('Should render empty charts', async () => {
+      document.cookie = 'SessionId=123';
       const {
         retrieveSessionStub,
         countPagesStub,

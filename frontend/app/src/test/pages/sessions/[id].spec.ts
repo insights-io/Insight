@@ -18,6 +18,7 @@ jest.mock('react-virtualized-auto-sizer', () => {
 
 describe('/sessions/[id]', () => {
   test('As a user I should be redirected to /sessions on 404 request', async () => {
+    document.cookie = 'SessionId=123';
     mockSessionsPage();
 
     const retrieveSessionStub = sandbox.stub(SessionApi, 'getSession').rejects(

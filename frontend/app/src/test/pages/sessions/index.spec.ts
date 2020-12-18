@@ -17,6 +17,7 @@ jest.mock('react-virtualized-auto-sizer', () => {
 describe('/sessions', () => {
   describe('With no sessions', () => {
     test('As a user I should see a bootstrap script when no sessions has been tracked yet', async () => {
+      document.cookie = 'SessionId=123';
       const {
         listSessionsStub,
         retrieveRecordingSnippetStub,
@@ -60,6 +61,7 @@ describe('/sessions', () => {
 
   describe('With many sessions', () => {
     test('As a user I see sessions in a paginated list that works smoothly', async () => {
+      document.cookie = 'SessionId=123';
       const { listSessionsStub, countSessionsStub } = mockSessionsPage();
       const { page } = await getPage({ route: '/sessions' });
       render(page);

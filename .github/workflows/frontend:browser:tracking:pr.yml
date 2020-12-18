@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - uses: insights-io/compressed-size-action@v0.0.5
         with:
-          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           build-script: 'frontend:browser:tracking:build'
           pattern: 'frontend/browser/tracking/dist/*.js'
           compression: 'gzip'

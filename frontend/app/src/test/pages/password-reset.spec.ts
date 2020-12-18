@@ -19,7 +19,10 @@ describe('/password-reset', () => {
 
       const passwordResetStub = sandbox
         .stub(AuthApi.password, 'reset')
-        .returns(jsonPromise({ status: 200 }));
+        .callsFake(() => {
+          document.cookie = 'SessionId=123';
+          return jsonPromise({ status: 200 });
+        });
 
       const { page } = await getPage({
         route: `/password-reset?token=${token}`,
