@@ -59,6 +59,7 @@ const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
             email,
             absoluteRedirect,
           });
+
           locationAssign(location);
         }
       })

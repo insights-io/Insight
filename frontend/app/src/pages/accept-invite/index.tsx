@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GetServerSideProps } from 'next';
-import type { APIErrorDataResponse, TeamInviteDTO } from '@rebrowse/types';
+import type { TeamInviteDTO } from '@rebrowse/types';
 import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
 import { AuthApi } from 'api';
 import { INDEX_PAGE } from 'shared/constants/routes';
@@ -28,9 +28,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       requestSpan.log({
         message: `Missing token: redirecting to ${INDEX_PAGE}`,
       });
-      context.res.writeHead(302, { Location: INDEX_PAGE });
-      context.res.end();
-      return { props: { invite: null } };
+      return { redirect: { destination: INDEX_PAGE, statusCode: 302 } };
     }
 
     const invite = await AuthApi.organization.teamInvite
@@ -38,12 +36,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       })
-      .catch(async (error) => {
-        const errorDTO: APIErrorDataResponse = await error.response.json();
-        if (errorDTO.error.statusCode === 404) {
+      .catch((error) => {
+        const response = error.response as Response;
+        if (response.status === 404) {
           return null;
         }
-        requestSpan.log(errorDTO);
         throw error;
       });
 
