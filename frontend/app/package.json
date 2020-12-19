@@ -54,7 +54,7 @@
     "@rebrowse/service-proxy": "0.0.0-development",
     "@rebrowse/sdk": "0.0.0-development",
     "@rebrowse/elements": "0.0.0-development",
-    "baseui": "9.106.2",
+    "baseui": "9.106.3",
     "date-fns": "2.16.1",
     "jaeger-client": "3.18.1",
     "next": "10.0.3",

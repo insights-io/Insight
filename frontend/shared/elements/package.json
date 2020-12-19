@@ -36,12 +36,12 @@
   "devDependencies": {
     "@rebrowse/testing": "0.0.0-development",
     "@rebrowse/storybook": "0.0.0-development",
-    "baseui": "9.106.2",
+    "baseui": "9.106.3",
     "react-hook-form": "6.13.1",
     "styletron-react": "5.2.7"
   },
   "peerDependencies": {
-    "baseui": "9.106.2",
+    "baseui": "9.106.3",
     "styletron-react": "5.2.7",
     "react": "17.0.1"
   }
