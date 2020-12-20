@@ -18,8 +18,12 @@ jest.mock('react-virtualized-auto-sizer', () => {
 });
 
 describe('/sessions', () => {
+  /* Data */
+  const route = SESSIONS_PAGE;
+
   describe('With no sessions', () => {
     test('As a user I should see a bootstrap script when no sessions has been tracked yet', async () => {
+      /* Mocks */
       document.cookie = 'SessionId=123';
       const {
         listSessionsStub,
@@ -27,9 +31,11 @@ describe('/sessions', () => {
         countSessionsStub,
       } = mockEmptySessionsPage();
 
-      const { page } = await getPage({ route: SESSIONS_PAGE });
+      /* Render */
+      const { page } = await getPage({ route });
       render(page);
 
+      /* Assertions */
       await screen.findByText(
         'Ready to get insights? Setup the recording snippet.'
       );
@@ -64,15 +70,19 @@ describe('/sessions', () => {
 
   describe('With many sessions', () => {
     test('As a user I see sessions in a paginated list that works smoothly', async () => {
+      /* Mocks */
       document.cookie = 'SessionId=123';
       const {
         listSessionsStub,
         countSessionsStub,
         getDistinctStub,
       } = mockSessionsPage();
-      const { page } = await getPage({ route: SESSIONS_PAGE });
+
+      /* Render */
+      const { page } = await getPage({ route });
       const { container } = render(page);
 
+      /* Assertions */
       sandbox.assert.calledWithMatch(countSessionsStub, {
         baseURL: 'http://localhost:8082',
         headers: { cookie: 'SessionId=123' },
@@ -187,6 +197,7 @@ describe('/sessions', () => {
     });
 
     test('As a user I should be able to see more details about a session', async () => {
+      /* Mocks */
       document.cookie = 'SessionId=123';
       const {
         listSessionsStub,
@@ -194,9 +205,11 @@ describe('/sessions', () => {
         retrieveSessionStub,
       } = mockSessionsPage();
 
-      const { page } = await getPage({ route: SESSIONS_PAGE });
+      /* Render */
+      const { page } = await getPage({ route });
       render(page);
 
+      /* Assertions */
       sandbox.assert.calledWithMatch(countSessionsStub, {
         baseURL: 'http://localhost:8082',
         headers: { cookie: 'SessionId=123' },

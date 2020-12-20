@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
 import sandbox from './sandbox';
@@ -5,6 +7,19 @@ import sandbox from './sandbox';
 export const setupEnvironment = () => {
   const originalConsoleWarn = console.warn;
   const originalConsoleError = console.error;
+
+  class IntersectionObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+
+  // Mock IntersectionObserver (Link component relies on it)
+  if (!global.IntersectionObserver) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    global.IntersectionObserver = IntersectionObserver;
+  }
 
   // Mock window.scrollTo (Link component triggers it)
   // eslint-disable-next-line lodash/prefer-constant

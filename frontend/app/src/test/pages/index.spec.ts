@@ -2,12 +2,17 @@ import { sandbox } from '@rebrowse/testing';
 import { TimePrecision } from '@rebrowse/types';
 import { screen } from '@testing-library/react';
 import { getPage } from 'next-page-tester';
+import { INDEX_PAGE } from 'shared/constants/routes';
 import { mockIndexPage } from 'test/mocks';
 import { render } from 'test/utils';
 
 describe('/', () => {
+  /* Data */
+  const route = INDEX_PAGE;
+
   describe('With no data', () => {
     test('Should render empty charts', async () => {
+      /* Mocks */
       document.cookie = 'SessionId=123';
       const {
         retrieveSessionStub,
@@ -15,8 +20,10 @@ describe('/', () => {
         countSessionsStub,
       } = mockIndexPage();
 
-      const { page } = await getPage({ route: '/' });
+      /* Render */
+      const { page } = await getPage({ route });
 
+      /* Assertions */
       sandbox.assert.calledWithMatch(retrieveSessionStub, '123', {
         baseURL: 'http://localhost:8080',
       });

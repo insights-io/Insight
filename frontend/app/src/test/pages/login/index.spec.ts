@@ -12,6 +12,9 @@ import * as windowUtils from 'shared/utils/window';
 import { mockIndexPage } from 'test/mocks';
 
 describe('/login', () => {
+  /* Data */
+  const route = LOGIN_PAGE;
+
   describe('Email', () => {
     /* Data */
     const email = 'john.doe@gmail.com';
@@ -29,7 +32,7 @@ describe('/login', () => {
         });
 
       /* Render */
-      const { page } = await getPage({ route: LOGIN_PAGE });
+      const { page } = await getPage({ route });
       render(page);
 
       /* Assertions */
@@ -57,7 +60,7 @@ describe('/login', () => {
         });
 
       /* Render */
-      const { page } = await getPage({ route: LOGIN_PAGE });
+      const { page } = await getPage({ route });
       render(page);
 
       /* Assertions */
@@ -85,7 +88,7 @@ describe('/login', () => {
         .resolves({ data: false });
 
       /* Render */
-      const { page } = await getPage({ route: LOGIN_PAGE });
+      const { page } = await getPage({ route });
       render(page);
 
       /* Assertions */
@@ -113,7 +116,7 @@ describe('/login', () => {
         .resolves({ data: ssoLocation });
 
       /* Render */
-      const { page } = await getPage({ route: LOGIN_PAGE });
+      const { page } = await getPage({ route });
       render(page);
 
       /* Assertions */
@@ -141,7 +144,7 @@ describe('/login', () => {
   describe('Social provider login', () => {
     test('As a user I should be able to start OAuth flow with providers', async () => {
       /* Render */
-      const { page } = await getPage({ route: LOGIN_PAGE });
+      const { page } = await getPage({ route });
       render(page);
 
       /* Assertions */
@@ -175,7 +178,7 @@ describe('/login', () => {
       .resolves();
 
     /* Render */
-    const { page } = await getPage({ route: LOGIN_PAGE });
+    const { page } = await getPage({ route });
     render(page);
 
     /* Assertions */

@@ -18,32 +18,40 @@ jest.mock('react-virtualized-auto-sizer', () => {
 });
 
 describe('/sessions/[id]', () => {
+  /* Data */
+  const route = `${SESSIONS_PAGE}/random`;
+
   test('As a user I should be redirected to /sessions on 404 request', async () => {
+    /* Mocks */
     document.cookie = 'SessionId=123';
     const { retrieveSessionStub } = mockSessionsPage();
-    const { page } = await getPage({ route: `${SESSIONS_PAGE}/random` });
+
+    /* Render */
+    const { page } = await getPage({ route });
     render(page);
 
+    /* Assertions */
     sandbox.assert.calledWithMatch(retrieveSessionStub, 'random', {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
 
-    // SSR redirect to /sessions page
-    // sesions fitting into the virtualized list height
     expect((await screen.findAllByText('Mac OS X • Chrome')).length).toEqual(
       16
     );
   });
 
   test('As a user I should be able to work with dev tools', async () => {
+    /* Mocks */
     document.cookie = 'SessionId=123';
     const { retrieveSessionStub, searchEventsStub } = mockSessionDetailsPage();
-
     const [{ id }] = REBROWSE_SESSIONS_DTOS;
+
+    /* Render */
     const { page } = await getPage({ route: `${SESSIONS_PAGE}/${id}` });
     const { container } = render(page);
 
+    /* Assertions */
     sandbox.assert.calledWithMatch(retrieveSessionStub, id, {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
