@@ -6,6 +6,8 @@ setupEnvironment();
 
 dotenv.config({ path: '.env.development' });
 
+jest.setTimeout(15000);
+
 afterEach(() => {
   clearAllCookies();
 });
