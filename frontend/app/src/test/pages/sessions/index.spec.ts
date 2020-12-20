@@ -1,7 +1,10 @@
 import { getPage } from 'next-page-tester';
 import { mockEmptySessionsPage, mockSessionsPage } from 'test/mocks';
-import { render } from 'test/utils';
-import { screen, waitForElementToBeRemoved } from '@testing-library/react';
+import {
+  screen,
+  waitForElementToBeRemoved,
+  render,
+} from '@testing-library/react';
 import { sandbox } from '@rebrowse/testing';
 import type { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import userEvent from '@testing-library/user-event';

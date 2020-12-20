@@ -1,12 +1,11 @@
 import { sandbox } from '@rebrowse/testing';
-import { screen } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import { SESSIONS_PAGE } from 'shared/constants/routes';
 import { REBROWSE_SESSIONS_DTOS } from 'test/data/sessions';
 import { mockSessionDetailsPage, mockSessionsPage } from 'test/mocks';
-import { render } from 'test/utils';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {

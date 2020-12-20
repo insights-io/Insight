@@ -1,10 +1,9 @@
 import { sandbox } from '@rebrowse/testing';
 import { TimePrecision } from '@rebrowse/types';
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { getPage } from 'next-page-tester';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { mockIndexPage } from 'test/mocks';
-import { render } from 'test/utils';
 
 describe('/', () => {
   /* Data */

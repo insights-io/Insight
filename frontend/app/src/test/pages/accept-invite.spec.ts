@@ -1,13 +1,13 @@
 import { mockApiError } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
 import { ADMIN_TEAM_INVITE_DTO } from 'test/data';
 import { mockIndexPage } from 'test/mocks';
-import { jsonPromise, render } from 'test/utils';
+import { jsonPromise } from 'test/utils';
 
 describe('/accept-invite', () => {
   /* Data */

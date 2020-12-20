@@ -1,9 +1,9 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { render, jsonPromise } from 'test/utils';
+import { jsonPromise } from 'test/utils';
 import userEvent from '@testing-library/user-event';
-import { screen } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import { mockIndexPage } from 'test/mocks';
 import { mockApiError } from '@rebrowse/storybook';
 
