@@ -4,16 +4,22 @@ import { AuthApi } from 'api';
 import { REBROWSE_ADMIN_DTO } from 'test/data/user';
 import { getPage } from 'next-page-tester';
 import { VERIFICATION_PAGE } from 'shared/constants/routes';
-import { render, textPromise } from 'test/utils';
-import { screen } from '@testing-library/react';
+import { textPromise } from 'test/utils';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { mockIndexPage } from 'test/mocks';
 import { TOTP_MFA_SETUP_QR_IMAGE } from 'test/data/mfa';
 
 describe('/login/verification', () => {
+  /* Data */
+  const route = VERIFICATION_PAGE;
+
   describe('With MFA setup', () => {
     test('As a user I can verify MFA using TOTP', async () => {
+      /* Mocks */
       document.cookie = 'ChallengeId=123';
+      mockIndexPage();
+
       const getChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'get')
         .resolves(['totp']);
@@ -25,9 +31,11 @@ describe('/login/verification', () => {
           return textPromise({ status: 200 });
         });
 
-      const { page } = await getPage({ route: VERIFICATION_PAGE });
+      /* Render */
+      const { page } = await getPage({ route });
       const { container } = render(page);
 
+      /* Assertions */
       sandbox.assert.calledWithMatch(getChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
       });
@@ -43,7 +51,6 @@ describe('/login/verification', () => {
       const code = '123456';
       userEvent.type(codeInput, code);
 
-      mockIndexPage();
       userEvent.click(screen.getByText('Submit'));
 
       sandbox.assert.calledWithExactly(
@@ -59,6 +66,7 @@ describe('/login/verification', () => {
 
   describe('With no setup', () => {
     test('As a user I can setup TOTP MFA on the spot if no existing setup', async () => {
+      /* Mocks */
       document.cookie = 'ChallengeId=123';
       const getChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'get')
@@ -82,7 +90,8 @@ describe('/login/verification', () => {
           });
         });
 
-      const { page } = await getPage({ route: VERIFICATION_PAGE });
+      /* Render */
+      const { page } = await getPage({ route });
       const { container } = render(page);
 
       sandbox.assert.calledWithMatch(getChallengeStub, '123', {
@@ -121,12 +130,16 @@ describe('/login/verification', () => {
   });
 
   test('As a user I get redirected to /login when no challengeId cookie', async () => {
-    const { page } = await getPage({ route: VERIFICATION_PAGE });
+    /* Render */
+    const { page } = await getPage({ route });
     render(page);
+
+    /* Assertions */
     await screen.findByText('Sign in with Google');
   });
 
   test('As a user I get redirected to /login when no challenge found on backend', async () => {
+    /* Mocks */
     document.cookie = 'ChallengeId=123';
     const getChallengeStub = sandbox.stub(AuthApi.mfa.challenge, 'get').rejects(
       mockApiError({
@@ -136,8 +149,11 @@ describe('/login/verification', () => {
       })
     );
 
-    const { page } = await getPage({ route: VERIFICATION_PAGE });
+    /* Render */
+    const { page } = await getPage({ route });
     render(page);
+
+    /* Assertions */
     await screen.findByText('Sign in with Google');
 
     sandbox.assert.calledWithMatch(getChallengeStub, '123', {

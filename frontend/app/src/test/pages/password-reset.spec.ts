@@ -1,18 +1,21 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { render, jsonPromise } from 'test/utils';
+import { jsonPromise } from 'test/utils';
 import userEvent from '@testing-library/user-event';
-import { screen } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import { mockIndexPage } from 'test/mocks';
 import { mockApiError } from '@rebrowse/storybook';
 
-const token = '1234';
-const password = 'password123';
-
 describe('/password-reset', () => {
+  /* Data */
+  const token = '1234';
+  const password = 'password123';
+  const route = `/password-reset?token=${token}`;
+
   describe('With existing password reset request', () => {
     test('As a user I get logged in after resetting my passsword', async () => {
+      /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
         .resolves({ data: true });
@@ -21,11 +24,13 @@ describe('/password-reset', () => {
         .stub(AuthApi.password, 'reset')
         .returns(jsonPromise({ status: 200 }));
 
-      const { page } = await getPage({
-        route: `/password-reset?token=${token}`,
-      });
+      mockIndexPage();
+
+      /* Render */
+      const { page } = await getPage({ route });
       render(page);
 
+      /* Assertions */
       sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
@@ -36,18 +41,15 @@ describe('/password-reset', () => {
 
       await userEvent.type(screen.getByPlaceholderText('Password'), password);
 
-      mockIndexPage();
-
       userEvent.click(screen.getByText('Reset password and sign in'));
 
       document.cookie = 'SessionId=123';
-      // Client side navigation to / route
       await screen.findByText('Page Visits');
-
       sandbox.assert.calledWithExactly(passwordResetStub, token, password);
     });
 
     test('As a user I can see error message if reset request fails', async () => {
+      /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
         .resolves({ data: true });
@@ -63,15 +65,14 @@ describe('/password-reset', () => {
         })
       );
 
-      const { page } = await getPage({
-        route: `/password-reset?token=${token}`,
-      });
+      /* Render */
+      const { page } = await getPage({ route });
+      render(page);
 
+      /* Assertions */
       sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
-
-      render(page);
 
       expect(
         await screen.findByText('Reset your password')
@@ -90,27 +91,25 @@ describe('/password-reset', () => {
 
   describe('With non existing password reset request', () => {
     test('As a user', async () => {
+      /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
         .resolves({ data: false });
 
-      const { page } = await getPage({
-        route: `/password-reset?token=${token}`,
-      });
+      /* Render */
+      const { page } = await getPage({ route });
+      render(page);
 
+      /* Assertions */
       sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
-
-      render(page);
 
       await screen.findByText(
         'It looks like this password reset request is invalid or has already been accepted.'
       );
 
       userEvent.click(screen.getByText('Log in or reset your password'));
-
-      // Client side navigation to /login route
       await screen.findByText('Sign in with Google');
     });
   });

@@ -15,9 +15,15 @@ export const createTestQueryClient = () => {
   });
 };
 
-export default createRenderer((props: Pick<Props, 'children' | 'engine'>) => {
-  return <AppProviders queryClient={createTestQueryClient()} {...props} />;
-});
+/*
+ * Use for tests not relying "next-page-tester" which will render AppProviders by default
+ * via the _app componennt
+ */
+export const render = createRenderer(
+  (props: Pick<Props, 'children' | 'engine'>) => {
+    return <AppProviders queryClient={createTestQueryClient()} {...props} />;
+  }
+);
 
 export const renderHook: typeof renderHookRtl = (callback, options) => {
   return renderHookRtl(callback, {

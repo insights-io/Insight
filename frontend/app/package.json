@@ -54,7 +54,7 @@
     "@rebrowse/service-proxy": "0.0.0-development",
     "@rebrowse/sdk": "0.0.0-development",
     "@rebrowse/elements": "0.0.0-development",
-    "baseui": "9.106.2",
+    "baseui": "9.106.3",
     "date-fns": "2.16.1",
     "jaeger-client": "3.18.1",
     "next": "10.0.3",
@@ -68,13 +68,14 @@
     "react-window": "1.8.6",
     "react-window-infinite-loader": "1.0.5",
     "react-virtualized-auto-sizer": "1.0.2",
-    "react-query": "3.3.0",
+    "react-query": "3.3.3",
     "use-debounce": "5.2.0",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7",
     "nprogress": "0.2.0",
     "http-proxy": "1.18.1",
-    "d3-scale-chromatic": "2.0.0"
+    "d3-scale-chromatic": "2.0.0",
+    "copy-to-clipboard": "3.3.1"
   },
   "devDependencies": {
     "@rebrowse/storybook": "0.0.0-development",
@@ -98,7 +99,7 @@
     "jsqr": "1.3.1",
     "speakeasy": "2.0.0",
     "@types/nprogress": "0.2.0",
-    "next-page-tester": "0.12.0",
+    "next-page-tester": "0.13.0",
     "@visx/mock-data": "1.0.0"
   }
 }

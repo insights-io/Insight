@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Theme } from 'baseui/theme';
 import { OptionListProps, OptionList, StatefulMenu, ItemsT } from 'baseui/menu';
 import { Block } from 'baseui/block';
@@ -33,22 +33,23 @@ type Props = {
   theme: Theme;
 };
 
-const OptionWithIcon = ({ item, ...rest }: OptionListProps) => {
-  const typedOption = item as FilterOption;
-  const IconComponent = typedOption.icon;
-  return (
-    <OptionList
-      item={item}
-      {...rest}
-      getItemLabel={() => (
-        <>
-          <IconComponent style={{ marginRight: '12px' }} />
-          {typedOption.label}
-        </>
-      )}
-    />
-  );
-};
+const OptionWithIcon = forwardRef<HTMLLIElement, OptionListProps>(
+  ({ item, ...rest }: OptionListProps, ref) => {
+    return (
+      <OptionList
+        item={item}
+        {...rest}
+        overrides={{ ListItem: { props: { ref } } }}
+        getItemLabel={(item: FilterOption) => (
+          <>
+            <item.icon style={{ marginRight: '12px' }} />
+            {item.label}
+          </>
+        )}
+      />
+    );
+  }
+);
 
 const SessionFilterRow = ({
   filter: { id, key, value },
