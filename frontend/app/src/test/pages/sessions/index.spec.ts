@@ -228,8 +228,10 @@ describe('/sessions', () => {
         screen.getAllByText(/Ljubljana, Slovenia - 82.192.62.51 - (.*)/)[0]
       );
 
-      // Client side navigation to /sessions/[id]
-      await screen.findByText(`Session ${REBROWSE_SESSIONS_DTOS[0].id}`);
+      await screen.findByText('Device ID: 123');
+      expect(
+        screen.getByText(`Session ${REBROWSE_SESSIONS_DTOS[0].id}`)
+      ).toBeInTheDocument();
 
       sandbox.assert.calledWithExactly(
         retrieveSessionStub,
