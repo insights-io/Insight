@@ -45,7 +45,7 @@ export const SettingsPage = ({
             avatar={user.fullName || user.email}
             quickLinks={[
               {
-                text: 'Chamge my password',
+                text: 'Change my password',
                 link: ACCOUNT_SETTINGS_SECURITY_PAGE,
               },
               {

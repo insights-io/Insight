@@ -29,6 +29,7 @@ export const PasswordPolicyForm = ({ initialPasswordPolicy }: Props) => {
     updatePasswordPolicy,
     createPasswordPolicy,
   } = useOrganizationPasswordPolicy(initialPasswordPolicy);
+
   const {
     register,
     errors,
