@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Block, BlockOverrides } from 'baseui/block';
 import { useStyletron } from 'baseui';
 import { Spinner } from 'baseui/spinner';
@@ -6,6 +6,7 @@ import { H3, Paragraph3 } from 'baseui/typography';
 import { SIZE } from 'baseui/button';
 import { Check } from 'baseui/icon';
 import { Button } from '@rebrowse/elements';
+import { useCopy } from 'shared/hooks/useCopy';
 
 import { useRecordingSnippet } from './useRecordingSnippet';
 
@@ -22,29 +23,13 @@ export const RecordingSnippet = ({
 }: Props) => {
   const [css, theme] = useStyletron();
   const codeRef = useRef<HTMLElement>(null);
-  const [copied, setCopied] = useState(false);
 
   const { data: recordingSnippet } = useRecordingSnippet(
     snippetUri,
     organizationId
   );
 
-  const onCopy = () => {
-    if (!recordingSnippet) {
-      return;
-    }
-    const textArea = document.createElement('textarea');
-    textArea.textContent = recordingSnippet;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    setCopied(true);
-
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  };
+  const { isCopied, copy } = useCopy(recordingSnippet);
 
   return (
     <Block>
@@ -78,9 +63,9 @@ export const RecordingSnippet = ({
             top: theme.sizing.scale500,
             right: theme.sizing.scale500,
           }}
-          onClick={onCopy}
+          onClick={copy}
         >
-          {copied ? <Check /> : 'Copy'}
+          {isCopied ? <Check /> : 'Copy'}
         </Button>
       </Block>
     </Block>

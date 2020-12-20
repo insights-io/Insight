@@ -74,7 +74,8 @@
     "styletron-react": "5.2.7",
     "nprogress": "0.2.0",
     "http-proxy": "1.18.1",
-    "d3-scale-chromatic": "2.0.0"
+    "d3-scale-chromatic": "2.0.0",
+    "copy-to-clipboard": "3.3.1"
   },
   "devDependencies": {
     "@rebrowse/storybook": "0.0.0-development",
