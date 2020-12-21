@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import { AppLayout } from 'modules/app/components/AppLayout';
 import type { OrganizationDTO, UserDTO } from '@rebrowse/types';
 import { useStyletron } from 'baseui';
@@ -7,51 +7,61 @@ import { useOrganization } from 'shared/hooks/useOrganization';
 import Head from 'next/head';
 import { StatCard } from 'modules/insights/components/StatCard';
 import { Block } from 'baseui/block';
+import type { RelativeTimeRange, TimeRangeOption } from 'shared/utils/date';
+import { Select, SIZE } from 'baseui/select';
+import { expandBorderRadius } from '@rebrowse/elements';
+import {
+  countPageVisitsByDate,
+  countSessionsByDate,
+  countSessionsByDeviceClass,
+  countSessionsByLocation,
+} from 'modules/insights/api';
 
 import type {
-  CountByDateDataPoint,
+  CountByDateDataPointDTO,
   CountByDeviceClassDataPoint,
   CountByLocationDataPoint,
 } from './types';
 import { PieChartBreakdown } from './PieChartBreakdown';
 
+const TIME_RANGE_OPTIONS: TimeRangeOption[] = [
+  { label: 'Last hour', value: '1h' },
+  { label: 'Last 24 hours', value: '24h' },
+  { label: 'Last 7 days', value: '7d' },
+  { label: 'Last 30 days', value: '30d' },
+  { label: 'Last 90 days', value: '90d' },
+];
+const getInitialTimeRange = (relativeTimeRange: RelativeTimeRange) => {
+  return [
+    TIME_RANGE_OPTIONS.find((o) => o.value === relativeTimeRange) ||
+      TIME_RANGE_OPTIONS[3],
+  ];
+};
+
 export type InsightsPageProps = {
   user: UserDTO;
   organization: OrganizationDTO;
-  countSessionsByLocation: CountByLocationDataPoint[];
-  countSessionsByDeviceClass: CountByDeviceClassDataPoint[];
-  countSessionsByDate: CountByDateDataPoint[];
-  countPageVisitsByDate: CountByDateDataPoint[];
+  sessionsByLocationCount: CountByLocationDataPoint[];
+  sessionsByDeviceCount: CountByDeviceClassDataPoint[];
+  sessionsByDateCount: CountByDateDataPointDTO[];
+  pageVisitsByDateCount: CountByDateDataPointDTO[];
+  relativeTimeRange: RelativeTimeRange;
 };
 
 export const InsightsPage = ({
   user: initialUser,
   organization: initialOrganization,
-  countSessionsByDate: initialCountSessionsByDate,
-  countPageVisitsByDate: initialCountPageVisitsByDate,
-  countSessionsByDeviceClass,
-  countSessionsByLocation,
+  sessionsByDateCount: initialCountSessionsByDate,
+  pageVisitsByDateCount: initialCountPageVisitsByDate,
+  sessionsByDeviceCount: initialSessionsByDeviceCount,
+  sessionsByLocationCount: initialSessionsByLocationCount,
+  relativeTimeRange: initialRelativeTimeRange,
 }: InsightsPageProps) => {
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
   const [_css, theme] = useStyletron();
-
-  const countSessionsByDate = useMemo(
-    () =>
-      initialCountSessionsByDate.map((v) => ({
-        value: v.count,
-        date: new Date(v.createdAt),
-      })),
-    [initialCountSessionsByDate]
-  );
-
-  const countPageVisitsByDate = useMemo(
-    () =>
-      initialCountPageVisitsByDate.map((v) => ({
-        value: v.count,
-        date: new Date(v.createdAt),
-      })),
-    [initialCountPageVisitsByDate]
+  const [timeRange, setTimeRange] = useState(() =>
+    getInitialTimeRange(initialRelativeTimeRange)
   );
 
   return (
@@ -59,12 +69,7 @@ export const InsightsPage = ({
       organization={organization}
       user={user}
       overrides={{
-        MainContent: {
-          style: {
-            padding: theme.sizing.scale600,
-            background: theme.colors.mono300,
-          },
-        },
+        MainContent: { style: { background: theme.colors.mono300 } },
       }}
     >
       <Head>
@@ -73,50 +78,85 @@ export const InsightsPage = ({
 
       <Block
         display="grid"
-        gridGap={theme.sizing.scale600}
+        $style={{ border: '1px solid rgb(231, 225, 236)' }}
+        backgroundColor={theme.colors.white}
+        padding={theme.sizing.scale600}
         gridTemplateColumns="repeat(auto-fit, minmax(400px, 1fr))"
       >
-        <StatCard
-          data={countPageVisitsByDate}
-          title="Page Visits"
-          timeRange="Last 30 days"
-        />
-        <StatCard
-          data={countSessionsByDate}
-          title="Sessions"
-          timeRange="Last 30 days"
+        <div />
+        <div />
+        <Select
+          options={TIME_RANGE_OPTIONS}
+          value={timeRange}
+          size={SIZE.compact}
+          valueKey="value"
+          onChange={(params) => {
+            if (params.type === 'remove') {
+              return;
+            }
+            setTimeRange(params.value as [TimeRangeOption]);
+          }}
+          clearable={false}
+          overrides={{
+            ControlContainer: { style: expandBorderRadius('8px') },
+          }}
         />
       </Block>
+      <Block as="section" padding={theme.sizing.scale600}>
+        <Block
+          display="grid"
+          gridGap={theme.sizing.scale600}
+          gridTemplateColumns="repeat(auto-fit, minmax(400px, 1fr))"
+        >
+          <StatCard
+            title="Page Visits"
+            field="createdAt"
+            initialData={initialCountPageVisitsByDate}
+            relativeTimeRange={timeRange[0].value}
+            dataLoader={countPageVisitsByDate}
+          />
+          <StatCard
+            title="Sessions"
+            field="createdAt"
+            initialData={initialCountSessionsByDate}
+            relativeTimeRange={timeRange[0].value}
+            dataLoader={countSessionsByDate}
+          />
+        </Block>
 
-      <Block
-        display="grid"
-        gridGap={theme.sizing.scale600}
-        gridTemplateColumns="repeat(auto-fit, minmax(400px, 1fr))"
-        marginTop={theme.sizing.scale600}
-      >
-        <PieChartBreakdown
-          height="400px"
-          title="Device Breakdown"
-          subtitle="Last 30 days"
-          data={countSessionsByDeviceClass}
-          field="userAgent.deviceClass"
-        />
+        <Block
+          display="grid"
+          gridGap={theme.sizing.scale600}
+          gridTemplateColumns="repeat(auto-fit, minmax(400px, 1fr))"
+          marginTop={theme.sizing.scale600}
+        >
+          <PieChartBreakdown
+            height="400px"
+            title="Device Breakdown"
+            relativeTimeRange={timeRange[0].value}
+            initialData={initialSessionsByDeviceCount}
+            dataLoader={countSessionsByDeviceClass}
+            field="userAgent.deviceClass"
+          />
 
-        <PieChartBreakdown
-          height="400px"
-          title="Country Breakdown"
-          subtitle="Last 30 days"
-          data={countSessionsByLocation}
-          field="location.countryName"
-        />
+          <PieChartBreakdown
+            height="400px"
+            title="Country Breakdown"
+            relativeTimeRange={timeRange[0].value}
+            initialData={initialSessionsByLocationCount}
+            dataLoader={countSessionsByLocation}
+            field="location.countryName"
+          />
 
-        <PieChartBreakdown
-          height="400px"
-          title="Continent Breakdown"
-          subtitle="Last 30 days"
-          data={countSessionsByLocation}
-          field="location.continentName"
-        />
+          <PieChartBreakdown
+            height="400px"
+            title="Continent Breakdown"
+            relativeTimeRange={timeRange[0].value}
+            initialData={initialSessionsByLocationCount}
+            dataLoader={countSessionsByLocation}
+            field="location.continentName"
+          />
+        </Block>
       </Block>
     </AppLayout>
   );

@@ -11,7 +11,7 @@ import get from 'lodash/get';
 import type { SessionDTO } from '@rebrowse/types';
 import { mockApiError } from '@rebrowse/storybook';
 
-import { filterBrowserEvent, filterSession } from './filter';
+import { filterSession, filterBrowserEvent, countSessionsBy } from './filter';
 
 export const mockAuth = () => {
   const retrieveSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
@@ -149,10 +149,31 @@ export const mockEmptySessionsPage = () => {
   };
 };
 
-export const mockIndexPage = () => {
+export const mockIndexPage = (
+  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
+) => {
   const authMocks = mockAuth();
-  const countPagesStub = sandbox.stub(PagesApi, 'count').resolves([]);
-  const countSessionsStub = sandbox.stub(SessionApi, 'count').resolves([]);
+  const countSessionsStub = sandbox
+    .stub(SessionApi, 'count')
+    .callsFake((args = {}) => {
+      return Promise.resolve(
+        countSessionsBy(sessions, args.search).sort(
+          (a, b) =>
+            new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
+        )
+      );
+    });
 
-  return { ...authMocks, countPagesStub, countSessionsStub };
+  const countPageVisitsStub = sandbox
+    .stub(PagesApi, 'count')
+    .callsFake((args = {}) => {
+      return Promise.resolve(
+        countSessionsBy(sessions, args.search).sort(
+          (a, b) =>
+            new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
+        )
+      );
+    });
+
+  return { ...authMocks, countPageVisitsStub, countSessionsStub };
 };
