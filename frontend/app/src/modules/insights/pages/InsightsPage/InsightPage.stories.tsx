@@ -48,10 +48,7 @@ Base.story = configureStory({
       .stub(SessionApi, 'count')
       .callsFake((args = {}) => {
         return Promise.resolve(
-          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search).sort(
-            (a, b) =>
-              new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
-          )
+          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search)
         );
       });
 
@@ -59,10 +56,7 @@ Base.story = configureStory({
       .stub(PagesApi, 'count')
       .callsFake((args = {}) => {
         return Promise.resolve(
-          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search).sort(
-            (a, b) =>
-              new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
-          )
+          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search)
         );
       });
 

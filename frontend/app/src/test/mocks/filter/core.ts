@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-import type { GroupByBaseResult, SearchBean } from '@rebrowse/types';
+import type { GroupByResult, SearchBean } from '@rebrowse/types';
 
 export const filterByParam = <
   TObject extends Record<string, unknown>,
@@ -50,7 +50,7 @@ export const filterByParam = <
 export const countBy = <
   TObject extends Record<string, unknown>,
   TQueryParams extends Record<string, unknown>,
-  GroupBy extends (keyof TQueryParams)[]
+  GroupBy extends (keyof TQueryParams)[] = []
 >(
   data: TObject[],
   filter: (r: TObject) => boolean,
@@ -59,7 +59,7 @@ export const countBy = <
     object: TObject,
     path: TObjectKey | [TObjectKey]
   ) => TObject[TObjectKey]
-) => {
+): GroupByResult<GroupBy> => {
   const map = data.reduce((acc, point) => {
     if (!filter(point)) {
       return acc;
@@ -79,12 +79,18 @@ export const countBy = <
     };
   }, {} as Record<string, number>);
 
+  if (!search?.groupBy || search.groupBy.length === 0) {
+    return {
+      count: Object.values(map).reduce((acc, v) => acc + v, 0),
+    } as GroupByResult<GroupBy>;
+  }
+
   return Object.keys(map).reduce((acc, key) => {
     const fieldValuePairs = key.split('--');
     const data = fieldValuePairs.reduce((acc, pair) => {
       const [field, value] = pair.split('=');
       return { ...acc, [field]: value };
     }, {} as Record<GroupBy[number], string>);
-    return [...acc, { ...data, count: map[key] }];
-  }, [] as (GroupByBaseResult & Record<GroupBy[number], string>)[]);
+    return [...acc, { ...data, count: map[key] }] as GroupByResult<GroupBy>;
+  }, ([] as unknown) as GroupByResult<GroupBy>);
 };

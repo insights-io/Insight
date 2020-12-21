@@ -25,19 +25,18 @@ describe('/sessions/[id]', () => {
     document.cookie = 'SessionId=123';
     const { retrieveSessionStub } = mockSessionsPage();
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
+
+    /* Client */
     render(page);
 
-    /* Assertions */
     sandbox.assert.calledWithMatch(retrieveSessionStub, 'random', {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
 
-    expect((await screen.findAllByText('Mac OS X • Chrome')).length).toEqual(
-      16
-    );
+    await screen.findAllByText('Mac OS X • Chrome');
   });
 
   test('As a user I should be able to work with dev tools', async () => {
@@ -46,11 +45,11 @@ describe('/sessions/[id]', () => {
     const { retrieveSessionStub, searchEventsStub } = mockSessionDetailsPage();
     const [{ id }] = REBROWSE_SESSIONS_DTOS;
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route: `${SESSIONS_PAGE}/${id}` });
-    const { container } = render(page);
 
-    /* Assertions */
+    /* Client */
+    const { container } = render(page);
     sandbox.assert.calledWithMatch(retrieveSessionStub, id, {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },

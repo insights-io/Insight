@@ -25,10 +25,7 @@ const USER_AGENT_DEVICE_ICON_LOOKUP: Record<
   Phone: FaMobileAlt,
 };
 
-const SessionListItem = ({ session, style }: Props) => {
-  const { id, createdAt, location, userAgent } = session;
-  const [css, theme] = useStyletron();
-
+export const sessionDescription = ({ createdAt, location }: Session) => {
   const createdAtText = formatDistanceToNow(createdAt, {
     includeSeconds: true,
     addSuffix: true,
@@ -40,6 +37,13 @@ const SessionListItem = ({ session, style }: Props) => {
     createdAtText,
   ].join(' - ');
 
+  return description;
+};
+
+const SessionListItem = ({ session, style }: Props) => {
+  const { id, userAgent } = session;
+  const [css, theme] = useStyletron();
+  const description = sessionDescription(session);
   const artwork =
     USER_AGENT_DEVICE_ICON_LOOKUP[userAgent.deviceClass] || FaDesktop;
 

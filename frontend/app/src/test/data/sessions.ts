@@ -125,14 +125,13 @@ export const REBROWSE_SESSIONS_DTOS: SessionDTO[] = [
   ...REBROWSE_SESSIONS_PHONE_FROM_ZAGREB,
   ...REBROWSE_SESSIONS_DESKTOP_FROM_VIRGINIA,
   ...REBROWSE_SESSIONS_PHONE_NO_LOCATION,
-];
+].sort(
+  (a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf()
+);
 
-export const REBROWSE_SESSIONS: Session[] = [
-  ...REBROWSE_SESSIONS_DESKTOP_FROM_LJUBLJANA.map(mapSession),
-  ...REBROWSE_SESSIONS_PHONE_FROM_ZAGREB.map(mapSession),
-  ...REBROWSE_SESSIONS_DESKTOP_FROM_VIRGINIA.map(mapSession),
-  ...REBROWSE_SESSIONS_PHONE_NO_LOCATION.map(mapSession),
-];
+export const REBROWSE_SESSIONS: Session[] = REBROWSE_SESSIONS_DTOS.map(
+  mapSession
+);
 
 export const GROUP_BY_COUNTRY: GroupByData = {
   Slovenia: 1,
@@ -154,8 +153,6 @@ export const COUNT_SESSIONS_BY_DEVICE_CLASS = countSessionsBy(
 export const COUNT_SESSIONS_BY_DATE = countSessionsBy(REBROWSE_SESSIONS_DTOS, {
   groupBy: ['createdAt'],
   dateTrunc: TimePrecision.DAY,
-}).sort(
-  (a, b) => new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
-);
+});
 
 export const COUNT_PAGE_VISITS_BY_DATE = [...COUNT_SESSIONS_BY_DATE];

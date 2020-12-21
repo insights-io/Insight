@@ -72,12 +72,8 @@ export const mockSessionsPage = (
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
     .callsFake((args = {}) => {
-      return Promise.resolve(
-        countSessionsBy(sessions, args.search).sort(
-          (a, b) =>
-            new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
-        )
-      );
+      const data = countSessionsBy(sessions, args.search);
+      return Promise.resolve(data);
     });
 
   const retrieveSessionStub = sandbox
@@ -99,17 +95,17 @@ export const mockSessionsPage = (
   const listSessionsStub = sandbox
     .stub(SessionApi, 'getSessions')
     .callsFake((args = {}) => {
-      return Promise.resolve(
-        sessions.filter((s) => filterSession(s, args.search))
-      );
+      const data = sessions.filter((s) => filterSession(s, args.search));
+      return Promise.resolve(data);
     });
 
   const getDistinctStub = sandbox
     .stub(SessionApi, 'distinct')
     .callsFake((on: string) => {
-      return Promise.resolve([
+      const data = [
         ...new Set(sessions.map((s) => get(s, on)).filter(Boolean)),
-      ]);
+      ];
+      return Promise.resolve(data);
     });
 
   return {
@@ -159,23 +155,13 @@ export const mockIndexPage = (
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
     .callsFake((args = {}) => {
-      return Promise.resolve(
-        countSessionsBy(sessions, args.search).sort(
-          (a, b) =>
-            new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
-        )
-      );
+      return Promise.resolve(countSessionsBy(sessions, args.search));
     });
 
   const countPageVisitsStub = sandbox
     .stub(PagesApi, 'count')
     .callsFake((args = {}) => {
-      return Promise.resolve(
-        countSessionsBy(sessions, args.search).sort(
-          (a, b) =>
-            new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
-        )
-      );
+      return Promise.resolve(countSessionsBy(sessions, args.search));
     });
 
   return { ...authMocks, countPageVisitsStub, countSessionsStub };

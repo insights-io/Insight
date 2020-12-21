@@ -53,7 +53,7 @@ export const filterSession = <
 };
 
 export const countSessionsBy = <
-  GroupBy extends (keyof SessionSearchQueryParams)[]
+  GroupBy extends (keyof SessionSearchQueryParams)[] = []
 >(
   data: SessionDTO[],
   search: SessionSearchBean<GroupBy> | undefined
