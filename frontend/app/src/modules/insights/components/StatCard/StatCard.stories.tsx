@@ -18,68 +18,81 @@ const Container = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const baseProps = {
+  title: 'Page Visits',
+  field: 'createdAt',
+  relativeTimeRange: '30d',
+} as const;
+
 export const WithManyDataPoints = () => {
+  const data = Array.from({ length: 100 })
+    .map((_, index) => ({
+      createdAt: addDays(new Date(), -index).toISOString(),
+      count: Math.floor(Math.random() * 1000),
+    }))
+    .reverse();
+
   return (
     <Container>
       <StatCard
-        title="Page visits"
-        timeRange="Last 30 days"
-        data={Array.from({ length: 100 })
-          .map((_, index) => ({
-            date: addDays(new Date(), -index),
-            value: Math.floor(Math.random() * 1000),
-          }))
-          .reverse()}
+        {...baseProps}
+        dataLoader={() => Promise.resolve(data)}
+        initialData={data}
       />
     </Container>
   );
 };
 
 export const WithAFewDataPoints = () => {
+  const data = [
+    { createdAt: new Date(2017, 3, 1).toISOString(), count: 100 },
+    { createdAt: new Date(2017, 4, 1).toISOString(), count: 122 },
+    { createdAt: new Date(2017, 5, 1).toISOString(), count: 88 },
+    { createdAt: new Date(2017, 6, 1).toISOString(), count: 243 },
+    { createdAt: new Date(2017, 7, 1).toISOString(), count: 250 },
+    { createdAt: new Date(2017, 8, 1).toISOString(), count: 222 },
+    { createdAt: new Date(2017, 9, 1).toISOString(), count: 255 },
+    { createdAt: new Date(2017, 10, 1).toISOString(), count: 266 },
+    { createdAt: new Date(2017, 11, 1).toISOString(), count: 200 },
+    { createdAt: new Date(2017, 11, 2).toISOString(), count: 300 },
+  ];
+
   return (
     <Container>
       <StatCard
-        title="Page visits"
-        timeRange="Last 30 days"
-        data={[
-          { date: new Date(2017, 3, 1), value: 100 },
-          { date: new Date(2017, 4, 1), value: 122 },
-          { date: new Date(2017, 5, 1), value: 88 },
-          { date: new Date(2017, 6, 1), value: 243 },
-          { date: new Date(2017, 7, 1), value: 250 },
-          { date: new Date(2017, 8, 1), value: 222 },
-          { date: new Date(2017, 9, 1), value: 255 },
-          { date: new Date(2017, 10, 1), value: 266 },
-          { date: new Date(2017, 11, 1), value: 200 },
-          { date: new Date(2017, 11, 2), value: 300 },
-        ]}
+        {...baseProps}
+        dataLoader={() => Promise.resolve(data)}
+        initialData={data}
       />
     </Container>
   );
 };
 
 export const WithTwoDataPoints = () => {
+  const data = [
+    { createdAt: new Date(2017, 3, 1).toISOString(), count: 100 },
+    { createdAt: new Date(2017, 4, 1).toISOString(), count: 122 },
+  ];
+
   return (
     <Container>
       <StatCard
-        title="Page visits"
-        timeRange="Last 30 days"
-        data={[
-          { date: new Date(2017, 3, 1), value: 100 },
-          { date: new Date(2017, 4, 1), value: 122 },
-        ]}
+        {...baseProps}
+        initialData={data}
+        dataLoader={() => Promise.resolve(data)}
       />
     </Container>
   );
 };
 
 export const WithOneDataPoints = () => {
+  const data = [{ createdAt: new Date(2017, 3, 1).toISOString(), count: 100 }];
   return (
     <Container>
       <StatCard
-        title="Page visits"
-        timeRange="Last 30 days"
-        data={[{ date: new Date(2017, 3, 1), value: 100 }]}
+        {...baseProps}
+        initialData={data}
+        dataLoader={() => Promise.resolve(data)}
       />
     </Container>
   );
@@ -88,7 +101,11 @@ export const WithOneDataPoints = () => {
 export const WithNoDataPoints = () => {
   return (
     <Container>
-      <StatCard title="Page visits" timeRange="Last 30 days" data={[]} />
+      <StatCard
+        {...baseProps}
+        initialData={[]}
+        dataLoader={() => Promise.resolve([])}
+      />
     </Container>
   );
 };

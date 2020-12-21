@@ -1,20 +1,23 @@
 import ky from 'ky-universal';
-import type { DataResponse } from '@rebrowse/types';
+import type { DataResponse, GroupByResult } from '@rebrowse/types';
 
 import { getData, querystring, withCredentials } from '../utils';
 
-import type { PageVisitSearchRequestOptions } from './types';
+import type {
+  PageVisitSearchRequestOptions,
+  PageVisitQueryParams,
+} from './types';
 
 export const createPagesClient = (sessionApiBaseUrl: string) => {
-  function count<T = { count: number }>({
+  function count<GroupBy extends (keyof PageVisitQueryParams)[]>({
     baseURL = sessionApiBaseUrl,
     search,
     ...rest
-  }: PageVisitSearchRequestOptions = {}) {
+  }: PageVisitSearchRequestOptions<GroupBy> = {}) {
     const searchQuery = querystring(search);
     return ky
       .get(`${baseURL}/v1/pages/count${searchQuery}`, withCredentials(rest))
-      .json<DataResponse<T>>()
+      .json<DataResponse<GroupByResult<GroupBy>>>()
       .then(getData);
   }
 

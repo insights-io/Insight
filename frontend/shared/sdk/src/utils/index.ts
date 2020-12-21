@@ -11,8 +11,11 @@ export const getData = <T>(dataResponse: DataResponse<T>) => {
   return dataResponse.data;
 };
 
-export const querystring = <P extends Record<string, unknown>>(
-  searchParams?: SearchBean<P>
+export const querystring = <
+  P extends Record<string, unknown>,
+  GroupBy extends (keyof P)[]
+>(
+  searchParams?: SearchBean<P, GroupBy>
 ): string => {
   if (!searchParams) {
     return '';

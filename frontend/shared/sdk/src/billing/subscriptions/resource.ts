@@ -40,11 +40,11 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
         .then(getData);
     },
 
-    list: ({
+    list: <GroupBy extends (keyof SubscriptionDTO)[]>({
       baseURL = billingApiBaseURL,
       search,
       ...rest
-    }: SubscriptionSearchRequestOptions = {}) => {
+    }: SubscriptionSearchRequestOptions<GroupBy> = {}) => {
       return ky
         .get(
           `${baseURL}/v1/billing/subscriptions${querystring(search)}`,

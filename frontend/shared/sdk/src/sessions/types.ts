@@ -16,20 +16,24 @@ export type SessionSearchQueryParams = {
   'userAgent.deviceClass'?: unknown;
 };
 
-export type SessionSearchBean = SearchBean<SessionSearchQueryParams>;
+export type SessionSearchBean<
+  GroupBy extends (keyof SessionSearchQueryParams)[]
+> = SearchBean<SessionSearchQueryParams, GroupBy>;
 
-export type SessionsSearchRequestOptions = Omit<
-  RequestOptions,
-  'searchParams'
-> & {
-  search?: SessionSearchBean;
+export type SessionsSearchRequestOptions<
+  GroupBy extends (keyof SessionSearchQueryParams)[]
+> = Omit<RequestOptions, 'searchParams'> & {
+  search?: SessionSearchBean<GroupBy>;
 };
 
-export type EventSeachBean = SearchBean<{ 'event.e'?: unknown }>;
+export type EventSearchQueryParams = { 'event.e'?: unknown };
 
-export type SearchEventsRequestOptions = Omit<
-  RequestOptions,
-  'searchParams'
-> & {
-  search?: EventSeachBean;
+export type EventSeachBean<
+  GroupBy extends (keyof EventSearchQueryParams)[]
+> = SearchBean<EventSearchQueryParams, GroupBy>;
+
+export type SearchEventsRequestOptions<
+  GroupBy extends (keyof EventSearchQueryParams)[]
+> = Omit<RequestOptions, 'searchParams'> & {
+  search?: EventSeachBean<GroupBy>;
 };

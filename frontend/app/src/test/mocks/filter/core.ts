@@ -1,15 +1,15 @@
 import get from 'lodash/get';
-import type { SearchBean } from '@rebrowse/types';
-import type { CountByFieldDataPoint } from 'modules/insights/pages/InsightsPage';
+import type { GroupByBaseResult, SearchBean } from '@rebrowse/types';
 
 export const filterByParam = <
   TObject extends Record<string, unknown>,
   QueryKey extends keyof TObject,
-  M
+  M,
+  GroupBy extends (keyof TObject)[]
 >(
   object: TObject,
   queryKey: QueryKey,
-  search: SearchBean<never>,
+  search: SearchBean<never, GroupBy>,
   parseValue: (v: TObject[QueryKey]) => M,
   getValue: (
     object: TObject,
@@ -47,11 +47,18 @@ export const filterByParam = <
   return true;
 };
 
-export const countBy = <R extends Record<string, unknown>>(
-  data: R[],
-  filter: (r: R) => boolean,
-  search: SearchBean<R> | undefined,
-  get: <TKey extends keyof R>(object: R, path: TKey | [TKey]) => R[TKey]
+export const countBy = <
+  TObject extends Record<string, unknown>,
+  TQueryParams extends Record<string, unknown>,
+  GroupBy extends (keyof TQueryParams)[]
+>(
+  data: TObject[],
+  filter: (r: TObject) => boolean,
+  search: SearchBean<TQueryParams, GroupBy> | undefined,
+  get: <TObjectKey extends keyof TObject>(
+    object: TObject,
+    path: TObjectKey | [TObjectKey]
+  ) => TObject[TObjectKey]
 ) => {
   const map = data.reduce((acc, point) => {
     if (!filter(point)) {
@@ -59,7 +66,9 @@ export const countBy = <R extends Record<string, unknown>>(
     }
 
     const key = search?.groupBy
-      ?.map((field) => `${field}=${get(point, field) || 'Unknown'}`)
+      ?.map(
+        (field) => `${field}=${get(point, field as keyof TObject) || 'Unknown'}`
+      )
       .join('--') as string;
 
     const value = acc[key];
@@ -72,15 +81,10 @@ export const countBy = <R extends Record<string, unknown>>(
 
   return Object.keys(map).reduce((acc, key) => {
     const fieldValuePairs = key.split('--');
-
     const data = fieldValuePairs.reduce((acc, pair) => {
       const [field, value] = pair.split('=');
       return { ...acc, [field]: value };
-    }, {} as Record<keyof R & string, R[keyof R]>);
-
-    return [
-      ...acc,
-      { ...data, count: map[key] } as CountByFieldDataPoint<keyof R & string>,
-    ];
-  }, [] as CountByFieldDataPoint<keyof R & string>[]);
+    }, {} as Record<GroupBy[number], string>);
+    return [...acc, { ...data, count: map[key] }];
+  }, [] as (GroupByBaseResult & Record<GroupBy[number], string>)[]);
 };

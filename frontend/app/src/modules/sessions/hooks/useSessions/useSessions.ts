@@ -78,7 +78,7 @@ const stateReducer: Reducer<State, StateAction> = (state, action) => {
 };
 
 const getSearchQuery = ({ dateRange, filters }: Filter) => {
-  const searchBean: SessionSearchBean = {};
+  const searchBean: SessionSearchBean<[]> = {};
   const createdAt = [];
   if (dateRange?.from) {
     createdAt.push(`gte:${dateRange.from.toISOString()}`);

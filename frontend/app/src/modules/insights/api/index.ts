@@ -1,17 +1,12 @@
 import { PagesApi, SessionApi } from 'api';
-import type { SessionsSearchRequestOptions } from '@rebrowse/sdk';
-import type {
-  CountByDateDataPointDTO,
-  CountByDeviceClassDataPoint,
-  CountByLocationDataPoint,
-} from 'modules/insights/pages/InsightsPage';
+import type { RequestOptions } from '@rebrowse/sdk';
 import { QueryParam, TimePrecision } from '@rebrowse/types';
 
 export const countSessionsByLocation = (
   createdAt: QueryParam,
-  options?: Omit<SessionsSearchRequestOptions, 'search'>
+  options?: RequestOptions
 ) => {
-  return SessionApi.count<CountByLocationDataPoint[]>({
+  return SessionApi.count({
     ...options,
     search: {
       groupBy: ['location.countryName', 'location.continentName'],
@@ -22,9 +17,9 @@ export const countSessionsByLocation = (
 
 export const countSessionsByDeviceClass = (
   createdAt: QueryParam,
-  options?: Omit<SessionsSearchRequestOptions, 'search'>
+  options?: RequestOptions
 ) => {
-  return SessionApi.count<CountByDeviceClassDataPoint[]>({
+  return SessionApi.count({
     ...options,
     search: {
       groupBy: ['userAgent.deviceClass'],
@@ -35,9 +30,9 @@ export const countSessionsByDeviceClass = (
 
 export const countSessionsByDate = (
   createdAt: QueryParam,
-  options?: Omit<SessionsSearchRequestOptions, 'search'>
+  options?: RequestOptions
 ) => {
-  return SessionApi.count<CountByDateDataPointDTO[]>({
+  return SessionApi.count({
     ...options,
     search: {
       groupBy: ['createdAt'],
@@ -49,9 +44,9 @@ export const countSessionsByDate = (
 
 export const countPageVisitsByDate = (
   createdAt: QueryParam,
-  options?: Omit<SessionsSearchRequestOptions, 'search'>
+  options?: RequestOptions
 ) => {
-  return PagesApi.count<CountByDateDataPointDTO[]>({
+  return PagesApi.count({
     ...options,
     search: {
       groupBy: ['createdAt'],

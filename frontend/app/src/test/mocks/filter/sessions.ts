@@ -1,13 +1,18 @@
-import type { SessionSearchBean } from '@rebrowse/sdk';
-import { SearchBean, SessionDTO, TimePrecision } from '@rebrowse/types';
+import type {
+  SessionSearchBean,
+  SessionSearchQueryParams,
+} from '@rebrowse/sdk';
+import { SessionDTO, TimePrecision } from '@rebrowse/types';
 import { startOfDay } from 'date-fns';
 import get from 'lodash/get';
 
 import { countBy, filterByParam } from './core';
 
-export const filterSession = (
+export const filterSession = <
+  GroupBy extends (keyof SessionSearchQueryParams)[]
+>(
   value: SessionDTO,
-  search: SessionSearchBean | undefined
+  search: SessionSearchBean<GroupBy> | undefined
 ) => {
   if (!search) {
     return true;
@@ -47,14 +52,16 @@ export const filterSession = (
   return true;
 };
 
-export const countSessionsBy = (
+export const countSessionsBy = <
+  GroupBy extends (keyof SessionSearchQueryParams)[]
+>(
   data: SessionDTO[],
-  search: SessionSearchBean | undefined
+  search: SessionSearchBean<GroupBy> | undefined
 ) => {
   return countBy(
     data,
     (s) => filterSession(s, search),
-    search as SearchBean<SessionDTO>,
+    search,
     (v, field) => {
       const value = get(v, field);
       if (search?.dateTrunc === TimePrecision.DAY && field === 'createdAt') {

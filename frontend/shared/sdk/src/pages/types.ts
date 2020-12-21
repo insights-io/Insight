@@ -1,12 +1,16 @@
 import type { SearchBean } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
-// TODO: use correct type
-export type PageVisitSearchBean = SearchBean<{ createdAt: Date }>;
+export type PageVisitQueryParams = {
+  createdAt?: unknown;
+};
 
-export type PageVisitSearchRequestOptions = Omit<
-  RequestOptions,
-  'searchParams'
-> & {
-  search?: PageVisitSearchBean;
+export type PageVisitSearchBean<
+  GroupBy extends (keyof PageVisitQueryParams)[]
+> = SearchBean<PageVisitQueryParams, GroupBy>;
+
+export type PageVisitSearchRequestOptions<
+  GroupBy extends (keyof PageVisitQueryParams)[]
+> = Omit<RequestOptions, 'searchParams'> & {
+  search?: PageVisitSearchBean<GroupBy>;
 };
