@@ -23,14 +23,14 @@ export const SessionList = ({
   overrides,
 }: Props) => {
   return (
-    <InfiniteLoader
-      isItemLoaded={isItemLoaded}
-      itemCount={count}
-      loadMoreItems={loadMoreItems}
-    >
-      {({ onItemsRendered, ref }) => (
-        <AutoSizer>
-          {({ height, width }) => (
+    <AutoSizer>
+      {({ height, width }) => (
+        <InfiniteLoader
+          isItemLoaded={isItemLoaded}
+          itemCount={count}
+          loadMoreItems={loadMoreItems}
+        >
+          {({ onItemsRendered, ref }) => (
             <FixedSizeList
               ref={ref}
               height={height}
@@ -44,8 +44,8 @@ export const SessionList = ({
               {SessionListItem}
             </FixedSizeList>
           )}
-        </AutoSizer>
+        </InfiniteLoader>
       )}
-    </InfiniteLoader>
+    </AutoSizer>
   );
 };

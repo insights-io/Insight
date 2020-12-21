@@ -4,33 +4,36 @@ import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
 import {
   InsightsPage,
-  CountByDateDataPoint,
-  CountByDeviceClassDataPoint,
   InsightsPageProps,
-  CountByLocationDataPoint,
 } from 'modules/insights/pages/InsightsPage';
-import { SessionApi, PagesApi } from 'api';
-import { TimePrecision } from '@rebrowse/types';
-import { addDays } from 'date-fns';
+import { RelativeTimeRange, timeRelative } from 'shared/utils/date';
+import {
+  countSessionsByDeviceClass,
+  countSessionsByLocation,
+  countSessionsByDate,
+  countPageVisitsByDate,
+} from 'modules/insights/api';
 
 export type Props = InsightsPageProps;
 
 const Home = ({
   user,
-  countSessionsByLocation,
   organization,
-  countSessionsByDeviceClass,
-  countSessionsByDate,
-  countPageVisitsByDate,
+  relativeTimeRange,
+  sessionsByLocationCount,
+  sessionsByDeviceCount,
+  sessionsByDateCount,
+  pageVisitsByDateCount,
 }: Props) => {
   return (
     <InsightsPage
       user={user}
-      countSessionsByLocation={countSessionsByLocation}
-      countSessionsByDeviceClass={countSessionsByDeviceClass}
       organization={organization}
-      countSessionsByDate={countSessionsByDate}
-      countPageVisitsByDate={countPageVisitsByDate}
+      relativeTimeRange={relativeTimeRange}
+      sessionsByLocationCount={sessionsByLocationCount}
+      sessionsByDeviceCount={sessionsByDeviceCount}
+      sessionsByDateCount={sessionsByDateCount}
+      pageVisitsByDateCount={pageVisitsByDateCount}
     />
   );
 };
@@ -38,6 +41,7 @@ const Home = ({
 export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
+  const relativeTimeRange: RelativeTimeRange = '30d';
   const requestSpan = startRequestSpan(context.req);
   try {
     const authResponse = await authenticated(context, requestSpan);
@@ -45,75 +49,53 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const createdAtGte = `gte:${addDays(new Date(), -30).toISOString()}`;
+    const createdAtGte = `gte:${timeRelative(relativeTimeRange).toISOString()}`;
     const headers = {
       ...prepareCrossServiceHeaders(requestSpan),
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const countSessionsByDatePromise = SessionApi.count<CountByDateDataPoint[]>(
-      {
-        baseURL: process.env.SESSION_API_BASE_URL,
-        headers,
-        search: {
-          groupBy: ['createdAt'],
-          dateTrunc: TimePrecision.DAY,
-          createdAt: createdAtGte,
-        },
-      }
-    );
-
-    const countSessionsByDeviceClassPromise = SessionApi.count<
-      CountByDeviceClassDataPoint[]
-    >({
+    const countSessionsByDatePromise = countSessionsByDate(createdAtGte, {
       baseURL: process.env.SESSION_API_BASE_URL,
       headers,
-      search: { groupBy: ['userAgent.deviceClass'], createdAt: createdAtGte },
     });
 
-    const countSessionsByLocationPromise = SessionApi.count<
-      CountByLocationDataPoint[]
-    >({
+    const countSessionsByDeviceClassPromise = countSessionsByDeviceClass(
+      createdAtGte,
+      { baseURL: process.env.SESSION_API_BASE_URL, headers }
+    );
+
+    const countSessionsByLocationPromise = countSessionsByLocation(
+      createdAtGte,
+      { baseURL: process.env.SESSION_API_BASE_URL, headers }
+    );
+
+    const countPageVisitsByDatePromise = countPageVisitsByDate(createdAtGte, {
       baseURL: process.env.SESSION_API_BASE_URL,
       headers,
-      search: {
-        groupBy: ['location.countryName', 'location.continentName'],
-        createdAt: createdAtGte,
-      },
     });
-
-    const countPageVisitsByDatePromise = PagesApi.count<CountByDateDataPoint[]>(
-      {
-        baseURL: process.env.SESSION_API_BASE_URL,
-        headers,
-        search: {
-          groupBy: ['createdAt'],
-          dateTrunc: TimePrecision.DAY,
-          createdAt: createdAtGte,
-        },
-      }
-    );
 
     const [
-      countSessionsByDate,
-      countPageVisitsByDate,
-      countSessionsByLocation,
-      countSessionsByDeviceClass,
+      sessionsByDateCount,
+      sessionsByLocationCount,
+      sessionsByDeviceCount,
+      pageVisitsByDateCount,
     ] = await Promise.all([
       countSessionsByDatePromise,
-      countPageVisitsByDatePromise,
       countSessionsByLocationPromise,
       countSessionsByDeviceClassPromise,
+      countPageVisitsByDatePromise,
     ]);
 
     return {
       props: {
         user: authResponse.user,
         organization: authResponse.organization,
-        countSessionsByLocation,
-        countSessionsByDeviceClass,
-        countSessionsByDate,
-        countPageVisitsByDate,
+        sessionsByLocationCount,
+        sessionsByDeviceCount,
+        sessionsByDateCount,
+        pageVisitsByDateCount,
+        relativeTimeRange,
       },
     };
   } finally {
