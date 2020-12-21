@@ -42,10 +42,20 @@ export enum SortDirection {
 
 type SortByQueryParam<S extends string> = S | `${SortDirection}${S}`;
 
-export type SearchBean<R extends Record<string, unknown>> = {
+export type SearchBean<
+  R extends Record<string, unknown>,
+  GroupBy extends (keyof R)[] = []
+> = {
   query?: string;
   limit?: number;
   sortBy?: SortByQueryParam<keyof R & string>[];
-  groupBy?: (keyof R)[];
+  groupBy?: GroupBy;
   dateTrunc?: TimePrecision;
 } & Partial<Record<keyof R, QueryParam>>;
+
+export type GroupByBaseResult = { count: number };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type GroupByResult<T extends any[] = []> = T extends []
+  ? GroupByBaseResult
+  : (GroupByBaseResult & Record<T[number], string>)[];

@@ -52,11 +52,11 @@ export const organizationsResource = (authApiBaseURL: string) => {
         .json<DataResponse<OrganizationDTO>>()
         .then(getData);
     },
-    members: ({
+    members: <GroupBy extends (keyof UserDTO)[]>({
       baseURL = authApiBaseURL,
       search,
       ...rest
-    }: MembersSearchOptions = {}) => {
+    }: MembersSearchOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
       return ky
         .get(
@@ -66,11 +66,11 @@ export const organizationsResource = (authApiBaseURL: string) => {
         .json<DataResponse<UserDTO[]>>()
         .then(getData);
     },
-    memberCount: ({
+    memberCount: <GroupBy extends (keyof UserDTO)[]>({
       baseURL = authApiBaseURL,
       search,
       ...rest
-    }: MembersSearchOptions = {}) => {
+    }: MembersSearchOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
       return ky
         .get(
@@ -129,11 +129,11 @@ export const organizationsResource = (authApiBaseURL: string) => {
           .json<DataResponse<TeamInviteDTO>>()
           .then(getData);
       },
-      list: ({
+      list: <GroupBy extends (keyof TeamInviteDTO)[]>({
         baseURL = authApiBaseURL,
         search,
         ...rest
-      }: TeamInviteSearchOptions = {}) => {
+      }: TeamInviteSearchOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
         return ky
           .get(
@@ -143,11 +143,11 @@ export const organizationsResource = (authApiBaseURL: string) => {
           .json<DataResponse<TeamInviteDTO[]>>()
           .then(getData);
       },
-      count: ({
+      count: <GroupBy extends (keyof TeamInviteDTO)[]>({
         baseURL = authApiBaseURL,
         search,
         ...rest
-      }: TeamInviteSearchOptions = {}) => {
+      }: TeamInviteSearchOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
         return ky
           .get(

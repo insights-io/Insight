@@ -1,7 +1,7 @@
 import type { SearchBean } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
-export type SessionSearchBean = SearchBean<{
+export type SessionSearchQueryParams = {
   createdAt?: unknown;
   'location.countryName'?: unknown;
   'location.continentName'?: unknown;
@@ -14,20 +14,28 @@ export type SessionSearchBean = SearchBean<{
   'userAgent.operatingSystemName'?: unknown;
   'user_agent.deviceClass'?: unknown;
   'userAgent.deviceClass'?: unknown;
-}>;
-
-export type SessionsSearchRequestOptions = Omit<
-  RequestOptions,
-  'searchParams'
-> & {
-  search?: SessionSearchBean;
 };
 
-export type EventSeachBean = SearchBean<{ 'event.e'?: unknown }>;
+export type SessionSearchBean<
+  GroupBy extends (keyof SessionSearchQueryParams)[] = []
+> = SearchBean<SessionSearchQueryParams, GroupBy>;
 
-export type SearchEventsRequestOptions = Omit<
-  RequestOptions,
-  'searchParams'
-> & {
-  search?: EventSeachBean;
+export type SessionsSearchRequestOptions<
+  GroupBy extends (keyof SessionSearchQueryParams)[] = []
+> = Omit<RequestOptions, 'searchParams'> & {
+  search?: SessionSearchBean<GroupBy>;
+};
+
+export type EventSearchQueryParams = {
+  'event.e'?: unknown;
+};
+
+export type EventSeachBean<
+  GroupBy extends (keyof EventSearchQueryParams)[] = []
+> = SearchBean<EventSearchQueryParams, GroupBy>;
+
+export type SearchEventsRequestOptions<
+  GroupBy extends (keyof EventSearchQueryParams)[] = []
+> = Omit<RequestOptions, 'searchParams'> & {
+  search?: EventSeachBean<GroupBy>;
 };

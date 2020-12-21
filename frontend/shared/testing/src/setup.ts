@@ -26,7 +26,9 @@ export const setupEnvironment = () => {
   global.scrollTo = () => null;
 
   // https://testing-library.com/docs/dom-testing-library/api-helpers#debugging
-  process.env.DEBUG_PRINT_LIMIT = '50000';
+  if (process.env.CI) {
+    process.env.DEBUG_PRINT_LIMIT = '100000';
+  }
 
   // Error: Not implemented: window.scrollTo
   sandbox.stub(window, 'scrollTo');

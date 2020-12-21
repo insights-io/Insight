@@ -33,12 +33,11 @@ export const SessionsPage = ({
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
-  const hasSessions = initialSessions.length > 0;
   const [filters, setFilters] = useState<SessionFilter[]>([]);
   const [dateRange, setDataRange] = useState<DateRange>(() =>
     createDateRange('all-time')
   );
-
+  const hasSessions = initialSessionCount > 0;
   const options = useMemo(() => ({ dateRange, filters }), [dateRange, filters]);
   const { sessions, count, loadMoreItems, isItemLoaded } = useSessions(
     initialSessions,

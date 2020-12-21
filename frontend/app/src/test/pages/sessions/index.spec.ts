@@ -1,15 +1,12 @@
 import { getPage } from 'next-page-tester';
 import { mockEmptySessionsPage, mockSessionsPage } from 'test/mocks';
-import {
-  screen,
-  waitForElementToBeRemoved,
-  render,
-} from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import { sandbox } from '@rebrowse/testing';
 import type { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import userEvent from '@testing-library/user-event';
 import { SESSIONS_PAGE } from 'shared/constants/routes';
-import { REBROWSE_SESSIONS_DTOS } from 'test/data/sessions';
+import { REBROWSE_SESSIONS, REBROWSE_SESSIONS_DTOS } from 'test/data/sessions';
+import { sessionDescription } from 'modules/sessions/components/SessionListItem/SessionListItem';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -81,11 +78,9 @@ describe('/sessions', () => {
         getDistinctStub,
       } = mockSessionsPage();
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      const { container } = render(page);
 
-      /* Assertions */
       sandbox.assert.calledWithMatch(countSessionsStub, {
         baseURL: 'http://localhost:8082',
         headers: { cookie: 'SessionId=123' },
@@ -97,13 +92,10 @@ describe('/sessions', () => {
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 
-      expect((await screen.findAllByText('Mac OS X • Chrome')).length).toEqual(
-        9
-      );
-
-      expect(
-        screen.getAllByText(/Ljubljana, Slovenia - 82.192.62.51 - (.*)/).length
-      ).toEqual(9);
+      /* Client */
+      const { container } = render(page);
+      await screen.findAllByText('Mac OS X • Chrome');
+      screen.getAllByText(/Ljubljana, Slovenia - 82.192.62.51 - (.*)/);
 
       userEvent.click(screen.getByText('0 Filters'));
       userEvent.click(screen.getByText('Filter event by...'));
@@ -119,25 +111,17 @@ describe('/sessions', () => {
         boydton
       );
 
-      expect((await screen.findAllByText('Mac OS X • Firefox')).length).toEqual(
-        9
-      );
-
-      expect(
-        screen.getAllByText(
-          /Boydton, Virginia, United States - 13.77.88.76 - (.*)/
-        ).length
-      ).toEqual(9);
-
-      sandbox.assert.calledWithExactly(listSessionsStub, {
-        search: {
-          limit: 20,
-          'location.city': `eq:${boydton}`,
-          sortBy: ['-createdAt'],
-        },
-      });
-      sandbox.assert.calledWithExactly(countSessionsStub, {
-        search: { 'location.city': `eq:${boydton}` },
+      await waitFor(() => {
+        sandbox.assert.calledWithExactly(listSessionsStub, {
+          search: {
+            limit: 20,
+            'location.city': `eq:${boydton}`,
+            sortBy: ['-createdAt'],
+          },
+        });
+        sandbox.assert.calledWithExactly(countSessionsStub, {
+          search: { 'location.city': `eq:${boydton}` },
+        });
       });
 
       /* Search by country */
@@ -156,23 +140,21 @@ describe('/sessions', () => {
         slovenia
       );
 
-      await waitForElementToBeRemoved(() =>
-        screen.getAllByText('Mac OS X • Firefox')
-      );
-
-      sandbox.assert.calledWithExactly(listSessionsStub, {
-        search: {
-          limit: 20,
-          'location.city': `eq:${boydton}`,
-          'location.countryName': `eq:${slovenia}`,
-          sortBy: ['-createdAt'],
-        },
-      });
-      sandbox.assert.calledWithExactly(countSessionsStub, {
-        search: {
-          'location.city': `eq:${boydton}`,
-          'location.countryName': `eq:${slovenia}`,
-        },
+      await waitFor(() => {
+        sandbox.assert.calledWithExactly(listSessionsStub, {
+          search: {
+            limit: 20,
+            'location.city': `eq:${boydton}`,
+            'location.countryName': `eq:${slovenia}`,
+            sortBy: ['-createdAt'],
+          },
+        });
+        sandbox.assert.calledWithExactly(countSessionsStub, {
+          search: {
+            'location.city': `eq:${boydton}`,
+            'location.countryName': `eq:${slovenia}`,
+          },
+        });
       });
 
       /* Clear all filters */
@@ -180,22 +162,16 @@ describe('/sessions', () => {
         userEvent.click(element);
       });
 
-      expect((await screen.findAllByText('Mac OS X • Chrome')).length).toEqual(
-        9
-      );
-
-      expect(
-        screen.getAllByText(/Ljubljana, Slovenia - 82.192.62.51 - (.*)/).length
-      ).toEqual(9);
-
-      sandbox.assert.calledWithExactly(listSessionsStub.lastCall, {
-        search: {
-          limit: 20,
-          sortBy: ['-createdAt'],
-        },
-      });
-      sandbox.assert.calledWithExactly(countSessionsStub.lastCall, {
-        search: {},
+      await waitFor(() => {
+        sandbox.assert.calledWithExactly(listSessionsStub.lastCall, {
+          search: {
+            limit: 20,
+            sortBy: ['-createdAt'],
+          },
+        });
+        sandbox.assert.calledWithExactly(countSessionsStub.lastCall, {
+          search: {},
+        });
       });
     });
 
@@ -208,11 +184,9 @@ describe('/sessions', () => {
         retrieveSessionStub,
       } = mockSessionsPage();
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      render(page);
 
-      /* Assertions */
       sandbox.assert.calledWithMatch(countSessionsStub, {
         baseURL: 'http://localhost:8082',
         headers: { cookie: 'SessionId=123' },
@@ -224,12 +198,14 @@ describe('/sessions', () => {
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 
+      /* Client */
+      render(page);
+
       userEvent.click(
-        screen.getAllByText(/Ljubljana, Slovenia - 82.192.62.51 - (.*)/)[0]
+        screen.getByText(sessionDescription(REBROWSE_SESSIONS[0]))
       );
 
-      // Client side navigation to /sessions/[id]
-      await screen.findByText(`Session ${REBROWSE_SESSIONS_DTOS[0].id}`);
+      await screen.findByText(`Session ${REBROWSE_SESSIONS[0].id}`);
 
       sandbox.assert.calledWithExactly(
         retrieveSessionStub,

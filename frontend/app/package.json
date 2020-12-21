@@ -67,7 +67,7 @@
     "react-icons": "4.1.0",
     "react-window": "1.8.6",
     "react-window-infinite-loader": "1.0.5",
-    "react-virtualized-auto-sizer": "1.0.2",
+    "react-virtualized-auto-sizer": "1.0.3",
     "react-query": "3.3.3",
     "use-debounce": "5.2.0",
     "styletron-engine-atomic": "1.4.6",

@@ -1,10 +1,12 @@
-export type CountByFieldDataPoint<Field extends string> = {
-  [key in Field]: string;
+export type CountByFieldDataPoint<Field extends string, V = string> = {
+  [key in Field]: V;
 } & {
   count: number;
 };
 
-export type CountByDateDataPoint = CountByFieldDataPoint<'createdAt'>;
+export type CountByDateDataPointDTO = CountByFieldDataPoint<'createdAt'>;
+export type CountByDateDataPoint = CountByFieldDataPoint<'createdAt', Date>;
+
 export type CountByDeviceClassDataPoint = CountByFieldDataPoint<'userAgent.deviceClass'>;
 export type CountByLocationDataPoint = CountByFieldDataPoint<
   'location.countryName' | 'location.continentName'

@@ -9,8 +9,7 @@ import { Group } from '@visx/group';
 import { GridRows, GridColumns } from '@visx/grid';
 import { AxisBottom } from '@visx/axis';
 import { format } from 'date-fns';
-
-import { DataPoint } from './types';
+import type { CountByDateDataPoint } from 'modules/insights/pages/InsightsPage';
 
 export const accentColorDark = '#75daad';
 const tooltipStyles = {
@@ -20,7 +19,7 @@ const tooltipStyles = {
 };
 
 type Props = {
-  data: DataPoint[];
+  data: CountByDateDataPoint[];
   width: number;
   height: number;
 };
@@ -49,11 +48,16 @@ const getMinMax = <T,>(values: T[], ...getValueAccessors: GetValue<T>[]) => {
   return minMax;
 };
 
-const bisectDate = bisector<DataPoint, Date>((d) => d.date).left;
+const bisectDate = bisector<CountByDateDataPoint, Date>((d) => d.createdAt)
+  .left;
 
 export const SimpleLine = ({ data, width, height }: Props) => {
-  const getX = useCallback((d: DataPoint) => d.date.valueOf(), []);
-  const getY = useCallback((d: DataPoint) => d.value, []);
+  const getX = useCallback(
+    (d: CountByDateDataPoint) => d.createdAt.valueOf(),
+    []
+  );
+  const getY = useCallback((d: CountByDateDataPoint) => d.count, []);
+
   const svgRef = useRef<SVGSVGElement>(null);
   const lineHeight = height - 22.5;
 
@@ -64,7 +68,7 @@ export const SimpleLine = ({ data, width, height }: Props) => {
     tooltipTop,
     showTooltip,
     hideTooltip,
-  } = useTooltip<DataPoint>();
+  } = useTooltip<CountByDateDataPoint>();
 
   const [{ min: minX, max: maxX }, { min: minY, max: maxY }] = useMemo(
     () => getMinMax(data, getX, getY),

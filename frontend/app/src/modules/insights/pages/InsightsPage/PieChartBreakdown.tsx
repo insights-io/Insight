@@ -9,23 +9,45 @@ import { scaleOrdinal } from '@visx/scale';
 import { schemeDark2 } from 'd3-scale-chromatic';
 import { Flex } from '@rebrowse/elements';
 import { Block } from 'baseui/block';
+import {
+  RelativeTimeRange,
+  timeRelative,
+  timeRelativeLabel,
+} from 'shared/utils/date';
+import { useQuery } from 'shared/hooks/useQuery';
 
 import type { CountByFieldDataPoint } from './types';
 
 type Props<T extends string> = InsightCardProps & {
   field: T;
-  data: CountByFieldDataPoint<T>[];
+  initialData: CountByFieldDataPoint<T>[];
   title: string;
-  subtitle: string;
+  relativeTimeRange: RelativeTimeRange;
+  dataLoader: (createdAtGte: string) => Promise<CountByFieldDataPoint<T>[]>;
+};
+
+const cacheKey = (field: string, relativeTimeRange: RelativeTimeRange) => {
+  return ['count', 'by', field, relativeTimeRange];
 };
 
 export const PieChartBreakdown = <T extends string>({
   title,
-  data,
+  initialData,
+  dataLoader,
   field,
-  subtitle,
+  relativeTimeRange,
   ...rest
 }: Props<T>) => {
+  const { data = initialData } = useQuery(
+    cacheKey(field, relativeTimeRange),
+    () => dataLoader(`gte:${timeRelative(relativeTimeRange).toISOString()}`),
+    { initialData }
+  );
+
+  const subtitle = useMemo(() => timeRelativeLabel(relativeTimeRange), [
+    relativeTimeRange,
+  ]);
+
   const dataMap = useMemo(() => {
     return data.reduce((acc, item) => {
       const value = acc[item[field]];

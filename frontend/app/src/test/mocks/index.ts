@@ -11,7 +11,7 @@ import get from 'lodash/get';
 import type { SessionDTO } from '@rebrowse/types';
 import { mockApiError } from '@rebrowse/storybook';
 
-import { filterBrowserEvent, filterSession } from './filter';
+import { filterSession, filterBrowserEvent, countSessionsBy } from './filter';
 
 export const mockAuth = () => {
   const retrieveSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
@@ -72,9 +72,8 @@ export const mockSessionsPage = (
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
     .callsFake((args = {}) => {
-      return Promise.resolve({
-        count: sessions.filter((s) => filterSession(s, args.search)).length,
-      });
+      const data = countSessionsBy(sessions, args.search);
+      return Promise.resolve(data);
     });
 
   const retrieveSessionStub = sandbox
@@ -96,17 +95,17 @@ export const mockSessionsPage = (
   const listSessionsStub = sandbox
     .stub(SessionApi, 'getSessions')
     .callsFake((args = {}) => {
-      return Promise.resolve(
-        sessions.filter((s) => filterSession(s, args.search))
-      );
+      const data = sessions.filter((s) => filterSession(s, args.search));
+      return Promise.resolve(data);
     });
 
   const getDistinctStub = sandbox
     .stub(SessionApi, 'distinct')
     .callsFake((on: string) => {
-      return Promise.resolve([
+      const data = [
         ...new Set(sessions.map((s) => get(s, on)).filter(Boolean)),
-      ]);
+      ];
+      return Promise.resolve(data);
     });
 
   return {
@@ -149,10 +148,21 @@ export const mockEmptySessionsPage = () => {
   };
 };
 
-export const mockIndexPage = () => {
+export const mockIndexPage = (
+  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
+) => {
   const authMocks = mockAuth();
-  const countPagesStub = sandbox.stub(PagesApi, 'count').resolves([]);
-  const countSessionsStub = sandbox.stub(SessionApi, 'count').resolves([]);
+  const countSessionsStub = sandbox
+    .stub(SessionApi, 'count')
+    .callsFake((args = {}) => {
+      return Promise.resolve(countSessionsBy(sessions, args.search));
+    });
 
-  return { ...authMocks, countPagesStub, countSessionsStub };
+  const countPageVisitsStub = sandbox
+    .stub(PagesApi, 'count')
+    .callsFake((args = {}) => {
+      return Promise.resolve(countSessionsBy(sessions, args.search));
+    });
+
+  return { ...authMocks, countPageVisitsStub, countSessionsStub };
 };

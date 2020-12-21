@@ -9,7 +9,7 @@ import { fullHeightDecorator, configureStory } from '@rebrowse/storybook';
 import { AuthApi, SessionApi } from 'api';
 import get from 'lodash/get';
 import type { Meta } from '@storybook/react';
-import { filterSession } from 'test/mocks/filter';
+import { countSessionsBy, filterSession } from 'test/mocks/filter';
 
 import { SessionsPage } from './SessionsPage';
 
@@ -73,16 +73,13 @@ WithSessions.story = configureStory({
         );
       });
 
-    const getSessionCountStub = sandbox
+    const countSessionsStub = sandbox
       .stub(SessionApi, 'count')
       .callsFake((args = {}) => {
-        return Promise.resolve({
-          count: REBROWSE_SESSIONS_DTOS.filter((s) =>
-            filterSession(s, args.search)
-          ).length,
-        });
+        return Promise.resolve(
+          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search)
+        );
       });
-
     const retrieveUserStub = sandbox
       .stub(AuthApi.user, 'me')
       .resolves(REBROWSE_ADMIN_DTO);
@@ -93,7 +90,7 @@ WithSessions.story = configureStory({
 
     return {
       getSessionsStub,
-      getSessionCountStub,
+      countSessionsStub,
       getDistinctStub,
       retrieveUserStub,
       retrieveOrganizationStub,

@@ -50,6 +50,9 @@ export function AnimatedPie<Datum>({
     <>
       {transitions.map((transition: Transition<Datum>) => {
         const { item: arc, props, key } = transition;
+        if (!arc) {
+          return null;
+        }
         const [centroidX, centroidY] = path.centroid(arc);
         const hasSpaceForLabel = arc.endAngle - arc.startAngle >= 0.1;
 
