@@ -27,7 +27,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
         .json<DataResponse<SessionDTO>>()
         .then(getData);
     },
-    count: <GroupBy extends (keyof SessionSearchQueryParams)[]>({
+    count: <GroupBy extends (keyof SessionSearchQueryParams)[] = []>({
       baseURL = sessionApiBaseUrl,
       search,
       ...rest
@@ -55,7 +55,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
         .then((dataResponse) => dataResponse.data);
     },
 
-    getSessions: <GroupBy extends (keyof SessionSearchQueryParams)[]>({
+    getSessions: <GroupBy extends (keyof SessionSearchQueryParams)[] = []>({
       baseURL = sessionApiBaseUrl,
       search,
       ...rest
@@ -69,7 +69,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
   };
 
   const events = {
-    search: <GroupBy extends (keyof EventSearchQueryParams)[]>(
+    search: <GroupBy extends (keyof EventSearchQueryParams)[] = []>(
       sessionId: string,
       {
         baseURL = sessionApiBaseUrl,

@@ -17,23 +17,25 @@ export type SessionSearchQueryParams = {
 };
 
 export type SessionSearchBean<
-  GroupBy extends (keyof SessionSearchQueryParams)[]
+  GroupBy extends (keyof SessionSearchQueryParams)[] = []
 > = SearchBean<SessionSearchQueryParams, GroupBy>;
 
 export type SessionsSearchRequestOptions<
-  GroupBy extends (keyof SessionSearchQueryParams)[]
+  GroupBy extends (keyof SessionSearchQueryParams)[] = []
 > = Omit<RequestOptions, 'searchParams'> & {
   search?: SessionSearchBean<GroupBy>;
 };
 
-export type EventSearchQueryParams = { 'event.e'?: unknown };
+export type EventSearchQueryParams = {
+  'event.e'?: unknown;
+};
 
 export type EventSeachBean<
-  GroupBy extends (keyof EventSearchQueryParams)[]
+  GroupBy extends (keyof EventSearchQueryParams)[] = []
 > = SearchBean<EventSearchQueryParams, GroupBy>;
 
 export type SearchEventsRequestOptions<
-  GroupBy extends (keyof EventSearchQueryParams)[]
+  GroupBy extends (keyof EventSearchQueryParams)[] = []
 > = Omit<RequestOptions, 'searchParams'> & {
   search?: EventSeachBean<GroupBy>;
 };

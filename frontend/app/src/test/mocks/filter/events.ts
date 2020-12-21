@@ -1,11 +1,13 @@
-import type { EventSeachBean } from '@rebrowse/sdk';
+import type { EventSeachBean, EventSearchQueryParams } from '@rebrowse/sdk';
 import type { BrowserEventDTO } from '@rebrowse/types';
 
 import { filterByParam } from './core';
 
-export const filterBrowserEvent = (
+export const filterBrowserEvent = <
+  GroupBy extends (keyof EventSearchQueryParams)[]
+>(
   event: BrowserEventDTO,
-  search: EventSeachBean | undefined
+  search: EventSeachBean<GroupBy> | undefined
 ) => {
   if (!search) {
     return true;

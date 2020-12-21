@@ -72,9 +72,12 @@ export const mockSessionsPage = (
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
     .callsFake((args = {}) => {
-      return Promise.resolve({
-        count: sessions.filter((s) => filterSession(s, args.search)).length,
-      });
+      return Promise.resolve(
+        countSessionsBy(sessions, args.search).sort(
+          (a, b) =>
+            new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf()
+        )
+      );
     });
 
   const retrieveSessionStub = sandbox
