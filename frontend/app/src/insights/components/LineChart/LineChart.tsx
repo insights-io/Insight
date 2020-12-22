@@ -9,8 +9,8 @@ import { Group } from '@visx/group';
 import { GridRows, GridColumns } from '@visx/grid';
 import { AxisBottom } from '@visx/axis';
 import { format } from 'date-fns';
-import type { CountByDateDataPoint } from 'insights/types';
 import { ResponsiveChart } from 'insights/components/ResponsiveChart';
+import { getMinMax } from 'shared/utils/math';
 
 export const accentColorDark = '#75daad';
 const tooltipStyles = {
@@ -19,49 +19,23 @@ const tooltipStyles = {
   color: '#e0e0e0',
 };
 
-type Props = {
-  data: CountByDateDataPoint[];
+type Props<Datum> = {
+  data: Datum[];
   width: number;
   height: number;
+  getY: (d: Datum) => number;
+  getX: (d: Datum) => number;
 };
 
-type GetValue<T> = (t: T) => number;
-
-const getMinMax = <T,>(values: T[], ...getValueAccessors: GetValue<T>[]) => {
-  const minMax = Array.from({ length: getValueAccessors.length }).map(() => ({
-    max: Number.MIN_SAFE_INTEGER,
-    min: Number.MAX_SAFE_INTEGER,
-  }));
-
-  for (let i = 0; i < values.length; i++) {
-    for (let j = 0; j < getValueAccessors.length; j++) {
-      const value = getValueAccessors[j](values[i]);
-
-      if (value > minMax[j].max) {
-        minMax[j].max = value;
-      }
-      if (value < minMax[j].min) {
-        minMax[j].min = value;
-      }
-    }
-  }
-
-  return minMax;
-};
-
-const bisectDate = bisector<CountByDateDataPoint, Date>((d) => d.createdAt)
-  .left;
-
-export const LineChart = ({ data, width, height }: Props) => {
-  const getX = useCallback(
-    (d: CountByDateDataPoint) => d.createdAt.valueOf(),
-    []
-  );
-  const getY = useCallback((d: CountByDateDataPoint) => d.count, []);
-
+export const LineChart = <Datum,>({
+  data,
+  width,
+  height,
+  getX,
+  getY,
+}: Props<Datum>) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const lineHeight = height - 22.5;
-
+  const bisectDate = useMemo(() => bisector<Datum, number>(getX).left, [getX]);
   const {
     tooltipOpen,
     tooltipData,
@@ -69,7 +43,9 @@ export const LineChart = ({ data, width, height }: Props) => {
     tooltipTop,
     showTooltip,
     hideTooltip,
-  } = useTooltip<CountByDateDataPoint>();
+  } = useTooltip<Datum>();
+
+  const lineHeight = height - 22.5;
 
   const [{ min: minX, max: maxX }, { min: minY, max: maxY }] = useMemo(
     () => getMinMax(data, getX, getY),
@@ -101,7 +77,7 @@ export const LineChart = ({ data, width, height }: Props) => {
         y: 0,
       };
       const x0 = xScale.invert(xPoint);
-      const index = bisectDate(data, x0, 1);
+      const index = bisectDate(data, x0.valueOf(), 1);
 
       const d0 = data[index - 1];
       const d1 = data[index];
@@ -116,7 +92,7 @@ export const LineChart = ({ data, width, height }: Props) => {
         tooltipTop: yScale(getY(d)),
       });
     },
-    [showTooltip, data, getX, getY, xScale, yScale]
+    [showTooltip, data, getX, getY, xScale, yScale, bisectDate]
   );
 
   return (
@@ -201,7 +177,9 @@ export const LineChart = ({ data, width, height }: Props) => {
   );
 };
 
-export const ResponsiveLineChart = (props: Omit<Props, 'width' | 'height'>) => {
+export const ResponsiveLineChart = <Datum,>(
+  props: Omit<Props<Datum>, 'width' | 'height'>
+) => {
   return (
     <ResponsiveChart>
       {({ width, height }) => (

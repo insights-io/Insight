@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Block } from 'baseui/block';
 import { FlexColumn, SpacedBetween } from '@rebrowse/elements';
 import {
@@ -65,6 +65,12 @@ export const LineChartBreakdown = <T extends 'createdAt'>({
     return percentageChange(lastPoint.count, firstPoint.count);
   }, [data]);
 
+  const getX = useCallback(
+    (d: CountByDateDataPoint) => d.createdAt.valueOf(),
+    []
+  );
+  const getY = useCallback((d: CountByDateDataPoint) => d.count, []);
+
   return (
     <Card>
       <SpacedBetween>
@@ -93,7 +99,7 @@ export const LineChartBreakdown = <T extends 'createdAt'>({
 
       {data.length > 1 && (
         <Card.Content height="100px">
-          <ResponsiveLineChart data={data} />
+          <ResponsiveLineChart data={data} getX={getX} getY={getY} />
         </Card.Content>
       )}
     </Card>

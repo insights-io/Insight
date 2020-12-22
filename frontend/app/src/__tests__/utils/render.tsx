@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRenderer } from '@rebrowse/next-testing';
-import { AppProviders, Props } from 'shared/containers/AppProviders';
+import { AppProviders, Props } from 'shared/components/AppProviders';
 import { createQueryClient } from 'shared/utils/cache';
 import { renderHook as renderHookRtl } from '@testing-library/react-hooks';
 import { QueryClientProvider } from 'react-query';
