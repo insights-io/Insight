@@ -1,11 +1,14 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 import { OrganizationSettingsBillingSubscriptionPage } from 'modules/settings/pages/organization/OrganizationSettingsBillingSubscriptionPage';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
+import {
+  prepareCrossServiceHeaders,
+  startRequestSpan,
+} from 'shared/utils/tracing';
 import { BillingApi } from 'api';
 import type {
   OrganizationDTO,

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta } from '@storybook/react';
-import { EXPIRED_TEAM_INVITE_DTO } from 'test/data/organization';
+import { EXPIRED_TEAM_INVITE_DTO } from '__tests__/data/organization';
 
 import { AcceptTeamInviteInvalidPage } from './AcceptTeamInviteInvalidPage';
 

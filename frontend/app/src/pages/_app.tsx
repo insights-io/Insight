@@ -1,6 +1,6 @@
 import React from 'react';
 import App from 'next/app';
-import { AppProviders } from 'shared/containers/AppProviders';
+import { AppProviders } from 'shared/components/AppProviders';
 import { createQueryClient } from 'shared/utils/cache';
 import Router from 'next/router';
 import NProgress from 'nprogress';

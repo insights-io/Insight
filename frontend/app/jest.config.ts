@@ -7,7 +7,7 @@ const pack = require('./package');
 
 const config: Config.InitialOptions = {
   ...baseConfig,
-  setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
   displayName: pack.name,
   name: pack.name,
   testEnvironment: 'jest-environment-jsdom-sixteen',

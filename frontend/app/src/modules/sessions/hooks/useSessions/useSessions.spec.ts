@@ -1,7 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { SessionApi } from 'api';
-import { REBROWSE_SESSIONS, REBROWSE_SESSIONS_DTOS } from 'test/data';
+import { REBROWSE_SESSIONS, REBROWSE_SESSIONS_DTOS } from '__tests__/data';
 
 import { useSessions } from './useSessions';
 

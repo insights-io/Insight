@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { AppLayout } from 'modules/app/components/AppLayout';
+import { AppLayout } from 'shared/components/AppLayout';
 import { useStyletron } from 'baseui';
 import { RecordingSnippet } from 'modules/setup/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';

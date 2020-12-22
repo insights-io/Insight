@@ -4,12 +4,12 @@ import {
   SMS_MFA_SETUP_DTO,
   TOTP_MFA_SETUP_QR_IMAGE,
   TOTP_MFA_SETUP_DTO,
-} from 'test/data/mfa';
+} from '__tests__/data/mfa';
 import { AuthApi } from 'api';
 import type { Meta } from '@storybook/react';
 import type { ResponsePromise } from 'ky';
-import { REBROWSE_ADMIN_DTO } from 'test/data/user';
-import { REBROWSE_ORGANIZATION_DTO } from 'test/data/organization';
+import { REBROWSE_ADMIN_DTO } from '__tests__/data/user';
+import { REBROWSE_ORGANIZATION_DTO } from '__tests__/data/organization';
 
 import { AccountSettingsSecurityPage } from './AccountSettingsSecurityPage';
 

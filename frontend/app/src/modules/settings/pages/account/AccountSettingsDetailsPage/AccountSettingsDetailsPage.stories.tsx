@@ -1,6 +1,6 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 
 import { AccountSettingsDetailsPage } from './AccountSettingsDetailsPage';

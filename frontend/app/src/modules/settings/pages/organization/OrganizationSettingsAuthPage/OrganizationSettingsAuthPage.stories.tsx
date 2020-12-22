@@ -5,7 +5,7 @@ import {
   REBROWSE_ADMIN_DTO,
   REBROWSE_ORGANIZATION_DTO,
   SSO_SAML_SETUP_DTO,
-} from 'test/data';
+} from '__tests__/data';
 import { AuthApi } from 'api';
 import {
   SamlConfigurationDTO,

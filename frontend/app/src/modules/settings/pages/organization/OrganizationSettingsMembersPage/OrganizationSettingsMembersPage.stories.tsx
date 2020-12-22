@@ -4,7 +4,7 @@ import {
   REBROWSE_ADMIN_DTO,
   REBROWSE_ORGANIZATION_DTO,
   NAMELESS_ADMIN_DTO,
-} from 'test/data';
+} from '__tests__/data';
 import type { Meta } from '@storybook/react';
 
 import { OrganizationSettingsMembersPage } from './OrganizationSettingsMembersPage';

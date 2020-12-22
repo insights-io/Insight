@@ -4,12 +4,12 @@ import {
   REBROWSE_SESSIONS,
   REBROWSE_SESSIONS_DTOS,
   REBROWSE_ORGANIZATION_DTO,
-} from 'test/data';
+} from '__tests__/data';
 import { fullHeightDecorator, configureStory } from '@rebrowse/storybook';
 import { AuthApi, SessionApi } from 'api';
 import get from 'lodash/get';
 import type { Meta } from '@storybook/react';
-import { countSessionsBy, filterSession } from 'test/mocks/filter';
+import { countSessionsBy, filterSession } from '__tests__/mocks/filter';
 
 import { SessionsPage } from './SessionsPage';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppLayout } from 'modules/app/components/AppLayout';
+import { AppLayout } from 'shared/components/AppLayout';
 import { SessionDetails } from 'modules/sessions/components/SessionDetails.tsx';
 import { useUser } from 'shared/hooks/useUser';
 import { useSession } from 'modules/sessions/hooks/useSession';

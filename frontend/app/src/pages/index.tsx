@@ -1,18 +1,18 @@
 import React from 'react';
 import { authenticated } from 'modules/auth/middleware/authMiddleware';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
-  InsightsPage,
-  InsightsPageProps,
-} from 'modules/insights/pages/InsightsPage';
+  startRequestSpan,
+  prepareCrossServiceHeaders,
+} from 'shared/utils/tracing';
+import { InsightsPage, InsightsPageProps } from 'insights/pages/InsightsPage';
 import { RelativeTimeRange, timeRelative } from 'shared/utils/date';
 import {
   countSessionsByDeviceClass,
   countSessionsByLocation,
   countSessionsByDate,
   countPageVisitsByDate,
-} from 'modules/insights/api';
+} from 'insights/api';
 
 export type Props = InsightsPageProps;
 

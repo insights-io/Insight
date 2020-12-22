@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppLayout } from 'modules/app/components/AppLayout';
+import { AppLayout } from 'shared/components/AppLayout';
 import type { SettingsLayoutPropsBase } from 'modules/settings/types';
 import { Organization, User } from '@rebrowse/types';
 import Head from 'next/head';

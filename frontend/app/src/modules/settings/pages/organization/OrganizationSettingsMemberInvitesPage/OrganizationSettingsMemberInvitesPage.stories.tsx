@@ -1,12 +1,12 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { REBROWSE_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ADMIN_DTO } from '__tests__/data/user';
 import {
   ADMIN_TEAM_INVITE_DTO,
   EXPIRED_TEAM_INVITE_DTO,
   REBROWSE_ORGANIZATION_DTO,
   STANDARD_TEAM_INVITE_DTO,
-} from 'test/data/organization';
+} from '__tests__/data/organization';
 import type { Meta } from '@storybook/react';
 
 import { OrganizationSettingsMemberInvitesPage } from './OrganizationSettingsMemberInvitesPage';

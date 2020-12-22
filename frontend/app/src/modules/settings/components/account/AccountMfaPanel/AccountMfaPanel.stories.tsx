@@ -1,12 +1,12 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
-import { REBROWSE_ADMIN } from 'test/data/user';
+import { REBROWSE_ADMIN } from '__tests__/data/user';
 import {
   SMS_MFA_SETUP_DTO,
   TOTP_MFA_SETUP_QR_IMAGE,
   TOTP_MFA_SETUP_DTO,
-} from 'test/data/mfa';
+} from '__tests__/data/mfa';
 import type { Meta } from '@storybook/react';
 
 import { AccountMfaPanel } from './AccountMfaPanel';

@@ -4,7 +4,10 @@ import {
   authenticated,
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
+import {
+  prepareCrossServiceHeaders,
+  startRequestSpan,
+} from 'shared/utils/tracing';
 import { AuthApi } from 'api';
 import type { TeamInviteDTO } from '@rebrowse/types';
 import { OrganizationSettingsMemberInvitesPage } from 'modules/settings/pages/organization/OrganizationSettingsMemberInvitesPage';
