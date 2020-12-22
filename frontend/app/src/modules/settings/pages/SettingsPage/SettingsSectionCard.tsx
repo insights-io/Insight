@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'baseui/card';
-import { Flex, FlexColumn } from '@rebrowse/elements';
+import { expandBorderRadius, Flex, FlexColumn } from '@rebrowse/elements';
 import Link from 'next/link';
 import { Avatar } from 'baseui/avatar';
 import { Block } from 'baseui/block';
@@ -30,8 +30,8 @@ export const SettingsSectionCard = ({
           style: {
             width: '100%',
             maxWidth: '350px',
-            borderRadius: '8px',
             margin: theme.sizing.scale200,
+            ...expandBorderRadius(theme.sizing.scale400),
           },
         },
       }}
@@ -44,7 +44,9 @@ export const SettingsSectionCard = ({
                 <Avatar
                   name={avatar}
                   overrides={{
-                    Root: { style: { background: theme.colors.accent700 } },
+                    Root: {
+                      style: { backgroundColor: theme.colors.accent700 },
+                    },
                   }}
                 />
               </Flex>
@@ -64,7 +66,7 @@ export const SettingsSectionCard = ({
         <ul>
           {quickLinks.map(({ link, text }) => {
             return (
-              <li key={link}>
+              <li key={text}>
                 <Link href={link}>
                   <a className={linkStyles}>{text}</a>
                 </Link>

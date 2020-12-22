@@ -31,14 +31,15 @@ describe('/login/verification', () => {
           return textPromise({ status: 200 });
         });
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      const { container } = render(page);
 
-      /* Assertions */
       sandbox.assert.calledWithMatch(getChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
       });
+
+      /* Client */
+      const { container } = render(page);
 
       await screen.findByText(
         'To protect your account, please complete the following verification.'

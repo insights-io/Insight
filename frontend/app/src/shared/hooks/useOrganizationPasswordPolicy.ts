@@ -9,6 +9,7 @@ import type {
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'passwordPolicy', 'retrieve'];
+
 const queryFn = () => AuthApi.organization.passwordPolicy.retrieve();
 
 export const useOrganizationPasswordPolicy = (
