@@ -18,7 +18,7 @@ export enum DeviceClass {
 export type UserAgentDTO = {
   deviceClass: DeviceClass;
   deviceName: string;
-  deviceBrand: 'Apple' | 'Samsung' | 'Google';
+  deviceBrand: 'Apple' | 'Samsung' | 'Google' | string;
   operatingSystemName:
     | 'Mac OS X'
     | 'Nintendo NX'

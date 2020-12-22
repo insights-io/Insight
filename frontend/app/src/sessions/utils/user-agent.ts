@@ -5,16 +5,21 @@ import {
   FaBookReader,
   FaChrome,
   FaDesktop,
+  FaFirefox,
   FaGamepad,
   FaMobileAlt,
   FaQuestion,
   FaStopwatch,
   FaTablet,
   FaTv,
+  FaWindows,
 } from 'react-icons/fa';
 import type { IconType } from 'react-icons/lib';
 
-const DEVICE_CLASS_ICON_MAP: Record<UserAgentDTO['deviceClass'], IconType> = {
+const DEVICE_CLASS_TO_ICON_MAP: Record<
+  UserAgentDTO['deviceClass'],
+  IconType
+> = {
   [DeviceClass.DESKTOP]: FaDesktop,
   [DeviceClass.PHONE]: FaMobileAlt,
   [DeviceClass.MOBILE]: FaMobileAlt,
@@ -32,27 +37,29 @@ const DEVICE_CLASS_ICON_MAP: Record<UserAgentDTO['deviceClass'], IconType> = {
 };
 
 export const getDeviceClassIcon = (key: UserAgentDTO['deviceClass']) => {
-  return DEVICE_CLASS_ICON_MAP[key] || FaQuestion;
+  return DEVICE_CLASS_TO_ICON_MAP[key] || FaQuestion;
 };
 
-const OPERATING_SYTEM_ICON_MAP: Record<
+const OPERATING_SYSTEM_NAME_TO_ICON_MAP: Record<
   UserAgentDTO['operatingSystemName'],
   IconType
 > = {
   'Mac OS X': FaApple,
   Android: FaAndroid,
+  'Windows NT': FaWindows,
 };
 
 export const getOperatingSystemIcon = (
   key: UserAgentDTO['operatingSystemName']
 ) => {
-  return OPERATING_SYTEM_ICON_MAP[key] || FaQuestion;
+  return OPERATING_SYSTEM_NAME_TO_ICON_MAP[key] || FaQuestion;
 };
 
-const AGENT_NAME_ICON_MAP: Record<UserAgentDTO['agentName'], IconType> = {
+const AGENT_NAME_TO_ICON_MAP: Record<UserAgentDTO['agentName'], IconType> = {
   Chrome: FaChrome,
+  Firefox: FaFirefox,
 };
 
 export const getAgentNameIcon = (key: UserAgentDTO['agentName']) => {
-  return AGENT_NAME_ICON_MAP[key] || FaQuestion;
+  return AGENT_NAME_TO_ICON_MAP[key] || FaQuestion;
 };
