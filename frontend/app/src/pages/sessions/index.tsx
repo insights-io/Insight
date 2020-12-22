@@ -9,8 +9,8 @@ import {
   prepareCrossServiceHeaders,
 } from 'shared/utils/tracing';
 import { SessionApi } from 'api';
-import { SessionDTO } from '@rebrowse/types';
-import { SessionsPage } from 'modules/sessions/pages/SessionsPage';
+import type { SessionDTO } from '@rebrowse/types';
+import { SessionsPage } from 'sessions/pages/SessionsPage';
 
 type Props = AuthenticatedServerSideProps & {
   sessions: SessionDTO[];

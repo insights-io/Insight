@@ -19,9 +19,9 @@ import com.meemaw.auth.organization.model.dto.PasswordPolicyDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +35,28 @@ import org.jooq.UpdateSetFirstStep;
 
 @ApplicationScoped
 public class SqlOrganizationPasswordPolicyDatasource
+    extends AbstractSqlDatasource<PasswordPolicyDTO>
     implements OrganizationPasswordPolicyDatasource {
 
   @Inject SqlPool sqlPool;
+
+  public static PasswordPolicyDTO map(Row row) {
+    return new PasswordPolicyDTO(
+        row.getString(ORGANIZATION_ID.getName()),
+        row.getShort(MIN_CHARACTERS.getName()),
+        row.getBoolean(PREVENT_PASSWORD_REUSE.getName()),
+        row.getBoolean(REQUIRE_UPPERCASE_CHARACTER.getName()),
+        row.getBoolean(REQUIRE_LOWERCASE_CHARACTER.getName()),
+        row.getBoolean(REQUIRE_NUMBER.getName()),
+        row.getBoolean(REQUIRE_NON_ALPHANUMERIC_CHARACTER.getName()),
+        row.getOffsetDateTime(UPDATED_AT.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
+  }
+
+  @Override
+  public PasswordPolicyDTO fromSql(Row row) {
+    return SqlOrganizationPasswordPolicyDatasource.map(row);
+  }
 
   private Query retrieveQuery(String organizationId) {
     return sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId));
@@ -45,13 +64,13 @@ public class SqlOrganizationPasswordPolicyDatasource
 
   @Override
   public CompletionStage<Optional<PasswordPolicyDTO>> retrieve(String organizationId) {
-    return sqlPool.execute(retrieveQuery(organizationId)).thenApply(this::onRetrieve);
+    return sqlPool.execute(retrieveQuery(organizationId)).thenApply(this::findOne);
   }
 
   @Override
   public CompletionStage<Optional<PasswordPolicyDTO>> retrieve(
       String organizationId, SqlTransaction transaction) {
-    return transaction.execute(retrieveQuery(organizationId)).thenApply(this::onRetrieve);
+    return transaction.execute(retrieveQuery(organizationId)).thenApply(this::findOne);
   }
 
   @Override
@@ -74,7 +93,7 @@ public class SqlOrganizationPasswordPolicyDatasource
             .values(values)
             .returning(FIELDS);
 
-    return sqlPool.execute(query).thenApply(rows -> mapPasswordPolicy(rows.iterator().next()));
+    return sqlPool.execute(query).thenApply(this::expectOne);
   }
 
   @Override
@@ -87,26 +106,6 @@ public class SqlOrganizationPasswordPolicyDatasource
             .where(ORGANIZATION_ID.eq(organizationId))
             .returning(FIELDS);
 
-    return sqlPool.execute(query).thenApply(this::onRetrieve);
-  }
-
-  public Optional<PasswordPolicyDTO> onRetrieve(RowSet<Row> rows) {
-    if (!rows.iterator().hasNext()) {
-      return Optional.empty();
-    }
-    return Optional.of(mapPasswordPolicy(rows.iterator().next()));
-  }
-
-  public static PasswordPolicyDTO mapPasswordPolicy(Row row) {
-    return new PasswordPolicyDTO(
-        row.getString(ORGANIZATION_ID.getName()),
-        row.getShort(MIN_CHARACTERS.getName()),
-        row.getBoolean(PREVENT_PASSWORD_REUSE.getName()),
-        row.getBoolean(REQUIRE_UPPERCASE_CHARACTER.getName()),
-        row.getBoolean(REQUIRE_LOWERCASE_CHARACTER.getName()),
-        row.getBoolean(REQUIRE_NUMBER.getName()),
-        row.getBoolean(REQUIRE_NON_ALPHANUMERIC_CHARACTER.getName()),
-        row.getOffsetDateTime(UPDATED_AT.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()));
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 }

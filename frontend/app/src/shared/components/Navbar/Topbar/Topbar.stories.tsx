@@ -6,7 +6,7 @@ import type { Meta } from '@storybook/react';
 import { NavbarTopbar, Props } from './Topbar';
 
 export default {
-  title: 'app/components/NavbarTopbar',
+  title: 'shared/components/NavbarTopbar',
   component: NavbarTopbar,
   decorators: [fullHeightDecorator],
 } as Meta;

@@ -15,7 +15,7 @@ import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
 import Divider from 'shared/components/Divider';
 import { toaster } from 'baseui/toast';
 import { FormControl } from 'baseui/form-control';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 
 type Props = {
   initialPasswordPolicy: OrganizationPasswordPolicyDTO | undefined;

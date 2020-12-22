@@ -116,7 +116,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+            .create(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -198,7 +198,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
       throws IOException, URISyntaxException {
     String organizationId = Organization.identifier();
     organizationDatasource
-        .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+        .create(new CreateOrganizationParams(organizationId, "Test"))
         .toCompletableFuture()
         .join();
 
@@ -239,7 +239,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
 
     organizationDatasource
-        .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+        .create(new CreateOrganizationParams(organizationId, "Test"))
         .toCompletableFuture()
         .join();
 
@@ -280,7 +280,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String organizationId = Organization.identifier();
     Organization organization =
         organizationDatasource
-            .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+            .create(new CreateOrganizationParams(organizationId, "Test"))
             .toCompletableFuture()
             .join();
 
@@ -409,7 +409,7 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
     String samlResponse = data.getRight();
 
     organizationDatasource
-        .createOrganization(new CreateOrganizationParams(organizationId, "Test"))
+        .create(new CreateOrganizationParams(organizationId, "Test"))
         .toCompletableFuture()
         .join();
 

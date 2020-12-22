@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { AuthApi } from 'api/auth';
 import Link from 'next/link';
 import Head from 'next/head';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import {
   EMAIL_PLACEHOLDER,
   EMAIL_VALIDATION,

@@ -8,7 +8,7 @@ import {
   EMAIL_VALIDATION,
 } from 'modules/auth/validation/email';
 import { toaster } from 'baseui/toast';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { RadioGroup, Radio } from 'baseui/radio';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
 import type {

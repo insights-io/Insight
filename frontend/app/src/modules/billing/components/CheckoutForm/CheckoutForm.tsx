@@ -10,7 +10,7 @@ import { BillingApi } from 'api';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { SIZE } from 'baseui/button';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import type {
   APIError,
   APIErrorDataResponse,

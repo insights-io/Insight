@@ -224,7 +224,9 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .body(
                     sameJson(
                         String.format(
-                            "{\"data\":[{\"count\":1,\"%s\":\"Desktop\"},{\"count\":4,\"%s\":\"Phone\"}]}",
+                            "{\"data\":[{\"count\":2,\"%s\":\"Desktop\"},{\"count\":1,\"%s\":\"Phone\"},{\"count\":1,\"%s\":\"Set-top box\"},{\"count\":1,\"%s\":\"Tablet\"}]}",
+                            caseProvider.apply(SessionTable.USER_AGENT__DEVICE_CLASS),
+                            caseProvider.apply(SessionTable.USER_AGENT__DEVICE_CLASS),
                             caseProvider.apply(SessionTable.USER_AGENT__DEVICE_CLASS),
                             caseProvider.apply(SessionTable.USER_AGENT__DEVICE_CLASS)))));
   }
@@ -382,8 +384,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
   }
 
   @Test
-  public void get_v1_sessions_distinct__should_return_browser_name()
-      throws JsonProcessingException {
+  public void get_v1_sessions_distinct__should_return_agent_name() throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
     List<SessionDTO> sessions = createTestSessions(organizationId);
@@ -393,14 +394,14 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
           given()
               .when()
               .cookie(SsoSession.COOKIE_NAME, sessionId)
-              .queryParam("on", caseProvider.apply(SessionTable.USER_AGENT__BROWSER))
+              .queryParam("on", caseProvider.apply(SessionTable.USER_AGENT__AGENT_NAME))
               .queryParam(
                   caseProvider.apply(SessionTable.CREATED_AT),
                   TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
               .get(DISTINCT_PATH)
               .then()
               .statusCode(200)
-              .body(sameJson("{\"data\":[\"Chrome\"]}"));
+              .body(sameJson("{\"data\":[\"Chrome\",\"Chrome Webview\",\"Edge\",\"Safari\"]}"));
         });
   }
 
@@ -416,14 +417,16 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
             given()
                 .when()
                 .cookie(SsoSession.COOKIE_NAME, sessionId)
-                .queryParam("on", caseProvider.apply(SessionTable.USER_AGENT__OPERATING_SYSTEM))
+                .queryParam(
+                    "on", caseProvider.apply(SessionTable.USER_AGENT__OPERATING_SYSTEM_NAME))
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
                 .get(DISTINCT_PATH)
                 .then()
                 .statusCode(200)
-                .body(sameJson("{\"data\":[\"Mac OS X\"]}"))));
+                .body(
+                    sameJson("{\"data\":[\"Android\",\"Mac OS X\",\"Unknown\",\"Windows NT\"]}"))));
   }
 
   @Test
@@ -445,7 +448,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .get(DISTINCT_PATH)
                 .then()
                 .statusCode(200)
-                .body(sameJson("{\"data\":[\"Desktop\",\"Phone\"]}")));
+                .body(sameJson("{\"data\":[\"Desktop\",\"Phone\",\"Set-top box\",\"Tablet\"]}")));
   }
 
   @Test

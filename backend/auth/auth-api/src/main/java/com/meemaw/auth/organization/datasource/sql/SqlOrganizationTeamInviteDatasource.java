@@ -19,16 +19,14 @@ import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -41,22 +39,38 @@ import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
-public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInviteDatasource {
+public class SqlOrganizationTeamInviteDatasource extends AbstractSqlDatasource<TeamInviteDTO>
+    implements OrganizationTeamInviteDatasource {
 
   @Inject SqlPool sqlPool;
 
+  public static TeamInviteDTO map(Row row) {
+    return new TeamInviteDTO(
+        row.getUUID(TOKEN.getName()),
+        row.getString(EMAIL.getName()),
+        row.getString(ORGANIZATION_ID.getName()),
+        UserRole.fromString(row.getString(ROLE.getName())),
+        row.getUUID(CREATOR_ID.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
+  }
+
+  @Override
+  public TeamInviteDTO fromSql(Row row) {
+    return SqlOrganizationTeamInviteDatasource.map(row);
+  }
+
   @Override
   public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token) {
-    return sqlPool.execute(retrieveQuery(token)).thenApply(this::mapTeamInviteIfPresent);
+    return sqlPool.execute(retrieveQuery(token)).thenApply(this::findOne);
   }
 
   @Override
   public CompletionStage<Optional<TeamInviteDTO>> retrieve(UUID token, SqlTransaction transaction) {
-    return transaction.execute(retrieveQuery(token)).thenApply(this::mapTeamInviteIfPresent);
+    return transaction.execute(retrieveQuery(token)).thenApply(this::findOne);
   }
 
   @Override
-  public CompletionStage<Optional<TeamInviteDTO>> retrieveValidInviteForUser(
+  public CompletionStage<Optional<TeamInviteDTO>> retrieveValid(
       String email, SqlTransaction transaction) {
     Query query =
         sqlPool
@@ -69,7 +83,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
                         CREATED_AT.gt(
                             OffsetDateTime.now().minusDays(TeamInviteDTO.DAYS_VALIDITY))));
 
-    return transaction.execute(query).thenApply(this::mapTeamInviteIfPresent);
+    return transaction.execute(query).thenApply(this::findOne);
   }
 
   private Query retrieveQuery(UUID token) {
@@ -92,7 +106,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
                 return Optional.empty();
               }
               Row row = rows.iterator().next();
-              TeamInviteDTO teamInvite = mapTeamInvite(row);
+              TeamInviteDTO teamInvite = map(row);
               Organization organization = SqlOrganizationDatasource.mapOrganization(row);
               return Optional.of(Pair.of(teamInvite, organization));
             });
@@ -100,7 +114,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
 
   @Override
   @Traced
-  public CompletionStage<List<TeamInviteDTO>> list(String organizationId, SearchDTO search) {
+  public CompletionStage<Collection<TeamInviteDTO>> list(String organizationId, SearchDTO search) {
     SelectConditionStep<?> baseQuery =
         searchQuery(
             sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
@@ -108,11 +122,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
 
     return sqlPool
         .execute(SQLSearchDTO.of(search).query(baseQuery, FIELD_MAPPINGS))
-        .thenApply(
-            pgRowSet ->
-                StreamSupport.stream(pgRowSet.spliterator(), false)
-                    .map(SqlOrganizationTeamInviteDatasource::mapTeamInvite)
-                    .collect(Collectors.toList()));
+        .thenApply(this::findMany);
   }
 
   @Override
@@ -143,7 +153,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
   @Traced
   public CompletionStage<Boolean> delete(UUID token) {
     Query query = sqlPool.getContext().deleteFrom(TABLE).where(TOKEN.eq(token)).returning(TOKEN);
-    return sqlPool.execute(query).thenApply(pgRowSet -> pgRowSet.iterator().hasNext());
+    return sqlPool.execute(query).thenApply(this::hasNext);
   }
 
   @Override
@@ -157,7 +167,7 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
             .where(EMAIL.eq(email))
             .and(ORGANIZATION_ID.eq(organizationId));
 
-    return transaction.execute(query).thenApply(pgRowSet -> true);
+    return transaction.execute(query).thenApply(this::hasNext);
   }
 
   @Override
@@ -167,34 +177,18 @@ public class SqlOrganizationTeamInviteDatasource implements OrganizationTeamInvi
       UUID creatorId,
       TeamInviteTemplateData teamInvite,
       SqlTransaction transaction) {
-    String email = teamInvite.getRecipientEmail();
-    UserRole role = teamInvite.getRecipientRole();
-
     Query query =
         sqlPool
             .getContext()
             .insertInto(TABLE)
             .columns(INSERT_FIELDS)
-            .values(creatorId, email, organizationId, role.getKey())
+            .values(
+                creatorId,
+                teamInvite.getRecipientEmail(),
+                organizationId,
+                teamInvite.getRecipientRole().getKey())
             .returning(FIELDS);
 
-    return transaction.execute(query).thenApply(rows -> mapTeamInvite(rows.iterator().next()));
-  }
-
-  private Optional<TeamInviteDTO> mapTeamInviteIfPresent(RowSet<Row> rows) {
-    if (!rows.iterator().hasNext()) {
-      return Optional.empty();
-    }
-    return Optional.of(mapTeamInvite(rows.iterator().next()));
-  }
-
-  public static TeamInviteDTO mapTeamInvite(Row row) {
-    return new TeamInviteDTO(
-        row.getUUID(TOKEN.getName()),
-        row.getString(EMAIL.getName()),
-        row.getString(ORGANIZATION_ID.getName()),
-        UserRole.fromString(row.getString(ROLE.getName())),
-        row.getUUID(CREATOR_ID.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()));
+    return transaction.execute(query).thenApply(this::expectOne);
   }
 }

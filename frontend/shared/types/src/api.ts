@@ -1,28 +1,13 @@
-export type DataResponse<T> = {
-  data: T;
-};
+/* sortBy */
 
-export type ApiErrors = { [name: string]: string | ApiErrors };
+export enum SortDirection {
+  ASC = '+',
+  DESC = '-',
+}
 
-export type APIErrorDataResponse<T extends ApiErrors = ApiErrors> = {
-  error: APIError<T>;
-};
+export type SortByQueryParam<S extends string> = S | `${SortDirection}${S}`;
 
-export type APIError<T extends ApiErrors = ApiErrors> = {
-  statusCode: number;
-  reason: string;
-  message: string;
-  errors?: T;
-};
-
-export type QueryParam =
-  | string
-  | number
-  | boolean
-  | string[]
-  | number[]
-  | boolean[]
-  | null;
+/* groupBy */
 
 export enum TimePrecision {
   MICROSECONDS = 'microseconds',
@@ -35,27 +20,55 @@ export enum TimePrecision {
   MONTH = 'month',
 }
 
-export enum SortDirection {
-  ASC = '+',
-  DESC = '-',
-}
+export type CountResponse = { count: number };
 
-type SortByQueryParam<S extends string> = S | `${SortDirection}${S}`;
+export type WithCountResponse<
+  TObject extends Record<string, string>
+> = CountResponse & TObject;
+
+export type GroupByResult<Fields extends string[] = []> = Fields extends []
+  ? CountResponse
+  : WithCountResponse<Record<Fields[number], string>>[];
+
+/* search */
+
+export type QueryParam =
+  | string
+  | number
+  | boolean
+  | string[]
+  | number[]
+  | boolean[]
+  | null;
 
 export type SearchBean<
-  R extends Record<string, unknown>,
-  GroupBy extends (keyof R)[] = []
+  TObject extends Record<string, unknown>,
+  GroupBy extends (keyof TObject)[] = []
 > = {
   query?: string;
   limit?: number;
-  sortBy?: SortByQueryParam<keyof R & string>[];
+  sortBy?: SortByQueryParam<keyof TObject & string>[];
   groupBy?: GroupBy;
   dateTrunc?: TimePrecision;
-} & Partial<Record<keyof R, QueryParam>>;
+} & Partial<Record<keyof TObject, QueryParam>>;
 
-export type GroupByBaseResult = { count: number };
+/* response */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type GroupByResult<T extends any[] = []> = T extends []
-  ? GroupByBaseResult
-  : (GroupByBaseResult & Record<T[number], string>)[];
+export type DataResponse<Data> = {
+  data: Data;
+};
+
+export type ApiErrors = {
+  [name: string]: string | ApiErrors;
+};
+
+export type APIErrorDataResponse<Errors extends ApiErrors = ApiErrors> = {
+  error: APIError<Errors>;
+};
+
+export type APIError<Errors extends ApiErrors = ApiErrors> = {
+  statusCode: number;
+  reason: string;
+  message: string;
+  errors?: Errors;
+};

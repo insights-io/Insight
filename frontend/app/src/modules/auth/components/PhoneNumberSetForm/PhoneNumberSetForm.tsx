@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Label, PhoneNumberInput } from '@rebrowse/elements';
 import { Controller, FieldError, useForm } from 'react-hook-form';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import type {
   APIError,
   APIErrorDataResponse,

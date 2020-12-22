@@ -8,7 +8,7 @@ import type {
   APIErrorDataResponse,
 } from '@rebrowse/types';
 import { AuthApi } from 'api/auth';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { toaster } from 'baseui/toast';
 import { Button, PasswordInput, Panel } from '@rebrowse/elements';
 import { SIZE } from 'baseui/input';

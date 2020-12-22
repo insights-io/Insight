@@ -13,12 +13,11 @@ import com.meemaw.auth.mfa.totp.model.MfaConfigurationDTO;
 import com.meemaw.auth.user.datasource.UserMfaDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -30,18 +29,10 @@ import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j
-public class SqlUserMfaDatasource implements UserMfaDatasource {
+public class SqlUserMfaDatasource extends AbstractSqlDatasource<MfaConfiguration>
+    implements UserMfaDatasource {
 
   @Inject SqlPool sqlPool;
-
-  public static Optional<MfaConfiguration> maybeMapMfaConfiguration(RowSet<Row> rows) {
-    if (!rows.iterator().hasNext()) {
-      return Optional.empty();
-    }
-
-    Row row = rows.iterator().next();
-    return Optional.of(mapConfiguration(row));
-  }
 
   public static MfaConfiguration mapConfiguration(Row row) {
     MfaMethod method = MfaMethod.fromString(row.getString(METHOD.getName()));
@@ -56,19 +47,16 @@ public class SqlUserMfaDatasource implements UserMfaDatasource {
     return new SmsMfaSetup(createdAt, userId);
   }
 
-  public static List<MfaConfiguration> mapConfigurations(RowSet<Row> rows) {
-    List<MfaConfiguration> mfaConfigurations = new ArrayList<>(rows.size());
-    for (Row row : rows) {
-      mfaConfigurations.add(mapConfiguration(row));
-    }
-    return mfaConfigurations;
+  @Override
+  public MfaConfiguration fromSql(Row row) {
+    return SqlUserMfaDatasource.mapConfiguration(row);
   }
 
   @Override
   @Traced
-  public CompletionStage<List<MfaConfiguration>> list(UUID userId) {
+  public CompletionStage<Collection<MfaConfiguration>> list(UUID userId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(USER_ID.eq(userId));
-    return sqlPool.execute(query).thenApply(SqlUserMfaDatasource::mapConfigurations);
+    return sqlPool.execute(query).thenApply(this::findMany);
   }
 
   @Override
@@ -79,7 +67,8 @@ public class SqlUserMfaDatasource implements UserMfaDatasource {
             .getContext()
             .selectFrom(TABLE)
             .where(USER_ID.eq(userId).and(METHOD.eq(method.getKey())));
-    return sqlPool.execute(query).thenApply(SqlUserMfaDatasource::maybeMapMfaConfiguration);
+
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 
   @Override

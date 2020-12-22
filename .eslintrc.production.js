@@ -45,15 +45,17 @@ module.exports = {
     'import/extensions': ['off'],
     'import/prefer-default-export': ['off'],
     'import/order': [
-      1,
+      'error',
       {
-        'newlines-between': 'always',
         groups: [
           'builtin',
-          ['external', 'internal'],
+          'external',
+          'internal',
           'parent',
-          ['sibling', 'index'],
+          'sibling',
+          'index',
         ],
+        'newlines-between': 'always',
       },
     ],
 

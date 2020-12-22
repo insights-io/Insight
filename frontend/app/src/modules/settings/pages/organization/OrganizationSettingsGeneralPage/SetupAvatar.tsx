@@ -29,7 +29,7 @@ import type { Crop } from 'react-image-crop';
 import { toaster } from 'baseui/toast';
 import { Controller, useForm } from 'react-hook-form';
 import { REQUIRED_VALIDATION } from 'modules/auth/validation/base';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { SIZE } from 'baseui/button';
 
 const LazyImageCrop = dynamic(

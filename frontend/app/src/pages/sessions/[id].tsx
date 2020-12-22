@@ -7,7 +7,7 @@ import {
   startRequestSpan,
   prepareCrossServiceHeaders,
 } from 'shared/utils/tracing';
-import { SessionPage } from 'modules/sessions/pages/SessionPage';
+import { SessionPage } from 'sessions/pages/SessionPage';
 import { SessionApi } from 'api';
 import type { SessionDTO } from '@rebrowse/types';
 import type { GetServerSideProps, GetServerSidePropsResult } from 'next';

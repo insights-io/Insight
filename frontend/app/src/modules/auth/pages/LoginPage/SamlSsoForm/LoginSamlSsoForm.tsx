@@ -7,7 +7,7 @@ import {
   WORK_EMAIL_PLACEHOLDER,
 } from 'modules/auth/validation/email';
 import React, { useState, useMemo } from 'react';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { locationAssign } from 'shared/utils/window';
 import { Button, EmailInput } from '@rebrowse/elements';
 

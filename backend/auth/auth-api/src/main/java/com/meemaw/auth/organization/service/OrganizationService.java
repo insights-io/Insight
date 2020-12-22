@@ -39,13 +39,13 @@ public class OrganizationService {
 
   @Traced
   public CompletionStage<Optional<Organization>> getOrganization(String organizationId) {
-    return organizationDatasource.findOrganization(organizationId);
+    return organizationDatasource.retrieve(organizationId);
   }
 
   @Traced
   public CompletionStage<Optional<Organization>> updateOrganization(
       String organizationId, UpdateDTO update) {
-    return organizationDatasource.updateOrganization(organizationId, update);
+    return organizationDatasource.update(organizationId, update);
   }
 
   @Traced

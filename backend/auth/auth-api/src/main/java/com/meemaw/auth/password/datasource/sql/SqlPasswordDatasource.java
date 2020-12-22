@@ -8,8 +8,8 @@ import static com.meemaw.auth.password.datasource.sql.SqlPasswordTable.USER_ID;
 import com.meemaw.auth.password.datasource.PasswordDatasource;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -21,26 +21,30 @@ import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j
-public class SqlPasswordDatasource implements PasswordDatasource {
+public class SqlPasswordDatasource extends AbstractSqlDatasource<OffsetDateTime>
+    implements PasswordDatasource {
 
   @Inject SqlPool sqlPool;
+
+  public static OffsetDateTime map(Row row) {
+    return row.getOffsetDateTime(CREATED_AT.getName());
+  }
+
+  @Override
+  public OffsetDateTime fromSql(Row row) {
+    return SqlPasswordDatasource.map(row);
+  }
 
   @Override
   @Traced
   public CompletionStage<OffsetDateTime> storePassword(
       UUID userId, String hash, SqlTransaction transaction) {
-    return transaction
-        .execute(insertPasswordQuery(userId, hash))
-        .thenApply(this::mapStoredPassword);
+    return transaction.execute(insertPasswordQuery(userId, hash)).thenApply(this::expectOne);
   }
 
   @Override
   public CompletionStage<OffsetDateTime> storePassword(UUID userId, String hash) {
-    return sqlPool.execute(insertPasswordQuery(userId, hash)).thenApply(this::mapStoredPassword);
-  }
-
-  private OffsetDateTime mapStoredPassword(RowSet<Row> rows) {
-    return rows.iterator().next().getOffsetDateTime(CREATED_AT.getName());
+    return sqlPool.execute(insertPasswordQuery(userId, hash)).thenApply(this::expectOne);
   }
 
   private Query insertPasswordQuery(UUID userId, String hash) {

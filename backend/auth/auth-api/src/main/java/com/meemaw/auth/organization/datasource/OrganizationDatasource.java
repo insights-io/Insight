@@ -9,17 +9,15 @@ import java.util.concurrent.CompletionStage;
 
 public interface OrganizationDatasource {
 
-  CompletionStage<Organization> createOrganization(
-      CreateOrganizationParams params, SqlTransaction transaction);
+  CompletionStage<Organization> create(CreateOrganizationParams params, SqlTransaction transaction);
 
-  CompletionStage<Organization> createOrganization(CreateOrganizationParams params);
+  CompletionStage<Organization> create(CreateOrganizationParams params);
 
-  CompletionStage<Optional<Organization>> updateOrganization(
-      String organizationId, UpdateDTO update);
+  CompletionStage<Optional<Organization>> update(String organizationId, UpdateDTO update);
 
-  CompletionStage<Optional<Organization>> findOrganization(String organizationId);
+  CompletionStage<Optional<Organization>> retrieve(String organizationId);
 
-  CompletionStage<Optional<Organization>> findOrganization(
+  CompletionStage<Optional<Organization>> retrieve(
       String organizationId, SqlTransaction transaction);
 
   CompletionStage<Boolean> delete(String id, SqlTransaction transaction);

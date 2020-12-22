@@ -1,7 +1,34 @@
+export enum DeviceClass {
+  DESKTOP = 'Desktop',
+  ANONYMIZED = 'Anonymized',
+  MOBILE = 'Mobile',
+  TABLET = 'Tablet',
+  PHONE = 'Phone',
+  WATCH = 'Watch',
+  VIRTUAL_REALITY = 'Virtual Reality',
+  E_READER = 'eReader',
+  SET_TOP_BOX = 'Set-top box',
+  TV = 'TV',
+  GAME_CONSOLE = 'Game Console',
+  HANDHELD_GAME_CONSOLE = 'Handheld Game Console',
+  UNKNOWN = 'Unknown',
+  UNCLASSIFIED = 'Unclassified',
+}
+
 export type UserAgentDTO = {
-  deviceClass: 'Desktop' | 'Phone' | string;
-  operatingSystemName: string;
-  browserName: string;
+  deviceClass: DeviceClass;
+  deviceName: string;
+  deviceBrand: 'Apple' | 'Samsung' | 'Google';
+  operatingSystemName:
+    | 'Mac OS X'
+    | 'Nintendo NX'
+    | 'Android'
+    | 'Windows NT'
+    | 'Ubuntu'
+    | string;
+  operatingSystemVersion: string;
+  agentName: 'Chrome' | 'Firefox' | string;
+  agentVersion: string;
 };
 
 export type LocationDTO = {

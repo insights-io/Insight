@@ -1,5 +1,8 @@
-import { queryByPlaceholderText, queryByText } from '@testing-library/testcafe';
-import { Selector } from 'testcafe';
+import {
+  queryByLabelText,
+  queryByPlaceholderText,
+  queryByText,
+} from '@testing-library/testcafe';
 
 import config from '../config';
 import { getLocation } from '../utils';
@@ -8,7 +11,7 @@ class SessionPage {
   /* Selectors */
 
   public readonly devtools = {
-    button: Selector('svg[id="devtools"]'),
+    button: queryByLabelText('Developer tools'),
     filterInput: queryByPlaceholderText('Filter'),
 
     tabs: {

@@ -14,7 +14,7 @@ import { AuthApi } from 'api';
 import { NavbarBanner } from './Banner';
 
 export default {
-  title: 'app/components/NavbarBanner',
+  title: 'shared/components/NavbarBanner',
   component: NavbarBanner,
   decorators: [fullHeightDecorator],
 } as Meta;

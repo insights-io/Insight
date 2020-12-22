@@ -26,12 +26,23 @@ public final class SqlSessionTable {
   /* User agent fields */
   public static final Field<JsonObject> USER_AGENT =
       field(SessionTable.USER_AGENT, JSON_OBJECT_DATA_TYPE);
+
   public static final Field<String> USER_AGENT__DEVICE_CLASS =
       field(SessionTable.USER_AGENT__DEVICE_CLASS, String.class);
-  public static final Field<String> USER_AGENT__BROWSER =
-      field(SessionTable.USER_AGENT__BROWSER, String.class);
-  public static final Field<String> USER_AGENT_OPERATING_SYSTEM_ =
-      field(SessionTable.USER_AGENT__OPERATING_SYSTEM, String.class);
+  public static final Field<String> USER_AGENT__DEVICE_NAME =
+      field(SessionTable.USER_AGENT__DEVICE_NAME, String.class);
+  public static final Field<String> USER_AGENT__DEVICE_BRAND =
+      field(SessionTable.USER_AGENT__DEVICE_BRAND, String.class);
+
+  public static final Field<String> USER_AGENT__AGENT_NAME =
+      field(SessionTable.USER_AGENT__AGENT_NAME, String.class);
+  public static final Field<String> USER_AGENT__AGENT_VERSION =
+      field(SessionTable.USER_AGENT__AGENT_VERSION, String.class);
+
+  public static final Field<String> USER_AGENT_OPERATING_SYSTEM_NAME =
+      field(SessionTable.USER_AGENT__OPERATING_SYSTEM_NAME, String.class);
+  public static final Field<String> USER_AGENT_OPERATING_SYSTEM_VERSION =
+      field(SessionTable.USER_AGENT__OPERATING_SYSTEM_VERSION, String.class);
 
   /* Location fields */
   public static final Field<JsonObject> LOCATION =
@@ -68,9 +79,13 @@ public final class SqlSessionTable {
                   LOCATION__CONTINENT,
                   LOCATION__REGION,
                   LOCATION_IP,
+                  USER_AGENT__DEVICE_NAME,
                   USER_AGENT__DEVICE_CLASS,
-                  USER_AGENT__BROWSER,
-                  USER_AGENT_OPERATING_SYSTEM_))
+                  USER_AGENT__DEVICE_BRAND,
+                  USER_AGENT__AGENT_NAME,
+                  USER_AGENT__AGENT_VERSION,
+                  USER_AGENT_OPERATING_SYSTEM_NAME,
+                  USER_AGENT_OPERATING_SYSTEM_VERSION))
           .collect(Collectors.toMap(Field::getName, f -> f));
 
   private SqlSessionTable() {}

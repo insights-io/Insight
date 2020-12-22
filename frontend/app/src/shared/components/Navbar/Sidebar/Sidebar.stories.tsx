@@ -8,7 +8,7 @@ import useSidebar from 'shared/hooks/useSidebar';
 import { Sidebar } from './Sidebar';
 
 export default {
-  title: 'app/components/Sidebar',
+  title: 'shared/components/Sidebar',
   component: Sidebar,
   decorators: [fullHeightDecorator],
 } as Meta;

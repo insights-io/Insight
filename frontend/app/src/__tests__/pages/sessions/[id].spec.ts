@@ -49,15 +49,13 @@ describe('/sessions/[id]', () => {
     const { page } = await getPage({ route: `${SESSIONS_PAGE}/${id}` });
 
     /* Client */
-    const { container } = render(page);
+    render(page);
     sandbox.assert.calledWithMatch(retrieveSessionStub, id, {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
 
-    userEvent.click(
-      container.querySelector('svg[id="devtools"]') as SVGElement
-    );
+    userEvent.click(screen.getByLabelText('Developer tools'));
 
     // Console events
     await screen.findByText(
