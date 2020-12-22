@@ -8,7 +8,7 @@ import type {
   APIErrorDataResponse,
   MfaSetupDTO,
 } from '@rebrowse/types';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';
 

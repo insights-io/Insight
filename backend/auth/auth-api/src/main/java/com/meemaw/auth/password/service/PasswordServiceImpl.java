@@ -125,7 +125,7 @@ public class PasswordServiceImpl implements PasswordService {
     UUID userId = authUser.getId();
 
     return passwordResetDatasource
-        .createPasswordResetRequest(email, userId, transaction)
+        .create(email, userId, transaction)
         .thenApply(
             passwordResetRequest ->
                 sendPasswordResetEmail(passwordResetRequest, passwordResetURL)
@@ -171,7 +171,7 @@ public class PasswordServiceImpl implements PasswordService {
   public CompletionStage<PasswordResetRequest> resetPassword(UUID token, String password) {
     log.info("[AUTH]: Reset password attempt token: {}", token);
     return passwordResetDatasource
-        .findPasswordResetRequest(token)
+        .retrieve(token)
         .thenApply(
             maybePasswordRequest ->
                 maybePasswordRequest.orElseThrow(
@@ -240,7 +240,7 @@ public class PasswordServiceImpl implements PasswordService {
         .thenCompose(
             transaction ->
                 passwordResetDatasource
-                    .deletePasswordResetRequest(request.getToken(), transaction)
+                    .delete(request.getToken(), transaction)
                     .thenCompose(
                         deleted ->
                             createPassword(
@@ -269,7 +269,7 @@ public class PasswordServiceImpl implements PasswordService {
       description = "A measure of how long it takes to check if password reset request exists")
   public CompletionStage<Boolean> passwordResetRequestExists(UUID token) {
     log.info("[AUTH]: Password reset request exists for token: {}", token);
-    return passwordResetDatasource.findPasswordResetRequest(token).thenApply(Optional::isPresent);
+    return passwordResetDatasource.retrieve(token).thenApply(Optional::isPresent);
   }
 
   @Override

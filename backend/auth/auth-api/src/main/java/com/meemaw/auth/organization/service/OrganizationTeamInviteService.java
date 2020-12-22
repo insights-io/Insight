@@ -27,7 +27,7 @@ import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.api.ResourcePath;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,7 +81,7 @@ public class OrganizationTeamInviteService {
         "[AUTH]: Creating team invite for user={} organizationId={}", invitedEmail, organizationId);
 
     return teamInviteDatasource
-        .retrieveValidInviteForUser(invitedEmail, transaction)
+        .retrieveValid(invitedEmail, transaction)
         .thenCompose(
             maybeValidInvite -> {
               if (maybeValidInvite.isPresent()) {
@@ -113,7 +113,7 @@ public class OrganizationTeamInviteService {
                         }
 
                         return organizationDatasource
-                            .findOrganization(organizationId, transaction)
+                            .retrieve(organizationId, transaction)
                             .thenCompose(
                                 maybeOrganization -> {
                                   if (maybeOrganization.isEmpty()) {
@@ -337,7 +337,7 @@ public class OrganizationTeamInviteService {
   }
 
   @Traced
-  public CompletionStage<List<TeamInviteDTO>> listTeamInvites(
+  public CompletionStage<Collection<TeamInviteDTO>> listTeamInvites(
       AuthPrincipal principal, SearchDTO search) {
     AuthUser user = principal.user();
     log.debug("[AUTH]: List team invites for organizationId={}", user.getOrganizationId());

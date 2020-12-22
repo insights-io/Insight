@@ -4,5 +4,5 @@ import com.meemaw.useragent.model.UserAgent;
 
 public interface UserAgentService {
 
-  UserAgent parse(String userAgentString);
+  UserAgent parse(String rawUserAgent);
 }

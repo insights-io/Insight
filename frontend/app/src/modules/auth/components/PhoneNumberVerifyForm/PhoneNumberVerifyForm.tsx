@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@rebrowse/elements';
 import { Block } from 'baseui/block';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import type { CodeValidityDTO } from '@rebrowse/types';
 import { SmsMfaInputMethod } from 'modules/auth/components/SmsMfaInputMethod';

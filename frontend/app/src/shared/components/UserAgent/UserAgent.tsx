@@ -5,10 +5,10 @@ type Props = {
   value: UserAgentDTO;
 };
 
-const UserAgent = ({ value }: Props) => {
+export const UserAgent = ({ value }: Props) => {
   return (
     <>
-      {value.operatingSystemName} &bull; {value.browserName}
+      {value.operatingSystemName} &bull; {value.agentName}
     </>
   );
 };

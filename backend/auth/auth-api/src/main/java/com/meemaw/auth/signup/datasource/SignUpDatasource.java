@@ -8,15 +8,13 @@ import java.util.concurrent.CompletionStage;
 
 public interface SignUpDatasource {
 
-  CompletionStage<UUID> createSignUpRequest(
-      SignUpRequest signUpRequest, SqlTransaction transaction);
+  CompletionStage<UUID> create(SignUpRequest signUpRequest, SqlTransaction transaction);
 
-  CompletionStage<Optional<SignUpRequest>> findSignUpRequest(UUID token);
+  CompletionStage<Optional<SignUpRequest>> retrieve(UUID token);
 
-  CompletionStage<Optional<SignUpRequest>> findSignUpRequest(
-      UUID token, SqlTransaction transaction);
+  CompletionStage<Optional<SignUpRequest>> retrieve(UUID token, SqlTransaction transaction);
 
-  CompletionStage<Boolean> deleteSignUpRequest(UUID token, SqlTransaction transaction);
+  CompletionStage<Boolean> delete(UUID token, SqlTransaction transaction);
 
-  CompletionStage<Boolean> selectIsEmailTaken(String email, SqlTransaction transaction);
+  CompletionStage<Boolean> retrieveIsEmailTaken(String email, SqlTransaction transaction);
 }

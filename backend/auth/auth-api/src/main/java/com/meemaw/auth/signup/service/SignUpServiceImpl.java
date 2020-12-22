@@ -79,7 +79,7 @@ public class SignUpServiceImpl implements SignUpService {
       URL serverBaseURL, SignUpRequest signUpRequest, SqlTransaction transaction) {
     String email = signUpRequest.getEmail();
     return signUpDatasource
-        .selectIsEmailTaken(email, transaction)
+        .retrieveIsEmailTaken(email, transaction)
         .thenCompose(
             emailTaken -> {
               if (emailTaken) {
@@ -89,7 +89,7 @@ public class SignUpServiceImpl implements SignUpService {
               }
 
               return signUpDatasource
-                  .createSignUpRequest(signUpRequest, transaction)
+                  .create(signUpRequest, transaction)
                   .thenCompose(
                       token ->
                           sendSignUpCompleteEmail(email, serverBaseURL, token)
@@ -154,7 +154,7 @@ public class SignUpServiceImpl implements SignUpService {
         .thenCompose(
             transaction ->
                 signUpDatasource
-                    .findSignUpRequest(token, transaction)
+                    .retrieve(token, transaction)
                     .thenCompose(
                         maybeSignUpRequest -> {
                           SignUpRequest signUpRequest =
@@ -184,7 +184,7 @@ public class SignUpServiceImpl implements SignUpService {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
     return organizationDatasource
-        .createOrganization(
+        .create(
             new CreateOrganizationParams(organizationId, signUpRequest.getCompany()), transaction)
         .thenCompose(
             organization ->
@@ -200,7 +200,7 @@ public class SignUpServiceImpl implements SignUpService {
                         createdUser ->
                             CompletableFuture.allOf(
                                     signUpDatasource
-                                        .deleteSignUpRequest(token, transaction)
+                                        .delete(token, transaction)
                                         .toCompletableFuture(),
                                     passwordDatasource
                                         .storePassword(
@@ -223,7 +223,7 @@ public class SignUpServiceImpl implements SignUpService {
   @Traced
   public CompletionStage<Boolean> signUpRequestValid(UUID token) {
     return signUpDatasource
-        .findSignUpRequest(token)
+        .retrieve(token)
         .thenApply(
             maybeSignUpRequest ->
                 maybeSignUpRequest.map(signUpRequest -> !signUpRequest.hasExpired()).orElse(false));
@@ -270,7 +270,7 @@ public class SignUpServiceImpl implements SignUpService {
         fullName,
         (organization) -> UserRole.ADMIN,
         (transaction) ->
-            organizationDatasource.createOrganization(
+            organizationDatasource.create(
                 new CreateOrganizationParams(Organization.identifier(), null), transaction));
   }
 
@@ -289,7 +289,7 @@ public class SignUpServiceImpl implements SignUpService {
         Organization::getDefaultRole,
         transaction ->
             organizationDatasource
-                .findOrganization(organizationId, transaction)
+                .retrieve(organizationId, transaction)
                 .thenApply(
                     maybeOrganization -> {
                       if (maybeOrganization.isEmpty()) {

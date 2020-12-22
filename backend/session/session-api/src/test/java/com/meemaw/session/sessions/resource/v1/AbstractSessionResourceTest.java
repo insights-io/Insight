@@ -7,6 +7,7 @@ import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.query.AbstractQueryParser;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.test.setup.ExternalAuthApiProvidedTest;
+import com.meemaw.useragent.model.DeviceClass;
 import com.meemaw.useragent.model.HasUserAgent;
 import com.meemaw.useragent.model.UserAgent;
 import java.util.ArrayList;
@@ -35,8 +36,49 @@ public class AbstractSessionResourceTest extends ExternalAuthApiProvidedTest {
           .longitude(-78.38899993896484)
           .build();
 
-  protected static final HasUserAgent DESKTOP_MAC_CHROME =
-      new UserAgent("Desktop", "Mac OS X", "Chrome");
+  protected static final HasUserAgent MAC__SAFARI =
+      new UserAgent(
+          "Apple Macintosh",
+          "Apple",
+          DeviceClass.DESKTOP,
+          "Mac OS X",
+          "10.11.2",
+          "Safari",
+          "9.0.2");
+
+  protected static final HasUserAgent HTC_ONE_X10__CHROME =
+      new UserAgent(
+          "HTC ONE X10",
+          "HTC",
+          DeviceClass.PHONE,
+          "Android",
+          "6.0",
+          "Chrome Webview",
+          "61.0.3163.98");
+
+  protected static final HasUserAgent CHROMECAST__CHROME =
+      new UserAgent(
+          "Google Chromecast",
+          "Google",
+          DeviceClass.SET_TOP_BOX,
+          "Unknown",
+          "??",
+          "Chrome",
+          "31.0.1650.0");
+
+  protected static final HasUserAgent WINDOWS_10__EDGE =
+      new UserAgent(
+          "Desktop", "Unknown", DeviceClass.DESKTOP, "Windows NT", "10.0", "Edge", "20.??");
+
+  protected static final HasUserAgent GOOGLE_PIXEL_C__CHROME =
+      new UserAgent(
+          "Google Pixel C",
+          "Google",
+          DeviceClass.TABLET,
+          "Android",
+          "7.0",
+          "Chrome Webview",
+          "52.0.2743.98");
 
   @Inject protected SqlPool sqlPool;
   @Inject protected SessionDatasource sessionDatasource;
@@ -59,7 +101,7 @@ public class AbstractSessionResourceTest extends ExternalAuthApiProvidedTest {
                           .continentName("North America")
                           .regionName("Washington")
                           .build(),
-                      DESKTOP_MAC_CHROME,
+                      MAC__SAFARI,
                       transaction)
                   .thenApply(sessions::add);
 
@@ -73,7 +115,7 @@ public class AbstractSessionResourceTest extends ExternalAuthApiProvidedTest {
                           .countryName("Canada")
                           .continentName("North America")
                           .build(),
-                      new UserAgent("Phone", "Mac OS X", "Chrome"),
+                      HTC_ONE_X10__CHROME,
                       transaction)
                   .thenApply(sessions::add);
 
@@ -88,7 +130,7 @@ public class AbstractSessionResourceTest extends ExternalAuthApiProvidedTest {
                           .continentName("Europe")
                           .regionName("Podravska")
                           .build(),
-                      new UserAgent("Phone", "Mac OS X", "Chrome"),
+                      CHROMECAST__CHROME,
                       transaction)
                   .thenApply(sessions::add);
 
@@ -98,7 +140,7 @@ public class AbstractSessionResourceTest extends ExternalAuthApiProvidedTest {
                       UUID.randomUUID(),
                       organizationId,
                       Location.builder().countryName("Slovenia").continentName("Europe").build(),
-                      new UserAgent("Phone", "Mac OS X", "Chrome"),
+                      WINDOWS_10__EDGE,
                       transaction)
                   .thenApply(sessions::add);
 
@@ -112,7 +154,7 @@ public class AbstractSessionResourceTest extends ExternalAuthApiProvidedTest {
                           .countryName("Croatia")
                           .continentName("Europe")
                           .build(),
-                      new UserAgent("Phone", "Mac OS X", "Chrome"),
+                      GOOGLE_PIXEL_C__CHROME,
                       transaction)
                   .thenApply(sessions::add);
 

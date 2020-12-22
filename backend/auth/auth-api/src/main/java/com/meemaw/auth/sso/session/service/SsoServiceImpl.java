@@ -301,7 +301,7 @@ public class SsoServiceImpl implements SsoService {
     if (userMfaMethods.isEmpty()) {
       // TODO: should probably read from cache
       return organizationDatasource
-          .findOrganization(organizationId)
+          .retrieve(organizationId)
           .thenCompose(
               maybeOrganization -> {
                 Organization organization =

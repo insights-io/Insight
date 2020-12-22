@@ -12,8 +12,8 @@ import com.meemaw.auth.password.datasource.PasswordResetDatasource;
 import com.meemaw.auth.password.model.PasswordResetRequest;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,28 +26,41 @@ import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j
-public class SqlPasswordResetDatasource implements PasswordResetDatasource {
+public class SqlPasswordResetDatasource extends AbstractSqlDatasource<PasswordResetRequest>
+    implements PasswordResetDatasource {
 
   @Inject SqlPool sqlPool;
 
+  public static PasswordResetRequest map(Row row) {
+    return new PasswordResetRequest(
+        row.getUUID(TOKEN.getName()),
+        row.getUUID(USER_ID.getName()),
+        row.getString(EMAIL.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
+  }
+
+  @Override
+  public PasswordResetRequest fromSql(Row row) {
+    return SqlPasswordResetDatasource.map(row);
+  }
+
   @Override
   @Traced
-  public CompletionStage<Boolean> deletePasswordResetRequest(
-      UUID token, SqlTransaction transaction) {
+  public CompletionStage<Boolean> delete(UUID token, SqlTransaction transaction) {
     Query query = sqlPool.getContext().delete(TABLE).where(TOKEN.eq(token));
     return transaction.execute(query).thenApply(pgRowSet -> true);
   }
 
   @Override
   @Traced
-  public CompletionStage<Optional<PasswordResetRequest>> findPasswordResetRequest(UUID token) {
+  public CompletionStage<Optional<PasswordResetRequest>> retrieve(UUID token) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(TOKEN.eq(token));
-    return sqlPool.execute(query).thenApply(this::mapMaybePasswordResetRequest);
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 
   @Override
   @Traced
-  public CompletionStage<PasswordResetRequest> createPasswordResetRequest(
+  public CompletionStage<PasswordResetRequest> create(
       String email, UUID userId, SqlTransaction transaction) {
     Query query =
         sqlPool
@@ -66,20 +79,5 @@ public class SqlPasswordResetDatasource implements PasswordResetDatasource {
               OffsetDateTime createdAt = row.getOffsetDateTime(CREATED_AT.getName());
               return new PasswordResetRequest(token, userId, email, createdAt);
             });
-  }
-
-  private Optional<PasswordResetRequest> mapMaybePasswordResetRequest(RowSet<Row> rows) {
-    if (!rows.iterator().hasNext()) {
-      return Optional.empty();
-    }
-    return Optional.of(mapPasswordResetRequest(rows.iterator().next()));
-  }
-
-  public static PasswordResetRequest mapPasswordResetRequest(Row row) {
-    return new PasswordResetRequest(
-        row.getUUID(TOKEN.getName()),
-        row.getUUID(USER_ID.getName()),
-        row.getString(EMAIL.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()));
   }
 }

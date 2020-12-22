@@ -4,6 +4,7 @@ import com.meemaw.auth.mfa.MfaMethod;
 import com.meemaw.auth.mfa.model.MfaConfiguration;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import io.vertx.core.json.JsonObject;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public interface UserMfaDatasource {
 
   CompletionStage<Optional<MfaConfiguration>> retrieve(UUID userId, MfaMethod mfaMethod);
 
-  CompletionStage<List<MfaConfiguration>> list(UUID userId);
+  CompletionStage<Collection<MfaConfiguration>> list(UUID userId);
 
   CompletionStage<Boolean> delete(UUID userId, MfaMethod method);
 

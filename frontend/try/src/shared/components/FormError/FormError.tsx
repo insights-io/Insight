@@ -8,7 +8,7 @@ type Props = {
   error: APIError;
 };
 
-const FormError = ({ error }: Props) => {
+export const FormError = ({ error }: Props) => {
   const [_css, theme] = useStyletron();
   return (
     <Block
@@ -20,5 +20,3 @@ const FormError = ({ error }: Props) => {
     </Block>
   );
 };
-
-export default React.memo(FormError);

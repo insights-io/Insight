@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { AuthApi } from 'api/auth';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
 import { AuthPageLayout } from 'modules/auth/components/PageLayout';
 import { INDEX_PAGE } from 'shared/constants/routes';

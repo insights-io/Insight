@@ -9,7 +9,7 @@ import type {
   SsoMethod,
   SsoSetupDTO,
 } from '@rebrowse/types';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { SIZE } from 'baseui/button';
 import { toaster } from 'baseui/toast';
 import { useForm } from 'react-hook-form';

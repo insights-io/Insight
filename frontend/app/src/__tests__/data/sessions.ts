@@ -1,4 +1,5 @@
 import {
+  DeviceClass,
   Session,
   SessionDTO,
   TimePrecision,
@@ -10,22 +11,34 @@ import { subHours } from 'date-fns';
 import { mapSession } from '@rebrowse/sdk';
 import { countSessionsBy } from '__tests__/mocks/filter';
 
-export const DESKTOP_MAC_OSX_CHROME: UserAgentDTO = {
-  deviceClass: 'Desktop',
+export const MAC__SAFARI: UserAgentDTO = {
+  deviceName: 'Apple Macintosh',
+  deviceBrand: 'Apple',
+  deviceClass: DeviceClass.DESKTOP,
   operatingSystemName: 'Mac OS X',
-  browserName: 'Chrome',
+  operatingSystemVersion: '10.14.6',
+  agentName: 'Chrome',
+  agentVersion: '87.0.664',
 };
 
-export const DESKTOP_MAC_OSX_FIREFOX: UserAgentDTO = {
-  deviceClass: 'Desktop',
-  operatingSystemName: 'Mac OS X',
-  browserName: 'Firefox',
+export const LINUX_FIREFOX: UserAgentDTO = {
+  deviceName: 'Linux Desktop',
+  deviceBrand: 'Unknown',
+  deviceClass: DeviceClass.DESKTOP,
+  operatingSystemName: 'Ubuntu',
+  operatingSystemVersion: '??',
+  agentName: 'Firefox',
+  agentVersion: '15.0.1',
 };
 
-export const MOBILE_ANDROID_CHROME: UserAgentDTO = {
-  deviceClass: 'Phone',
+export const HTC_ONE_X10__CHROME: UserAgentDTO = {
+  deviceName: 'HTC ONE X10',
+  deviceBrand: 'HTC',
+  deviceClass: DeviceClass.PHONE,
   operatingSystemName: 'Android',
-  browserName: 'Chrome',
+  operatingSystemVersion: '6.0',
+  agentName: 'Chrome Webview',
+  agentVersion: '61.0.3163.98',
 };
 
 const HOURS_IN_DAY = 24;
@@ -52,7 +65,7 @@ const REBROWSE_SESSIONS_DESKTOP_FROM_LJUBLJANA: SessionDTO[] = Array.from({
       continentName: 'Europe',
     },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: DESKTOP_MAC_OSX_CHROME,
+    userAgent: MAC__SAFARI,
   };
 });
 
@@ -76,7 +89,7 @@ const REBROWSE_SESSIONS_PHONE_FROM_ZAGREB: SessionDTO[] = Array.from({
       continentName: 'Europe',
     },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: DESKTOP_MAC_OSX_CHROME,
+    userAgent: MAC__SAFARI,
   };
 });
 
@@ -100,7 +113,7 @@ const REBROWSE_SESSIONS_DESKTOP_FROM_VIRGINIA: SessionDTO[] = Array.from({
       continentName: 'North America',
     },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: DESKTOP_MAC_OSX_FIREFOX,
+    userAgent: LINUX_FIREFOX,
   };
 });
 
@@ -115,7 +128,7 @@ const REBROWSE_SESSIONS_PHONE_NO_LOCATION: SessionDTO[] = Array.from({
     deviceId: '123',
     location: { ip: '13.77.88.76' },
     organizationId: REBROWSE_ADMIN_DTO.organizationId,
-    userAgent: MOBILE_ANDROID_CHROME,
+    userAgent: HTC_ONE_X10__CHROME,
   };
 });
 

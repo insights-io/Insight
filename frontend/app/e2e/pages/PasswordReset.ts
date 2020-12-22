@@ -2,8 +2,8 @@ import { getByText } from '@testing-library/testcafe';
 
 import { PASSWORD_RESET_PAGE } from '../../src/shared/constants/routes';
 
-import { LoginPage } from '.';
 import { AbstractPage } from './AbstractPage';
+import LoginPage from './Login';
 
 class PasswordReset extends AbstractPage {
   /* Selectors */

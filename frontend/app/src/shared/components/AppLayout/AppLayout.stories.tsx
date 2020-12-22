@@ -7,7 +7,7 @@ import type { Meta } from '@storybook/react';
 import { AppLayout } from './AppLayout';
 
 export default {
-  title: 'App/components/AppLayout',
+  title: 'shared/components/AppLayout',
   component: AppLayout,
   decorators: [fullHeightDecorator],
 } as Meta;

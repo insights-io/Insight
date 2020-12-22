@@ -9,7 +9,7 @@ import {
   REBROWSE_SESSIONS,
   REBROWSE_SESSIONS_DTOS,
 } from '__tests__/data/sessions';
-import { sessionDescription } from 'modules/sessions/components/SessionListItem/SessionListItem';
+import { sessionDescription } from 'sessions/utils';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -72,9 +72,7 @@ describe('/sessions', () => {
   });
 
   describe('With many sessions', () => {
-    // FIXME!
-    // eslint-disable-next-line jest/no-disabled-tests
-    test.skip('As a user I see sessions in a paginated list that works smoothly', async () => {
+    test('As a user I see sessions in a paginated list that works smoothly', async () => {
       /* Mocks */
       document.cookie = 'SessionId=123';
       const {

@@ -205,7 +205,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
             given()
                 .when()
                 .contentType(ContentType.JSON)
-                .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+                .header(HttpHeaders.USER_AGENT, UserAgentData.MAC__SAFARI)
                 .body(body)
                 .post(PageVisitResource.PATH)
                 .then()
@@ -233,7 +233,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
     given()
         .when()
         .contentType(ContentType.JSON)
-        .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+        .header(HttpHeaders.USER_AGENT, UserAgentData.MAC__SAFARI)
         .body(objectMapper.writeValueAsString(withRandomOrganization))
         .post(PageVisitResource.PATH)
         .then()
@@ -253,7 +253,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
         given()
             .when()
             .contentType(ContentType.JSON)
-            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.MAC__SAFARI)
             .body(payload)
             .post(PageVisitResource.PATH)
             .then()
@@ -312,7 +312,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
         given()
             .when()
             .contentType(ContentType.JSON)
-            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.MAC__SAFARI)
             .body(nextPageNode)
             .post(PageVisitResource.PATH)
             .then()
@@ -347,7 +347,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
     DataResponse<PageVisitSessionLink> dataResponse =
         given()
             .when()
-            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.MAC__SAFARI)
             .contentType(ContentType.JSON)
             .body(payload)
             .post(PageVisitResource.PATH)
@@ -366,7 +366,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
         given()
             .when()
             .contentType(ContentType.JSON)
-            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.MAC__SAFARI)
             .body(payload)
             .post(PageVisitResource.PATH)
             .then()
@@ -407,7 +407,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
             .response()
             .as(new TypeRef<>() {});
 
-    assertEquals(DESKTOP_MAC_CHROME, sessions.getData().get(0).getUserAgent());
+    assertEquals(MAC__SAFARI, sessions.getData().get(0).getUserAgent());
     assertEquals(BOYDTON_US_VIRGINIA_NA, sessions.getData().get(0).getLocation());
   }
 
@@ -434,7 +434,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
                 deviceId,
                 organizationId,
                 JsonObject.mapFrom(BOYDTON_US_VIRGINIA_NA),
-                JsonObject.mapFrom(DESKTOP_MAC_CHROME),
+                JsonObject.mapFrom(MAC__SAFARI),
                 OffsetDateTime.ofInstant(
                     Instant.now().minus(31, ChronoUnit.MINUTES), ZoneOffset.UTC))
             .returning(FIELDS);
@@ -446,7 +446,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
         given()
             .when()
             .contentType(ContentType.JSON)
-            .header(HttpHeaders.USER_AGENT, UserAgentData.DESKTOP_MAC_CHROME)
+            .header(HttpHeaders.USER_AGENT, UserAgentData.MAC__SAFARI)
             .body(payload)
             .post(PageVisitResource.PATH)
             .then()

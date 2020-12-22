@@ -4,37 +4,61 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface HasUserAgent {
 
-  String getDeviceClass();
+  /* "Google Chromecast" | String */
+  String getDeviceName();
 
+  /* "Apple" | "Google" | String */
+  String getDeviceBrand();
+
+  DeviceClass getDeviceClass();
+
+  /* "Mac OS X" | String */
   String getOperatingSystemName();
 
-  String getBrowserName();
+  /* "10.14.6" | String */
+  String getOperatingSystemVersion();
+
+  /* "Firefox" | "Chrome" | String */
+  String getAgentName();
+
+  /* "87.0.664" | String */
+  String getAgentVersion();
 
   @JsonIgnore
   default boolean isRobot() {
-    return "Robot".equals(getDeviceClass());
+    return DeviceClass.ROBOT.equals(getDeviceClass())
+        || DeviceClass.ROBOT_IMITATOR.equals(getDeviceClass())
+        || DeviceClass.ROBOT_MOBILE.equals(getDeviceClass());
   }
 
   @JsonIgnore
   default boolean isHacker() {
-    return "Hacker".equals(getDeviceClass());
+    return DeviceClass.HACKER.equals(getDeviceClass());
   }
 
   @JsonIgnore
   default UserAgentMapper mapper() {
     return UserAgentMapper.builder()
+        .deviceName(getDeviceName())
+        .deviceBrand(getDeviceBrand())
         .deviceClass(getDeviceClass())
         .operatingSystemName(getOperatingSystemName())
-        .browserName(getBrowserName())
+        .operatingSystemVersion(getOperatingSystemVersion())
+        .agentName(getAgentName())
+        .agentVersion(getAgentVersion())
         .build();
   }
 
   @JsonIgnore
   default UserAgent userAgent() {
     return UserAgent.builder()
+        .deviceName(getDeviceName())
+        .deviceBrand(getDeviceBrand())
         .deviceClass(getDeviceClass())
         .operatingSystemName(getOperatingSystemName())
-        .browserName(getBrowserName())
+        .operatingSystemVersion(getOperatingSystemVersion())
+        .agentName(getAgentName())
+        .agentVersion(getAgentVersion())
         .build();
   }
 }

@@ -15,7 +15,11 @@ import lombok.Value;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserAgentMapper implements HasUserAgent {
 
-  String deviceClass;
+  String deviceName;
+  String deviceBrand;
+  DeviceClass deviceClass;
   String operatingSystemName;
-  String browserName;
+  String operatingSystemVersion;
+  String agentName;
+  String agentVersion;
 }

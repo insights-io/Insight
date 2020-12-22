@@ -10,7 +10,7 @@ import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import { SsoButton } from 'modules/auth/components/SsoButton';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { Flex, UnstyledLink } from '@rebrowse/elements';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 
 import { createOAuth2IntegrationHrefBuilder } from './utils';
 import LoginEmailForm from './EmailForm';

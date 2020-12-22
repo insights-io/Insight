@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalFooter, ModalBody } from 'baseui/modal';
 import { Button } from '@rebrowse/elements';
 import type { APIError, APIErrorDataResponse } from '@rebrowse/types';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { SIZE } from 'baseui/button';
 import { toaster } from 'baseui/toast';
 import { Block } from 'baseui/block';

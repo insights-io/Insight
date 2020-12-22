@@ -9,12 +9,16 @@ import { createQueryClient } from '../src/shared/utils/cache';
 
 /* Share Styletron instance across stories to keep css in sync */
 const engine = new Styletron();
-const queryClient = createQueryClient({
-  defaultOptions: { queries: { retry: false } },
-});
 
 const Providers = (
   props: Omit<AppProvidersProps, 'engine' | 'queryClient'>
-) => <AppProviders engine={engine} queryClient={queryClient} {...props} />;
+) => {
+  // Create fresh client for each story to restore cache
+  const queryClient = createQueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
+  return <AppProviders engine={engine} queryClient={queryClient} {...props} />;
+};
 
 export default createNextDecorator(Providers);

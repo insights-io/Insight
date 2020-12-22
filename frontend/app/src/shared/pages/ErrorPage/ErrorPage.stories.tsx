@@ -5,7 +5,7 @@ import type { Meta } from '@storybook/react';
 import { ErrorPage } from './ErrorPage';
 
 export default {
-  title: 'app/pages/ErrorPage',
+  title: 'shared/pages/ErrorPage',
   component: ErrorPage,
   decorators: [fullHeightDecorator],
 } as Meta;

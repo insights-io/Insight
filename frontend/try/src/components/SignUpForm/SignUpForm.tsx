@@ -8,7 +8,7 @@ import {
   APIError,
   SignUpRequestDTO,
 } from '@rebrowse/types';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import Router from 'next/router';
 import {
   PhoneNumberInput,

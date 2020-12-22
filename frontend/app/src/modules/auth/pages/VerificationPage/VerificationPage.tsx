@@ -5,7 +5,7 @@ import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
 import { AuthApi } from 'api/auth';
 import { useRouter } from 'next/router';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { TotpMfaInputMethod } from 'modules/auth/components/TotpMfaInputMethod';

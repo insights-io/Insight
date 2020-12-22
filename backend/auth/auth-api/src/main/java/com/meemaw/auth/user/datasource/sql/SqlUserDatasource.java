@@ -31,6 +31,7 @@ import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
 import io.vertx.core.json.JsonObject;
@@ -56,7 +57,7 @@ import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
-public class SqlUserDatasource implements UserDatasource {
+public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implements UserDatasource {
 
   private static final List<Field<?>> USER_WITH_LOGIN_INFORMATION_FIELDS =
       Stream.concat(
@@ -129,12 +130,12 @@ public class SqlUserDatasource implements UserDatasource {
 
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String email) {
-    return sqlPool.execute(findUserByEmail(email)).thenApply(this::onFindUser);
+    return sqlPool.execute(findUserByEmail(email)).thenApply(this::findOne);
   }
 
   @Override
   public CompletionStage<Optional<AuthUser>> findUser(String email, SqlTransaction transaction) {
-    return transaction.execute(findUserByEmail(email)).thenApply(this::onFindUser);
+    return transaction.execute(findUserByEmail(email)).thenApply(this::findOne);
   }
 
   private Query findUserByEmail(String email) {
@@ -142,10 +143,9 @@ public class SqlUserDatasource implements UserDatasource {
   }
 
   @Override
-  @Traced
   public CompletionStage<Optional<AuthUser>> findUser(UUID userId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(userId));
-    return sqlPool.execute(query).thenApply(this::onFindUser);
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 
   @Override
@@ -156,9 +156,8 @@ public class SqlUserDatasource implements UserDatasource {
         searchQuery(
             sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
             search);
-
     Query query = SQLSearchDTO.of(search).query(searchQuery, FIELD_MAPPINGS);
-    return sqlPool.execute(query).thenApply(this::onUsersFound);
+    return sqlPool.execute(query).thenApply(this::findMany);
   }
 
   @Override
@@ -185,20 +184,6 @@ public class SqlUserDatasource implements UserDatasource {
     }
 
     return baseQuery;
-  }
-
-  private Optional<AuthUser> onFindUser(RowSet<Row> pgRowSet) {
-    if (!pgRowSet.iterator().hasNext()) {
-      return Optional.empty();
-    }
-    Row row = pgRowSet.iterator().next();
-    return Optional.of(mapUser(row));
-  }
-
-  private Collection<AuthUser> onUsersFound(RowSet<Row> rows) {
-    Collection<AuthUser> users = new ArrayList<>();
-    rows.forEach(row -> users.add(mapUser(row)));
-    return users;
   }
 
   @Override
@@ -250,5 +235,10 @@ public class SqlUserDatasource implements UserDatasource {
             user.isPhoneNumberVerified(),
             password,
             mfaMethods));
+  }
+
+  @Override
+  public AuthUser fromSql(Row row) {
+    return SqlUserDatasource.mapUser(row);
   }
 }

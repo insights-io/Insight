@@ -83,7 +83,7 @@ public class BeaconBeatResourceProcessingTest {
     return Uni.createFrom()
         .completionStage(
             pageVisitResource
-                .create(payload, UserAgentData.DESKTOP_MAC_CHROME)
+                .create(payload, UserAgentData.MAC__SAFARI)
                 .thenApply(
                     response -> {
                       DataResponse<PageVisitSessionLink> dataResponse =

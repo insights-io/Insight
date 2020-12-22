@@ -17,7 +17,7 @@ import {
 } from 'modules/auth/validation/email';
 import Link from 'next/link';
 import { PASSWORD_VALIDATION } from 'modules/auth/validation/password';
-import FormError from 'shared/components/FormError';
+import { FormError } from 'shared/components/FormError';
 import { useStyletron } from 'baseui';
 import { locationAssign } from 'shared/utils/window';
 import { VERIFICATION_PAGE } from 'shared/constants/routes';

@@ -22,10 +22,10 @@ import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
@@ -36,7 +36,8 @@ import org.jooq.UpdateSetFirstStep;
 
 @ApplicationScoped
 @Slf4j
-public class SqlOrganizationDatasource implements OrganizationDatasource {
+public class SqlOrganizationDatasource extends AbstractSqlDatasource<Organization>
+    implements OrganizationDatasource {
 
   @Inject SqlPool sqlPool;
 
@@ -54,8 +55,12 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
   }
 
   @Override
-  public CompletionStage<Optional<Organization>> updateOrganization(
-      String organizationId, UpdateDTO update) {
+  public OrganizationDTO fromSql(Row row) {
+    return SqlOrganizationDatasource.mapOrganization(row);
+  }
+
+  @Override
+  public CompletionStage<Optional<Organization>> update(String organizationId, UpdateDTO update) {
     UpdateSetFirstStep<?> updateStep = sqlPool.getContext().update(TABLE);
     Query query =
         SQLUpdateDTO.of(update)
@@ -63,44 +68,30 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
             .where(ID.eq(organizationId))
             .returning(FIELDS);
 
-    return sqlPool.execute(query).thenApply(this::mapOrganizationIfPresent);
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 
   @Override
-  public CompletionStage<Organization> createOrganization(
+  public CompletionStage<Organization> create(
       CreateOrganizationParams params, SqlTransaction transaction) {
-    return transaction
-        .execute(createOrganizationQuery(params))
-        .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
+    return transaction.execute(createOrganizationQuery(params)).thenApply(this::expectOne);
   }
 
   @Override
-  public CompletionStage<Organization> createOrganization(CreateOrganizationParams params) {
-    return sqlPool
-        .execute(createOrganizationQuery(params))
-        .thenApply(pgRowSet -> mapOrganization(pgRowSet.iterator().next()));
-  }
-
-  private Query createOrganizationQuery(CreateOrganizationParams params) {
-    return sqlPool
-        .getContext()
-        .insertInto(TABLE)
-        .columns(INSERT_FIELDS)
-        .values(params.getId(), params.getName())
-        .returning(FIELDS);
+  public CompletionStage<Organization> create(CreateOrganizationParams params) {
+    return sqlPool.execute(createOrganizationQuery(params)).thenApply(this::expectOne);
   }
 
   @Override
-  public CompletionStage<Optional<Organization>> findOrganization(String id) {
+  public CompletionStage<Optional<Organization>> retrieve(String id) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
-    return sqlPool.execute(query).thenApply(this::mapOrganizationIfPresent);
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 
   @Override
-  public CompletionStage<Optional<Organization>> findOrganization(
-      String id, SqlTransaction transaction) {
+  public CompletionStage<Optional<Organization>> retrieve(String id, SqlTransaction transaction) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(id));
-    return transaction.execute(query).thenApply(this::mapOrganizationIfPresent);
+    return transaction.execute(query).thenApply(this::findOne);
   }
 
   @Override
@@ -114,10 +105,12 @@ public class SqlOrganizationDatasource implements OrganizationDatasource {
     return sqlPool.beginTransaction();
   }
 
-  private Optional<Organization> mapOrganizationIfPresent(RowSet<Row> rows) {
-    if (!rows.iterator().hasNext()) {
-      return Optional.empty();
-    }
-    return Optional.of(mapOrganization(rows.iterator().next()));
+  private Query createOrganizationQuery(CreateOrganizationParams params) {
+    return sqlPool
+        .getContext()
+        .insertInto(TABLE)
+        .columns(INSERT_FIELDS)
+        .values(params.getId(), params.getName())
+        .returning(FIELDS);
   }
 }
