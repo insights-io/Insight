@@ -1,4 +1,3 @@
-import type { GroupByData } from 'modules/insights/components/charts/GroupByPieChart';
 import {
   Session,
   SessionDTO,
@@ -132,13 +131,6 @@ export const REBROWSE_SESSIONS_DTOS: SessionDTO[] = [
 export const REBROWSE_SESSIONS: Session[] = REBROWSE_SESSIONS_DTOS.map(
   mapSession
 );
-
-export const GROUP_BY_COUNTRY: GroupByData = {
-  Slovenia: 1,
-  Crotia: 5,
-  Hungary: 3,
-  Germany: 4,
-};
 
 export const COUNT_SESSIONS_BY_LOCATION = countSessionsBy(
   REBROWSE_SESSIONS_DTOS,

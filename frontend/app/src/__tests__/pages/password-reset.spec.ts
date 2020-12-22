@@ -1,10 +1,10 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { jsonPromise } from 'test/utils';
+import { jsonPromise } from '__tests__/utils';
 import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
-import { mockIndexPage } from 'test/mocks';
+import { mockIndexPage } from '__tests__/mocks';
 import { mockApiError } from '@rebrowse/storybook';
 
 describe('/password-reset', () => {

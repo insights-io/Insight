@@ -11,6 +11,7 @@ const config: Config.InitialOptions = {
   displayName: pack.name,
   name: pack.name,
   testEnvironment: 'jest-environment-jsdom-sixteen',
+  testMatch: ['**/?(*.)+(spec).[jt]s?(x)'],
   globals: {
     'ts-jest': { tsconfig: 'tsconfig.jest.json' },
   },

@@ -9,7 +9,7 @@ import {
 import { getPage } from 'next-page-tester';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import * as windowUtils from 'shared/utils/window';
-import { mockIndexPage } from 'test/mocks';
+import { mockIndexPage } from '__tests__/mocks';
 
 describe('/login', () => {
   /* Data */

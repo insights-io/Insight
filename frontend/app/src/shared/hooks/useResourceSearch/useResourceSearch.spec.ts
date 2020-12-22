@@ -1,7 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { SearchBean } from '@rebrowse/types';
 import { act } from '@testing-library/react-hooks';
-import { renderHook } from 'test/utils';
+import { renderHook } from '__tests__/utils';
 
 import { useResourceSearch } from './useResourceSearch';
 

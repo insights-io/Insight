@@ -5,7 +5,7 @@ import {
   ACCOUNT_SETTINGS_DETAILS_PAGE,
   SETTINGS_PAGE,
 } from 'shared/constants/routes';
-import { mockAuth } from 'test/mocks';
+import { mockAuth } from '__tests__/mocks';
 
 describe('/settings', () => {
   /* Data */
