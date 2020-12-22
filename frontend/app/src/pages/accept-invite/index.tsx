@@ -1,7 +1,10 @@
 import React from 'react';
 import type { GetServerSideProps } from 'next';
 import type { TeamInviteDTO } from '@rebrowse/types';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
+import {
+  prepareCrossServiceHeaders,
+  startRequestSpan,
+} from 'shared/utils/tracing';
 import { AuthApi } from 'api';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { AcceptTeamInviteInvalidPage } from 'modules/auth/pages/AcceptTeamInviteInvalidPage';

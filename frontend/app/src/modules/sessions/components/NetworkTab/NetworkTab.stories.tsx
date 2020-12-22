@@ -1,5 +1,5 @@
 import React from 'react';
-import { FETCH_EVENTS } from 'test/data';
+import { FETCH_EVENTS } from '__tests__/data';
 import { fullHeightDecorator } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
 

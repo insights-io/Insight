@@ -1,8 +1,8 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { PAID_INVOICE_DTO } from 'test/data/billing';
+import { PAID_INVOICE_DTO } from '__tests__/data/billing';
 import type { Meta } from '@storybook/react';
-import { REBROWSE_ADMIN_DTO, REBROWSE_ORGANIZATION_DTO } from 'test/data';
+import { REBROWSE_ADMIN_DTO, REBROWSE_ORGANIZATION_DTO } from '__tests__/data';
 
 import { OrganizationSettingsBillingUsageAndPaymentsPage } from './OrganizationSettingsBillingUsageAndPaymentsPage';
 

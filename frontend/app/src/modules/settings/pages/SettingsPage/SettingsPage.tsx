@@ -1,5 +1,5 @@
-import { AppLayout } from 'modules/app/components/AppLayout';
 import React from 'react';
+import { AppLayout } from 'shared/components/AppLayout';
 import {
   ACCOUNT_SETTINGS_DETAILS_PAGE,
   ACCOUNT_SETTINGS_SECURITY_PAGE,

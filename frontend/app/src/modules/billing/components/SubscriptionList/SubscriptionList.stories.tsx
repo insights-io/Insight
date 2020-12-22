@@ -4,7 +4,7 @@ import {
   ACTIVE_BUSINESS_SUBSCRIPTION,
   CANCELED_ENTERPRISE_SUBSCRIPTION,
   INCOMPLETE_ENTERPRISE_SUBSCRIPTION,
-} from 'test/data/billing';
+} from '__tests__/data/billing';
 
 import { SubscriptionList } from './SubscriptionList';
 

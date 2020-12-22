@@ -5,7 +5,10 @@ import {
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 import { OrganizationSettingsBillingSubscriptionDetailsPage } from 'modules/settings/pages/organization/OrganizationSettingsBillingSubscriptionDetailsPage';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
+import {
+  prepareCrossServiceHeaders,
+  startRequestSpan,
+} from 'shared/utils/tracing';
 import { BillingApi } from 'api';
 import type { InvoiceDTO, SubscriptionDTO } from '@rebrowse/types';
 import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constants/routes';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { FREE_PLAN_DTO } from 'test/data/billing';
-import { REBROWSE_ADMIN_DTO, REBROWSE_ORGANIZATION_DTO } from 'test/data';
+import { FREE_PLAN_DTO } from '__tests__/data/billing';
+import { REBROWSE_ADMIN_DTO, REBROWSE_ORGANIZATION_DTO } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 
 import { OrganizationSettingsBillingSubscriptionPage } from './OrganizationSettingsBillingSubscriptionPage';

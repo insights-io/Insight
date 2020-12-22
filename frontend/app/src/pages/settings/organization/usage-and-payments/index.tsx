@@ -5,7 +5,10 @@ import {
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 import { OrganizationSettingsBillingUsageAndPaymentsPage } from 'modules/settings/pages/organization/OrganizationSettingsBillingUsageAndPaymentsPage';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
+import {
+  prepareCrossServiceHeaders,
+  startRequestSpan,
+} from 'shared/utils/tracing';
 import { BillingApi } from 'api';
 import type { InvoiceDTO } from '@rebrowse/types';
 

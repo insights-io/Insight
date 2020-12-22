@@ -2,7 +2,10 @@ import React from 'react';
 import { action } from '@storybook/addon-actions';
 import { configureStory, mockApiError } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
-import { TOTP_MFA_SETUP_QR_IMAGE, TOTP_MFA_SETUP_DTO } from 'test/data/mfa';
+import {
+  TOTP_MFA_SETUP_QR_IMAGE,
+  TOTP_MFA_SETUP_DTO,
+} from '__tests__/data/mfa';
 import type { Meta } from '@storybook/react';
 
 import { TotpMfaSetupModal, Props } from './index';

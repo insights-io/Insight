@@ -4,7 +4,7 @@ import {
   REBROWSE_ADMIN,
   REBROWSE_ADMIN_DTO,
   NAMELESS_ADMIN_DTO,
-} from 'test/data';
+} from '__tests__/data';
 
 import { OrganizationMembers } from './OrganizationMembers';
 

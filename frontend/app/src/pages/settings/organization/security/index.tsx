@@ -9,7 +9,10 @@ import type {
   OrganizationDTO,
   OrganizationPasswordPolicyDTO,
 } from '@rebrowse/types';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
+import {
+  prepareCrossServiceHeaders,
+  startRequestSpan,
+} from 'shared/utils/tracing';
 import { AuthApi } from 'api';
 
 type Props = AuthenticatedServerSideProps & {

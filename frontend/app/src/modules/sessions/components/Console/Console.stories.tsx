@@ -1,11 +1,13 @@
 import React from 'react';
-import { CONSOLE_EVENTS, ERROR_EVENTS } from 'test/data';
+import { CONSOLE_EVENTS, ERROR_EVENTS } from '__tests__/data';
+import type { Meta } from '@storybook/react';
 
 import Console from './Console';
 
 export default {
   title: 'sessions/components/Console',
-};
+  component: Console,
+} as Meta;
 
 export const Base = () => {
   return (

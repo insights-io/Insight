@@ -6,7 +6,7 @@ import {
 } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import type { ResponsePromise } from 'ky';
-import { MFA_METHODS } from 'test/data';
+import { MFA_METHODS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 
 import { VerificationPage } from './VerificationPage';

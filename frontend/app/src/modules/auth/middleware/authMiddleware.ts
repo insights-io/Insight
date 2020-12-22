@@ -14,7 +14,7 @@ import {
   startSpan,
   startRequestSpan,
   prepareCrossServiceHeaders,
-} from 'modules/tracing';
+} from 'shared/utils/tracing';
 import { LOGIN_PAGE, VERIFICATION_PAGE } from 'shared/constants/routes';
 
 export type Authenticated = {

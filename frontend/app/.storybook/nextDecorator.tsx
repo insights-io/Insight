@@ -4,7 +4,7 @@ import { createNextDecorator } from '@rebrowse/next-storybook';
 import {
   AppProviders,
   Props as AppProvidersProps,
-} from '../src/shared/containers/AppProviders';
+} from '../src/shared/components/AppProviders';
 import { createQueryClient } from '../src/shared/utils/cache';
 
 /* Share Styletron instance across stories to keep css in sync */

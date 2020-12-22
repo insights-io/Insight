@@ -1,5 +1,5 @@
 import React from 'react';
-import { REBROWSE_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ADMIN_DTO } from '__tests__/data';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
 

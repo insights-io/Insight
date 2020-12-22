@@ -19,7 +19,7 @@ import {
   IncomingTracedMessage,
   startRequestSpan,
   Span,
-} from 'modules/tracing';
+} from 'shared/utils/tracing';
 import { getBoostrapScript } from '@rebrowse/sdk';
 import { STYLETRON_HYDRATE_CLASSNAME } from '@rebrowse/elements';
 

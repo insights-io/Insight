@@ -1,9 +1,9 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
 import { SessionApi } from 'api/session';
-import { REBROWSE_SESSIONS, REBROWSE_EVENTS } from 'test/data';
+import { REBROWSE_SESSIONS, REBROWSE_EVENTS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
-import { filterBrowserEvent } from 'test/mocks/filter';
+import { filterBrowserEvent } from '__tests__/mocks/filter';
 
 import { SessionDetails } from './SessionDetails';
 

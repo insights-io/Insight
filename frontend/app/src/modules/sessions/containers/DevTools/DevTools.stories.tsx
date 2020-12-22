@@ -1,9 +1,9 @@
 import React from 'react';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { SessionApi } from 'api';
-import { REBROWSE_EVENTS } from 'test/data';
+import { REBROWSE_EVENTS } from '__tests__/data';
 import noop from 'lodash/noop';
-import { filterBrowserEvent } from 'test/mocks/filter';
+import { filterBrowserEvent } from '__tests__/mocks/filter';
 import type { Meta } from '@storybook/react';
 
 import DevTools from './DevTools';

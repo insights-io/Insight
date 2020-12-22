@@ -3,8 +3,11 @@ import {
   AuthenticatedServerSideProps,
   authenticated,
 } from 'modules/auth/middleware/authMiddleware';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import { startRequestSpan, prepareCrossServiceHeaders } from 'modules/tracing';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import {
+  startRequestSpan,
+  prepareCrossServiceHeaders,
+} from 'shared/utils/tracing';
 import { SessionApi } from 'api';
 import { SessionDTO } from '@rebrowse/types';
 import { SessionsPage } from 'modules/sessions/pages/SessionsPage';

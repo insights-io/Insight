@@ -4,11 +4,11 @@ import {
   REBROWSE_ADMIN_DTO,
   REBROWSE_ORGANIZATION_DTO,
   REBROWSE_EVENTS,
-} from 'test/data';
+} from '__tests__/data';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { AuthApi, SessionApi } from 'api';
 import { Meta } from '@storybook/react';
-import { filterBrowserEvent } from 'test/mocks/filter';
+import { filterBrowserEvent } from '__tests__/mocks/filter';
 
 import { SessionPage } from './SessionPage';
 

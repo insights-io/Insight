@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
-import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from 'test/data';
+import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from '__tests__/data';
 import { AuthApi } from 'api';
 
 import { OrganizationSettingsSecurityPage } from './OrganizationSettingsSecurityPage';

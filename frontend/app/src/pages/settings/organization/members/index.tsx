@@ -5,7 +5,10 @@ import {
   AuthenticatedServerSideProps,
 } from 'modules/auth/middleware/authMiddleware';
 import { OrganizationSettingsMembersPage } from 'modules/settings/pages/organization/OrganizationSettingsMembersPage';
-import { prepareCrossServiceHeaders, startRequestSpan } from 'modules/tracing';
+import {
+  prepareCrossServiceHeaders,
+  startRequestSpan,
+} from 'shared/utils/tracing';
 import { AuthApi } from 'api';
 import type { UserDTO } from '@rebrowse/types';
 

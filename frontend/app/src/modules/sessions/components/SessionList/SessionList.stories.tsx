@@ -2,7 +2,7 @@
 import React from 'react';
 import { Meta } from '@storybook/react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { REBROWSE_SESSIONS } from 'test/data';
+import { REBROWSE_SESSIONS } from '__tests__/data';
 
 import { SessionList } from './SessionList';
 
