@@ -60,9 +60,7 @@ describe('/password-reset', () => {
           statusCode: 400,
           reason: 'Bad Request',
           message: 'Bad Request',
-          errors: {
-            password: 'Too Short',
-          },
+          errors: { password: 'Too Short' },
         })
       );
 

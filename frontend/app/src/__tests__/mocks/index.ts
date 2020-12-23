@@ -18,8 +18,8 @@ import {
   countSessionsBy,
   retrieveSessionMockImplementation,
   searchEventsMockImplementation,
+  getDistinctMockImplementation,
 } from './filter';
-import { getParsedValue } from './filter/core';
 
 export const mockAuth = (
   sandbox: SinonSandbox,
@@ -91,15 +91,7 @@ export const mockSessionsPage = (
 
   const getDistinctStub = sandbox
     .stub(SessionApi, 'distinct')
-    .callsFake((on) => {
-      return Promise.resolve([
-        ...new Set(
-          sessions
-            .map((session) => getParsedValue(session, on) as string)
-            .filter(Boolean)
-        ),
-      ]);
-    });
+    .callsFake((on) => getDistinctMockImplementation(on));
 
   return {
     ...sessionMocks,

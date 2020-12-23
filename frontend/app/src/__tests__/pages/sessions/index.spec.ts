@@ -135,7 +135,10 @@ describe('/sessions', () => {
       );
       userEvent.click(screen.getByText('Filter event by...'));
       userEvent.click(screen.getByText('Country'));
-      sandbox.assert.calledWithExactly(getDistinctStub, 'location.countryName');
+      sandbox.assert.calledWithExactly(
+        getDistinctStub,
+        'location.country_name'
+      );
 
       const slovenia = 'Slovenia';
       userEvent.type(
@@ -149,14 +152,14 @@ describe('/sessions', () => {
           search: {
             limit: 20,
             'location.city': TermCondition.EQ(boydton),
-            'location.countryName': TermCondition.EQ(slovenia),
+            'location.country_name': TermCondition.EQ(slovenia),
             sortBy: ['-createdAt'],
           },
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
           search: {
             'location.city': TermCondition.EQ(boydton),
-            'location.countryName': TermCondition.EQ(slovenia),
+            'location.country_name': TermCondition.EQ(slovenia),
           },
         });
       });

@@ -8,7 +8,7 @@ import { startOfDay } from 'date-fns';
 import get from 'lodash/get';
 import { REBROWSE_SESSIONS_DTOS } from '__tests__/data/sessions';
 
-import { countBy, filterByParam } from './core';
+import { countBy, filterByParam, getParsedValue } from './core';
 
 export const filterSession = <
   GroupBy extends (keyof SessionSearchQueryParams)[]
@@ -54,4 +54,17 @@ export const retrieveSessionMockImplementation = (
       reason: 'Not Found',
     })
   );
+};
+
+export const getDistinctMockImplementation = (
+  on: keyof SessionSearchQueryParams,
+  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
+) => {
+  return Promise.resolve([
+    ...new Set(
+      sessions
+        .map((session) => getParsedValue(session, on) as string)
+        .filter(Boolean)
+    ),
+  ]);
 };

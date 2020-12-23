@@ -4,12 +4,13 @@ import camelCase from 'lodash/camelCase';
 import { isValid, parseISO } from 'date-fns';
 
 const parseValue = (value: string | number | Date) => {
+  if (!Number.isNaN(Number(value))) {
+    return Number(value);
+  }
+
   const maybeDate = parseISO(value as string);
   if (isValid(maybeDate)) {
     return maybeDate;
-  }
-  if (!Number.isNaN(Number(value))) {
-    return Number(value);
   }
 
   return value;
@@ -53,7 +54,8 @@ export const filterByParam = <
     // eslint-disable-next-line no-restricted-syntax
     for (const queryParam of params) {
       const [termCondition, ...rest] = queryParam.split(':');
-      const expectedValue = parseValue(rest.join(':'));
+      const stringValue = rest.join(':');
+      const expectedValue = parseValue(stringValue);
 
       if (termCondition === 'gte' && actualValue < expectedValue) {
         return false;

@@ -1,4 +1,8 @@
-import { SessionSearchBean, TermCondition } from '@rebrowse/sdk';
+import {
+  EventSearchQueryParams,
+  SessionSearchBean,
+  TermCondition,
+} from '@rebrowse/sdk';
 import { SearchBean, SessionDTO } from '@rebrowse/types';
 import { addHours, subHours } from 'date-fns';
 import {
@@ -15,28 +19,35 @@ describe('filter', () => {
   describe('filterByParam', () => {
     it('events > "event.e" | Number', () => {
       const [event] = CONSOLE_EVENTS;
+      const { e } = event;
 
-      const filterEventByParam = (search: SearchBean<{ 'event.e': unknown }>) =>
+      const filterEventByParam = (search: SearchBean<EventSearchQueryParams>) =>
         filterBrowserEvent(event, search);
 
       expect(
-        filterEventByParam({ 'event.e': TermCondition.EQ(9) })
+        filterEventByParam({ 'event.e': TermCondition.EQ(e) })
       ).toBeTruthy();
 
       expect(
-        filterEventByParam({ 'event.e': TermCondition.GT(9) })
+        filterEventByParam({ 'event.e': TermCondition.GT(e) })
       ).toBeFalsy();
 
       expect(
-        filterEventByParam({ 'event.e': TermCondition.GTE(9) })
+        filterEventByParam({ 'event.e': TermCondition.GTE(e) })
       ).toBeTruthy();
 
       expect(
-        filterEventByParam({ 'event.e': TermCondition.LT(9) })
+        filterEventByParam({ 'event.e': TermCondition.LT(e) })
       ).toBeFalsy();
 
       expect(
-        filterEventByParam({ 'event.e': TermCondition.LTE(9) })
+        filterEventByParam({ 'event.e': TermCondition.LTE(e) })
+      ).toBeTruthy();
+
+      expect(
+        filterEventByParam({
+          'event.e': [TermCondition.GTE(e), TermCondition.LTE(e + 1)],
+        })
       ).toBeTruthy();
     });
 
