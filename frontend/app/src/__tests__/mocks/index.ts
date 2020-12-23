@@ -8,18 +8,19 @@ import {
 import { jsonPromise, textPromise } from '__tests__/utils';
 import ky from 'ky-universal';
 import get from 'lodash/get';
-import type { SessionDTO } from '@rebrowse/types';
-import { mockApiError } from '@rebrowse/storybook';
+import type { BrowserEventDTO, SessionDTO } from '@rebrowse/types';
 
-import { filterSession, filterBrowserEvent, countSessionsBy } from './filter';
+import {
+  filterSession,
+  countSessionsBy,
+  retrieveSessionMockImplementation,
+  searchEventsMockImplementation,
+} from './filter';
 
 export const mockAuth = () => {
-  const retrieveSessionStub = sandbox.stub(AuthApi.sso.session, 'get').returns(
-    jsonPromise({
-      status: 200,
-      data: REBROWSE_SESSION_INFO,
-    })
-  );
+  const retrieveSessionStub = sandbox
+    .stub(AuthApi.sso.session, 'get')
+    .returns(jsonPromise({ status: 200, data: REBROWSE_SESSION_INFO }));
 
   const retrieveUserStub = sandbox
     .stub(AuthApi.user, 'me')
@@ -33,7 +34,8 @@ export const mockAuth = () => {
 };
 
 export const mockSessionDetailsPage = (
-  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
+  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS,
+  events: BrowserEventDTO[] = REBROWSE_EVENTS
 ) => {
   const authMocks = mockAuth();
 
@@ -43,11 +45,9 @@ export const mockSessionDetailsPage = (
 
   const searchEventsStub = sandbox
     .stub(SessionApi.events, 'search')
-    .callsFake((_sessionId, args = {}) => {
-      return Promise.resolve(
-        REBROWSE_EVENTS.filter((e) => filterBrowserEvent(e, args.search))
-      );
-    });
+    .callsFake((_, args = {}) =>
+      searchEventsMockImplementation(args.search, events)
+    );
 
   return { ...authMocks, retrieveSessionStub, searchEventsStub };
 };
@@ -59,42 +59,27 @@ export const mockSessionsPage = (
 
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
-    .callsFake((args = {}) => {
-      const data = countSessionsBy(sessions, args.search);
-      return Promise.resolve(data);
-    });
+    .callsFake((args = {}) =>
+      Promise.resolve(countSessionsBy(sessions, args.search))
+    );
 
   const retrieveSessionStub = sandbox
     .stub(SessionApi, 'getSession')
-    .callsFake((id) => {
-      const maybeSession = sessions.find((s) => s.id === id);
-      if (maybeSession) {
-        return Promise.resolve(maybeSession);
-      }
-      return Promise.reject(
-        mockApiError({
-          statusCode: 404,
-          message: 'Not Found',
-          reason: 'Not Found',
-        })
-      );
-    });
+    .callsFake((id) => retrieveSessionMockImplementation(id, sessions));
 
   const listSessionsStub = sandbox
     .stub(SessionApi, 'getSessions')
-    .callsFake((args = {}) => {
-      const data = sessions.filter((s) => filterSession(s, args.search));
-      return Promise.resolve(data);
-    });
+    .callsFake((args = {}) =>
+      Promise.resolve(sessions.filter((s) => filterSession(s, args.search)))
+    );
 
   const getDistinctStub = sandbox
     .stub(SessionApi, 'distinct')
-    .callsFake((on: string) => {
-      const data = [
+    .callsFake((on: string) =>
+      Promise.resolve([
         ...new Set(sessions.map((s) => get(s, on)).filter(Boolean)),
-      ];
-      return Promise.resolve(data);
-    });
+      ])
+    );
 
   return {
     ...authMocks,
@@ -142,15 +127,15 @@ export const mockIndexPage = (
   const authMocks = mockAuth();
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
-    .callsFake((args = {}) => {
-      return Promise.resolve(countSessionsBy(sessions, args.search));
-    });
+    .callsFake((args = {}) =>
+      Promise.resolve(countSessionsBy(sessions, args.search))
+    );
 
   const countPageVisitsStub = sandbox
     .stub(PagesApi, 'count')
-    .callsFake((args = {}) => {
-      return Promise.resolve(countSessionsBy(sessions, args.search));
-    });
+    .callsFake((args = {}) =>
+      Promise.resolve(countSessionsBy(sessions, args.search))
+    );
 
   return { ...authMocks, countPageVisitsStub, countSessionsStub };
 };
