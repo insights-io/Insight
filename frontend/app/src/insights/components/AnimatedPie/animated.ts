@@ -12,18 +12,16 @@ export type Transition<Datum> = {
   key: string;
 };
 
-export const fromLeaveTransition = ({ endAngle }: PieArcDatum<unknown>) => ({
+export const fromLeaveTransition = <Datum>({
+  endAngle,
+}: PieArcDatum<Datum>) => ({
   // enter from 360° if end angle is > 180°
   startAngle: endAngle > Math.PI ? 2 * Math.PI : 0,
   endAngle: endAngle > Math.PI ? 2 * Math.PI : 0,
   opacity: 0,
 });
 
-export const enterUpdateTransition = ({
+export const enterUpdateTransition = <Datum>({
   startAngle,
   endAngle,
-}: PieArcDatum<unknown>) => ({
-  startAngle,
-  endAngle,
-  opacity: 1,
-});
+}: PieArcDatum<Datum>) => ({ startAngle, endAngle, opacity: 1 });

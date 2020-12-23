@@ -1,17 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Group } from '@visx/group';
 import { Pie } from '@visx/shape';
-import { defaultStyles, TooltipWithBounds, useTooltip } from '@visx/tooltip';
+import { TooltipWithBounds, useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { ResponsiveChart } from 'insights/components/ResponsiveChart';
-
-import { AnimatedPie } from './AnimatedPie';
-
-const tooltipStyles = {
-  ...defaultStyles,
-  background: '#6086d6',
-  color: '#e0e0e0',
-};
+import { AnimatedPie } from 'insights/components/AnimatedPie';
+import { tooltipStyles } from 'insights/styles';
 
 type Props<Datum> = {
   width: number;
