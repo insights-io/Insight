@@ -15,44 +15,7 @@ export const filterSession = <
 >(
   value: SessionDTO,
   search: SessionSearchBean<GroupBy> | undefined
-) => {
-  if (!search) {
-    return true;
-  }
-
-  const {
-    location: { city, countryName, continentName },
-  } = value;
-
-  if (search['location.city']) {
-    if (`eq:${city}` !== search['location.city']) {
-      return false;
-    }
-  }
-  if (search['location.countryName']) {
-    if (`eq:${countryName}` !== search['location.countryName']) {
-      return false;
-    }
-  }
-
-  if (search['location.continentName']) {
-    if (`eq:${continentName}` !== search['location.continentName']) {
-      return false;
-    }
-  }
-
-  if (search.createdAt) {
-    if (
-      !filterByParam(value, 'createdAt', { createdAt: search.createdAt }, (v) =>
-        new Date(v).valueOf()
-      )
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-};
+) => filterByParam(value, search);
 
 export const countSessionsBy = <
   GroupBy extends (keyof SessionSearchQueryParams)[] = []

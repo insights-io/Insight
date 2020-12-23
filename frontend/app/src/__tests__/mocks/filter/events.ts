@@ -8,29 +8,17 @@ export const filterBrowserEvent = <
   GroupBy extends (keyof EventSearchQueryParams)[]
 >(
   event: BrowserEventDTO,
-  search: EventSeachBean<GroupBy> | undefined
+  search: EventSeachBean<GroupBy> = {}
 ) => {
-  if (!search) {
-    return true;
-  }
+  const mappedSearch = Object.keys(search).reduce((acc, key) => {
+    const mappedKey = key.replace('event.', '');
+    return { ...acc, [mappedKey]: search[key as keyof typeof search] };
+  }, {} as typeof search);
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const key of ['event.e']) {
-    if (
-      !filterByParam(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        event as any,
-        key,
-        search,
-        (v) => parseInt(v, 10),
-        (r, f) => r[(f as string).replace('event.', '')]
-      )
-    ) {
-      return false;
-    }
-  }
-
-  return true;
+  return filterByParam(
+    (event as unknown) as Record<string, unknown>,
+    mappedSearch
+  );
 };
 
 export const searchEventsMockImplementation = (

@@ -93,7 +93,7 @@ describe('/sessions/[id]', () => {
     );
 
     sandbox.assert.calledWithExactly(searchEventsStub, id, {
-      search: { 'event.e': ['eq:11'], limit: 1000 },
+      search: { 'event.e': [TermCondition.EQ(11)], limit: 1000 },
     });
   });
 

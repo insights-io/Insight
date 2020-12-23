@@ -6,7 +6,6 @@ import {
 } from '__tests__/data';
 import { jsonPromise, textPromise } from '__tests__/utils/request';
 import ky from 'ky-universal';
-import get from 'lodash/get';
 import type {
   BrowserEventDTO,
   SessionDTO,
@@ -20,6 +19,7 @@ import {
   retrieveSessionMockImplementation,
   searchEventsMockImplementation,
 } from './filter';
+import { getParsedValue } from './filter/core';
 
 export const mockAuth = (
   sandbox: SinonSandbox,
@@ -91,11 +91,15 @@ export const mockSessionsPage = (
 
   const getDistinctStub = sandbox
     .stub(SessionApi, 'distinct')
-    .callsFake((on: string) =>
-      Promise.resolve([
-        ...new Set(sessions.map((s) => get(s, on)).filter(Boolean)),
-      ])
-    );
+    .callsFake((on) => {
+      return Promise.resolve([
+        ...new Set(
+          sessions
+            .map((session) => getParsedValue(session, on) as string)
+            .filter(Boolean)
+        ),
+      ]);
+    });
 
   return {
     ...sessionMocks,
