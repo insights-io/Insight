@@ -10,6 +10,7 @@ import Divider from 'shared/components/Divider';
 import { readableLocation } from 'shared/utils/location';
 import { FaQuestion } from 'react-icons/fa';
 import { SESSIONS_PAGE } from 'shared/constants/routes';
+import { TermCondition } from '@rebrowse/sdk';
 
 import { Item } from '../Item';
 
@@ -22,9 +23,6 @@ type Props = {
 export const SessionDetails = ({
   session: { userAgent, createdAt, location },
 }: Props) => {
-  const browser = `${userAgent.agentName} ${userAgent.agentVersion}`;
-  const operatingSystem = `${userAgent.operatingSystemName} ${userAgent.operatingSystemVersion}`;
-
   return (
     <Block>
       <Paragraph3>
@@ -77,52 +75,75 @@ export const SessionDetails = ({
         </H5>
 
         <TagLink
-          href={`${SESSIONS_PAGE}?query=user_agent.device_class:eq${userAgent.deviceClass}`}
+          href={`${SESSIONS_PAGE}?user_agent.device_class=${TermCondition.EQ(
+            userAgent.deviceClass
+          )}`}
         >
           device.class = {userAgent.deviceClass}
         </TagLink>
 
         <TagLink
-          href={`${SESSIONS_PAGE}?query=user_agent.device_brand:eq${userAgent.deviceBrand}`}
+          href={`${SESSIONS_PAGE}?user_agent.device_brand=${TermCondition.EQ(
+            userAgent.deviceBrand
+          )}`}
         >
           device.brand = {userAgent.deviceBrand}
         </TagLink>
         <TagLink
-          href={`${SESSIONS_PAGE}?query=user_agent.device_name:eq${userAgent.deviceName}`}
+          href={`${SESSIONS_PAGE}?user_agent.device_name=${TermCondition.EQ(
+            userAgent.deviceName
+          )}`}
         >
           device.name = {userAgent.deviceName}
         </TagLink>
 
         <TagLink
-          href={`${SESSIONS_PAGE}?query=user_agent.browser:eq${browser}`}
+          href={`${SESSIONS_PAGE}?user_agent.browser_name=${TermCondition.EQ(
+            userAgent.agentName
+          )}&user_agent.browser_name=${TermCondition.EQ(
+            userAgent.agentVersion
+          )}`}
         >
-          browser = {browser}
+          browser = {userAgent.agentName} {userAgent.agentVersion}
         </TagLink>
         <TagLink
-          href={`${SESSIONS_PAGE}?query=user_agent.browser_name:eq${userAgent.agentName}`}
+          href={`${SESSIONS_PAGE}?user_agent.browser_name=${TermCondition.EQ(
+            userAgent.agentName
+          )}`}
         >
           browser.name = {userAgent.agentName}
         </TagLink>
 
         <TagLink
-          href={`${SESSIONS_PAGE}?query=user_agent.operating_system:eq${operatingSystem}`}
+          href={`${SESSIONS_PAGE}?user_agent.operating_system_name=${TermCondition.EQ(
+            userAgent.operatingSystemName
+          )}&user_agent.operating_system_version=${TermCondition.EQ(
+            userAgent.operatingSystemVersion
+          )}`}
         >
-          client_os = {operatingSystem}
+          client_os = {userAgent.operatingSystemName}{' '}
+          {userAgent.operatingSystemVersion}
         </TagLink>
 
         <TagLink
-          href={`${SESSIONS_PAGE}?query=user_agent.operating_system_name:eq${userAgent.operatingSystemName}`}
+          href={`${SESSIONS_PAGE}?user_agent.operating_system_name=${TermCondition.EQ(
+            userAgent.operatingSystemName
+          )}`}
         >
           client_os.name = {userAgent.operatingSystemName}
         </TagLink>
 
-        <TagLink href={`${SESSIONS_PAGE}?query=location.ip:eq${location.ip}`}>
+        <TagLink
+          href={`${SESSIONS_PAGE}?location.ip=${TermCondition.EQ(location.ip)}`}
+        >
           user.ip = {location.ip}
         </TagLink>
 
         {location.continentName && (
           <TagLink
-            href={`${SESSIONS_PAGE}?query=location.continent_name:eq${location.continentName}`}
+            href={`${SESSIONS_PAGE}?location.continent_name=${TermCondition.EQ(
+              location.continentName
+            )}`}
           >
             user.continent = {location.continentName}
           </TagLink>
@@ -130,7 +151,9 @@ export const SessionDetails = ({
 
         {location.countryName && (
           <TagLink
-            href={`${SESSIONS_PAGE}?query=location.country_name:eq${location.countryName}`}
+            href={`${SESSIONS_PAGE}?query=location.country_name${TermCondition.EQ(
+              location.countryName
+            )}`}
           >
             user.country = {location.countryName}
           </TagLink>
@@ -138,7 +161,9 @@ export const SessionDetails = ({
 
         {location.regionName && (
           <TagLink
-            href={`${SESSIONS_PAGE}?query=location.region_name:eq${location.regionName}`}
+            href={`${SESSIONS_PAGE}?query=location.region_name${TermCondition.EQ(
+              location.regionName
+            )}`}
           >
             user.region = {location.regionName}
           </TagLink>
@@ -146,7 +171,9 @@ export const SessionDetails = ({
 
         {location.city && (
           <TagLink
-            href={`${SESSIONS_PAGE}?query=location.city:eq${location.city}`}
+            href={`${SESSIONS_PAGE}?query=location.city${TermCondition.EQ(
+              location.city
+            )}`}
           >
             user.city = {location.city}
           </TagLink>

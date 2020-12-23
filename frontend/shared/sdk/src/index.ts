@@ -36,3 +36,4 @@ export * from './types';
 export * from './tracking';
 export * from './pages';
 export * from './billing';
+export * from './utils';

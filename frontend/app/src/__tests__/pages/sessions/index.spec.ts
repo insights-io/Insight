@@ -10,6 +10,7 @@ import {
   REBROWSE_SESSIONS_DTOS,
 } from '__tests__/data/sessions';
 import { sessionDescription } from 'sessions/utils';
+import { TermCondition } from '@rebrowse/sdk';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -118,12 +119,12 @@ describe('/sessions', () => {
         sandbox.assert.calledWithExactly(listSessionsStub, {
           search: {
             limit: 20,
-            'location.city': `eq:${boydton}`,
+            'location.city': TermCondition.EQ(boydton),
             sortBy: ['-createdAt'],
           },
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
-          search: { 'location.city': `eq:${boydton}` },
+          search: { 'location.city': TermCondition.EQ(boydton) },
         });
       });
 
@@ -147,15 +148,15 @@ describe('/sessions', () => {
         sandbox.assert.calledWithExactly(listSessionsStub, {
           search: {
             limit: 20,
-            'location.city': `eq:${boydton}`,
-            'location.countryName': `eq:${slovenia}`,
+            'location.city': TermCondition.EQ(boydton),
+            'location.countryName': TermCondition.EQ(slovenia),
             sortBy: ['-createdAt'],
           },
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
           search: {
-            'location.city': `eq:${boydton}`,
-            'location.countryName': `eq:${slovenia}`,
+            'location.city': TermCondition.EQ(boydton),
+            'location.countryName': TermCondition.EQ(slovenia),
           },
         });
       });

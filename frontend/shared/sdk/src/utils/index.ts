@@ -26,3 +26,21 @@ export const querystring = <
 
   return `?${stringify(searchParams)}`;
 };
+
+const rhsTermCondition = (key: string) => <T>(value: T): string => {
+  // eslint-disable-next-line lodash/prefer-lodash-typecheck
+  if (value instanceof Date) {
+    return `${key}:${value.toISOString()}`;
+  }
+  return `${key}:${value}`;
+};
+
+export const TermCondition = {
+  EQ: rhsTermCondition('eq'),
+  GTE: rhsTermCondition('gte'),
+  GT: rhsTermCondition('gt'),
+  LTE: rhsTermCondition('lte'),
+  LT: rhsTermCondition('lt'),
+};
+
+export type TermConditionKey = keyof typeof TermCondition;

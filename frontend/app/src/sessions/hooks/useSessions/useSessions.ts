@@ -8,7 +8,7 @@ import {
   Reducer,
 } from 'react';
 import { Session, SessionDTO } from '@rebrowse/types';
-import { mapSession } from '@rebrowse/sdk';
+import { mapSession, TermCondition } from '@rebrowse/sdk';
 import debounce from 'lodash/debounce';
 import { UnreachableCaseError } from 'shared/utils/error';
 import { SessionSearchBean } from '@rebrowse/sdk/dist/sessions';
@@ -81,10 +81,10 @@ const getSearchQuery = ({ dateRange, filters }: Filter) => {
   const searchBean: SessionSearchBean<[]> = {};
   const createdAt = [];
   if (dateRange?.from) {
-    createdAt.push(`gte:${dateRange.from.toISOString()}`);
+    createdAt.push(TermCondition.GTE(dateRange.from));
   }
   if (dateRange?.to) {
-    createdAt.push(`lte:${dateRange.to.toISOString()}`);
+    createdAt.push(TermCondition.LTE(dateRange.to));
   }
 
   if (createdAt.length > 0) {
@@ -93,7 +93,7 @@ const getSearchQuery = ({ dateRange, filters }: Filter) => {
 
   filters.forEach((f) => {
     if (f.key) {
-      searchBean[f.key] = `eq:${f.value}`;
+      searchBean[f.key] = TermCondition.EQ(f.value);
     }
   });
 
@@ -175,9 +175,9 @@ export const useSessions = (
       search.limit = endIndex - startIndex + 1;
 
       if (sessions.length > 0) {
-        const lastSessionCreatedAt = `lte:${sessions[
-          sessions.length - 1
-        ].createdAt.toISOString()}`;
+        const lastSessionCreatedAt = TermCondition.LTE(
+          sessions[sessions.length - 1].createdAt
+        );
 
         if (!search.createdAt) {
           search.createdAt = [lastSessionCreatedAt];

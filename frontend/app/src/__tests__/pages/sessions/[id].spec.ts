@@ -1,3 +1,4 @@
+import { TermCondition } from '@rebrowse/sdk';
 import { sandbox } from '@rebrowse/testing';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -28,18 +29,18 @@ describe('/sessions/[id]', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    /* Client */
-    render(page);
-
     sandbox.assert.calledWithMatch(retrieveSessionStub, 'random', {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
 
+    /* Client */
+    render(page);
+
     await screen.findAllByText('Mac OS X • Chrome');
   });
 
-  test('As a user I should be able to work with dev tools', async () => {
+  test('As a user I should be able to work with Developer tools', async () => {
     /* Mocks */
     document.cookie = 'SessionId=123';
     const { retrieveSessionStub, searchEventsStub } = mockSessionPage(sandbox);
@@ -48,12 +49,13 @@ describe('/sessions/[id]', () => {
     /* Server */
     const { page } = await getPage({ route: `${SESSIONS_PAGE}/${id}` });
 
-    /* Client */
-    render(page);
     sandbox.assert.calledWithMatch(retrieveSessionStub, id, {
       baseURL: 'http://localhost:8082',
       headers: { cookie: 'SessionId=123' },
     });
+
+    /* Client */
+    render(page);
 
     userEvent.click(screen.getByLabelText('Developer tools'));
 
@@ -73,7 +75,10 @@ describe('/sessions/[id]', () => {
     ).toBeInTheDocument();
 
     sandbox.assert.calledWithExactly(searchEventsStub, id, {
-      search: { 'event.e': ['gte:9', 'lte:10'], limit: 1000 },
+      search: {
+        'event.e': [TermCondition.GTE(9), TermCondition.LTE(10)],
+        limit: 1000,
+      },
     });
 
     userEvent.click(screen.getByText('Network'));
@@ -86,5 +91,25 @@ describe('/sessions/[id]', () => {
     sandbox.assert.calledWithExactly(searchEventsStub, id, {
       search: { 'event.e': ['eq:11'], limit: 1000 },
     });
+  });
+
+  test.only('As a user I can search for "similar sessions" by tags', async () => {
+    /* Mocks */
+    document.cookie = 'SessionId=123';
+    const { retrieveSessionStub } = mockSessionPage(sandbox);
+    const [{ id }] = REBROWSE_SESSIONS_DTOS;
+
+    /* Server */
+    const { page } = await getPage({ route: `${SESSIONS_PAGE}/${id}` });
+
+    sandbox.assert.calledWithMatch(retrieveSessionStub, id, {
+      baseURL: 'http://localhost:8082',
+      headers: { cookie: 'SessionId=123' },
+    });
+
+    /* Client */
+    render(page);
+
+    await screen.findByText(id);
   });
 });
