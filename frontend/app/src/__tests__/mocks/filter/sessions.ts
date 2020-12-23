@@ -2,9 +2,11 @@ import type {
   SessionSearchBean,
   SessionSearchQueryParams,
 } from '@rebrowse/sdk';
+import { mockApiError } from '@rebrowse/storybook';
 import { SessionDTO, TimePrecision } from '@rebrowse/types';
 import { startOfDay } from 'date-fns';
 import get from 'lodash/get';
+import { REBROWSE_SESSIONS_DTOS } from '__tests__/data/sessions';
 
 import { countBy, filterByParam } from './core';
 
@@ -71,5 +73,22 @@ export const countSessionsBy = <
       }
       return value;
     }
+  );
+};
+
+export const retrieveSessionMockImplementation = (
+  id: string,
+  sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
+) => {
+  const maybeSession = sessions.find((s) => s.id === id);
+  if (maybeSession) {
+    return Promise.resolve(maybeSession);
+  }
+  return Promise.reject(
+    mockApiError({
+      statusCode: 404,
+      message: 'Not Found',
+      reason: 'Not Found',
+    })
   );
 };

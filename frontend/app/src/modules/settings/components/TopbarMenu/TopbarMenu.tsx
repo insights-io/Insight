@@ -1,6 +1,6 @@
 import React from 'react';
 import { Block } from 'baseui/block';
-import { Breadcrumbs } from 'baseui/breadcrumbs';
+import { Breadcrumbs } from 'shared/components/Breadcrumbs';
 import Link from 'next/link';
 import { Select, SIZE, TYPE, Option } from 'baseui/select';
 import {
@@ -13,7 +13,6 @@ import {
   Flex,
 } from '@rebrowse/elements';
 import { FaLink } from 'react-icons/fa';
-import { joinSegments } from 'modules/settings/utils';
 import { Menu, Delete } from 'baseui/icon';
 import type { Path, SearchOption } from 'modules/settings/types';
 import * as zIndex from 'shared/constants/zIndex';
@@ -74,31 +73,7 @@ export const TopbarMenu = ({
         </VerticalAligned>
 
         <VerticalAligned>
-          <Breadcrumbs
-            overrides={{
-              List: { style: { display: 'flex', flexWrap: 'wrap' } },
-              ListItem: { style: { display: 'flex' } },
-              Separator: {
-                style: {
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                },
-              },
-            }}
-          >
-            {path.map((pathPart, index) => {
-              const link = joinSegments(
-                path.slice(0, index + 1).map((p) => p.segment)
-              );
-
-              return (
-                <Link key={link} href={link}>
-                  <UnstyledLink href={link}>{pathPart.text}</UnstyledLink>
-                </Link>
-              );
-            })}
-          </Breadcrumbs>
+          <Breadcrumbs path={path} />
         </VerticalAligned>
       </Flex>
 

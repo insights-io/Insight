@@ -39,19 +39,7 @@ export const mockSessionDetailsPage = (
 
   const retrieveSessionStub = sandbox
     .stub(SessionApi, 'getSession')
-    .callsFake((id) => {
-      const maybeSession = sessions.find((s) => s.id === id);
-      if (maybeSession) {
-        return Promise.resolve(maybeSession);
-      }
-      return Promise.reject(
-        mockApiError({
-          statusCode: 404,
-          message: 'Not Found',
-          reason: 'Not Found',
-        })
-      );
-    });
+    .callsFake((id) => retrieveSessionMockImplementation(id, sessions));
 
   const searchEventsStub = sandbox
     .stub(SessionApi.events, 'search')

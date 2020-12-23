@@ -45,9 +45,11 @@ const HOURS_IN_DAY = 24;
 const HOURS_IN_30_DAYS = HOURS_IN_DAY * 30;
 const NOW = new Date();
 
-const REBROWSE_SESSIONS_DESKTOP_FROM_LJUBLJANA: SessionDTO[] = Array.from({
-  length: HOURS_IN_30_DAYS,
-}).map((_, index) => {
+export const REBROWSE_SESSIONS_DESKTOP_FROM_LJUBLJANA: SessionDTO[] = Array.from(
+  {
+    length: HOURS_IN_30_DAYS,
+  }
+).map((_, index) => {
   const offsetHours = Math.ceil(Math.random() * 10) + index;
 
   return {
@@ -69,7 +71,7 @@ const REBROWSE_SESSIONS_DESKTOP_FROM_LJUBLJANA: SessionDTO[] = Array.from({
   };
 });
 
-const REBROWSE_SESSIONS_PHONE_FROM_ZAGREB: SessionDTO[] = Array.from({
+export const REBROWSE_SESSIONS_PHONE_FROM_ZAGREB: SessionDTO[] = Array.from({
   length: HOURS_IN_DAY,
 }).map((_, index) => {
   const offsetHours = Math.ceil(Math.random() * 10) + index;
@@ -93,9 +95,11 @@ const REBROWSE_SESSIONS_PHONE_FROM_ZAGREB: SessionDTO[] = Array.from({
   };
 });
 
-const REBROWSE_SESSIONS_DESKTOP_FROM_VIRGINIA: SessionDTO[] = Array.from({
-  length: HOURS_IN_30_DAYS,
-}).map((_, index) => {
+export const REBROWSE_SESSIONS_DESKTOP_FROM_VIRGINIA: SessionDTO[] = Array.from(
+  {
+    length: HOURS_IN_30_DAYS,
+  }
+).map((_, index) => {
   const offsetHours = Math.ceil(Math.random() * 10) + index;
 
   return {
@@ -117,7 +121,7 @@ const REBROWSE_SESSIONS_DESKTOP_FROM_VIRGINIA: SessionDTO[] = Array.from({
   };
 });
 
-const REBROWSE_SESSIONS_PHONE_NO_LOCATION: SessionDTO[] = Array.from({
+export const REBROWSE_SESSIONS_PHONE_NO_LOCATION: SessionDTO[] = Array.from({
   length: HOURS_IN_30_DAYS,
 }).map((_, index) => {
   const offsetHours = Math.ceil(Math.random() * 10) + index;

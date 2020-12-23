@@ -1,0 +1,1 @@
+export { DeviceClassItem } from './DeviceClassItem';
