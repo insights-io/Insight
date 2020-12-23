@@ -2,10 +2,10 @@ import { useCallback, useState, useMemo } from 'react';
 
 import { SessionFilter, generateNewFilter } from './utils';
 
-const useSessionFilters = () => {
-  const [filters, setFilters] = useState<SessionFilter[]>([
-    generateNewFilter(),
-  ]);
+const useSessionFilters = (initialFilters: SessionFilter[]) => {
+  const [filters, setFilters] = useState(() =>
+    initialFilters.length === 0 ? [generateNewFilter()] : initialFilters
+  );
 
   const onPlus = useCallback(() => {
     setFilters((prev) => [...prev, generateNewFilter()]);

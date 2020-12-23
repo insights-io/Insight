@@ -75,17 +75,13 @@ export const mockSessionsPage = (
     sessionInfo?: SessionInfoDTO;
   } = {}
 ) => {
-  const authMocks = mockAuth(sandbox, sessionInfo);
+  const sessionMocks = mockSessionPage(sandbox, { sessions, sessionInfo });
 
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
     .callsFake((args = {}) =>
       Promise.resolve(countSessionsBy(sessions, args.search))
     );
-
-  const retrieveSessionStub = sandbox
-    .stub(SessionApi, 'getSession')
-    .callsFake((id) => retrieveSessionMockImplementation(id, sessions));
 
   const listSessionsStub = sandbox
     .stub(SessionApi, 'getSessions')
@@ -102,11 +98,10 @@ export const mockSessionsPage = (
     );
 
   return {
-    ...authMocks,
+    ...sessionMocks,
     listSessionsStub,
     countSessionsStub,
     getDistinctStub,
-    retrieveSessionStub,
   };
 };
 

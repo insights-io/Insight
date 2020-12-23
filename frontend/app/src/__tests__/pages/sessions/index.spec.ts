@@ -168,10 +168,7 @@ describe('/sessions', () => {
 
       await waitFor(() => {
         sandbox.assert.calledWithExactly(listSessionsStub.lastCall, {
-          search: {
-            limit: 20,
-            sortBy: ['-createdAt'],
-          },
+          search: { limit: 20, sortBy: ['-createdAt'] },
         });
         sandbox.assert.calledWithExactly(countSessionsStub.lastCall, {
           search: {},

@@ -7,39 +7,40 @@ import SessionFilterRow from './SessionFilterRow';
 
 type Props = {
   onChange: (filters: SessionFilter[]) => void;
+  initialFilters: SessionFilter[];
 };
 
-const SessionFilters = ({ onChange }: Props) => {
-  const [css, theme] = useStyletron();
-  const {
-    filters,
-    onPlus,
-    onDelete,
-    onUpdateFilter,
-    validFilters,
-  } = useSessionFilters();
+export const SessionFilters = React.memo(
+  ({ onChange, initialFilters }: Props) => {
+    const [css, theme] = useStyletron();
+    const {
+      filters,
+      onPlus,
+      onDelete,
+      onUpdateFilter,
+      validFilters,
+    } = useSessionFilters(initialFilters);
 
-  useEffect(() => {
-    onChange(validFilters);
-  }, [validFilters, onChange]);
+    useEffect(() => {
+      onChange(validFilters);
+    }, [validFilters, onChange]);
 
-  return (
-    <ul className={css({ padding: 0, margin: 0 })}>
-      {filters.map((filter, index) => {
-        return (
-          <SessionFilterRow
-            index={index}
-            key={filter.id}
-            filter={filter}
-            onPlus={onPlus}
-            onDelete={onDelete}
-            onUpdateFilter={onUpdateFilter}
-            theme={theme}
-          />
-        );
-      })}
-    </ul>
-  );
-};
-
-export default React.memo(SessionFilters);
+    return (
+      <ul className={css({ padding: 0, margin: 0 })}>
+        {filters.map((filter, index) => {
+          return (
+            <SessionFilterRow
+              index={index}
+              key={filter.id}
+              filter={filter}
+              onPlus={onPlus}
+              onDelete={onDelete}
+              onUpdateFilter={onUpdateFilter}
+              theme={theme}
+            />
+          );
+        })}
+      </ul>
+    );
+  }
+);

@@ -1,1 +1,1 @@
-export { default } from './SessionFilters';
+export { SessionFilters } from './SessionFilters';

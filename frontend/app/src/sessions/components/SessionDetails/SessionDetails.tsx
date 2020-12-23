@@ -98,16 +98,16 @@ export const SessionDetails = ({
         </TagLink>
 
         <TagLink
-          href={`${SESSIONS_PAGE}?user_agent.browser_name=${TermCondition.EQ(
+          href={`${SESSIONS_PAGE}?user_agent.agent_name=${TermCondition.EQ(
             userAgent.agentName
-          )}&user_agent.browser_name=${TermCondition.EQ(
+          )}&user_agent.agent_version=${TermCondition.EQ(
             userAgent.agentVersion
           )}`}
         >
           browser = {userAgent.agentName} {userAgent.agentVersion}
         </TagLink>
         <TagLink
-          href={`${SESSIONS_PAGE}?user_agent.browser_name=${TermCondition.EQ(
+          href={`${SESSIONS_PAGE}?user_agent.agent_name=${TermCondition.EQ(
             userAgent.agentName
           )}`}
         >
@@ -151,7 +151,7 @@ export const SessionDetails = ({
 
         {location.countryName && (
           <TagLink
-            href={`${SESSIONS_PAGE}?query=location.country_name${TermCondition.EQ(
+            href={`${SESSIONS_PAGE}?location.country_name=${TermCondition.EQ(
               location.countryName
             )}`}
           >
@@ -161,7 +161,7 @@ export const SessionDetails = ({
 
         {location.regionName && (
           <TagLink
-            href={`${SESSIONS_PAGE}?query=location.region_name${TermCondition.EQ(
+            href={`${SESSIONS_PAGE}?location.region_name=${TermCondition.EQ(
               location.regionName
             )}`}
           >
@@ -171,7 +171,7 @@ export const SessionDetails = ({
 
         {location.city && (
           <TagLink
-            href={`${SESSIONS_PAGE}?query=location.city${TermCondition.EQ(
+            href={`${SESSIONS_PAGE}?location.city=${TermCondition.EQ(
               location.city
             )}`}
           >

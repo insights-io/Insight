@@ -6,7 +6,7 @@ import { useStyletron } from 'baseui';
 import { Flex, Button, expandBorderRadius } from '@rebrowse/elements';
 
 import DateSearch from './DateSearch';
-import SessionFilters from './SessionFilters';
+import { SessionFilters } from './SessionFilters';
 import { SessionFilter } from './SessionFilters/utils';
 
 export type Props = {
@@ -52,7 +52,7 @@ export const SessionSearch = ({
         marginTop={theme.sizing.scale600}
         display={showFilters ? undefined : 'none'}
       >
-        <SessionFilters onChange={setFilters} />
+        <SessionFilters onChange={setFilters} initialFilters={filters} />
       </Block>
     </Block>
   );
