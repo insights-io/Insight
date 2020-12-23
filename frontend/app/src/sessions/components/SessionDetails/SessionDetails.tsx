@@ -5,7 +5,7 @@ import { OperatingSystemItem } from 'sessions/components/OperatingSystemItem';
 import { DeviceClassItem } from 'sessions/components/DeviceClassItem';
 import { Block } from 'baseui/block';
 import { H5, Paragraph3 } from 'baseui/typography';
-import { format } from 'date-fns/esm';
+import { format } from 'date-fns';
 import Divider from 'shared/components/Divider';
 import { readableLocation } from 'shared/utils/location';
 import { FaQuestion } from 'react-icons/fa';

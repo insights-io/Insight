@@ -19,13 +19,14 @@ describe('/accept-invite', () => {
   test('As a user I get redirected to / if no token', async () => {
     /* Mocks */
     document.cookie = 'SessionId=123';
-    mockIndexPage();
+    mockIndexPage(sandbox);
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route: ACCEPT_INVITE_PAGE });
+
+    /* Client */
     render(page);
 
-    /* Assertions */
     await screen.findByText('Page Visits');
   });
 
@@ -41,14 +42,15 @@ describe('/accept-invite', () => {
         })
       );
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
-    render(page);
 
-    /* Assertions */
     sandbox.assert.calledWithMatch(retrieveTeamInviteStub, token, {
       baseURL: 'http://localhost:8080',
     });
+
+    /* Client */
+    render(page);
 
     await screen.findByText(
       'We could not find team invite you were looking for'
@@ -60,7 +62,7 @@ describe('/accept-invite', () => {
 
   test('As a user I can accept a team invite', async () => {
     /* Mocks */
-    mockIndexPage();
+    mockIndexPage(sandbox);
 
     const retrieveTeamInviteStub = sandbox
       .stub(AuthApi.organization.teamInvite, 'retrieve')
@@ -73,14 +75,15 @@ describe('/accept-invite', () => {
         return jsonPromise({ status: 200 });
       });
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
-    render(page);
 
-    /* Assertions */
     sandbox.assert.calledWithMatch(retrieveTeamInviteStub, token, {
       baseURL: 'http://localhost:8080',
     });
+
+    /* Client */
+    render(page);
 
     await screen.findByText(
       'User 123 has invited you to join organization 000000 with role Admin.'

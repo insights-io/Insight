@@ -6,11 +6,9 @@ import {
   COUNT_SESSIONS_BY_DEVICE_CLASS,
   COUNT_PAGE_VISITS_BY_DATE,
   COUNT_SESSIONS_BY_LOCATION,
-  REBROWSE_SESSIONS_DTOS,
 } from '__tests__/data/sessions';
 import type { Meta } from '@storybook/react';
-import { AuthApi, PagesApi, SessionApi } from 'api';
-import { countSessionsBy } from '__tests__/mocks/filter';
+import { mockIndexPage as setupMocks } from '__tests__/mocks';
 
 import { InsightsPage } from './InsightsPage';
 
@@ -33,41 +31,7 @@ export const Base = () => {
     />
   );
 };
-
-Base.story = configureStory({
-  setupMocks: (sandbox) => {
-    const retrieveOrganization = sandbox
-      .stub(AuthApi.organization, 'get')
-      .resolves(REBROWSE_ORGANIZATION_DTO);
-
-    const retrieveUser = sandbox
-      .stub(AuthApi.user, 'me')
-      .resolves(REBROWSE_ADMIN_DTO);
-
-    const countSessionsStub = sandbox
-      .stub(SessionApi, 'count')
-      .callsFake((args = {}) => {
-        return Promise.resolve(
-          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search)
-        );
-      });
-
-    const countPageVisitsStub = sandbox
-      .stub(PagesApi, 'count')
-      .callsFake((args = {}) => {
-        return Promise.resolve(
-          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search)
-        );
-      });
-
-    return {
-      retrieveOrganization,
-      retrieveUser,
-      countSessionsStub,
-      countPageVisitsStub,
-    };
-  },
-});
+Base.story = configureStory({ setupMocks });
 
 export const Empty = () => {
   return (
@@ -82,17 +46,6 @@ export const Empty = () => {
     />
   );
 };
-
 Empty.story = configureStory({
-  setupMocks: (sandbox) => {
-    const retrieveOrganization = sandbox
-      .stub(AuthApi.organization, 'get')
-      .resolves(REBROWSE_ORGANIZATION_DTO);
-
-    const retrieveUser = sandbox
-      .stub(AuthApi.user, 'me')
-      .resolves(REBROWSE_ADMIN_DTO);
-
-    return { retrieveOrganization, retrieveUser };
-  },
+  setupMocks: (sandbox) => setupMocks(sandbox, { sessions: [] }),
 });

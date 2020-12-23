@@ -18,7 +18,7 @@ describe('/login/verification', () => {
     test('As a user I can verify MFA using TOTP', async () => {
       /* Mocks */
       document.cookie = 'ChallengeId=123';
-      mockIndexPage();
+      mockIndexPage(sandbox);
 
       const getChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'get')
@@ -91,9 +91,10 @@ describe('/login/verification', () => {
           });
         });
 
-      /* Render */
+      mockIndexPage(sandbox);
+
+      /* Server */
       const { page } = await getPage({ route });
-      const { container } = render(page);
 
       sandbox.assert.calledWithMatch(getChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
@@ -103,11 +104,14 @@ describe('/login/verification', () => {
         baseURL: 'http://localhost:8080',
       });
 
-      sandbox.assert.calledWithExactly(startTotpMfaSetupStub);
+      /* Client */
+      const { container } = render(page);
 
       await screen.findByText(
         'Your organization has enforced multi-factor authentication for all members.'
       );
+
+      sandbox.assert.calledWithExactly(startTotpMfaSetupStub);
 
       const codeInput = container.querySelector(
         'input[aria-label="Please enter your pin code"]'
@@ -116,7 +120,6 @@ describe('/login/verification', () => {
       const code = '123456';
       userEvent.type(codeInput, code);
 
-      mockIndexPage();
       userEvent.click(screen.getByText('Submit'));
 
       // Client side navigation to / page
@@ -131,11 +134,12 @@ describe('/login/verification', () => {
   });
 
   test('As a user I get redirected to /login when no challengeId cookie', async () => {
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
+
+    /* Client */
     render(page);
 
-    /* Assertions */
     await screen.findByText('Sign in with Google');
   });
 
@@ -150,15 +154,16 @@ describe('/login/verification', () => {
       })
     );
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
-    render(page);
-
-    /* Assertions */
-    await screen.findByText('Sign in with Google');
 
     sandbox.assert.calledWithMatch(getChallengeStub, '123', {
       baseURL: 'http://localhost:8080',
     });
+
+    /* Client */
+    render(page);
+
+    await screen.findByText('Sign in with Google');
   });
 });

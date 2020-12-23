@@ -6,13 +6,8 @@ import {
   REBROWSE_ORGANIZATION_DTO,
 } from '__tests__/data';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
-import { AuthApi, SessionApi } from 'api';
-import { Meta } from '@storybook/react';
-import { SinonSandbox } from 'sinon';
-import {
-  retrieveSessionMockImplementation,
-  searchEventsMockImplementation,
-} from '__tests__/mocks/filter';
+import type { Meta } from '@storybook/react';
+import { mockSessionPage as setupMocks } from '__tests__/mocks';
 
 import { SessionPage } from './SessionPage';
 
@@ -21,26 +16,6 @@ export default {
   component: SessionPage,
   decorators: [fullHeightDecorator],
 } as Meta;
-
-const setupMocks = (sandbox: SinonSandbox) => {
-  return {
-    retrieveUser: sandbox.stub(AuthApi.user, 'me').resolves(REBROWSE_ADMIN_DTO),
-
-    retrieveOrganization: sandbox
-      .stub(AuthApi.organization, 'get')
-      .resolves(REBROWSE_ORGANIZATION_DTO),
-
-    retrieveSessionStub: sandbox
-      .stub(SessionApi, 'getSession')
-      .callsFake((id) => retrieveSessionMockImplementation(id)),
-
-    searchEvents: sandbox
-      .stub(SessionApi.events, 'search')
-      .callsFake((_sessionId, args = {}) =>
-        searchEventsMockImplementation(args.search)
-      ),
-  };
-};
 
 export const Base = () => {
   return (

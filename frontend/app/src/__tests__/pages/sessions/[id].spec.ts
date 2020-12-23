@@ -5,7 +5,7 @@ import { getPage } from 'next-page-tester';
 import { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import { SESSIONS_PAGE } from 'shared/constants/routes';
 import { REBROWSE_SESSIONS_DTOS } from '__tests__/data/sessions';
-import { mockSessionDetailsPage, mockSessionsPage } from '__tests__/mocks';
+import { mockSessionPage, mockSessionsPage } from '__tests__/mocks';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -23,7 +23,7 @@ describe('/sessions/[id]', () => {
   test('As a user I should be redirected to /sessions on 404 request', async () => {
     /* Mocks */
     document.cookie = 'SessionId=123';
-    const { retrieveSessionStub } = mockSessionsPage();
+    const { retrieveSessionStub } = mockSessionsPage(sandbox);
 
     /* Server */
     const { page } = await getPage({ route });
@@ -42,7 +42,7 @@ describe('/sessions/[id]', () => {
   test('As a user I should be able to work with dev tools', async () => {
     /* Mocks */
     document.cookie = 'SessionId=123';
-    const { retrieveSessionStub, searchEventsStub } = mockSessionDetailsPage();
+    const { retrieveSessionStub, searchEventsStub } = mockSessionPage(sandbox);
     const [{ id }] = REBROWSE_SESSIONS_DTOS;
 
     /* Server */

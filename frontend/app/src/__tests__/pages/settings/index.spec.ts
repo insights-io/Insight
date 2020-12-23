@@ -1,3 +1,4 @@
+import { sandbox } from '@rebrowse/testing';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
@@ -14,7 +15,7 @@ describe('/settings', () => {
   test('As a user I see & search for basic information', async () => {
     /* Mocks */
     document.cookie = 'SessionId=123';
-    mockAuth();
+    mockAuth(sandbox);
 
     /* Render */
     const { page } = await getPage({ route });

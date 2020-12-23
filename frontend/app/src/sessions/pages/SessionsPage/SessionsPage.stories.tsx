@@ -6,10 +6,8 @@ import {
   REBROWSE_ORGANIZATION_DTO,
 } from '__tests__/data';
 import { fullHeightDecorator, configureStory } from '@rebrowse/storybook';
-import { AuthApi, SessionApi } from 'api';
-import get from 'lodash/get';
 import type { Meta } from '@storybook/react';
-import { countSessionsBy, filterSession } from '__tests__/mocks/filter';
+import { mockSessionsPage as setupMocks } from '__tests__/mocks';
 
 import { SessionsPage } from './SessionsPage';
 
@@ -30,17 +28,7 @@ export const NoSessions = () => {
   );
 };
 NoSessions.story = configureStory({
-  setupMocks: (sandbox) => {
-    const retrieveUserStub = sandbox
-      .stub(AuthApi.user, 'me')
-      .resolves(REBROWSE_ADMIN_DTO);
-
-    const retrieveOrganizationStub = sandbox
-      .stub(AuthApi.organization, 'get')
-      .resolves(REBROWSE_ORGANIZATION_DTO);
-
-    return { retrieveUserStub, retrieveOrganizationStub };
-  },
+  setupMocks: (sandbox) => setupMocks(sandbox, { sessions: [] }),
 });
 
 export const WithSessions = () => {
@@ -53,47 +41,4 @@ export const WithSessions = () => {
     />
   );
 };
-WithSessions.story = configureStory({
-  setupMocks: (sandbox) => {
-    const getDistinctStub = sandbox
-      .stub(SessionApi, 'distinct')
-      .callsFake((on: string) => {
-        return Promise.resolve([
-          ...new Set(
-            REBROWSE_SESSIONS_DTOS.map((s) => get(s, on)).filter(Boolean)
-          ),
-        ]);
-      });
-
-    const getSessionsStub = sandbox
-      .stub(SessionApi, 'getSessions')
-      .callsFake((args = {}) => {
-        return Promise.resolve(
-          REBROWSE_SESSIONS_DTOS.filter((s) => filterSession(s, args.search))
-        );
-      });
-
-    const countSessionsStub = sandbox
-      .stub(SessionApi, 'count')
-      .callsFake((args = {}) => {
-        return Promise.resolve(
-          countSessionsBy(REBROWSE_SESSIONS_DTOS, args.search)
-        );
-      });
-    const retrieveUserStub = sandbox
-      .stub(AuthApi.user, 'me')
-      .resolves(REBROWSE_ADMIN_DTO);
-
-    const retrieveOrganizationStub = sandbox
-      .stub(AuthApi.organization, 'get')
-      .resolves(REBROWSE_ORGANIZATION_DTO);
-
-    return {
-      getSessionsStub,
-      countSessionsStub,
-      getDistinctStub,
-      retrieveUserStub,
-      retrieveOrganizationStub,
-    };
-  },
-});
+WithSessions.story = configureStory({ setupMocks });

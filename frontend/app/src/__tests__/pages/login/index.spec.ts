@@ -22,7 +22,7 @@ describe('/login', () => {
 
     test('As a user I can login using my email', async () => {
       /* Mocks */
-      mockIndexPage();
+      mockIndexPage(sandbox);
 
       const loginStub = sandbox
         .stub(AuthApi.sso.session, 'login')
@@ -31,11 +31,12 @@ describe('/login', () => {
           return Promise.resolve({ data: true });
         });
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
+
+      /* Client */
       render(page);
 
-      /* Assertions */
       const signInButton = await screen.findByText('Sign in');
 
       userEvent.type(screen.getByPlaceholderText(EMAIL_PLACEHOLDER), email);
@@ -59,11 +60,12 @@ describe('/login', () => {
           return Promise.resolve({ data: false });
         });
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
+
+      /* Client */
       render(page);
 
-      /* Assertions */
       const signInButton = await screen.findByText('Sign in');
 
       userEvent.type(screen.getByPlaceholderText(EMAIL_PLACEHOLDER), email);
@@ -87,11 +89,12 @@ describe('/login', () => {
         .stub(AuthApi.sso.setup, 'getByDomain')
         .resolves({ data: false });
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
+
+      /* Client */
       render(page);
 
-      /* Assertions */
       userEvent.click(await screen.findByText('SSO'));
       userEvent.type(
         screen.getByPlaceholderText(WORK_EMAIL_PLACEHOLDER),
@@ -115,11 +118,12 @@ describe('/login', () => {
         .stub(AuthApi.sso.setup, 'getByDomain')
         .resolves({ data: ssoLocation });
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
+
+      /* Client */
       render(page);
 
-      /* Assertions */
       userEvent.click(await screen.findByText('SSO'));
       userEvent.type(
         screen.getByPlaceholderText(WORK_EMAIL_PLACEHOLDER),
@@ -143,11 +147,12 @@ describe('/login', () => {
 
   describe('Social provider login', () => {
     test('As a user I should be able to start OAuth flow with providers', async () => {
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
+
+      /* Client */
       render(page);
 
-      /* Assertions */
       expect(
         screen.getByText('Sign in with Google').parentElement
       ).toHaveAttribute(
@@ -177,11 +182,12 @@ describe('/login', () => {
       .stub(AuthApi.password, 'forgot')
       .resolves();
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
+
+    /* Client */
     render(page);
 
-    /* Assertions */
     userEvent.click(screen.getByText('Forgot?'));
     await screen.findByText('Remember password?');
 

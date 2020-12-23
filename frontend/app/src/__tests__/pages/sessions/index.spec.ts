@@ -32,7 +32,7 @@ describe('/sessions', () => {
         listSessionsStub,
         retrieveRecordingSnippetStub,
         countSessionsStub,
-      } = mockEmptySessionsPage();
+      } = mockEmptySessionsPage(sandbox);
 
       /* Render */
       const { page } = await getPage({ route });
@@ -79,7 +79,7 @@ describe('/sessions', () => {
         listSessionsStub,
         countSessionsStub,
         getDistinctStub,
-      } = mockSessionsPage();
+      } = mockSessionsPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
@@ -185,7 +185,7 @@ describe('/sessions', () => {
         listSessionsStub,
         countSessionsStub,
         retrieveSessionStub,
-      } = mockSessionsPage();
+      } = mockSessionsPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
@@ -208,7 +208,7 @@ describe('/sessions', () => {
         screen.getAllByText(sessionDescription(REBROWSE_SESSIONS[0]))[0]
       );
 
-      await screen.findByText(`Session ${REBROWSE_SESSIONS[0].id}`);
+      await screen.findByText(REBROWSE_SESSIONS[0].id);
 
       sandbox.assert.calledWithExactly(
         retrieveSessionStub,
