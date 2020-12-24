@@ -3,18 +3,16 @@ import { queryByText, queryAllByText } from '@testing-library/testcafe';
 
 import { SESSIONS_PAGE } from '../../src/shared/constants/routes';
 import { LoginPage, SessionPage, SessionsPage } from '../pages';
-import { createPageVisitLogger } from '../pages/Sessions';
+import { PageVisitInterceptor } from '../utils/PageVisitInterceptor';
 
 fixture('/sessions').page(SessionsPage.path);
 
-const { logger, getSessionId } = createPageVisitLogger();
+const pageVisitInterceptor = PageVisitInterceptor.create();
 
-test.requestHooks(logger)(
+test.requestHooks(pageVisitInterceptor)(
   'As a user I should be able to use "Developer tools" to investigate problems',
   async (t) => {
     await LoginPage.loginWithRebrowseUser(t);
-
-    console.log(getSessionId());
 
     /* Generate some events for Developer tools */
     await t.eval(() => {
@@ -38,16 +36,11 @@ test.requestHooks(logger)(
       location.reload(true);
     });
 
-    console.log(getSessionId());
-
-    const sessionId = getSessionId();
-
-    // TODO: figure out to click it
+    const sessionId = pageVisitInterceptor.getSessionId();
     await t.navigateTo(`${SESSIONS_PAGE}/${sessionId}`);
     await t.expect(queryByText(sessionId).visible).ok('Session ID is visible');
 
     await t
-      .click(SessionPage.devtools.button)
       .click(SessionPage.devtools.button)
       .typeText(SessionPage.devtools.filterInput, 'console')
       .expect(queryByText('console.log').visible)
