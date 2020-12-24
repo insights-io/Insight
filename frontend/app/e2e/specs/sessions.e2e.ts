@@ -1,13 +1,12 @@
 /* eslint-disable no-console */
 import { queryByText, queryAllByText } from '@testing-library/testcafe';
 
-import { SESSIONS_PAGE } from '../../src/shared/constants/routes';
 import { LoginPage, SessionPage, SessionsPage } from '../pages';
 import { PageVisitInterceptor } from '../utils/PageVisitInterceptor';
 
 fixture('/sessions').page(SessionsPage.path);
 
-const pageVisitInterceptor = PageVisitInterceptor.create();
+const pageVisitInterceptor = new PageVisitInterceptor();
 
 test.requestHooks(pageVisitInterceptor)(
   'As a user I should be able to use "Developer tools" to investigate problems',
@@ -37,8 +36,14 @@ test.requestHooks(pageVisitInterceptor)(
     });
 
     const sessionId = pageVisitInterceptor.getSessionId();
-    await t.navigateTo(`${SESSIONS_PAGE}/${sessionId}`);
-    await t.expect(queryByText(sessionId).visible).ok('Session ID is visible');
+    await t
+      .click(SessionsPage.getItemBySessionId(sessionId))
+      .expect(queryByText(sessionId).visible)
+      .ok('Session ID is visible')
+      .expect(queryByText('Unknown location').visible)
+      .ok('Unknown location')
+      .expect(queryByText('browser.name = Chrome').visible)
+      .ok('Is in Chrome');
 
     await t
       .click(SessionPage.devtools.button)
@@ -53,6 +58,9 @@ test.requestHooks(pageVisitInterceptor)(
       .ok('console.warn should be visible in the console')
       .expect(queryByText('console.error').visible)
       .ok('console.error should be visible in the console')
+      .selectText(SessionPage.devtools.filterInput)
+      .pressKey('delete')
+      .typeText(SessionPage.devtools.filterInput, 'Error')
       .expect(queryByText('Uncaught Error: simulated error').visible)
       .ok('Uncaught Error should be visible in console');
 
