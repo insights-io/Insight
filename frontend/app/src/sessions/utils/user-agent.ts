@@ -57,6 +57,7 @@ export const getOperatingSystemIcon = (
 
 const AGENT_NAME_TO_ICON_MAP: Record<UserAgentDTO['agentName'], IconType> = {
   Chrome: FaChrome,
+  'Chrome Webview': FaChrome,
   Firefox: FaFirefox,
 };
 

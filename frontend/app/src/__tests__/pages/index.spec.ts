@@ -16,7 +16,7 @@ describe('/', () => {
       retrieveSessionStub,
       countPageVisitsStub,
       countSessionsStub,
-    } = mockIndexPage([]);
+    } = mockIndexPage(sandbox, { sessions: [] });
 
     /* Render */
     const { page } = await getPage({ route });

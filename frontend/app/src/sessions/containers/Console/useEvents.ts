@@ -1,3 +1,4 @@
+import { TermCondition } from '@rebrowse/sdk';
 import { SessionApi } from 'api';
 import { useQuery } from 'shared/hooks/useQuery';
 
@@ -8,7 +9,10 @@ export const cacheKey = (sessionId: string) => {
 const queryFn = (sessionId: string) => {
   return SessionApi.events.search(sessionId, {
     // TODO: pagination
-    search: { 'event.e': ['gte:9', 'lte:10'], limit: 1000 },
+    search: {
+      'event.e': [TermCondition.GTE(9), TermCondition.LTE(10)],
+      limit: 1000,
+    },
   });
 };
 

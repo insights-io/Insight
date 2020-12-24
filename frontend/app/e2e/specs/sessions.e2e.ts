@@ -48,7 +48,7 @@ test('User should be able to see page sessions', async (t) => {
     .expect(queryAllByText('login').visible)
     .ok('Should display /login request')
     .expect(
-      queryAllByText('search?event.e=gte:9&event.e=lte:10&limit=1000').visible
+      queryAllByText(`search?event.e=gte:9&event.e=lte:10&limit=1000`).visible
     )
     .ok('Should display console events search request');
 });

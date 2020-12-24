@@ -24,16 +24,17 @@ describe('/password-reset', () => {
         .stub(AuthApi.password, 'reset')
         .returns(jsonPromise({ status: 200 }));
 
-      mockIndexPage();
+      mockIndexPage(sandbox);
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      render(page);
 
-      /* Assertions */
       sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
+
+      /* Client */
+      render(page);
 
       expect(
         await screen.findByText('Reset your password')
@@ -59,20 +60,19 @@ describe('/password-reset', () => {
           statusCode: 400,
           reason: 'Bad Request',
           message: 'Bad Request',
-          errors: {
-            password: 'Too Short',
-          },
+          errors: { password: 'Too Short' },
         })
       );
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      render(page);
 
-      /* Assertions */
       sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
+
+      /* Client */
+      render(page);
 
       expect(
         await screen.findByText('Reset your password')
@@ -96,14 +96,15 @@ describe('/password-reset', () => {
         .stub(AuthApi.password, 'resetExists')
         .resolves({ data: false });
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      render(page);
 
-      /* Assertions */
       sandbox.assert.calledWithMatch(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
       });
+
+      /* Client */
+      render(page);
 
       await screen.findByText(
         'It looks like this password reset request is invalid or has already been accepted.'

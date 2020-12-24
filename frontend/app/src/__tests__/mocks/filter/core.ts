@@ -1,46 +1,77 @@
 import get from 'lodash/get';
 import type { GroupByResult, SearchBean } from '@rebrowse/types';
+import camelCase from 'lodash/camelCase';
+import { isValid, parseISO } from 'date-fns';
+
+const parseValue = (value: string | number | Date) => {
+  if (!Number.isNaN(Number(value))) {
+    return Number(value);
+  }
+
+  const maybeDate = parseISO(value as string);
+  if (isValid(maybeDate)) {
+    return maybeDate;
+  }
+
+  return value;
+};
+
+export const camelCaseField = (key: string) => {
+  return key.split('.').map(camelCase).join('.');
+};
+
+export const getParsedValue = <T extends Record<string, unknown>>(
+  value: T,
+  key: string
+) => parseValue(get(value, camelCaseField(key)) as string);
 
 export const filterByParam = <
   TObject extends Record<string, unknown>,
-  QueryKey extends keyof TObject,
-  M,
-  GroupBy extends (keyof TObject)[]
+  TSearchObject extends Record<string, unknown>,
+  GroupBy extends (keyof TSearchObject & string)[] = []
 >(
-  object: TObject,
-  queryKey: QueryKey,
-  search: SearchBean<never, GroupBy>,
-  parseValue: (v: TObject[QueryKey]) => M,
-  getValue: (
-    object: TObject,
-    path: QueryKey | [QueryKey]
-  ) => TObject[QueryKey] = get
+  value: TObject,
+  search: SearchBean<TSearchObject, GroupBy> = {}
 ): boolean => {
-  const actualValue = parseValue(getValue(object, queryKey));
-
-  const params = (Array.isArray(search[queryKey])
-    ? search[queryKey]
-    : [search[queryKey]]) as string[];
-
   // eslint-disable-next-line no-restricted-syntax
-  for (const queryParam of params) {
-    const [termCondition, ...rest] = queryParam.split(':');
-    const expectedValue = parseValue(rest.join(':') as TObject[QueryKey]);
+  for (const searchKey of Object.keys(search)) {
+    const typedSearchKey = searchKey as keyof typeof search;
+    if (
+      typedSearchKey === 'groupBy' ||
+      typedSearchKey === 'dateTrunc' ||
+      typedSearchKey === 'limit' ||
+      typedSearchKey === 'sortBy'
+    ) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
 
-    if (termCondition === 'gte' && actualValue < expectedValue) {
-      return false;
-    }
-    if (termCondition === 'gt' && actualValue <= expectedValue) {
-      return false;
-    }
-    if (termCondition === 'lte' && actualValue > expectedValue) {
-      return false;
-    }
-    if (termCondition === 'lt' && actualValue >= expectedValue) {
-      return false;
-    }
-    if (termCondition === 'eq' && actualValue !== expectedValue) {
-      return false;
+    const actualValue = getParsedValue(value, searchKey);
+    const params = (Array.isArray(search[typedSearchKey])
+      ? search[typedSearchKey]
+      : [search[typedSearchKey]]) as string[];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const queryParam of params) {
+      const [termCondition, ...rest] = queryParam.split(':');
+      const stringValue = rest.join(':');
+      const expectedValue = parseValue(stringValue);
+
+      if (termCondition === 'gte' && actualValue < expectedValue) {
+        return false;
+      }
+      if (termCondition === 'gt' && actualValue <= expectedValue) {
+        return false;
+      }
+      if (termCondition === 'lte' && actualValue > expectedValue) {
+        return false;
+      }
+      if (termCondition === 'lt' && actualValue >= expectedValue) {
+        return false;
+      }
+      if (termCondition === 'eq' && actualValue !== expectedValue) {
+        return false;
+      }
     }
   }
 
@@ -50,7 +81,7 @@ export const filterByParam = <
 export const countBy = <
   TObject extends Record<string, unknown>,
   TQueryParams extends Record<string, unknown>,
-  GroupBy extends (keyof TQueryParams)[] = []
+  GroupBy extends (keyof TQueryParams & string)[] = []
 >(
   data: TObject[],
   filter: (r: TObject) => boolean,

@@ -42,7 +42,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
         .then(getData);
     },
     distinct: (
-      on: string,
+      on: keyof SessionSearchQueryParams,
       { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
     ) => {
       const searchQuery = querystring({ on });

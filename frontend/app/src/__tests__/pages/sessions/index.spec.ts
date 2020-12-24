@@ -10,6 +10,7 @@ import {
   REBROWSE_SESSIONS_DTOS,
 } from '__tests__/data/sessions';
 import { sessionDescription } from 'sessions/utils';
+import { TermCondition } from '@rebrowse/sdk';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -32,7 +33,7 @@ describe('/sessions', () => {
         listSessionsStub,
         retrieveRecordingSnippetStub,
         countSessionsStub,
-      } = mockEmptySessionsPage();
+      } = mockEmptySessionsPage(sandbox);
 
       /* Render */
       const { page } = await getPage({ route });
@@ -79,7 +80,7 @@ describe('/sessions', () => {
         listSessionsStub,
         countSessionsStub,
         getDistinctStub,
-      } = mockSessionsPage();
+      } = mockSessionsPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
@@ -118,12 +119,12 @@ describe('/sessions', () => {
         sandbox.assert.calledWithExactly(listSessionsStub, {
           search: {
             limit: 20,
-            'location.city': `eq:${boydton}`,
+            'location.city': TermCondition.EQ(boydton),
             sortBy: ['-createdAt'],
           },
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
-          search: { 'location.city': `eq:${boydton}` },
+          search: { 'location.city': TermCondition.EQ(boydton) },
         });
       });
 
@@ -134,7 +135,10 @@ describe('/sessions', () => {
       );
       userEvent.click(screen.getByText('Filter event by...'));
       userEvent.click(screen.getByText('Country'));
-      sandbox.assert.calledWithExactly(getDistinctStub, 'location.countryName');
+      sandbox.assert.calledWithExactly(
+        getDistinctStub,
+        'location.country_name'
+      );
 
       const slovenia = 'Slovenia';
       userEvent.type(
@@ -147,15 +151,15 @@ describe('/sessions', () => {
         sandbox.assert.calledWithExactly(listSessionsStub, {
           search: {
             limit: 20,
-            'location.city': `eq:${boydton}`,
-            'location.countryName': `eq:${slovenia}`,
+            'location.city': TermCondition.EQ(boydton),
+            'location.country_name': TermCondition.EQ(slovenia),
             sortBy: ['-createdAt'],
           },
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
           search: {
-            'location.city': `eq:${boydton}`,
-            'location.countryName': `eq:${slovenia}`,
+            'location.city': TermCondition.EQ(boydton),
+            'location.country_name': TermCondition.EQ(slovenia),
           },
         });
       });
@@ -167,10 +171,7 @@ describe('/sessions', () => {
 
       await waitFor(() => {
         sandbox.assert.calledWithExactly(listSessionsStub.lastCall, {
-          search: {
-            limit: 20,
-            sortBy: ['-createdAt'],
-          },
+          search: { limit: 20, sortBy: ['-createdAt'] },
         });
         sandbox.assert.calledWithExactly(countSessionsStub.lastCall, {
           search: {},
@@ -185,7 +186,7 @@ describe('/sessions', () => {
         listSessionsStub,
         countSessionsStub,
         retrieveSessionStub,
-      } = mockSessionsPage();
+      } = mockSessionsPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
@@ -208,7 +209,7 @@ describe('/sessions', () => {
         screen.getAllByText(sessionDescription(REBROWSE_SESSIONS[0]))[0]
       );
 
-      await screen.findByText(`Session ${REBROWSE_SESSIONS[0].id}`);
+      await screen.findByText(REBROWSE_SESSIONS[0].id);
 
       sandbox.assert.calledWithExactly(
         retrieveSessionStub,

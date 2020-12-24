@@ -1,3 +1,5 @@
+import type { ParsedUrlQuery } from 'querystring';
+
 import {
   FaMapMarker,
   FaMap,
@@ -7,30 +9,52 @@ import {
   FaInternetExplorer,
   FaDesktop,
   FaWindows,
+  FaApple,
+  FaPhone,
 } from 'react-icons/fa';
 import { IconType } from 'react-icons/lib';
 import { v4 as uuid } from 'uuid';
 
 export const FILTER_OPTIONS = [
   { label: 'City', icon: FaMapMarker, key: 'location.city' },
-  { label: 'State/Region', icon: FaMap, key: 'location.regionName' },
-  { label: 'Country', icon: FaFlag, key: 'location.countryName' },
-  { label: 'Continent', icon: FaGlobe, key: 'location.continentName' },
+  { label: 'State/Region', icon: FaMap, key: 'location.region_name' },
+  { label: 'Country', icon: FaFlag, key: 'location.country_name' },
+  { label: 'Continent', icon: FaGlobe, key: 'location.continent_name' },
   { label: 'IP address', icon: FaLocationArrow, key: 'location.ip' },
   {
-    label: 'Browser',
+    label: 'Browser name',
     icon: FaInternetExplorer,
-    key: 'user_agent.browserName',
+    key: 'user_agent.agent_name',
   },
   {
-    label: 'Device',
+    label: 'Browser version',
+    icon: FaInternetExplorer,
+    key: 'user_agent.agent_version',
+  },
+  {
+    label: 'Device class',
     icon: FaDesktop,
-    key: 'user_agent.deviceClass',
+    key: 'user_agent.device_class',
   },
   {
-    label: 'Operating System',
+    label: 'Device brand',
+    icon: FaApple,
+    key: 'user_agent.device_brand',
+  },
+  {
+    label: 'Device name',
+    icon: FaPhone,
+    key: 'user_agent.device_name',
+  },
+  {
+    label: 'Operating System name',
     icon: FaWindows,
-    key: 'user_agent.operatingSystemName',
+    key: 'user_agent.operating_system_name',
+  },
+  {
+    label: 'Operating System version',
+    icon: FaWindows,
+    key: 'user_agent.operating_system_version',
   },
 ] as const;
 
@@ -52,4 +76,27 @@ export type SessionFilter = {
 
 export const generateNewFilter = (): SessionFilter => {
   return { id: uuid(), value: '', key: undefined };
+};
+
+export const parseQueryFilters = (query: ParsedUrlQuery) => {
+  return Object.keys(query).reduce((acc, key) => {
+    const maybeFilterKey = key as FilterKey;
+    if (!FILTER_LOOKUPS[maybeFilterKey]) {
+      return acc;
+    }
+
+    const maybeValue = query[maybeFilterKey];
+    if (!maybeValue) {
+      return acc;
+    }
+
+    const values = Array.isArray(maybeValue) ? maybeValue : [maybeValue];
+    const newFilters = values.map((value) => ({
+      key: maybeFilterKey,
+      value,
+      id: uuid(),
+    }));
+
+    return [...acc, ...newFilters];
+  }, [] as SessionFilter[]);
 };

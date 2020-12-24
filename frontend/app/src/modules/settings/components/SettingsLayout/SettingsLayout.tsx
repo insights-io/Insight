@@ -9,10 +9,10 @@ import type {
   SettingsLayoutPropsBase,
   SidebarSection,
 } from 'modules/settings/types';
-import { joinPath } from 'modules/settings/utils';
 import useWindowSize from 'shared/hooks/useWindowSize';
 import { useStyletron } from 'baseui';
 import * as zIndex from 'shared/constants/zIndex';
+import { joinPath } from 'shared/components/Breadcrumbs/utils';
 
 import { ContentMask } from '../TopbarMenu/ContentMask';
 

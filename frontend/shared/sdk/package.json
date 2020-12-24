@@ -24,6 +24,7 @@
     "build:rollup": "rollup -c rollup.config.js",
     "build:types": "tsc --p tsconfig.build.json --declaration --outDir dist --emitDeclarationOnly",
     "lint": "concurrently \"npm run prettier\" \"npm run eslint\"",
+    "test": "jest",
     "eslint": "eslint --max-warnings 0 --ext .ts 'src/**/*'",
     "prettier": "prettier -l 'src/**/*'",
     "prettier:fix": "prettier -l 'src/**/*' --write"

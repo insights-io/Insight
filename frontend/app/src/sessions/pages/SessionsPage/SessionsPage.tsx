@@ -11,11 +11,12 @@ import {
   DateRange,
   createDateRange,
 } from 'sessions/components/SessionSearch/utils';
-import { SessionFilter } from 'sessions/components/SessionSearch/SessionFilters/utils';
+import { parseQueryFilters } from 'sessions/components/SessionSearch/SessionFilters/utils';
 import { useUser } from 'shared/hooks/useUser';
 import { useSessions } from 'sessions/hooks/useSessions';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 type Props = {
   user: UserDTO;
@@ -30,10 +31,12 @@ export const SessionsPage = ({
   sessions: initialSessions,
   sessionCount: initialSessionCount,
 }: Props) => {
+  const { query } = useRouter();
+
   const [_css, theme] = useStyletron();
   const { user } = useUser(initialUser);
   const { organization } = useOrganization(initialOrganization);
-  const [filters, setFilters] = useState<SessionFilter[]>([]);
+  const [filters, setFilters] = useState(() => parseQueryFilters(query));
   const [dateRange, setDataRange] = useState<DateRange>(() =>
     createDateRange('all-time')
   );

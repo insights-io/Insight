@@ -1,4 +1,4 @@
-import { Path } from 'modules/settings/types';
+import type { Path } from './types';
 
 export const joinSegments = (segments: string[]) => {
   return `/${segments.join('/')}`;

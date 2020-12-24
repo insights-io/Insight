@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { scaleLinear, scaleTime } from '@visx/scale';
 import { Line, LinePath } from '@visx/shape';
 import { curveLinear } from '@visx/curve';
-import { useTooltip, defaultStyles, TooltipWithBounds } from '@visx/tooltip';
+import { useTooltip, TooltipWithBounds } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { bisector } from 'd3-array';
 import { Group } from '@visx/group';
@@ -11,13 +11,9 @@ import { AxisBottom } from '@visx/axis';
 import { format } from 'date-fns';
 import { ResponsiveChart } from 'insights/components/ResponsiveChart';
 import { getMinMax } from 'shared/utils/math';
+import { tooltipStyles } from 'insights/styles';
 
 export const accentColorDark = '#75daad';
-const tooltipStyles = {
-  ...defaultStyles,
-  background: '#6086d6',
-  color: '#e0e0e0',
-};
 
 type Props<Datum> = {
   data: Datum[];

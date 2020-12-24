@@ -1,3 +1,4 @@
+import { TermCondition } from '@rebrowse/sdk';
 import { sandbox } from '@rebrowse/testing';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { SessionApi } from 'api';
@@ -11,13 +12,12 @@ describe('useSessions', () => {
       .stub(SessionApi, 'getSessions')
       .resolves(REBROWSE_SESSIONS_DTOS.slice(0, 1));
 
+    const from = new Date('04 Dec 1995 00:12:00 GMT');
+
     const { result, waitFor } = renderHook(() =>
       useSessions([], 0, {
         filters: [{ id: '1', key: 'location.city', value: 'Maribor' }],
-        dateRange: {
-          from: new Date('04 Dec 1995 00:12:00 GMT'),
-          to: undefined,
-        },
+        dateRange: { from, to: undefined },
       })
     );
 
@@ -32,8 +32,8 @@ describe('useSessions', () => {
       search: {
         limit: 1,
         sortBy: ['-createdAt'],
-        'location.city': 'eq:Maribor',
-        createdAt: ['gte:1995-12-04T00:12:00.000Z'],
+        'location.city': TermCondition.EQ('Maribor'),
+        createdAt: [TermCondition.GTE(from)],
       },
     });
 
@@ -49,10 +49,10 @@ describe('useSessions', () => {
       search: {
         limit: 1,
         sortBy: ['-createdAt'],
-        'location.city': 'eq:Maribor',
+        'location.city': TermCondition.EQ('Maribor'),
         createdAt: [
-          'gte:1995-12-04T00:12:00.000Z',
-          `lte:${REBROWSE_SESSIONS[0].createdAt.toISOString()}`,
+          TermCondition.GTE(from),
+          TermCondition.LTE(REBROWSE_SESSIONS[0].createdAt),
         ],
       },
     });

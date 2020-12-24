@@ -1,3 +1,4 @@
+/* eslint-disable lodash/prefer-constant */
 import React from 'react';
 import type { Meta } from '@storybook/react';
 import { Block } from 'baseui/block';
@@ -48,7 +49,15 @@ const Container = ({ children }: { children: React.ReactNode }) => {
   return (
     <Block backgroundColor="#d3d3d3" padding="32px">
       <Block width="400px" height="400px">
-        {children}
+        <Block
+          backgroundColor="#27273f"
+          padding="24px"
+          $style={{ borderRadius: '8px' }}
+          height="100%"
+          width="100%"
+        >
+          {children}
+        </Block>
       </Block>
     </Block>
   );
@@ -57,20 +66,25 @@ const Container = ({ children }: { children: React.ReactNode }) => {
 export const Base = () => {
   return (
     <Container>
-      <Block
-        backgroundColor="#27273f"
-        padding="24px"
-        $style={{ borderRadius: '8px' }}
-        height="100%"
-        width="100%"
-      >
-        <ResponsivePieChart
-          data={browsers}
-          getColor={(d) => getBrowserColor(d.label)}
-          getLabel={(d) => d.label}
-          getPieValue={(d) => d.usage}
-        />
-      </Block>
+      <ResponsivePieChart
+        data={browsers}
+        getColor={(d) => getBrowserColor(d.label)}
+        getLabel={(d) => d.label}
+        getPieValue={(d) => d.usage}
+      />
+    </Container>
+  );
+};
+
+export const Empty = () => {
+  return (
+    <Container>
+      <ResponsivePieChart
+        data={[]}
+        getColor={(_) => ''}
+        getLabel={(_) => ''}
+        getPieValue={(_) => 0}
+      />
     </Container>
   );
 };

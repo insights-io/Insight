@@ -1,5 +1,6 @@
 import type { EventSeachBean, EventSearchQueryParams } from '@rebrowse/sdk';
-import type { BrowserEventDTO } from '@rebrowse/types';
+import type { BrowserEventDTO, SearchBean } from '@rebrowse/types';
+import { REBROWSE_EVENTS } from '__tests__/data/events';
 
 import { filterByParam } from './core';
 
@@ -7,27 +8,22 @@ export const filterBrowserEvent = <
   GroupBy extends (keyof EventSearchQueryParams)[]
 >(
   event: BrowserEventDTO,
-  search: EventSeachBean<GroupBy> | undefined
+  search: EventSeachBean<GroupBy> = {}
 ) => {
-  if (!search) {
-    return true;
-  }
+  const mappedSearch = Object.keys(search).reduce((acc, key) => {
+    const mappedKey = key.replace('event.', '');
+    return { ...acc, [mappedKey]: search[key as keyof typeof search] };
+  }, {} as typeof search);
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const key of ['event.e']) {
-    if (
-      !filterByParam(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        event as any,
-        key,
-        search,
-        (v) => parseInt(v, 10),
-        (r, f) => r[(f as string).replace('event.', '')]
-      )
-    ) {
-      return false;
-    }
-  }
+  return filterByParam(
+    (event as unknown) as Record<string, unknown>,
+    mappedSearch
+  );
+};
 
-  return true;
+export const searchEventsMockImplementation = (
+  search: SearchBean<EventSearchQueryParams, 'event.e'[]> | undefined,
+  events: BrowserEventDTO[] = REBROWSE_EVENTS
+) => {
+  return Promise.resolve(events.filter((e) => filterBrowserEvent(e, search)));
 };
