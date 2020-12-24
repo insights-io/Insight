@@ -5,11 +5,20 @@ import {
 } from '@testing-library/testcafe';
 
 import { SESSIONS_PAGE } from '../../src/shared/constants/routes';
-import config from '../config';
-import { getLocation } from '../utils';
 
-class SessionPage {
-  /* Selectors */
+import { AbstractPage } from './AbstractPage';
+
+export class SessionPage extends AbstractPage {
+  private readonly id: string;
+
+  constructor(id: string) {
+    super(`${SESSIONS_PAGE}/${id}`);
+    this.id = id;
+  }
+
+  public readonly backButton = this.withinContainer.queryByLabelText(
+    'Back to all sesions'
+  );
 
   public readonly devtools = {
     button: queryByLabelText('Developer tools'),
@@ -20,20 +29,4 @@ class SessionPage {
       network: queryByText('Network'),
     },
   };
-
-  /* Utils */
-  public path = () => {
-    return this.getId().then(
-      (id) => `${config.appBaseURL}${SESSIONS_PAGE}/${id}`
-    );
-  };
-
-  public getId = () => {
-    return getLocation().then((path) => {
-      const split = path.split('/');
-      return split[split.length - 1];
-    });
-  };
 }
-
-export default new SessionPage();

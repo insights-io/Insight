@@ -36,6 +36,8 @@ test.requestHooks(pageVisitInterceptor)(
     });
 
     const sessionId = pageVisitInterceptor.getSessionId();
+    const sessionPage = new SessionPage(sessionId);
+
     await t
       .click(SessionsPage.getItemBySessionId(sessionId))
       .expect(queryByText(sessionId).visible)
@@ -43,13 +45,15 @@ test.requestHooks(pageVisitInterceptor)(
       .expect(queryByText('Unknown location').visible)
       .ok('Unknown location')
       .expect(queryByText('browser.name = Chrome').visible)
-      .ok('Is in Chrome');
+      .ok('Is in Chrome')
+      .click(sessionPage.backButton)
+      .click(SessionsPage.getItemBySessionId(sessionId));
 
     await t
-      .click(SessionPage.devtools.button)
-      .typeText(SessionPage.devtools.filterInput, 'console')
+      .click(sessionPage.devtools.button)
+      .typeText(sessionPage.devtools.filterInput, 'console')
       .expect(queryByText('console.log').visible)
-      .ok('console.log should be visible in the console', { timeout: 10000 }) // this might take some time -- refresh interval is 5s
+      .ok('console.log should be visible in the console', { timeout: 15000 })
       .expect(queryByText('console.info').visible)
       .ok('console.info should be visible in the console')
       .expect(queryByText('console.debug').visible)
@@ -58,25 +62,25 @@ test.requestHooks(pageVisitInterceptor)(
       .ok('console.warn should be visible in the console')
       .expect(queryByText('console.error').visible)
       .ok('console.error should be visible in the console')
-      .selectText(SessionPage.devtools.filterInput)
+      .selectText(sessionPage.devtools.filterInput)
       .pressKey('delete')
-      .typeText(SessionPage.devtools.filterInput, 'Error')
+      .typeText(sessionPage.devtools.filterInput, 'Error')
       .expect(queryByText('Uncaught Error: simulated error').visible)
       .ok('Uncaught Error should be visible in console');
 
     await t
-      .click(SessionPage.devtools.tabs.network)
+      .click(sessionPage.devtools.tabs.network)
       .expect(queryAllByText('POST').visible)
-      .ok('Multiple POST requests')
+      .ok('POST requests')
       .expect(queryAllByText('GET').visible)
-      .ok('Multiple GET requests')
-      .expect(queryAllByText('sessions').visible)
-      .ok('Should display GET /sessions request')
-      .expect(queryAllByText('login').visible)
-      .ok('Should display /login request')
+      .ok('GET requests')
+      .expect(queryAllByText('user').visible)
+      .ok('GET /user request')
+      .expect(queryAllByText('organization').visible)
+      .ok('GET /organization request')
       .expect(
         queryAllByText(`search?event.e=gte:9&event.e=lte:10&limit=1000`).visible
       )
-      .ok('Should display console events search request');
+      .ok('Should display console events search request', { timeout: 15000 });
   }
 );
