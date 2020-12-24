@@ -15,7 +15,7 @@ type Props = {
   events: BrowserXhrEventDTO[];
 };
 
-const NetworkTab = ({ events, loading }: Props) => {
+export const NetworkTab = React.memo(({ events, loading }: Props) => {
   const [_css, theme] = useStyletron();
 
   const columns = [
@@ -86,6 +86,4 @@ const NetworkTab = ({ events, loading }: Props) => {
       )}
     </Block>
   );
-};
-
-export default React.memo(NetworkTab);
+});

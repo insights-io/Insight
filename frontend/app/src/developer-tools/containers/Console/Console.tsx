@@ -1,5 +1,5 @@
 import React from 'react';
-import Console, { ConsoleEventDTO } from 'sessions/components/Console';
+import { Console, ConsoleEventDTO } from 'developer-tools/components/Console';
 
 import { useEvents } from './useEvents';
 

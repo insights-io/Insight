@@ -23,7 +23,7 @@ type Props = {
   style?: StyleObject;
 };
 
-const Console = ({ events, loading, style }: Props) => {
+export const Console = ({ events, loading, style }: Props) => {
   const [css, theme] = useStyletron();
   const [filterText, setFilterText] = useState('');
 
@@ -115,5 +115,3 @@ const Console = ({ events, loading, style }: Props) => {
     </section>
   );
 };
-
-export default Console;

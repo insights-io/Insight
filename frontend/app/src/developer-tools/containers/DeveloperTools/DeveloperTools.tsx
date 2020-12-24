@@ -14,8 +14,10 @@ type Props = {
   children: (open: () => void) => void;
 };
 
-const ConsoleTab = dynamic(() => import('sessions/containers/Console'));
-const NetworkTab = dynamic(() => import('sessions/containers/NetworkTab'));
+const ConsoleTab = dynamic(() => import('developer-tools/containers/Console'));
+const NetworkTab = dynamic(
+  () => import('developer-tools/containers/NetworkTab')
+);
 
 type TriggerProps = {
   open: () => void;

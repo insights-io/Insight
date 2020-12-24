@@ -72,7 +72,11 @@ export const SessionsPage = ({
             setFilters={setFilters}
             filters={filters}
           />
-          <Block marginTop={theme.sizing.scale400} height="100%">
+          <Block
+            marginTop={theme.sizing.scale400}
+            height="100%"
+            className="sessions"
+          >
             <SessionList
               sessions={sessions}
               count={count}

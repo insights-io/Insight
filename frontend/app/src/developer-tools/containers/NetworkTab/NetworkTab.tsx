@@ -1,5 +1,5 @@
 import React from 'react';
-import NetworkTab from 'sessions/components/NetworkTab';
+import { NetworkTab } from 'developer-tools/components/NetworkTab';
 import type { BrowserXhrEventDTO } from '@rebrowse/types';
 
 import { useEvents } from './useEvents';

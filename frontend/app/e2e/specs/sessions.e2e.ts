@@ -5,13 +5,10 @@ import { LoginPage, SessionPage, SessionsPage } from '../pages';
 
 fixture('/sessions').page(SessionsPage.path);
 
-test('User should be able to see page sessions', async (t) => {
-  await LoginPage.loginWithRebrowseUser(t)
-    .click(SessionsPage.getLastSession())
-    .click(SessionPage.devtools.button)
-    .expect(SessionPage.devtools.filterInput.visible)
-    .ok('Navigates to session details page');
+test('As a user I should be able to use "Developer tools" to investigate problems', async (t) => {
+  await LoginPage.loginWithRebrowseUser(t);
 
+  /* Generate some events for Developer tools */
   await t.eval(() => {
     console.log('console.log');
     console.info('console.info');
@@ -19,11 +16,26 @@ test('User should be able to see page sessions', async (t) => {
     console.warn('console.warn');
     console.error('console.error');
 
+    // simulate Error thrown in browser (we cant just throw here as this will kill the process)
+    const errorElem = document.createElement('script');
+    errorElem.textContent = 'throw new Error("simulated error");';
+    document.body.append(errorElem);
+
+    // simulate SyntaxError thrown in browser (we cant just throw here as this will kill the process)
+    const syntaxErrorElem = document.createElement('script');
+    syntaxErrorElem.textContent = 'eval("va x = 5;");';
+    document.body.append(syntaxErrorElem);
+
     // eslint-disable-next-line no-restricted-globals
     location.reload(true);
   });
 
+  await t.click(SessionsPage.firstSession);
+  const sessionId = await SessionPage.getId();
+  await t.expect(queryByText(sessionId).visible).ok('Session ID is visible');
+
   await t
+    .click(SessionPage.devtools.button)
     .click(SessionPage.devtools.button)
     .typeText(SessionPage.devtools.filterInput, 'console')
     .expect(queryByText('console.log').visible)
@@ -35,7 +47,9 @@ test('User should be able to see page sessions', async (t) => {
     .expect(queryByText('console.warn').visible)
     .ok('console.warn should be visible in the console')
     .expect(queryByText('console.error').visible)
-    .ok('console.error should be visible in the console');
+    .ok('console.error should be visible in the console')
+    .expect(queryByText('Uncaught Error: simulated error').visible)
+    .ok('Uncaught Error should be visible in console');
 
   await t
     .click(SessionPage.devtools.tabs.network)

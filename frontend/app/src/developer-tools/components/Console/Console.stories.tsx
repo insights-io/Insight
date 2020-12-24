@@ -2,10 +2,10 @@ import React from 'react';
 import { CONSOLE_EVENTS, ERROR_EVENTS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 
-import Console from './Console';
+import { Console } from './Console';
 
 export default {
-  title: 'sessions/components/Console',
+  title: 'developer-tools/components/Console',
   component: Console,
 } as Meta;
 

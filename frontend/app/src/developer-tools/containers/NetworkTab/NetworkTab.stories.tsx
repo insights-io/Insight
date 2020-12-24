@@ -8,7 +8,7 @@ import type { Meta } from '@storybook/react';
 import { NetworkTabContainer } from './NetworkTab';
 
 export default {
-  title: 'sessions/containers/NetworkTabContainer',
+  title: 'developer-tools/containers/NetworkTabContainer',
   component: NetworkTabContainer,
   decorators: [fullHeightDecorator],
 } as Meta;

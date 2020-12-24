@@ -6,7 +6,7 @@ import { useSession } from 'sessions/hooks/useSession/useSession';
 import type { OrganizationDTO, SessionDTO, UserDTO } from '@rebrowse/types';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import { useStyletron } from 'baseui';
-import { DeveloperTools } from 'sessions/containers/DeveloperTools';
+import { DeveloperTools } from 'developer-tools/containers/DeveloperTools';
 import { Flex, SpacedBetween, VerticalAligned } from '@rebrowse/elements';
 import Link from 'next/link';
 import { SESSIONS_PAGE } from 'shared/constants/routes';

@@ -4,6 +4,7 @@ import {
   queryByText,
 } from '@testing-library/testcafe';
 
+import { SESSIONS_PAGE } from '../../src/shared/constants/routes';
 import config from '../config';
 import { getLocation } from '../utils';
 
@@ -22,7 +23,9 @@ class SessionPage {
 
   /* Utils */
   public path = () => {
-    return this.getId().then((id) => `${config.appBaseURL}/sessions/${id}`);
+    return this.getId().then(
+      (id) => `${config.appBaseURL}${SESSIONS_PAGE}/${id}`
+    );
   };
 
   public getId = () => {

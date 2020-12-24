@@ -9,7 +9,7 @@ import type { Meta } from '@storybook/react';
 import { DeveloperTools } from './DeveloperTools';
 
 export default {
-  title: 'sessions/containers/DeveloperTools',
+  title: 'developer-tools/containers/DeveloperTools',
   component: DeveloperTools,
   decorators: [fullHeightDecorator],
 } as Meta;
