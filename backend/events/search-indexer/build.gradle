@@ -6,6 +6,7 @@ plugins {
 apply plugin: "com.github.johnrengelman.shadow"
 
 dependencies {
+    runtimeOnly "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
     implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticsearchVersion}") {
         force = true
@@ -20,6 +21,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+configurations.runtimeClasspath {
+    exclude group: "org.jboss.slf4j", module: "slf4j-jboss-logmanager"
 }
 
 jar {

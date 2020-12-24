@@ -48,17 +48,6 @@ public class SearchIndexer {
             new BrowserEventElasticsearchBatchProcessor(client));
   }
 
-  public void shutdown() {
-    log.info("Shutting down ...");
-    processor.shutdown();
-  }
-
-  public void start() {
-    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
-    log.info("Starting search indexer ...");
-    processor.start();
-  }
-
   public static Properties retryQueueProducerProperties(String bootstrapServers) {
     Properties producerProperties = new Properties();
     producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -80,5 +69,16 @@ public class SearchIndexer {
     consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     return consumerProps;
+  }
+
+  public void shutdown() {
+    log.info("Shutting down ...");
+    processor.shutdown();
+  }
+
+  public void start() {
+    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+    log.info("Starting search indexer ...");
+    processor.start();
   }
 }
