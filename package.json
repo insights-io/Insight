@@ -28,7 +28,7 @@
     "@testing-library/testcafe": "4.3.1",
     "@testing-library/user-event": "12.6.0",
     "@types/jest": "26.0.19",
-    "@types/sinon": "9.0.9",
+    "@types/sinon": "9.0.10",
     "@typescript-eslint/eslint-plugin": "4.11.0",
     "@typescript-eslint/parser": "4.11.0",
     "babel-loader": "8.2.2",
