@@ -1,7 +1,7 @@
 import { getPage } from 'next-page-tester';
 import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
-import { EMAIL_PLACEHOLDER } from 'modules/auth/validation/email';
+import { EMAIL_PLACEHOLDER } from 'shared/constants/form-placeholders';
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { mockApiError } from '@rebrowse/storybook';

@@ -2,7 +2,7 @@
 import React from 'react';
 import type { GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
-import { VerificationPage } from 'modules/auth/pages/VerificationPage';
+import { VerificationPage } from 'auth/pages/VerificationPage';
 import {
   startRequestSpan,
   prepareCrossServiceHeaders,
@@ -10,7 +10,7 @@ import {
 import { AuthApi } from 'api/auth';
 import type { MfaMethod, UserDTO } from '@rebrowse/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
-import { SetupMultiFactorAuthenticationPage } from 'modules/auth/pages/SetupMultiFactorAuthenticationPage';
+import { SetupMultiFactorAuthenticationPage } from 'auth/pages/SetupMultiFactorAuthenticationPage';
 
 type Props =
   | { methods: MfaMethod[]; user?: undefined }

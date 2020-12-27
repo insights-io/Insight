@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { SESSIONS_PAGE } from 'shared/constants/routes';
 import { BackButton } from 'shared/components/BackButton';
 import { Block } from 'baseui/block';
-import { Path } from 'modules/settings/types';
+import type { Path } from 'settings/types';
 import { Breadcrumbs } from 'shared/components/Breadcrumbs';
 
 type Props = {

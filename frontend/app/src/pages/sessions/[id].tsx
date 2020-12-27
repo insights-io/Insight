@@ -2,7 +2,7 @@ import React from 'react';
 import {
   authenticated,
   AuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
+} from 'auth/middleware/authMiddleware';
 import {
   startRequestSpan,
   prepareCrossServiceHeaders,
