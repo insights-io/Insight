@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { queryByText, within } from '@testing-library/testcafe';
 
-import { EMAIL_PLACEHOLDER } from '../../../../src/modules/auth/validation/email';
+import { EMAIL_PLACEHOLDER } from '../../../../src/shared/constants/form-placeholders';
 import { ORGANIZATION_SETTINGS_MEMBERS_PAGE } from '../../../../src/shared/constants/routes';
 
 import { AbstractOrganizationSettingsPage } from './AbstractOrganizationSettingsPage';

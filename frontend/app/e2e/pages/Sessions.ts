@@ -1,13 +1,15 @@
-import { queryAllByText } from '@testing-library/testcafe';
-
 import { SESSIONS_PAGE } from '../../src/shared/constants/routes';
 
 import { AbstractPage } from './AbstractPage';
 
 class SessionsPage extends AbstractPage {
-  /* Utils */
-  public getLastSession = () => {
-    return queryAllByText(/^.*less than [1-9][0-9]* seconds ago$/);
+  public readonly sessionsList = this.container.find('div.sessions').find('ul');
+
+  public readonly getItemBySessionId = (id: string) => {
+    return this.sessionsList
+      .find('a')
+      .withAttribute('href', `${SESSIONS_PAGE}/${id}`)
+      .child();
   };
 }
 

@@ -2,8 +2,8 @@ import React from 'react';
 import {
   AuthenticatedServerSideProps,
   getAuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
-import { SettingsPage } from 'modules/settings/pages/SettingsPage';
+} from 'auth/middleware/authMiddleware';
+import { SettingsPage } from 'settings/pages/SettingsPage';
 import type { GetServerSideProps } from 'next';
 import type { OrganizationDTO } from '@rebrowse/types';
 

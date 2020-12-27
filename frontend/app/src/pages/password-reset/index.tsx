@@ -1,8 +1,8 @@
 import React from 'react';
 import { AuthApi } from 'api/auth';
 import type { GetServerSideProps } from 'next';
-import { PasswordResetInvalidPage } from 'modules/auth/pages/PasswordResetInvalidPage';
-import { PasswordResetPage } from 'modules/auth/pages/PasswordResetPage';
+import { PasswordResetInvalidPage } from 'auth/pages/PasswordResetInvalidPage';
+import { PasswordResetPage } from 'auth/pages/PasswordResetPage';
 import {
   startRequestSpan,
   prepareCrossServiceHeaders,

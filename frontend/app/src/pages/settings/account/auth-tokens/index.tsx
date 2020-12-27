@@ -1,9 +1,9 @@
 import React from 'react';
-import { AccountSettingsAuthTokensPage } from 'modules/settings/pages/account/AccountSettingsAuthTokensPage';
+import { AccountSettingsAuthTokensPage } from 'settings/pages/account/AccountSettingsAuthTokensPage';
 import {
   authenticated,
   AuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
+} from 'auth/middleware/authMiddleware';
 import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import type { AuthTokenDTO } from '@rebrowse/types';
 import {

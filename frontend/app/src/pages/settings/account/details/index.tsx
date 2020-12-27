@@ -1,9 +1,9 @@
 import React from 'react';
-import { AccountSettingsDetailsPage } from 'modules/settings/pages/account/AccountSettingsDetailsPage';
+import { AccountSettingsDetailsPage } from 'settings/pages/account/AccountSettingsDetailsPage';
 import {
   getAuthenticatedServerSideProps,
   AuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
+} from 'auth/middleware/authMiddleware';
 import type { GetServerSideProps } from 'next';
 
 type Props = AuthenticatedServerSideProps;

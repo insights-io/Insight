@@ -3,14 +3,14 @@ import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
+} from 'auth/middleware/authMiddleware';
 import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
 import { AuthApi } from 'api';
 import type { TeamInviteDTO } from '@rebrowse/types';
-import { OrganizationSettingsMemberInvitesPage } from 'modules/settings/pages/organization/OrganizationSettingsMemberInvitesPage';
+import { OrganizationSettingsMemberInvitesPage } from 'settings/pages/organization/OrganizationSettingsMemberInvitesPage';
 
 type Props = AuthenticatedServerSideProps & {
   teamInvites: TeamInviteDTO[];

@@ -5,7 +5,7 @@ import { LOGIN_PAGE } from '../../src/shared/constants/routes';
 import {
   EMAIL_PLACEHOLDER,
   WORK_EMAIL_PLACEHOLDER,
-} from '../../src/modules/auth/validation/email';
+} from '../../src/shared/constants/form-placeholders';
 
 import { AbstractPage } from './AbstractPage';
 

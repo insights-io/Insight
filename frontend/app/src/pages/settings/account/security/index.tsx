@@ -1,9 +1,9 @@
 import React from 'react';
-import { AccountSettingsSecurityPage } from 'modules/settings/pages/account/AccountSettingsSecurityPage';
+import { AccountSettingsSecurityPage } from 'settings/pages/account/AccountSettingsSecurityPage';
 import {
   authenticated,
   AuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
+} from 'auth/middleware/authMiddleware';
 import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   prepareCrossServiceHeaders,

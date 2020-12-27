@@ -5,7 +5,7 @@ import { AuthApi } from 'api';
 import {
   EMAIL_PLACEHOLDER,
   WORK_EMAIL_PLACEHOLDER,
-} from 'modules/auth/validation/email';
+} from 'shared/constants/form-placeholders';
 import { getPage } from 'next-page-tester';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import * as windowUtils from 'shared/utils/window';

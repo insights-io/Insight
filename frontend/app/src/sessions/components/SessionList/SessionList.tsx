@@ -32,6 +32,7 @@ export const SessionList = ({
         >
           {({ onItemsRendered, ref }) => (
             <FixedSizeList
+              innerElementType="ul"
               ref={ref}
               height={height}
               itemCount={count}

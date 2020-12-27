@@ -3,8 +3,8 @@ import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
-import { OrganizationSettingsBillingSubscriptionDetailsPage } from 'modules/settings/pages/organization/OrganizationSettingsBillingSubscriptionDetailsPage';
+} from 'auth/middleware/authMiddleware';
+import { OrganizationSettingsBillingSubscriptionDetailsPage } from 'settings/pages/organization/OrganizationSettingsBillingSubscriptionDetailsPage';
 import {
   prepareCrossServiceHeaders,
   startRequestSpan,

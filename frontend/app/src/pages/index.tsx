@@ -1,5 +1,5 @@
 import React from 'react';
-import { authenticated } from 'modules/auth/middleware/authMiddleware';
+import { authenticated } from 'auth/middleware/authMiddleware';
 import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   startRequestSpan,

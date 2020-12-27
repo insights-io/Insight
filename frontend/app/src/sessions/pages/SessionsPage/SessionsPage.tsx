@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { AppLayout } from 'shared/components/AppLayout';
 import { useStyletron } from 'baseui';
-import { RecordingSnippet } from 'modules/setup/components/RecordingSnippet';
+import { RecordingSnippet } from 'sessions/components/RecordingSnippet';
 import { BOOTSTRAP_SCRIPT_URI } from 'shared/config';
 import type { OrganizationDTO, SessionDTO, UserDTO } from '@rebrowse/types';
 import { SessionList } from 'sessions/components/SessionList';
@@ -72,7 +72,11 @@ export const SessionsPage = ({
             setFilters={setFilters}
             filters={filters}
           />
-          <Block marginTop={theme.sizing.scale400} height="100%">
+          <Block
+            marginTop={theme.sizing.scale400}
+            height="100%"
+            className="sessions"
+          >
             <SessionList
               sessions={sessions}
               count={count}

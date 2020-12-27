@@ -3,8 +3,8 @@ import type { GetServerSideProps } from 'next';
 import {
   AuthenticatedServerSideProps,
   getAuthenticatedServerSideProps,
-} from 'modules/auth/middleware/authMiddleware';
-import { OrganizationSettingsGeneralPage } from 'modules/settings/pages/organization/OrganizationSettingsGeneralPage';
+} from 'auth/middleware/authMiddleware';
+import { OrganizationSettingsGeneralPage } from 'settings/pages/organization/OrganizationSettingsGeneralPage';
 import type { OrganizationDTO } from '@rebrowse/types';
 
 type Props = AuthenticatedServerSideProps & {

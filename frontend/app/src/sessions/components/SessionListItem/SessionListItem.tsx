@@ -20,9 +20,10 @@ export const SessionListItem = ({ session, style }: Props) => {
   const [css, theme] = useStyletron();
   const description = sessionDescription(session);
   const artwork = getDeviceClassIcon(session.userAgent.deviceClass);
+  const link = `${SESSIONS_PAGE}/${id}`;
 
   return (
-    <Link href={`${SESSIONS_PAGE}/${id}`} key={id}>
+    <Link href={link} key={id}>
       <a className={css({ color: 'inherit' })}>
         <ListItem
           artwork={artwork}
