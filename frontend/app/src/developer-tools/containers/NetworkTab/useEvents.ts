@@ -17,13 +17,16 @@ export const cacheKey = (sessionId: string) => {
 const queryFn = (sessionId: string) => {
   return SessionApi.events.search(sessionId, {
     // TODO: pagination
-    search: { 'event.e': [TermCondition.EQ(11)], limit: 1000 },
+    search: {
+      'event.e': [TermCondition.EQ(11)],
+      limit: 1000,
+    },
   });
 };
 
 export const useEvents = (sessionId: string) => {
   const { data } = useQuery(cacheKey(sessionId), () => queryFn(sessionId), {
-    refetchInterval: 5000,
+    refetchInterval: 3000,
   });
 
   return { data };

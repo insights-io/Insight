@@ -18,7 +18,7 @@ const queryFn = (sessionId: string) => {
 
 export const useEvents = (sessionId: string) => {
   const { data } = useQuery(cacheKey(sessionId), () => queryFn(sessionId), {
-    refetchInterval: 5000,
+    refetchInterval: 3000,
   });
 
   return { data };

@@ -53,7 +53,7 @@ test.requestHooks(pageVisitInterceptor)(
       .click(sessionPage.devtools.button)
       .typeText(sessionPage.devtools.filterInput, 'console')
       .expect(queryByText('console.log').visible)
-      .ok('console.log should be visible in the console', { timeout: 15000 })
+      .ok('console.log should be visible in the console', { timeout: 25000 })
       .expect(queryByText('console.info').visible)
       .ok('console.info should be visible in the console')
       .expect(queryByText('console.debug').visible)
@@ -81,6 +81,6 @@ test.requestHooks(pageVisitInterceptor)(
       .expect(
         queryAllByText(`search?event.e=gte:9&event.e=lte:10&limit=1000`).visible
       )
-      .ok('Should display console events search request', { timeout: 15000 });
+      .ok('Should display console events search request', { timeout: 25000 });
   }
 );
