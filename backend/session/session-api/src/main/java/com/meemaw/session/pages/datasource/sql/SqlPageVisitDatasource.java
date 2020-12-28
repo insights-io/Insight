@@ -8,29 +8,33 @@ import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.HEIGHT;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.ID;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.INSERT_FIELDS;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.ORGANIZATION_ID;
+import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.ORIGIN;
+import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.PATH;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.REFERRER;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.SCREEN_HEIGHT;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.SCREEN_WIDTH;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.SESSION_ID;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.TABLE;
-import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.URL;
 import static com.meemaw.session.pages.datasource.sql.SqlPageVisitTable.WIDTH;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.location.model.Located;
-import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.model.PageVisitCreateParams;
 import com.meemaw.session.model.PageVisitDTO;
 import com.meemaw.session.model.PageVisitSessionLink;
 import com.meemaw.session.pages.datasource.PageVisitDatasource;
 import com.meemaw.session.sessions.datasource.SessionDatasource;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import com.meemaw.shared.sql.rest.query.SQLGroupByQuery;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.useragent.model.HasUserAgent;
 import io.vertx.mutiny.sqlclient.Row;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,11 +47,29 @@ import org.jooq.Query;
 
 @ApplicationScoped
 @Slf4j
-public class SqlPageVisitDatasource implements PageVisitDatasource {
+public class SqlPageVisitDatasource extends AbstractSqlDatasource<PageVisitDTO>
+    implements PageVisitDatasource {
 
   @Inject ObjectMapper objectMapper;
   @Inject SqlPool sqlPool;
   @Inject SessionDatasource sessionDatasource;
+
+  public static PageVisitDTO map(Row row) {
+    return new PageVisitDTO(
+        row.getUUID(ID.getName()),
+        row.getUUID(SESSION_ID.getName()),
+        row.getString(ORGANIZATION_ID.getName()),
+        row.getString(DOCTYPE.getName()),
+        RequestUtils.sneakyUrl(row.getString(ORIGIN.getName())),
+        row.getString(PATH.getName()),
+        row.getString(REFERRER.getName()),
+        row.getInteger(SCREEN_WIDTH.getName()),
+        row.getInteger(SCREEN_HEIGHT.getName()),
+        row.getInteger(WIDTH.getName()),
+        row.getInteger(HEIGHT.getName()),
+        row.getInteger(COMPILED_TIMESTAMP.getName()),
+        row.getOffsetDateTime(CREATED_AT.getName()));
+  }
 
   @Override
   public CompletionStage<PageVisitSessionLink> createPageAndNewSession(
@@ -56,13 +78,14 @@ public class SqlPageVisitDatasource implements PageVisitDatasource {
       UUID deviceId,
       HasUserAgent userAgent,
       Located location,
-      CreatePageVisitDTO page) {
+      PageVisitCreateParams createParams) {
     return sqlPool
         .beginTransaction()
         .thenCompose(
             transaction ->
                 createPageAndNewSession(
-                    pageId, sessionId, deviceId, userAgent, location, page, transaction));
+                        pageId, sessionId, deviceId, userAgent, location, createParams, transaction)
+                    .thenCompose(link -> transaction.commit().thenApply(i -> link)));
   }
 
   private CompletionStage<PageVisitSessionLink> createPageAndNewSession(
@@ -71,25 +94,25 @@ public class SqlPageVisitDatasource implements PageVisitDatasource {
       UUID deviceId,
       HasUserAgent userAgent,
       Located location,
-      CreatePageVisitDTO page,
+      PageVisitCreateParams page,
       SqlTransaction transaction) {
-    String organizationId = page.getOrganizationId();
     return sessionDatasource
-        .createSession(sessionId, deviceId, organizationId, location, userAgent, transaction)
+        .create(sessionId, deviceId, page.getOrganizationId(), location, userAgent, transaction)
         .thenCompose(
             session ->
-                insertPage(pageId, session.getId(), session.getDeviceId(), page, transaction)
-                    .thenCompose(
-                        pageIdentity -> transaction.commit().thenApply(ignored -> pageIdentity)));
+                insertPage(pageId, session.getId(), session.getDeviceId(), page, transaction));
   }
 
   private CompletionStage<PageVisitSessionLink> insertPage(
-      UUID id, UUID sessionId, UUID deviceId, CreatePageVisitDTO page, SqlTransaction transaction) {
-    Query query = insertPageQuery(id, sessionId, page);
+      UUID id,
+      UUID sessionId,
+      UUID deviceId,
+      PageVisitCreateParams page,
+      SqlTransaction transaction) {
     return transaction
-        .execute(query)
+        .execute(insertPageQuery(id, sessionId, page))
         .thenApply(
-            rowSet ->
+            r ->
                 PageVisitSessionLink.builder()
                     .pageVisitId(id)
                     .sessionId(sessionId)
@@ -120,10 +143,9 @@ public class SqlPageVisitDatasource implements PageVisitDatasource {
 
   @Override
   public CompletionStage<PageVisitSessionLink> create(
-      UUID id, UUID sessionId, UUID deviceId, CreatePageVisitDTO page) {
-    Query query = insertPageQuery(id, sessionId, page);
+      UUID id, UUID sessionId, UUID deviceId, PageVisitCreateParams page) {
     return sqlPool
-        .execute(query)
+        .execute(insertPageQuery(id, sessionId, page))
         .thenApply(
             rowSet ->
                 PageVisitSessionLink.builder()
@@ -133,17 +155,38 @@ public class SqlPageVisitDatasource implements PageVisitDatasource {
                     .build());
   }
 
-  private Query insertPageQuery(UUID id, UUID sessionId, CreatePageVisitDTO page) {
+  @Override
+  public CompletionStage<PageVisitSessionLink> create(
+      UUID pageVisitId,
+      UUID sessionId,
+      UUID deviceId,
+      PageVisitCreateParams page,
+      SqlTransaction transaction) {
+    return transaction
+        .execute(insertPageQuery(pageVisitId, sessionId, page))
+        .thenApply(
+            rowSet ->
+                PageVisitSessionLink.builder()
+                    .pageVisitId(pageVisitId)
+                    .sessionId(sessionId)
+                    .deviceId(deviceId)
+                    .build());
+  }
+
+  private Query insertPageQuery(UUID pageVisitId, UUID sessionId, PageVisitCreateParams page) {
+    URL origin = RequestUtils.parseOrigin(page.getHref());
+    String path = RequestUtils.removeTrailingSlash(page.getHref().getPath());
     return sqlPool
         .getContext()
         .insertInto(TABLE)
         .columns(INSERT_FIELDS)
         .values(
-            id,
+            pageVisitId,
             sessionId,
             page.getOrganizationId(),
             page.getDoctype(),
-            page.getUrl(),
+            origin.toString(),
+            path,
             page.getReferrer(),
             page.getHeight(),
             page.getWidth(),
@@ -161,25 +204,11 @@ public class SqlPageVisitDatasource implements PageVisitDatasource {
             .from(TABLE)
             .where(ID.eq(id).and(ORGANIZATION_ID.eq(organizationId)));
 
-    return sqlPool
-        .execute(query)
-        .thenApply(rowSet -> rowSet.iterator().hasNext() ? map(rowSet.iterator().next()) : null)
-        .thenApply(Optional::ofNullable);
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 
-  private PageVisitDTO map(Row row) {
-    return new PageVisitDTO(
-        row.getUUID(ID.getName()),
-        row.getUUID(SESSION_ID.getName()),
-        row.getString(ORGANIZATION_ID.getName()),
-        row.getString(URL.getName()),
-        row.getString(REFERRER.getName()),
-        row.getString(DOCTYPE.getName()),
-        row.getInteger(SCREEN_WIDTH.getName()),
-        row.getInteger(SCREEN_HEIGHT.getName()),
-        row.getInteger(WIDTH.getName()),
-        row.getInteger(HEIGHT.getName()),
-        row.getInteger(COMPILED_TIMESTAMP.getName()),
-        row.getOffsetDateTime(CREATED_AT.getName()));
+  @Override
+  public PageVisitDTO fromSql(Row row) {
+    return SqlPageVisitDatasource.map(row);
   }
 }

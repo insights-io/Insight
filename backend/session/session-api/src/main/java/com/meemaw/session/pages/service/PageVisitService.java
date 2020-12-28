@@ -6,7 +6,7 @@ import com.meemaw.auth.organization.resource.v1.OrganizationResource;
 import com.meemaw.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
 import com.meemaw.location.model.Located;
 import com.meemaw.session.location.service.LocationService;
-import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.model.PageVisitCreateParams;
 import com.meemaw.session.model.PageVisitDTO;
 import com.meemaw.session.model.PageVisitSessionLink;
 import com.meemaw.session.pages.datasource.PageVisitDatasource;
@@ -65,7 +65,7 @@ public class PageVisitService {
       description = "A measure of how long it takes to create a page visit")
   @Traced
   public CompletionStage<PageVisitSessionLink> create(
-      CreatePageVisitDTO pageVisit, String userAgentString, String ipAddress) {
+      PageVisitCreateParams pageVisit, String userAgentString, String ipAddress) {
     UserAgent userAgent = userAgentService.parse(userAgentString);
     if (userAgent.isRobot() || userAgent.isHacker()) {
       log.debug(
@@ -83,10 +83,10 @@ public class PageVisitService {
     MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
     // TODO: use SDK
+    String authorization =
+        AbstractBearerTokenSecurityRequirementAuthDynamicFeature.header(s2sApiKey);
     return organizationResource
-        .retrieve(
-            organizationId,
-            AbstractBearerTokenSecurityRequirementAuthDynamicFeature.header(s2sApiKey))
+        .retrieve(organizationId, authorization)
         .thenCompose(
             response -> {
               int status = response.getStatus();
@@ -106,19 +106,19 @@ public class PageVisitService {
                 log.debug(
                     "[SESSION]: Unrecognized device -- starting a new session organizationId={}",
                     organizationId);
-                return createPageSession(
+                return createPageVisit(
                     pageVisitId, deviceId, userAgent, ipAddress, pageVisit, organization);
               }
 
               // recognized device; try to link it with an existing session
               return sessionDatasource
-                  .findSessionDeviceLink(organizationId, deviceId)
+                  .retrieveByDeviceId(organizationId, deviceId)
                   .thenCompose(
                       maybeSessionId -> {
                         if (maybeSessionId.isEmpty()) {
                           log.debug(
                               "[SESSION]: Could not link page visit to an existing session -- starting new session");
-                          return createPageSession(
+                          return createPageVisit(
                               pageVisitId, deviceId, userAgent, ipAddress, pageVisit, organization);
                         }
                         UUID sessionId = maybeSessionId.get();
@@ -136,12 +136,12 @@ public class PageVisitService {
   }
 
   @Traced
-  private CompletionStage<PageVisitSessionLink> createPageSession(
+  private CompletionStage<PageVisitSessionLink> createPageVisit(
       UUID pageVisitId,
       UUID deviceId,
       UserAgent userAgent,
       String ipAddress,
-      CreatePageVisitDTO page,
+      PageVisitCreateParams page,
       Organization organization) {
     UUID sessionId = UUID.randomUUID();
     MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
@@ -176,8 +176,9 @@ public class PageVisitService {
                   .thenApply(
                       identity -> {
                         log.debug(
-                            "[SESSION]: Created session id={} organizationId={}",
+                            "[SESSION]: Page visit created sessionId={} pageVisitId={} organizationId={}",
                             sessionId,
+                            identity.getPageVisitId(),
                             organizationId);
 
                         return identity;

@@ -21,7 +21,7 @@ declare global {
 }
 
 ((window, location, compiledTs) => {
-  let { href: lastLocation } = location;
+  let { href: lastHref } = location;
   const context = new Context();
   const eventQueue = new EventQueue(context);
   const { _i_org: organizationId, _i_host: host } = window;
@@ -81,10 +81,10 @@ declare global {
   */
 
   const onNavigationChange = (event: PopStateEvent) => {
-    const { href: currentLocation } = location;
-    if (lastLocation !== currentLocation) {
-      lastLocation = currentLocation;
-      const args = [currentLocation, document.title];
+    const { href: currentHref } = location;
+    if (lastHref !== currentHref) {
+      lastHref = currentHref;
+      const args = [currentHref, document.title];
       enqueue(EventType.NAVIGATE, args, '[navigate]', event);
     }
   };
@@ -117,7 +117,7 @@ declare global {
   };
 
   const onLoad = (event: Event) => {
-    enqueue(EventType.LOAD, [lastLocation], '[resize]', event);
+    enqueue(EventType.LOAD, [lastHref], '[resize]', event);
   };
 
   const onError = (event: ErrorEvent) => {
@@ -140,7 +140,7 @@ declare global {
   // window.addEventListener('mouseup', onMouseUp);
 
   const onUnload = (event: Event) => {
-    const args = [lastLocation];
+    const args = [lastHref];
     eventQueue.enqueue(EventType.UNLOAD, args, event);
     backend.sendBeacon(eventQueue.events()).catch((error) => {
       if (process.env.NODE_ENV !== 'production') {
@@ -178,7 +178,7 @@ declare global {
       screenHeight: window.screen.height,
       screenWidth: window.screen.width,
       referrer: document.referrer,
-      url: lastLocation,
+      href: lastHref,
     })
     .then(startBeaconing)
     .catch((error) => {

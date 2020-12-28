@@ -34,20 +34,22 @@ public class SsoSessionResourceImpl implements SsoSessionResource {
 
   @Override
   public CompletionStage<Response> login(String email, String password) {
-    URI serverBaseURI = RequestUtils.getServerBaseURI(info, request);
+    URI serverBaseURI = RequestUtils.getServerBaseUri(info, request);
     String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURI);
     String ipAddress = RequestUtils.getRemoteAddress(request);
-    URL refererURL =
-        RequestUtils.parseRefererURL(request)
+    URL referrerUrl =
+        RequestUtils.parseReferrerUrl(request)
             .orElseThrow(() -> Boom.badRequest().message("referer required").exception());
 
     String relativeRedirect =
-        Optional.ofNullable(RequestUtils.getQueryMap(refererURL.getQuery()).get("redirect"))
+        Optional.ofNullable(RequestUtils.getQueryMap(referrerUrl.getQuery()).get("redirect"))
             .map(redirect -> URLDecoder.decode(redirect, RebrowseApi.CHARSET))
             .orElse("/");
 
     URI redirect =
-        UriBuilder.fromUri(RequestUtils.parseBaseURL(refererURL)).path(relativeRedirect).build();
+        UriBuilder.fromUri(RequestUtils.parseOrigin(referrerUrl).toString())
+            .path(relativeRedirect)
+            .build();
 
     return ssoService
         .passwordLogin(email, password, ipAddress, redirect, serverBaseURI)

@@ -26,11 +26,11 @@ public class SignUpResourceImpl implements SignUpResource {
 
   @Override
   public CompletionStage<Response> create(SignUpRequestDTO payload) {
-    URL referer = RequestUtils.parseRefererBaseURL(request).orElse(null);
-    URL serverBaseURL = RequestUtils.getServerBaseURL(info, request);
+    URL referrer = RequestUtils.parseReferrerOrigin(request).orElse(null);
+    URL serverBaseURL = RequestUtils.getServerBaseUrl(info, request);
 
     return signUpService
-        .signUp(referer, serverBaseURL, payload)
+        .signUp(referrer, serverBaseURL, payload)
         .thenApply(ignored -> DataResponse.noContent());
   }
 
@@ -51,7 +51,7 @@ public class SignUpResourceImpl implements SignUpResource {
                         userAndSignUpRequest.getLeft(),
                         userAndSignUpRequest
                             .getRight()
-                            .getRefererCallbackURL()
+                            .getReferrerCallbackUrl()
                             .map(URI::create)
                             .orElse(null))
                     .thenApply(loginResult -> loginResult.loginResponse(cookieDomain)));

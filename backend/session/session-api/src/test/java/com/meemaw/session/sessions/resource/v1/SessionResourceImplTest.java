@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meemaw.auth.sso.session.model.SsoSession;
 import com.meemaw.location.model.Located;
+import com.meemaw.session.AbstractSessionResourceTest;
 import com.meemaw.session.location.service.LocationService;
 import com.meemaw.session.model.SessionDTO;
 import com.meemaw.session.sessions.datasource.SessionTable;
@@ -64,8 +65,8 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
 
   @Test
   public void get_v1_sessions_count__should_throw__on_unauthorized() {
-    ssoSessionCookieTestCases(Method.GET, COUNT_PATH);
-    ssoBearerTokenTestCases(Method.GET, COUNT_PATH);
+    ssoSessionCookieTestCases(Method.GET, SESSION_COUNT_PATH);
+    ssoBearerTokenTestCases(Method.GET, SESSION_COUNT_PATH);
   }
 
   @Test
@@ -80,7 +81,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
         .queryParam(GROUP_BY_PARAM, "another")
         .queryParam(SORT_BY_PARAM, "hehe")
         .queryParam(LIMIT_PARAM, "not_string")
-        .get(COUNT_PATH)
+        .get(SESSION_COUNT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -99,7 +100,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam(SessionTable.CREATED_AT, TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-        .get(COUNT_PATH)
+        .get(SESSION_COUNT_PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":{\"count\":5}}"));
@@ -109,7 +110,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
         .when()
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
         .queryParam(SessionTable.CREATED_AT, TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-        .get(COUNT_PATH)
+        .get(SESSION_COUNT_PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":{\"count\":5}}"));
@@ -127,7 +128,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam(SessionTable.CREATED_AT, TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
         .queryParam(SessionTable.LOCATION__CITY, TermCondition.EQ.rhs("Maribor"))
-        .get(COUNT_PATH)
+        .get(SESSION_COUNT_PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":{\"count\":1}}"));
@@ -151,7 +152,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(COUNT_PATH)
+                .get(SESSION_COUNT_PATH)
                 .then()
                 .statusCode(200)
                 .body(
@@ -183,7 +184,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(COUNT_PATH)
+                .get(SESSION_COUNT_PATH)
                 .then()
                 .statusCode(200)
                 .body(
@@ -218,7 +219,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(COUNT_PATH)
+                .get(SESSION_COUNT_PATH)
                 .then()
                 .statusCode(200)
                 .body(
@@ -253,7 +254,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessionFirstBatch.getCreatedAt()))
-                .get(COUNT_PATH)
+                .get(SESSION_COUNT_PATH)
                 .then()
                 .statusCode(200)
                 .body(
@@ -272,8 +273,8 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
 
   @Test
   public void get_v1_sessions_distinct__should_throw__on_unauthorized() {
-    ssoSessionCookieTestCases(Method.GET, DISTINCT_PATH);
-    ssoBearerTokenTestCases(Method.GET, DISTINCT_PATH);
+    ssoSessionCookieTestCases(Method.GET, SESSION_DISTINCT_PATH);
+    ssoBearerTokenTestCases(Method.GET, SESSION_DISTINCT_PATH);
   }
 
   @Test
@@ -282,7 +283,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(DISTINCT_PATH)
+        .get(SESSION_DISTINCT_PATH)
         .then()
         .statusCode(400)
         .body(
@@ -301,7 +302,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
         .cookie(SsoSession.COOKIE_NAME, sessionId)
         .queryParam("on", SessionTable.LOCATION__CITY)
         .queryParam(SessionTable.CREATED_AT, TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-        .get(DISTINCT_PATH)
+        .get(SESSION_DISTINCT_PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":[\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
@@ -312,7 +313,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
         .queryParam("on", SessionTable.LOCATION__CITY)
         .queryParam(SessionTable.CREATED_AT, TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-        .get(DISTINCT_PATH)
+        .get(SESSION_DISTINCT_PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":[\"Maribor\",\"New York\",\"Otawa\",\"Zagreb\"]}"));
@@ -333,7 +334,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(DISTINCT_PATH)
+                .get(SESSION_DISTINCT_PATH)
                 .then()
                 .statusCode(200)
                 .body(sameJson("{\"data\":[\"Europe\",\"North America\"]}")));
@@ -354,7 +355,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(DISTINCT_PATH)
+                .get(SESSION_DISTINCT_PATH)
                 .then()
                 .statusCode(200)
                 .body(
@@ -377,7 +378,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(DISTINCT_PATH)
+                .get(SESSION_DISTINCT_PATH)
                 .then()
                 .statusCode(200)
                 .body(sameJson("{\"data\":[\"Podravska\",\"Washington\"]}")));
@@ -398,7 +399,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
               .queryParam(
                   caseProvider.apply(SessionTable.CREATED_AT),
                   TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-              .get(DISTINCT_PATH)
+              .get(SESSION_DISTINCT_PATH)
               .then()
               .statusCode(200)
               .body(sameJson("{\"data\":[\"Chrome\",\"Chrome Webview\",\"Edge\",\"Safari\"]}"));
@@ -422,7 +423,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(DISTINCT_PATH)
+                .get(SESSION_DISTINCT_PATH)
                 .then()
                 .statusCode(200)
                 .body(
@@ -445,7 +446,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(
                     caseProvider.apply(SessionTable.CREATED_AT),
                     TermCondition.GTE.rhs(sessions.get(0).getCreatedAt()))
-                .get(DISTINCT_PATH)
+                .get(SESSION_DISTINCT_PATH)
                 .then()
                 .statusCode(200)
                 .body(sameJson("{\"data\":[\"Desktop\",\"Phone\",\"Set-top box\",\"Tablet\"]}")));
@@ -457,7 +458,7 @@ public class SessionResourceImplTest extends AbstractSessionResourceTest {
         .when()
         .cookie(SsoSession.COOKIE_NAME, authApi().loginWithAdminUser())
         .queryParam("on", "random")
-        .get(DISTINCT_PATH)
+        .get(SESSION_DISTINCT_PATH)
         .then()
         .statusCode(400)
         .body(

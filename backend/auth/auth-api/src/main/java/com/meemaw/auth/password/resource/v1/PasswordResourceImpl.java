@@ -31,8 +31,8 @@ public class PasswordResourceImpl implements PasswordResource {
   @Override
   public CompletionStage<Response> forgot(PasswordForgotRequestDTO passwordForgotRequestDTO) {
     URL clientBaseURL =
-        RequestUtils.parseRefererBaseURL(request)
-            .orElseGet(() -> RequestUtils.getServerBaseURL(info, request));
+        RequestUtils.parseReferrerOrigin(request)
+            .orElseGet(() -> RequestUtils.getServerBaseUrl(info, request));
 
     return passwordService
         .forgotPassword(passwordForgotRequestDTO.getEmail(), clientBaseURL)
@@ -42,7 +42,7 @@ public class PasswordResourceImpl implements PasswordResource {
   @Override
   public CompletionStage<Response> reset(UUID token, PasswordResetRequestDTO payload) {
     String password = payload.getPassword();
-    URL serverBaseURL = RequestUtils.getServerBaseURL(info, request);
+    URL serverBaseURL = RequestUtils.getServerBaseUrl(info, request);
     String cookieDomain = RequestUtils.parseCookieDomain(serverBaseURL);
     String ipAddress = RequestUtils.getRemoteAddress(request);
 

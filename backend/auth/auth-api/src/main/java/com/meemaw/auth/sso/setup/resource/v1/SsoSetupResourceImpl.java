@@ -103,7 +103,7 @@ public class SsoSetupResourceImpl implements SsoSetupResource {
   @Override
   public CompletionStage<Response> get(String domain) {
     log.info("[AUTH] SSO setup get request domain={}", domain);
-    URI serverBaseURI = RequestUtils.getServerBaseURI(info, request);
+    URI serverBaseURI = RequestUtils.getServerBaseUri(info, request);
 
     return ssoSetupDatasource
         .getByDomain(domain)

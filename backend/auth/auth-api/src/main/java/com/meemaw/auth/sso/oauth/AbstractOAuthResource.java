@@ -28,7 +28,7 @@ public abstract class AbstractOAuthResource<T, U extends OAuthUserInfo, E extend
       AbstractOAuthIdentityProvider<T, U, E> oauthService,
       UriInfo info,
       HttpServerRequest request) {
-    return UriBuilder.fromUri(RequestUtils.getServerBaseURI(info, request))
+    return UriBuilder.fromUri(RequestUtils.getServerBaseUri(info, request))
         .path(oauthService.callbackPath())
         .build();
   }
@@ -53,7 +53,7 @@ public abstract class AbstractOAuthResource<T, U extends OAuthUserInfo, E extend
       String code,
       String state,
       String sessionState) {
-    URI serverBaseUri = RequestUtils.getServerBaseURI(info, request);
+    URI serverBaseUri = RequestUtils.getServerBaseUri(info, request);
     return identityProvider
         .oauthCallback(state, sessionState, code, serverBaseUri)
         .thenApply(SsoLoginResult::response);

@@ -8,7 +8,7 @@ import com.meemaw.events.stream.EventsStream;
 import com.meemaw.shared.logging.LoggingConstants;
 import com.meemaw.shared.rest.response.Boom;
 import com.rebrowse.exception.ApiException;
-import com.rebrowse.model.session.SessionPage;
+import com.rebrowse.model.session.PageVisit;
 import com.rebrowse.net.RequestOptions;
 import io.smallrye.mutiny.Uni;
 import java.util.List;
@@ -52,9 +52,9 @@ public class BeaconService {
       name = "pageVisitExists",
       description = "A measure of how long it takes to check if page visit exists")
   CompletionStage<Boolean> pageVisitExists(UUID id, String organizationId) {
-    return SessionPage.retrieve(
+    return PageVisit.retrieve(
             id, organizationId, new RequestOptions.Builder().apiBaseUrl(sessionApiBaseUrl).build())
-        .thenApply(sessionPage -> sessionPage.getId().equals(id))
+        .thenApply(pageVisit -> pageVisit.getId().equals(id))
         .exceptionally(
             throwable -> {
               CompletionException completionException = (CompletionException) throwable;
@@ -62,6 +62,7 @@ public class BeaconService {
               if (cause instanceof ApiException && ((ApiException) cause).getStatusCode() == 404) {
                 return false;
               }
+              log.error("Failed to check if page visit exists", cause);
               throw completionException;
             });
   }

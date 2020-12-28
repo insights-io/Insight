@@ -1,11 +1,12 @@
-package com.meemaw.session.sessions.resource.v1;
+package com.meemaw.session.pages.resource;
 
 import com.meemaw.auth.permissions.AccessManager;
 import com.meemaw.auth.sso.session.model.AuthPrincipal;
 import com.meemaw.auth.user.model.AuthUser;
-import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.model.PageVisitCreateParams;
 import com.meemaw.session.pages.datasource.PageVisitDatasource;
 import com.meemaw.session.pages.datasource.PageVisitTable;
+import com.meemaw.session.pages.resource.v1.PageVisitResource;
 import com.meemaw.session.pages.service.PageVisitService;
 import com.meemaw.session.sessions.service.SessionSocketService;
 import com.meemaw.shared.context.RequestUtils;
@@ -32,17 +33,16 @@ public class PageVisitResourceImpl implements PageVisitResource {
   @Inject SessionSocketService sessionSocketService;
 
   @Override
-  public CompletionStage<Response> create(CreatePageVisitDTO body, String userAgent) {
+  public CompletionStage<Response> create(PageVisitCreateParams body, String userAgent) {
     String ipAddress = RequestUtils.getRemoteAddress(request);
-
     return pageVisitService
         .create(body, userAgent, ipAddress)
         .thenApply(
-            pageIdentity -> {
+            pageVisitSessionLink -> {
               // TODO: should be done in service not resource
               // TODO: notify with session object
-              sessionSocketService.pageStart(pageIdentity.getPageVisitId());
-              return DataResponse.ok(pageIdentity);
+              sessionSocketService.pageStart(pageVisitSessionLink.getPageVisitId());
+              return DataResponse.ok(pageVisitSessionLink);
             });
   }
 

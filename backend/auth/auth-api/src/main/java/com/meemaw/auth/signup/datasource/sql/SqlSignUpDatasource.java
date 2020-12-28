@@ -1,15 +1,15 @@
 package com.meemaw.auth.signup.datasource.sql;
 
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.COMPANY;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.CREATED_AT;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.EMAIL;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.FULL_NAME;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.HASHED_PASSWORD;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERER;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.COMPANY;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.CREATED_AT;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.EMAIL;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.FULL_NAME;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.HASHED_PASSWORD;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.REFERRER;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.TABLE;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.TOKEN;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
@@ -40,7 +40,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
 
   public static SignUpRequest map(Row row) {
     JsonObject phoneNumber = (JsonObject) row.getValue(SqlUserTable.PHONE_NUMBER.getName());
-    String referer = row.getString(REFERER.getName());
+    String referrer = row.getString(REFERRER.getName());
 
     return new SignUpRequest(
         row.getUUID(TOKEN.getName()),
@@ -49,7 +49,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
         row.getString(FULL_NAME.getName()),
         row.getString(COMPANY.getName()),
         Optional.ofNullable(phoneNumber).map(p -> p.mapTo(PhoneNumberDTO.class)).orElse(null),
-        Optional.ofNullable(referer).map(RequestUtils::sneakyURL).orElse(null),
+        Optional.ofNullable(referrer).map(RequestUtils::sneakyUrl).orElse(null),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 
@@ -72,7 +72,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
                 signUpRequest.getFullName(),
                 signUpRequest.getCompany(),
                 JsonObject.mapFrom(signUpRequest.getPhoneNumber()),
-                signUpRequest.getReferer())
+                signUpRequest.getReferrer())
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction
@@ -104,7 +104,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
   @Traced
   public CompletionStage<Boolean> retrieveIsEmailTaken(String email, SqlTransaction transaction) {
     Field<String> userEmail = SqlUserTable.tableField(SqlUserTable.EMAIL);
-    Field<String> signUpRequestEmail = SignUpRequestTable.tableField(EMAIL);
+    Field<String> signUpRequestEmail = SqlSignUpRequestTable.tableField(EMAIL);
 
     Query query =
         sqlPool

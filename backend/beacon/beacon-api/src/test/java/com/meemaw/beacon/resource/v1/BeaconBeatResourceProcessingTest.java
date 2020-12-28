@@ -6,10 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.meemaw.events.index.UserEventTable;
 import com.meemaw.events.model.incoming.UserEvent;
 import com.meemaw.events.stream.EventsStream;
-import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.model.PageVisitCreateParams;
 import com.meemaw.session.model.PageVisitSessionLink;
-import com.meemaw.session.sessions.resource.v1.PageVisitResource;
+import com.meemaw.session.pages.resource.v1.PageVisitResource;
 import com.meemaw.shared.SharedConstants;
+import com.meemaw.shared.context.RequestUtils;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.rest.data.UserAgentData;
 import com.meemaw.test.testconainers.api.session.SessionApiTestResource;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -67,12 +69,12 @@ public class BeaconBeatResourceProcessingTest {
 
   @Traced
   protected Uni<PageVisitSessionLink> insertPage(UUID deviceId) {
-    CreatePageVisitDTO payload =
-        new CreatePageVisitDTO(
+    PageVisitCreateParams payload =
+        new PageVisitCreateParams(
             ORGANIZATION_ID,
             deviceId,
-            "testURL",
-            "testReferrer",
+            RequestUtils.sneakyUrl("http://localhost:3000"),
+            "",
             "testDocType",
             200,
             200,
@@ -112,7 +114,7 @@ public class BeaconBeatResourceProcessingTest {
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
-        .statusCode(204);
+        .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
     assertEquals(382, events.size());
     assertEquals(0, unloadEvents.size());
@@ -180,7 +182,7 @@ public class BeaconBeatResourceProcessingTest {
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
-        .statusCode(204);
+        .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
     assertEquals(2, events.size());
     assertEquals(1, unloadEvents.size());

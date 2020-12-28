@@ -11,9 +11,9 @@ public abstract class AbstractSqlDatasource<T> {
   public abstract T fromSql(Row row);
 
   public Collection<T> findMany(RowSet<Row> rows) {
-    ArrayList<T> users = new ArrayList<>(rows.size());
-    rows.forEach(row -> users.add(fromSql(row)));
-    return users;
+    ArrayList<T> items = new ArrayList<>(rows.size());
+    rows.forEach(row -> items.add(fromSql(row)));
+    return items;
   }
 
   public Optional<T> findOne(RowSet<Row> rows) {

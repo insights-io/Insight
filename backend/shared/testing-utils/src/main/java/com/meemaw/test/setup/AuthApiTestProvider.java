@@ -15,6 +15,7 @@ import com.rebrowse.model.auth.ApiKey;
 import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.net.RequestOptions;
+import io.vertx.core.http.HttpHeaders;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.ws.rs.core.MediaType;
@@ -133,7 +134,7 @@ public class AuthApiTestProvider {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", email)
         .param("password", password)
-        .header("referer", "http://localhost:3000")
+        .header(HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .post(loginURI)
         .then()
         .statusCode(200)

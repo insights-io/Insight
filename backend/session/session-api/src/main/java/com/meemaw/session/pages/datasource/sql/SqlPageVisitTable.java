@@ -22,7 +22,8 @@ public final class SqlPageVisitTable {
   public static final Field<String> ORGANIZATION_ID =
       field(PageVisitTable.ORGANIZATION_ID, String.class);
   public static final Field<String> DOCTYPE = field(PageVisitTable.DOCTYPE, String.class);
-  public static final Field<String> URL = field(PageVisitTable.URL, String.class);
+  public static final Field<String> ORIGIN = field(PageVisitTable.ORIGIN, String.class);
+  public static final Field<String> PATH = field(PageVisitTable.PATH, String.class);
   public static final Field<String> REFERRER = field(PageVisitTable.REFERRER, String.class);
   public static final Field<Integer> HEIGHT = field(PageVisitTable.HEIGHT, Integer.class);
   public static final Field<Integer> WIDTH = field(PageVisitTable.WIDTH, Integer.class);
@@ -43,7 +44,8 @@ public final class SqlPageVisitTable {
           SESSION_ID,
           ORGANIZATION_ID,
           DOCTYPE,
-          URL,
+          ORIGIN,
+          PATH,
           REFERRER,
           HEIGHT,
           WIDTH,

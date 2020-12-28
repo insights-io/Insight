@@ -12,7 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public interface SignUpService {
 
   CompletionStage<Optional<UUID>> signUp(
-      URL referer, URL serverBaseURL, SignUpRequestDTO signUpRequestDTO);
+      URL referrer, URL serverBaseURL, SignUpRequestDTO signUpRequestDTO);
 
   CompletionStage<Pair<AuthUser, SignUpRequest>> completeSignUp(UUID token);
 

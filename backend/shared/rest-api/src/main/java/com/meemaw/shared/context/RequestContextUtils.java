@@ -45,6 +45,6 @@ public final class RequestContextUtils {
   public static String getServerBaseURL(ContainerRequestContext context) {
     String proto = context.getHeaderString(MissingHttpHeaders.X_FORWARDED_PROTO);
     String host = context.getHeaderString(MissingHttpHeaders.X_FORWARDED_HOST);
-    return RequestUtils.getServerBaseURL(context.getUriInfo(), proto, host);
+    return RequestUtils.getServerBaseUrl(context.getUriInfo(), proto, host);
   }
 }

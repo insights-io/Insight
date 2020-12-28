@@ -1,4 +1,4 @@
-package com.meemaw.session.sessions.resource.v1;
+package com.meemaw.session.pages.resource.v1;
 
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
 import static com.meemaw.session.sessions.datasource.sql.SqlSessionTable.TABLE;
@@ -17,10 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meemaw.auth.sso.session.model.SsoSession;
-import com.meemaw.session.model.CreatePageVisitDTO;
+import com.meemaw.session.AbstractSessionResourceTest;
+import com.meemaw.session.model.PageVisitCreateParams;
 import com.meemaw.session.model.PageVisitSessionLink;
 import com.meemaw.session.model.SessionDTO;
+import com.meemaw.session.pages.datasource.PageVisitTable;
 import com.meemaw.session.sessions.datasource.SessionTable;
+import com.meemaw.session.sessions.resource.v1.SessionResource;
 import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.shared.sql.SQLContext;
 import com.meemaw.test.rest.data.UserAgentData;
@@ -56,25 +59,25 @@ import org.junit.jupiter.api.Test;
 @QuarkusTestResource(AuthApiTestResource.class)
 public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
 
-  private CreatePageVisitDTO withUpdateOrganizationId(
-      CreatePageVisitDTO createPageVisitDTO, String organizationId) {
-    return new CreatePageVisitDTO(
+  private PageVisitCreateParams withUpdateOrganizationId(
+      PageVisitCreateParams pageVisitCreateParams, String organizationId) {
+    return new PageVisitCreateParams(
         organizationId,
-        createPageVisitDTO.getDeviceId(),
-        createPageVisitDTO.getUrl(),
-        createPageVisitDTO.getReferrer(),
-        createPageVisitDTO.getDoctype(),
-        createPageVisitDTO.getScreenWidth(),
-        createPageVisitDTO.getScreenHeight(),
-        createPageVisitDTO.getWidth(),
-        createPageVisitDTO.getHeight(),
-        createPageVisitDTO.getCompiledTs());
+        pageVisitCreateParams.getDeviceId(),
+        pageVisitCreateParams.getHref(),
+        pageVisitCreateParams.getReferrer(),
+        pageVisitCreateParams.getDoctype(),
+        pageVisitCreateParams.getScreenWidth(),
+        pageVisitCreateParams.getScreenHeight(),
+        pageVisitCreateParams.getWidth(),
+        pageVisitCreateParams.getHeight(),
+        pageVisitCreateParams.getCompiledTs());
   }
 
-  private CreatePageVisitDTO readSimplePage() throws URISyntaxException, IOException {
+  private PageVisitCreateParams readSimplePage() throws URISyntaxException, IOException {
     return objectMapper.readValue(
         Files.readString(Path.of(getClass().getResource("/page/simple.json").toURI())),
-        CreatePageVisitDTO.class);
+        PageVisitCreateParams.class);
   }
 
   @Test
@@ -114,7 +117,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
         .statusCode(400)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"doctype\":\"may not be null\",\"organizationId\":\"Required\",\"url\":\"may not be null\"}}}"));
+                "{\"error\":{\"statusCode\":400,\"reason\":\"Bad Request\",\"message\":\"Validation Error\",\"errors\":{\"doctype\":\"may not be null\",\"organizationId\":\"Required\",\"href\":\"may not be null\"}}}"));
   }
 
   @Test
@@ -196,7 +199,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
       throws IOException, URISyntaxException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
     Organization organization = authApi().retrieveOrganization(sessionId);
-    CreatePageVisitDTO withFreePlanOrganization =
+    PageVisitCreateParams withFreePlanOrganization =
         withUpdateOrganizationId(readSimplePage(), organization.getId());
     String body = objectMapper.writeValueAsString(withFreePlanOrganization);
 
@@ -226,7 +229,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
   @Test
   public void post_v1_pages__should_throw__when_missing_organization()
       throws IOException, URISyntaxException {
-    CreatePageVisitDTO withRandomOrganization =
+    PageVisitCreateParams withRandomOrganization =
         withUpdateOrganizationId(
             readSimplePage(), com.meemaw.auth.organization.model.Organization.identifier());
 
@@ -461,9 +464,8 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
 
   @Test
   public void get_v1_pages_count__should_throw__when_unauthorized() {
-    String path = String.format("%s/%s", PageVisitResource.PATH, "count");
-    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, path);
-    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, path);
+    RestAssuredUtils.ssoSessionCookieTestCases(Method.GET, PAGES_COUNT_PATH);
+    RestAssuredUtils.ssoBearerTokenTestCases(Method.GET, PAGES_COUNT_PATH);
   }
 
   @Test
@@ -480,7 +482,7 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
                 .queryParam(caseProvider.apply(GROUP_BY_PARAM), "another")
                 .queryParam(caseProvider.apply(SORT_BY_PARAM), "hehe")
                 .queryParam(caseProvider.apply(LIMIT_PARAM), "not_string")
-                .get(String.format("%s/%s", PageVisitResource.PATH, "count"))
+                .get(PAGES_COUNT_PATH)
                 .then()
                 .statusCode(400)
                 .body(
@@ -499,9 +501,72 @@ public class PageVisitResourceImplTest extends AbstractSessionResourceTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .get(String.format("%s/%s", PageVisitResource.PATH, "count"))
+        .get(PAGES_COUNT_PATH)
         .then()
         .statusCode(200)
         .body(sameJson("{\"data\":{\"count\":0}}"));
+  }
+
+  @Test
+  public void get_v1_pages_count__should_count__when_group_by_referrer()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    createTestSessions(organizationId);
+
+    CASE_PROVIDERS.forEach(
+        (caseProvider) ->
+            given()
+                .when()
+                .cookie(SsoSession.COOKIE_NAME, sessionId)
+                .queryParam(caseProvider.apply(GROUP_BY_PARAM), PageVisitTable.REFERRER)
+                .get(PAGES_COUNT_PATH)
+                .then()
+                .statusCode(200)
+                .body(
+                    sameJson(
+                        "{\"data\":[{\"count\":1,\"referrer\":\"https://facebook.com/\"},{\"count\":1,\"referrer\":\"https://github.com/\"},{\"count\":2,\"referrer\":\"https://google.com/\"},{\"count\":1,\"referrer\":\"https://instagram.com/\"}]}")));
+  }
+
+  @Test
+  public void get_v1_pages_count__should_count__when_group_by_origin()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    createTestSessions(organizationId);
+
+    CASE_PROVIDERS.forEach(
+        (caseProvider) ->
+            given()
+                .when()
+                .cookie(SsoSession.COOKIE_NAME, sessionId)
+                .queryParam(caseProvider.apply(GROUP_BY_PARAM), PageVisitTable.ORIGIN)
+                .get(PAGES_COUNT_PATH)
+                .then()
+                .statusCode(200)
+                .body(
+                    sameJson(
+                        "{\"data\":[{\"count\":3,\"origin\":\"https://localhost:3000\"},{\"count\":2,\"origin\":\"https://rebrowse.dev\"}]}")));
+  }
+
+  @Test
+  public void get_v1_pages_count__should_count__when_group_by_path()
+      throws JsonProcessingException {
+    String sessionId = authApi().signUpAndLoginWithRandomCredentials();
+    String organizationId = authApi().retrieveUserData(sessionId).getOrganization().getId();
+    createTestSessions(organizationId);
+
+    CASE_PROVIDERS.forEach(
+        (caseProvider) ->
+            given()
+                .when()
+                .cookie(SsoSession.COOKIE_NAME, sessionId)
+                .queryParam(caseProvider.apply(GROUP_BY_PARAM), PageVisitTable.PATH)
+                .get(PAGES_COUNT_PATH)
+                .then()
+                .statusCode(200)
+                .body(
+                    sameJson(
+                        "{\"data\":[{\"count\":2,\"path\":\"\"},{\"count\":2,\"path\":\"/sessions\"},{\"count\":1,\"path\":\"/settings\"}]}")));
   }
 }

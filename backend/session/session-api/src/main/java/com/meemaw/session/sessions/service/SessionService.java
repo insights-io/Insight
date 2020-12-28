@@ -17,12 +17,12 @@ public class SessionService {
 
   @Inject SessionDatasource sessionDatasource;
 
-  public CompletionStage<Collection<SessionDTO>> getSessions(
+  public CompletionStage<Collection<SessionDTO>> listSessions(
       String organizationId, SearchDTO searchDTO) {
-    return sessionDatasource.getSessions(organizationId, searchDTO);
+    return sessionDatasource.list(organizationId, searchDTO);
   }
 
-  public CompletionStage<Optional<SessionDTO>> getSession(UUID id, String organizationId) {
-    return sessionDatasource.getSession(id, organizationId);
+  public CompletionStage<Optional<SessionDTO>> retrieveSession(UUID id, String organizationId) {
+    return sessionDatasource.retrieve(id, organizationId);
   }
 }

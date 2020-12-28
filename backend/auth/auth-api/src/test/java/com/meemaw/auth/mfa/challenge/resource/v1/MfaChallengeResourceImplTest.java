@@ -33,6 +33,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
+import io.vertx.core.http.HttpHeaders;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.UUID;
@@ -176,7 +177,7 @@ public class MfaChallengeResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -285,7 +286,7 @@ public class MfaChallengeResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", user.getEmail())
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login")
             .then()
             .statusCode(200)

@@ -463,16 +463,15 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
   public void send_invite_flow__should_succeed__when_existing_invite()
       throws JsonProcessingException {
     String sessionId = authApi().signUpAndLoginWithRandomCredentials();
-    UserData userData = authApi().retrieveUserData(sessionId);
     String invitedUserEmail = String.format("%s@gmail.com", UUID.randomUUID());
     String invitePayload =
         objectMapper.writeValueAsString(new TeamInviteCreateDTO(invitedUserEmail, UserRole.ADMIN));
 
-    String referer = String.format("https://www.%s", SharedConstants.REBROWSE_STAGING_DOMAIN);
+    String referrer = String.format("https://www.%s", SharedConstants.REBROWSE_STAGING_DOMAIN);
 
     // Invite the user
     given()
-        .header("referer", referer)
+        .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), referrer)
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -489,12 +488,12 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
     String acceptInviteUrl = EmailTestUtils.parseLink(teamInviteEmail);
     String token = EmailTestUtils.parseConfirmationToken(acceptInviteUrl);
 
-    assertEquals(acceptInviteUrl, referer + "/accept-invite?token=" + token);
+    assertEquals(acceptInviteUrl, referrer + "/accept-invite?token=" + token);
 
     // resend the invite email
     DataResponse<TeamInviteDTO> dataResponse =
         given()
-            .header("referer", referer)
+            .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), referrer)
             .when()
             .contentType(MediaType.APPLICATION_JSON)
             .cookie(SsoSession.COOKIE_NAME, sessionId)
@@ -505,6 +504,8 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
             .body()
             .as(new TypeRef<>() {});
 
+    UserData userData = authApi().retrieveUserData(sessionId);
+
     assertEquals(dataResponse.getData().getRole(), UserRole.ADMIN);
     assertEquals(dataResponse.getData().getEmail(), invitedUserEmail);
     assertEquals(dataResponse.getData().getCreator(), userData.getUser().getId());
@@ -513,7 +514,7 @@ public class OrganizationTeamInviteResourceImplTest extends AbstractAuthApiTest 
 
     assertEquals(2, mailbox.getMessagesSentTo(invitedUserEmail).size());
     acceptInviteUrl = Jsoup.parse(sent.get(1).getHtml()).select("a").attr("href");
-    assertEquals(acceptInviteUrl, referer + "/accept-invite?token=" + token);
+    assertEquals(acceptInviteUrl, referrer + "/accept-invite?token=" + token);
   }
 
   @Test

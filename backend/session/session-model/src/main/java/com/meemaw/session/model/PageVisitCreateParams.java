@@ -1,6 +1,7 @@
 package com.meemaw.session.model;
 
 import com.meemaw.auth.organization.model.validation.OrganizationId;
+import java.net.URL;
 import java.util.UUID;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -12,14 +13,14 @@ import lombok.Value;
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class CreatePageVisitDTO {
+public class PageVisitCreateParams {
 
   @OrganizationId String organizationId;
 
   UUID deviceId;
 
   @NotNull(message = "may not be null")
-  String url;
+  URL href;
 
   String referrer;
 

@@ -37,6 +37,7 @@ import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
+import io.vertx.core.http.HttpHeaders;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -122,7 +123,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", "test@gmail.com")
         .param("password", "superFancyPassword")
-        .header("referer", "http://localhost:3000")
+        .header(HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
@@ -132,7 +133,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void login__should_fail__when_no_referer() {
+  public void login__should_fail__when_no_referrer() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -147,13 +148,13 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
   }
 
   @Test
-  public void login__should_fail__when_malformed_referer() {
+  public void login__should_fail__when_malformed_referrer() {
     given()
         .when()
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", "test@gmail.com")
         .param("password", "superFancyPassword")
-        .header("referer", "random")
+        .header(HttpHeaders.REFERER.toString(), "random")
         .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
@@ -184,7 +185,9 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000/login?redirect=%2Faccount%2Fsettings")
+            .header(
+                HttpHeaders.REFERER.toString(),
+                "http://localhost:3000/login?redirect=%2Faccount%2Fsettings")
             .post(SsoSessionResource.PATH + "/login")
             .as(new TypeRef<>() {});
 
@@ -205,7 +208,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
         given()
             .config(RestAssuredUtils.dontFollowRedirects())
             .when()
-            .header("referer", "http://localhost:3000")
+            .header(HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .get(URLDecoder.decode(signInRedirect, RebrowseApi.CHARSET))
             .then()
             .statusCode(302)
@@ -256,7 +259,9 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000/login?redirect=/account/settings")
+            .header(
+                HttpHeaders.REFERER.toString(),
+                "http://localhost:3000/login?redirect=/account/settings")
             .post(SsoSessionResource.PATH + "/login")
             .as(new TypeRef<>() {});
 
@@ -276,7 +281,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
     given()
         .config(RestAssuredUtils.dontFollowRedirects())
         .when()
-        .header("referer", "http://localhost:3000")
+        .header(HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .get(URLDecoder.decode(signInRedirect, RebrowseApi.CHARSET))
         .then()
         .statusCode(302)
@@ -306,7 +311,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", signUpRequestDTO.getEmail())
         .param("password", "superFancyPassword")
-        .header("referer", "http://localhost:3000")
+        .header(HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)

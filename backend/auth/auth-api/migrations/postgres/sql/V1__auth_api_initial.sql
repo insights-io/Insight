@@ -101,7 +101,7 @@ CREATE TABLE auth.sign_up_request
     full_name       TEXT        NOT NULL,
     company         TEXT        NOT NULL,
     phone_number    JSONB,
-    referer         TEXT,
+    referrer        TEXT,
     created_at      TIMESTAMPTZ NOT NULL        DEFAULT now(),
 
     PRIMARY KEY (token, email),
