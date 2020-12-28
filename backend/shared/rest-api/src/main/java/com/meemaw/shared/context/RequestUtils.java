@@ -206,6 +206,9 @@ public final class RequestUtils {
   }
 
   public static String removeTrailingSlash(String value) {
+    if (value == null || value.isEmpty()) {
+      return value;
+    }
     if (value.charAt(value.length() - 1) == '/') {
       return value.substring(0, value.length() - 1);
     }

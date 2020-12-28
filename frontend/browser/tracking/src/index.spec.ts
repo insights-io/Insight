@@ -99,6 +99,7 @@ describe('tracking script', () => {
       const {
         data: { sessionId, deviceId, pageVisitId },
       } = await parsePageResponse(pageResponse);
+
       const beaconBeatUrl = `${beaconApiBaseUrl}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
 
       const { cookie, localStorage } = await page.evaluate(() => {

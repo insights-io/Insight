@@ -28,6 +28,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -113,7 +114,7 @@ public class BeaconBeatResourceProcessingTest {
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
-        .statusCode(204);
+        .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
     assertEquals(382, events.size());
     assertEquals(0, unloadEvents.size());
@@ -181,7 +182,7 @@ public class BeaconBeatResourceProcessingTest {
         .body(body)
         .post(BEACON_RESOURCE_BEAT_PATH)
         .then()
-        .statusCode(204);
+        .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
     assertEquals(2, events.size());
     assertEquals(1, unloadEvents.size());
