@@ -1,15 +1,15 @@
 package com.meemaw.auth.signup.datasource.sql;
 
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.AUTO_GENERATED_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.COMPANY;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.CREATED_AT;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.EMAIL;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.FULL_NAME;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.HASHED_PASSWORD;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERRER;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.AUTO_GENERATED_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.COMPANY;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.CREATED_AT;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.EMAIL;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.FULL_NAME;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.HASHED_PASSWORD;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.INSERT_FIELDS;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.REFERRER;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.TABLE;
+import static com.meemaw.auth.signup.datasource.sql.SqlSignUpRequestTable.TOKEN;
 
 import com.meemaw.auth.signup.datasource.SignUpDatasource;
 import com.meemaw.auth.signup.model.SignUpRequest;
@@ -104,7 +104,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
   @Traced
   public CompletionStage<Boolean> retrieveIsEmailTaken(String email, SqlTransaction transaction) {
     Field<String> userEmail = SqlUserTable.tableField(SqlUserTable.EMAIL);
-    Field<String> signUpRequestEmail = SignUpRequestTable.tableField(EMAIL);
+    Field<String> signUpRequestEmail = SqlSignUpRequestTable.tableField(EMAIL);
 
     Query query =
         sqlPool
