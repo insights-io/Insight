@@ -35,3 +35,5 @@ dependencies {
     implementation project(":auth:auth-api-contracts")
     implementation project(":shared:shared-sql")
 }
+
+tasks.quarkusBuild.enabled = false
