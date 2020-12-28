@@ -24,6 +24,7 @@ import com.meemaw.session.sessions.datasource.SessionDatasource;
 import com.meemaw.shared.rest.query.SearchDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
+import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
 import com.meemaw.shared.sql.rest.query.SQLGroupByQuery;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.useragent.model.HasUserAgent;
@@ -46,11 +47,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.conf.ParamType;
 
 @ApplicationScoped
 @Slf4j
-public class SqlSessionDatasource implements SessionDatasource {
+public class SqlSessionDatasource extends AbstractSqlDatasource<SessionDTO>
+    implements SessionDatasource {
 
   private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE =
       new TypeReference<>() {};
@@ -58,9 +59,21 @@ public class SqlSessionDatasource implements SessionDatasource {
   @Inject SqlPool sqlPool;
   @Inject ObjectMapper objectMapper;
 
+  public static SessionDTO mapSession(Row row) {
+    JsonObject location = (JsonObject) row.getValue(LOCATION.getName());
+    JsonObject userAgent = (JsonObject) row.getValue(USER_AGENT.getName());
+
+    return new SessionDTO(
+        row.getUUID(ID.getName()),
+        row.getUUID(DEVICE_ID.getName()),
+        row.getString(ORGANIZATION_ID.getName()),
+        location.mapTo(LocationMapper.class).location(),
+        userAgent.mapTo(UserAgentMapper.class).userAgent(),
+        row.getOffsetDateTime(CREATED_AT.getName()));
+  }
+
   @Override
-  public CompletionStage<Optional<UUID>> findSessionDeviceLink(
-      String organizationId, UUID deviceId) {
+  public CompletionStage<Optional<UUID>> retrieveByDeviceId(String organizationId, UUID deviceId) {
     Query query =
         sqlPool
             .getContext()
@@ -122,8 +135,6 @@ public class SqlSessionDatasource implements SessionDatasource {
                     .where(distinctQueryParams.getRight()),
                 FIELD_MAPPINGS);
 
-    System.out.println(query.getSQL(ParamType.INLINED));
-
     return sqlPool
         .execute(query)
         .thenApply(
@@ -137,7 +148,7 @@ public class SqlSessionDatasource implements SessionDatasource {
   }
 
   @Override
-  public CompletionStage<SessionDTO> createSession(
+  public CompletionStage<SessionDTO> create(
       UUID id,
       UUID deviceId,
       String organizationId,
@@ -146,15 +157,15 @@ public class SqlSessionDatasource implements SessionDatasource {
       SqlTransaction transaction) {
     return transaction
         .execute(createSessionQuery(id, deviceId, organizationId, location, userAgent))
-        .thenApply(rowSet -> mapSession(rowSet.iterator().next()));
+        .thenApply(this::expectOne);
   }
 
   @Override
-  public CompletionStage<SessionDTO> createSession(
+  public CompletionStage<SessionDTO> create(
       UUID id, UUID deviceId, String organizationId, Located location, HasUserAgent userAgent) {
     return sqlPool
         .execute(createSessionQuery(id, deviceId, organizationId, location, userAgent))
-        .thenApply(rowSet -> mapSession(rowSet.iterator().next()));
+        .thenApply(this::expectOne);
   }
 
   private Query createSessionQuery(
@@ -173,7 +184,7 @@ public class SqlSessionDatasource implements SessionDatasource {
   }
 
   @Override
-  public CompletionStage<Optional<SessionDTO>> getSession(UUID id, String organizationId) {
+  public CompletionStage<Optional<SessionDTO>> retrieve(UUID id, String organizationId) {
     Query query =
         sqlPool
             .getContext()
@@ -181,44 +192,18 @@ public class SqlSessionDatasource implements SessionDatasource {
             .from(TABLE)
             .where(ID.eq(id).and(ORGANIZATION_ID.eq(organizationId)));
 
-    return sqlPool
-        .execute(query)
-        .thenApply(
-            rowSet -> rowSet.iterator().hasNext() ? mapSession(rowSet.iterator().next()) : null)
-        .thenApply(Optional::ofNullable);
+    return sqlPool.execute(query).thenApply(this::findOne);
   }
 
   @Override
-  public CompletionStage<Collection<SessionDTO>> getSessions(
-      String organizationId, SearchDTO searchDTO) {
+  public CompletionStage<Collection<SessionDTO>> list(String organizationId, SearchDTO searchDTO) {
     Query query =
         SQLSearchDTO.of(searchDTO)
             .query(
                 sqlPool.getContext().selectFrom(TABLE).where(ORGANIZATION_ID.eq(organizationId)),
                 FIELD_MAPPINGS);
 
-    return sqlPool.execute(query).thenApply(this::mapSessions);
-  }
-
-  private List<SessionDTO> mapSessions(RowSet<Row> rowSet) {
-    List<SessionDTO> collection = new ArrayList<>(rowSet.size());
-    for (Row row : rowSet) {
-      collection.add(mapSession(row));
-    }
-    return collection;
-  }
-
-  private SessionDTO mapSession(Row row) {
-    JsonObject location = (JsonObject) row.getValue(LOCATION.getName());
-    JsonObject userAgent = (JsonObject) row.getValue(USER_AGENT.getName());
-
-    return new SessionDTO(
-        row.getUUID(ID.getName()),
-        row.getUUID(DEVICE_ID.getName()),
-        row.getString(ORGANIZATION_ID.getName()),
-        location.mapTo(LocationMapper.class).location(),
-        userAgent.mapTo(UserAgentMapper.class).userAgent(),
-        row.getOffsetDateTime(CREATED_AT.getName()));
+    return sqlPool.execute(query).thenApply(this::findMany);
   }
 
   private Pair<List<Field<?>>, List<Condition>> distinctQueryParams(
@@ -236,5 +221,10 @@ public class SqlSessionDatasource implements SessionDatasource {
     }
 
     return Pair.of(fields, conditions);
+  }
+
+  @Override
+  public SessionDTO fromSql(Row row) {
+    return SqlSessionDatasource.mapSession(row);
   }
 }

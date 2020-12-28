@@ -76,10 +76,10 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
   public static Response passwordForgot(String email, ObjectMapper objectMapper)
       throws JsonProcessingException {
     String payload = objectMapper.writeValueAsString(new PasswordForgotRequestDTO(email));
-    String referer = String.format("https://www.%s", SharedConstants.REBROWSE_STAGING_DOMAIN);
+    String referrer = String.format("https://www.%s", SharedConstants.REBROWSE_STAGING_DOMAIN);
 
     return given()
-        .header("referer", referer)
+        .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), referrer)
         .when()
         .contentType(MediaType.APPLICATION_JSON)
         .body(payload)
@@ -334,7 +334,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", signUpEmail)
         .param("password", oldPassword)
-        .header("referer", "http://localhost:3000")
+        .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(200)
@@ -388,7 +388,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", signUpEmail)
         .param("password", oldPassword)
-        .header("referer", "http://localhost:3000")
+        .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)
@@ -402,7 +402,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", signUpEmail)
         .param("password", newPassword)
-        .header("referer", "http://localhost:3000")
+        .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(200)
@@ -585,7 +585,7 @@ public class PasswordResourceImplTest extends AbstractAuthApiTest {
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .param("email", email)
         .param("password", oldPassword)
-        .header("referer", "http://localhost:3000")
+        .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
         .post(SsoSessionResource.PATH + "/login")
         .then()
         .statusCode(400)

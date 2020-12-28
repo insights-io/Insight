@@ -3,6 +3,7 @@ package com.meemaw.shared.context;
 import com.meemaw.shared.rest.exception.BoomException;
 import com.meemaw.shared.rest.headers.MissingHttpHeaders;
 import com.meemaw.shared.rest.response.Boom;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -26,31 +27,29 @@ public final class RequestUtils {
   private RequestUtils() {}
 
   /**
-   * Extracts referer URL from http server request if present.
+   * Extracts referrer URL from http server request if present.
    *
    * @param request http server request
    * @return Optional URL
    * @throws BoomException if malformed URL
    */
-  public static Optional<URL> sneakyParseRefererURL(HttpServerRequest request) {
-    return Optional.ofNullable(request.getHeader("referer")).map(RequestUtils::sneakyURL);
+  public static Optional<URL> sneakyParseReferrerUrl(HttpServerRequest request) {
+    return Optional.ofNullable(request.getHeader(HttpHeaders.REFERER)).map(RequestUtils::sneakyUrl);
   }
 
   /**
-   * Extracts referer base URL from http server request if present.
+   * Extracts referrer base URL from http server request if present.
    *
    * @param request http server request
    * @return Optional String base URL as string
    * @throws BoomException if malformed URL
    */
-  public static Optional<URL> parseRefererBaseURL(HttpServerRequest request) {
-    return sneakyParseRefererURL(request)
-        .map(RequestUtils::parseBaseURL)
-        .map(RequestUtils::sneakyURL);
+  public static Optional<URL> parseReferrerOrigin(HttpServerRequest request) {
+    return sneakyParseReferrerUrl(request).map(RequestUtils::parseOrigin);
   }
 
-  public static Optional<URL> parseRefererURL(HttpServerRequest request) {
-    return sneakyParseRefererURL(request);
+  public static Optional<URL> parseReferrerUrl(HttpServerRequest request) {
+    return sneakyParseReferrerUrl(request);
   }
 
   /**
@@ -60,7 +59,7 @@ public final class RequestUtils {
    * @return URL
    * @throws BoomException if malformed URL
    */
-  public static URL sneakyURL(String url) {
+  public static URL sneakyUrl(String url) {
     try {
       return new URL(url);
     } catch (MalformedURLException e) {
@@ -68,28 +67,28 @@ public final class RequestUtils {
     }
   }
 
-  public static URL sneakyURL(URI uri) {
-    return sneakyURL(uri.toString());
+  public static URL sneakyUrl(URI uri) {
+    return sneakyUrl(uri.toString());
   }
 
   /**
-   * Parse base URL.
+   * Parse origin
    *
    * @param url URL
-   * @return String base url
+   * @return URL origin
    */
-  public static String parseBaseURL(URL url) {
+  public static URL parseOrigin(URL url) {
     String base = url.getProtocol() + "://" + url.getHost();
     if (url.getPort() == -1) {
-      return base;
+      return sneakyUrl(base);
     }
-    return base + ":" + url.getPort();
+    return sneakyUrl(base + ":" + url.getPort());
   }
 
-  public static URI getServerBaseURI(UriInfo info, HttpServerRequest request) {
+  public static URI getServerBaseUri(UriInfo info, HttpServerRequest request) {
     String proto = request.getHeader(MissingHttpHeaders.X_FORWARDED_PROTO);
     String host = request.getHeader(MissingHttpHeaders.X_FORWARDED_HOST);
-    return URI.create(getServerBaseURL(info, proto, host));
+    return URI.create(getServerBaseUrl(info, proto, host));
   }
 
   /**
@@ -100,8 +99,8 @@ public final class RequestUtils {
    * @param request http server request
    * @return server base URL
    */
-  public static URL getServerBaseURL(UriInfo info, HttpServerRequest request) {
-    return sneakyURL(getServerBaseURI(info, request));
+  public static URL getServerBaseUrl(UriInfo info, HttpServerRequest request) {
+    return sneakyUrl(getServerBaseUri(info, request));
   }
 
   /**
@@ -113,7 +112,7 @@ public final class RequestUtils {
    * @param forwardedHost X-Forwarded-Host header value
    * @return server base URL
    */
-  public static String getServerBaseURL(
+  public static String getServerBaseUrl(
       UriInfo info, @Nullable String forwardedProto, @Nullable String forwardedHost) {
     if (forwardedProto != null && forwardedHost != null) {
       return forwardedProto + "://" + forwardedHost;
@@ -127,7 +126,7 @@ public final class RequestUtils {
    * @param url associated with the http request
    * @return Optional String top level domain
    */
-  public static Optional<String> parseTLD(String url) {
+  public static Optional<String> parseTopLevelDomain(String url) {
     try {
       String[] parts = new URL(url).getHost().split("\\.");
       if (parts.length < DOMAIN_MIN_PARTS) {
@@ -146,7 +145,7 @@ public final class RequestUtils {
    * @return String cookie domain if present else null
    */
   public static String parseCookieDomain(String url) {
-    return parseTLD(url).orElse(null);
+    return parseTopLevelDomain(url).orElse(null);
   }
 
   public static String parseCookieDomain(URI uri) {
@@ -204,5 +203,12 @@ public final class RequestUtils {
       map.put(name, value);
     }
     return map;
+  }
+
+  public static String removeTrailingSlash(String value) {
+    if (value.charAt(value.length() - 1) == '/') {
+      return value.substring(0, value.length() - 1);
+    }
+    return value;
   }
 }

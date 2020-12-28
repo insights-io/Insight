@@ -1,5 +1,6 @@
 package com.meemaw.session.model;
 
+import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -16,7 +17,8 @@ public class PageVisitDTO {
   UUID sessionId;
   String organizationId;
   String doctype;
-  String url;
+  URL origin;
+  String path;
   String referrer;
   int height;
   int width;

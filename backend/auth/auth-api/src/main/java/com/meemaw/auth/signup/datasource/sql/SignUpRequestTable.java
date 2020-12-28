@@ -21,18 +21,18 @@ public final class SignUpRequestTable {
   public static final Field<String> FULL_NAME = field("full_name", String.class);
   public static final Field<String> COMPANY = field("company", String.class);
   public static final Field<JsonObject> PHONE_NUMBER = field("phone_number", JSON_OBJECT_DATA_TYPE);
-  public static final Field<String> REFERER = field("referer", String.class);
+  public static final Field<String> REFERRER = field("referrer", String.class);
   public static final Field<OffsetDateTime> CREATED_AT = field("created_at", OffsetDateTime.class);
 
   public static final List<Field<?>> INSERT_FIELDS =
-      List.of(EMAIL, HASHED_PASSWORD, FULL_NAME, COMPANY, PHONE_NUMBER, REFERER);
+      List.of(EMAIL, HASHED_PASSWORD, FULL_NAME, COMPANY, PHONE_NUMBER, REFERRER);
 
   public static final List<Field<?>> AUTO_GENERATED_FIELDS = List.of(TOKEN, CREATED_AT);
+
+  private SignUpRequestTable() {}
 
   @SuppressWarnings({"unchecked"})
   public static <T> Field<T> tableField(Field<T> field) {
     return (Field<T>) field(String.join(".", TABLE.getName(), field.getName()));
   }
-
-  private SignUpRequestTable() {}
 }

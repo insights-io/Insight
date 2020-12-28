@@ -56,7 +56,7 @@ public class SignUpServiceImpl implements SignUpService {
   @Traced
   @Timed(name = "signUp", description = "A measure of how long it takes to do a sign up")
   public CompletionStage<Optional<UUID>> signUp(
-      URL referer, URL serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
+      URL referrer, URL serverBaseURL, SignUpRequestDTO signUpRequestDTO) {
     MDC.put(LoggingConstants.USER_EMAIL, signUpRequestDTO.getEmail());
     log.info("[AUTH]: Sign up request for user: {}", signUpRequestDTO.getEmail());
     String hashedPassword = passwordService.hashPassword(signUpRequestDTO.getPassword());
@@ -67,7 +67,7 @@ public class SignUpServiceImpl implements SignUpService {
             .fullName(signUpRequestDTO.getFullName())
             .company(signUpRequestDTO.getCompany())
             .phoneNumber(signUpRequestDTO.getPhoneNumber())
-            .referer(referer)
+            .referrer(referrer)
             .build();
 
     return sqlPool

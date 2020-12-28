@@ -13,9 +13,9 @@ import java.util.concurrent.CompletionStage;
 
 public interface SessionDatasource {
 
-  CompletionStage<Optional<UUID>> findSessionDeviceLink(String organizationId, UUID deviceId);
+  CompletionStage<Optional<UUID>> retrieveByDeviceId(String organizationId, UUID deviceId);
 
-  CompletionStage<SessionDTO> createSession(
+  CompletionStage<SessionDTO> create(
       UUID sessionId,
       UUID deviceId,
       String organizationId,
@@ -23,16 +23,16 @@ public interface SessionDatasource {
       HasUserAgent userAgent,
       SqlTransaction transaction);
 
-  CompletionStage<SessionDTO> createSession(
+  CompletionStage<SessionDTO> create(
       UUID sessionId,
       UUID deviceId,
       String organizationId,
       Located location,
       HasUserAgent userAgent);
 
-  CompletionStage<Optional<SessionDTO>> getSession(UUID id, String organizationId);
+  CompletionStage<Optional<SessionDTO>> retrieve(UUID id, String organizationId);
 
-  CompletionStage<Collection<SessionDTO>> getSessions(String organizationId, SearchDTO searchDTO);
+  CompletionStage<Collection<SessionDTO>> list(String organizationId, SearchDTO searchDTO);
 
   CompletionStage<JsonNode> count(String organizationId, SearchDTO searchDTO);
 

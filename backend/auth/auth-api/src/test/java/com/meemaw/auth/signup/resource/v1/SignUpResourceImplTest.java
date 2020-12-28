@@ -21,6 +21,7 @@ import io.quarkus.mailer.Mail;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.vertx.core.http.HttpHeaders;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
@@ -124,7 +125,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
   @Test
   public void sign_up__should_redirect_back_to_referer__when_valid_payload()
       throws JsonProcessingException {
-    String referer = "http://localhost:3000";
+    String referrer = "http://localhost:3000";
     String signUpEmail = String.format("%s@gmail.com", UUID.randomUUID());
     SignUpRequestDTO signUpRequestDTO =
         new SignUpRequestDTO(
@@ -133,13 +134,13 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .contentType(MediaType.APPLICATION_JSON)
-        .header("referer", referer)
+        .header(HttpHeaders.REFERER.toString(), referrer)
         .body(objectMapper.writeValueAsString(signUpRequestDTO))
         .post(SignUpResource.PATH)
         .then()
         .statusCode(204);
 
-    // completing sign up with with referer should redirect back to it
+    // completing sign up with with referrer should redirect back to it
     given()
         .when()
         .config(dontFollowRedirects())
@@ -147,7 +148,7 @@ public class SignUpResourceImplTest extends AbstractAuthApiTest {
         .then()
         .statusCode(Status.FOUND.getStatusCode())
         .cookie(SsoSession.COOKIE_NAME)
-        .header("Location", String.join("/", referer, "signup-completed-callback"));
+        .header("Location", String.join("/", referrer, "signup-completed-callback"));
   }
 
   @Test

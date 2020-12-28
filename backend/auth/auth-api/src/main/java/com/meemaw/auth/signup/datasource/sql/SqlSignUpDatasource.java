@@ -7,7 +7,7 @@ import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.EMAIL;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.FULL_NAME;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.HASHED_PASSWORD;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.INSERT_FIELDS;
-import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERER;
+import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.REFERRER;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TABLE;
 import static com.meemaw.auth.signup.datasource.sql.SignUpRequestTable.TOKEN;
 
@@ -40,7 +40,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
 
   public static SignUpRequest map(Row row) {
     JsonObject phoneNumber = (JsonObject) row.getValue(SqlUserTable.PHONE_NUMBER.getName());
-    String referer = row.getString(REFERER.getName());
+    String referrer = row.getString(REFERRER.getName());
 
     return new SignUpRequest(
         row.getUUID(TOKEN.getName()),
@@ -49,7 +49,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
         row.getString(FULL_NAME.getName()),
         row.getString(COMPANY.getName()),
         Optional.ofNullable(phoneNumber).map(p -> p.mapTo(PhoneNumberDTO.class)).orElse(null),
-        Optional.ofNullable(referer).map(RequestUtils::sneakyURL).orElse(null),
+        Optional.ofNullable(referrer).map(RequestUtils::sneakyUrl).orElse(null),
         row.getOffsetDateTime(CREATED_AT.getName()));
   }
 
@@ -72,7 +72,7 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
                 signUpRequest.getFullName(),
                 signUpRequest.getCompany(),
                 JsonObject.mapFrom(signUpRequest.getPhoneNumber()),
-                signUpRequest.getReferer())
+                signUpRequest.getReferrer())
             .returning(AUTO_GENERATED_FIELDS);
 
     return transaction

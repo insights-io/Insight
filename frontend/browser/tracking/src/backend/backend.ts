@@ -5,7 +5,7 @@ import type { Connected } from 'identity/types';
 import type {
   CreatePageResponse,
   PageVisitSessionLink,
-  CreatePageVisitDTO,
+  PageVisitCreateParams,
 } from '@rebrowse/types';
 import Context from 'context';
 
@@ -80,9 +80,12 @@ class Backend implements Connected {
   };
 
   // TODO: better error handling
-  public page = (pageDTO: CreatePageVisitDTO) => {
+  public page = (createParams: PageVisitCreateParams) => {
     return this._requestResponseTransport
-      .post<CreatePageResponse>(this._pageVisitURL, JSON.stringify(pageDTO))
+      .post<CreatePageResponse>(
+        this._pageVisitURL,
+        JSON.stringify(createParams)
+      )
       .then((response) => {
         if (response.status > 400 && response.status < 600) {
           throw new Error(`Failed to create page status: ${response.status}`);

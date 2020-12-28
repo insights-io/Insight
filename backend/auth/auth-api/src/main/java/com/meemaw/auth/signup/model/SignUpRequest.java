@@ -21,11 +21,11 @@ public class SignUpRequest implements CanExpire {
   String fullName;
   String company;
   PhoneNumber phoneNumber;
-  URL referer;
+  URL referrer;
   OffsetDateTime createdAt;
 
-  public Optional<String> getRefererCallbackURL() {
-    return Optional.ofNullable(referer)
+  public Optional<String> getReferrerCallbackUrl() {
+    return Optional.ofNullable(referrer)
         .map(r -> String.join("/", r.toString(), "signup-completed-callback"));
   }
 

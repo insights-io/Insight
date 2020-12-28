@@ -31,7 +31,7 @@ public class SamlResourceImpl implements SamlResource {
     log.info("[AUTH]: SAML signIn request email={} redirect={}", email, redirect);
     String domain = EmailUtils.domainFromEmail(email);
     String cookieDomain =
-        RequestUtils.parseCookieDomain(RequestUtils.getServerBaseURI(info, request));
+        RequestUtils.parseCookieDomain(RequestUtils.getServerBaseUri(info, request));
 
     return ssoSetupDatasource
         .getByDomain(domain)

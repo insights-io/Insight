@@ -36,7 +36,7 @@ public class SessionResourceImpl implements SessionResource {
   public CompletionStage<Response> retrieve(UUID sessionId) {
     String organizationId = principal.user().getOrganizationId();
     return sessionService
-        .getSession(sessionId, organizationId)
+        .retrieveSession(sessionId, organizationId)
         .thenApply(
             maybePage -> DataResponse.ok(maybePage.orElseThrow(() -> Boom.notFound().exception())));
   }
@@ -83,6 +83,6 @@ public class SessionResourceImpl implements SessionResource {
         SearchDTO.withAllowedFields(SessionTable.QUERYABLE_FIELDS)
             .rhsColon(RequestUtils.map(uriInfo.getQueryParameters()));
 
-    return sessionService.getSessions(organizationId, searchDTO).thenApply(DataResponse::ok);
+    return sessionService.listSessions(organizationId, searchDTO).thenApply(DataResponse::ok);
   }
 }

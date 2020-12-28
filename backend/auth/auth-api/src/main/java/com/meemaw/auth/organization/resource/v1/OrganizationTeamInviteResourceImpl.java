@@ -33,8 +33,8 @@ public class OrganizationTeamInviteResourceImpl implements OrganizationTeamInvit
 
   private String getAcceptInviteURL() {
     URL clientBaseUrl =
-        RequestUtils.parseRefererBaseURL(request)
-            .orElseGet(() -> RequestUtils.getServerBaseURL(uriInfo, request));
+        RequestUtils.parseReferrerOrigin(request)
+            .orElseGet(() -> RequestUtils.getServerBaseUrl(uriInfo, request));
 
     return UriBuilder.fromUri(clientBaseUrl.toString()).path("accept-invite").build().toString();
   }
@@ -85,7 +85,7 @@ public class OrganizationTeamInviteResourceImpl implements OrganizationTeamInvit
 
   @Override
   public CompletionStage<Response> accept(UUID token, TeamInviteAcceptDTO body) {
-    URL serverBaseUrl = RequestUtils.getServerBaseURL(uriInfo, request);
+    URL serverBaseUrl = RequestUtils.getServerBaseUrl(uriInfo, request);
     String cookieDomain = RequestUtils.parseCookieDomain(serverBaseUrl);
     return inviteService
         .acceptTeamInvite(token, body)

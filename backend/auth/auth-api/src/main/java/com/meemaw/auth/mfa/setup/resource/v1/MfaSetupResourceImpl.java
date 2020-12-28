@@ -81,7 +81,7 @@ public class MfaSetupResourceImpl implements MfaSetupResource {
   @Override
   public CompletionStage<Response> completeEnforcedSetup(
       MfaMethod method, MfaChallengeCompleteDTO body) {
-    URL serverBaseUrl = RequestUtils.getServerBaseURL(uriInfo, request);
+    URL serverBaseUrl = RequestUtils.getServerBaseUrl(uriInfo, request);
     String cookieDomain = RequestUtils.parseCookieDomain(serverBaseUrl);
 
     return mfaSetupService

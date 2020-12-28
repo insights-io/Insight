@@ -373,7 +373,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -492,7 +492,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -578,7 +578,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login");
 
     String challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -627,7 +627,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login");
 
     challengeId = response.detailedCookie(SsoChallenge.COOKIE_NAME).getValue();
@@ -664,7 +664,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login")
             .then()
             .statusCode(200)
@@ -731,7 +731,7 @@ public class MfaSetupResourceImplTest extends AbstractAuthApiTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("email", email)
             .param("password", password)
-            .header("referer", "http://localhost:3000")
+            .header(io.vertx.core.http.HttpHeaders.REFERER.toString(), "http://localhost:3000")
             .post(SsoSessionResource.PATH + "/login")
             .then()
             .statusCode(200)
