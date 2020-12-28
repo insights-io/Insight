@@ -132,7 +132,7 @@ public class AbstractSessionResourceTest extends ExternalAuthApiProvidedTest {
               UUID deviceId1 = UUID.randomUUID();
               UUID sessionId1 = UUID.randomUUID();
               sessionDatasource
-                  .create(sessionId1, deviceId1, organizationId, NEW_YORK, MAC__SAFARI)
+                  .create(sessionId1, deviceId1, organizationId, NEW_YORK, MAC__SAFARI, transaction)
                   .thenApply(sessions::add);
 
               UUID deviceId2 = UUID.randomUUID();
