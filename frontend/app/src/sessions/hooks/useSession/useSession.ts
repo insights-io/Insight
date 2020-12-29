@@ -11,7 +11,10 @@ export const cacheKey = (id: string) => {
 export const useSession = (sessionId: string, initialData: SessionDTO) => {
   const { data = initialData } = useQuery(
     cacheKey(initialData.id),
-    () => SessionApi.getSession(sessionId),
+    () =>
+      SessionApi.getSession(sessionId).then(
+        (httpResponse) => httpResponse.data.data
+      ),
     { initialData: () => initialData }
   );
 

@@ -1,7 +1,6 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { jsonPromise } from '__tests__/utils';
 import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
 import { mockIndexPage } from '__tests__/mocks';
@@ -18,11 +17,15 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({ data: true });
+        .resolves({
+          data: { data: true },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       const passwordResetStub = sandbox
         .stub(AuthApi.password, 'reset')
-        .returns(jsonPromise({ status: 200 }));
+        .resolves({ statusCode: 200, headers: new Headers() });
 
       mockIndexPage(sandbox);
 
@@ -53,7 +56,11 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({ data: true });
+        .resolves({
+          data: { data: true },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       const passwordResetStub = sandbox.stub(AuthApi.password, 'reset').rejects(
         mockApiError({
@@ -94,7 +101,11 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({ data: false });
+        .resolves({
+          data: { data: false },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       /* Server */
       const { page } = await getPage({ route });

@@ -5,7 +5,8 @@ import type { AvatarDTO, OrganizationDTO } from '@rebrowse/types';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'get'];
-const queryFn = () => AuthApi.organization.get();
+const queryFn = () =>
+  AuthApi.organization.get().then((httpResponse) => httpResponse.data.data);
 
 export const useOrganization = (initialData: OrganizationDTO) => {
   const queryClient = useQueryClient();

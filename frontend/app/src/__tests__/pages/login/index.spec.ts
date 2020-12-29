@@ -28,7 +28,11 @@ describe('/login', () => {
         .stub(AuthApi.sso.session, 'login')
         .callsFake(() => {
           document.cookie = 'SessionId=123';
-          return Promise.resolve({ data: true });
+          return Promise.resolve({
+            data: { data: true },
+            statusCode: 200,
+            headers: new Headers(),
+          });
         });
 
       /* Server */
@@ -51,13 +55,21 @@ describe('/login', () => {
       /* Mocks */
       const retrieveChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'get')
-        .resolves(['totp']);
+        .resolves({
+          data: { data: ['totp'] },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       const loginStub = sandbox
         .stub(AuthApi.sso.session, 'login')
         .callsFake(() => {
           document.cookie = 'ChallengeId=123';
-          return Promise.resolve({ data: false });
+          return Promise.resolve({
+            data: { data: false },
+            statusCode: 200,
+            headers: new Headers(),
+          });
         });
 
       /* Server */
@@ -87,7 +99,11 @@ describe('/login', () => {
       /* Mocks */
       const retrieveSsoSetupByDomainStub = sandbox
         .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves({ data: false });
+        .resolves({
+          data: { data: false },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       /* Server */
       const { page } = await getPage({ route });
@@ -116,7 +132,11 @@ describe('/login', () => {
       const ssoLocation = 'http://localhost:8080/sso/login';
       const retrieveSsoSetupByDomainStub = sandbox
         .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves({ data: ssoLocation });
+        .resolves({
+          data: { data: ssoLocation },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       /* Server */
       const { page } = await getPage({ route });

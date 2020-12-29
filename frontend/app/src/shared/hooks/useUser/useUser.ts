@@ -6,7 +6,8 @@ import type { PhoneNumber, UserDTO } from '@rebrowse/types';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'user', 'me'];
-const queryFn = () => AuthApi.user.me();
+const queryFn = () =>
+  AuthApi.user.me().then((httpResponse) => httpResponse.data.data);
 
 export const useUser = (initialData: UserDTO) => {
   const queryClient = useQueryClient();

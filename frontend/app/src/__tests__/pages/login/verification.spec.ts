@@ -4,7 +4,6 @@ import { AuthApi } from 'api';
 import { REBROWSE_ADMIN_DTO } from '__tests__/data/user';
 import { getPage } from 'next-page-tester';
 import { VERIFICATION_PAGE } from 'shared/constants/routes';
-import { textPromise } from '__tests__/utils';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { mockIndexPage } from '__tests__/mocks';
@@ -22,13 +21,17 @@ describe('/login/verification', () => {
 
       const getChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'get')
-        .resolves(['totp']);
+        .resolves({
+          data: { data: ['totp'] },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       const completeChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'complete')
         .callsFake(() => {
           document.cookie = 'SessionId=123';
-          return textPromise({ status: 200 });
+          return Promise.resolve({ statusCode: 200, headers: new Headers() });
         });
 
       /* Server */
@@ -71,23 +74,41 @@ describe('/login/verification', () => {
       document.cookie = 'ChallengeId=123';
       const getChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'get')
-        .resolves([]);
+        .resolves({
+          data: { data: [] },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       const retrieveUserByChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'retrieveUser')
-        .resolves(REBROWSE_ADMIN_DTO);
+        .resolves({
+          data: { data: REBROWSE_ADMIN_DTO },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       const startTotpMfaSetupStub = sandbox
         .stub(AuthApi.mfa.setup.totp, 'start')
-        .resolves({ data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } });
+        .resolves({
+          data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
+          statusCode: 200,
+          headers: new Headers(),
+        });
 
       const completeTotpMfaSetupStub = sandbox
         .stub(AuthApi.mfa.setup, 'completeEnforced')
         .callsFake(() => {
           document.cookie = 'SessionId=123';
           return Promise.resolve({
-            createdAt: new Date().toISOString(),
-            method: 'totp',
+            statusCode: 200,
+            headers: new Headers(),
+            data: {
+              data: {
+                createdAt: new Date().toISOString(),
+                method: 'totp',
+              },
+            },
           });
         });
 

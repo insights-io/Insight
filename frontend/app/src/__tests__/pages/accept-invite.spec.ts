@@ -7,7 +7,6 @@ import { getPage } from 'next-page-tester';
 import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
 import { ADMIN_TEAM_INVITE_DTO } from '__tests__/data';
 import { mockIndexPage } from '__tests__/mocks';
-import { jsonPromise } from '__tests__/utils';
 
 describe('/accept-invite', () => {
   /* Data */
@@ -66,13 +65,17 @@ describe('/accept-invite', () => {
 
     const retrieveTeamInviteStub = sandbox
       .stub(AuthApi.organization.teamInvite, 'retrieve')
-      .resolves(ADMIN_TEAM_INVITE_DTO);
+      .resolves({
+        data: { data: ADMIN_TEAM_INVITE_DTO },
+        statusCode: 200,
+        headers: new Headers(),
+      });
 
     const acceptTeamInviteStub = sandbox
       .stub(AuthApi.organization.teamInvite, 'accept')
       .callsFake(() => {
         document.cookie = 'SessionId=123';
-        return jsonPromise({ status: 200 });
+        return Promise.resolve({ statusCode: 200, headers: new Headers() });
       });
 
     /* Server */

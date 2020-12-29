@@ -1,17 +1,19 @@
-import { AuthApi, PagesApi, SessionApi } from 'api';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AuthApi, SessionApi } from 'api';
 import {
   REBROWSE_EVENTS,
   REBROWSE_SESSIONS_DTOS,
   REBROWSE_SESSION_INFO,
 } from '__tests__/data';
-import { jsonPromise, textPromise } from '__tests__/utils/request';
-import ky from 'ky-universal';
+import * as sdk from '@rebrowse/sdk';
 import type {
   BrowserEventDTO,
   SessionDTO,
   SessionInfoDTO,
 } from '@rebrowse/types';
-import { SinonSandbox } from 'sinon';
+import type { SinonSandbox } from 'sinon';
+import { jsonPromise } from '__tests__/utils';
+import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
 
 import {
   filterSession,
@@ -29,11 +31,19 @@ export const mockAuth = (
     .stub(AuthApi.sso.session, 'get')
     .returns(jsonPromise({ status: 200, data }));
 
-  const retrieveUserStub = sandbox.stub(AuthApi.user, 'me').resolves(data.user);
+  const retrieveUserStub = sandbox.stub(AuthApi.user, 'me').resolves({
+    data: { data: data.user },
+    statusCode: 200,
+    headers: new Headers(),
+  });
 
   const retrieveOrganizationStub = sandbox
     .stub(AuthApi.organization, 'get')
-    .resolves(data.organization);
+    .resolves({
+      data: { data: data.organization },
+      statusCode: 200,
+      headers: new Headers(),
+    });
 
   return { retrieveSessionStub, retrieveUserStub, retrieveOrganizationStub };
 };
@@ -80,18 +90,28 @@ export const mockSessionsPage = (
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
     .callsFake((args = {}) =>
-      Promise.resolve(countSessionsBy(sessions, args.search))
+      Promise.resolve({
+        data: { data: countSessionsBy(sessions, args.search) },
+        statusCode: 200,
+        headers: new Headers(),
+      })
     );
 
   const listSessionsStub = sandbox
     .stub(SessionApi, 'getSessions')
     .callsFake((args = {}) =>
-      Promise.resolve(sessions.filter((s) => filterSession(s, args.search)))
+      Promise.resolve({
+        data: { data: sessions.filter((s) => filterSession(s, args.search)) },
+        statusCode: 200,
+        headers: new Headers(),
+      })
     );
 
   const getDistinctStub = sandbox
     .stub(SessionApi, 'distinct')
-    .callsFake((on) => getDistinctMockImplementation(on));
+    .callsFake((on) => {
+      return getDistinctMockImplementation(on);
+    });
 
   return {
     ...sessionMocks,
@@ -103,28 +123,17 @@ export const mockSessionsPage = (
 
 export const mockEmptySessionsPage = (sandbox: SinonSandbox) => {
   const mocks = mockSessionsPage(sandbox, { sessions: [] });
-
-  const retrieveRecordingSnippetStub = sandbox.stub(ky, 'get').returns(
-    textPromise({
-      status: 200,
-      data: `((e, s, r) => {
-    e._i_debug = !1;
-    e._i_host = 'rebrowse.dev';
-    e._i_org = '<ORG>';
-    e._i_ns = 'IS';
-    const t = s.createElement(r);
-    t.async = true;
-    t.crossOrigin = 'anonymous';
-    t.src = 'https://static.rebrowse.dev/s/rebrowse.js';
-    const o = s.getElementsByTagName(r)[0];
-    o.parentNode.insertBefore(t, o);
-  })(window, document, 'script');`,
-    })
-  );
+  const retrieveBoostrapScriptStub = sandbox
+    .stub(sdk, 'getBoostrapScript')
+    .resolves({
+      data: BOOTSTRAP_SCRIPT,
+      statusCode: 200,
+      headers: new Headers(),
+    });
 
   return {
     ...mocks,
-    retrieveRecordingSnippetStub,
+    retrieveBoostrapScriptStub,
   };
 };
 
@@ -136,14 +145,24 @@ export const mockIndexPage = (
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
     .callsFake((args = {}) =>
-      Promise.resolve(countSessionsBy(sessions, args.search))
+      Promise.resolve({
+        data: { data: countSessionsBy(sessions, args.search) },
+        statusCode: 200,
+        headers: new Headers(),
+      })
     );
 
   const countPageVisitsStub = sandbox
-    .stub(PagesApi, 'count')
-    .callsFake((args = {}) =>
-      Promise.resolve(countSessionsBy(sessions, args.search))
-    );
+    .stub(SessionApi.pageVisit, 'count')
+    .callsFake((args = {}) => {
+      return Promise.resolve({
+        data: {
+          data: countSessionsBy(sessions, args.search as any),
+        },
+        statusCode: 200,
+        headers: new Headers(),
+      }) as any;
+    });
 
   return { ...authMocks, countPageVisitsStub, countSessionsStub };
 };

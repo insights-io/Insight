@@ -15,13 +15,15 @@ export const cacheKey = (sessionId: string) => {
 };
 
 const queryFn = (sessionId: string) => {
-  return SessionApi.events.search(sessionId, {
-    // TODO: pagination
-    search: {
-      'event.e': [TermCondition.EQ(11)],
-      limit: 1000,
-    },
-  });
+  return SessionApi.events
+    .search(sessionId, {
+      // TODO: pagination
+      search: {
+        'event.e': [TermCondition.EQ(11)],
+        limit: 1000,
+      },
+    })
+    .then((httpResponse) => httpResponse.data.data);
 };
 
 export const useEvents = (sessionId: string) => {

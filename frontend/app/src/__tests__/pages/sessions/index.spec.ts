@@ -31,7 +31,7 @@ describe('/sessions', () => {
       document.cookie = 'SessionId=123';
       const {
         listSessionsStub,
-        retrieveRecordingSnippetStub,
+        retrieveBoostrapScriptStub,
         countSessionsStub,
       } = mockEmptySessionsPage(sandbox);
 
@@ -45,7 +45,7 @@ describe('/sessions', () => {
       );
 
       sandbox.assert.calledWithExactly(
-        retrieveRecordingSnippetStub,
+        retrieveBoostrapScriptStub,
         'https://static.rebrowse.dev/b/rebrowse.js'
       );
 
@@ -65,7 +65,7 @@ describe('/sessions', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          `.src = 'https://static.rebrowse.dev/s/rebrowse.js';`,
+          `src = 'https://static.rebrowse.dev/s/localhost.rebrowse.js';`,
           { exact: false }
         )
       ).toBeInTheDocument();

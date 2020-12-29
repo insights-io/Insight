@@ -10,7 +10,11 @@ describe('useSessions', () => {
   it('Should correctly load more sessions', async () => {
     const searchSessionsStub = sandbox
       .stub(SessionApi, 'getSessions')
-      .resolves(REBROWSE_SESSIONS_DTOS.slice(0, 1));
+      .resolves({
+        data: { data: REBROWSE_SESSIONS_DTOS.slice(0, 1) },
+        statusCode: 200,
+        headers: new Headers(),
+      });
 
     const from = new Date('04 Dec 1995 00:12:00 GMT');
 
