@@ -5,8 +5,8 @@ import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.sso.BearerTokenSecurityScheme;
 import com.meemaw.auth.sso.SsoSessionCookieSecurityScheme;
 import com.meemaw.auth.user.model.dto.UserDTO;
+import com.meemaw.shared.rest.response.CountDataResponse;
 import com.meemaw.shared.rest.response.ErrorDataResponse;
-import com.meemaw.shared.rest.response.IntegerDataResponse;
 import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public interface OrganizationResource {
 
   @DELETE
   @Tag(name = TAG)
-  @Operation(summary = "Delete organization associated with authenticated user")
+  @Operation(summary = "Delete Organization")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -84,7 +84,7 @@ public interface OrganizationResource {
   @GET
   @Path("members")
   @Tag(name = TAG)
-  @Operation(summary = "List organization members")
+  @Operation(summary = "List Members")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -94,7 +94,7 @@ public interface OrganizationResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User collection",
+            description = "Members",
             content =
                 @Content(
                     schema = @Schema(implementation = MemberListDataResponse.class),
@@ -121,7 +121,7 @@ public interface OrganizationResource {
   @GET
   @Path("members/count")
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve organization member count")
+  @Operation(summary = "Retrieve Member Count")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -131,10 +131,10 @@ public interface OrganizationResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User count",
+            description = "Member count",
             content =
                 @Content(
-                    schema = @Schema(implementation = IntegerDataResponse.class),
+                    schema = @Schema(implementation = CountDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "401",
@@ -157,7 +157,7 @@ public interface OrganizationResource {
 
   @PATCH
   @Tag(name = TAG)
-  @Operation(summary = "Update organization associated with authenticated user")
+  @Operation(summary = "Update Organization")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -210,7 +210,7 @@ public interface OrganizationResource {
 
   @GET
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve organization associated with authenticated user")
+  @Operation(summary = "Retrieve Organization")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -220,7 +220,7 @@ public interface OrganizationResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "Organization object",
+            description = "Organization",
             content =
                 @Content(
                     schema = @Schema(implementation = OrganizationDataResponse.class),
@@ -247,7 +247,7 @@ public interface OrganizationResource {
   @GET
   @Path("{id}")
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve organization")
+  @Operation(summary = "Retrieve Organization")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -257,7 +257,7 @@ public interface OrganizationResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "Organization object",
+            description = "Organization",
             content =
                 @Content(
                     schema = @Schema(implementation = OrganizationDataResponse.class),
@@ -298,7 +298,7 @@ public interface OrganizationResource {
   @PATCH
   @Path("avatar")
   @Tag(name = TAG)
-  @Operation(summary = "Setup avatar for the organization associated with authenticated user")
+  @Operation(summary = "Setup Avatar")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -308,7 +308,7 @@ public interface OrganizationResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "Updated organization",
+            description = "Organization",
             content =
                 @Content(
                     schema = @Schema(implementation = OrganizationDataResponse.class),

@@ -2,7 +2,7 @@ import ky from 'ky-universal';
 import type { DataResponse, SignUpRequestDTO } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
-import { jsonResponse } from '../../http';
+import { httpResponse, jsonResponse } from '../../http';
 
 export const signupResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -14,7 +14,9 @@ export const signupResource = (authApiBaseURL: string) => {
       json: SignUpRequestDTO,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse(ky.post(resourceBaseURL(baseURL), { json, ...rest }));
+      return ky
+        .post(resourceBaseURL(baseURL), { json, ...rest })
+        .then(httpResponse);
     },
     verify: (
       token: string,

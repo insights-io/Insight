@@ -164,18 +164,19 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
 
   @Override
   public CompletionStage<JsonNode> count(String organizationId, SearchDTO search) {
-
     List<Field<?>> columns =
         SQLGroupByQuery.of(search.getGroupBy(), search.getDateTrunc()).selectFieldsWithCount();
 
     Query query =
         SQLSearchDTO.of(search)
             .query(
-                sqlPool
-                    .getContext()
-                    .select(columns)
-                    .from(TABLE)
-                    .where(ORGANIZATION_ID.eq(organizationId)),
+                searchQuery(
+                    sqlPool
+                        .getContext()
+                        .select(columns)
+                        .from(TABLE)
+                        .where(ORGANIZATION_ID.eq(organizationId)),
+                    search),
                 FIELD_MAPPINGS);
 
     return sqlPool

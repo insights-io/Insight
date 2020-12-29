@@ -17,7 +17,7 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox
       .stub(AuthApi.signup, 'create')
-      .resolves(new Promise((resolve) => setTimeout(resolve, 100)));
+      .resolves({ statusCode: 200, headers: new Headers() });
   },
 });
 

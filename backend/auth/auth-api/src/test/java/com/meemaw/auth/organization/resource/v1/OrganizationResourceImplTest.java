@@ -15,6 +15,7 @@ import com.meemaw.auth.organization.model.Organization;
 import com.meemaw.auth.organization.model.dto.AvatarSetupDTO;
 import com.meemaw.auth.organization.model.dto.OrganizationDTO;
 import com.meemaw.auth.sso.session.model.SsoSession;
+import com.meemaw.auth.user.datasource.UserTable;
 import com.meemaw.auth.user.model.UserRole;
 import com.meemaw.auth.user.model.dto.UserDTO;
 import com.meemaw.shared.SharedConstants;
@@ -22,6 +23,7 @@ import com.meemaw.shared.rest.response.DataResponse;
 import com.meemaw.test.setup.AbstractAuthApiTest;
 import com.meemaw.test.setup.RestAssuredUtils;
 import com.meemaw.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.api.query.TermCondition;
 import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.TeamInvite;
 import com.rebrowse.model.organization.TeamInviteAcceptParams;
@@ -466,14 +468,14 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
         .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":0}"));
+        .body(sameJson("{\"data\":{\"count\":0}}"));
 
     DataResponse<List<UserDTO>> fullNameResponse =
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
             .queryParam(QUERY_PARAM, REBROWSE_ADMIN_FULL_NAME)
-            .queryParam(SORT_BY_PARAM, "created_at")
+            .queryParam(SORT_BY_PARAM, UserTable.CREATED_AT)
             .get(GET_ORGANIZATION_MEMBERS_PATH)
             .then()
             .statusCode(200)
@@ -488,7 +490,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
         .get(GET_ORGANIZATION_MEMBER_COUNT_PATH)
         .then()
         .statusCode(200)
-        .body(sameJson("{\"data\":1}"));
+        .body(sameJson("{\"data\":{\"count\":1}}"));
 
     assertEquals(firstResponse, fullNameResponse);
 
@@ -496,7 +498,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
     given()
         .when()
         .cookie(SsoSession.COOKIE_NAME, sessionId)
-        .queryParam("role", "eq:member")
+        .queryParam(UserTable.ROLE, TermCondition.EQ.rhs("member"))
         .get(GET_ORGANIZATION_MEMBERS_PATH)
         .then()
         .statusCode(200)
@@ -506,7 +508,7 @@ public class OrganizationResourceImplTest extends AbstractAuthApiTest {
         given()
             .when()
             .cookie(SsoSession.COOKIE_NAME, sessionId)
-            .queryParam("role", "eq:admin")
+            .queryParam(UserTable.ROLE, TermCondition.EQ.rhs("admin"))
             .get(GET_ORGANIZATION_MEMBERS_PATH)
             .then()
             .statusCode(200)
