@@ -1,42 +1,42 @@
-import type { SearchBean } from '@rebrowse/types';
+import type { QueryParam, SearchBean } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
 export type SessionSearchQueryParams = {
-  createdAt?: unknown;
+  createdAt?: QueryParam;
 
-  'location.country_name'?: unknown;
-  'location.countryName'?: unknown;
+  'location.country_name'?: QueryParam;
+  'location.countryName'?: QueryParam;
 
-  'location.continent_name'?: unknown;
-  'location.continentName'?: unknown;
+  'location.continent_name'?: QueryParam;
+  'location.continentName'?: QueryParam;
 
-  'location.city'?: unknown;
+  'location.city'?: QueryParam;
 
-  'location.region_name'?: unknown;
-  'location.regionName'?: unknown;
+  'location.region_name'?: QueryParam;
+  'location.regionName'?: QueryParam;
 
-  'location.ip'?: unknown;
+  'location.ip'?: QueryParam;
 
-  'user_agent.agent_version'?: unknown;
+  'user_agent.agent_version'?: QueryParam;
 
-  'user_agent.agent_name'?: unknown;
-  'userAgent.agent_name'?: unknown;
+  'user_agent.agent_name'?: QueryParam;
+  'userAgent.agent_name'?: QueryParam;
 
-  'user_agent.operating_system_version'?: unknown;
+  'user_agent.operating_system_version'?: QueryParam;
 
-  'user_agent.operating_system_name'?: unknown;
-  'user_agent.operatingSystemName'?: unknown;
-  'userAgent.operatingSystemName'?: unknown;
-  'userAgent.operating_system_name'?: unknown;
+  'user_agent.operating_system_name'?: QueryParam;
+  'user_agent.operatingSystemName'?: QueryParam;
+  'userAgent.operatingSystemName'?: QueryParam;
+  'userAgent.operating_system_name'?: QueryParam;
 
-  'user_agent.device_name'?: unknown;
+  'user_agent.device_name'?: QueryParam;
 
-  'user_agent.device_brand'?: unknown;
+  'user_agent.device_brand'?: QueryParam;
 
-  'user_agent.deviceClass'?: unknown;
-  'user_agent.device_class'?: unknown;
-  'userAgent.deviceClass'?: unknown;
-  'userAgent.device_class'?: unknown;
+  'user_agent.deviceClass'?: QueryParam;
+  'user_agent.device_class'?: QueryParam;
+  'userAgent.deviceClass'?: QueryParam;
+  'userAgent.device_class'?: QueryParam;
 };
 
 export type SessionSearchBean<
@@ -47,18 +47,4 @@ export type SessionsSearchRequestOptions<
   GroupBy extends (keyof SessionSearchQueryParams)[] = []
 > = Omit<RequestOptions, 'searchParams'> & {
   search?: SessionSearchBean<GroupBy>;
-};
-
-export type EventSearchQueryParams = {
-  'event.e'?: unknown;
-};
-
-export type EventSeachBean<
-  GroupBy extends (keyof EventSearchQueryParams)[] = []
-> = SearchBean<EventSearchQueryParams, GroupBy>;
-
-export type SearchEventsRequestOptions<
-  GroupBy extends (keyof EventSearchQueryParams)[] = []
-> = Omit<RequestOptions, 'searchParams'> & {
-  search?: EventSeachBean<GroupBy>;
 };

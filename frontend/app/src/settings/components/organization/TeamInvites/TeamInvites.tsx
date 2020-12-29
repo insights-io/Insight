@@ -34,11 +34,15 @@ export const TeamInvites = ({
   const [_css, theme] = useStyletron();
 
   const search = useCallback(async (search: TeamInviteSearchBean) => {
-    return AuthApi.organization.teamInvite.list({ search });
+    return AuthApi.organization.teamInvite
+      .list({ search })
+      .then((httpResponse) => httpResponse.data.data);
   }, []);
 
   const searchCount = useCallback(async (search: TeamInviteSearchBean) => {
-    return AuthApi.organization.teamInvite.count({ search });
+    return AuthApi.organization.teamInvite
+      .count({ search })
+      .then((httpResponse) => httpResponse.data.data.count);
   }, []);
 
   const {
@@ -60,9 +64,9 @@ export const TeamInvites = ({
   });
 
   const createTeamInvite = (data: TeamInviteCreateDTO) => {
-    return AuthApi.organization.teamInvite.create(data).then((teamInvite) => {
+    return AuthApi.organization.teamInvite.create(data).then((httpResponse) => {
       revalidate();
-      return teamInvite;
+      return httpResponse;
     });
   };
 

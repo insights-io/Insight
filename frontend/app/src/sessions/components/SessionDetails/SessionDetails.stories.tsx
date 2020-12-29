@@ -21,9 +21,15 @@ Base.story = configureStory({
       searchEvents: sandbox
         .stub(SessionApi.events, 'search')
         .callsFake((_sessionId, args = {}) => {
-          return Promise.resolve(
-            REBROWSE_EVENTS.filter((e) => filterBrowserEvent(e, args.search))
-          );
+          return Promise.resolve({
+            data: {
+              data: REBROWSE_EVENTS.filter((e) =>
+                filterBrowserEvent(e, args.search)
+              ),
+            },
+            statusCode: 200,
+            headers: new Headers(),
+          });
         }),
     };
   },

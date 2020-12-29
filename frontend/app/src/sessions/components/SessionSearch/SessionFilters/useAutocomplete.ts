@@ -7,7 +7,9 @@ export const cacheKey = (on: keyof SessionSearchQueryParams | undefined) => {
 };
 
 const queryFn = (on: keyof SessionSearchQueryParams | undefined) => {
-  return on === undefined ? [] : SessionApi.distinct(on);
+  return on === undefined
+    ? []
+    : SessionApi.distinct(on).then((httpResponse) => httpResponse.data.data);
 };
 
 export const useAutocomplete = (

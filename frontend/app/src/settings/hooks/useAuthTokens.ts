@@ -1,5 +1,5 @@
-import { mapAuthToken } from '@rebrowse/sdk';
-import { AuthTokenDTO } from '@rebrowse/types';
+import { HttpResponse, mapAuthToken } from '@rebrowse/sdk';
+import { AuthTokenDTO, DataResponse } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
@@ -19,9 +19,9 @@ export const useAuthTokenMutations = () => {
   const { mutateAsync: create } = useMutation(
     () => AuthApi.sso.token.create(),
     {
-      onSuccess: (authToken) => {
+      onSuccess: (httpResponse: HttpResponse<DataResponse<AuthTokenDTO>>) => {
         queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
-          return [...(prev || []), authToken];
+          return [...(prev || []), httpResponse.data.data];
         });
       },
     }

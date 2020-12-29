@@ -1,1 +1,1 @@
-export { default } from './LoginSamlSsoForm';
+export { LoginSamlSsoForm } from './LoginSamlSsoForm';

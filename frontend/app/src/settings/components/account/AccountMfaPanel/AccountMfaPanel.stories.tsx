@@ -27,21 +27,31 @@ export const MfaEnabled = () => {
 MfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      listSetups: sandbox
-        .stub(AuthApi.mfa.setup, 'list')
-        .resolves([TOTP_MFA_SETUP_DTO]),
-
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
+      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves({
+        data: { data: [TOTP_MFA_SETUP_DTO] },
+        statusCode: 200,
+        headers: new Headers(),
       }),
 
-      setupComplete: sandbox
-        .stub(AuthApi.mfa.setup, 'complete')
-        .resolves(TOTP_MFA_SETUP_DTO),
+      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
+        data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
+        statusCode: 200,
+        headers: new Headers(),
+      }),
+
+      setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').resolves({
+        data: { data: TOTP_MFA_SETUP_DTO },
+        statusCode: 200,
+        headers: new Headers(),
+      }),
 
       setupSendSmsCode: sandbox
         .stub(AuthApi.mfa.setup.sms, 'sendCode')
-        .resolves({ validitySeconds: 60 }),
+        .resolves({
+          data: { data: { validitySeconds: 60 } },
+          statusCode: 200,
+          headers: new Headers(),
+        }),
     };
   },
 });

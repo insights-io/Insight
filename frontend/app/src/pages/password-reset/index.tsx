@@ -45,14 +45,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return { props: { exists: false } };
     }
 
-    const response = await AuthApi.password.resetExists(token, {
+    const {
+      data: { data: exists },
+    } = await AuthApi.password.resetExists(token, {
       baseURL: process.env.AUTH_API_BASE_URL,
       headers: prepareCrossServiceHeaders(requestSpan),
     });
-    if (response.data === false) {
-      return { props: { exists: false } };
-    }
-    return { props: { exists: true, token } };
+    return { props: { exists, token } };
   } finally {
     requestSpan.finish();
   }

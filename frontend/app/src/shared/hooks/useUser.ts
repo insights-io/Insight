@@ -13,7 +13,10 @@ export const useUser = (initialData: UserDTO) => {
   const { data = initialData } = useQuery(CACHE_KEY, queryFn, { initialData });
 
   const { mutateAsync: updateUser } = useMutation(
-    (payload: UpdateUserPayload) => AuthApi.user.update(payload),
+    (payload: UpdateUserPayload) =>
+      AuthApi.user
+        .update(payload)
+        .then((httpResponse) => httpResponse.data.data),
     {
       onSuccess: (updatedUser) => {
         queryClient.setQueryData<UserDTO>(CACHE_KEY, updatedUser);
@@ -23,7 +26,9 @@ export const useUser = (initialData: UserDTO) => {
 
   const { mutateAsync: updatePhoneNumber } = useMutation(
     (phoneNumber: PhoneNumber | undefined | null) =>
-      AuthApi.user.updatePhoneNumber(phoneNumber),
+      AuthApi.user
+        .updatePhoneNumber(phoneNumber)
+        .then((httpResponse) => httpResponse.data.data),
     {
       onSuccess: (updatedUser) => {
         queryClient.setQueryData<UserDTO>(CACHE_KEY, updatedUser);
@@ -32,7 +37,10 @@ export const useUser = (initialData: UserDTO) => {
   );
 
   const { mutateAsync: verifyPhoneNumber } = useMutation(
-    (code: number) => AuthApi.user.phoneNumberVerify(code),
+    (code: number) =>
+      AuthApi.user
+        .phoneNumberVerify(code)
+        .then((httpResponse) => httpResponse.data.data),
     {
       onSuccess: (updatedUser) => {
         queryClient.setQueryData<UserDTO>(CACHE_KEY, updatedUser);

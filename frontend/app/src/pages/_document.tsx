@@ -48,7 +48,9 @@ export const getInitialProps = async (
       : startRequestSpan(incomingTracedMessage, tags);
   }
 
-  const bootstrapScriptPromise = getBoostrapScript(bootstrapScriptUri);
+  const bootstrapScriptPromise = getBoostrapScript(bootstrapScriptUri).then(
+    (httpResponse) => httpResponse.data
+  );
   const renderPagePromise = renderPage({
     enhanceApp: (App) => (props) => (
       <StyletronProvider value={styletron}>

@@ -24,13 +24,19 @@ export const Base = () => {
 
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    const retrieveUserStub = sandbox
-      .stub(AuthApi.user, 'me')
-      .resolves(REBROWSE_ADMIN_DTO);
+    const retrieveUserStub = sandbox.stub(AuthApi.user, 'me').resolves({
+      data: { data: REBROWSE_ADMIN_DTO },
+      statusCode: 200,
+      headers: new Headers(),
+    });
 
     const retrieveOrganizationStub = sandbox
       .stub(AuthApi.organization, 'get')
-      .resolves(REBROWSE_ORGANIZATION_DTO);
+      .resolves({
+        data: { data: REBROWSE_ORGANIZATION_DTO },
+        statusCode: 200,
+        headers: new Headers(),
+      });
 
     return {
       retrieveUserStub,

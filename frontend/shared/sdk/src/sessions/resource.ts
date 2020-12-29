@@ -1,18 +1,14 @@
 import ky from 'ky-universal';
-import type {
-  DataResponse,
-  SessionDTO,
-  BrowserEventDTO,
-  GroupByResult,
-} from '@rebrowse/types';
+import type { DataResponse, SessionDTO, GroupByResult } from '@rebrowse/types';
 
-import { getData, querystring, withCredentials } from '../utils';
+import { jsonResponse } from '../http';
+import { querystring, withCredentials } from '../utils';
 import type { RequestOptions } from '../types';
 
+import { createEventsClient } from './events';
+import { createPageVisitClient } from './page-visit';
 import type {
-  SearchEventsRequestOptions,
   SessionsSearchRequestOptions,
-  EventSearchQueryParams,
   SessionSearchQueryParams,
 } from './types';
 
@@ -22,10 +18,9 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
       sessionId: string,
       { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .get(`${baseURL}/v1/sessions/${sessionId}`, withCredentials(rest))
-        .json<DataResponse<SessionDTO>>()
-        .then(getData);
+      return jsonResponse<DataResponse<SessionDTO>>(
+        ky.get(`${baseURL}/v1/sessions/${sessionId}`, withCredentials(rest))
+      );
     },
     count: <GroupBy extends (keyof SessionSearchQueryParams)[] = []>({
       baseURL = sessionApiBaseUrl,
@@ -33,26 +28,24 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
       ...rest
     }: SessionsSearchRequestOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
-      return ky
-        .get(
+      return jsonResponse<DataResponse<GroupByResult<GroupBy>>>(
+        ky.get(
           `${baseURL}/v1/sessions/count${searchQuery}`,
           withCredentials(rest)
         )
-        .json<DataResponse<GroupByResult<GroupBy>>>()
-        .then(getData);
+      );
     },
     distinct: (
       on: keyof SessionSearchQueryParams,
       { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
     ) => {
       const searchQuery = querystring({ on });
-      return ky
-        .get(
+      return jsonResponse<DataResponse<string[]>>(
+        ky.get(
           `${baseURL}/v1/sessions/distinct${searchQuery}`,
           withCredentials(rest)
         )
-        .json<DataResponse<string[]>>()
-        .then((dataResponse) => dataResponse.data);
+      );
     },
 
     getSessions: <GroupBy extends (keyof SessionSearchQueryParams)[] = []>({
@@ -61,32 +54,14 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
       ...rest
     }: SessionsSearchRequestOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
-      return ky
-        .get(`${baseURL}/v1/sessions${searchQuery}`, withCredentials(rest))
-        .json<DataResponse<SessionDTO[]>>()
-        .then(getData);
+      return jsonResponse<DataResponse<SessionDTO[]>>(
+        ky.get(`${baseURL}/v1/sessions${searchQuery}`, withCredentials(rest))
+      );
     },
   };
 
-  const events = {
-    search: <GroupBy extends (keyof EventSearchQueryParams)[] = []>(
-      sessionId: string,
-      {
-        baseURL = sessionApiBaseUrl,
-        search,
-        ...rest
-      }: SearchEventsRequestOptions<GroupBy> = {}
-    ) => {
-      const query = decodeURIComponent(querystring(search));
-      return ky
-        .get(
-          `${baseURL}/v1/sessions/${sessionId}/events/search${query}`,
-          withCredentials(rest)
-        )
-        .json<DataResponse<BrowserEventDTO[]>>()
-        .then(getData);
-    },
-  };
+  const events = createEventsClient(sessionApiBaseUrl);
+  const pageVisit = createPageVisitClient(sessionApiBaseUrl);
 
-  return { ...SessionApi, events };
+  return { ...SessionApi, events, pageVisit };
 };

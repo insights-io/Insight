@@ -35,11 +35,15 @@ export const OrganizationMembers = ({
   const [_css, theme] = useStyletron();
 
   const search = useCallback(async (search: MemberSearchBean) => {
-    return AuthApi.organization.members({ search });
+    return AuthApi.organization
+      .members({ search })
+      .then((httpResponse) => httpResponse.data.data);
   }, []);
 
   const searchCount = useCallback(async (search: MemberSearchBean) => {
-    return AuthApi.organization.memberCount({ search });
+    return AuthApi.organization
+      .memberCount({ search })
+      .then((httpResponse) => httpResponse.data.data.count);
   }, []);
 
   const {

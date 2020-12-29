@@ -40,9 +40,15 @@ WithSaml.story = configureStory({
       .stub(AuthApi.sso.setup, 'create')
       .callsFake((method, saml) => {
         return Promise.resolve({
-          ...SSO_SAML_SETUP_DTO,
-          method: method as SamlSsoMethod,
-          saml: saml as SamlConfigurationDTO,
+          data: {
+            data: {
+              ...SSO_SAML_SETUP_DTO,
+              method: method as SamlSsoMethod,
+              saml: saml as SamlConfigurationDTO,
+            },
+          },
+          statusCode: 200,
+          headers: new Headers(),
         });
       });
   },

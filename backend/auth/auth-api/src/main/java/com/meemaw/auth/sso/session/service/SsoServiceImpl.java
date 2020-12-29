@@ -85,7 +85,7 @@ public class SsoServiceImpl implements SsoService {
       description = "A measure of how long it takes to create session for user id")
   public CompletionStage<String> createSession(UUID userId) {
     return userDatasource
-        .findUser(userId)
+        .retrieve(userId)
         .thenCompose(
             maybeUser ->
                 createSession(
@@ -397,7 +397,7 @@ public class SsoServiceImpl implements SsoService {
   private CompletionStage<UserWithLoginInformation> ssoFindOrSignUpUser(
       String email, String fullName, String organizationId) {
     return userDatasource
-        .findUserWithLoginInformation(email)
+        .retrieveUserWithLoginInformation(email)
         .thenCompose(
             maybeUserWithLoginInformation -> {
               if (maybeUserWithLoginInformation.isPresent()) {
@@ -419,7 +419,7 @@ public class SsoServiceImpl implements SsoService {
   private CompletionStage<UserWithLoginInformation> socialFindOrSignUpUser(
       String email, String fullName) {
     return userDatasource
-        .findUserWithLoginInformation(email)
+        .retrieveUserWithLoginInformation(email)
         .thenCompose(
             maybeUserWithLoginInformation -> {
               if (maybeUserWithLoginInformation.isPresent()) {

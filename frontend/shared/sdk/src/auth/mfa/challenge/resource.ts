@@ -5,8 +5,10 @@ import type {
   CodeValidityDTO,
   UserDTO,
 } from '@rebrowse/types';
-import { getData, withCredentials } from 'utils';
+import { withCredentials } from 'utils';
 import type { RequestOptions } from 'types';
+
+import { httpResponse, jsonResponse } from '../../../http';
 
 export const mfaChallengeResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -19,41 +21,40 @@ export const mfaChallengeResource = (authApiBaseURL: string) => {
       code: number,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky.post(
-        `${resourceBaseURL(baseURL)}/${method}/complete`,
-        withCredentials({ json: { code }, ...rest })
-      );
+      return ky
+        .post(
+          `${resourceBaseURL(baseURL)}/${method}/complete`,
+          withCredentials({ json: { code }, ...rest })
+        )
+        .then(httpResponse);
     },
 
     sensSmsChallengeCode: ({
       baseURL = authApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
-      return ky
-        .post(
+      return jsonResponse<DataResponse<CodeValidityDTO>>(
+        ky.post(
           `${resourceBaseURL(baseURL)}/sms/send_code`,
           withCredentials(rest)
         )
-        .json<DataResponse<CodeValidityDTO>>()
-        .then(getData);
+      );
     },
     retrieveUser: (
       id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .get(`${resourceBaseURL(baseURL)}/${id}/user`, rest)
-        .json<DataResponse<UserDTO>>()
-        .then(getData);
+      return jsonResponse<DataResponse<UserDTO>>(
+        ky.get(`${resourceBaseURL(baseURL)}/${id}/user`, rest)
+      );
     },
     get: (
       id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .get(`${resourceBaseURL(baseURL)}/${id}`, rest)
-        .json<DataResponse<MfaMethod[]>>()
-        .then(getData);
+      return jsonResponse<DataResponse<MfaMethod[]>>(
+        ky.get(`${resourceBaseURL(baseURL)}/${id}`, rest)
+      );
     },
   };
 };

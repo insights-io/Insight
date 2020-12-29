@@ -44,22 +44,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     }
 
     const { user, organization } = authResponse;
-    const teamInvitesPromise = AuthApi.organization.teamInvite.list({
-      baseURL: process.env.AUTH_API_BASE_URL,
-      search: { limit: 20, sortBy: ['+createdAt'] },
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
+    const teamInvitesPromise = AuthApi.organization.teamInvite
+      .list({
+        baseURL: process.env.AUTH_API_BASE_URL,
+        search: { limit: 20, sortBy: ['+createdAt'] },
+        headers: {
+          ...prepareCrossServiceHeaders(requestSpan),
+          cookie: `SessionId=${authResponse.SessionId}`,
+        },
+      })
+      .then((httpResponse) => httpResponse.data.data);
 
-    const inviteCountPromise = AuthApi.organization.teamInvite.count({
-      baseURL: process.env.AUTH_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
+    const inviteCountPromise = AuthApi.organization.teamInvite
+      .count({
+        baseURL: process.env.AUTH_API_BASE_URL,
+        headers: {
+          ...prepareCrossServiceHeaders(requestSpan),
+          cookie: `SessionId=${authResponse.SessionId}`,
+        },
+      })
+      .then((httpResponse) => httpResponse.data.data.count);
 
     const [teamInvites, inviteCount] = await Promise.all([
       teamInvitesPromise,

@@ -20,7 +20,10 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
   );
 
   const { mutateAsync: cancelSubscription } = useMutation(
-    () => BillingApi.subscriptions.cancel(initialData.id),
+    () =>
+      BillingApi.subscriptions
+        .cancel(initialData.id)
+        .then((httpResponse) => httpResponse.data.data),
     {
       onSuccess: (updatedSubscription) => {
         subscriptionCache.setSubscription(updatedSubscription);

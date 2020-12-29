@@ -5,9 +5,9 @@ import {
   mockApiError,
 } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
-import type { ResponsePromise } from 'ky';
 import { MFA_METHODS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
+import type { HttpResponseBase } from '@rebrowse/sdk';
 
 import { VerificationPage } from './VerificationPage';
 
@@ -25,7 +25,7 @@ Base.story = configureStory({
     return {
       challengeComplete: sandbox
         .stub(AuthApi.mfa.challenge, 'complete')
-        .resolves({} as Response),
+        .resolves({ statusCode: 200, headers: new Headers() }),
     };
   },
 });
@@ -60,7 +60,7 @@ WithMissingChallengeIdError.story = configureStory({
 
           return new Promise((_resolve, reject) => {
             setTimeout(() => reject(apiError), 350);
-          }) as ResponsePromise;
+          }) as Promise<HttpResponseBase>;
         }),
     };
   },
@@ -83,7 +83,7 @@ WithExpiredChallengeError.story = configureStory({
 
           return new Promise((_resolve, reject) => {
             setTimeout(() => reject(apiError), 350);
-          }) as ResponsePromise;
+          }) as Promise<HttpResponseBase>;
         }),
     };
   },
@@ -109,7 +109,7 @@ WithInvalidCodeError.story = configureStory({
 
           return new Promise((_resolve, reject) => {
             setTimeout(() => reject(apiError), 350);
-          }) as ResponsePromise;
+          }) as Promise<HttpResponseBase>;
         }),
     };
   },

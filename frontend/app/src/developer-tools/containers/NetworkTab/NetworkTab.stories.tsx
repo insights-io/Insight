@@ -19,9 +19,11 @@ export const Base = () => {
 
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox
-      .stub(SessionApi.events, 'search')
-      .resolves([...Object.values(FETCH_EVENTS)]);
+    return sandbox.stub(SessionApi.events, 'search').resolves({
+      data: { data: [...Object.values(FETCH_EVENTS)] },
+      statusCode: 200,
+      headers: new Headers(),
+    });
   },
 });
 

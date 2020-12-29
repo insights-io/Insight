@@ -1,5 +1,6 @@
 package com.meemaw.auth.organization.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.meemaw.auth.organization.datasource.OrganizationDatasource;
 import com.meemaw.auth.organization.datasource.OrganizationTable;
 import com.meemaw.auth.organization.model.Organization;
@@ -28,7 +29,7 @@ public class OrganizationService {
   @Inject OrganizationDatasource organizationDatasource;
   @Inject SsoSessionDatasource ssoSessionDatasource;
 
-  public CompletionStage<Integer> memberCount(String organizationId, SearchDTO search) {
+  public CompletionStage<JsonNode> memberCount(String organizationId, SearchDTO search) {
     return userDatasource.count(organizationId, search);
   }
 

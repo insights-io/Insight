@@ -15,7 +15,7 @@ type Props = {
   absoluteRedirect: string;
 };
 
-const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
+export const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
@@ -49,11 +49,11 @@ const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
       .getByDomain(domain)
       .then((dataRepsonse) => {
         setFormError(undefined);
-        if (dataRepsonse.data === false) {
+        if (dataRepsonse.data.data === false) {
           setSetupExists(false);
         } else {
           const location = ssoIntegrationHrefBuilder({
-            ssoSignInURI: dataRepsonse.data,
+            ssoSignInURI: dataRepsonse.data.data,
             email,
             absoluteRedirect,
           });
@@ -102,5 +102,3 @@ const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
     </form>
   );
 };
-
-export default React.memo(LoginSamlSsoForm);

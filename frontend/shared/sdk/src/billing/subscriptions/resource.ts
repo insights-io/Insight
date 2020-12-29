@@ -8,7 +8,8 @@ import type {
 } from '@rebrowse/types';
 
 import type { RequestOptions } from '../../types';
-import { withCredentials, getData, querystring } from '../../utils';
+import { withCredentials, querystring } from '../../utils';
+import { jsonResponse } from '../../http';
 
 import type { SubscriptionSearchRequestOptions } from './types';
 
@@ -18,26 +19,24 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       json: CreateSubscriptionDTO,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .post(`${baseURL}/v1/billing/subscriptions`, {
+      return jsonResponse<DataResponse<CreateSubscriptionResponseDTO>>(
+        ky.post(`${baseURL}/v1/billing/subscriptions`, {
           json,
           ...withCredentials(rest),
         })
-        .json<DataResponse<CreateSubscriptionResponseDTO>>()
-        .then(getData);
+      );
     },
 
     get: (
       subscriptionId: string,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .get(
+      return jsonResponse<DataResponse<SubscriptionDTO>>(
+        ky.get(
           `${baseURL}/v1/billing/subscriptions/${subscriptionId}`,
           withCredentials(rest)
         )
-        .json<DataResponse<SubscriptionDTO>>()
-        .then(getData);
+      );
     },
 
     list: <GroupBy extends (keyof SubscriptionDTO)[]>({
@@ -45,36 +44,36 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       search,
       ...rest
     }: SubscriptionSearchRequestOptions<GroupBy> = {}) => {
-      return ky
-        .get(
+      return jsonResponse<DataResponse<SubscriptionDTO[]>>(
+        ky.get(
           `${baseURL}/v1/billing/subscriptions${querystring(search)}`,
           withCredentials(rest)
         )
-        .json<DataResponse<SubscriptionDTO[]>>()
-        .then(getData);
+      );
     },
 
     cancel: (
       subscriptionId: string,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .patch(
+      return jsonResponse<DataResponse<SubscriptionDTO>>(
+        ky.patch(
           `${baseURL}/v1/billing/subscriptions/${subscriptionId}/cancel`,
           withCredentials(rest)
         )
-        .json<DataResponse<SubscriptionDTO>>()
-        .then(getData);
+      );
     },
 
     getActivePlan: ({
       baseURL = billingApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
-      return ky
-        .get(`${baseURL}/v1/billing/subscriptions/plan`, withCredentials(rest))
-        .json<DataResponse<PlanDTO>>()
-        .then(getData);
+      return jsonResponse<DataResponse<PlanDTO>>(
+        ky.get(
+          `${baseURL}/v1/billing/subscriptions/plan`,
+          withCredentials(rest)
+        )
+      );
     },
   };
 };

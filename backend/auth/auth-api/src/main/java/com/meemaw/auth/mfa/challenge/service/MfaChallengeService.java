@@ -108,7 +108,7 @@ public class MfaChallengeService {
                 return CompletableFuture.completedStage(Optional.empty());
               }
               // TODO: should probably use user cache
-              return userDatasource.findUser(maybeUserId.get());
+              return userDatasource.retrieve(maybeUserId.get());
             });
   }
 }

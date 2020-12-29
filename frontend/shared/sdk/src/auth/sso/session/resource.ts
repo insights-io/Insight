@@ -4,8 +4,10 @@ import type {
   LoginResponseDTO,
   SessionInfoDTO,
 } from '@rebrowse/types';
-import { getData, withCredentials } from 'utils';
+import { withCredentials } from 'utils';
 import type { RequestOptions } from 'types';
+
+import { httpResponse, jsonResponse } from '../../../http';
 
 export const ssoSessionResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -21,12 +23,12 @@ export const ssoSessionResource = (authApiBaseURL: string) => {
       const body = new URLSearchParams();
       body.set('email', email);
       body.set('password', password);
-      return ky
-        .post(
+      return jsonResponse<DataResponse<LoginResponseDTO>>(
+        ky.post(
           `${resourceBaseURL(baseURL)}/login`,
           withCredentials({ body, ...rest })
         )
-        .json<DataResponse<LoginResponseDTO>>();
+      );
     },
     get: (
       id: string,
@@ -35,28 +37,28 @@ export const ssoSessionResource = (authApiBaseURL: string) => {
       return ky.get(`${resourceBaseURL(baseURL)}/session/${id}/userdata`, rest);
     },
     me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return ky
-        .get(
+      return jsonResponse<DataResponse<SessionInfoDTO>>(
+        ky.get(
           `${resourceBaseURL(baseURL)}/session/userdata`,
           withCredentials(rest)
         )
-        .json<DataResponse<SessionInfoDTO>>()
-        .then(getData);
+      );
     },
     logout: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return ky.post(
-        `${resourceBaseURL(baseURL)}/logout`,
-        withCredentials(rest)
-      );
+      return ky
+        .post(`${resourceBaseURL(baseURL)}/logout`, withCredentials(rest))
+        .then(httpResponse);
     },
     logoutFromAllDevices: ({
       baseURL = authApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
-      return ky.post(
-        `${resourceBaseURL(baseURL)}/logout-from-all-devices`,
-        withCredentials(rest)
-      );
+      return ky
+        .post(
+          `${resourceBaseURL(baseURL)}/logout-from-all-devices`,
+          withCredentials(rest)
+        )
+        .then(httpResponse);
     },
   };
 };

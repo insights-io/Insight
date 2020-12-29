@@ -17,14 +17,18 @@ import type {
   APIErrorDataResponse,
   UserRole,
   TeamInviteDTO,
+  DataResponse,
 } from '@rebrowse/types';
 import { Button, EmailInput, Label } from '@rebrowse/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
 import { SIZE } from 'baseui/button';
 import { useIsOpen } from 'shared/hooks/useIsOpen';
+import type { HttpResponse } from '@rebrowse/sdk';
 
 type Props = {
-  createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
+  createTeamInvite: (
+    formData: TeamInviteCreateDTO
+  ) => Promise<HttpResponse<DataResponse<TeamInviteDTO>>>;
   children: (open: () => void) => void;
 };
 

@@ -15,7 +15,9 @@ export const useOrganization = (initialData: OrganizationDTO) => {
 
   const { mutateAsync: update } = useMutation(
     (update: Pick<OrganizationDTO, 'name'>) =>
-      AuthApi.organization.update(update),
+      AuthApi.organization
+        .update(update)
+        .then((httpResponse) => httpResponse.data.data),
     {
       onSuccess: (organization) => {
         queryClient.setQueryData<OrganizationDTO>(CACHE_KEY, organization);
@@ -24,7 +26,10 @@ export const useOrganization = (initialData: OrganizationDTO) => {
   );
 
   const { mutateAsync: updateAvatar } = useMutation(
-    (avatar: AvatarDTO) => AuthApi.organization.setupAvatar(avatar),
+    (avatar: AvatarDTO) =>
+      AuthApi.organization
+        .setupAvatar(avatar)
+        .then((httpResponse) => httpResponse.data.data),
     {
       onSuccess: (organization) => {
         queryClient.setQueryData<OrganizationDTO>(CACHE_KEY, organization);

@@ -6,12 +6,13 @@ import { FormError } from 'shared/components/FormError';
 import { SIZE } from 'baseui/button';
 import { toaster } from 'baseui/toast';
 import { Block } from 'baseui/block';
+import type { HttpResponseBase } from '@rebrowse/sdk';
 
 type Props = {
   label: string;
   isOpen: boolean;
   onClose: () => void;
-  disable: () => Promise<Response>;
+  disable: () => Promise<HttpResponseBase>;
 };
 
 export const SsoSetupDisableModal = ({

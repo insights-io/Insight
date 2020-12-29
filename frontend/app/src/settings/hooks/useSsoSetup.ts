@@ -32,7 +32,9 @@ export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
 
   const { mutateAsync: createSsoSetup } = useMutation(
     ({ method, saml }: { method: SsoMethod; saml: SamlConfigurationDTO }) =>
-      AuthApi.sso.setup.create(method, saml),
+      AuthApi.sso.setup
+        .create(method, saml)
+        .then((httpResponse) => httpResponse.data.data),
     {
       onSuccess: (setup) => {
         queryClient.setQueryData<SsoSetupDTO | undefined>(CACHE_KEY, setup);

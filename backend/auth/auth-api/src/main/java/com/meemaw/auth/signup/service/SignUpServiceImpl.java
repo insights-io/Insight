@@ -189,7 +189,7 @@ public class SignUpServiceImpl implements SignUpService {
         .thenCompose(
             organization ->
                 userDatasource
-                    .createUser(
+                    .create(
                         email,
                         signUpRequest.getFullName(),
                         organization.getId(),
@@ -244,7 +244,7 @@ public class SignUpServiceImpl implements SignUpService {
                     .thenCompose(
                         organization ->
                             userDatasource
-                                .createUser(
+                                .create(
                                     email,
                                     fullName,
                                     organization.getId(),

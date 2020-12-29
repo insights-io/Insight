@@ -46,14 +46,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
+    const headers = {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    };
+
     return BillingApi.subscriptions
       .get(subscriptionId, {
         baseURL: process.env.BILLING_API_BASE_URL,
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
+        headers,
       })
+      .then((httpResponse) => httpResponse.data.data)
       .catch((error) => {
         const response = error.response as Response;
         if (response.status === 404) {
@@ -65,16 +68,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         throw error;
       })
       .then(async (subscription) => {
-        const invoices = await BillingApi.invoices.listBySubscription(
-          subscription.id,
-          {
+        const invoices = await BillingApi.invoices
+          .listBySubscription(subscription.id, {
             baseURL: process.env.BILLING_API_BASE_URL,
-            headers: {
-              ...prepareCrossServiceHeaders(requestSpan),
-              cookie: `SessionId=${authResponse.SessionId}`,
-            },
-          }
-        );
+            headers,
+          })
+          .then((httpResponse) => httpResponse.data.data);
 
         return {
           props: {

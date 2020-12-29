@@ -29,12 +29,16 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
+        data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
+        statusCode: 200,
+        headers: new Headers(),
       }),
 
-      completeSetup: sandbox
-        .stub(AuthApi.mfa.setup, 'complete')
-        .resolves(TOTP_MFA_SETUP_DTO),
+      completeSetup: sandbox.stub(AuthApi.mfa.setup, 'complete').resolves({
+        data: { data: TOTP_MFA_SETUP_DTO },
+        statusCode: 200,
+        headers: new Headers(),
+      }),
     };
   },
 });
@@ -63,7 +67,9 @@ WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
+        data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
+        statusCode: 200,
+        headers: new Headers(),
       }),
       setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').rejects(
         mockApiError({
@@ -86,7 +92,9 @@ WithQrCodeExpiredError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
+        data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
+        statusCode: 200,
+        headers: new Headers(),
       }),
       setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').rejects(
         mockApiError({

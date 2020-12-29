@@ -48,22 +48,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const activePlanPromise = BillingApi.subscriptions.getActivePlan({
-      baseURL: process.env.BILLING_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
+    const headers = {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    };
 
-    const subscriptionsPromise = BillingApi.subscriptions.list({
-      baseURL: process.env.BILLING_API_BASE_URL,
-      search: { sortBy: ['-createdAt'] },
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
+    const activePlanPromise = BillingApi.subscriptions
+      .getActivePlan({
+        baseURL: process.env.BILLING_API_BASE_URL,
+        headers,
+      })
+      .then((httpResponse) => httpResponse.data.data);
+
+    const subscriptionsPromise = BillingApi.subscriptions
+      .list({
+        baseURL: process.env.BILLING_API_BASE_URL,
+        search: { sortBy: ['-createdAt'] },
+        headers,
+      })
+      .then((httpResponse) => httpResponse.data.data);
 
     const [plan, subscriptions] = await Promise.all([
       activePlanPromise,

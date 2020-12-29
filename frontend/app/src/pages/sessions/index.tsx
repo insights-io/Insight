@@ -47,14 +47,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       baseURL: process.env.SESSION_API_BASE_URL,
       search: { sortBy: ['-createdAt'], limit: 20, ...context.query },
       headers,
-    });
+    }).then((httpResponse) => httpResponse.data.data);
 
     // TODO: should probably limit time range
     const sessionCountPromise = SessionApi.count({
       baseURL: process.env.SESSION_API_BASE_URL,
       headers,
       search: context.query,
-    }).then((dataResponse) => dataResponse.count);
+    }).then((httpResponse) => httpResponse.data.data.count);
 
     const [sessions, sessionCount] = await Promise.all([
       sessionsPromise,

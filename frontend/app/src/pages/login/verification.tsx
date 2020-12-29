@@ -47,19 +47,23 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     const headers = prepareCrossServiceHeaders(requestSpan);
 
     try {
-      const methods = await AuthApi.mfa.challenge.get(ChallengeId, {
-        baseURL: process.env.AUTH_API_BASE_URL,
-        headers,
-      });
+      const methods = await AuthApi.mfa.challenge
+        .get(ChallengeId, {
+          baseURL: process.env.AUTH_API_BASE_URL,
+          headers,
+        })
+        .then((httpResponse) => httpResponse.data.data);
 
       if (methods.length > 0) {
         return { props: { methods } };
       }
 
-      const user = await AuthApi.mfa.challenge.retrieveUser(ChallengeId, {
-        baseURL: process.env.AUTH_API_BASE_URL,
-        headers,
-      });
+      const user = await AuthApi.mfa.challenge
+        .retrieveUser(ChallengeId, {
+          baseURL: process.env.AUTH_API_BASE_URL,
+          headers,
+        })
+        .then((httpResponse) => httpResponse.data.data);
 
       return { props: { user } };
     } catch (error) {

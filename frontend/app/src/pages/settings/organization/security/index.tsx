@@ -54,6 +54,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         baseURL: process.env.AUTH_API_BASE_URL,
         headers,
       })
+      .then((httpResponse) => httpResponse.data.data)
       .catch((error) => {
         const response = error.response as Response;
         if (response.status === 404) {

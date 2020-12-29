@@ -28,13 +28,13 @@ export const SmsMfaModal = ({
 
   const onComplete = useCallback(
     (code: number) => {
-      return completeSetup(code).then((setup) => {
+      return completeSetup(code).then((httpResponse) => {
         close();
         toaster.positive(
           `${SMS_LABEL} multi-factor authentication enabled`,
           {}
         );
-        return setup;
+        return httpResponse;
       });
     },
     [close, completeSetup]

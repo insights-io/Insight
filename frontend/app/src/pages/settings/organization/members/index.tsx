@@ -44,22 +44,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const membersPromise = AuthApi.organization.members({
-      baseURL: process.env.AUTH_API_BASE_URL,
-      search: { limit: 20, sortBy: ['+createdAt'] },
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
+    const membersPromise = AuthApi.organization
+      .members({
+        baseURL: process.env.AUTH_API_BASE_URL,
+        search: { limit: 20, sortBy: ['+createdAt'] },
+        headers: {
+          ...prepareCrossServiceHeaders(requestSpan),
+          cookie: `SessionId=${authResponse.SessionId}`,
+        },
+      })
+      .then((httpResponse) => httpResponse.data.data);
 
-    const memberCountPromise = AuthApi.organization.memberCount({
-      baseURL: process.env.AUTH_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
+    const memberCountPromise = AuthApi.organization
+      .memberCount({
+        baseURL: process.env.AUTH_API_BASE_URL,
+        headers: {
+          ...prepareCrossServiceHeaders(requestSpan),
+          cookie: `SessionId=${authResponse.SessionId}`,
+        },
+      })
+      .then((httpResponse) => httpResponse.data.data.count);
 
     const [members, memberCount] = await Promise.all([
       membersPromise,

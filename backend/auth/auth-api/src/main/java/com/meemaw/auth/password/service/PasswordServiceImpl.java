@@ -62,7 +62,7 @@ public class PasswordServiceImpl implements PasswordService {
   public CompletionStage<UserWithLoginInformation> verifyPassword(String email, String password) {
     log.info("[AUTH]: verify password request for user: {}", email);
     return userDatasource
-        .findUserWithLoginInformation(email)
+        .retrieveUserWithLoginInformation(email)
         .thenApply(
             maybeUserWithPasswordHash -> {
               UserWithLoginInformation withLoginInformation =
@@ -99,7 +99,7 @@ public class PasswordServiceImpl implements PasswordService {
             .toString();
 
     return userDatasource
-        .findUser(email)
+        .retrieve(email)
         .thenCompose(
             maybeUser -> {
               // Don't leak that email is already in use
@@ -191,7 +191,7 @@ public class PasswordServiceImpl implements PasswordService {
       String currentPassword,
       String newPassword) {
     return userDatasource
-        .findUserWithLoginInformation(email)
+        .retrieveUserWithLoginInformation(email)
         .thenCompose(
             maybeUserWithPasswordHash -> {
               UserWithLoginInformation withLoginInformation =
