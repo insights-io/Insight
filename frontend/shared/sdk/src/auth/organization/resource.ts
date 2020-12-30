@@ -13,11 +13,14 @@ import type {
 } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 import { querystring, withCredentials } from 'utils';
+import type {
+  UserSearchQueryParams,
+  UserSearchRequestOptions,
+} from 'auth/user/types';
 
 import { httpResponse, jsonDataResponse } from '../../http';
 
 import type {
-  MembersSearchOptions,
   TeamInviteSearchOptions,
   OrganizationUpdateParams,
 } from './types';
@@ -57,31 +60,34 @@ export const organizationsResource = (authApiBaseURL: string) => {
         ky.get(resourceBaseURL(baseURL), withCredentials(rest))
       );
     },
-    members: <GroupBy extends (keyof UserDTO)[]>({
-      baseURL = authApiBaseURL,
-      search,
-      ...rest
-    }: MembersSearchOptions<GroupBy> = {}) => {
-      const searchQuery = querystring(search);
-      return jsonDataResponse<UserDTO[]>(
-        ky.get(
-          `${resourceBaseURL(baseURL)}/members${searchQuery}`,
-          withCredentials(rest)
-        )
-      );
-    },
-    memberCount: <GroupBy extends (keyof UserDTO)[] = []>({
-      baseURL = authApiBaseURL,
-      search,
-      ...rest
-    }: MembersSearchOptions<GroupBy> = {}) => {
-      const searchQuery = querystring(search);
-      return jsonDataResponse<GroupByResult<GroupBy>>(
-        ky.get(
-          `${resourceBaseURL(baseURL)}/members/count${searchQuery}`,
-          withCredentials(rest)
-        )
-      );
+
+    members: {
+      list: <GroupBy extends (keyof UserSearchQueryParams)[] = []>({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: UserSearchRequestOptions<GroupBy> = {}) => {
+        const searchQuery = querystring(search);
+        return jsonDataResponse<UserDTO[]>(
+          ky.get(
+            `${resourceBaseURL(baseURL)}/members${searchQuery}`,
+            withCredentials(rest)
+          )
+        );
+      },
+      count: <GroupBy extends (keyof UserSearchQueryParams)[] = []>({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: UserSearchRequestOptions<GroupBy> = {}) => {
+        const searchQuery = querystring(search);
+        return jsonDataResponse<GroupByResult<GroupBy>>(
+          ky.get(
+            `${resourceBaseURL(baseURL)}/members/count${searchQuery}`,
+            withCredentials(rest)
+          )
+        );
+      },
     },
 
     passwordPolicy: {

@@ -31,7 +31,8 @@ export const filterByParam = <
   GroupBy extends (keyof TSearchObject & string)[] = []
 >(
   value: TObject,
-  search: SearchBean<TSearchObject, GroupBy> = {}
+  search: SearchBean<TSearchObject, GroupBy> = {},
+  { queryFn }: { queryFn?: (t: TObject, query: string) => boolean } = {}
 ): boolean => {
   // eslint-disable-next-line no-restricted-syntax
   for (const searchKey of Object.keys(search)) {
@@ -44,6 +45,12 @@ export const filterByParam = <
     ) {
       // eslint-disable-next-line no-continue
       continue;
+    }
+
+    if (typedSearchKey === 'query' && search.query && queryFn) {
+      if (!queryFn(value, search.query)) {
+        return false;
+      }
     }
 
     const actualValue = getParsedValue(value, searchKey);

@@ -13,6 +13,7 @@ import type {
   SessionDTO,
   SessionInfoDTO,
   SsoSetupDTO,
+  UserDTO,
 } from '@rebrowse/types';
 import type { SinonSandbox } from 'sinon';
 import { httpOkResponse, jsonPromise } from '__tests__/utils/request';
@@ -26,6 +27,10 @@ import {
   searchEventsMockImplementation,
   getDistinctMockImplementation,
 } from './filter';
+import {
+  countUsersMockImplementation,
+  searchUsersMockImplementation,
+} from './filter/users';
 
 export const mockAuth = (
   sandbox: SinonSandbox,
@@ -58,6 +63,30 @@ export const mockAuth = (
     retrieveOrganizationStub,
     updateOrganizationStub,
   };
+};
+
+export const mockOrganizationSettingsMembersPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    members = [sessionInfo.user],
+  }: { sessionInfo?: SessionInfoDTO; members?: UserDTO[] } = {}
+) => {
+  const users = members;
+
+  const listMembersStub = sandbox
+    .stub(AuthApi.organization.members, 'list')
+    .callsFake((args = {}) =>
+      searchUsersMockImplementation(users, args.search)
+    );
+
+  const countMembersStub = sandbox
+    .stub(AuthApi.organization.members, 'count')
+    .callsFake((args = {}) => countUsersMockImplementation(users, args.search));
+
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  return { ...authMocks, listMembersStub, countMembersStub };
 };
 
 export const mockOrganizationSettingsGeneralPage = (

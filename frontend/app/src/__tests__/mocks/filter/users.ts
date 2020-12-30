@@ -1,0 +1,62 @@
+import type { UserSearchBean, UserSearchQueryParams } from '@rebrowse/sdk';
+import { TimePrecision, UserDTO } from '@rebrowse/types';
+import { REBROWSE_ADMIN_DTO } from '__tests__/data';
+import { httpOkResponse } from '__tests__/utils/request';
+import get from 'lodash/get';
+import { startOfDay } from 'date-fns';
+
+import { countBy, filterByParam } from './core';
+
+export const filterUser = <GroupBy extends (keyof UserSearchQueryParams)[]>(
+  value: UserDTO,
+  search: UserSearchBean<GroupBy> | undefined
+) =>
+  filterByParam(value, search, {
+    queryFn: (user, query) =>
+      user.email.toLowerCase().includes(query.toLowerCase()) ||
+      (user.fullName
+        ? user.fullName.toLowerCase().includes(query.toLowerCase())
+        : true),
+  });
+
+export const countUsers = <
+  GroupBy extends (keyof UserSearchQueryParams)[] = []
+>(
+  value: UserDTO[],
+  search: UserSearchBean<GroupBy> | undefined
+) => {
+  return countBy(
+    value,
+    (s) => filterUser(s, search),
+    search,
+    (v, field) => {
+      const value = get(v, field);
+      if (search?.dateTrunc === TimePrecision.DAY && field === 'createdAt') {
+        return startOfDay(
+          new Date(value as string)
+        ).toISOString() as UserDTO[typeof field];
+      }
+      return value;
+    }
+  );
+};
+
+export const countUsersMockImplementation = <
+  GroupBy extends (keyof UserSearchQueryParams)[]
+>(
+  value: UserDTO[] = [REBROWSE_ADMIN_DTO],
+  search: UserSearchBean<GroupBy> | undefined
+) => {
+  return Promise.resolve(httpOkResponse(countUsers(value, search)));
+};
+
+export const searchUsersMockImplementation = <
+  GroupBy extends (keyof UserSearchQueryParams)[]
+>(
+  value: UserDTO[] = [REBROWSE_ADMIN_DTO],
+  search: UserSearchBean<GroupBy> | undefined
+) => {
+  return Promise.resolve(
+    httpOkResponse(value.filter((v) => filterUser(v, search)))
+  );
+};

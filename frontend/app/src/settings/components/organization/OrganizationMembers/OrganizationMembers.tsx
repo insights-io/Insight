@@ -11,12 +11,12 @@ import { Avatar } from 'baseui/avatar';
 import { SIZE } from 'baseui/button';
 import { Delete } from 'baseui/icon';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
-import { mapUser, MemberSearchBean } from '@rebrowse/sdk';
+import { mapUser, UserSearchBean } from '@rebrowse/sdk';
 import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { StyledSpinnerNext } from 'baseui/spinner';
-import type { User, UserDTO } from '@rebrowse/types';
+import type { SearchBean, User, UserDTO } from '@rebrowse/types';
 import { capitalize } from 'shared/utils/string';
 
 type Props = {
@@ -34,15 +34,15 @@ export const OrganizationMembers = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
 
-  const search = useCallback(async (search: MemberSearchBean) => {
-    return AuthApi.organization
-      .members({ search })
+  const search = useCallback(async (search: SearchBean<UserDTO>) => {
+    return AuthApi.organization.members
+      .list({ search: search as UserSearchBean })
       .then((httpResponse) => httpResponse.data);
   }, []);
 
-  const searchCount = useCallback(async (search: MemberSearchBean) => {
-    return AuthApi.organization
-      .memberCount({ search })
+  const searchCount = useCallback(async (search: SearchBean<UserDTO>) => {
+    return AuthApi.organization.members
+      .count({ search: search as UserSearchBean })
       .then((httpResponse) => httpResponse.data.count);
   }, []);
 
@@ -55,7 +55,7 @@ export const OrganizationMembers = ({
     items,
     isSearching,
   } = useResourceSearch({
-    resource: 'members',
+    resource: 'users',
     field: 'createdAt',
     initialData: { count: initialMemberCount, items: initialMembers },
     search,
