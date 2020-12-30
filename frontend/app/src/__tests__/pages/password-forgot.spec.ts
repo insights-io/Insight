@@ -18,8 +18,10 @@ describe('/password-forgot', () => {
       .stub(AuthApi.password, 'forgot')
       .resolves();
 
-    /* Render */
+    /* Sever */
     const { page } = await getPage({ route });
+
+    /* Client */
     render(page);
 
     /* Assertions */
@@ -49,8 +51,10 @@ describe('/password-forgot', () => {
       })
     );
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
+
+    /* Client */
     render(page);
 
     const email = 'john.doe@gmail.com';

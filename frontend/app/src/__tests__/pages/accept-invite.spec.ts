@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
+import { match } from 'sinon';
 import { ADMIN_TEAM_INVITE_DTO } from '__tests__/data';
 import { mockIndexPage } from '__tests__/mocks';
 import { httpOkResponse } from '__tests__/utils';
@@ -45,8 +46,11 @@ describe('/accept-invite', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(retrieveTeamInviteStub, token, {
+    sandbox.assert.calledWithExactly(retrieveTeamInviteStub, token, {
       baseURL: 'http://localhost:8080',
+      headers: {
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
     /* Client */
@@ -78,8 +82,11 @@ describe('/accept-invite', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(retrieveTeamInviteStub, token, {
+    sandbox.assert.calledWithExactly(retrieveTeamInviteStub, token, {
       baseURL: 'http://localhost:8080',
+      headers: {
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
     /* Client */

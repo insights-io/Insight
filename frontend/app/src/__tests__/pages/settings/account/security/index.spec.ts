@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ACCOUNT_SETTINGS_SECURITY_PAGE } from 'shared/constants/routes';
+import { match } from 'sinon';
 import { mockAccountSettingsSecurityPage } from '__tests__/mocks';
 
 describe('/settings/account/security', () => {
@@ -24,9 +25,12 @@ describe('/settings/account/security', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(listMfaSetupsStub, {
+      sandbox.assert.calledWithExactly(listMfaSetupsStub, {
         baseURL: 'http://localhost:8080',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
@@ -66,9 +70,12 @@ describe('/settings/account/security', () => {
         /* Server */
         const { page } = await getPage({ route });
 
-        sandbox.assert.calledWithMatch(listMfaSetupsStub, {
+        sandbox.assert.calledWithExactly(listMfaSetupsStub, {
           baseURL: 'http://localhost:8080',
-          headers: { cookie: 'SessionId=123' },
+          headers: {
+            cookie: 'SessionId=123',
+            'uber-trace-id': (match.string as unknown) as string,
+          },
         });
 
         /* Client */
@@ -116,9 +123,12 @@ describe('/settings/account/security', () => {
         /* Server */
         const { page } = await getPage({ route });
 
-        sandbox.assert.calledWithMatch(listMfaSetupsStub, {
+        sandbox.assert.calledWithExactly(listMfaSetupsStub, {
           baseURL: 'http://localhost:8080',
-          headers: { cookie: 'SessionId=123' },
+          headers: {
+            cookie: 'SessionId=123',
+            'uber-trace-id': (match.string as unknown) as string,
+          },
         });
 
         /* Client */

@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ORGANIZATION_SETTINGS_AUTH_PAGE } from 'shared/constants/routes';
+import { match } from 'sinon';
 import { SSO_SAML_SETUP_DTO } from '__tests__/data';
 import { mockOrganizationAuthPage } from '__tests__/mocks';
 
@@ -21,9 +22,12 @@ describe('/settings/organization/auth', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(retrieveSsoSetupStub, {
+    sandbox.assert.calledWithExactly(retrieveSsoSetupStub, {
       baseURL: 'http://localhost:8080',
-      headers: { cookie: 'SessionId=123' },
+      headers: {
+        cookie: 'SessionId=123',
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
     /* Client */
@@ -60,9 +64,12 @@ describe('/settings/organization/auth', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(retrieveSsoSetupStub, {
+    sandbox.assert.calledWithExactly(retrieveSsoSetupStub, {
       baseURL: 'http://localhost:8080',
-      headers: { cookie: 'SessionId=123' },
+      headers: {
+        cookie: 'SessionId=123',
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
     /* Client */

@@ -3,6 +3,7 @@ import { TimePrecision } from '@rebrowse/types';
 import { render, screen } from '@testing-library/react';
 import { getPage } from 'next-page-tester';
 import { INDEX_PAGE } from 'shared/constants/routes';
+import { match } from 'sinon';
 import { mockIndexPage } from '__tests__/mocks';
 
 describe('/', () => {
@@ -18,42 +19,62 @@ describe('/', () => {
       countSessionsStub,
     } = mockIndexPage(sandbox, { sessions: [] });
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
-    render(page);
 
-    /* Assertions */
-    sandbox.assert.calledWithMatch(retrieveSessionStub, '123', {
+    sandbox.assert.calledWithExactly(retrieveSessionStub, '123', {
       baseURL: 'http://localhost:8080',
+      headers: {
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
-    sandbox.assert.calledWithMatch(countPageVisitsStub, {
+    sandbox.assert.calledWithExactly(countPageVisitsStub, {
       baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
-      search: { dateTrunc: TimePrecision.DAY, groupBy: ['createdAt'] },
-    });
-
-    sandbox.assert.calledWithMatch(countSessionsStub.firstCall, {
-      baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
-      search: { dateTrunc: TimePrecision.DAY, groupBy: ['createdAt'] },
-    });
-
-    sandbox.assert.calledWithMatch(countSessionsStub.secondCall, {
-      baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
+      headers: {
+        cookie: 'SessionId=123',
+        'uber-trace-id': (match.string as unknown) as string,
+      },
       search: {
+        createdAt: (match.string as unknown) as string,
+        dateTrunc: TimePrecision.DAY,
+        groupBy: ['createdAt'],
+      },
+    });
+
+    sandbox.assert.calledWithExactly(countSessionsStub.firstCall, {
+      baseURL: 'http://localhost:8082',
+      headers: {
+        cookie: 'SessionId=123',
+        'uber-trace-id': (match.string as unknown) as string,
+      },
+      search: {
+        createdAt: (match.string as unknown) as string,
+        dateTrunc: TimePrecision.DAY,
+        groupBy: ['createdAt'],
+      },
+    });
+
+    sandbox.assert.calledWithExactly(countSessionsStub.secondCall, {
+      baseURL: 'http://localhost:8082',
+      headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
+      search: {
+        createdAt: (match.string as unknown) as string,
         groupBy: ['userAgent.deviceClass'],
       },
     });
 
-    sandbox.assert.calledWithMatch(countSessionsStub.thirdCall, {
+    sandbox.assert.calledWithExactly(countSessionsStub.thirdCall, {
       baseURL: 'http://localhost:8082',
-      headers: { cookie: 'SessionId=123' },
+      headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
       search: {
+        createdAt: (match.string as unknown) as string,
         groupBy: ['location.countryName', 'location.continentName'],
       },
     });
+
+    /* Client */
+    render(page);
 
     expect(await screen.findByText('Page Visits')).toBeInTheDocument();
     expect(screen.getByText('Sessions')).toBeInTheDocument();

@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import { mockIndexPage } from '__tests__/mocks';
 import { TOTP_MFA_SETUP_QR_IMAGE } from '__tests__/data/mfa';
 import { httpOkResponse } from '__tests__/utils/request';
+import { match } from 'sinon';
 
 describe('/login/verification', () => {
   /* Data */
@@ -34,8 +35,11 @@ describe('/login/verification', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
+      sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
@@ -98,12 +102,18 @@ describe('/login/verification', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
+      sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
-      sandbox.assert.calledWithMatch(retrieveUserByChallengeStub, '123', {
+      sandbox.assert.calledWithExactly(retrieveUserByChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
@@ -161,8 +171,11 @@ describe('/login/verification', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
+    sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
       baseURL: 'http://localhost:8080',
+      headers: {
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
     /* Client */

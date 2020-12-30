@@ -11,6 +11,7 @@ import {
 } from '__tests__/data/sessions';
 import { sessionDescription } from 'sessions/utils';
 import { TermCondition } from '@rebrowse/sdk';
+import { match } from 'sinon';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -49,14 +50,21 @@ describe('/sessions', () => {
         'https://static.rebrowse.dev/b/rebrowse.js'
       );
 
-      sandbox.assert.calledWithMatch(countSessionsStub, {
+      sandbox.assert.calledWithExactly(countSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
+        search: {},
       });
 
-      sandbox.assert.calledWithMatch(listSessionsStub, {
+      sandbox.assert.calledWithExactly(listSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 
@@ -85,14 +93,21 @@ describe('/sessions', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(countSessionsStub, {
+      sandbox.assert.calledWithExactly(countSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
+        search: {},
       });
 
-      sandbox.assert.calledWithMatch(listSessionsStub, {
+      sandbox.assert.calledWithExactly(listSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 
@@ -191,14 +206,21 @@ describe('/sessions', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(countSessionsStub, {
+      sandbox.assert.calledWithExactly(countSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
+        search: {},
       });
 
-      sandbox.assert.calledWithMatch(listSessionsStub, {
+      sandbox.assert.calledWithExactly(listSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 

@@ -6,6 +6,7 @@ import { screen, render } from '@testing-library/react';
 import { mockIndexPage } from '__tests__/mocks';
 import { mockApiError } from '@rebrowse/storybook';
 import { httpOkResponse } from '__tests__/utils';
+import { match } from 'sinon';
 
 describe('/password-reset', () => {
   /* Data */
@@ -29,8 +30,11 @@ describe('/password-reset', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, token, {
+      sandbox.assert.calledWithExactly(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
@@ -67,8 +71,11 @@ describe('/password-reset', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, token, {
+      sandbox.assert.calledWithExactly(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
@@ -99,8 +106,11 @@ describe('/password-reset', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, token, {
+      sandbox.assert.calledWithExactly(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */

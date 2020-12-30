@@ -11,6 +11,7 @@ import { LOGIN_PAGE } from 'shared/constants/routes';
 import * as windowUtils from 'shared/utils/window';
 import { mockIndexPage } from '__tests__/mocks';
 import { httpOkResponse } from '__tests__/utils/request';
+import { match } from 'sinon';
 
 describe('/login', () => {
   /* Data */
@@ -76,10 +77,15 @@ describe('/login', () => {
       await screen.findByText(
         'To protect your account, please complete the following verification.'
       );
-      sandbox.assert.calledWithExactly(loginStub, email, password);
-      sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
+
+      sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
+
+      sandbox.assert.calledWithExactly(loginStub, email, password);
     });
   });
 
