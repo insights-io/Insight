@@ -1,16 +1,18 @@
-import type {
-  OrganizationDTO,
-  SearchBean,
-  TeamInviteDTO,
-} from '@rebrowse/types';
+import type { OrganizationDTO, QueryParam, SearchBean } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
-export type TeamInviteSearchBean<
-  GroupBy extends (keyof TeamInviteDTO)[] = []
-> = SearchBean<TeamInviteDTO, GroupBy>;
+export type TeamInviteQueryParams = {
+  email?: QueryParam;
+  role?: QueryParam;
+  createdAt?: QueryParam;
+};
 
-export type TeamInviteSearchOptions<
-  GroupBy extends (keyof TeamInviteDTO)[] = []
+export type TeamInviteSearchBean<
+  GroupBy extends (keyof TeamInviteQueryParams)[] = []
+> = SearchBean<TeamInviteQueryParams, GroupBy>;
+
+export type TeamInviteSearchRequestOptions<
+  GroupBy extends (keyof TeamInviteQueryParams)[] = []
 > = Omit<RequestOptions, 'searchParams'> & {
   search?: TeamInviteSearchBean<GroupBy>;
 };

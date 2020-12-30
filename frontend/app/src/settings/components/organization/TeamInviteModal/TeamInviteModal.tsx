@@ -79,7 +79,7 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
   return (
     <>
       {children(open)}
-      <Modal onClose={close} isOpen={isOpen}>
+      <Modal onClose={close} isOpen={isOpen} unstable_ModalBackdropScroll>
         <form onSubmit={onSubmit} noValidate>
           <ModalHeader>Invite new member</ModalHeader>
           <ModalBody>

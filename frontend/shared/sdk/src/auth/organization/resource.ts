@@ -21,8 +21,9 @@ import type {
 import { httpResponse, jsonDataResponse } from '../../http';
 
 import type {
-  TeamInviteSearchOptions,
+  TeamInviteSearchRequestOptions,
   OrganizationUpdateParams,
+  TeamInviteQueryParams,
 } from './types';
 
 export const organizationsResource = (authApiBaseURL: string) => {
@@ -134,11 +135,11 @@ export const organizationsResource = (authApiBaseURL: string) => {
           ky.get(`${resourceBaseURL(baseURL)}/invites/${token}`, rest)
         );
       },
-      list: <GroupBy extends (keyof TeamInviteDTO)[]>({
+      list: <GroupBy extends (keyof TeamInviteQueryParams)[] = []>({
         baseURL = authApiBaseURL,
         search,
         ...rest
-      }: TeamInviteSearchOptions<GroupBy> = {}) => {
+      }: TeamInviteSearchRequestOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
         return jsonDataResponse<TeamInviteDTO[]>(
           ky.get(
@@ -147,11 +148,11 @@ export const organizationsResource = (authApiBaseURL: string) => {
           )
         );
       },
-      count: <GroupBy extends (keyof TeamInviteDTO)[] = []>({
+      count: <GroupBy extends (keyof TeamInviteQueryParams)[] = []>({
         baseURL = authApiBaseURL,
         search,
         ...rest
-      }: TeamInviteSearchOptions<GroupBy> = {}) => {
+      }: TeamInviteSearchRequestOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
         return jsonDataResponse<GroupByResult<GroupBy>>(
           ky.get(

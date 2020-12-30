@@ -13,6 +13,7 @@ import type {
   SessionDTO,
   SessionInfoDTO,
   SsoSetupDTO,
+  TeamInviteDTO,
   UserDTO,
 } from '@rebrowse/types';
 import type { SinonSandbox } from 'sinon';
@@ -28,7 +29,9 @@ import {
   getDistinctMockImplementation,
 } from './filter';
 import {
+  countTeamInvitesMockImplementation,
   countUsersMockImplementation,
+  searchTeamInvitesMockImplementation,
   searchUsersMockImplementation,
 } from './filter/users';
 
@@ -63,6 +66,31 @@ export const mockAuth = (
     retrieveOrganizationStub,
     updateOrganizationStub,
   };
+};
+
+export const mockOrganizationSettingsMemberInvitesPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    invites: initialInvites = [],
+  }: { sessionInfo?: SessionInfoDTO; invites?: TeamInviteDTO[] } = {}
+) => {
+  const invites = initialInvites;
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  const listTeamInvitesStub = sandbox
+    .stub(AuthApi.organization.teamInvite, 'list')
+    .callsFake((args = {}) =>
+      searchTeamInvitesMockImplementation(invites, args.search)
+    );
+
+  const countTeamInvitesStub = sandbox
+    .stub(AuthApi.organization.teamInvite, 'count')
+    .callsFake((args = {}) =>
+      countTeamInvitesMockImplementation(invites, args.search)
+    );
+
+  return { ...authMocks, listTeamInvitesStub, countTeamInvitesStub };
 };
 
 export const mockOrganizationSettingsMembersPage = (

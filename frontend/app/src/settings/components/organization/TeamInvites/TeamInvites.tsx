@@ -1,6 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { Block } from 'baseui/block';
-import type { TeamInviteCreateDTO, TeamInviteDTO } from '@rebrowse/types';
+import type {
+  SearchBean,
+  TeamInviteCreateDTO,
+  TeamInviteDTO,
+} from '@rebrowse/types';
 import {
   Button,
   Flex,
@@ -33,15 +37,15 @@ export const TeamInvites = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
 
-  const search = useCallback(async (search: TeamInviteSearchBean) => {
+  const search = useCallback(async (search: SearchBean<TeamInviteDTO>) => {
     return AuthApi.organization.teamInvite
-      .list({ search })
+      .list({ search: search as TeamInviteSearchBean })
       .then((httpResponse) => httpResponse.data);
   }, []);
 
-  const searchCount = useCallback(async (search: TeamInviteSearchBean) => {
+  const searchCount = useCallback(async (search: SearchBean<TeamInviteDTO>) => {
     return AuthApi.organization.teamInvite
-      .count({ search })
+      .count({ search: search as TeamInviteSearchBean })
       .then((httpResponse) => httpResponse.data.count);
   }, []);
 

@@ -44,7 +44,6 @@ describe('/settings/organization/members', () => {
       screen.getByText(REBROWSE_ADMIN_DTO.fullName as string)
     ).toBeInTheDocument();
     expect(screen.getByText(REBROWSE_ADMIN_DTO.email)).toBeInTheDocument();
-    expect(screen.getByText('of 1')).toBeInTheDocument();
 
     const searchInput = screen.getByPlaceholderText('Search members');
     userEvent.type(searchInput, randomQuery);
