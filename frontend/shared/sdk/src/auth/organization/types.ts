@@ -1,4 +1,9 @@
-import type { SearchBean, TeamInviteDTO, UserDTO } from '@rebrowse/types';
+import type {
+  OrganizationDTO,
+  SearchBean,
+  TeamInviteDTO,
+  UserDTO,
+} from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
 export type MemberSearchBean<
@@ -21,3 +26,7 @@ export type TeamInviteSearchOptions<
 > = Omit<RequestOptions, 'searchParams'> & {
   search?: TeamInviteSearchBean<GroupBy>;
 };
+
+export type OrganizationUpdateParams = Partial<
+  Pick<OrganizationDTO, 'name' | 'openMembership'>
+>;

@@ -1,5 +1,5 @@
-import { HttpResponse, mapAuthToken } from '@rebrowse/sdk';
-import { AuthTokenDTO, DataResponse } from '@rebrowse/types';
+import { mapAuthToken } from '@rebrowse/sdk';
+import type { AuthTokenDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';

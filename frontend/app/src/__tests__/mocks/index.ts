@@ -31,19 +31,41 @@ export const mockAuth = (
   sandbox: SinonSandbox,
   data: SessionInfoDTO = REBROWSE_SESSION_INFO
 ) => {
+  const sessionInfo = data;
+
   const retrieveSessionStub = sandbox
     .stub(AuthApi.sso.session, 'get')
-    .returns(jsonPromise({ status: 200, data }));
+    .callsFake(() => jsonPromise({ status: 200, data: sessionInfo }));
 
   const retrieveUserStub = sandbox
     .stub(AuthApi.user, 'me')
-    .resolves(httpOkResponse(data.user));
+    .callsFake(() => Promise.resolve(httpOkResponse(sessionInfo.user)));
 
   const retrieveOrganizationStub = sandbox
     .stub(AuthApi.organization, 'get')
-    .resolves(httpOkResponse(data.organization));
+    .callsFake(() => Promise.resolve(httpOkResponse(data.organization)));
 
-  return { retrieveSessionStub, retrieveUserStub, retrieveOrganizationStub };
+  const updateOrganizationStub = sandbox
+    .stub(AuthApi.organization, 'update')
+    .callsFake((params) => {
+      sessionInfo.organization = { ...sessionInfo.organization, ...params };
+      return Promise.resolve(httpOkResponse(sessionInfo.organization));
+    });
+
+  return {
+    retrieveSessionStub,
+    retrieveUserStub,
+    retrieveOrganizationStub,
+    updateOrganizationStub,
+  };
+};
+
+export const mockOrganizationSettingsGeneralPage = (
+  sandbox: SinonSandbox,
+  { sessionInfo = REBROWSE_SESSION_INFO }: { sessionInfo?: SessionInfoDTO } = {}
+) => {
+  const authMocks = mockAuth(sandbox, sessionInfo);
+  return authMocks;
 };
 
 export const mockOrganizationAuthPage = (

@@ -16,7 +16,11 @@ import { querystring, withCredentials } from 'utils';
 
 import { httpResponse, jsonDataResponse } from '../../http';
 
-import type { MembersSearchOptions, TeamInviteSearchOptions } from './types';
+import type {
+  MembersSearchOptions,
+  TeamInviteSearchOptions,
+  OrganizationUpdateParams,
+} from './types';
 
 export const organizationsResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -25,7 +29,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
 
   return {
     update: (
-      json: Pick<OrganizationDTO, 'name'>,
+      json: OrganizationUpdateParams,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       return jsonDataResponse<OrganizationDTO>(

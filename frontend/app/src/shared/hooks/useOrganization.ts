@@ -1,4 +1,4 @@
-import { mapOrganization } from '@rebrowse/sdk';
+import { mapOrganization, OrganizationUpdateParams } from '@rebrowse/sdk';
 import { AuthApi } from 'api';
 import { useMemo } from 'react';
 import type { AvatarDTO, OrganizationDTO } from '@rebrowse/types';
@@ -15,7 +15,7 @@ export const useOrganization = (initialData: OrganizationDTO) => {
   });
 
   const { mutateAsync: update } = useMutation(
-    (update: Pick<OrganizationDTO, 'name'>) =>
+    (update: OrganizationUpdateParams) =>
       AuthApi.organization
         .update(update)
         .then((httpResponse) => httpResponse.data),
