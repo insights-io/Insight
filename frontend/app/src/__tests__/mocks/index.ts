@@ -199,6 +199,10 @@ export const mockAccountSettingsSecurityPage = (
   const authMocks = mockAuth(sandbox, sessionInfo);
   let setups = mfaSetups;
 
+  const changePasswordStub = sandbox
+    .stub(AuthApi.password, 'change')
+    .resolves({ statusCode: 200, headers: new Headers() });
+
   const listMfaSetupsStub = sandbox
     .stub(AuthApi.mfa.setup, 'list')
     .callsFake(() => Promise.resolve(httpOkResponse(setups)));
@@ -231,6 +235,7 @@ export const mockAccountSettingsSecurityPage = (
     startMfaTotpSetupStub,
     completeMfaSetupStub,
     disableMfaSetupStub,
+    changePasswordStub,
   };
 };
 

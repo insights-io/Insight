@@ -40,7 +40,11 @@ export const DeleteOrganization = () => {
       >
         Delete Organization
       </Button>
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        unstable_ModalBackdropScroll
+      >
         <ModalHeader>Are you sure?</ModalHeader>
         <ModalBody>
           Deleting the organization is permanent and cannot be undone! Are you

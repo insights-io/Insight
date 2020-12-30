@@ -127,6 +127,7 @@ export const AccountSettingsAuthTokensPage = ({
       <Modal
         isOpen={selectedAuthToken !== undefined}
         onClose={() => setSelectedAuthToken(undefined)}
+        unstable_ModalBackdropScroll
       >
         <ModalHeader>Are you sure you want to revoke Auth Token?</ModalHeader>
         <ModalBody>

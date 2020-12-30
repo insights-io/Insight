@@ -80,7 +80,11 @@ export const BillingSubscription = ({
       />
 
       {plan?.type !== 'enterprise' && (
-        <Modal isOpen={isUpgrading} onClose={() => setIsUpgrading(false)}>
+        <Modal
+          isOpen={isUpgrading}
+          onClose={() => setIsUpgrading(false)}
+          unstable_ModalBackdropScroll
+        >
           <CheckoutForm
             onPlanUpgraded={onPlanUpgraded}
             onPaymentIntentSucceeded={onPaymentIntentSucceeded}
