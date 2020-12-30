@@ -44,7 +44,6 @@ export const LineChartBreakdown = <T extends 'createdAt'>({
     () => dataLoader(TermCondition.GTE(timeRelative(relativeTimeRange))),
     { initialData }
   );
-  console.log(rawData);
 
   const data = useMemo(() => {
     return (rawData.map((v) => ({

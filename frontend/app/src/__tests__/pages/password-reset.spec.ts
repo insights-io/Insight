@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
 import { mockIndexPage } from '__tests__/mocks';
 import { mockApiError } from '@rebrowse/storybook';
+import { httpOkResponse } from '__tests__/utils';
 
 describe('/password-reset', () => {
   /* Data */
@@ -17,11 +18,7 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({
-          data: { data: true },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .resolves(httpOkResponse(true));
 
       const passwordResetStub = sandbox
         .stub(AuthApi.password, 'reset')
@@ -56,11 +53,7 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({
-          data: { data: true },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .resolves(httpOkResponse(true));
 
       const passwordResetStub = sandbox.stub(AuthApi.password, 'reset').rejects(
         mockApiError({
@@ -101,11 +94,7 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({
-          data: { data: false },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .resolves(httpOkResponse(false));
 
       /* Server */
       const { page } = await getPage({ route });

@@ -39,6 +39,4 @@ export const WithNoSetup = () => {
     <OrganizationSettingsAuthPage {...baseProps} maybeSsoSetup={undefined} />
   );
 };
-WithNoSetup.story = configureStory({
-  setupMocks,
-});
+WithNoSetup.story = configureStory({ setupMocks });

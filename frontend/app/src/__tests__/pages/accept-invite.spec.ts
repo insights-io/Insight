@@ -7,6 +7,7 @@ import { getPage } from 'next-page-tester';
 import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
 import { ADMIN_TEAM_INVITE_DTO } from '__tests__/data';
 import { mockIndexPage } from '__tests__/mocks';
+import { httpOkResponse } from '__tests__/utils';
 
 describe('/accept-invite', () => {
   /* Data */
@@ -65,11 +66,7 @@ describe('/accept-invite', () => {
 
     const retrieveTeamInviteStub = sandbox
       .stub(AuthApi.organization.teamInvite, 'retrieve')
-      .resolves({
-        data: { data: ADMIN_TEAM_INVITE_DTO },
-        statusCode: 200,
-        headers: new Headers(),
-      });
+      .resolves(httpOkResponse(ADMIN_TEAM_INVITE_DTO));
 
     const acceptTeamInviteStub = sandbox
       .stub(AuthApi.organization.teamInvite, 'accept')

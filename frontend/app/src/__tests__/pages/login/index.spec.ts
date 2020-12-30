@@ -21,7 +21,7 @@ describe('/login', () => {
     const email = 'john.doe@gmail.com';
     const password = 'password1234!';
 
-    test.only('As a user I can login using my email', async () => {
+    test('As a user I can login using my email', async () => {
       /* Mocks */
       mockIndexPage(sandbox);
 
