@@ -15,9 +15,9 @@ export const useOrganization = (initialData: OrganizationDTO) => {
   });
 
   const { mutateAsync: update } = useMutation(
-    (update: OrganizationUpdateParams) =>
+    (updateParams: OrganizationUpdateParams) =>
       AuthApi.organization
-        .update(update)
+        .update(updateParams)
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (organization) => {

@@ -1,7 +1,7 @@
 import React from 'react';
-import { SHAPE } from 'baseui/button';
 import { Modal, ModalFooter, ModalHeader } from 'baseui/modal';
 import { Button } from '@rebrowse/elements';
+import { SIZE } from 'baseui/button';
 
 type Props = {
   isOpen: boolean;
@@ -17,15 +17,15 @@ export const DisableMfaModal = ({
   header,
 }: Props) => {
   return (
-    <Modal isOpen={isOpen} onClose={close}>
+    <Modal isOpen={isOpen} onClose={close} unstable_ModalBackdropScroll>
       <ModalHeader>{header}</ModalHeader>
       <ModalFooter>
-        <Button shape={SHAPE.pill} kind="tertiary" onClick={close}>
-          Mayber later
+        <Button kind="tertiary" onClick={close} size={SIZE.compact}>
+          Maybe later
         </Button>
         <Button
-          shape={SHAPE.pill}
           onClick={onConfirm}
+          size={SIZE.compact}
           $style={{ marginLeft: '16px' }}
         >
           Disable

@@ -10,7 +10,9 @@ import { useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['mfa', 'setup', 'list'];
-const queryFn = () => AuthApi.mfa.setup.list();
+
+const queryFn = () =>
+  AuthApi.mfa.setup.list().then((httpResponse) => httpResponse.data);
 
 export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   const queryClient = useQueryClient();

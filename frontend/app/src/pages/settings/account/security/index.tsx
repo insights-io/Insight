@@ -40,14 +40,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
+    const headers = {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    };
+
     const mfaSetups = await AuthApi.mfa.setup
-      .list({
-        baseURL: process.env.AUTH_API_BASE_URL,
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
-      })
+      .list({ baseURL: process.env.AUTH_API_BASE_URL, headers })
       .then((httpResponse) => httpResponse.data);
 
     return {

@@ -4,10 +4,14 @@ import {
   REBROWSE_EVENTS,
   REBROWSE_SESSIONS_DTOS,
   REBROWSE_SESSION_INFO,
+  SMS_MFA_SETUP_DTO,
+  TOTP_MFA_SETUP_DTO,
+  TOTP_MFA_SETUP_QR_IMAGE,
 } from '__tests__/data';
 import * as sdk from '@rebrowse/sdk';
 import type {
   BrowserEventDTO,
+  MfaSetupDTO,
   SamlConfigurationDTO,
   SamlSsoMethod,
   SessionDTO,
@@ -179,6 +183,54 @@ export const mockOrganizationAuthPage = (
     retrieveSsoSetupStub,
     createSsoSetupStub,
     disableSsoSetupStub,
+  };
+};
+
+export const mockAccountSettingsSecurityPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    mfaSetups = [TOTP_MFA_SETUP_DTO, SMS_MFA_SETUP_DTO],
+  }: {
+    sessionInfo?: SessionInfoDTO;
+    mfaSetups?: MfaSetupDTO[];
+  } = {}
+) => {
+  const authMocks = mockAuth(sandbox, sessionInfo);
+  let setups = mfaSetups;
+
+  const listMfaSetupsStub = sandbox
+    .stub(AuthApi.mfa.setup, 'list')
+    .callsFake(() => Promise.resolve(httpOkResponse(setups)));
+
+  const startMfaTotpSetupStub = sandbox
+    .stub(AuthApi.mfa.setup.totp, 'start')
+    .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE }));
+
+  const completeMfaSetupStub = sandbox
+    .stub(AuthApi.mfa.setup, 'complete')
+    .callsFake((method) => {
+      const newSetup: MfaSetupDTO = {
+        method,
+        createdAt: new Date().toISOString(),
+      };
+      setups.push(newSetup);
+      return Promise.resolve(httpOkResponse(newSetup));
+    });
+
+  const disableMfaSetupStub = sandbox
+    .stub(AuthApi.mfa.setup, 'disable')
+    .callsFake((method) => {
+      setups = setups.filter((s) => s.method !== method);
+      return Promise.resolve({ statusCode: 200, headers: new Headers() });
+    });
+
+  return {
+    ...authMocks,
+    listMfaSetupsStub,
+    startMfaTotpSetupStub,
+    completeMfaSetupStub,
+    disableMfaSetupStub,
   };
 };
 

@@ -46,4 +46,4 @@ export const SSO_SAML_SETUP_DTO: SsoSetupDTO = {
   method: 'saml',
 };
 
-export const SSO_SAML_SETUP = mapSsoSetup(SSO_SAML_SETUP_DTO as SsoSetupDTO);
+export const SSO_SAML_SETUP = mapSsoSetup(SSO_SAML_SETUP_DTO);

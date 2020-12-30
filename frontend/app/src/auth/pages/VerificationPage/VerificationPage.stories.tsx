@@ -7,7 +7,6 @@ import {
 import { AuthApi } from 'api/auth';
 import { MFA_METHODS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
-import type { HttpResponseBase } from '@rebrowse/sdk';
 
 import { VerificationPage } from './VerificationPage';
 
@@ -60,7 +59,7 @@ WithMissingChallengeIdError.story = configureStory({
 
           return new Promise((_resolve, reject) => {
             setTimeout(() => reject(apiError), 350);
-          }) as Promise<HttpResponseBase>;
+          });
         }),
     };
   },
@@ -83,7 +82,7 @@ WithExpiredChallengeError.story = configureStory({
 
           return new Promise((_resolve, reject) => {
             setTimeout(() => reject(apiError), 350);
-          }) as Promise<HttpResponseBase>;
+          });
         }),
     };
   },
@@ -109,7 +108,7 @@ WithInvalidCodeError.story = configureStory({
 
           return new Promise((_resolve, reject) => {
             setTimeout(() => reject(apiError), 350);
-          }) as Promise<HttpResponseBase>;
+          });
         }),
     };
   },
