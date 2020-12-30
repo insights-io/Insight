@@ -9,7 +9,9 @@ import {
   TOTP_MFA_SETUP_QR_IMAGE,
 } from '__tests__/data';
 import * as sdk from '@rebrowse/sdk';
+import { v4 as uuid } from 'uuid';
 import type {
+  AuthTokenDTO,
   BrowserEventDTO,
   MfaSetupDTO,
   SamlConfigurationDTO,
@@ -24,6 +26,7 @@ import type { SinonSandbox } from 'sinon';
 import { httpOkResponse, jsonPromise } from '__tests__/utils/request';
 import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
 import { mockApiError } from '@rebrowse/storybook';
+import { AUTH_TOKEN_DTO } from '__tests__/data/sso';
 
 import {
   filterSession,
@@ -183,6 +186,50 @@ export const mockOrganizationAuthPage = (
     retrieveSsoSetupStub,
     createSsoSetupStub,
     disableSsoSetupStub,
+  };
+};
+
+export const mockAcocuntSettingsAuthTokensPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    authTokens = [AUTH_TOKEN_DTO],
+  }: {
+    sessionInfo?: SessionInfoDTO;
+    authTokens?: AuthTokenDTO[];
+  } = {}
+) => {
+  let tokens = authTokens;
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  const listAuthTokensStub = sandbox
+    .stub(AuthApi.sso.token, 'list')
+    .callsFake(() => Promise.resolve(httpOkResponse(tokens)));
+
+  const deleteAuthTokenStub = sandbox
+    .stub(AuthApi.sso.token, 'delete')
+    .callsFake((token) => {
+      tokens = tokens.filter((t) => t.token !== token);
+      return Promise.resolve(httpOkResponse(true));
+    });
+
+  const createAuthTokensStub = sandbox
+    .stub(AuthApi.sso.token, 'create')
+    .callsFake(() => {
+      const newAuthToken: AuthTokenDTO = {
+        userId: sessionInfo.user.id,
+        createdAt: new Date().toISOString(),
+        token: uuid(),
+      };
+      tokens = [...tokens, newAuthToken];
+      return Promise.resolve(httpOkResponse(newAuthToken));
+    });
+
+  return {
+    ...authMocks,
+    listAuthTokensStub,
+    createAuthTokensStub,
+    deleteAuthTokenStub,
   };
 };
 

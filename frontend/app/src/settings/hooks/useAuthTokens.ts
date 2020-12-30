@@ -5,7 +5,8 @@ import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['sso', 'token', 'list'];
-const queryFn = () => AuthApi.sso.token.list();
+const queryFn = () =>
+  AuthApi.sso.token.list().then((httpResponse) => httpResponse.data);
 
 export const useAuthTokens = (initialData: AuthTokenDTO[]) => {
   const { data = initialData } = useQuery(cacheKey, queryFn, { initialData });
@@ -32,7 +33,7 @@ export const useAuthTokenMutations = () => {
     {
       onSuccess: (_result, token) => {
         queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
-          return (prev || [])?.filter((t) => t.token !== token);
+          return (prev || []).filter((t) => t.token !== token);
         });
       },
     }
