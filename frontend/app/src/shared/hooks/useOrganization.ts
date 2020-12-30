@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'get'];
 const queryFn = () =>
-  AuthApi.organization.get().then((httpResponse) => httpResponse.data.data);
+  AuthApi.organization.get().then((httpResponse) => httpResponse.data);
 
 export const useOrganization = (initialData: OrganizationDTO) => {
   const queryClient = useQueryClient();
@@ -18,7 +18,7 @@ export const useOrganization = (initialData: OrganizationDTO) => {
     (update: Pick<OrganizationDTO, 'name'>) =>
       AuthApi.organization
         .update(update)
-        .then((httpResponse) => httpResponse.data.data),
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (organization) => {
         queryClient.setQueryData<OrganizationDTO>(CACHE_KEY, organization);
@@ -30,7 +30,7 @@ export const useOrganization = (initialData: OrganizationDTO) => {
     (avatar: AvatarDTO) =>
       AuthApi.organization
         .setupAvatar(avatar)
-        .then((httpResponse) => httpResponse.data.data),
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (organization) => {
         queryClient.setQueryData<OrganizationDTO>(CACHE_KEY, organization);

@@ -49,11 +49,11 @@ export const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
       .getByDomain(domain)
       .then((dataRepsonse) => {
         setFormError(undefined);
-        if (dataRepsonse.data.data === false) {
+        if (dataRepsonse.data === false) {
           setSetupExists(false);
         } else {
           const location = ssoIntegrationHrefBuilder({
-            ssoSignInURI: dataRepsonse.data.data,
+            ssoSignInURI: dataRepsonse.data,
             email,
             absoluteRedirect,
           });

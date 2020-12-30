@@ -1,6 +1,6 @@
 import { SessionApi } from 'api';
 import { QueryParam, TimePrecision } from '@rebrowse/types';
-import type { RequestOptions } from '@rebrowse/sdk';
+import { RequestOptions } from '@rebrowse/sdk';
 
 export const countSessionsByLocation = (
   createdAt: QueryParam,
@@ -12,7 +12,7 @@ export const countSessionsByLocation = (
       groupBy: ['location.countryName', 'location.continentName'],
       createdAt,
     },
-  }).then((httpResponse) => httpResponse.data.data);
+  }).then((httpResponse) => httpResponse.data);
 };
 
 export const countSessionsByDeviceClass = (
@@ -25,7 +25,7 @@ export const countSessionsByDeviceClass = (
       groupBy: ['userAgent.deviceClass'],
       createdAt,
     },
-  }).then((httpResponse) => httpResponse.data.data);
+  }).then((httpResponse) => httpResponse.data);
 };
 
 export const countSessionsByDate = (
@@ -39,7 +39,7 @@ export const countSessionsByDate = (
       dateTrunc: TimePrecision.DAY,
       createdAt,
     },
-  }).then((httpResponse) => httpResponse.data.data);
+  }).then((httpResponse) => httpResponse.data);
 };
 
 export const countPageVisitsByDate = (
@@ -55,7 +55,7 @@ export const countPageVisitsByDate = (
         createdAt,
       },
     })
-    .then((httpResponse) => httpResponse.data.data);
+    .then((httpResponse) => httpResponse.data);
 };
 
 export const countPageVisitsByReferrer = (options?: RequestOptions) => {
@@ -64,7 +64,7 @@ export const countPageVisitsByReferrer = (options?: RequestOptions) => {
       ...options,
       search: { groupBy: ['referrer'] },
     })
-    .then((httpResponse) => httpResponse.data.data);
+    .then((httpResponse) => httpResponse.data);
 };
 
 export const countPageVisitsByPath = (options?: RequestOptions) => {
@@ -73,5 +73,5 @@ export const countPageVisitsByPath = (options?: RequestOptions) => {
       ...options,
       search: { groupBy: ['path'] },
     })
-    .then((httpResponse) => httpResponse.data.data);
+    .then((httpResponse) => httpResponse.data);
 };

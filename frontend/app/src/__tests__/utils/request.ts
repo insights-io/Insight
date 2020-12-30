@@ -22,3 +22,7 @@ export const textPromise = ({
   promise.text = () => Promise.resolve(data as string);
   return promise;
 };
+
+export const httpOkResponse = <TObject>(data: TObject) => {
+  return { data, statusCode: 200, headers: new Headers() };
+};

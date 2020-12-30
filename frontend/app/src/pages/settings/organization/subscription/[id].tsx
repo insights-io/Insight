@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         baseURL: process.env.BILLING_API_BASE_URL,
         headers,
       })
-      .then((httpResponse) => httpResponse.data.data)
+      .then((httpResponse) => httpResponse.data)
       .catch((error) => {
         const response = error.response as Response;
         if (response.status === 404) {
@@ -73,7 +73,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
             baseURL: process.env.BILLING_API_BASE_URL,
             headers,
           })
-          .then((httpResponse) => httpResponse.data.data);
+          .then((httpResponse) => httpResponse.data);
 
         return {
           props: {

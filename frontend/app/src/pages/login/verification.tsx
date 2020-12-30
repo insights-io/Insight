@@ -48,11 +48,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
     try {
       const methods = await AuthApi.mfa.challenge
-        .get(ChallengeId, {
+        .retrieve(ChallengeId, {
           baseURL: process.env.AUTH_API_BASE_URL,
           headers,
         })
-        .then((httpResponse) => httpResponse.data.data);
+        .then((httpResponse) => httpResponse.data);
 
       if (methods.length > 0) {
         return { props: { methods } };
@@ -63,7 +63,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
           baseURL: process.env.AUTH_API_BASE_URL,
           headers,
         })
-        .then((httpResponse) => httpResponse.data.data);
+        .then((httpResponse) => httpResponse.data);
 
       return { props: { user } };
     } catch (error) {

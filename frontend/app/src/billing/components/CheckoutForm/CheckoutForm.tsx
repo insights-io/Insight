@@ -76,13 +76,13 @@ const StripeChekoutForm = ({
         await BillingApi.subscriptions
           .create({ paymentMethodId: paymentMethod.id, plan })
           .then((httpResponse) => {
-            if (httpResponse.data.data.plan) {
-              onPlanUpgraded(httpResponse.data.data.plan);
+            if (httpResponse.data.plan) {
+              onPlanUpgraded(httpResponse.data.plan);
               return Promise.resolve();
             }
 
             return confirmCardPayment(
-              httpResponse.data.data.clientSecret,
+              httpResponse.data.clientSecret,
               stripe,
               elements
             ).then((confirmation) => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { configureStory, mockApiError } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils';
 
 import { LoginPage } from './LoginPage';
 
@@ -17,15 +18,7 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox.stub(AuthApi.sso.session, 'login').callsFake(() => {
       return new Promise((resolve) =>
-        setTimeout(
-          () =>
-            resolve({
-              data: { data: true },
-              statusCode: 200,
-              headers: new Headers(),
-            }),
-          10
-        )
+        setTimeout(() => resolve(httpOkResponse(true)), 10)
       );
     });
   },

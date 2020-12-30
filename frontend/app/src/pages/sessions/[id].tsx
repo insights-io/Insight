@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
           sessionId,
           user: authResponse.user,
           organization: authResponse.organization,
-          session: httpResponse.data.data,
+          session: httpResponse.data,
         },
       }))
       .catch((error) => {

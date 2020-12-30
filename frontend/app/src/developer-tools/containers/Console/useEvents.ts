@@ -15,7 +15,7 @@ const queryFn = (sessionId: string) => {
         limit: 1000,
       },
     })
-    .then((httpResponse) => httpResponse.data.data);
+    .then((httpResponse) => httpResponse.data);
 };
 
 export const useEvents = (sessionId: string) => {

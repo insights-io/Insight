@@ -6,7 +6,6 @@ import { useCodeInput } from 'shared/hooks/useCodeInput';
 import type {
   APIError,
   APIErrorDataResponse,
-  DataResponse,
   MfaSetupDTO,
 } from '@rebrowse/types';
 import { FormError } from 'shared/components/FormError';
@@ -15,9 +14,7 @@ import { Paragraph3 } from 'baseui/typography';
 import type { HttpResponse } from '@rebrowse/sdk';
 
 export type Props = {
-  completeSetup?: (
-    code: number
-  ) => Promise<HttpResponse<DataResponse<MfaSetupDTO>>>;
+  completeSetup?: (code: number) => Promise<HttpResponse<MfaSetupDTO>>;
   onCompleted?: (value: MfaSetupDTO) => void;
 };
 
@@ -41,7 +38,7 @@ export const TotpMfaSetupForm = ({
   } = useCodeInput({
     submitAction: (paramCode) => {
       return completeSetup(paramCode)
-        .then((response) => response.data.data)
+        .then((response) => response.data)
         .then(onCompleted);
     },
     handleError: (error, setError) => {
@@ -53,7 +50,7 @@ export const TotpMfaSetupForm = ({
     if (!qrImage) {
       AuthApi.mfa.setup.totp
         .start()
-        .then((dataResponse) => setQrImage(dataResponse.data.data.qrImage))
+        .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
         .catch(async (error) => {
           const errorDTO: APIErrorDataResponse = await error.response.json();
           setSetupStartError(errorDTO.error);

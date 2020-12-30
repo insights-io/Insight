@@ -17,7 +17,6 @@ import type {
   APIErrorDataResponse,
   UserRole,
   TeamInviteDTO,
-  DataResponse,
 } from '@rebrowse/types';
 import { Button, EmailInput, Label } from '@rebrowse/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
@@ -28,7 +27,7 @@ import type { HttpResponse } from '@rebrowse/sdk';
 type Props = {
   createTeamInvite: (
     formData: TeamInviteCreateDTO
-  ) => Promise<HttpResponse<DataResponse<TeamInviteDTO>>>;
+  ) => Promise<HttpResponse<TeamInviteDTO>>;
   children: (open: () => void) => void;
 };
 

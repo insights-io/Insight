@@ -1,8 +1,8 @@
 import ky from 'ky-universal';
-import type { DataResponse, GroupByResult } from '@rebrowse/types';
+import type { GroupByResult } from '@rebrowse/types';
 import { querystring, withCredentials } from 'utils';
 
-import { jsonResponse } from '../../http';
+import { jsonDataResponse } from '../../http';
 
 import type {
   PageVisitSearchRequestOptions,
@@ -16,7 +16,7 @@ export const createPageVisitClient = (sessionApiBaseUrl: string) => {
     ...rest
   }: PageVisitSearchRequestOptions<GroupBy> = {}) {
     const searchQuery = querystring(search);
-    return jsonResponse<DataResponse<GroupByResult<GroupBy>>>(
+    return jsonDataResponse<GroupByResult<GroupBy>>(
       ky.get(`${baseURL}/v1/pages/count${searchQuery}`, withCredentials(rest))
     );
   }

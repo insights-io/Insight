@@ -40,14 +40,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const requestSpan = startRequestSpan(context.req);
   try {
     const token = context.query.token as string | undefined;
-
     if (!token) {
       return { props: { exists: false } };
     }
 
-    const {
-      data: { data: exists },
-    } = await AuthApi.password.resetExists(token, {
+    const { data: exists } = await AuthApi.password.resetExists(token, {
       baseURL: process.env.AUTH_API_BASE_URL,
       headers: prepareCrossServiceHeaders(requestSpan),
     });

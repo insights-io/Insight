@@ -83,12 +83,12 @@ export const VerificationPage = ({ methods }: Props) => {
         <Block display="flex" justifyContent="center">
           <Block width="fit-content">
             <Tabs
+              activateOnFocus
               activeKey={activeMethod}
+              fill={FILL.fixed}
               onChange={(params) =>
                 setActiveMethod(params.activeKey as MfaMethod)
               }
-              activateOnFocus
-              fill={FILL.fixed}
             >
               {methods.map((method) => {
                 const {
@@ -102,7 +102,7 @@ export const VerificationPage = ({ methods }: Props) => {
                       error={codeError}
                       handleChange={handleChange}
                       code={code}
-                      sendCode={AuthApi.mfa.challenge.sensSmsChallengeCode}
+                      sendCode={AuthApi.mfa.challenge.sendSmsCode}
                     />
                   </Tab>
                 );

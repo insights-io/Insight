@@ -36,13 +36,13 @@ export const TeamInvites = ({
   const search = useCallback(async (search: TeamInviteSearchBean) => {
     return AuthApi.organization.teamInvite
       .list({ search })
-      .then((httpResponse) => httpResponse.data.data);
+      .then((httpResponse) => httpResponse.data);
   }, []);
 
   const searchCount = useCallback(async (search: TeamInviteSearchBean) => {
     return AuthApi.organization.teamInvite
       .count({ search })
-      .then((httpResponse) => httpResponse.data.data.count);
+      .then((httpResponse) => httpResponse.data.count);
   }, []);
 
   const {

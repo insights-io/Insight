@@ -48,7 +48,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
           cookie: `SessionId=${authResponse.SessionId}`,
         },
       })
-      .then((httpResponse) => httpResponse.data.data);
+      .then((httpResponse) => httpResponse.data);
 
     return {
       props: {

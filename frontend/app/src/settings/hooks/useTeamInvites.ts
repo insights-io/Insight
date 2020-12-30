@@ -32,7 +32,7 @@ export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
       onSuccess: (httpResponse) => {
         queryClient.setQueryData<TeamInviteDTO[]>(CACHE_KEY, (prev) => [
           ...(prev || initialData),
-          httpResponse.data.data,
+          httpResponse.data,
         ]);
       },
     }

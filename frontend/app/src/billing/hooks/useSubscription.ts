@@ -23,7 +23,7 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
     () =>
       BillingApi.subscriptions
         .cancel(initialData.id)
-        .then((httpResponse) => httpResponse.data.data),
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (updatedSubscription) => {
         subscriptionCache.setSubscription(updatedSubscription);

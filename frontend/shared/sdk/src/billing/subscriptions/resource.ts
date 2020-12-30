@@ -1,6 +1,5 @@
 import ky from 'ky-universal';
 import type {
-  DataResponse,
   CreateSubscriptionDTO,
   SubscriptionDTO,
   CreateSubscriptionResponseDTO,
@@ -9,7 +8,7 @@ import type {
 
 import type { RequestOptions } from '../../types';
 import { withCredentials, querystring } from '../../utils';
-import { jsonResponse } from '../../http';
+import { jsonDataResponse } from '../../http';
 
 import type { SubscriptionSearchRequestOptions } from './types';
 
@@ -19,7 +18,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       json: CreateSubscriptionDTO,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<CreateSubscriptionResponseDTO>>(
+      return jsonDataResponse<CreateSubscriptionResponseDTO>(
         ky.post(`${baseURL}/v1/billing/subscriptions`, {
           json,
           ...withCredentials(rest),
@@ -31,7 +30,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       subscriptionId: string,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<SubscriptionDTO>>(
+      return jsonDataResponse<SubscriptionDTO>(
         ky.get(
           `${baseURL}/v1/billing/subscriptions/${subscriptionId}`,
           withCredentials(rest)
@@ -44,7 +43,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       search,
       ...rest
     }: SubscriptionSearchRequestOptions<GroupBy> = {}) => {
-      return jsonResponse<DataResponse<SubscriptionDTO[]>>(
+      return jsonDataResponse<SubscriptionDTO[]>(
         ky.get(
           `${baseURL}/v1/billing/subscriptions${querystring(search)}`,
           withCredentials(rest)
@@ -56,7 +55,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       subscriptionId: string,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<SubscriptionDTO>>(
+      return jsonDataResponse<SubscriptionDTO>(
         ky.patch(
           `${baseURL}/v1/billing/subscriptions/${subscriptionId}/cancel`,
           withCredentials(rest)
@@ -68,7 +67,7 @@ export const subscriptionResource = (billingApiBaseURL: string) => {
       baseURL = billingApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
-      return jsonResponse<DataResponse<PlanDTO>>(
+      return jsonDataResponse<PlanDTO>(
         ky.get(
           `${baseURL}/v1/billing/subscriptions/plan`,
           withCredentials(rest)

@@ -1,7 +1,7 @@
 import ky from 'ky-universal';
-import type { DataResponse, SessionDTO, GroupByResult } from '@rebrowse/types';
+import type { SessionDTO, GroupByResult } from '@rebrowse/types';
 
-import { jsonResponse } from '../http';
+import { jsonDataResponse } from '../http';
 import { querystring, withCredentials } from '../utils';
 import type { RequestOptions } from '../types';
 
@@ -18,7 +18,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
       sessionId: string,
       { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<SessionDTO>>(
+      return jsonDataResponse<SessionDTO>(
         ky.get(`${baseURL}/v1/sessions/${sessionId}`, withCredentials(rest))
       );
     },
@@ -28,7 +28,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
       ...rest
     }: SessionsSearchRequestOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
-      return jsonResponse<DataResponse<GroupByResult<GroupBy>>>(
+      return jsonDataResponse<GroupByResult<GroupBy>>(
         ky.get(
           `${baseURL}/v1/sessions/count${searchQuery}`,
           withCredentials(rest)
@@ -40,7 +40,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
       { baseURL = sessionApiBaseUrl, ...rest }: RequestOptions = {}
     ) => {
       const searchQuery = querystring({ on });
-      return jsonResponse<DataResponse<string[]>>(
+      return jsonDataResponse<string[]>(
         ky.get(
           `${baseURL}/v1/sessions/distinct${searchQuery}`,
           withCredentials(rest)
@@ -54,7 +54,7 @@ export const createSessionsClient = (sessionApiBaseUrl: string) => {
       ...rest
     }: SessionsSearchRequestOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
-      return jsonResponse<DataResponse<SessionDTO[]>>(
+      return jsonDataResponse<SessionDTO[]>(
         ky.get(`${baseURL}/v1/sessions${searchQuery}`, withCredentials(rest))
       );
     },

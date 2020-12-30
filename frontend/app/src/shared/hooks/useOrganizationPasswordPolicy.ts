@@ -22,7 +22,7 @@ export const useOrganizationPasswordPolicy = (
     (params: PasswordPolicyCreateParams) =>
       AuthApi.organization.passwordPolicy
         .create(params)
-        .then((httpResponse) => httpResponse.data.data),
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (policy) => {
         queryClient.setQueryData<OrganizationPasswordPolicyDTO>(
@@ -37,7 +37,7 @@ export const useOrganizationPasswordPolicy = (
     (params: PasswordPolicyUpdateParams) =>
       AuthApi.organization.passwordPolicy
         .update(params)
-        .then((httpResponse) => httpResponse.data.data),
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (policy) => {
         queryClient.setQueryData<OrganizationPasswordPolicyDTO>(

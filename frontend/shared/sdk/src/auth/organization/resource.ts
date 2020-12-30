@@ -1,6 +1,5 @@
 import ky from 'ky-universal';
 import type {
-  DataResponse,
   OrganizationDTO,
   TeamInviteCreateDTO,
   TeamInviteDTO,
@@ -15,7 +14,7 @@ import type {
 import type { RequestOptions } from 'types';
 import { querystring, withCredentials } from 'utils';
 
-import { httpResponse, jsonResponse } from '../../http';
+import { httpResponse, jsonDataResponse } from '../../http';
 
 import type { MembersSearchOptions, TeamInviteSearchOptions } from './types';
 
@@ -29,7 +28,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
       json: Pick<OrganizationDTO, 'name'>,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<OrganizationDTO>>(
+      return jsonDataResponse<OrganizationDTO>(
         ky.patch(resourceBaseURL(baseURL), { json, ...withCredentials(rest) })
       );
     },
@@ -42,7 +41,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
       json: AvatarDTO,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<OrganizationDTO>>(
+      return jsonDataResponse<OrganizationDTO>(
         ky.patch(`${resourceBaseURL(baseURL)}/avatar`, {
           json,
           ...withCredentials(rest),
@@ -50,7 +49,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
       );
     },
     get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return jsonResponse<DataResponse<OrganizationDTO>>(
+      return jsonDataResponse<OrganizationDTO>(
         ky.get(resourceBaseURL(baseURL), withCredentials(rest))
       );
     },
@@ -60,7 +59,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
       ...rest
     }: MembersSearchOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
-      return jsonResponse<DataResponse<UserDTO[]>>(
+      return jsonDataResponse<UserDTO[]>(
         ky.get(
           `${resourceBaseURL(baseURL)}/members${searchQuery}`,
           withCredentials(rest)
@@ -73,7 +72,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
       ...rest
     }: MembersSearchOptions<GroupBy> = {}) => {
       const searchQuery = querystring(search);
-      return jsonResponse<DataResponse<GroupByResult<GroupBy>>>(
+      return jsonDataResponse<GroupByResult<GroupBy>>(
         ky.get(
           `${resourceBaseURL(baseURL)}/members/count${searchQuery}`,
           withCredentials(rest)
@@ -86,7 +85,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         baseURL = authApiBaseURL,
         ...rest
       }: RequestOptions = {}) => {
-        return jsonResponse<DataResponse<OrganizationPasswordPolicyDTO>>(
+        return jsonDataResponse<OrganizationPasswordPolicyDTO>(
           ky.get(
             `${resourceBaseURL(baseURL)}/password/policy`,
             withCredentials(rest)
@@ -97,7 +96,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         json: PasswordPolicyCreateParams,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return jsonResponse<DataResponse<OrganizationPasswordPolicyDTO>>(
+        return jsonDataResponse<OrganizationPasswordPolicyDTO>(
           ky.post(`${resourceBaseURL(baseURL)}/password/policy`, {
             json,
             ...withCredentials(rest),
@@ -108,7 +107,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         json: PasswordPolicyUpdateParams,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return jsonResponse<DataResponse<OrganizationPasswordPolicyDTO>>(
+        return jsonDataResponse<OrganizationPasswordPolicyDTO>(
           ky.patch(`${resourceBaseURL(baseURL)}/password/policy`, {
             json,
             ...withCredentials(rest),
@@ -121,7 +120,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         token: string,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return jsonResponse<DataResponse<TeamInviteDTO>>(
+        return jsonDataResponse<TeamInviteDTO>(
           ky.get(`${resourceBaseURL(baseURL)}/invites/${token}`, rest)
         );
       },
@@ -131,7 +130,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         ...rest
       }: TeamInviteSearchOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
-        return jsonResponse<DataResponse<TeamInviteDTO[]>>(
+        return jsonDataResponse<TeamInviteDTO[]>(
           ky.get(
             `${resourceBaseURL(baseURL)}/invites${searchQuery}`,
             withCredentials(rest)
@@ -144,7 +143,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         ...rest
       }: TeamInviteSearchOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
-        return jsonResponse<DataResponse<GroupByResult<GroupBy>>>(
+        return jsonDataResponse<GroupByResult<GroupBy>>(
           ky.get(
             `${resourceBaseURL(baseURL)}/invites/count${searchQuery}`,
             withCredentials(rest)
@@ -156,7 +155,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         email: string,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return jsonResponse<DataResponse<boolean>>(
+        return jsonDataResponse<boolean>(
           ky.delete(
             `${resourceBaseURL(baseURL)}/invites/${token}`,
             withCredentials({ json: { email }, ...rest })
@@ -167,7 +166,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         json: TeamInviteCreateDTO,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return jsonResponse<DataResponse<TeamInviteDTO>>(
+        return jsonDataResponse<TeamInviteDTO>(
           ky.post(
             `${resourceBaseURL(baseURL)}/invites`,
             withCredentials({ json, ...rest })
@@ -190,7 +189,7 @@ export const organizationsResource = (authApiBaseURL: string) => {
         email: string,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return jsonResponse<DataResponse<boolean>>(
+        return jsonDataResponse<boolean>(
           ky.post(
             `${resourceBaseURL(baseURL)}/invites/send`,
             withCredentials({ json: { email }, ...rest })

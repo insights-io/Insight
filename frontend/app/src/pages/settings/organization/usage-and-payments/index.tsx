@@ -47,7 +47,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
     const invoices = await BillingApi.invoices
       .list({ baseURL: process.env.BILLING_API_BASE_URL, headers })
-      .then((httpResponse) => httpResponse.data.data);
+      .then((httpResponse) => httpResponse.data);
 
     return {
       props: {

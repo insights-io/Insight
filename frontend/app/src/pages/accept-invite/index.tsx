@@ -9,7 +9,7 @@ import { AuthApi } from 'api';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { AcceptTeamInviteInvalidPage } from 'auth/pages/AcceptTeamInviteInvalidPage';
 import { AcceptTeamInvitePage } from 'auth/pages/AcceptTeamInvitePage';
-import { mapTeamInvite } from '@rebrowse/sdk';
+import { getData, mapTeamInvite } from '@rebrowse/sdk';
 
 type Props = { invite: TeamInviteDTO } | { invite: null };
 
@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         baseURL: process.env.AUTH_API_BASE_URL,
         headers: prepareCrossServiceHeaders(requestSpan),
       })
-      .then((httpResponse) => httpResponse.data.data)
+      .then((httpResponse) => getData(httpResponse))
       .catch((error) => {
         const response = error.response as Response;
         if (response.status === 404) {

@@ -37,13 +37,13 @@ export const OrganizationMembers = ({
   const search = useCallback(async (search: MemberSearchBean) => {
     return AuthApi.organization
       .members({ search })
-      .then((httpResponse) => httpResponse.data.data);
+      .then((httpResponse) => httpResponse.data);
   }, []);
 
   const searchCount = useCallback(async (search: MemberSearchBean) => {
     return AuthApi.organization
       .memberCount({ search })
-      .then((httpResponse) => httpResponse.data.data.count);
+      .then((httpResponse) => httpResponse.data.count);
   }, []);
 
   const {

@@ -1,5 +1,5 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import type { CodeValidityDTO, DataResponse } from '@rebrowse/types';
+import type { CodeValidityDTO } from '@rebrowse/types';
 import { Block } from 'baseui/block';
 import { toaster } from 'baseui/toast';
 import { Flex, CodeInput, FlexColumn, Button } from '@rebrowse/elements';
@@ -8,7 +8,7 @@ import { HttpResponse } from '@rebrowse/sdk';
 import { MfaInputMethodProps } from '../types';
 
 type Props = MfaInputMethodProps & {
-  sendCode: () => Promise<HttpResponse<DataResponse<CodeValidityDTO>>>;
+  sendCode: () => Promise<HttpResponse<CodeValidityDTO>>;
 };
 
 export const SmsMfaInputMethod = ({
@@ -42,7 +42,7 @@ export const SmsMfaInputMethod = ({
     sendCode()
       .then((httpResponse) => {
         toaster.positive('Code sent', {});
-        setValiditySeconds(httpResponse.data.data.validitySeconds);
+        setValiditySeconds(httpResponse.data.validitySeconds);
 
         countdownInterval.current = window.setInterval(() => {
           setValiditySeconds((v) => v - 1);

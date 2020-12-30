@@ -5,6 +5,7 @@ import { REBROWSE_EVENTS } from '__tests__/data';
 import noop from 'lodash/noop';
 import { filterBrowserEvent } from '__tests__/mocks/filter';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils';
 
 import { DeveloperTools } from './DeveloperTools';
 
@@ -27,15 +28,11 @@ Base.story = configureStory({
       searchEvents: sandbox
         .stub(SessionApi.events, 'search')
         .callsFake((_sessionId, args = {}) => {
-          return Promise.resolve({
-            data: {
-              data: REBROWSE_EVENTS.filter((e) =>
-                filterBrowserEvent(e, args.search)
-              ),
-            },
-            statusCode: 200,
-            headers: new Headers(),
-          });
+          return Promise.resolve(
+            httpOkResponse(
+              REBROWSE_EVENTS.filter((e) => filterBrowserEvent(e, args.search))
+            )
+          );
         }),
     };
   },

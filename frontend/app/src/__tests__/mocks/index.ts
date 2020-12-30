@@ -8,12 +8,16 @@ import {
 import * as sdk from '@rebrowse/sdk';
 import type {
   BrowserEventDTO,
+  SamlConfigurationDTO,
+  SamlSsoMethod,
   SessionDTO,
   SessionInfoDTO,
+  SsoSetupDTO,
 } from '@rebrowse/types';
 import type { SinonSandbox } from 'sinon';
-import { jsonPromise } from '__tests__/utils';
+import { httpOkResponse, jsonPromise } from '__tests__/utils/request';
 import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
+import { mockApiError } from '@rebrowse/storybook';
 
 import {
   filterSession,
@@ -31,21 +35,72 @@ export const mockAuth = (
     .stub(AuthApi.sso.session, 'get')
     .returns(jsonPromise({ status: 200, data }));
 
-  const retrieveUserStub = sandbox.stub(AuthApi.user, 'me').resolves({
-    data: { data: data.user },
-    statusCode: 200,
-    headers: new Headers(),
-  });
+  const retrieveUserStub = sandbox
+    .stub(AuthApi.user, 'me')
+    .resolves(httpOkResponse(data.user));
 
   const retrieveOrganizationStub = sandbox
     .stub(AuthApi.organization, 'get')
-    .resolves({
-      data: { data: data.organization },
-      statusCode: 200,
-      headers: new Headers(),
-    });
+    .resolves(httpOkResponse(data.organization));
 
   return { retrieveSessionStub, retrieveUserStub, retrieveOrganizationStub };
+};
+
+export const mockOrganizationAuthPage = (
+  sandbox: SinonSandbox,
+  {
+    ssoSetup,
+    sessionInfo = REBROWSE_SESSION_INFO,
+  }: {
+    ssoSetup?: SsoSetupDTO;
+    sessionInfo?: SessionInfoDTO;
+  } = {}
+) => {
+  let actualSsoSetup = ssoSetup;
+
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  const disableSsoSetupStub = sandbox
+    .stub(AuthApi.sso.setup, 'delete')
+    .callsFake(() => {
+      actualSsoSetup = undefined;
+      return Promise.resolve({ statusCode: 200, headers: new Headers() });
+    });
+
+  const retrieveSsoSetupStub = sandbox
+    .stub(AuthApi.sso.setup, 'get')
+    .callsFake(() => {
+      if (!actualSsoSetup) {
+        return Promise.reject(
+          mockApiError({
+            statusCode: 404,
+            message: 'Not Found',
+            reason: 'Not Found',
+          })
+        );
+      }
+      return Promise.resolve(httpOkResponse(actualSsoSetup));
+    });
+
+  const createSsoSetupStub = sandbox
+    .stub(AuthApi.sso.setup, 'create')
+    .callsFake((method, saml) => {
+      actualSsoSetup = {
+        method: method as SamlSsoMethod,
+        saml: saml as SamlConfigurationDTO,
+        organizationId: sessionInfo.user.organizationId,
+        createdAt: new Date().toISOString(),
+        domain: sessionInfo.user.email.split('@')[1],
+      };
+      return Promise.resolve(httpOkResponse(actualSsoSetup));
+    });
+
+  return {
+    ...authMocks,
+    retrieveSsoSetupStub,
+    createSsoSetupStub,
+    disableSsoSetupStub,
+  };
 };
 
 export const mockSessionPage = (
@@ -89,23 +144,19 @@ export const mockSessionsPage = (
 
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
-    .callsFake((args = {}) =>
-      Promise.resolve({
-        data: { data: countSessionsBy(sessions, args.search) },
-        statusCode: 200,
-        headers: new Headers(),
-      })
-    );
+    .callsFake((args = {}) => {
+      return Promise.resolve(
+        httpOkResponse(countSessionsBy(sessions, args.search))
+      );
+    });
 
   const listSessionsStub = sandbox
     .stub(SessionApi, 'getSessions')
-    .callsFake((args = {}) =>
-      Promise.resolve({
-        data: { data: sessions.filter((s) => filterSession(s, args.search)) },
-        statusCode: 200,
-        headers: new Headers(),
-      })
-    );
+    .callsFake((args = {}) => {
+      return Promise.resolve(
+        httpOkResponse(sessions.filter((s) => filterSession(s, args.search)))
+      );
+    });
 
   const getDistinctStub = sandbox
     .stub(SessionApi, 'distinct')
@@ -131,10 +182,7 @@ export const mockEmptySessionsPage = (sandbox: SinonSandbox) => {
       headers: new Headers(),
     });
 
-  return {
-    ...mocks,
-    retrieveBoostrapScriptStub,
-  };
+  return { ...mocks, retrieveBoostrapScriptStub };
 };
 
 export const mockIndexPage = (
@@ -144,24 +192,18 @@ export const mockIndexPage = (
   const authMocks = mockAuth(sandbox);
   const countSessionsStub = sandbox
     .stub(SessionApi, 'count')
-    .callsFake((args = {}) =>
-      Promise.resolve({
-        data: { data: countSessionsBy(sessions, args.search) },
-        statusCode: 200,
-        headers: new Headers(),
-      })
-    );
+    .callsFake((args = {}) => {
+      return Promise.resolve(
+        httpOkResponse(countSessionsBy(sessions, args.search))
+      );
+    });
 
   const countPageVisitsStub = sandbox
     .stub(SessionApi.pageVisit, 'count')
     .callsFake((args = {}) => {
-      return Promise.resolve({
-        data: {
-          data: countSessionsBy(sessions, args.search as any),
-        },
-        statusCode: 200,
-        headers: new Headers(),
-      }) as any;
+      return Promise.resolve(
+        httpOkResponse(countSessionsBy(sessions, args.search as any)) as any
+      );
     });
 
   return { ...authMocks, countPageVisitsStub, countSessionsStub };

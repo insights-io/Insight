@@ -1,14 +1,9 @@
 import ky from 'ky-universal';
-import type {
-  CodeValidityDTO,
-  DataResponse,
-  PhoneNumber,
-  UserDTO,
-} from '@rebrowse/types';
+import type { CodeValidityDTO, PhoneNumber, UserDTO } from '@rebrowse/types';
 import { withCredentials } from 'utils';
 import type { RequestOptions } from 'types';
 
-import { jsonResponse } from '../../http';
+import { jsonDataResponse } from '../../http';
 
 import type { UpdateUserPayload } from './types';
 
@@ -17,14 +12,14 @@ export const userResource = (authApiBaseURL: string) => {
     json: UpdateUserPayload,
     { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
   ) => {
-    return jsonResponse<DataResponse<UserDTO>>(
+    return jsonDataResponse<UserDTO>(
       ky.patch(`${baseURL}/v1/user`, withCredentials({ json, ...rest }))
     );
   };
 
   return {
     me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return jsonResponse<DataResponse<UserDTO>>(
+      return jsonDataResponse<UserDTO>(
         ky.get(`${baseURL}/v1/user`, withCredentials(rest))
       );
     },
@@ -37,7 +32,7 @@ export const userResource = (authApiBaseURL: string) => {
         return update({ phone_number: null });
       }
 
-      return jsonResponse<DataResponse<UserDTO>>(
+      return jsonDataResponse<UserDTO>(
         ky.patch(
           `${baseURL}/v1/user/phone_number`,
           withCredentials({ json, ...rest })
@@ -48,7 +43,7 @@ export const userResource = (authApiBaseURL: string) => {
       baseURL = authApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
-      return jsonResponse<DataResponse<CodeValidityDTO>>(
+      return jsonDataResponse<CodeValidityDTO>(
         ky.post(
           `${baseURL}/v1/user/phone_number/verify/send_code`,
           withCredentials(rest)
@@ -59,7 +54,7 @@ export const userResource = (authApiBaseURL: string) => {
       code: number,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<UserDTO>>(
+      return jsonDataResponse<UserDTO>(
         ky.patch(
           `${baseURL}/v1/user/phone_number/verify`,
           withCredentials({ json: { code }, ...rest })

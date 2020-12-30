@@ -8,6 +8,7 @@ import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { mockIndexPage } from '__tests__/mocks';
 import { TOTP_MFA_SETUP_QR_IMAGE } from '__tests__/data/mfa';
+import { httpOkResponse } from '__tests__/utils/request';
 
 describe('/login/verification', () => {
   /* Data */
@@ -19,13 +20,9 @@ describe('/login/verification', () => {
       document.cookie = 'ChallengeId=123';
       mockIndexPage(sandbox);
 
-      const getChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'get')
-        .resolves({
-          data: { data: ['totp'] },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+      const retrieveChallengeStub = sandbox
+        .stub(AuthApi.mfa.challenge, 'retrieve')
+        .resolves(httpOkResponse(['totp']));
 
       const completeChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'complete')
@@ -37,7 +34,7 @@ describe('/login/verification', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(getChallengeStub, '123', {
+      sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
       });
 
@@ -72,44 +69,28 @@ describe('/login/verification', () => {
     test('As a user I can setup TOTP MFA on the spot if no existing setup', async () => {
       /* Mocks */
       document.cookie = 'ChallengeId=123';
-      const getChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'get')
-        .resolves({
-          data: { data: [] },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+      const retrieveChallengeStub = sandbox
+        .stub(AuthApi.mfa.challenge, 'retrieve')
+        .resolves(httpOkResponse([]));
 
       const retrieveUserByChallengeStub = sandbox
         .stub(AuthApi.mfa.challenge, 'retrieveUser')
-        .resolves({
-          data: { data: REBROWSE_ADMIN_DTO },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .resolves(httpOkResponse(REBROWSE_ADMIN_DTO));
 
       const startTotpMfaSetupStub = sandbox
         .stub(AuthApi.mfa.setup.totp, 'start')
-        .resolves({
-          data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE }));
 
       const completeTotpMfaSetupStub = sandbox
         .stub(AuthApi.mfa.setup, 'completeEnforced')
         .callsFake(() => {
           document.cookie = 'SessionId=123';
-          return Promise.resolve({
-            statusCode: 200,
-            headers: new Headers(),
-            data: {
-              data: {
-                createdAt: new Date().toISOString(),
-                method: 'totp',
-              },
-            },
-          });
+          return Promise.resolve(
+            httpOkResponse({
+              createdAt: new Date().toISOString(),
+              method: 'totp',
+            })
+          );
         });
 
       mockIndexPage(sandbox);
@@ -117,7 +98,7 @@ describe('/login/verification', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(getChallengeStub, '123', {
+      sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
       });
 
@@ -167,18 +148,20 @@ describe('/login/verification', () => {
   test('As a user I get redirected to /login when no challenge found on backend', async () => {
     /* Mocks */
     document.cookie = 'ChallengeId=123';
-    const getChallengeStub = sandbox.stub(AuthApi.mfa.challenge, 'get').rejects(
-      mockApiError({
-        statusCode: 404,
-        reason: 'Not Found',
-        message: 'Not Found',
-      })
-    );
+    const retrieveChallengeStub = sandbox
+      .stub(AuthApi.mfa.challenge, 'retrieve')
+      .rejects(
+        mockApiError({
+          statusCode: 404,
+          reason: 'Not Found',
+          message: 'Not Found',
+        })
+      );
 
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(getChallengeStub, '123', {
+    sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
       baseURL: 'http://localhost:8080',
     });
 

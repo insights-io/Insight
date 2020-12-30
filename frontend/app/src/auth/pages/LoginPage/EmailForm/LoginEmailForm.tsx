@@ -48,7 +48,7 @@ export const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
     AuthApi.sso.session
       .login(formData.email, formData.password)
       .then((response) => {
-        if (response.data.data === true) {
+        if (response.data === true) {
           replace(relativeRedirect);
         } else {
           replace(

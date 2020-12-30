@@ -44,7 +44,7 @@ export const SsoSetupDisableModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} unstable_ModalBackdropScroll>
       <ModalHeader>Disable {label} authentication</ModalHeader>
       <ModalBody>
         <Block>

@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import { AuthApi } from 'api';
 import { PhoneNumberSetForm } from 'auth/components/PhoneNumberSetForm';
 import { PhoneNumberVerifyForm } from 'auth/components/PhoneNumberVerifyForm';
-import type { PhoneNumber, MfaSetupDTO, DataResponse } from '@rebrowse/types';
+import type { PhoneNumber, MfaSetupDTO } from '@rebrowse/types';
 import type { HttpResponse } from '@rebrowse/sdk';
 
 type Props = {
   phoneNumber: PhoneNumber | undefined;
   onCompleted?: (value: MfaSetupDTO) => void;
-  completeSetup?: (
-    code: number
-  ) => Promise<HttpResponse<DataResponse<MfaSetupDTO>>>;
+  completeSetup?: (code: number) => Promise<HttpResponse<MfaSetupDTO>>;
 };
 
 const completeSmsSetup = (code: number) =>
@@ -30,7 +28,7 @@ export const SmsMfaSetupForm = ({
         updatePhoneNumber={(newPhoneNumber) =>
           AuthApi.user
             .updatePhoneNumber(newPhoneNumber)
-            .then(({ data: { data: user } }) => {
+            .then(({ data: user }) => {
               setPhoneNumber(user.phoneNumber);
               return user;
             })
@@ -43,7 +41,7 @@ export const SmsMfaSetupForm = ({
     <PhoneNumberVerifyForm
       verify={(code) =>
         completeSetup(code)
-          .then((httpResponse) => httpResponse.data.data)
+          .then((httpResponse) => httpResponse.data)
           .then(onCompleted)
       }
       sendCode={AuthApi.mfa.setup.sms.sendCode}

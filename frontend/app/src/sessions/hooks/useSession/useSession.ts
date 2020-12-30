@@ -13,7 +13,7 @@ export const useSession = (sessionId: string, initialData: SessionDTO) => {
     cacheKey(initialData.id),
     () =>
       SessionApi.getSession(sessionId).then(
-        (httpResponse) => httpResponse.data.data
+        (httpResponse) => httpResponse.data
       ),
     { initialData: () => initialData }
   );

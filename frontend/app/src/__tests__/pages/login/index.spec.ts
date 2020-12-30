@@ -10,6 +10,7 @@ import { getPage } from 'next-page-tester';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import * as windowUtils from 'shared/utils/window';
 import { mockIndexPage } from '__tests__/mocks';
+import { httpOkResponse } from '__tests__/utils/request';
 
 describe('/login', () => {
   /* Data */
@@ -20,7 +21,7 @@ describe('/login', () => {
     const email = 'john.doe@gmail.com';
     const password = 'password1234!';
 
-    test('As a user I can login using my email', async () => {
+    test.only('As a user I can login using my email', async () => {
       /* Mocks */
       mockIndexPage(sandbox);
 
@@ -28,11 +29,7 @@ describe('/login', () => {
         .stub(AuthApi.sso.session, 'login')
         .callsFake(() => {
           document.cookie = 'SessionId=123';
-          return Promise.resolve({
-            data: { data: true },
-            statusCode: 200,
-            headers: new Headers(),
-          });
+          return Promise.resolve(httpOkResponse(true));
         });
 
       /* Server */
@@ -54,22 +51,14 @@ describe('/login', () => {
     test('As a user I can login but get challenged by MFA', async () => {
       /* Mocks */
       const retrieveChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'get')
-        .resolves({
-          data: { data: ['totp'] },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .stub(AuthApi.mfa.challenge, 'retrieve')
+        .resolves(httpOkResponse(['totp']));
 
       const loginStub = sandbox
         .stub(AuthApi.sso.session, 'login')
         .callsFake(() => {
           document.cookie = 'ChallengeId=123';
-          return Promise.resolve({
-            data: { data: false },
-            statusCode: 200,
-            headers: new Headers(),
-          });
+          return Promise.resolve(httpOkResponse(false));
         });
 
       /* Server */
@@ -99,11 +88,7 @@ describe('/login', () => {
       /* Mocks */
       const retrieveSsoSetupByDomainStub = sandbox
         .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves({
-          data: { data: false },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .resolves(httpOkResponse(false));
 
       /* Server */
       const { page } = await getPage({ route });
@@ -132,11 +117,7 @@ describe('/login', () => {
       const ssoLocation = 'http://localhost:8080/sso/login';
       const retrieveSsoSetupByDomainStub = sandbox
         .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves({
-          data: { data: ssoLocation },
-          statusCode: 200,
-          headers: new Headers(),
-        });
+        .resolves(httpOkResponse(ssoLocation));
 
       /* Server */
       const { page } = await getPage({ route });

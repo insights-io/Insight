@@ -19,9 +19,9 @@ export const useAuthTokenMutations = () => {
   const { mutateAsync: create } = useMutation(
     () => AuthApi.sso.token.create(),
     {
-      onSuccess: (httpResponse: HttpResponse<DataResponse<AuthTokenDTO>>) => {
+      onSuccess: (httpResponse) => {
         queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
-          return [...(prev || []), httpResponse.data.data];
+          return [...(prev || []), httpResponse.data];
         });
       },
     }

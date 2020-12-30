@@ -1,3 +1,4 @@
+import type { DataResponse } from '@rebrowse/types';
 import type { ResponsePromise } from 'ky';
 import type { HttpResponse } from 'types';
 
@@ -20,10 +21,13 @@ export const textResponse = async (
   return httpDataResponse(data, response);
 };
 
-export const jsonResponse = async <TObject>(
+const json = <TObject>(responsePromise: ResponsePromise) => {
+  return Promise.all([responsePromise, responsePromise.json<TObject>()]);
+};
+
+export const jsonDataResponse = async <TObject>(
   responsePromise: ResponsePromise
 ): Promise<HttpResponse<TObject>> => {
-  const response = await responsePromise;
-  const data = await responsePromise.json<TObject>();
-  return httpDataResponse(data, response);
+  const [response, data] = await json<DataResponse<TObject>>(responsePromise);
+  return httpDataResponse<TObject>(data.data, response);
 };

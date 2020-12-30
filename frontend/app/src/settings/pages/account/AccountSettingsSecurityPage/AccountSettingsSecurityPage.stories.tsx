@@ -9,6 +9,7 @@ import { AuthApi } from 'api';
 import type { Meta } from '@storybook/react';
 import { REBROWSE_ADMIN_DTO } from '__tests__/data/user';
 import { REBROWSE_ORGANIZATION_DTO } from '__tests__/data/organization';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { AccountSettingsSecurityPage } from './AccountSettingsSecurityPage';
 
@@ -32,23 +33,17 @@ MfaEnabled.story = configureStory({
     let list = [TOTP_MFA_SETUP_DTO, SMS_MFA_SETUP_DTO];
 
     return {
-      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves({
-        data: { data: list },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
+      listSetups: sandbox
+        .stub(AuthApi.mfa.setup, 'list')
+        .resolves(httpOkResponse(list)),
 
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
+      setupStart: sandbox
+        .stub(AuthApi.mfa.setup.totp, 'start')
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
 
-      setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').resolves({
-        data: { data: TOTP_MFA_SETUP_DTO },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
+      setupComplete: sandbox
+        .stub(AuthApi.mfa.setup, 'complete')
+        .resolves(httpOkResponse(TOTP_MFA_SETUP_DTO)),
 
       disable: sandbox
         .stub(AuthApi.mfa.setup, 'disable')
@@ -72,21 +67,15 @@ export const MfaDisabled = () => {
 MfaDisabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves({
-        data: { data: [] },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
-      setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').resolves({
-        data: { data: TOTP_MFA_SETUP_DTO },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
+      listSetups: sandbox
+        .stub(AuthApi.mfa.setup, 'list')
+        .resolves(httpOkResponse([])),
+      setupStart: sandbox
+        .stub(AuthApi.mfa.setup.totp, 'start')
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
+      setupComplete: sandbox
+        .stub(AuthApi.mfa.setup, 'complete')
+        .resolves(httpOkResponse(TOTP_MFA_SETUP_DTO)),
     };
   },
 });

@@ -8,6 +8,7 @@ import {
   TOTP_MFA_SETUP_DTO,
 } from '__tests__/data/mfa';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { AccountMfaPanel } from './AccountMfaPanel';
 
@@ -27,31 +28,21 @@ export const MfaEnabled = () => {
 MfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      listSetups: sandbox.stub(AuthApi.mfa.setup, 'list').resolves({
-        data: { data: [TOTP_MFA_SETUP_DTO] },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
+      listSetups: sandbox
+        .stub(AuthApi.mfa.setup, 'list')
+        .resolves(httpOkResponse([TOTP_MFA_SETUP_DTO])),
 
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE } },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
+      setupStart: sandbox
+        .stub(AuthApi.mfa.setup.totp, 'start')
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
 
-      setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').resolves({
-        data: { data: TOTP_MFA_SETUP_DTO },
-        statusCode: 200,
-        headers: new Headers(),
-      }),
+      setupComplete: sandbox
+        .stub(AuthApi.mfa.setup, 'complete')
+        .resolves(httpOkResponse(TOTP_MFA_SETUP_DTO)),
 
       setupSendSmsCode: sandbox
         .stub(AuthApi.mfa.setup.sms, 'sendCode')
-        .resolves({
-          data: { data: { validitySeconds: 60 } },
-          statusCode: 200,
-          headers: new Headers(),
-        }),
+        .resolves(httpOkResponse({ validitySeconds: 60 })),
     };
   },
 });

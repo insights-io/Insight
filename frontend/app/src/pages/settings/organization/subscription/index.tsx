@@ -58,7 +58,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         baseURL: process.env.BILLING_API_BASE_URL,
         headers,
       })
-      .then((httpResponse) => httpResponse.data.data);
+      .then((httpResponse) => httpResponse.data);
 
     const subscriptionsPromise = BillingApi.subscriptions
       .list({
@@ -66,7 +66,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         search: { sortBy: ['-createdAt'] },
         headers,
       })
-      .then((httpResponse) => httpResponse.data.data);
+      .then((httpResponse) => httpResponse.data);
 
     const [plan, subscriptions] = await Promise.all([
       activePlanPromise,

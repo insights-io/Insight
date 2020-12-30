@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { HttpResponse, mapMfaSetup } from '@rebrowse/sdk';
+import { mapMfaSetup } from '@rebrowse/sdk';
 import type {
   APIErrorDataResponse,
-  DataResponse,
   MfaMethod,
   MfaSetupDTO,
 } from '@rebrowse/types';
@@ -36,9 +35,9 @@ export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
     ({ method, code }: { method: MfaMethod; code: number }) =>
       AuthApi.mfa.setup.complete(method, code),
     {
-      onSuccess: (httpResponse: HttpResponse<DataResponse<MfaSetupDTO>>) => {
+      onSuccess: (httpResponse) => {
         queryClient.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
-          return [...(prev || initialData), httpResponse.data.data];
+          return [...(prev || initialData), httpResponse.data];
         });
       },
     }

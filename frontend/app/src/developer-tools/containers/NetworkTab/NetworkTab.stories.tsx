@@ -4,6 +4,7 @@ import { SessionApi } from 'api';
 import { FETCH_EVENTS } from '__tests__/data';
 import noop from 'lodash/noop';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { NetworkTabContainer } from './NetworkTab';
 
@@ -19,11 +20,9 @@ export const Base = () => {
 
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(SessionApi.events, 'search').resolves({
-      data: { data: [...Object.values(FETCH_EVENTS)] },
-      statusCode: 200,
-      headers: new Headers(),
-    });
+    return sandbox
+      .stub(SessionApi.events, 'search')
+      .resolves(httpOkResponse([...Object.values(FETCH_EVENTS)]));
   },
 });
 

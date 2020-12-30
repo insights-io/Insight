@@ -1,6 +1,5 @@
 import ky from 'ky-universal';
 import type {
-  DataResponse,
   MfaMethod,
   MfaTotpSetupStartDTO,
   MfaSetupStartDTO,
@@ -10,7 +9,7 @@ import type {
 import { withCredentials } from 'utils';
 import type { RequestOptions } from 'types';
 
-import { httpResponse, jsonResponse } from '../../../http';
+import { httpResponse, jsonDataResponse } from '../../../http';
 
 export const mfaSetupResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -21,7 +20,7 @@ export const mfaSetupResource = (authApiBaseURL: string) => {
     method: MfaMethod,
     { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
   ) => {
-    return jsonResponse<DataResponse<T>>(
+    return jsonDataResponse<T>(
       ky.post(
         `${resourceBaseURL(baseURL)}/${method}/start`,
         withCredentials(rest)
@@ -35,7 +34,7 @@ export const mfaSetupResource = (authApiBaseURL: string) => {
     { baseURL = authApiBaseURL, ...rest }: RequestOptions = {},
     path = ''
   ) => {
-    return jsonResponse<DataResponse<MfaSetupDTO>>(
+    return jsonDataResponse<MfaSetupDTO>(
       ky.post(
         `${resourceBaseURL(baseURL)}/${method}/complete${path}`,
         withCredentials({ json: { code }, ...rest })
@@ -48,12 +47,12 @@ export const mfaSetupResource = (authApiBaseURL: string) => {
       method: MfaMethod,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<MfaSetupDTO>>(
+      return jsonDataResponse<MfaSetupDTO>(
         ky.get(`${resourceBaseURL(baseURL)}/${method}`, withCredentials(rest))
       );
     },
     list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return jsonResponse<DataResponse<MfaSetupDTO[]>>(
+      return jsonDataResponse<MfaSetupDTO[]>(
         ky.get(resourceBaseURL(baseURL), withCredentials(rest))
       );
     },
@@ -65,7 +64,7 @@ export const mfaSetupResource = (authApiBaseURL: string) => {
         baseURL = authApiBaseURL,
         ...rest
       }: RequestOptions = {}) => {
-        return jsonResponse<DataResponse<CodeValidityDTO>>(
+        return jsonDataResponse<CodeValidityDTO>(
           ky.post(
             `${resourceBaseURL(baseURL)}/sms/send_code`,
             withCredentials(rest)

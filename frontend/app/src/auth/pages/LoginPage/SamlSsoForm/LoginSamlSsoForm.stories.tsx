@@ -3,6 +3,7 @@ import { AuthApi } from 'api';
 import React from 'react';
 import { ACCOUNT_SETTINGS_PAGE } from 'shared/constants/routes';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { LoginSamlSsoForm } from './LoginSamlSsoForm';
 
@@ -16,11 +17,9 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso.setup, 'getByDomain').resolves({
-      data: { data: 'http://localhost:8080/v1/sso/saml/signin' },
-      statusCode: 200,
-      headers: new Headers(),
-    });
+    return sandbox
+      .stub(AuthApi.sso.setup, 'getByDomain')
+      .resolves(httpOkResponse('http://localhost:8080/v1/sso/saml/signin'));
   },
 });
 
@@ -33,10 +32,8 @@ export const SsoNotEnabled = () => {
 };
 SsoNotEnabled.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso.setup, 'getByDomain').resolves({
-      data: { data: false },
-      statusCode: 200,
-      headers: new Headers(),
-    });
+    return sandbox
+      .stub(AuthApi.sso.setup, 'getByDomain')
+      .resolves(httpOkResponse(false));
   },
 });

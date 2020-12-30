@@ -1,14 +1,9 @@
 import ky from 'ky-universal';
-import type {
-  DataResponse,
-  MfaMethod,
-  CodeValidityDTO,
-  UserDTO,
-} from '@rebrowse/types';
+import type { MfaMethod, CodeValidityDTO, UserDTO } from '@rebrowse/types';
 import { withCredentials } from 'utils';
 import type { RequestOptions } from 'types';
 
-import { httpResponse, jsonResponse } from '../../../http';
+import { httpResponse, jsonDataResponse } from '../../../http';
 
 export const mfaChallengeResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -29,11 +24,11 @@ export const mfaChallengeResource = (authApiBaseURL: string) => {
         .then(httpResponse);
     },
 
-    sensSmsChallengeCode: ({
+    sendSmsCode: ({
       baseURL = authApiBaseURL,
       ...rest
     }: RequestOptions = {}) => {
-      return jsonResponse<DataResponse<CodeValidityDTO>>(
+      return jsonDataResponse<CodeValidityDTO>(
         ky.post(
           `${resourceBaseURL(baseURL)}/sms/send_code`,
           withCredentials(rest)
@@ -44,15 +39,15 @@ export const mfaChallengeResource = (authApiBaseURL: string) => {
       id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<UserDTO>>(
+      return jsonDataResponse<UserDTO>(
         ky.get(`${resourceBaseURL(baseURL)}/${id}/user`, rest)
       );
     },
-    get: (
+    retrieve: (
       id: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<MfaMethod[]>>(
+      return jsonDataResponse<MfaMethod[]>(
         ky.get(`${resourceBaseURL(baseURL)}/${id}`, rest)
       );
     },

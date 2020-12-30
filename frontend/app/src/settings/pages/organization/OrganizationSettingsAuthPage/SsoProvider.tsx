@@ -29,7 +29,7 @@ type Props = {
   deleteSsoSetup: () => Promise<HttpResponseBase>;
   createSsoSetup: (params: {
     method: SsoMethod;
-    saml: SamlConfigurationDTO;
+    saml?: SamlConfigurationDTO;
   }) => Promise<SsoSetupDTO>;
 };
 

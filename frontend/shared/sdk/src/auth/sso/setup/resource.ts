@@ -1,6 +1,5 @@
 import ky from 'ky-universal';
 import type {
-  DataResponse,
   SsoMethod,
   SsoSetupDTO,
   SamlConfigurationDTO,
@@ -8,12 +7,12 @@ import type {
 
 import { withCredentials } from '../../../utils';
 import type { RequestOptions } from '../../../types';
-import { httpResponse, jsonResponse } from '../../../http';
+import { httpResponse, jsonDataResponse } from '../../../http';
 
 export const ssoSetupResource = (authApiBaseURL: string) => {
   return {
     get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return jsonResponse<DataResponse<SsoSetupDTO>>(
+      return jsonDataResponse<SsoSetupDTO>(
         ky.get(`${baseURL}/v1/sso/setup`, withCredentials(rest))
       );
     },
@@ -27,7 +26,7 @@ export const ssoSetupResource = (authApiBaseURL: string) => {
       saml: SamlConfigurationDTO | undefined,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<SsoSetupDTO>>(
+      return jsonDataResponse<SsoSetupDTO>(
         ky.post(
           `${baseURL}/v1/sso/setup`,
           withCredentials({ json: { method, saml }, ...rest })
@@ -38,7 +37,7 @@ export const ssoSetupResource = (authApiBaseURL: string) => {
       domain: string,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return jsonResponse<DataResponse<false | string>>(
+      return jsonDataResponse<false | string>(
         ky.get(`${baseURL}/v1/sso/setup/${domain}`, rest)
       );
     },

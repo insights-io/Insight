@@ -1,13 +1,13 @@
 import type {
-  HttpResponse,
   SessionSearchBean,
   SessionSearchQueryParams,
 } from '@rebrowse/sdk';
 import { mockApiError } from '@rebrowse/storybook';
-import { DataResponse, SessionDTO, TimePrecision } from '@rebrowse/types';
+import { SessionDTO, TimePrecision } from '@rebrowse/types';
 import { startOfDay } from 'date-fns';
 import get from 'lodash/get';
 import { REBROWSE_SESSIONS_DTOS } from '__tests__/data/sessions';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { countBy, filterByParam, getParsedValue } from './core';
 
@@ -43,14 +43,10 @@ export const countSessionsBy = <
 export const retrieveSessionMockImplementation = (
   id: string,
   sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
-): Promise<HttpResponse<DataResponse<SessionDTO>>> => {
+) => {
   const maybeSession = sessions.find((s) => s.id === id);
   if (maybeSession) {
-    return Promise.resolve({
-      data: { data: maybeSession },
-      statusCode: 200,
-      headers: new Headers(),
-    });
+    return Promise.resolve(httpOkResponse(maybeSession));
   }
   return Promise.reject(
     mockApiError({
@@ -64,18 +60,14 @@ export const retrieveSessionMockImplementation = (
 export const getDistinctMockImplementation = (
   on: keyof SessionSearchQueryParams,
   sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
-): Promise<HttpResponse<DataResponse<string[]>>> => {
-  return Promise.resolve({
-    data: {
-      data: [
-        ...new Set(
-          sessions
-            .map((session) => getParsedValue(session, on) as string)
-            .filter(Boolean)
-        ),
-      ],
-    },
-    statusCode: 200,
-    headers: new Headers(),
-  });
+) => {
+  return Promise.resolve(
+    httpOkResponse([
+      ...new Set(
+        sessions
+          .map((session) => getParsedValue(session, on) as string)
+          .filter(Boolean)
+      ),
+    ])
+  );
 };

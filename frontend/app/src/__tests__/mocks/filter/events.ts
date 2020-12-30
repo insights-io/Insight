@@ -1,14 +1,7 @@
-import type {
-  EventSeachBean,
-  EventSearchQueryParams,
-  HttpResponse,
-} from '@rebrowse/sdk';
-import type {
-  BrowserEventDTO,
-  DataResponse,
-  SearchBean,
-} from '@rebrowse/types';
+import type { EventSeachBean, EventSearchQueryParams } from '@rebrowse/sdk';
+import type { BrowserEventDTO, SearchBean } from '@rebrowse/types';
 import { REBROWSE_EVENTS } from '__tests__/data/events';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { filterByParam } from './core';
 
@@ -32,10 +25,8 @@ export const filterBrowserEvent = <
 export const searchEventsMockImplementation = (
   search: SearchBean<EventSearchQueryParams, 'event.e'[]> | undefined,
   events: BrowserEventDTO[] = REBROWSE_EVENTS
-): Promise<HttpResponse<DataResponse<BrowserEventDTO[]>>> => {
-  return Promise.resolve({
-    data: { data: events.filter((e) => filterBrowserEvent(e, search)) },
-    statusCode: 200,
-    headers: new Headers(),
-  });
+) => {
+  return Promise.resolve(
+    httpOkResponse(events.filter((e) => filterBrowserEvent(e, search)))
+  );
 };

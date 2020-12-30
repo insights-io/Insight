@@ -43,34 +43,36 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const { user, organization } = authResponse;
+    const headers = {
+      ...prepareCrossServiceHeaders(requestSpan),
+      cookie: `SessionId=${authResponse.SessionId}`,
+    };
+
     const teamInvitesPromise = AuthApi.organization.teamInvite
       .list({
         baseURL: process.env.AUTH_API_BASE_URL,
         search: { limit: 20, sortBy: ['+createdAt'] },
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
+        headers,
       })
-      .then((httpResponse) => httpResponse.data.data);
+      .then((httpResponse) => httpResponse.data);
 
     const inviteCountPromise = AuthApi.organization.teamInvite
-      .count({
-        baseURL: process.env.AUTH_API_BASE_URL,
-        headers: {
-          ...prepareCrossServiceHeaders(requestSpan),
-          cookie: `SessionId=${authResponse.SessionId}`,
-        },
-      })
-      .then((httpResponse) => httpResponse.data.data.count);
+      .count({ baseURL: process.env.AUTH_API_BASE_URL, headers })
+      .then((httpResponse) => httpResponse.data.count);
 
     const [teamInvites, inviteCount] = await Promise.all([
       teamInvitesPromise,
       inviteCountPromise,
     ]);
 
-    return { props: { user, teamInvites, inviteCount, organization } };
+    return {
+      props: {
+        user: authResponse.user,
+        teamInvites,
+        inviteCount,
+        organization: authResponse.organization,
+      },
+    };
   } finally {
     requestSpan.finish();
   }

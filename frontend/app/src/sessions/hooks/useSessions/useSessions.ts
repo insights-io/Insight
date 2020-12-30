@@ -128,14 +128,14 @@ export const useSessions = (
         const search = getSearchQuery(paramFilter);
         const countPromise = SessionApi.count({
           search: getSearchQuery(paramFilter),
-        }).then((httpResponse) => httpResponse.data.data.count);
+        }).then((httpResponse) => httpResponse.data.count);
 
         search.limit = 20;
         search.sortBy = ['-createdAt'];
 
         const sessionsPromise = SessionApi.getSessions({
           search,
-        }).then((httpResponse) => httpResponse.data.data.map(mapSession));
+        }).then((httpResponse) => httpResponse.data.map(mapSession));
 
         Promise.all([countPromise, sessionsPromise]).then(
           ([nextCount, nextSessions]) => {
@@ -195,7 +195,7 @@ export const useSessions = (
       }
 
       SessionApi.getSessions({ search })
-        .then((httpResponse) => httpResponse.data.data.map(mapSession))
+        .then((httpResponse) => httpResponse.data.map(mapSession))
         .then((newSessions) =>
           dispatch({
             type: actionTypes.ADD_SESSIONS,
