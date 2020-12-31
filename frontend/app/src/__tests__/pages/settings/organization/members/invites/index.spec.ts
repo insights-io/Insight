@@ -1,9 +1,5 @@
 import { sandbox } from '@rebrowse/testing';
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ORGANIZATION_SETTINGS_MEMBER_INVITES_PAGE } from 'shared/constants/routes';
@@ -14,6 +10,7 @@ import {
   STANDARD_TEAM_INVITE_DTO,
 } from '__tests__/data';
 import { mockOrganizationSettingsMemberInvitesPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings/organization/members', () => {
   /* Data */
@@ -47,7 +44,7 @@ describe('/settings/organization/members', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     expect(screen.getByText(invites[0].email)).toBeInTheDocument();
     expect(screen.getByText(invites[1].email)).toBeInTheDocument();

@@ -12,6 +12,7 @@ import {
 import { sessionDescription } from 'sessions/utils';
 import { TermCondition } from '@rebrowse/sdk';
 import { match } from 'sinon';
+import { renderPage } from '__tests__/utils';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -36,11 +37,12 @@ describe('/sessions', () => {
         countSessionsStub,
       } = mockEmptySessionsPage(sandbox);
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      render(page);
 
-      /* Assertions */
+      /* Client */
+      renderPage(page);
+
       await screen.findByText(
         'Ready to get insights? Setup the recording snippet.'
       );
@@ -112,7 +114,7 @@ describe('/sessions', () => {
       });
 
       /* Client */
-      const { container } = render(page);
+      const { container } = renderPage(page);
       await screen.findAllByText('Mac OS X • Chrome');
       screen.getAllByText(/Ljubljana, Slovenia - 82.192.62.51 - (.*)/);
 
@@ -225,7 +227,7 @@ describe('/sessions', () => {
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       userEvent.click(
         screen.getAllByText(sessionDescription(REBROWSE_SESSIONS[0]))[0]

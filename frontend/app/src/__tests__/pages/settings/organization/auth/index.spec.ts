@@ -1,11 +1,12 @@
 import { sandbox } from '@rebrowse/testing';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ORGANIZATION_SETTINGS_AUTH_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { SSO_SAML_SETUP_DTO } from '__tests__/data';
 import { mockOrganizationAuthPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings/organization/auth', () => {
   /* Data */
@@ -31,7 +32,7 @@ describe('/settings/organization/auth', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     const oktaToggle = screen
       .getByText('Enable your organization to sign in with Okta.')
@@ -73,7 +74,7 @@ describe('/settings/organization/auth', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     const githubToggle = screen
       .getByText('Enable your organization to sign in with Github.')

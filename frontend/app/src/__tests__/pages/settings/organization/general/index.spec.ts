@@ -1,10 +1,11 @@
 import { sandbox } from '@rebrowse/testing';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ORGANIZATION_SETTINGS_GENERAL_PAGE } from 'shared/constants/routes';
 import { REBROWSE_ORGANIZATION } from '__tests__/data/organization';
 import { mockOrganizationSettingsGeneralPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings/organization/general', () => {
   /* Data */
@@ -20,7 +21,7 @@ describe('/settings/organization/general', () => {
     const { page } = await getPage({ route });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     expect(
       screen.getByDisplayValue(REBROWSE_ORGANIZATION.id)

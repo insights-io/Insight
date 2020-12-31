@@ -1,6 +1,6 @@
 import { TermCondition } from '@rebrowse/sdk';
 import { sandbox } from '@rebrowse/testing';
-import { screen, render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import type { AutoSizerProps } from 'react-virtualized-auto-sizer';
@@ -12,6 +12,7 @@ import {
   REBROWSE_SESSIONS_DTOS,
 } from '__tests__/data/sessions';
 import { mockSessionPage, mockSessionsPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -43,7 +44,7 @@ describe('/sessions/[id]', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findAllByText('Mac OS X • Chrome');
   });
@@ -66,7 +67,7 @@ describe('/sessions/[id]', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     userEvent.click(screen.getByLabelText('Developer tools'));
 
@@ -141,7 +142,7 @@ describe('/sessions/[id]', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     /* user_agent.device_class */
     await screen.findByText(id);

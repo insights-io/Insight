@@ -48,21 +48,21 @@ export const countTeamInvites = <
 export const searchTeamInvitesMockImplementation = <
   GroupBy extends (keyof TeamInviteQueryParams)[]
 >(
-  value: TeamInviteDTO[] = [],
-  search: TeamInviteSearchBean<GroupBy> | undefined
+  search: TeamInviteSearchBean<GroupBy> | undefined,
+  values: TeamInviteDTO[] = []
 ) => {
   return Promise.resolve(
-    httpOkResponse(value.filter((v) => filterTeamInvite(v, search)))
+    httpOkResponse(values.filter((value) => filterTeamInvite(value, search)))
   );
 };
 
 export const countTeamInvitesMockImplementation = <
   GroupBy extends (keyof TeamInviteQueryParams)[]
 >(
-  value: TeamInviteDTO[] = [],
-  search: TeamInviteSearchBean<GroupBy> | undefined
+  search: TeamInviteSearchBean<GroupBy> | undefined,
+  values: TeamInviteDTO[] = []
 ) => {
-  return Promise.resolve(httpOkResponse(countTeamInvites(value, search)));
+  return Promise.resolve(httpOkResponse(countTeamInvites(values, search)));
 };
 
 export const filterUser = <GroupBy extends (keyof UserSearchQueryParams)[]>(
@@ -80,8 +80,8 @@ export const filterUser = <GroupBy extends (keyof UserSearchQueryParams)[]>(
 export const countUsers = <
   GroupBy extends (keyof UserSearchQueryParams)[] = []
 >(
-  values: UserDTO[],
-  search: UserSearchBean<GroupBy> | undefined
+  search: UserSearchBean<GroupBy> | undefined,
+  values: UserDTO[] = []
 ) => {
   return countBy(
     values,
@@ -102,19 +102,19 @@ export const countUsers = <
 export const countUsersMockImplementation = <
   GroupBy extends (keyof UserSearchQueryParams)[]
 >(
-  value: UserDTO[] = [REBROWSE_ADMIN_DTO],
-  search: UserSearchBean<GroupBy> | undefined
+  search: UserSearchBean<GroupBy> | undefined,
+  values: UserDTO[] = [REBROWSE_ADMIN_DTO]
 ) => {
-  return Promise.resolve(httpOkResponse(countUsers(value, search)));
+  return Promise.resolve(httpOkResponse(countUsers(search, values)));
 };
 
 export const searchUsersMockImplementation = <
   GroupBy extends (keyof UserSearchQueryParams)[]
 >(
-  value: UserDTO[] = [REBROWSE_ADMIN_DTO],
-  search: UserSearchBean<GroupBy> | undefined
+  search: UserSearchBean<GroupBy> | undefined,
+  values: UserDTO[] = [REBROWSE_ADMIN_DTO]
 ) => {
   return Promise.resolve(
-    httpOkResponse(value.filter((v) => filterUser(v, search)))
+    httpOkResponse(values.filter((value) => filterUser(value, search)))
   );
 };

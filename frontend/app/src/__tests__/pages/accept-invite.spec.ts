@@ -1,6 +1,6 @@
 import { mockApiError } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
@@ -8,7 +8,7 @@ import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { ADMIN_TEAM_INVITE_DTO } from '__tests__/data';
 import { mockIndexPage } from '__tests__/mocks';
-import { httpOkResponse } from '__tests__/utils';
+import { httpOkResponse, renderPage } from '__tests__/utils';
 
 describe('/accept-invite', () => {
   /* Data */
@@ -26,7 +26,7 @@ describe('/accept-invite', () => {
     const { page } = await getPage({ route: ACCEPT_INVITE_PAGE });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText('Page Visits');
   });
@@ -54,7 +54,7 @@ describe('/accept-invite', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText(
       'We could not find team invite you were looking for'
@@ -90,7 +90,7 @@ describe('/accept-invite', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText(
       'User 123 has invited you to join organization 000000 with role Admin.'

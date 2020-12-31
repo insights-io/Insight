@@ -1,11 +1,12 @@
 import { sandbox } from '@rebrowse/testing';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { FREE_PLAN_DTO } from '__tests__/data/billing';
 import { mockOrganizationSettingsSubscriptionPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings/organization/subscription', () => {
   /* Data */
@@ -42,7 +43,7 @@ describe('/settings/organization/subscription', () => {
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(screen.getByText('Rebrowse Free')).toBeInTheDocument();
       expect(screen.getByText('0 of 1,000 sessions')).toBeInTheDocument();
@@ -83,7 +84,7 @@ describe('/settings/organization/subscription', () => {
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(screen.getByText('Rebrowse Enterprise')).toBeInTheDocument();
       expect(screen.getByText('0 of ∞ sessions')).toBeInTheDocument();

@@ -1,10 +1,11 @@
 import { sandbox } from '@rebrowse/testing';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ACCOUNT_SETTINGS_SECURITY_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { mockAccountSettingsSecurityPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings/account/security', () => {
   /* Data */
@@ -34,7 +35,7 @@ describe('/settings/account/security', () => {
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       userEvent.type(
         screen.getByPlaceholderText('Current password'),
@@ -79,7 +80,7 @@ describe('/settings/account/security', () => {
         });
 
         /* Client */
-        render(page);
+        renderPage(page);
 
         const authyMfaToggle = screen
           .getByText(
@@ -132,7 +133,7 @@ describe('/settings/account/security', () => {
         });
 
         /* Client */
-        render(page);
+        renderPage(page);
 
         const authyMfaToggle = screen
           .getByText(

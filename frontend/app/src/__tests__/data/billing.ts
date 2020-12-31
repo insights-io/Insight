@@ -48,7 +48,7 @@ export const FREE_PLAN_DTO: PlanDTO = {
   type: 'free',
 };
 
-export const REBROWSER_PLAN_DTO: PlanDTO = {
+export const REBROWSE_PLAN_DTO: PlanDTO = {
   dataRetention: '∞',
   organizationId: REBROWSE_ORGANIZATION.id,
   price: { amount: 0, interval: 'month' },

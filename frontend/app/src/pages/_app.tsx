@@ -6,7 +6,7 @@ import Router from 'next/router';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
-const queryClient = createQueryClient();
+export const QUERY_CLIENT = createQueryClient();
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -16,7 +16,7 @@ class RebrowseApp extends App {
   render() {
     const { Component, pageProps } = this.props;
     return (
-      <AppProviders queryClient={queryClient}>
+      <AppProviders queryClient={QUERY_CLIENT}>
         <Component {...pageProps} />
       </AppProviders>
     );

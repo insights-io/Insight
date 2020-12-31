@@ -1,10 +1,11 @@
 import { sandbox } from '@rebrowse/testing';
 import { TimePrecision } from '@rebrowse/types';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { getPage } from 'next-page-tester';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { mockIndexPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/', () => {
   /* Data */
@@ -74,7 +75,7 @@ describe('/', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     expect(await screen.findByText('Page Visits')).toBeInTheDocument();
     expect(screen.getByText('Sessions')).toBeInTheDocument();

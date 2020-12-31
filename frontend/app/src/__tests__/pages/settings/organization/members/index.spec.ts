@@ -1,15 +1,12 @@
 import { sandbox } from '@rebrowse/testing';
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ORGANIZATION_SETTINGS_MEMBERS_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { REBROWSE_ADMIN_DTO } from '__tests__/data';
 import { mockOrganizationSettingsMembersPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings/organization/members', () => {
   /* Data */
@@ -38,7 +35,7 @@ describe('/settings/organization/members', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     expect(
       screen.getByText(REBROWSE_ADMIN_DTO.fullName as string)

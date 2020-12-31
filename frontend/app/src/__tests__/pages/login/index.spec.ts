@@ -1,5 +1,5 @@
 import { sandbox } from '@rebrowse/testing';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import {
@@ -12,6 +12,7 @@ import * as windowUtils from 'shared/utils/window';
 import { mockIndexPage } from '__tests__/mocks';
 import { httpOkResponse } from '__tests__/utils/request';
 import { match } from 'sinon';
+import { renderPage } from '__tests__/utils';
 
 describe('/login', () => {
   /* Data */
@@ -37,7 +38,7 @@ describe('/login', () => {
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       const signInButton = await screen.findByText('Sign in');
 
@@ -66,7 +67,7 @@ describe('/login', () => {
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       const signInButton = await screen.findByText('Sign in');
 
@@ -100,7 +101,7 @@ describe('/login', () => {
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       userEvent.click(await screen.findByText('SSO'));
       userEvent.type(
@@ -129,7 +130,7 @@ describe('/login', () => {
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       userEvent.click(await screen.findByText('SSO'));
       userEvent.type(
@@ -158,7 +159,7 @@ describe('/login', () => {
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(
         screen.getByText('Sign in with Google').parentElement
@@ -193,7 +194,7 @@ describe('/login', () => {
     const { page } = await getPage({ route });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     userEvent.click(screen.getByText('Forgot?'));
     await screen.findByText('Remember password?');

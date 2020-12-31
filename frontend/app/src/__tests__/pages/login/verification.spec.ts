@@ -4,12 +4,13 @@ import { AuthApi } from 'api';
 import { REBROWSE_ADMIN_DTO } from '__tests__/data/user';
 import { getPage } from 'next-page-tester';
 import { VERIFICATION_PAGE } from 'shared/constants/routes';
-import { screen, render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { mockIndexPage } from '__tests__/mocks';
 import { TOTP_MFA_SETUP_QR_IMAGE } from '__tests__/data/mfa';
 import { httpOkResponse } from '__tests__/utils/request';
 import { match } from 'sinon';
+import { renderPage } from '__tests__/utils';
 
 describe('/login/verification', () => {
   /* Data */
@@ -43,7 +44,7 @@ describe('/login/verification', () => {
       });
 
       /* Client */
-      const { container } = render(page);
+      const { container } = renderPage(page);
 
       await screen.findByText(
         'To protect your account, please complete the following verification.'
@@ -117,7 +118,7 @@ describe('/login/verification', () => {
       });
 
       /* Client */
-      const { container } = render(page);
+      const { container } = renderPage(page);
 
       await screen.findByText(
         'Your organization has enforced multi-factor authentication for all members.'
@@ -150,7 +151,7 @@ describe('/login/verification', () => {
     const { page } = await getPage({ route });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText('Sign in with Google');
   });
@@ -179,7 +180,7 @@ describe('/login/verification', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText('Sign in with Google');
   });

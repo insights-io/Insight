@@ -24,7 +24,9 @@ Base.story = configureStory({
         .callsFake((_sessionId, args = {}) => {
           return Promise.resolve(
             httpOkResponse(
-              REBROWSE_EVENTS.filter((e) => filterBrowserEvent(e, args.search))
+              REBROWSE_EVENTS.filter((event) =>
+                filterBrowserEvent(event, args.search)
+              )
             )
           );
         }),

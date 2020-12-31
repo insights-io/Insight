@@ -1,15 +1,12 @@
 import { sandbox } from '@rebrowse/testing';
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import { ACCOUNT_SETTINGS_AUTH_TOKENS_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { AUTH_TOKEN_DTO } from '__tests__/data/sso';
 import { mockAcocuntSettingsAuthTokensPage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings/account/auth-token', () => {
   /* Data */
@@ -35,7 +32,7 @@ describe('/settings/account/auth-token', () => {
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     expect(screen.getByText(AUTH_TOKEN_DTO.token)).toBeInTheDocument();
     userEvent.click(screen.getByText('Create new'));
@@ -65,7 +62,7 @@ describe('/settings/account/auth-token', () => {
     });
 
     /* Client */
-    const { container } = render(page);
+    const { container } = renderPage(page);
 
     expect(screen.getByText(AUTH_TOKEN_DTO.token)).toBeInTheDocument();
 

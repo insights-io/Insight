@@ -1,6 +1,6 @@
 import React from 'react';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
-import { FREE_PLAN_DTO, REBROWSER_PLAN_DTO } from '__tests__/data/billing';
+import { FREE_PLAN_DTO, REBROWSE_PLAN_DTO } from '__tests__/data/billing';
 import { REBROWSE_ADMIN_DTO, REBROWSE_ORGANIZATION_DTO } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 import { mockOrganizationSettingsSubscriptionPage as setupMocks } from '__tests__/mocks';
@@ -19,7 +19,7 @@ export const GenesisPlan = () => {
     <OrganizationSettingsBillingSubscriptionPage
       organization={REBROWSE_ORGANIZATION_DTO}
       subscriptions={[]}
-      plan={REBROWSER_PLAN_DTO}
+      plan={REBROWSE_PLAN_DTO}
       user={REBROWSE_ADMIN_DTO}
     />
   );

@@ -1,5 +1,5 @@
 import type { EventSeachBean, EventSearchQueryParams } from '@rebrowse/sdk';
-import type { BrowserEventDTO, SearchBean } from '@rebrowse/types';
+import type { BrowserEventDTO } from '@rebrowse/types';
 import { REBROWSE_EVENTS } from '__tests__/data/events';
 import { httpOkResponse } from '__tests__/utils/request';
 
@@ -22,11 +22,13 @@ export const filterBrowserEvent = <
   );
 };
 
-export const searchEventsMockImplementation = (
-  search: SearchBean<EventSearchQueryParams, 'event.e'[]> | undefined,
-  events: BrowserEventDTO[] = REBROWSE_EVENTS
+export const searchEventsMockImplementation = <
+  GroupBy extends (keyof EventSearchQueryParams)[]
+>(
+  events: BrowserEventDTO[] = REBROWSE_EVENTS,
+  search: EventSeachBean<GroupBy> = {}
 ) => {
   return Promise.resolve(
-    httpOkResponse(events.filter((e) => filterBrowserEvent(e, search)))
+    httpOkResponse(events.filter((event) => filterBrowserEvent(event, search)))
   );
 };

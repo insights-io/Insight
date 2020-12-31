@@ -2,10 +2,10 @@ import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import userEvent from '@testing-library/user-event';
-import { screen, render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { mockIndexPage } from '__tests__/mocks';
 import { mockApiError } from '@rebrowse/storybook';
-import { httpOkResponse } from '__tests__/utils';
+import { httpOkResponse, renderPage } from '__tests__/utils';
 import { match } from 'sinon';
 
 describe('/password-reset', () => {
@@ -38,7 +38,7 @@ describe('/password-reset', () => {
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(
         await screen.findByText('Reset your password')
@@ -79,7 +79,7 @@ describe('/password-reset', () => {
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(
         await screen.findByText('Reset your password')
@@ -114,7 +114,7 @@ describe('/password-reset', () => {
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       await screen.findByText(
         'It looks like this password reset request is invalid or has already been accepted.'

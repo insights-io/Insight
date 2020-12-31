@@ -28,7 +28,7 @@ import { httpOkResponse, jsonPromise } from '__tests__/utils/request';
 import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
 import { mockApiError } from '@rebrowse/storybook';
 import { AUTH_TOKEN_DTO } from '__tests__/data/sso';
-import { REBROWSER_PLAN_DTO } from '__tests__/data/billing';
+import { REBROWSE_PLAN_DTO } from '__tests__/data/billing';
 
 import {
   filterSession,
@@ -90,13 +90,13 @@ export const mockOrganizationSettingsMemberInvitesPage = (
   const listTeamInvitesStub = sandbox
     .stub(AuthApi.organization.teamInvite, 'list')
     .callsFake((args = {}) =>
-      searchTeamInvitesMockImplementation(invites, args.search)
+      searchTeamInvitesMockImplementation(args.search, invites)
     );
 
   const countTeamInvitesStub = sandbox
     .stub(AuthApi.organization.teamInvite, 'count')
     .callsFake((args = {}) =>
-      countTeamInvitesMockImplementation(invites, args.search)
+      countTeamInvitesMockImplementation(args.search, invites)
     );
 
   return { ...authMocks, listTeamInvitesStub, countTeamInvitesStub };
@@ -106,7 +106,7 @@ export const mockOrganizationSettingsSubscriptionPage = (
   sandbox: SinonSandbox,
   {
     sessionInfo = REBROWSE_SESSION_INFO,
-    plan = REBROWSER_PLAN_DTO,
+    plan = REBROWSE_PLAN_DTO,
   }: { sessionInfo?: SessionInfoDTO; plan?: PlanDTO } = {}
 ) => {
   const authMocks = mockAuth(sandbox, sessionInfo);
@@ -134,12 +134,12 @@ export const mockOrganizationSettingsMembersPage = (
   const listMembersStub = sandbox
     .stub(AuthApi.organization.members, 'list')
     .callsFake((args = {}) =>
-      searchUsersMockImplementation(users, args.search)
+      searchUsersMockImplementation(args.search, users)
     );
 
   const countMembersStub = sandbox
     .stub(AuthApi.organization.members, 'count')
-    .callsFake((args = {}) => countUsersMockImplementation(users, args.search));
+    .callsFake((args = {}) => countUsersMockImplementation(args.search, users));
 
   const authMocks = mockAuth(sandbox, sessionInfo);
 
@@ -329,7 +329,7 @@ export const mockSessionPage = (
   const searchEventsStub = sandbox
     .stub(SessionApi.events, 'search')
     .callsFake((_, args = {}) =>
-      searchEventsMockImplementation(args.search, events)
+      searchEventsMockImplementation(events, args.search)
     );
 
   return { ...authMocks, retrieveSessionStub, searchEventsStub };
@@ -359,7 +359,9 @@ export const mockSessionsPage = (
     .stub(SessionApi, 'getSessions')
     .callsFake((args = {}) => {
       return Promise.resolve(
-        httpOkResponse(sessions.filter((s) => filterSession(s, args.search)))
+        httpOkResponse(
+          sessions.filter((session) => filterSession(session, args.search))
+        )
       );
     });
 
