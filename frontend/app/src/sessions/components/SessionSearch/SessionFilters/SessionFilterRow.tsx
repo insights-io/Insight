@@ -40,10 +40,10 @@ const OptionWithIcon = forwardRef<HTMLLIElement, OptionListProps>(
         item={item}
         {...rest}
         overrides={{ ListItem: { props: { ref } } }}
-        getItemLabel={(item: FilterOption) => (
+        getItemLabel={(filterOption: FilterOption) => (
           <>
             <item.icon style={{ marginRight: '12px' }} />
-            {item.label}
+            {filterOption.label}
           </>
         )}
       />

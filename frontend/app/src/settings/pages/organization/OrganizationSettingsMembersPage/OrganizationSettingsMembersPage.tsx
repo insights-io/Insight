@@ -11,16 +11,16 @@ type Props = {
 };
 
 export const OrganizationSettingsMembersPage = ({
-  user,
-  organization,
+  user: initialUser,
+  organization: intialOrganization,
   members,
   memberCount,
 }: Props) => {
   return (
     <OrganizationMembersLayout
       pageTab="Members"
-      organization={organization}
-      user={user}
+      organization={intialOrganization}
+      user={initialUser}
       renderTab={(user) => (
         <OrganizationMembers
           user={user}

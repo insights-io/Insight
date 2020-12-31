@@ -20,7 +20,9 @@ export const useOrganizationPasswordPolicy = (
 
   const { mutateAsync: createPasswordPolicy } = useMutation(
     (params: PasswordPolicyCreateParams) =>
-      AuthApi.organization.passwordPolicy.create(params),
+      AuthApi.organization.passwordPolicy
+        .create(params)
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (policy) => {
         queryClient.setQueryData<OrganizationPasswordPolicyDTO>(
@@ -33,7 +35,9 @@ export const useOrganizationPasswordPolicy = (
 
   const { mutateAsync: updatePasswordPolicy } = useMutation(
     (params: PasswordPolicyUpdateParams) =>
-      AuthApi.organization.passwordPolicy.update(params),
+      AuthApi.organization.passwordPolicy
+        .update(params)
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (policy) => {
         queryClient.setQueryData<OrganizationPasswordPolicyDTO>(

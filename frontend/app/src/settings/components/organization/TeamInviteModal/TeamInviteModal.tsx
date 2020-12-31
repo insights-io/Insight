@@ -22,9 +22,12 @@ import { Button, EmailInput, Label } from '@rebrowse/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
 import { SIZE } from 'baseui/button';
 import { useIsOpen } from 'shared/hooks/useIsOpen';
+import type { HttpResponse } from '@rebrowse/sdk';
 
 type Props = {
-  createTeamInvite: (formData: TeamInviteCreateDTO) => Promise<TeamInviteDTO>;
+  createTeamInvite: (
+    formData: TeamInviteCreateDTO
+  ) => Promise<HttpResponse<TeamInviteDTO>>;
   children: (open: () => void) => void;
 };
 
@@ -76,7 +79,7 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
   return (
     <>
       {children(open)}
-      <Modal onClose={close} isOpen={isOpen}>
+      <Modal onClose={close} isOpen={isOpen} unstable_ModalBackdropScroll>
         <form onSubmit={onSubmit} noValidate>
           <ModalHeader>Invite new member</ModalHeader>
           <ModalBody>

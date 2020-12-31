@@ -46,9 +46,7 @@ const HOURS_IN_30_DAYS = HOURS_IN_DAY * 30;
 const NOW = new Date();
 
 export const REBROWSE_SESSIONS_DESKTOP_FROM_LJUBLJANA: SessionDTO[] = Array.from(
-  {
-    length: HOURS_IN_30_DAYS,
-  }
+  { length: HOURS_IN_30_DAYS }
 ).map((_, index) => {
   const offsetHours = Math.ceil(Math.random() * 10) + index;
 

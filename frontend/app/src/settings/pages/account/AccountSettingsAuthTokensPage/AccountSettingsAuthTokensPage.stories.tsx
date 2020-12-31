@@ -1,8 +1,9 @@
 import React from 'react';
-import { fullHeightDecorator } from '@rebrowse/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { Meta } from '@storybook/react';
-import { AuthTokenDTO } from '@rebrowse/types';
 import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from '__tests__/data';
+import { mockAcocuntSettingsAuthTokensPage as setupMocks } from '__tests__/mocks';
+import { AUTH_TOKEN_DTO } from '__tests__/data/sso';
 
 import { AccountSettingsAuthTokensPage } from './AccountSettingsAuthTokensPage';
 
@@ -11,12 +12,6 @@ export default {
   component: AccountSettingsAuthTokensPage,
   decorators: [fullHeightDecorator],
 } as Meta;
-
-const AUTH_TOKEN_DTO: AuthTokenDTO = {
-  userId: '123',
-  token: 'superToken',
-  createdAt: new Date().toUTCString(),
-};
 
 export const Base = () => {
   return (
@@ -27,3 +22,4 @@ export const Base = () => {
     />
   );
 };
+Base.story = configureStory({ setupMocks });

@@ -20,7 +20,12 @@ export const PhoneNumberVerifyModal = ({
   return (
     <>
       {children(open)}
-      <Modal isOpen={isOpen} onClose={close} size={SIZE.auto}>
+      <Modal
+        isOpen={isOpen}
+        onClose={close}
+        size={SIZE.auto}
+        unstable_ModalBackdropScroll
+      >
         <ModalHeader>Verify phone number</ModalHeader>
         <ModalBody>
           <PhoneNumberVerifyForm

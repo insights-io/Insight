@@ -6,6 +6,7 @@ import { mockServerSideRequest } from '@rebrowse/next-testing';
 import * as tracerUtils from 'shared/utils/tracing';
 import type { Tracer } from 'opentracing';
 import { RenderPage, RenderPageResult } from 'next/dist/next-server/lib/utils';
+import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
 
 const initilEnvironment = process.env;
 
@@ -18,23 +19,15 @@ describe('pages/_document', () => {
     process.env.BOOTSTRAP_SCRIPT = 'fromEnv';
     const renderPage = sandbox
       .stub<Parameters<RenderPage>, RenderPageResult>()
-      .resolves({
-        html: '<div>Hello world</div>',
-      });
+      .resolves({ html: '<div>Hello world</div>' });
 
-    const fetchBoostrapScriptStub = sandbox.stub(sdk, 'getBoostrapScript')
-      .resolves(`((s, e, t) => {
-      s._i_debug = !1;
-      s._i_host = 'rebrowse.dev';
-      s._i_org = '<ORG>';
-      s._i_ns = 'IS';
-      const n = e.createElement(t);
-      n.async = true;
-      n.crossOrigin = 'anonymous';
-      n.src = 'https://static.rebrowse.dev/s/localhost.rebrowse.js';
-      const i = e.getElementsByTagName(t)[0];
-      i.parentNode.insertBefore(n, i);
-    })(window, document, 'script');`);
+    const fetchBoostrapScriptStub = sandbox
+      .stub(sdk, 'getBoostrapScript')
+      .resolves({
+        data: BOOTSTRAP_SCRIPT,
+        statusCode: 200,
+        headers: new Headers(),
+      });
 
     const props = await getInitialProps(undefined, renderPage, new Server());
 
@@ -43,25 +36,16 @@ describe('pages/_document', () => {
     expect(props).toEqual({
       html: '<div>Hello world</div>',
       stylesheets: [{ attrs: {}, css: '' }],
-      bootstrapScript: `((s, e, t) => {
-      s._i_debug = !1;
-      s._i_host = 'rebrowse.dev';
-      s._i_org = '000000';
-      s._i_ns = 'IS';
-      const n = e.createElement(t);
-      n.async = true;
-      n.crossOrigin = 'anonymous';
-      n.src = 'https://static.rebrowse.dev/s/localhost.rebrowse.js';
-      const i = e.getElementsByTagName(t)[0];
-      i.parentNode.insertBefore(n, i);
-    })(window, document, 'script');`,
+      bootstrapScript: BOOTSTRAP_SCRIPT,
     });
   });
 
   it('Should trace when request', async () => {
     process.env.BOOTSTRAP_SCRIPT = 'fromEnv';
     const renderPage = sandbox.stub().resolves();
-    sandbox.stub(sdk, 'getBoostrapScript').resolves('');
+    sandbox
+      .stub(sdk, 'getBoostrapScript')
+      .resolves({ data: '', headers: new Headers(), statusCode: 200 });
 
     const tracer = { startSpan: sandbox.stub(), extract: sandbox.stub() };
     sandbox
@@ -91,7 +75,9 @@ describe('pages/_document', () => {
   it('Should trace continue previously started request trace', async () => {
     process.env.BOOTSTRAP_SCRIPT = 'fromEnv';
     const renderPage = sandbox.stub().resolves();
-    sandbox.stub(sdk, 'getBoostrapScript').resolves('');
+    sandbox
+      .stub(sdk, 'getBoostrapScript')
+      .resolves({ data: '', statusCode: 200, headers: new Headers() });
 
     const tracer = { startSpan: sandbox.stub(), extract: sandbox.stub() };
     sandbox

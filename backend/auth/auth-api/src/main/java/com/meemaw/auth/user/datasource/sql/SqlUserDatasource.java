@@ -18,6 +18,8 @@ import static com.meemaw.auth.user.datasource.sql.SqlUserTable.TABLE_FIELDS;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.UPDATED_AT;
 import static com.meemaw.auth.user.datasource.sql.SqlUserTable.USER_TABLE_ID;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.auth.mfa.MfaMethod;
 import com.meemaw.auth.password.datasource.sql.SqlPasswordTable;
 import com.meemaw.auth.user.datasource.UserDatasource;
@@ -32,6 +34,7 @@ import com.meemaw.shared.rest.query.UpdateDTO;
 import com.meemaw.shared.sql.client.SqlPool;
 import com.meemaw.shared.sql.client.SqlTransaction;
 import com.meemaw.shared.sql.datasource.AbstractSqlDatasource;
+import com.meemaw.shared.sql.rest.query.SQLGroupByQuery;
 import com.meemaw.shared.sql.rest.query.SQLSearchDTO;
 import com.meemaw.shared.sql.rest.query.SQLUpdateDTO;
 import io.vertx.core.json.JsonObject;
@@ -53,7 +56,6 @@ import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.SelectConditionStep;
 import org.jooq.UpdateSetFirstStep;
-import org.jooq.impl.DSL;
 
 @ApplicationScoped
 @Slf4j
@@ -68,7 +70,7 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
                   SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.METHOD),
                   SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.CREATED_AT)))
           .collect(Collectors.toUnmodifiableList());
-
+  @Inject ObjectMapper objectMapper;
   @Inject SqlPool sqlPool;
 
   public static AuthUser mapUser(Row row) {
@@ -87,7 +89,7 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
 
   @Override
   @Traced
-  public CompletionStage<AuthUser> createUser(
+  public CompletionStage<AuthUser> create(
       String email,
       String fullName,
       String organizationId,
@@ -106,14 +108,14 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
   }
 
   @Override
-  public CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update) {
+  public CompletionStage<AuthUser> update(UUID userId, UpdateDTO update) {
     return sqlPool
         .execute(updateUserQuery(userId, update))
         .thenApply(rows -> mapUser(rows.iterator().next()));
   }
 
   @Override
-  public CompletionStage<AuthUser> updateUser(
+  public CompletionStage<AuthUser> update(
       UUID userId, UpdateDTO update, SqlTransaction transaction) {
     return transaction
         .execute(updateUserQuery(userId, update))
@@ -129,12 +131,12 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
   }
 
   @Override
-  public CompletionStage<Optional<AuthUser>> findUser(String email) {
+  public CompletionStage<Optional<AuthUser>> retrieve(String email) {
     return sqlPool.execute(findUserByEmail(email)).thenApply(this::findOne);
   }
 
   @Override
-  public CompletionStage<Optional<AuthUser>> findUser(String email, SqlTransaction transaction) {
+  public CompletionStage<Optional<AuthUser>> retrieve(String email, SqlTransaction transaction) {
     return transaction.execute(findUserByEmail(email)).thenApply(this::findOne);
   }
 
@@ -143,7 +145,7 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
   }
 
   @Override
-  public CompletionStage<Optional<AuthUser>> findUser(UUID userId) {
+  public CompletionStage<Optional<AuthUser>> retrieve(UUID userId) {
     Query query = sqlPool.getContext().selectFrom(TABLE).where(ID.eq(userId));
     return sqlPool.execute(query).thenApply(this::findOne);
   }
@@ -161,18 +163,25 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
   }
 
   @Override
-  public CompletionStage<Integer> count(String organizationId, SearchDTO search) {
-    SelectConditionStep<?> searchQuery =
-        searchQuery(
-            sqlPool
-                .getContext()
-                .select(DSL.count())
-                .from(TABLE)
-                .where(ORGANIZATION_ID.eq(organizationId)),
-            search);
+  public CompletionStage<JsonNode> count(String organizationId, SearchDTO search) {
+    List<Field<?>> columns =
+        SQLGroupByQuery.of(search.getGroupBy(), search.getDateTrunc()).selectFieldsWithCount();
 
-    Query query = SQLSearchDTO.of(search).query(searchQuery, FIELD_MAPPINGS);
-    return sqlPool.execute(query).thenApply(rows -> rows.iterator().next().getInteger(0));
+    Query query =
+        SQLSearchDTO.of(search)
+            .query(
+                searchQuery(
+                    sqlPool
+                        .getContext()
+                        .select(columns)
+                        .from(TABLE)
+                        .where(ORGANIZATION_ID.eq(organizationId)),
+                    search),
+                FIELD_MAPPINGS);
+
+    return sqlPool
+        .execute(query)
+        .thenApply(rows -> SQLGroupByQuery.mapRowsToJsonNode(rows, columns, objectMapper));
   }
 
   private SelectConditionStep<?> searchQuery(SelectConditionStep<?> baseQuery, SearchDTO search) {
@@ -188,7 +197,7 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
 
   @Override
   @Traced
-  public CompletionStage<Optional<UserWithLoginInformation>> findUserWithLoginInformation(
+  public CompletionStage<Optional<UserWithLoginInformation>> retrieveUserWithLoginInformation(
       String email) {
     Query query =
         sqlPool

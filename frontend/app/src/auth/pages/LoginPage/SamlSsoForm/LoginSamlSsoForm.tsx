@@ -15,7 +15,7 @@ type Props = {
   absoluteRedirect: string;
 };
 
-const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
+export const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
@@ -102,5 +102,3 @@ const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
     </form>
   );
 };
-
-export default React.memo(LoginSamlSsoForm);

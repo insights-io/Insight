@@ -27,6 +27,7 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
 import { useUser } from 'shared/hooks/useUser';
 import { useOrganization } from 'shared/hooks/useOrganization';
 import { SIZE } from 'baseui/button';
+import { toaster } from 'baseui/toast';
 
 const PATH: Path = [
   SETTINGS_PATH_PART,
@@ -59,7 +60,11 @@ export const AccountSettingsAuthTokensPage = ({
       return;
     }
     setCreatingAuthToken(true);
-    create().finally(() => setCreatingAuthToken(false));
+    create()
+      .then(() => {
+        toaster.positive('Auth token successfully created', {});
+      })
+      .finally(() => setCreatingAuthToken(false));
   };
 
   const deleteAuthToken = useCallback(() => {
@@ -127,6 +132,7 @@ export const AccountSettingsAuthTokensPage = ({
       <Modal
         isOpen={selectedAuthToken !== undefined}
         onClose={() => setSelectedAuthToken(undefined)}
+        unstable_ModalBackdropScroll
       >
         <ModalHeader>Are you sure you want to revoke Auth Token?</ModalHeader>
         <ModalBody>

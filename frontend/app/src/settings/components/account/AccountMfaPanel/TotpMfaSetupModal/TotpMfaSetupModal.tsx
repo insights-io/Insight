@@ -6,7 +6,7 @@ import type { Props } from './types';
 
 export const TotpMfaSetupModal = ({ isOpen, onClose, ...rest }: Props) => {
   return (
-    <Modal onClose={onClose} isOpen={isOpen}>
+    <Modal onClose={onClose} isOpen={isOpen} unstable_ModalBackdropScroll>
       <ModalHeader>Setup multi-factor authentication</ModalHeader>
       <ModalBody>
         <TotpMfaSetupForm {...rest} />

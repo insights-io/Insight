@@ -11,9 +11,10 @@ import type {
 import { FormError } from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';
+import type { HttpResponse } from '@rebrowse/sdk';
 
 export type Props = {
-  completeSetup?: (code: number) => Promise<MfaSetupDTO>;
+  completeSetup?: (code: number) => Promise<HttpResponse<MfaSetupDTO>>;
   onCompleted?: (value: MfaSetupDTO) => void;
 };
 
@@ -36,7 +37,9 @@ export const TotpMfaSetupForm = ({
     apiError,
   } = useCodeInput({
     submitAction: (paramCode) => {
-      return completeSetup(paramCode).then(onCompleted);
+      return completeSetup(paramCode)
+        .then((response) => response.data)
+        .then(onCompleted);
     },
     handleError: (error, setError) => {
       setError(error.error);

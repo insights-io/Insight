@@ -1,5 +1,5 @@
 import { sandbox } from '@rebrowse/testing';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import {
@@ -10,6 +10,9 @@ import { getPage } from 'next-page-tester';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import * as windowUtils from 'shared/utils/window';
 import { mockIndexPage } from '__tests__/mocks';
+import { httpOkResponse } from '__tests__/utils/request';
+import { match } from 'sinon';
+import { renderPage } from '__tests__/utils';
 
 describe('/login', () => {
   /* Data */
@@ -28,14 +31,14 @@ describe('/login', () => {
         .stub(AuthApi.sso.session, 'login')
         .callsFake(() => {
           document.cookie = 'SessionId=123';
-          return Promise.resolve({ data: true });
+          return Promise.resolve(httpOkResponse(true));
         });
 
       /* Server */
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       const signInButton = await screen.findByText('Sign in');
 
@@ -50,21 +53,21 @@ describe('/login', () => {
     test('As a user I can login but get challenged by MFA', async () => {
       /* Mocks */
       const retrieveChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'get')
-        .resolves(['totp']);
+        .stub(AuthApi.mfa.challenge, 'retrieve')
+        .resolves(httpOkResponse(['totp']));
 
       const loginStub = sandbox
         .stub(AuthApi.sso.session, 'login')
         .callsFake(() => {
           document.cookie = 'ChallengeId=123';
-          return Promise.resolve({ data: false });
+          return Promise.resolve(httpOkResponse(false));
         });
 
       /* Server */
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       const signInButton = await screen.findByText('Sign in');
 
@@ -75,10 +78,15 @@ describe('/login', () => {
       await screen.findByText(
         'To protect your account, please complete the following verification.'
       );
-      sandbox.assert.calledWithExactly(loginStub, email, password);
-      sandbox.assert.calledWithMatch(retrieveChallengeStub, '123', {
+
+      sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
+
+      sandbox.assert.calledWithExactly(loginStub, email, password);
     });
   });
 
@@ -87,13 +95,13 @@ describe('/login', () => {
       /* Mocks */
       const retrieveSsoSetupByDomainStub = sandbox
         .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves({ data: false });
+        .resolves(httpOkResponse(false));
 
       /* Server */
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       userEvent.click(await screen.findByText('SSO'));
       userEvent.type(
@@ -116,13 +124,13 @@ describe('/login', () => {
       const ssoLocation = 'http://localhost:8080/sso/login';
       const retrieveSsoSetupByDomainStub = sandbox
         .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves({ data: ssoLocation });
+        .resolves(httpOkResponse(ssoLocation));
 
       /* Server */
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       userEvent.click(await screen.findByText('SSO'));
       userEvent.type(
@@ -151,7 +159,7 @@ describe('/login', () => {
       const { page } = await getPage({ route });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(
         screen.getByText('Sign in with Google').parentElement
@@ -186,7 +194,7 @@ describe('/login', () => {
     const { page } = await getPage({ route });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     userEvent.click(screen.getByText('Forgot?'));
     await screen.findByText('Remember password?');

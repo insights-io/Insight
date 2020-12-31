@@ -112,7 +112,7 @@ export const SubscriptionDetails = ({
         {subscription.status === 'active' && (
           <Block marginTop={theme.sizing.scale600}>
             <Button
-              kind="secondary"
+              kind="tertiary"
               size={SIZE.compact}
               isLoading={isCanceling}
               disabled={isCanceling}

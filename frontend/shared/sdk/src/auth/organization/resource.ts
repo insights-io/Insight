@@ -1,6 +1,5 @@
 import ky from 'ky-universal';
 import type {
-  DataResponse,
   OrganizationDTO,
   TeamInviteCreateDTO,
   TeamInviteDTO,
@@ -10,11 +9,22 @@ import type {
   PasswordPolicyCreateParams,
   PasswordPolicyUpdateParams,
   AcceptTeamInviteDTO,
+  GroupByResult,
 } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
-import { getData, querystring, withCredentials } from 'utils';
+import { querystring, withCredentials } from 'utils';
+import type {
+  UserSearchQueryParams,
+  UserSearchRequestOptions,
+} from 'auth/user/types';
 
-import type { MembersSearchOptions, TeamInviteSearchOptions } from './types';
+import { httpResponse, jsonDataResponse } from '../../http';
+
+import type {
+  TeamInviteSearchRequestOptions,
+  OrganizationUpdateParams,
+  TeamInviteQueryParams,
+} from './types';
 
 export const organizationsResource = (authApiBaseURL: string) => {
   const resourceBaseURL = (apiBaseURL: string) => {
@@ -23,62 +33,62 @@ export const organizationsResource = (authApiBaseURL: string) => {
 
   return {
     update: (
-      json: Pick<OrganizationDTO, 'name'>,
+      json: OrganizationUpdateParams,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .patch(resourceBaseURL(baseURL), { json, ...withCredentials(rest) })
-        .json<DataResponse<OrganizationDTO>>()
-        .then(getData);
+      return jsonDataResponse<OrganizationDTO>(
+        ky.patch(resourceBaseURL(baseURL), { json, ...withCredentials(rest) })
+      );
     },
     delete: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return ky.delete(resourceBaseURL(baseURL), withCredentials(rest));
+      return ky
+        .delete(resourceBaseURL(baseURL), withCredentials(rest))
+        .then(httpResponse);
     },
     setupAvatar: (
       json: AvatarDTO,
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .patch(`${resourceBaseURL(baseURL)}/avatar`, {
+      return jsonDataResponse<OrganizationDTO>(
+        ky.patch(`${resourceBaseURL(baseURL)}/avatar`, {
           json,
           ...withCredentials(rest),
         })
-        .json<DataResponse<OrganizationDTO>>()
-        .then(getData);
+      );
     },
     get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return ky
-        .get(resourceBaseURL(baseURL), withCredentials(rest))
-        .json<DataResponse<OrganizationDTO>>()
-        .then(getData);
+      return jsonDataResponse<OrganizationDTO>(
+        ky.get(resourceBaseURL(baseURL), withCredentials(rest))
+      );
     },
-    members: <GroupBy extends (keyof UserDTO)[]>({
-      baseURL = authApiBaseURL,
-      search,
-      ...rest
-    }: MembersSearchOptions<GroupBy> = {}) => {
-      const searchQuery = querystring(search);
-      return ky
-        .get(
-          `${resourceBaseURL(baseURL)}/members${searchQuery}`,
-          withCredentials(rest)
-        )
-        .json<DataResponse<UserDTO[]>>()
-        .then(getData);
-    },
-    memberCount: <GroupBy extends (keyof UserDTO)[]>({
-      baseURL = authApiBaseURL,
-      search,
-      ...rest
-    }: MembersSearchOptions<GroupBy> = {}) => {
-      const searchQuery = querystring(search);
-      return ky
-        .get(
-          `${resourceBaseURL(baseURL)}/members/count${searchQuery}`,
-          withCredentials(rest)
-        )
-        .json<DataResponse<number>>()
-        .then(getData);
+
+    members: {
+      list: <GroupBy extends (keyof UserSearchQueryParams)[] = []>({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: UserSearchRequestOptions<GroupBy> = {}) => {
+        const searchQuery = querystring(search);
+        return jsonDataResponse<UserDTO[]>(
+          ky.get(
+            `${resourceBaseURL(baseURL)}/members${searchQuery}`,
+            withCredentials(rest)
+          )
+        );
+      },
+      count: <GroupBy extends (keyof UserSearchQueryParams)[] = []>({
+        baseURL = authApiBaseURL,
+        search,
+        ...rest
+      }: UserSearchRequestOptions<GroupBy> = {}) => {
+        const searchQuery = querystring(search);
+        return jsonDataResponse<GroupByResult<GroupBy>>(
+          ky.get(
+            `${resourceBaseURL(baseURL)}/members/count${searchQuery}`,
+            withCredentials(rest)
+          )
+        );
+      },
     },
 
     passwordPolicy: {
@@ -86,37 +96,34 @@ export const organizationsResource = (authApiBaseURL: string) => {
         baseURL = authApiBaseURL,
         ...rest
       }: RequestOptions = {}) => {
-        return ky
-          .get(
+        return jsonDataResponse<OrganizationPasswordPolicyDTO>(
+          ky.get(
             `${resourceBaseURL(baseURL)}/password/policy`,
             withCredentials(rest)
           )
-          .json<DataResponse<OrganizationPasswordPolicyDTO>>()
-          .then(getData);
+        );
       },
       create: (
         json: PasswordPolicyCreateParams,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return ky
-          .post(`${resourceBaseURL(baseURL)}/password/policy`, {
+        return jsonDataResponse<OrganizationPasswordPolicyDTO>(
+          ky.post(`${resourceBaseURL(baseURL)}/password/policy`, {
             json,
             ...withCredentials(rest),
           })
-          .json<DataResponse<OrganizationPasswordPolicyDTO>>()
-          .then(getData);
+        );
       },
       update: (
         json: PasswordPolicyUpdateParams,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return ky
-          .patch(`${resourceBaseURL(baseURL)}/password/policy`, {
+        return jsonDataResponse<OrganizationPasswordPolicyDTO>(
+          ky.patch(`${resourceBaseURL(baseURL)}/password/policy`, {
             json,
             ...withCredentials(rest),
           })
-          .json<DataResponse<OrganizationPasswordPolicyDTO>>()
-          .then(getData);
+        );
       },
     },
     teamInvite: {
@@ -124,83 +131,81 @@ export const organizationsResource = (authApiBaseURL: string) => {
         token: string,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return ky
-          .get(`${resourceBaseURL(baseURL)}/invites/${token}`, rest)
-          .json<DataResponse<TeamInviteDTO>>()
-          .then(getData);
+        return jsonDataResponse<TeamInviteDTO>(
+          ky.get(`${resourceBaseURL(baseURL)}/invites/${token}`, rest)
+        );
       },
-      list: <GroupBy extends (keyof TeamInviteDTO)[]>({
+      list: <GroupBy extends (keyof TeamInviteQueryParams)[] = []>({
         baseURL = authApiBaseURL,
         search,
         ...rest
-      }: TeamInviteSearchOptions<GroupBy> = {}) => {
+      }: TeamInviteSearchRequestOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
-        return ky
-          .get(
+        return jsonDataResponse<TeamInviteDTO[]>(
+          ky.get(
             `${resourceBaseURL(baseURL)}/invites${searchQuery}`,
             withCredentials(rest)
           )
-          .json<DataResponse<TeamInviteDTO[]>>()
-          .then(getData);
+        );
       },
-      count: <GroupBy extends (keyof TeamInviteDTO)[]>({
+      count: <GroupBy extends (keyof TeamInviteQueryParams)[] = []>({
         baseURL = authApiBaseURL,
         search,
         ...rest
-      }: TeamInviteSearchOptions<GroupBy> = {}) => {
+      }: TeamInviteSearchRequestOptions<GroupBy> = {}) => {
         const searchQuery = querystring(search);
-        return ky
-          .get(
+        return jsonDataResponse<GroupByResult<GroupBy>>(
+          ky.get(
             `${resourceBaseURL(baseURL)}/invites/count${searchQuery}`,
             withCredentials(rest)
           )
-          .json<DataResponse<number>>()
-          .then(getData);
+        );
       },
       delete: (
         token: string,
         email: string,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return ky
-          .delete(
+        return jsonDataResponse<boolean>(
+          ky.delete(
             `${resourceBaseURL(baseURL)}/invites/${token}`,
             withCredentials({ json: { email }, ...rest })
           )
-          .json<DataResponse<boolean>>();
+        );
       },
       create: (
         json: TeamInviteCreateDTO,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return ky
-          .post(
+        return jsonDataResponse<TeamInviteDTO>(
+          ky.post(
             `${resourceBaseURL(baseURL)}/invites`,
             withCredentials({ json, ...rest })
           )
-          .json<DataResponse<TeamInviteDTO>>()
-          .then(getData);
+        );
       },
       accept: (
         token: string,
         json: AcceptTeamInviteDTO,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return ky.post(
-          `${resourceBaseURL(baseURL)}/invites/${token}/accept`,
-          withCredentials({ json, ...rest })
-        );
+        return ky
+          .post(
+            `${resourceBaseURL(baseURL)}/invites/${token}/accept`,
+            withCredentials({ json, ...rest })
+          )
+          .then(httpResponse);
       },
       resend: (
         email: string,
         { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
       ) => {
-        return ky
-          .post(
+        return jsonDataResponse<boolean>(
+          ky.post(
             `${resourceBaseURL(baseURL)}/invites/send`,
             withCredentials({ json: { email }, ...rest })
           )
-          .json<DataResponse<boolean>>();
+        );
       },
     },
   };

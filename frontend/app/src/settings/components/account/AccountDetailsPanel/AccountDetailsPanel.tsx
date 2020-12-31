@@ -54,8 +54,8 @@ export const AccountDetailsPanel = ({
     currentValue: user.phoneNumber,
     resource: 'user',
     update: (payload) => updatePhoneNumber(payload.phoneNumber),
-    displayValue: (phoneNumber) =>
-      `${phoneNumber?.countryCode}${phoneNumber?.digits}`,
+    displayValue: (maybePhoneNumber) =>
+      `${maybePhoneNumber?.countryCode}${maybePhoneNumber?.digits}`,
   });
 
   return (

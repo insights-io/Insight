@@ -7,6 +7,7 @@ import {
   TOTP_MFA_SETUP_DTO,
 } from '__tests__/data/mfa';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { TotpMfaSetupModal, Props } from './index';
 
@@ -28,13 +29,13 @@ export const Base = (props: Partial<Props>) => {
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
-      }),
+      setupStart: sandbox
+        .stub(AuthApi.mfa.setup.totp, 'start')
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
 
       completeSetup: sandbox
         .stub(AuthApi.mfa.setup, 'complete')
-        .resolves(TOTP_MFA_SETUP_DTO),
+        .resolves(httpOkResponse(TOTP_MFA_SETUP_DTO)),
     };
   },
 });
@@ -62,9 +63,9 @@ export const WithInvalidCodeError = () => {
 WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
-      }),
+      setupStart: sandbox
+        .stub(AuthApi.mfa.setup.totp, 'start')
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
       setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').rejects(
         mockApiError({
           message: 'Bad Request',
@@ -85,9 +86,9 @@ export const WithQrCodeExpiredError = () => {
 WithQrCodeExpiredError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
-      }),
+      setupStart: sandbox
+        .stub(AuthApi.mfa.setup.totp, 'start')
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
       setupComplete: sandbox.stub(AuthApi.mfa.setup, 'complete').rejects(
         mockApiError({
           message: 'QR code expired',

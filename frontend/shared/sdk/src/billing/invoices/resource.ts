@@ -1,7 +1,9 @@
 import ky from 'ky-universal';
-import type { DataResponse, InvoiceDTO } from '@rebrowse/types';
+import type { InvoiceDTO } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
-import { withCredentials, getData } from 'utils';
+import { withCredentials } from 'utils';
+
+import { jsonDataResponse } from '../../http';
 
 export const invoicesResource = (billingApiBaseURL: string) => {
   return {
@@ -9,23 +11,21 @@ export const invoicesResource = (billingApiBaseURL: string) => {
       subscriptionId: string,
       { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
-      return ky
-        .get(
+      return jsonDataResponse<InvoiceDTO[]>(
+        ky.get(
           `${baseURL}/v1/billing/subscriptions/${subscriptionId}/invoices`,
           withCredentials(rest)
         )
-        .json<DataResponse<InvoiceDTO[]>>()
-        .then(getData);
+      );
     },
 
     list: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return ky
-        .get(
+      return jsonDataResponse<InvoiceDTO[]>(
+        ky.get(
           `${baseURL}/v1/billing/subscriptions/invoices`,
           withCredentials(rest)
         )
-        .json<DataResponse<InvoiceDTO[]>>()
-        .then(getData);
+      );
     },
   };
 };

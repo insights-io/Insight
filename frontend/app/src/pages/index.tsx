@@ -13,6 +13,7 @@ import {
   countSessionsByDate,
   countPageVisitsByDate,
 } from 'insights/api';
+import { TermCondition } from '@rebrowse/sdk';
 
 export type Props = InsightsPageProps;
 
@@ -49,7 +50,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const createdAtGte = `gte:${timeRelative(relativeTimeRange).toISOString()}`;
+    const createdAtGte = TermCondition.GTE(timeRelative(relativeTimeRange));
     const headers = {
       ...prepareCrossServiceHeaders(requestSpan),
       cookie: `SessionId=${authResponse.SessionId}`,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { fullHeightDecorator } from '@rebrowse/storybook';
-import { PAID_INVOICE_DTO } from '__tests__/data/billing';
+import { ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO } from '__tests__/data/billing';
 import type { Meta } from '@storybook/react';
 import { REBROWSE_ADMIN_DTO, REBROWSE_ORGANIZATION_DTO } from '__tests__/data';
 
@@ -16,7 +16,7 @@ export default {
 export const Base = () => {
   return (
     <OrganizationSettingsBillingUsageAndPaymentsPage
-      invoices={[PAID_INVOICE_DTO]}
+      invoices={[ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO]}
       user={REBROWSE_ADMIN_DTO}
       organization={REBROWSE_ORGANIZATION_DTO}
     />

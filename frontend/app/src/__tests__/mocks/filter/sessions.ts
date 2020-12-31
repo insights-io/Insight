@@ -7,6 +7,7 @@ import { SessionDTO, TimePrecision } from '@rebrowse/types';
 import { startOfDay } from 'date-fns';
 import get from 'lodash/get';
 import { REBROWSE_SESSIONS_DTOS } from '__tests__/data/sessions';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { countBy, filterByParam, getParsedValue } from './core';
 
@@ -14,18 +15,18 @@ export const filterSession = <
   GroupBy extends (keyof SessionSearchQueryParams)[]
 >(
   value: SessionDTO,
-  search: SessionSearchBean<GroupBy> | undefined
+  search: SessionSearchBean<GroupBy> | undefined = {}
 ) => filterByParam(value, search);
 
 export const countSessionsBy = <
   GroupBy extends (keyof SessionSearchQueryParams)[] = []
 >(
-  data: SessionDTO[],
-  search: SessionSearchBean<GroupBy> | undefined
+  values: SessionDTO[] = [],
+  search: SessionSearchBean<GroupBy> = {}
 ) => {
   return countBy(
-    data,
-    (s) => filterSession(s, search),
+    values,
+    (value) => filterSession(value, search),
     search,
     (v, field) => {
       const value = get(v, field);
@@ -45,7 +46,7 @@ export const retrieveSessionMockImplementation = (
 ) => {
   const maybeSession = sessions.find((s) => s.id === id);
   if (maybeSession) {
-    return Promise.resolve(maybeSession);
+    return Promise.resolve(httpOkResponse(maybeSession));
   }
   return Promise.reject(
     mockApiError({
@@ -60,11 +61,13 @@ export const getDistinctMockImplementation = (
   on: keyof SessionSearchQueryParams,
   sessions: SessionDTO[] = REBROWSE_SESSIONS_DTOS
 ) => {
-  return Promise.resolve([
-    ...new Set(
-      sessions
-        .map((session) => getParsedValue(session, on) as string)
-        .filter(Boolean)
-    ),
-  ]);
+  return Promise.resolve(
+    httpOkResponse([
+      ...new Set(
+        sessions
+          .map((session) => getParsedValue(session, on) as string)
+          .filter(Boolean)
+      ),
+    ])
+  );
 };

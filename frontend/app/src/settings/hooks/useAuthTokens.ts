@@ -1,11 +1,12 @@
 import { mapAuthToken } from '@rebrowse/sdk';
-import { AuthTokenDTO } from '@rebrowse/types';
+import type { AuthTokenDTO } from '@rebrowse/types';
 import { AuthApi } from 'api';
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['sso', 'token', 'list'];
-const queryFn = () => AuthApi.sso.token.list();
+const queryFn = () =>
+  AuthApi.sso.token.list().then((httpResponse) => httpResponse.data);
 
 export const useAuthTokens = (initialData: AuthTokenDTO[]) => {
   const { data = initialData } = useQuery(cacheKey, queryFn, { initialData });
@@ -19,9 +20,9 @@ export const useAuthTokenMutations = () => {
   const { mutateAsync: create } = useMutation(
     () => AuthApi.sso.token.create(),
     {
-      onSuccess: (authToken) => {
+      onSuccess: (httpResponse) => {
         queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
-          return [...(prev || []), authToken];
+          return [...(prev || []), httpResponse.data];
         });
       },
     }
@@ -32,7 +33,7 @@ export const useAuthTokenMutations = () => {
     {
       onSuccess: (_result, token) => {
         queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
-          return (prev || [])?.filter((t) => t.token !== token);
+          return (prev || []).filter((t) => t.token !== token);
         });
       },
     }

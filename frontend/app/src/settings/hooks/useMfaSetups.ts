@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { mapMfaSetup } from '@rebrowse/sdk';
 import type {
   APIErrorDataResponse,
@@ -10,7 +9,9 @@ import { useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['mfa', 'setup', 'list'];
-const queryFn = () => AuthApi.mfa.setup.list();
+
+const queryFn = () =>
+  AuthApi.mfa.setup.list().then((httpResponse) => httpResponse.data);
 
 export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   const queryClient = useQueryClient();
@@ -35,23 +36,21 @@ export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
     ({ method, code }: { method: MfaMethod; code: number }) =>
       AuthApi.mfa.setup.complete(method, code),
     {
-      onSuccess: (setup: MfaSetupDTO) => {
+      onSuccess: (httpResponse) => {
         queryClient.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
-          return [...(prev || initialData), setup];
+          return [...(prev || initialData), httpResponse.data];
         });
       },
     }
   );
 
   const completeTotpSetup = useCallback(
-    (code: number) =>
-      completeSetup({ method: 'totp', code }).then((data) => data!),
+    (code: number) => completeSetup({ method: 'totp', code }),
     [completeSetup]
   );
 
   const completeSmsSetup = useCallback(
-    (code: number) =>
-      completeSetup({ method: 'sms', code }).then((data) => data!),
+    (code: number) => completeSetup({ method: 'sms', code }),
     [completeSetup]
   );
 

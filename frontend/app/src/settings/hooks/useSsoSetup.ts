@@ -10,12 +10,15 @@ import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'sso', 'setup', 'get'];
 const queryFn = () =>
-  AuthApi.sso.setup.get().catch((error) => {
-    if ((error.response as Response).status === 404) {
-      return undefined;
-    }
-    throw error;
-  });
+  AuthApi.sso.setup
+    .get()
+    .then((httpResponse) => httpResponse.data)
+    .catch((error) => {
+      if ((error.response as Response).status === 404) {
+        return undefined;
+      }
+      throw error;
+    });
 
 export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
   const queryClient = useQueryClient();
@@ -31,8 +34,10 @@ export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
   );
 
   const { mutateAsync: createSsoSetup } = useMutation(
-    ({ method, saml }: { method: SsoMethod; saml: SamlConfigurationDTO }) =>
-      AuthApi.sso.setup.create(method, saml),
+    ({ method, saml }: { method: SsoMethod; saml?: SamlConfigurationDTO }) =>
+      AuthApi.sso.setup
+        .create(method, saml)
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (setup) => {
         queryClient.setQueryData<SsoSetupDTO | undefined>(CACHE_KEY, setup);

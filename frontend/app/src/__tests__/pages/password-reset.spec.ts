@@ -1,11 +1,12 @@
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
-import { jsonPromise } from '__tests__/utils';
 import userEvent from '@testing-library/user-event';
-import { screen, render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { mockIndexPage } from '__tests__/mocks';
 import { mockApiError } from '@rebrowse/storybook';
+import { httpOkResponse, renderPage } from '__tests__/utils';
+import { match } from 'sinon';
 
 describe('/password-reset', () => {
   /* Data */
@@ -18,23 +19,26 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({ data: true });
+        .resolves(httpOkResponse(true));
 
       const passwordResetStub = sandbox
         .stub(AuthApi.password, 'reset')
-        .returns(jsonPromise({ status: 200 }));
+        .resolves({ statusCode: 200, headers: new Headers() });
 
       mockIndexPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, token, {
+      sandbox.assert.calledWithExactly(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(
         await screen.findByText('Reset your password')
@@ -53,7 +57,7 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({ data: true });
+        .resolves(httpOkResponse(true));
 
       const passwordResetStub = sandbox.stub(AuthApi.password, 'reset').rejects(
         mockApiError({
@@ -67,12 +71,15 @@ describe('/password-reset', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, token, {
+      sandbox.assert.calledWithExactly(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       expect(
         await screen.findByText('Reset your password')
@@ -94,17 +101,20 @@ describe('/password-reset', () => {
       /* Mocks */
       const resetExistsStub = sandbox
         .stub(AuthApi.password, 'resetExists')
-        .resolves({ data: false });
+        .resolves(httpOkResponse(false));
 
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(resetExistsStub, token, {
+      sandbox.assert.calledWithExactly(resetExistsStub, token, {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       await screen.findByText(
         'It looks like this password reset request is invalid or has already been accepted.'

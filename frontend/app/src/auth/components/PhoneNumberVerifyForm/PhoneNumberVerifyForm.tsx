@@ -5,10 +5,11 @@ import { FormError } from 'shared/components/FormError';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
 import type { CodeValidityDTO } from '@rebrowse/types';
 import { SmsMfaInputMethod } from 'auth/components/SmsMfaInputMethod';
+import { HttpResponse } from '@rebrowse/sdk';
 
 type Props<T> = {
   verify: (code: number) => Promise<T>;
-  sendCode: () => Promise<CodeValidityDTO>;
+  sendCode: () => Promise<HttpResponse<CodeValidityDTO>>;
 };
 
 export const PhoneNumberVerifyForm = <T,>({ verify, sendCode }: Props<T>) => {

@@ -73,7 +73,7 @@ export const YourPlan = ({
                 },
                 BarProgress: {
                   style: {
-                    background: violatesPlan
+                    backgroundColor: violatesPlan
                       ? planViolationErrorColor
                       : undefined,
                   },

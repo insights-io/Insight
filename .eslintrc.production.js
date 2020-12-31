@@ -69,6 +69,7 @@ module.exports = {
     'lines-between-class-members': ['off'],
     'jsx-a11y/anchor-is-valid': ['off'],
 
+    '@typescript-eslint/no-shadow': ['error'],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-unused-vars': [
       'error',

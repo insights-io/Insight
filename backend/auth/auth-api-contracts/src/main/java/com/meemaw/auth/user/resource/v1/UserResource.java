@@ -45,7 +45,7 @@ public interface UserResource {
 
   @GET
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve authenticated user")
+  @Operation(summary = "Retrieve User")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -55,7 +55,7 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "User",
             content =
                 @Content(
                     schema = @Schema(implementation = UserDataResponse.class),
@@ -83,7 +83,7 @@ public interface UserResource {
   @GET
   @Path("{userId}")
   @Tag(name = TAG)
-  @Operation(summary = "Retrieve user")
+  @Operation(summary = "Retrieve User")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -93,7 +93,7 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "User",
             content =
                 @Content(
                     schema = @Schema(implementation = UserDataResponse.class),
@@ -129,7 +129,7 @@ public interface UserResource {
   @Path("phone_number")
   @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
-  @Operation(summary = "Update user's phone number")
+  @Operation(summary = "Update User's Phone Number")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -140,7 +140,7 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "User",
             content =
                 @Content(
                     schema = @Schema(implementation = UserDataResponse.class),
@@ -176,7 +176,7 @@ public interface UserResource {
   @PATCH
   @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
-  @Operation(summary = "Update user")
+  @Operation(summary = "Update User")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -186,7 +186,7 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "User",
             content =
                 @Content(
                     schema = @Schema(implementation = UserDataResponse.class),
@@ -222,7 +222,7 @@ public interface UserResource {
   @Path("{userId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
-  @Operation(summary = "Update user")
+  @Operation(summary = "Update User")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -232,7 +232,7 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "User",
             content =
                 @Content(
                     schema = @Schema(implementation = UserDataResponse.class),
@@ -277,7 +277,7 @@ public interface UserResource {
   @PATCH
   @Consumes(MediaType.APPLICATION_JSON)
   @Tag(name = TAG)
-  @Operation(summary = "Verify phone number")
+  @Operation(summary = "Verify Phone Number")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),
@@ -287,7 +287,7 @@ public interface UserResource {
       value = {
         @APIResponse(
             responseCode = "200",
-            description = "User object",
+            description = "User",
             content =
                 @Content(
                     schema = @Schema(implementation = UserDataResponse.class),
@@ -323,7 +323,7 @@ public interface UserResource {
   @POST
   @Path("phone_number/verify/send_code")
   @Tag(name = TAG)
-  @Operation(summary = "Send phone number verification code")
+  @Operation(summary = "Send Phone Number Verification Code")
   @SecurityRequirements(
       value = {
         @SecurityRequirement(name = BearerTokenSecurityScheme.NAME),

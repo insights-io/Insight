@@ -3,6 +3,7 @@ import { sandbox } from '@rebrowse/testing';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { SessionApi } from 'api';
 import { REBROWSE_SESSIONS, REBROWSE_SESSIONS_DTOS } from '__tests__/data';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { useSessions } from './useSessions';
 
@@ -10,7 +11,7 @@ describe('useSessions', () => {
   it('Should correctly load more sessions', async () => {
     const searchSessionsStub = sandbox
       .stub(SessionApi, 'getSessions')
-      .resolves(REBROWSE_SESSIONS_DTOS.slice(0, 1));
+      .resolves(httpOkResponse(REBROWSE_SESSIONS_DTOS.slice(0, 1)));
 
     const from = new Date('04 Dec 1995 00:12:00 GMT');
 

@@ -1,5 +1,6 @@
 package com.meemaw.auth.user.datasource;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.meemaw.auth.user.model.AuthUser;
 import com.meemaw.auth.user.model.PhoneNumber;
 import com.meemaw.auth.user.model.UserRole;
@@ -14,7 +15,7 @@ import java.util.concurrent.CompletionStage;
 
 public interface UserDatasource {
 
-  CompletionStage<AuthUser> createUser(
+  CompletionStage<AuthUser> create(
       String email,
       String fullName,
       String organizationId,
@@ -22,20 +23,21 @@ public interface UserDatasource {
       PhoneNumber phoneNumber,
       SqlTransaction transaction);
 
-  CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update);
+  CompletionStage<AuthUser> update(UUID userId, UpdateDTO update);
 
-  CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO update, SqlTransaction transaction);
+  CompletionStage<AuthUser> update(UUID userId, UpdateDTO update, SqlTransaction transaction);
 
-  CompletionStage<Optional<AuthUser>> findUser(UUID userId);
+  CompletionStage<Optional<AuthUser>> retrieve(UUID userId);
 
-  CompletionStage<Optional<AuthUser>> findUser(String email);
+  CompletionStage<Optional<AuthUser>> retrieve(String email);
 
-  CompletionStage<Optional<AuthUser>> findUser(String email, SqlTransaction transaction);
+  CompletionStage<Optional<AuthUser>> retrieve(String email, SqlTransaction transaction);
 
-  CompletionStage<Optional<UserWithLoginInformation>> findUserWithLoginInformation(String email);
+  CompletionStage<Optional<UserWithLoginInformation>> retrieveUserWithLoginInformation(
+      String email);
 
   CompletionStage<Collection<AuthUser>> searchOrganizationMembers(
       String organizationId, SearchDTO search);
 
-  CompletionStage<Integer> count(String organizationId, SearchDTO search);
+  CompletionStage<JsonNode> count(String organizationId, SearchDTO search);
 }

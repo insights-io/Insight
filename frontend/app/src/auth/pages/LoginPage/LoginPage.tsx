@@ -13,9 +13,9 @@ import { Flex, UnstyledLink } from '@rebrowse/elements';
 import { FormError } from 'shared/components/FormError';
 
 import { createOAuth2IntegrationHrefBuilder } from './utils';
-import LoginEmailForm from './EmailForm';
+import { LoginEmailForm } from './EmailForm';
 import { LoginMethod } from './types';
-import LoginSamlSsoForm from './SamlSsoForm';
+import { LoginSamlSsoForm } from './SamlSsoForm';
 
 export const LoginPage = () => {
   const [activeMethod, setActiveMethod] = useState<LoginMethod>('email');

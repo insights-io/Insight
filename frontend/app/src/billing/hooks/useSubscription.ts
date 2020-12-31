@@ -15,12 +15,18 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
 
   const { data } = useQuery(
     cacheKey(initialData.id),
-    () => BillingApi.subscriptions.get(initialData.id),
+    () =>
+      BillingApi.subscriptions
+        .get(initialData.id)
+        .then((httpResponse) => httpResponse.data),
     { initialData }
   );
 
   const { mutateAsync: cancelSubscription } = useMutation(
-    () => BillingApi.subscriptions.cancel(initialData.id),
+    () =>
+      BillingApi.subscriptions
+        .cancel(initialData.id)
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (updatedSubscription) => {
         subscriptionCache.setSubscription(updatedSubscription);

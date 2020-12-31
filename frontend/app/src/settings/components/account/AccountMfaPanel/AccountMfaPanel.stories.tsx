@@ -8,6 +8,7 @@ import {
   TOTP_MFA_SETUP_DTO,
 } from '__tests__/data/mfa';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { AccountMfaPanel } from './AccountMfaPanel';
 
@@ -29,19 +30,19 @@ MfaEnabled.story = configureStory({
     return {
       listSetups: sandbox
         .stub(AuthApi.mfa.setup, 'list')
-        .resolves([TOTP_MFA_SETUP_DTO]),
+        .resolves(httpOkResponse([TOTP_MFA_SETUP_DTO])),
 
-      setupStart: sandbox.stub(AuthApi.mfa.setup.totp, 'start').resolves({
-        data: { qrImage: TOTP_MFA_SETUP_QR_IMAGE },
-      }),
+      setupStart: sandbox
+        .stub(AuthApi.mfa.setup.totp, 'start')
+        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
 
       setupComplete: sandbox
         .stub(AuthApi.mfa.setup, 'complete')
-        .resolves(TOTP_MFA_SETUP_DTO),
+        .resolves(httpOkResponse(TOTP_MFA_SETUP_DTO)),
 
       setupSendSmsCode: sandbox
         .stub(AuthApi.mfa.setup.sms, 'sendCode')
-        .resolves({ validitySeconds: 60 }),
+        .resolves(httpOkResponse({ validitySeconds: 60 })),
     };
   },
 });

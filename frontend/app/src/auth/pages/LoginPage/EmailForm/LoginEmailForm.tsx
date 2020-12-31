@@ -33,7 +33,7 @@ type Props = {
   replace: (location: string) => void;
 };
 
-const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
+export const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
   const [_css, theme] = useStyletron();
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,5 +114,3 @@ const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
     </form>
   );
 };
-
-export default React.memo(LoginEmailForm);

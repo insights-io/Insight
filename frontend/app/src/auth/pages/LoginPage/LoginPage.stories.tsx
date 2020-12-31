@@ -1,8 +1,8 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
-import type { DataResponse } from '@rebrowse/types';
 import type { Meta } from '@storybook/react';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { LoginPage } from './LoginPage';
 
@@ -18,7 +18,7 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox.stub(AuthApi.sso.session, 'login').callsFake(() => {
       return new Promise((resolve) =>
-        setTimeout(() => resolve({ data: true }), 10)
+        setTimeout(() => resolve(httpOkResponse(true)), 10)
       );
     });
   },
@@ -38,7 +38,7 @@ InvalidPassword.story = configureStory({
 
       return new Promise((_resolve, reject) =>
         setTimeout(() => reject(error), 10)
-      ) as Promise<DataResponse<boolean>>;
+      );
     });
   },
 });

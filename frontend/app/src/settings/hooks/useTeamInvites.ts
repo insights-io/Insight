@@ -29,10 +29,10 @@ export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
     (params: TeamInviteCreateDTO) =>
       AuthApi.organization.teamInvite.create(params),
     {
-      onSuccess: (invite) => {
+      onSuccess: (httpResponse) => {
         queryClient.setQueryData<TeamInviteDTO[]>(CACHE_KEY, (prev) => [
           ...(prev || initialData),
-          invite,
+          httpResponse.data,
         ]);
       },
     }

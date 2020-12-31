@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
-import { SearchBean, SortDirection } from '@rebrowse/types';
+import type { SearchBean, SortDirection } from '@rebrowse/types';
 import { useQuery, useQueryClient } from 'shared/hooks/useQuery';
 import { usePrevious } from 'shared/hooks/usePrevious';
 import { useDebounce } from 'use-debounce';
+import { TermCondition } from '@rebrowse/sdk';
 
 type SearchData<T> = {
   count: number;
@@ -53,8 +54,8 @@ export const useResourceSearch = <
   const queryClient = useQueryClient();
   const [debouncedQuery] = useDebounce(query, debounce);
 
-  const onQueryChange = (query: string) => {
-    setQuery(query);
+  const onQueryChange = (nextQuery: string) => {
+    setQuery(nextQuery);
     setPage(1);
   };
 
@@ -84,9 +85,9 @@ export const useResourceSearch = <
   } = useQuery(
     itemsCacheKey,
     () => {
-      const items = queryClient.getQueryData<Item[]>(itemsCacheKey);
-      if (items) {
-        return items;
+      const itemsInCache = queryClient.getQueryData<Item[]>(itemsCacheKey);
+      if (itemsInCache) {
+        return itemsInCache;
       }
 
       const searchBean = createSearchQuery();
@@ -101,14 +102,14 @@ export const useResourceSearch = <
           const fieldName = field as keyof Item;
           if (page >= previousPage) {
             const lastItem = previousItems[previousItems.length - 1];
-            searchBean[
-              fieldName
-            ] = `gt:${lastItem[fieldName]}` as SearchBean<Item>[keyof Item];
+            searchBean[fieldName] = TermCondition.GT(
+              lastItem[fieldName]
+            ) as SearchBean<Item>[keyof Item];
           } else {
             const firstItem = previousItems[0];
-            searchBean[
-              fieldName
-            ] = `lt:${firstItem[fieldName]}` as SearchBean<Item>[keyof Item];
+            searchBean[fieldName] = TermCondition.LT(
+              firstItem[fieldName]
+            ) as SearchBean<Item>[keyof Item];
           }
         }
       }
@@ -137,9 +138,9 @@ export const useResourceSearch = <
   } = useQuery(
     countCacheKey,
     () => {
-      const count = queryClient.getQueryData<number>(countCacheKey);
-      if (count !== undefined) {
-        return count;
+      const countInCache = queryClient.getQueryData<number>(countCacheKey);
+      if (countInCache !== undefined) {
+        return countInCache;
       }
       return searchCount(createSearchQuery());
     },

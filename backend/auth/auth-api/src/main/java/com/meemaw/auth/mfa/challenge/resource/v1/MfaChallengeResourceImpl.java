@@ -89,7 +89,7 @@ public class MfaChallengeResourceImpl implements MfaChallengeResource {
               }
               UUID userId = maybeUserId.get();
               return userDatasource
-                  .findUser(userId)
+                  .retrieve(userId)
                   .thenCompose(
                       maybeUser -> {
                         if (maybeUser.isEmpty()) {

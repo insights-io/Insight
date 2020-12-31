@@ -8,7 +8,10 @@ export const cacheKey = ['subscriptions', 'getActivePlan'];
 export const useActivePlan = (initialData: PlanDTO) => {
   const { data, refetch } = useQuery(
     cacheKey,
-    () => BillingApi.subscriptions.getActivePlan(),
+    () =>
+      BillingApi.subscriptions
+        .getActivePlan()
+        .then((httpResponse) => httpResponse.data),
     { initialData: () => initialData }
   );
 

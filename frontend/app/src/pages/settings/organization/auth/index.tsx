@@ -48,6 +48,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
           cookie: `SessionId=${authResponse.SessionId}`,
         },
       })
+      .then((httpResponse) => httpResponse.data)
       .catch((error) => {
         if ((error.response as Response).status === 404) {
           return undefined;

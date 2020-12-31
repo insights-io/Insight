@@ -94,7 +94,7 @@ public class OrganizationTeamInviteService {
               }
 
               return userDatasource
-                  .findUser(invitedEmail, transaction)
+                  .retrieve(invitedEmail, transaction)
                   .thenCompose(
                       maybeUser -> {
                         // If user is not in organization we should not leak that it is already
@@ -261,7 +261,7 @@ public class OrganizationTeamInviteService {
                         })
                     .thenCompose(
                         ignored ->
-                            userDatasource.createUser(
+                            userDatasource.create(
                                 teamInvite.getEmail(),
                                 fullName,
                                 teamInvite.getOrganizationId(),

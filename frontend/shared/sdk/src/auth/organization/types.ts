@@ -1,23 +1,22 @@
-import type { SearchBean, TeamInviteDTO, UserDTO } from '@rebrowse/types';
+import type { OrganizationDTO, QueryParam, SearchBean } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
-export type MemberSearchBean<
-  GroupBy extends (keyof UserDTO)[] = []
-> = SearchBean<UserDTO, GroupBy>;
-
-export type MembersSearchOptions<GroupBy extends (keyof UserDTO)[] = []> = Omit<
-  RequestOptions,
-  'searchParams'
-> & {
-  search?: MemberSearchBean<GroupBy>;
+export type TeamInviteQueryParams = {
+  email?: QueryParam;
+  role?: QueryParam;
+  createdAt?: QueryParam;
 };
 
 export type TeamInviteSearchBean<
-  GroupBy extends (keyof TeamInviteDTO)[] = []
-> = SearchBean<TeamInviteDTO, GroupBy>;
+  GroupBy extends (keyof TeamInviteQueryParams)[] = []
+> = SearchBean<TeamInviteQueryParams, GroupBy>;
 
-export type TeamInviteSearchOptions<
-  GroupBy extends (keyof TeamInviteDTO)[] = []
+export type TeamInviteSearchRequestOptions<
+  GroupBy extends (keyof TeamInviteQueryParams)[] = []
 > = Omit<RequestOptions, 'searchParams'> & {
   search?: TeamInviteSearchBean<GroupBy>;
 };
+
+export type OrganizationUpdateParams = Partial<
+  Pick<OrganizationDTO, 'name' | 'openMembership'>
+>;

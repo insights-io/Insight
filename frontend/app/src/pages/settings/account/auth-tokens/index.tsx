@@ -40,13 +40,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const authTokens = await AuthApi.sso.token.list({
-      baseURL: process.env.AUTH_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    });
+    const authTokens = await AuthApi.sso.token
+      .list({
+        baseURL: process.env.AUTH_API_BASE_URL,
+        headers: {
+          ...prepareCrossServiceHeaders(requestSpan),
+          cookie: `SessionId=${authResponse.SessionId}`,
+        },
+      })
+      .then((httpResponse) => httpResponse.data);
 
     return {
       props: {

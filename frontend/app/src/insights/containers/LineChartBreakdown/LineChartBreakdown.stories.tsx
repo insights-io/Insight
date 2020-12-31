@@ -61,8 +61,8 @@ export const WithAFewDataPoints = () => {
     <Container>
       <LineChartBreakdown
         {...baseProps}
-        dataLoader={() => Promise.resolve(data)}
         initialData={data}
+        dataLoader={() => Promise.resolve(data)}
       />
     </Container>
   );

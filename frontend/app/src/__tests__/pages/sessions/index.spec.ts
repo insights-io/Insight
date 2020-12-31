@@ -1,6 +1,6 @@
 import { getPage } from 'next-page-tester';
 import { mockEmptySessionsPage, mockSessionsPage } from '__tests__/mocks';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { sandbox } from '@rebrowse/testing';
 import type { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import userEvent from '@testing-library/user-event';
@@ -11,6 +11,8 @@ import {
 } from '__tests__/data/sessions';
 import { sessionDescription } from 'sessions/utils';
 import { TermCondition } from '@rebrowse/sdk';
+import { match } from 'sinon';
+import { renderPage } from '__tests__/utils';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -31,32 +33,40 @@ describe('/sessions', () => {
       document.cookie = 'SessionId=123';
       const {
         listSessionsStub,
-        retrieveRecordingSnippetStub,
+        retrieveBoostrapScriptStub,
         countSessionsStub,
       } = mockEmptySessionsPage(sandbox);
 
-      /* Render */
+      /* Server */
       const { page } = await getPage({ route });
-      render(page);
 
-      /* Assertions */
+      /* Client */
+      renderPage(page);
+
       await screen.findByText(
         'Ready to get insights? Setup the recording snippet.'
       );
 
       sandbox.assert.calledWithExactly(
-        retrieveRecordingSnippetStub,
+        retrieveBoostrapScriptStub,
         'https://static.rebrowse.dev/b/rebrowse.js'
       );
 
-      sandbox.assert.calledWithMatch(countSessionsStub, {
+      sandbox.assert.calledWithExactly(countSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
+        search: {},
       });
 
-      sandbox.assert.calledWithMatch(listSessionsStub, {
+      sandbox.assert.calledWithExactly(listSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 
@@ -65,7 +75,7 @@ describe('/sessions', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          `.src = 'https://static.rebrowse.dev/s/rebrowse.js';`,
+          `src = 'https://static.rebrowse.dev/s/localhost.rebrowse.js';`,
           { exact: false }
         )
       ).toBeInTheDocument();
@@ -85,19 +95,26 @@ describe('/sessions', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(countSessionsStub, {
+      sandbox.assert.calledWithExactly(countSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
+        search: {},
       });
 
-      sandbox.assert.calledWithMatch(listSessionsStub, {
+      sandbox.assert.calledWithExactly(listSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 
       /* Client */
-      const { container } = render(page);
+      const { container } = renderPage(page);
       await screen.findAllByText('Mac OS X • Chrome');
       screen.getAllByText(/Ljubljana, Slovenia - 82.192.62.51 - (.*)/);
 
@@ -191,19 +208,26 @@ describe('/sessions', () => {
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithMatch(countSessionsStub, {
+      sandbox.assert.calledWithExactly(countSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
+        search: {},
       });
 
-      sandbox.assert.calledWithMatch(listSessionsStub, {
+      sandbox.assert.calledWithExactly(listSessionsStub, {
         baseURL: 'http://localhost:8082',
-        headers: { cookie: 'SessionId=123' },
+        headers: {
+          cookie: 'SessionId=123',
+          'uber-trace-id': (match.string as unknown) as string,
+        },
         search: { sortBy: ['-createdAt'], limit: 20 },
       });
 
       /* Client */
-      render(page);
+      renderPage(page);
 
       userEvent.click(
         screen.getAllByText(sessionDescription(REBROWSE_SESSIONS[0]))[0]

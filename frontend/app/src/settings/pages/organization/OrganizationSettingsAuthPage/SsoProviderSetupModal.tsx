@@ -20,18 +20,18 @@ import { applyApiFormErrors } from 'shared/utils/form';
 
 type Props = {
   method: SsoMethod;
-  samlMethod: SamlMethod | undefined;
+  samlMethod?: SamlMethod;
   label: string;
   isOpen: boolean;
   onClose: () => void;
   createSsoSetup: (params: {
     method: SsoMethod;
-    saml: SamlConfigurationDTO;
+    saml?: SamlConfigurationDTO;
   }) => Promise<SsoSetupDTO>;
 };
 
 type FormValues = {
-  metadataEndpoint?: string;
+  metadataEndpoint: string;
 };
 
 export const SsoProviderSetupModal = ({
@@ -44,7 +44,9 @@ export const SsoProviderSetupModal = ({
 }: Props) => {
   const [formError, setFormError] = useState<APIError | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { handleSubmit, register, errors, setError } = useForm<FormValues>();
+  const { handleSubmit, register, errors, setError } = useForm<FormValues>({
+    defaultValues: { metadataEndpoint: '' },
+  });
 
   const onSubmit = handleSubmit(({ metadataEndpoint }) => {
     if (isSubmitting) {
@@ -55,10 +57,7 @@ export const SsoProviderSetupModal = ({
 
     createSsoSetup({
       method,
-      saml: {
-        metadataEndpoint,
-        method: samlMethod,
-      } as SamlConfigurationDTO,
+      saml: samlMethod ? { metadataEndpoint, method: samlMethod } : undefined,
     })
       .then(() => {
         toaster.positive(`${label} SSO setup enabled`, {});
@@ -76,7 +75,7 @@ export const SsoProviderSetupModal = ({
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} unstable_ModalBackdropScroll>
       <form onSubmit={onSubmit}>
         <ModalHeader>Setup {label} authentication</ModalHeader>
         <ModalBody>

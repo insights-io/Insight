@@ -14,7 +14,10 @@ export const useInvoices = (
 ) => {
   const { data } = useQuery(
     cacheKey(subscriptionId),
-    () => BillingApi.invoices.listBySubscription(subscriptionId),
+    () =>
+      BillingApi.invoices
+        .listBySubscription(subscriptionId)
+        .then((httpResponse) => httpResponse.data),
     { initialData: () => initialData }
   );
 

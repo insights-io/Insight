@@ -1,5 +1,5 @@
 import { sandbox } from '@rebrowse/testing';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import {
@@ -7,6 +7,7 @@ import {
   SETTINGS_PAGE,
 } from 'shared/constants/routes';
 import { mockAuth } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/settings', () => {
   /* Data */
@@ -17,11 +18,12 @@ describe('/settings', () => {
     document.cookie = 'SessionId=123';
     mockAuth(sandbox);
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
-    render(page);
 
-    /* Assertions */
+    /* Client */
+    renderPage(page);
+
     expect((await screen.findByText('AA')).closest('a')).toHaveAttribute(
       'href',
       ACCOUNT_SETTINGS_DETAILS_PAGE

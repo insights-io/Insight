@@ -38,7 +38,7 @@ public class UserService {
 
   @Traced
   public CompletionStage<Optional<AuthUser>> getUser(UUID userId) {
-    return userDatasource.findUser(userId);
+    return userDatasource.retrieve(userId);
   }
 
   @Traced
@@ -79,12 +79,12 @@ public class UserService {
   }
 
   public CompletionStage<AuthUser> updateUser(UUID userId, UpdateDTO params) {
-    return updateUser(() -> userDatasource.updateUser(userId, params));
+    return updateUser(() -> userDatasource.update(userId, params));
   }
 
   public CompletionStage<AuthUser> updateUser(
       UUID userId, UpdateDTO params, SqlTransaction transaction) {
-    return updateUser(() -> userDatasource.updateUser(userId, params, transaction));
+    return updateUser(() -> userDatasource.update(userId, params, transaction));
   }
 
   @Traced

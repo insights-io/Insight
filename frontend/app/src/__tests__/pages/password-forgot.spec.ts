@@ -1,11 +1,12 @@
 import { getPage } from 'next-page-tester';
 import userEvent from '@testing-library/user-event';
-import { screen, render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { EMAIL_PLACEHOLDER } from 'shared/constants/form-placeholders';
 import { sandbox } from '@rebrowse/testing';
 import { AuthApi } from 'api';
 import { mockApiError } from '@rebrowse/storybook';
 import { PASSWORD_FORGOT_PAGE } from 'shared/constants/routes';
+import { renderPage } from '__tests__/utils';
 
 describe('/password-forgot', () => {
   /* Data */
@@ -18,9 +19,11 @@ describe('/password-forgot', () => {
       .stub(AuthApi.password, 'forgot')
       .resolves();
 
-    /* Render */
+    /* Sever */
     const { page } = await getPage({ route });
-    render(page);
+
+    /* Client */
+    renderPage(page);
 
     /* Assertions */
     await screen.findByText(
@@ -49,11 +52,12 @@ describe('/password-forgot', () => {
       })
     );
 
-    /* Render */
+    /* Server */
     const { page } = await getPage({ route });
-    render(page);
 
-    const email = 'john.doe@gmail.com';
+    /* Client */
+    renderPage(page);
+
     await userEvent.type(screen.getByPlaceholderText(EMAIL_PLACEHOLDER), email);
 
     userEvent.click(screen.getByText('Reset password'));
@@ -67,7 +71,7 @@ describe('/password-forgot', () => {
   test('As a user I can navigate to /login if I remember my password', async () => {
     /* Render */
     const { page } = await getPage({ route });
-    render(page);
+    renderPage(page);
 
     /* Assertions */
     userEvent.click(await screen.findByText('Remember password?'));

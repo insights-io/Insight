@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { GetServerSideProps } from 'next';
 import { AuthApi } from 'api';
 import { mockServerSideRequest } from '@rebrowse/next-testing';
+import { match } from 'sinon';
 
 // eslint-disable-next-line jest/no-export
 export function authenticatedTestCases<T>(
@@ -62,8 +63,11 @@ export function authenticatedTestCases<T>(
         'set-cookie': undefined,
       });
       sandbox.assert.calledWithExactly(end);
-      sandbox.assert.calledWithMatch(getSessionStub, '123', {
+      sandbox.assert.calledWithExactly(getSessionStub, '123', {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
       expect(serverSideProps).toEqual({ props: {} });
     }),
@@ -91,8 +95,11 @@ export function authenticatedTestCases<T>(
         Location: '/login/verification?redirect=%2F',
       });
       sandbox.assert.calledWithExactly(end);
-      sandbox.assert.calledWithMatch(getSessionStub, '123', {
+      sandbox.assert.calledWithExactly(getSessionStub, '123', {
         baseURL: 'http://localhost:8080',
+        headers: {
+          'uber-trace-id': (match.string as unknown) as string,
+        },
       });
       expect(serverSideProps).toEqual({ props: {} });
     }),

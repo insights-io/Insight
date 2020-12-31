@@ -15,6 +15,7 @@ import {
   SsoSetupDTO,
 } from '@rebrowse/types';
 import { LabelSmall, LabelXSmall } from 'baseui/typography';
+import type { HttpResponseBase } from '@rebrowse/sdk';
 
 import { SsoProviderSetupModal } from './SsoProviderSetupModal';
 import { SsoSetupDisableModal } from './SsoSetupDisableModal';
@@ -25,10 +26,10 @@ type Props = {
   samlMethod?: SamlMethod;
   image: string;
   activeSetup: SsoSetup | undefined;
-  deleteSsoSetup: () => Promise<Response>;
+  deleteSsoSetup: () => Promise<HttpResponseBase>;
   createSsoSetup: (params: {
     method: SsoMethod;
-    saml: SamlConfigurationDTO;
+    saml?: SamlConfigurationDTO;
   }) => Promise<SsoSetupDTO>;
 };
 

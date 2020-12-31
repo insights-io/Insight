@@ -1,13 +1,14 @@
 import { mockApiError } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
+import { match } from 'sinon';
 import { ADMIN_TEAM_INVITE_DTO } from '__tests__/data';
 import { mockIndexPage } from '__tests__/mocks';
-import { jsonPromise } from '__tests__/utils';
+import { httpOkResponse, renderPage } from '__tests__/utils';
 
 describe('/accept-invite', () => {
   /* Data */
@@ -25,7 +26,7 @@ describe('/accept-invite', () => {
     const { page } = await getPage({ route: ACCEPT_INVITE_PAGE });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText('Page Visits');
   });
@@ -45,12 +46,15 @@ describe('/accept-invite', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(retrieveTeamInviteStub, token, {
+    sandbox.assert.calledWithExactly(retrieveTeamInviteStub, token, {
       baseURL: 'http://localhost:8080',
+      headers: {
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText(
       'We could not find team invite you were looking for'
@@ -66,24 +70,27 @@ describe('/accept-invite', () => {
 
     const retrieveTeamInviteStub = sandbox
       .stub(AuthApi.organization.teamInvite, 'retrieve')
-      .resolves(ADMIN_TEAM_INVITE_DTO);
+      .resolves(httpOkResponse(ADMIN_TEAM_INVITE_DTO));
 
     const acceptTeamInviteStub = sandbox
       .stub(AuthApi.organization.teamInvite, 'accept')
       .callsFake(() => {
         document.cookie = 'SessionId=123';
-        return jsonPromise({ status: 200 });
+        return Promise.resolve({ statusCode: 200, headers: new Headers() });
       });
 
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithMatch(retrieveTeamInviteStub, token, {
+    sandbox.assert.calledWithExactly(retrieveTeamInviteStub, token, {
       baseURL: 'http://localhost:8080',
+      headers: {
+        'uber-trace-id': (match.string as unknown) as string,
+      },
     });
 
     /* Client */
-    render(page);
+    renderPage(page);
 
     await screen.findByText(
       'User 123 has invited you to join organization 000000 with role Admin.'

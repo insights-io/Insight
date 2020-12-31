@@ -6,12 +6,7 @@ import {
   REBROWSE_ORGANIZATION_DTO,
   SSO_SAML_SETUP_DTO,
 } from '__tests__/data';
-import { AuthApi } from 'api';
-import {
-  SamlConfigurationDTO,
-  SamlSsoMethod,
-  SsoSetupDTO,
-} from '@rebrowse/types';
+import { mockOrganizationAuthPage as setupMocks } from '__tests__/mocks';
 
 import { OrganizationSettingsAuthPage } from './OrganizationSettingsAuthPage';
 
@@ -30,22 +25,13 @@ export const WithSaml = () => {
   return (
     <OrganizationSettingsAuthPage
       {...baseProps}
-      maybeSsoSetup={SSO_SAML_SETUP_DTO as SsoSetupDTO}
+      maybeSsoSetup={SSO_SAML_SETUP_DTO}
     />
   );
 };
 WithSaml.story = configureStory({
-  setupMocks: (sandbox) => {
-    return sandbox
-      .stub(AuthApi.sso.setup, 'create')
-      .callsFake((method, saml) => {
-        return Promise.resolve({
-          ...SSO_SAML_SETUP_DTO,
-          method: method as SamlSsoMethod,
-          saml: saml as SamlConfigurationDTO,
-        });
-      });
-  },
+  setupMocks: (sandbox) =>
+    setupMocks(sandbox, { ssoSetup: SSO_SAML_SETUP_DTO }),
 });
 
 export const WithNoSetup = () => {
@@ -53,3 +39,4 @@ export const WithNoSetup = () => {
     <OrganizationSettingsAuthPage {...baseProps} maybeSsoSetup={undefined} />
   );
 };
+WithNoSetup.story = configureStory({ setupMocks });
