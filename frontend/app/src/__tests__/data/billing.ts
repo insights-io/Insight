@@ -6,6 +6,7 @@ import type {
   Subscription,
   SubscriptionDTO,
 } from '@rebrowse/types';
+import { REBROWSE_ORGANIZATION } from '__tests__/data/organization';
 
 export const CANCELED_ENTERPRISE_SUBSCRIPTION: Subscription = {
   id: '1234',
@@ -45,6 +46,13 @@ export const FREE_PLAN_DTO: PlanDTO = {
   organizationId: '000000',
   price: { amount: 0, interval: 'month' },
   type: 'free',
+};
+
+export const REBROWSER_PLAN_DTO: PlanDTO = {
+  dataRetention: '∞',
+  organizationId: REBROWSE_ORGANIZATION.id,
+  price: { amount: 0, interval: 'month' },
+  type: 'enterprise',
 };
 
 export const ACTIVE_BUSINESS_SUBSCRIPTION_DTO: SubscriptionDTO = {

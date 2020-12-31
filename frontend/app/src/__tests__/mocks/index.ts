@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AuthApi, SessionApi } from 'api';
+import { AuthApi, BillingApi, SessionApi } from 'api';
 import {
   REBROWSE_EVENTS,
   REBROWSE_SESSIONS_DTOS,
@@ -14,6 +14,7 @@ import type {
   AuthTokenDTO,
   BrowserEventDTO,
   MfaSetupDTO,
+  PlanDTO,
   SamlConfigurationDTO,
   SamlSsoMethod,
   SessionDTO,
@@ -27,6 +28,7 @@ import { httpOkResponse, jsonPromise } from '__tests__/utils/request';
 import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
 import { mockApiError } from '@rebrowse/storybook';
 import { AUTH_TOKEN_DTO } from '__tests__/data/sso';
+import { REBROWSER_PLAN_DTO } from '__tests__/data/billing';
 
 import {
   filterSession,
@@ -98,6 +100,26 @@ export const mockOrganizationSettingsMemberInvitesPage = (
     );
 
   return { ...authMocks, listTeamInvitesStub, countTeamInvitesStub };
+};
+
+export const mockOrganizationSettingsSubscriptionPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    plan = REBROWSER_PLAN_DTO,
+  }: { sessionInfo?: SessionInfoDTO; plan?: PlanDTO } = {}
+) => {
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  const retrieveActivePlanStub = sandbox
+    .stub(BillingApi.subscriptions, 'getActivePlan')
+    .resolves(httpOkResponse(plan));
+
+  const listSubscriptionsStub = sandbox
+    .stub(BillingApi.subscriptions, 'list')
+    .resolves(httpOkResponse([]));
+
+  return { ...authMocks, retrieveActivePlanStub, listSubscriptionsStub };
 };
 
 export const mockOrganizationSettingsMembersPage = (

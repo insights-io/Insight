@@ -5,7 +5,7 @@ import { REBROWSE_EVENTS } from '__tests__/data';
 import noop from 'lodash/noop';
 import { filterBrowserEvent } from '__tests__/mocks/filter';
 import type { Meta } from '@storybook/react';
-import { httpOkResponse } from '__tests__/utils';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { DeveloperTools } from './DeveloperTools';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { configureStory, mockApiError } from '@rebrowse/storybook';
 import { AuthApi } from 'api/auth';
 import type { Meta } from '@storybook/react';
-import { httpOkResponse } from '__tests__/utils';
+import { httpOkResponse } from '__tests__/utils/request';
 
 import { LoginPage } from './LoginPage';
 
