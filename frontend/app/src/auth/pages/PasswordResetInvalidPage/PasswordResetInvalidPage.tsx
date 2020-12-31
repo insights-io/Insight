@@ -2,8 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { AuthPageLayout } from 'auth/components/PageLayout';
 import { useStyletron } from 'baseui';
-import { Button } from 'baseui/button';
 import { Paragraph3 } from 'baseui/typography';
+import { Button } from '@rebrowse/elements';
 
 export const PasswordResetInvalidPage = () => {
   const [css, theme] = useStyletron();

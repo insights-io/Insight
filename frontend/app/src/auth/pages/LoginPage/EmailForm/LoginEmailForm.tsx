@@ -47,16 +47,14 @@ export const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
 
     AuthApi.sso.session
       .login(formData.email, formData.password)
-      .then((response) => {
-        if (response.data === true) {
-          replace(relativeRedirect);
-        } else {
-          replace(
-            `${VERIFICATION_PAGE}?redirect=${encodeURIComponent(
-              relativeRedirect
-            )}`
-          );
-        }
+      .then(({ data: loggedIn }) => {
+        replace(
+          loggedIn === true
+            ? relativeRedirect
+            : `${VERIFICATION_PAGE}?redirect=${encodeURIComponent(
+                relativeRedirect
+              )}`
+        );
       })
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import {
   authenticated,
   AuthenticatedServerSideProps,
@@ -51,39 +51,41 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    return BillingApi.subscriptions
-      .get(subscriptionId, {
-        baseURL: process.env.BILLING_API_BASE_URL,
-        headers,
-      })
-      .then((httpResponse) => httpResponse.data)
-      .catch((error) => {
-        const response = error.response as Response;
-        if (response.status === 404) {
-          context.res.writeHead(302, {
-            Location: ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE,
-          });
-          context.res.end();
-        }
-        throw error;
-      })
-      .then(async (subscription) => {
-        const invoices = await BillingApi.invoices
-          .listBySubscription(subscription.id, {
-            baseURL: process.env.BILLING_API_BASE_URL,
-            headers,
-          })
-          .then((httpResponse) => httpResponse.data);
+    try {
+      const subscription = await BillingApi.subscriptions
+        .get(subscriptionId, {
+          baseURL: process.env.BILLING_API_BASE_URL,
+          headers,
+        })
+        .then((httpResponse) => httpResponse.data);
 
+      const invoices = await BillingApi.invoices
+        .listBySubscription(subscription.id, {
+          baseURL: process.env.BILLING_API_BASE_URL,
+          headers,
+        })
+        .then((httpResponse) => httpResponse.data);
+
+      return {
+        props: {
+          user: authResponse.user,
+          invoices,
+          subscription,
+          organization: authResponse.organization,
+        },
+      };
+    } catch (error) {
+      const response = error.response as Response;
+      if (response.status === 404) {
         return {
-          props: {
-            user: authResponse.user,
-            invoices,
-            subscription,
-            organization: authResponse.organization,
+          redirect: {
+            destination: ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE,
+            permanent: true,
           },
         };
-      });
+      }
+      throw error;
+    }
   } finally {
     requestSpan.finish();
   }
