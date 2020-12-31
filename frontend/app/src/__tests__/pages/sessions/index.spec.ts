@@ -1,6 +1,6 @@
 import { getPage } from 'next-page-tester';
 import { mockEmptySessionsPage, mockSessionsPage } from '__tests__/mocks';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { sandbox } from '@rebrowse/testing';
 import type { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import userEvent from '@testing-library/user-event';
