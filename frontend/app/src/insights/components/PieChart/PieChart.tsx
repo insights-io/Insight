@@ -56,14 +56,18 @@ export const PieChart = <Datum,>({
       event:
         | React.TouchEvent<SVGPathElement>
         | React.MouseEvent<SVGPathElement>,
-      tooltipData: Datum
+      nextTooltipData: Datum
     ) => {
-      const { x: tooltipLeft, y: tooltipTop } = localPoint(
-        svgRef.current || event,
-        event
-      ) || { x: 0, y: 0 };
+      const { x, y } = localPoint(svgRef.current || event, event) || {
+        x: 0,
+        y: 0,
+      };
 
-      showTooltip({ tooltipData, tooltipLeft, tooltipTop });
+      showTooltip({
+        tooltipData: nextTooltipData,
+        tooltipLeft: x,
+        tooltipTop: y,
+      });
     },
     [showTooltip]
   );
@@ -93,8 +97,8 @@ export const PieChart = <Datum,>({
                 onTouchMove={handleTooltip}
                 onMouseMove={handleTooltip}
                 getKey={(arc) => getLabel(arc.data)}
-                onClickDatum={({ data }) => {
-                  const label = getLabel(data);
+                onClickDatum={({ data: clickedData }) => {
+                  const label = getLabel(clickedData);
                   setSelectedLabel(selectedLabel === label ? undefined : label);
                 }}
                 getColor={(arc) => getColor(arc.data)}

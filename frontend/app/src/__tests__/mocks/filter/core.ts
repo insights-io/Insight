@@ -90,31 +90,29 @@ export const countBy = <
   TQueryParams extends Record<string, unknown>,
   GroupBy extends (keyof TQueryParams & string)[] = []
 >(
-  data: TObject[],
+  values: TObject[],
   filter: (r: TObject) => boolean,
   search: SearchBean<TQueryParams, GroupBy> | undefined,
-  get: <TObjectKey extends keyof TObject>(
+  getFn: <TObjectKey extends keyof TObject>(
     object: TObject,
     path: TObjectKey | [TObjectKey]
   ) => TObject[TObjectKey]
 ): GroupByResult<GroupBy> => {
-  const map = data.reduce((acc, point) => {
+  const map = values.reduce((valuesAcc, point) => {
     if (!filter(point)) {
-      return acc;
+      return valuesAcc;
     }
 
     const key = search?.groupBy
       ?.map(
-        (field) => `${field}=${get(point, field as keyof TObject) || 'Unknown'}`
+        (field) =>
+          `${field}=${getFn(point, field as keyof TObject) || 'Unknown'}`
       )
       .join('--') as string;
 
-    const value = acc[key];
+    const value = valuesAcc[key];
 
-    return {
-      ...acc,
-      [key]: (value || 0) + 1,
-    };
+    return { ...valuesAcc, [key]: (value || 0) + 1 };
   }, {} as Record<string, number>);
 
   if (!search?.groupBy || search.groupBy.length === 0) {
@@ -125,9 +123,9 @@ export const countBy = <
 
   return Object.keys(map).reduce((acc, key) => {
     const fieldValuePairs = key.split('--');
-    const data = fieldValuePairs.reduce((acc, pair) => {
+    const data = fieldValuePairs.reduce((innerAcc, pair) => {
       const [field, value] = pair.split('=');
-      return { ...acc, [field]: value };
+      return { ...innerAcc, [field]: value };
     }, {} as Record<GroupBy[number], string>);
     return [...acc, { ...data, count: map[key] }] as GroupByResult<GroupBy>;
   }, ([] as unknown) as GroupByResult<GroupBy>);

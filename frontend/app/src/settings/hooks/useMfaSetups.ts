@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { mapMfaSetup } from '@rebrowse/sdk';
 import type {
   APIErrorDataResponse,
@@ -46,14 +45,12 @@ export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   );
 
   const completeTotpSetup = useCallback(
-    (code: number) =>
-      completeSetup({ method: 'totp', code }).then((data) => data!),
+    (code: number) => completeSetup({ method: 'totp', code }),
     [completeSetup]
   );
 
   const completeSmsSetup = useCallback(
-    (code: number) =>
-      completeSetup({ method: 'sms', code }).then((data) => data!),
+    (code: number) => completeSetup({ method: 'sms', code }),
     [completeSetup]
   );
 

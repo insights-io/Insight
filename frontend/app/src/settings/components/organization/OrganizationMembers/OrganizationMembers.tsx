@@ -34,13 +34,13 @@ export const OrganizationMembers = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
 
-  const search = useCallback(async (search: SearchBean<UserDTO>) => {
+  const listMembers = useCallback(async (search: SearchBean<UserDTO>) => {
     return AuthApi.organization.members
       .list({ search: search as UserSearchBean })
       .then((httpResponse) => httpResponse.data);
   }, []);
 
-  const searchCount = useCallback(async (search: SearchBean<UserDTO>) => {
+  const countMembers = useCallback(async (search: SearchBean<UserDTO>) => {
     return AuthApi.organization.members
       .count({ search: search as UserSearchBean })
       .then((httpResponse) => httpResponse.data.count);
@@ -58,8 +58,8 @@ export const OrganizationMembers = ({
     resource: 'users',
     field: 'createdAt',
     initialData: { count: initialMemberCount, items: initialMembers },
-    search,
-    searchCount,
+    search: listMembers,
+    searchCount: countMembers,
     numItemsPerPage: NUM_ITEMS_PER_PAGE,
   });
 

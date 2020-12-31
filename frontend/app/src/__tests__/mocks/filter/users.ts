@@ -26,12 +26,12 @@ export const filterTeamInvite = <
 export const countTeamInvites = <
   GroupBy extends (keyof TeamInviteQueryParams)[] = []
 >(
-  value: TeamInviteDTO[],
+  values: TeamInviteDTO[],
   search: TeamInviteSearchBean<GroupBy> | undefined
 ) => {
   return countBy(
-    value,
-    (s) => filterTeamInvite(s, search),
+    values,
+    (value) => filterTeamInvite(value, search),
     search,
     (v, field) => {
       const value = get(v, field);
@@ -80,12 +80,12 @@ export const filterUser = <GroupBy extends (keyof UserSearchQueryParams)[]>(
 export const countUsers = <
   GroupBy extends (keyof UserSearchQueryParams)[] = []
 >(
-  value: UserDTO[],
+  values: UserDTO[],
   search: UserSearchBean<GroupBy> | undefined
 ) => {
   return countBy(
-    value,
-    (s) => filterUser(s, search),
+    values,
+    (value) => filterUser(value, search),
     search,
     (v, field) => {
       const value = get(v, field);

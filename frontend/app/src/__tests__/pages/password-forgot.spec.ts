@@ -57,7 +57,6 @@ describe('/password-forgot', () => {
     /* Client */
     render(page);
 
-    const email = 'john.doe@gmail.com';
     await userEvent.type(screen.getByPlaceholderText(EMAIL_PLACEHOLDER), email);
 
     userEvent.click(screen.getByText('Reset password'));

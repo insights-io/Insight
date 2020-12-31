@@ -37,17 +37,23 @@ export const TeamInvites = ({
 }: Props) => {
   const [_css, theme] = useStyletron();
 
-  const search = useCallback(async (search: SearchBean<TeamInviteDTO>) => {
-    return AuthApi.organization.teamInvite
-      .list({ search: search as TeamInviteSearchBean })
-      .then((httpResponse) => httpResponse.data);
-  }, []);
+  const listTeamInvites = useCallback(
+    async (search: SearchBean<TeamInviteDTO>) => {
+      return AuthApi.organization.teamInvite
+        .list({ search: search as TeamInviteSearchBean })
+        .then((httpResponse) => httpResponse.data);
+    },
+    []
+  );
 
-  const searchCount = useCallback(async (search: SearchBean<TeamInviteDTO>) => {
-    return AuthApi.organization.teamInvite
-      .count({ search: search as TeamInviteSearchBean })
-      .then((httpResponse) => httpResponse.data.count);
-  }, []);
+  const countTeamInvites = useCallback(
+    async (search: SearchBean<TeamInviteDTO>) => {
+      return AuthApi.organization.teamInvite
+        .count({ search: search as TeamInviteSearchBean })
+        .then((httpResponse) => httpResponse.data.count);
+    },
+    []
+  );
 
   const {
     page,
@@ -62,8 +68,8 @@ export const TeamInvites = ({
     resource: 'invites',
     field: 'createdAt',
     initialData: { count: initialInviteCount, items: initialInvites },
-    search,
-    searchCount,
+    search: listTeamInvites,
+    searchCount: countTeamInvites,
     numItemsPerPage: NUM_ITEMS_PER_PAGE,
   });
 

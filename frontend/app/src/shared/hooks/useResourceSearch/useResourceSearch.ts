@@ -54,8 +54,8 @@ export const useResourceSearch = <
   const queryClient = useQueryClient();
   const [debouncedQuery] = useDebounce(query, debounce);
 
-  const onQueryChange = (query: string) => {
-    setQuery(query);
+  const onQueryChange = (nextQuery: string) => {
+    setQuery(nextQuery);
     setPage(1);
   };
 
@@ -85,9 +85,9 @@ export const useResourceSearch = <
   } = useQuery(
     itemsCacheKey,
     () => {
-      const items = queryClient.getQueryData<Item[]>(itemsCacheKey);
-      if (items) {
-        return items;
+      const itemsInCache = queryClient.getQueryData<Item[]>(itemsCacheKey);
+      if (itemsInCache) {
+        return itemsInCache;
       }
 
       const searchBean = createSearchQuery();
@@ -138,9 +138,9 @@ export const useResourceSearch = <
   } = useQuery(
     countCacheKey,
     () => {
-      const count = queryClient.getQueryData<number>(countCacheKey);
-      if (count !== undefined) {
-        return count;
+      const countInCache = queryClient.getQueryData<number>(countCacheKey);
+      if (countInCache !== undefined) {
+        return countInCache;
       }
       return searchCount(createSearchQuery());
     },
