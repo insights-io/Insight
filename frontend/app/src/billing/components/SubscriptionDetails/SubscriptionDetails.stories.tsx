@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   ACTIVE_BUSINESS_SUBSCRIPTION_DTO,
-  PAID_INVOICE_DTO,
+  ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO,
 } from '__tests__/data/billing';
 import type { Meta } from '@storybook/react';
 
@@ -15,6 +15,6 @@ export default {
 export const Active = () => (
   <SubscriptionDetails
     subscription={ACTIVE_BUSINESS_SUBSCRIPTION_DTO}
-    invoices={[PAID_INVOICE_DTO]}
+    invoices={[ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO]}
   />
 );

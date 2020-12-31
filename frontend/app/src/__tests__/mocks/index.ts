@@ -13,6 +13,7 @@ import { v4 as uuid } from 'uuid';
 import type {
   AuthTokenDTO,
   BrowserEventDTO,
+  InvoiceDTO,
   MfaSetupDTO,
   PlanDTO,
   SamlConfigurationDTO,
@@ -20,6 +21,7 @@ import type {
   SessionDTO,
   SessionInfoDTO,
   SsoSetupDTO,
+  SubscriptionDTO,
   TeamInviteDTO,
   UserDTO,
 } from '@rebrowse/types';
@@ -28,7 +30,11 @@ import { httpOkResponse, jsonPromise } from '__tests__/utils/request';
 import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
 import { mockApiError } from '@rebrowse/storybook';
 import { AUTH_TOKEN_DTO } from '__tests__/data/sso';
-import { REBROWSE_PLAN_DTO } from '__tests__/data/billing';
+import {
+  ACTIVE_BUSINESS_SUBSCRIPTION_DTO,
+  ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO,
+  REBROWSE_PLAN_DTO,
+} from '__tests__/data/billing';
 
 import {
   filterSession,
@@ -100,6 +106,44 @@ export const mockOrganizationSettingsMemberInvitesPage = (
     );
 
   return { ...authMocks, listTeamInvitesStub, countTeamInvitesStub };
+};
+
+export const mockOrganizationSettingsSubscriptionDetailsPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    subscription: initialSubscription = ACTIVE_BUSINESS_SUBSCRIPTION_DTO,
+    invoices = [ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO],
+  }: {
+    sessionInfo?: SessionInfoDTO;
+    subscription?: SubscriptionDTO;
+    invoices?: InvoiceDTO[];
+  } = {}
+) => {
+  const authMocks = mockAuth(sandbox, sessionInfo);
+  let subscription = initialSubscription;
+
+  const retrieveSubscriptionStub = sandbox
+    .stub(BillingApi.subscriptions, 'get')
+    .callsFake(() => Promise.resolve(httpOkResponse(subscription)));
+
+  const listInvoicesStub = sandbox
+    .stub(BillingApi.invoices, 'listBySubscription')
+    .resolves(httpOkResponse(invoices));
+
+  const cancelSubscriptionStub = sandbox
+    .stub(BillingApi.subscriptions, 'cancel')
+    .callsFake(() => {
+      subscription = { ...subscription, status: 'canceled' };
+      return Promise.resolve(httpOkResponse(subscription));
+    });
+
+  return {
+    ...authMocks,
+    retrieveSubscriptionStub,
+    listInvoicesStub,
+    cancelSubscriptionStub,
+  };
 };
 
 export const mockOrganizationSettingsSubscriptionPage = (

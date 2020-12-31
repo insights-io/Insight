@@ -15,7 +15,10 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
 
   const { data } = useQuery(
     cacheKey(initialData.id),
-    () => BillingApi.subscriptions.get(initialData.id),
+    () =>
+      BillingApi.subscriptions
+        .get(initialData.id)
+        .then((httpResponse) => httpResponse.data),
     { initialData }
   );
 
