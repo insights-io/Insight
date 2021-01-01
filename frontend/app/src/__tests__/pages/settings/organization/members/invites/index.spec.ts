@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { EMAIL_PLACEHOLDER } from 'shared/constants/form-placeholders';
 import { ORGANIZATION_SETTINGS_MEMBER_INVITES_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import {
@@ -12,7 +13,7 @@ import {
 import { mockOrganizationSettingsMemberInvitesPage } from '__tests__/mocks';
 import { renderPage } from '__tests__/utils';
 
-describe('/settings/organization/members', () => {
+describe('/settings/organization/members/invites', () => {
   /* Data */
   const route = ORGANIZATION_SETTINGS_MEMBER_INVITES_PAGE;
   const invites = [
@@ -22,6 +23,7 @@ describe('/settings/organization/members', () => {
   ];
   const randomQuery = 'random';
   const emailQuery = invites[2].email.substring(3, 6);
+  const invitedUserEmail = 'user@gmail.com';
 
   test('As a user I want to search for team invites in my organization', async () => {
     document.cookie = 'SessionId=123';
@@ -68,5 +70,48 @@ describe('/settings/organization/members', () => {
     sandbox.assert.calledWithExactly(listTeamInvitesStub, {
       search: { limit: 20, sortBy: ['+createdAt'], query: emailQuery },
     });
+  });
+
+  test('As a user I want to invite new members into my organization', async () => {
+    document.cookie = 'SessionId=123';
+    const {
+      listTeamInvitesStub,
+      countTeamInvitesStub,
+      createTeamInviteStub,
+    } = mockOrganizationSettingsMemberInvitesPage(sandbox, { invites });
+
+    /* Server */
+    const { page } = await getPage({ route });
+
+    sandbox.assert.calledWithExactly(listTeamInvitesStub, {
+      baseURL: 'http://localhost:8080',
+      headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
+      search: { limit: 20, sortBy: ['+createdAt'] },
+    });
+    sandbox.assert.calledWithExactly(countTeamInvitesStub, {
+      baseURL: 'http://localhost:8080',
+      headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
+    });
+
+    /* Client */
+    renderPage(page);
+
+    userEvent.click(screen.getByText('Invite Member', { exact: false }));
+    userEvent.type(
+      screen.getByPlaceholderText(EMAIL_PLACEHOLDER),
+      invitedUserEmail
+    );
+
+    userEvent.click(screen.getByText('Admin', { selector: 'div' }));
+    userEvent.click(screen.getByText('Invite'));
+
+    await screen.findByText('Member invited');
+
+    sandbox.assert.calledWithExactly(createTeamInviteStub, {
+      email: invitedUserEmail,
+      role: 'admin',
+    });
+
+    expect(screen.getByText(invitedUserEmail)).toBeInTheDocument();
   });
 });

@@ -36,6 +36,7 @@ import {
   ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO,
   REBROWSE_PLAN_DTO,
 } from '__tests__/data/billing';
+import { addDays } from 'date-fns';
 
 import {
   filterSession,
@@ -107,7 +108,7 @@ export const mockOrganizationSettingsMemberInvitesPage = (
     invites: initialInvites = [],
   }: { sessionInfo?: SessionInfoDTO; invites?: TeamInviteDTO[] } = {}
 ) => {
-  const invites = initialInvites;
+  let invites = initialInvites;
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const listTeamInvitesStub = sandbox
@@ -122,7 +123,28 @@ export const mockOrganizationSettingsMemberInvitesPage = (
       countTeamInvitesMockImplementation(args.search, invites)
     );
 
-  return { ...authMocks, listTeamInvitesStub, countTeamInvitesStub };
+  const createTeamInviteStub = sandbox
+    .stub(AuthApi.organization.teamInvite, 'create')
+    .callsFake((createTeamInviteParams) => {
+      const newTeamInvite: TeamInviteDTO = {
+        ...createTeamInviteParams,
+        creator: sessionInfo.user.id,
+        createdAt: new Date().toISOString(),
+        expiresAt: addDays(new Date(), 1).toISOString(),
+        organizationId: sessionInfo.organization.id,
+        valid: true,
+        token: uuid(),
+      };
+      invites = [...invites, newTeamInvite];
+      return Promise.resolve(httpOkResponse(newTeamInvite));
+    });
+
+  return {
+    ...authMocks,
+    listTeamInvitesStub,
+    countTeamInvitesStub,
+    createTeamInviteStub,
+  };
 };
 
 export const mockOrganizationSettingsSubscriptionDetailsPage = (
