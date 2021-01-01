@@ -35,7 +35,7 @@ export class OrganizationSecuritySettingsPage extends AbstractOrganizationSettin
       "Require at least one non-alphanumeric character (! @ # $ % ^ & * () _ + - = [ ] {} | ')"
     ),
     saveButton: this.withinContainer.queryByText('Save'),
-    successMessage: queryByText('Password policy configured'),
+    successMessage: queryByText('Password policy updated'),
   };
 }
 

@@ -29,7 +29,7 @@ export const userResource = (authApiBaseURL: string) => {
       { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
     ) => {
       if (!json || !json.countryCode || !json.digits) {
-        return update({ phone_number: null });
+        return update({ phoneNumber: null });
       }
 
       return jsonDataResponse<UserDTO>(

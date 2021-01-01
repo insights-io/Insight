@@ -10,7 +10,17 @@ import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'passwordPolicy', 'retrieve'];
 
-const queryFn = () => AuthApi.organization.passwordPolicy.retrieve();
+const queryFn = () =>
+  AuthApi.organization.passwordPolicy
+    .retrieve()
+    .then((httpResponse) => httpResponse.data)
+    .catch((error) => {
+      const response = error.response as Response;
+      if (response.status === 404) {
+        return undefined;
+      }
+      throw error;
+    });
 
 export const useOrganizationPasswordPolicy = (
   initialData: OrganizationPasswordPolicyDTO | undefined
