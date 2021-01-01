@@ -56,7 +56,7 @@ export const PasswordPolicyForm = ({ initialPasswordPolicy }: Props) => {
 
     setIsSubmitting(true);
     apply({ ...values, minCharacters: Number(values.minCharacters) })
-      .then(() => toaster.positive('Password policy configured', {}))
+      .then(() => toaster.positive('Password policy updated', {}))
       .catch(async (error) => {
         const errorResponse: APIErrorDataResponse = await error.response.json();
         const {

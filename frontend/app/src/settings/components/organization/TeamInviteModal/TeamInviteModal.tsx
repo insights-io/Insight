@@ -24,9 +24,11 @@ import { SIZE } from 'baseui/button';
 import { useIsOpen } from 'shared/hooks/useIsOpen';
 import type { HttpResponse } from '@rebrowse/sdk';
 
+type FormValues = TeamInviteCreateDTO;
+
 type Props = {
   createTeamInvite: (
-    formData: TeamInviteCreateDTO
+    values: FormValues
   ) => Promise<HttpResponse<TeamInviteDTO>>;
   children: (open: () => void) => void;
 };
@@ -46,7 +48,7 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
     control,
     setError,
     reset,
-  } = useForm<TeamInviteCreateDTO>();
+  } = useForm<FormValues>();
 
   const close = () => {
     closeModal();

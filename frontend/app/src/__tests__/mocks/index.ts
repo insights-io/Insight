@@ -15,6 +15,7 @@ import type {
   BrowserEventDTO,
   InvoiceDTO,
   MfaSetupDTO,
+  OrganizationPasswordPolicyDTO,
   PlanDTO,
   SamlConfigurationDTO,
   SamlSsoMethod,
@@ -35,6 +36,7 @@ import {
   ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO,
   REBROWSE_PLAN_DTO,
 } from '__tests__/data/billing';
+import { addDays } from 'date-fns';
 
 import {
   filterSession,
@@ -75,11 +77,27 @@ export const mockAuth = (
       return Promise.resolve(httpOkResponse(sessionInfo.organization));
     });
 
+  const updateUserStub = sandbox
+    .stub(AuthApi.user, 'update')
+    .callsFake((params) => {
+      sessionInfo.user = { ...sessionInfo.user, ...(params as UserDTO) };
+      return Promise.resolve(httpOkResponse(sessionInfo.user));
+    });
+
+  const updatePhoneNumberStub = sandbox
+    .stub(AuthApi.user, 'updatePhoneNumber')
+    .callsFake((params) => {
+      sessionInfo.user.phoneNumber = params === null ? undefined : params;
+      return Promise.resolve(httpOkResponse(sessionInfo.user));
+    });
+
   return {
     retrieveSessionStub,
     retrieveUserStub,
     retrieveOrganizationStub,
     updateOrganizationStub,
+    updateUserStub,
+    updatePhoneNumberStub,
   };
 };
 
@@ -90,7 +108,7 @@ export const mockOrganizationSettingsMemberInvitesPage = (
     invites: initialInvites = [],
   }: { sessionInfo?: SessionInfoDTO; invites?: TeamInviteDTO[] } = {}
 ) => {
-  const invites = initialInvites;
+  let invites = initialInvites;
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const listTeamInvitesStub = sandbox
@@ -105,7 +123,28 @@ export const mockOrganizationSettingsMemberInvitesPage = (
       countTeamInvitesMockImplementation(args.search, invites)
     );
 
-  return { ...authMocks, listTeamInvitesStub, countTeamInvitesStub };
+  const createTeamInviteStub = sandbox
+    .stub(AuthApi.organization.teamInvite, 'create')
+    .callsFake((createTeamInviteParams) => {
+      const newTeamInvite: TeamInviteDTO = {
+        ...createTeamInviteParams,
+        creator: sessionInfo.user.id,
+        createdAt: new Date().toISOString(),
+        expiresAt: addDays(new Date(), 1).toISOString(),
+        organizationId: sessionInfo.organization.id,
+        valid: true,
+        token: uuid(),
+      };
+      invites = [...invites, newTeamInvite];
+      return Promise.resolve(httpOkResponse(newTeamInvite));
+    });
+
+  return {
+    ...authMocks,
+    listTeamInvitesStub,
+    countTeamInvitesStub,
+    createTeamInviteStub,
+  };
 };
 
 export const mockOrganizationSettingsSubscriptionDetailsPage = (
@@ -164,6 +203,67 @@ export const mockOrganizationSettingsSubscriptionPage = (
     .resolves(httpOkResponse([]));
 
   return { ...authMocks, retrieveActivePlanStub, listSubscriptionsStub };
+};
+
+export const mockOrganizationSettingsSecurityPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    passwordPolicy: initialPasswordPolicy,
+  }: {
+    sessionInfo?: SessionInfoDTO;
+    passwordPolicy?: OrganizationPasswordPolicyDTO;
+  } = {}
+) => {
+  let passwordPolicy = initialPasswordPolicy;
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  const retrievePasswordPolicyStub = sandbox
+    .stub(AuthApi.organization.passwordPolicy, 'retrieve')
+    .callsFake(() =>
+      !passwordPolicy
+        ? Promise.reject(
+            mockApiError({
+              statusCode: 404,
+              message: 'Not Found',
+              reason: 'Not Found',
+            })
+          )
+        : Promise.resolve(httpOkResponse(passwordPolicy))
+    );
+
+  const updatePasswordPolicyStub = sandbox
+    .stub(AuthApi.organization.passwordPolicy, 'update')
+    .callsFake((updateParams) => {
+      passwordPolicy = {
+        ...(passwordPolicy as OrganizationPasswordPolicyDTO),
+        ...updateParams,
+      };
+      return Promise.resolve(httpOkResponse(passwordPolicy));
+    });
+
+  const createPasswordPolicyStub = sandbox
+    .stub(AuthApi.organization.passwordPolicy, 'create')
+    .callsFake((createPasswordpolicyParams) => {
+      const newPasswordPolicy = !passwordPolicy
+        ? {
+            ...createPasswordpolicyParams,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            organizationId: sessionInfo.organization.id,
+          }
+        : { ...passwordPolicy, ...createPasswordpolicyParams };
+
+      passwordPolicy = newPasswordPolicy;
+      return Promise.resolve(httpOkResponse(newPasswordPolicy));
+    });
+
+  return {
+    ...authMocks,
+    retrievePasswordPolicyStub,
+    createPasswordPolicyStub,
+    updatePasswordPolicyStub,
+  };
 };
 
 export const mockOrganizationSettingsMembersPage = (
@@ -297,6 +397,18 @@ export const mockAcocuntSettingsAuthTokensPage = (
     createAuthTokensStub,
     deleteAuthTokenStub,
   };
+};
+
+export const mockAccountSettingsDetailsPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+  }: {
+    sessionInfo?: SessionInfoDTO;
+  } = {}
+) => {
+  const authMocks = mockAuth(sandbox, sessionInfo);
+  return { ...authMocks };
 };
 
 export const mockAccountSettingsSecurityPage = (

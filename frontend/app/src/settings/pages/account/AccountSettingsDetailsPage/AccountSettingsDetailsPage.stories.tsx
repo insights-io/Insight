@@ -1,7 +1,8 @@
 import React from 'react';
-import { fullHeightDecorator } from '@rebrowse/storybook';
+import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from '__tests__/data';
 import type { Meta } from '@storybook/react';
+import { mockAccountSettingsDetailsPage as setupMocks } from '__tests__/mocks';
 
 import { AccountSettingsDetailsPage } from './AccountSettingsDetailsPage';
 
@@ -19,3 +20,4 @@ export const Base = () => {
     />
   );
 };
+Base.story = configureStory({ setupMocks });

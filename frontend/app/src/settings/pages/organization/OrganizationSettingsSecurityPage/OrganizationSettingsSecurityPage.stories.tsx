@@ -2,8 +2,7 @@ import React from 'react';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
 import { REBROWSE_ORGANIZATION_DTO, REBROWSE_ADMIN_DTO } from '__tests__/data';
-import { AuthApi } from 'api';
-import { httpOkResponse } from '__tests__/utils/request';
+import { mockOrganizationSettingsSecurityPage as setupMocks } from '__tests__/mocks';
 
 import { OrganizationSettingsSecurityPage } from './OrganizationSettingsSecurityPage';
 
@@ -22,24 +21,4 @@ export const Base = () => {
     />
   );
 };
-Base.story = configureStory({
-  setupMocks: (sandbox) => {
-    const retrieveUserStub = sandbox
-      .stub(AuthApi.user, 'me')
-      .resolves(httpOkResponse(REBROWSE_ADMIN_DTO));
-
-    const retrieveOrganizationStub = sandbox
-      .stub(AuthApi.organization, 'get')
-      .resolves(httpOkResponse(REBROWSE_ORGANIZATION_DTO));
-
-    const retrievePasswordPolicyStub = sandbox
-      .stub(AuthApi.organization.passwordPolicy, 'retrieve')
-      .resolves(undefined);
-
-    return {
-      retrieveUserStub,
-      retrieveOrganizationStub,
-      retrievePasswordPolicyStub,
-    };
-  },
-});
+Base.story = configureStory({ setupMocks });

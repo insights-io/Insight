@@ -1,11 +1,9 @@
-/* eslint-disable camelcase */
-
 import type { PhoneNumber, QueryParam, SearchBean } from '@rebrowse/types';
 import type { RequestOptions } from 'types';
 
 export type UpdateUserPayload = {
-  phone_number?: PhoneNumber | null;
-  full_name?: string | null;
+  phoneNumber?: PhoneNumber | null;
+  fullName?: string | null;
 };
 
 export type UserSearchQueryParams = {
