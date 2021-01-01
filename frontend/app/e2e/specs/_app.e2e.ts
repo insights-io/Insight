@@ -16,13 +16,13 @@ test('User should be able to navigate around the app', async (t) => {
   await t
     .click(Sidebar.banner.trigger)
     .expect(Sidebar.banner.menu.organization.cardTitle.innerText)
-    .eql('My company', 'Mathces company name')
+    .eql('My company', 'Matches company name')
     .expect(Sidebar.banner.menu.organization.cardSubtitle.innerText)
-    .eql('Marko skace', 'Mathces full name')
+    .eql('Marko skace', 'Matches full name')
     .expect(Sidebar.banner.menu.account.cardTitle.innerText)
-    .eql('Marko skace', 'Mathces full name')
+    .eql('Marko skace', 'Matches full name')
     .expect(Sidebar.banner.menu.account.cardSubtitle.innerText)
-    .eql(email, 'Mathces email')
+    .eql(email, 'Matches email')
     .click(Sidebar.banner.menu.account.signOut)
     .expect(LoginPage.createFreeAccount.visible)
     .ok('Should be on the login page');
