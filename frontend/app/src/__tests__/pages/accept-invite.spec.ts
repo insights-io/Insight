@@ -3,6 +3,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { ADMIN_TEAM_INVITE_DTO } from '__tests__/data';
@@ -88,9 +89,11 @@ describe('/accept-invite', () => {
 
     await screen.findByText('Page Visits');
 
-    sandbox.assert.calledWithExactly(acceptTeamInviteStub, token, {
-      fullName,
-      password,
-    });
+    sandbox.assert.calledWithExactly(
+      acceptTeamInviteStub,
+      token,
+      { fullName, password },
+      INCLUDE_CREDENTIALS
+    );
   });
 });
