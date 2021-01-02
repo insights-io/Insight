@@ -20,7 +20,8 @@ import { mapTeamInvite, TeamInviteSearchBean } from '@rebrowse/sdk';
 import { useStyletron } from 'baseui';
 import { StyledSpinnerNext } from 'baseui/spinner';
 import { capitalize } from 'shared/utils/string';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
+import { useTeamInvitesMutations } from 'settings/hooks/useTeamInvites';
 
 import TeamInviteModal from '../TeamInviteModal';
 
@@ -36,11 +37,15 @@ export const TeamInvites = ({
   inviteCount: initialInviteCount,
 }: Props) => {
   const [_css, theme] = useStyletron();
+  const { createTeamInvite } = useTeamInvitesMutations(initialInvites);
 
   const listTeamInvites = useCallback(
     async (search: SearchBean<TeamInviteDTO>) => {
       return client.auth.organizations.teamInvite
-        .list({ search: search as TeamInviteSearchBean })
+        .list({
+          search: search as TeamInviteSearchBean,
+          ...INCLUDE_CREDENTIALS,
+        })
         .then((httpResponse) => httpResponse.data);
     },
     []
@@ -49,7 +54,10 @@ export const TeamInvites = ({
   const countTeamInvites = useCallback(
     async (search: SearchBean<TeamInviteDTO>) => {
       return client.auth.organizations.teamInvite
-        .count({ search: search as TeamInviteSearchBean })
+        .count({
+          search: search as TeamInviteSearchBean,
+          ...INCLUDE_CREDENTIALS,
+        })
         .then((httpResponse) => httpResponse.data.count);
     },
     []
@@ -73,13 +81,11 @@ export const TeamInvites = ({
     numItemsPerPage: NUM_ITEMS_PER_PAGE,
   });
 
-  const createTeamInvite = (data: TeamInviteCreateDTO) => {
-    return client.auth.organizations.teamInvite
-      .create(data)
-      .then((httpResponse) => {
-        revalidate();
-        return httpResponse;
-      });
+  const createTeamInviteRevalidate = (params: TeamInviteCreateDTO) => {
+    return createTeamInvite(params).then((teamInvite) => {
+      revalidate();
+      return teamInvite;
+    });
   };
 
   const invites = useMemo(() => items.map(mapTeamInvite), [items]);
@@ -95,7 +101,7 @@ export const TeamInvites = ({
         endEnhancer={isSearching ? <StyledSpinnerNext size={16} /> : undefined}
         size={SIZE.compact}
       >
-        <TeamInviteModal createTeamInvite={createTeamInvite}>
+        <TeamInviteModal createTeamInvite={createTeamInviteRevalidate}>
           {(open) => (
             <Block marginLeft="16px" width="240px">
               <Button

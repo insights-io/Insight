@@ -6,7 +6,7 @@ import { toaster } from 'baseui/toast';
 import { useRouter } from 'next/router';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SIZE } from 'baseui/button';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 export const DeleteOrganization = () => {
   const router = useRouter();
@@ -19,7 +19,7 @@ export const DeleteOrganization = () => {
   const handleDelete = () => {
     setIsDeleting(true);
     client.auth.organizations
-      .delete()
+      .delete(INCLUDE_CREDENTIALS)
       .then(() => {
         router.replace(LOGIN_PAGE);
         toaster.positive('Organization deleted', {});

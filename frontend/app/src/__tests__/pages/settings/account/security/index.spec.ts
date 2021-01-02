@@ -50,11 +50,15 @@ describe('/settings/account/security', () => {
       userEvent.click(screen.getByText('Save new password'));
 
       await screen.findByText('Password changed');
-      sandbox.assert.calledWithExactly(changePasswordStub, {
-        currentPassword,
-        newPassword,
-        confirmNewPassword: newPassword,
-      });
+      sandbox.assert.calledWithExactly(
+        changePasswordStub,
+        {
+          currentPassword,
+          newPassword,
+          confirmNewPassword: newPassword,
+        },
+        INCLUDE_CREDENTIALS
+      );
     });
   });
 
