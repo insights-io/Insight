@@ -13,8 +13,60 @@ describe('/login/verification', () => {
   /* Data */
   const route = VERIFICATION_PAGE;
   const challengeId = '123';
+  const code = '123456';
 
   describe('With MFA setup', () => {
+    test('As a user I can verify MFA using SMS', async () => {
+      /* Mocks */
+      document.cookie = `ChallengeId=${challengeId}`;
+      const {
+        retrieveChallengeStub,
+        sendChallengeSmsCodeStub,
+        completeChallengeStub,
+      } = mockVerificationPage(sandbox, { methods: ['sms'] });
+
+      /* Server */
+      const { page } = await getPage({ route });
+
+      sandbox.assert.calledWithExactly(retrieveChallengeStub, challengeId, {
+        headers: { 'uber-trace-id': (match.string as unknown) as string },
+      });
+
+      /* Client */
+      const { container } = renderPage(page);
+
+      await screen.findByText(
+        'To protect your account, please complete the following verification.'
+      );
+
+      userEvent.click(screen.getByText('Send Code'));
+      await screen.findByText('Code sent');
+      expect(screen.getByText('60s')).toBeInTheDocument();
+
+      sandbox.assert.calledWithExactly(
+        sendChallengeSmsCodeStub,
+        INCLUDE_CREDENTIALS
+      );
+
+      const codeInput = container.querySelector(
+        'input[aria-label="Please enter your pin code"]'
+      ) as HTMLInputElement;
+
+      userEvent.type(codeInput, code);
+
+      userEvent.click(screen.getByText('Submit'));
+
+      // Client side navigation to / page
+      await screen.findByText('Page Visits');
+
+      sandbox.assert.calledWithExactly(
+        completeChallengeStub,
+        'sms',
+        Number(code),
+        INCLUDE_CREDENTIALS
+      );
+    });
+
     test('As a user I can verify MFA using TOTP', async () => {
       /* Mocks */
       document.cookie = `ChallengeId=${challengeId}`;
@@ -41,7 +93,6 @@ describe('/login/verification', () => {
         'input[aria-label="Please enter your pin code"]'
       ) as HTMLInputElement;
 
-      const code = '123456';
       userEvent.type(codeInput, code);
 
       userEvent.click(screen.getByText('Submit'));
@@ -66,7 +117,7 @@ describe('/login/verification', () => {
         retrieveChallengeStub,
         retrieveUserByChallengeStub,
         startTotpMfaSetupStub,
-        completeTotpMfaSetupStub,
+        completeEnforcedMfaSetupStub,
       } = mockVerificationPage(sandbox, { methods: [] });
 
       /* Server */
@@ -98,7 +149,6 @@ describe('/login/verification', () => {
         'input[aria-label="Please enter your pin code"]'
       ) as HTMLInputElement;
 
-      const code = '123456';
       userEvent.type(codeInput, code);
 
       userEvent.click(screen.getByText('Submit'));
@@ -107,9 +157,9 @@ describe('/login/verification', () => {
       await screen.findByText('Page Visits');
 
       sandbox.assert.calledWithExactly(
-        completeTotpMfaSetupStub,
+        completeEnforcedMfaSetupStub,
         'totp',
-        123456
+        Number(code)
       );
     });
   });

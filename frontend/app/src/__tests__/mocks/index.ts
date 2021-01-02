@@ -655,7 +655,7 @@ export const mockVerificationPage = (
     .stub(client.auth.mfa.setup.totp, 'start')
     .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE }));
 
-  const completeTotpMfaSetupStub = sandbox
+  const completeEnforcedMfaSetupStub = sandbox
     .stub(client.auth.mfa.setup, 'completeEnforced')
     .callsFake(() => {
       document.cookie = 'SessionId=123';
@@ -667,13 +667,18 @@ export const mockVerificationPage = (
       );
     });
 
+  const sendChallengeSmsCodeStub = sandbox
+    .stub(client.auth.mfa.challenge, 'sendSmsCode')
+    .resolves(httpOkResponse({ validitySeconds: 60 }));
+
   return {
     ...indexPageMocks,
     retrieveChallengeStub,
     completeChallengeStub,
     retrieveUserByChallengeStub,
     startTotpMfaSetupStub,
-    completeTotpMfaSetupStub,
+    completeEnforcedMfaSetupStub,
+    sendChallengeSmsCodeStub,
   };
 };
 

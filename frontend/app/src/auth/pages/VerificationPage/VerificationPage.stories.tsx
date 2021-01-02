@@ -7,6 +7,7 @@ import {
 import { MFA_METHODS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 import { client } from 'sdk';
+import { mockVerificationPage as setupMocks } from '__tests__/mocks';
 
 import { VerificationPage } from './VerificationPage';
 
@@ -20,13 +21,7 @@ export const Base = () => {
   return <VerificationPage methods={MFA_METHODS} />;
 };
 Base.story = configureStory({
-  setupMocks: (sandbox) => {
-    return {
-      challengeComplete: sandbox
-        .stub(client.auth.mfa.challenge, 'complete')
-        .resolves({ statusCode: 200, headers: new Headers() }),
-    };
-  },
+  setupMocks: (sandbox) => setupMocks(sandbox, { methods: MFA_METHODS }),
 });
 
 export const WithTotpOnly = () => {
@@ -44,23 +39,24 @@ export const WithMissingChallengeIdError = () => {
 };
 WithMissingChallengeIdError.story = configureStory({
   setupMocks: (sandbox) => {
+    const { completeChallengeStub } = setupMocks(sandbox, {
+      methods: MFA_METHODS,
+    });
     return {
-      challengeComplete: sandbox
-        .stub(client.auth.mfa.challenge, 'complete')
-        .callsFake(() => {
-          const apiError = mockApiError({
-            statusCode: 400,
-            reason: 'Bad Request',
-            message: 'Bad Request',
-            errors: {
-              challengeId: 'Required',
-            },
-          });
+      completeChallengeStub: completeChallengeStub.callsFake(() => {
+        const apiError = mockApiError({
+          statusCode: 400,
+          reason: 'Bad Request',
+          message: 'Bad Request',
+          errors: {
+            challengeId: 'Required',
+          },
+        });
 
-          return new Promise((_resolve, reject) => {
-            setTimeout(() => reject(apiError), 350);
-          });
-        }),
+        return new Promise((_resolve, reject) => {
+          setTimeout(() => reject(apiError), 350);
+        });
+      }),
     };
   },
 });
@@ -70,20 +66,22 @@ export const WithExpiredChallengeError = () => {
 };
 WithExpiredChallengeError.story = configureStory({
   setupMocks: (sandbox) => {
-    return {
-      challengeComplete: sandbox
-        .stub(client.auth.mfa.challenge, 'complete')
-        .callsFake(() => {
-          const apiError = mockApiError({
-            statusCode: 400,
-            reason: 'Bad Request',
-            message: 'Challenge session expired',
-          });
+    const { completeChallengeStub } = setupMocks(sandbox, {
+      methods: MFA_METHODS,
+    });
 
-          return new Promise((_resolve, reject) => {
-            setTimeout(() => reject(apiError), 350);
-          });
-        }),
+    return {
+      completeChallengeStub: completeChallengeStub.callsFake(() => {
+        const apiError = mockApiError({
+          statusCode: 400,
+          reason: 'Bad Request',
+          message: 'Challenge session expired',
+        });
+
+        return new Promise((_resolve, reject) => {
+          setTimeout(() => reject(apiError), 350);
+        });
+      }),
     };
   },
 });

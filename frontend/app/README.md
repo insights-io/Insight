@@ -1,12 +1,16 @@
 # App
 
-[![storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://insights-io.github.io/Insight/app/storybook/master/)
+[![storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://app.storybook.rebrowse.dev/index.html)
 
 Main Rebrowse application.
 
+## Deployments
+
+Staging: https://app.rebrowse.dev/
+
 ## Storybook
 
-You can find up to date Storybooks [here](https://app.storybook.rebrowse.dev/index.html).
+You can find up to date Storybook [here](https://app.storybook.rebrowse.dev/index.html).
 
 ## Testing with locally build tracking script
 
