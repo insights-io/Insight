@@ -1,7 +1,8 @@
 import React from 'react';
 import { Client as Styletron } from 'styletron-engine-atomic';
 import { createNextDecorator } from '@rebrowse/next-storybook';
-import AppProviders, {
+import {
+  AppProviders,
   Props as AppProvidersProps,
 } from '../src/shared/containers/AppProviders';
 

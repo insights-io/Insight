@@ -1,15 +1,15 @@
 import React from 'react';
 import Head from 'next/head';
 import { useStyletron } from 'baseui';
-import { H5, Paragraph3 } from 'baseui/typography';
+import { H1, H2 } from 'baseui/typography';
 import { Block } from 'baseui/block';
-import { SignUpForm } from 'components/SignUpForm';
-import { appBaseURL, helpBaseURL } from 'shared/config';
-import { Topbar } from 'components/Topbar';
+import { SignUpForm } from 'signup/components/SignUpForm';
+import { Topbar } from 'signup/components/Topbar';
 import { FlexColumn } from '@rebrowse/elements';
+import { appBaseURL, helpBaseURL } from 'shared/config';
 import { sdk } from 'api';
 
-export const GetStarted = () => {
+export const GetStartedPage = () => {
   const [_css, theme] = useStyletron();
 
   return (
@@ -29,22 +29,23 @@ export const GetStarted = () => {
             marginBottom={theme.sizing.scale700}
             $style={{ textAlign: 'center' }}
           >
-            <H5
+            <H1
               marginBottom={theme.sizing.scale400}
-              $style={{ fontWeight: 700 }}
+              $style={{ fontSize: '40px' }}
             >
               Start your free trial now.
-            </H5>
+            </H1>
 
-            <Paragraph3
+            <H2
               marginTop={theme.sizing.scale400}
               color={theme.colors.primary400}
+              $style={{ fontSize: '22px' }}
             >
               You&apos;re minutes away from insights.
-            </Paragraph3>
+            </H2>
           </Block>
 
-          <SignUpForm onSubmit={sdk.create} />
+          <SignUpForm onSubmit={sdk.signup.create} />
         </Block>
       </Block>
     </FlexColumn>

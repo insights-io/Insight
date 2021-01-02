@@ -9,7 +9,7 @@ import {
   SignUpRequestDTO,
 } from '@rebrowse/types';
 import { FormError } from 'shared/components/FormError';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import {
   PhoneNumberInput,
   Button,
@@ -30,6 +30,7 @@ export const SignUpForm = ({
   onSubmit: onSubmitProp,
   minPasswordLength = 8,
 }: Props) => {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
   const [_css, theme] = useStyletron();
@@ -49,7 +50,7 @@ export const SignUpForm = ({
     setFormError(undefined);
 
     onSubmitProp(values)
-      .then(() => Router.push('/signup-confirm'))
+      .then(() => router.push('/signup-confirm'))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
         setFormError(errorDTO.error);

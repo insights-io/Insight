@@ -3,7 +3,11 @@ import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H6 } from 'baseui/typography';
 import { Button, SHAPE } from 'baseui/button';
-import { SpacedBetween, UnstyledLink } from '@rebrowse/elements';
+import {
+  SpacedBetween,
+  UnstyledLink,
+  VerticalAligned,
+} from '@rebrowse/elements';
 
 type Props = {
   appBaseURL: string;
@@ -20,7 +24,9 @@ export const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
       $style={{ borderBottom: `1px solid ${theme.colors.primary200}` }}
     >
       <SpacedBetween>
-        <H6 margin={0}>Rebrowse</H6>
+        <VerticalAligned>
+          <H6 margin={0}>Rebrowse</H6>
+        </VerticalAligned>
         <Block>
           <UnstyledLink
             href={helpBaseURL}

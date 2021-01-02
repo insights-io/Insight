@@ -1,0 +1,1 @@
+export { SignupConfirmPage } from './SignupConfirmPage';
