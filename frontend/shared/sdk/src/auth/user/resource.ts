@@ -29,15 +29,13 @@ export const userResource = (client: HttpClient, authApiBaseURL: string) => {
     phoneNumber: {
       update: (
         json: PhoneNumber | null | undefined,
-        {
-          baseUrl = authApiBaseURL,
-          ...requestOptions
-        }: ExtendedRequestOptions = {}
+        options: ExtendedRequestOptions = {}
       ) => {
         if (!json || !json.countryCode || !json.digits) {
-          return update({ phoneNumber: null });
+          return update({ phoneNumber: null }, options);
         }
 
+        const { baseUrl = authApiBaseURL, ...requestOptions } = options;
         return jsonDataResponse<UserDTO>(
           client.patch(`${baseUrl}/v1/user/phone_number`, {
             json,

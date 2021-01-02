@@ -99,4 +99,31 @@ describe('/settings/account/details', () => {
       INCLUDE_CREDENTIALS
     );
   });
+
+  test('As a user I can clear my phone number', async () => {
+    /* Mocks */
+    document.cookie = 'SessionId=123';
+    const { updateUserStub } = mockAccountSettingsDetailsPage(sandbox);
+
+    /* Server */
+    const { page } = await getPage({ route });
+
+    /* Client */
+    renderPage(page);
+
+    const digitsInput = screen.getByLabelText(
+      'Please enter a phone number without the country dial code.'
+    );
+
+    userEvent.clear(digitsInput);
+    userEvent.tab();
+
+    await screen.findByText('Successfully cleared user phone number');
+
+    sandbox.assert.calledWithExactly(
+      updateUserStub,
+      { phoneNumber: null },
+      INCLUDE_CREDENTIALS
+    );
+  });
 });

@@ -19,7 +19,7 @@ import {
 import { useRouter } from 'next/router';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { applyApiFormErrors } from 'shared/utils/form';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props = Pick<
   TeamInviteDTO,
@@ -45,7 +45,7 @@ export const AcceptTeamInvitePage = ({
   const onSubmit = handleSubmit((values) => {
     setIsSubmitting(true);
     client.auth.organizations.teamInvite
-      .accept(token, values)
+      .accept(token, values, INCLUDE_CREDENTIALS)
       .then(() => router.replace(INDEX_PAGE))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();

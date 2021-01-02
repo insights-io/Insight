@@ -87,7 +87,10 @@ export const mockAuth = (
 
   const updatePhoneNumberStub = sandbox
     .stub(client.auth.users.phoneNumber, 'update')
-    .callsFake((params) => {
+    .callsFake((params, requestOptions) => {
+      if (!params?.digits) {
+        return updateUserStub({ phoneNumber: null }, requestOptions);
+      }
       sessionInfo.user.phoneNumber = params === null ? undefined : params;
       return Promise.resolve(httpOkResponse(sessionInfo.user));
     });
