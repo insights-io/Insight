@@ -26,7 +26,7 @@ public final class ApiResource {
     return httpClient.request(method, url, params, clazz, options);
   }
 
-  public static <R, P extends ApiRequestParams> CompletionStage<R> request(
+  public static <R> CompletionStage<R> request(
       RequestMethod method, String url, Class<R> clazz, RequestOptions options) {
     return request(method, url, null, clazz, options);
   }
@@ -36,7 +36,7 @@ public final class ApiResource {
     return httpClient.request(method, url, params, clazz, options);
   }
 
-  public static <R, P extends ApiRequestParams> CompletionStage<R> request(
+  public static <R> CompletionStage<R> request(
       RequestMethod method, String url, TypeReference<R> clazz, RequestOptions options) {
     return request(method, url, null, clazz, options);
   }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { AuthApi } from 'api/auth';
 import type { GetServerSideProps } from 'next';
 import { PasswordResetInvalidPage } from 'auth/pages/PasswordResetInvalidPage';
 import { PasswordResetPage } from 'auth/pages/PasswordResetPage';
@@ -7,6 +6,7 @@ import {
   startRequestSpan,
   prepareCrossServiceHeaders,
 } from 'shared/utils/tracing';
+import { client } from 'sdk';
 
 type NonExistingPasswordResetRequest = {
   exists: false;
@@ -44,8 +44,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return { props: { exists: false } };
     }
 
-    const { data: exists } = await AuthApi.password.resetExists(token, {
-      baseURL: process.env.AUTH_API_BASE_URL,
+    const { data: exists } = await client.auth.password.resetExists(token, {
       headers: prepareCrossServiceHeaders(requestSpan),
     });
     return { props: { exists, token } };

@@ -1,11 +1,12 @@
 import type { ChangePasswordDTO } from '@rebrowse/types';
-import ky from 'ky-universal';
 
-import { withCredentials } from '../../utils';
-import type { RequestOptions } from '../../types';
-import { httpResponse, jsonDataResponse } from '../../http';
+import type { ExtendedRequestOptions } from '../../types';
+import { HttpClient, httpResponse, jsonDataResponse } from '../../http';
 
-export const passwordResource = (authApiBaseURL: string) => {
+export const passwordResource = (
+  client: HttpClient,
+  authApiBaseUrl: string
+) => {
   const resourceBaseURL = (apiBaseURL: string) => {
     return `${apiBaseURL}/v1/password`;
   };
@@ -13,44 +14,56 @@ export const passwordResource = (authApiBaseURL: string) => {
   return {
     forgot: (
       email: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
-      return ky
-        .post(`${resourceBaseURL(baseURL)}/forgot`, {
+      return client
+        .post(`${resourceBaseURL(baseUrl)}/forgot`, {
           json: { email },
-          ...rest,
+          ...requestOptions,
         })
         .then(httpResponse);
     },
     reset: (
       token: string,
       password: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
-      return ky
-        .post(
-          `${resourceBaseURL(baseURL)}/reset/${token}`,
-          withCredentials({ json: { password }, ...rest })
-        )
+      return client
+        .post(`${resourceBaseURL(baseUrl)}/reset/${token}`, {
+          json: { password },
+          ...requestOptions,
+        })
         .then(httpResponse);
     },
     change: (
       json: ChangePasswordDTO,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
-      return ky
-        .post(
-          `${resourceBaseURL(baseURL)}/change`,
-          withCredentials({ json, ...rest })
-        )
+      return client
+        .post(`${resourceBaseURL(baseUrl)}/change`, { json, ...requestOptions })
         .then(httpResponse);
     },
     resetExists: (
       token: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<boolean>(
-        ky.get(`${resourceBaseURL(baseURL)}/reset/${token}/exists`, rest)
+        client.get(
+          `${resourceBaseURL(baseUrl)}/reset/${token}/exists`,
+          requestOptions
+        )
       );
     },
   };

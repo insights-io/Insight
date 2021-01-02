@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AuthApi, BillingApi, SessionApi } from 'api';
 import {
+  ADMIN_TEAM_INVITE_DTO,
   REBROWSE_EVENTS,
   REBROWSE_SESSIONS_DTOS,
   REBROWSE_SESSION_INFO,
@@ -8,12 +8,12 @@ import {
   TOTP_MFA_SETUP_DTO,
   TOTP_MFA_SETUP_QR_IMAGE,
 } from '__tests__/data';
-import * as sdk from '@rebrowse/sdk';
 import { v4 as uuid } from 'uuid';
 import type {
   AuthTokenDTO,
   BrowserEventDTO,
   InvoiceDTO,
+  MfaMethod,
   MfaSetupDTO,
   OrganizationPasswordPolicyDTO,
   PlanDTO,
@@ -37,6 +37,7 @@ import {
   REBROWSE_PLAN_DTO,
 } from '__tests__/data/billing';
 import { addDays } from 'date-fns';
+import { client } from 'sdk';
 
 import {
   filterSession,
@@ -59,34 +60,37 @@ export const mockAuth = (
   const sessionInfo = data;
 
   const retrieveSessionStub = sandbox
-    .stub(AuthApi.sso.session, 'get')
+    .stub(client.auth.sso.sessions, 'retrieve')
     .callsFake(() => jsonPromise({ status: 200, data: sessionInfo }));
 
   const retrieveUserStub = sandbox
-    .stub(AuthApi.user, 'me')
+    .stub(client.auth.users, 'me')
     .callsFake(() => Promise.resolve(httpOkResponse(sessionInfo.user)));
 
   const retrieveOrganizationStub = sandbox
-    .stub(AuthApi.organization, 'get')
+    .stub(client.auth.organizations, 'get')
     .callsFake(() => Promise.resolve(httpOkResponse(data.organization)));
 
   const updateOrganizationStub = sandbox
-    .stub(AuthApi.organization, 'update')
+    .stub(client.auth.organizations, 'update')
     .callsFake((params) => {
       sessionInfo.organization = { ...sessionInfo.organization, ...params };
       return Promise.resolve(httpOkResponse(sessionInfo.organization));
     });
 
   const updateUserStub = sandbox
-    .stub(AuthApi.user, 'update')
+    .stub(client.auth.users, 'update')
     .callsFake((params) => {
       sessionInfo.user = { ...sessionInfo.user, ...(params as UserDTO) };
       return Promise.resolve(httpOkResponse(sessionInfo.user));
     });
 
   const updatePhoneNumberStub = sandbox
-    .stub(AuthApi.user, 'updatePhoneNumber')
-    .callsFake((params) => {
+    .stub(client.auth.users.phoneNumber, 'update')
+    .callsFake((params, requestOptions) => {
+      if (!params?.digits) {
+        return updateUserStub({ phoneNumber: null }, requestOptions);
+      }
       sessionInfo.user.phoneNumber = params === null ? undefined : params;
       return Promise.resolve(httpOkResponse(sessionInfo.user));
     });
@@ -101,6 +105,22 @@ export const mockAuth = (
   };
 };
 
+export const mockOrganizationSettingsUsageAndPaymentsPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    invoices = [ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO],
+  }: { sessionInfo?: SessionInfoDTO; invoices?: InvoiceDTO[] } = {}
+) => {
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  const listInvoicesStub = sandbox
+    .stub(client.billing.invoices, 'list')
+    .resolves(httpOkResponse(invoices));
+
+  return { ...authMocks, listInvoicesStub };
+};
+
 export const mockOrganizationSettingsMemberInvitesPage = (
   sandbox: SinonSandbox,
   {
@@ -112,19 +132,19 @@ export const mockOrganizationSettingsMemberInvitesPage = (
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const listTeamInvitesStub = sandbox
-    .stub(AuthApi.organization.teamInvite, 'list')
+    .stub(client.auth.organizations.teamInvite, 'list')
     .callsFake((args = {}) =>
       searchTeamInvitesMockImplementation(args.search, invites)
     );
 
   const countTeamInvitesStub = sandbox
-    .stub(AuthApi.organization.teamInvite, 'count')
+    .stub(client.auth.organizations.teamInvite, 'count')
     .callsFake((args = {}) =>
       countTeamInvitesMockImplementation(args.search, invites)
     );
 
   const createTeamInviteStub = sandbox
-    .stub(AuthApi.organization.teamInvite, 'create')
+    .stub(client.auth.organizations.teamInvite, 'create')
     .callsFake((createTeamInviteParams) => {
       const newTeamInvite: TeamInviteDTO = {
         ...createTeamInviteParams,
@@ -163,15 +183,15 @@ export const mockOrganizationSettingsSubscriptionDetailsPage = (
   let subscription = initialSubscription;
 
   const retrieveSubscriptionStub = sandbox
-    .stub(BillingApi.subscriptions, 'get')
+    .stub(client.billing.subscriptions, 'retrieve')
     .callsFake(() => Promise.resolve(httpOkResponse(subscription)));
 
   const listInvoicesStub = sandbox
-    .stub(BillingApi.invoices, 'listBySubscription')
+    .stub(client.billing.invoices, 'listBySubscription')
     .resolves(httpOkResponse(invoices));
 
   const cancelSubscriptionStub = sandbox
-    .stub(BillingApi.subscriptions, 'cancel')
+    .stub(client.billing.subscriptions, 'cancel')
     .callsFake(() => {
       subscription = { ...subscription, status: 'canceled' };
       return Promise.resolve(httpOkResponse(subscription));
@@ -195,11 +215,11 @@ export const mockOrganizationSettingsSubscriptionPage = (
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const retrieveActivePlanStub = sandbox
-    .stub(BillingApi.subscriptions, 'getActivePlan')
+    .stub(client.billing.subscriptions, 'retrieveActivePlan')
     .resolves(httpOkResponse(plan));
 
   const listSubscriptionsStub = sandbox
-    .stub(BillingApi.subscriptions, 'list')
+    .stub(client.billing.subscriptions, 'list')
     .resolves(httpOkResponse([]));
 
   return { ...authMocks, retrieveActivePlanStub, listSubscriptionsStub };
@@ -219,7 +239,7 @@ export const mockOrganizationSettingsSecurityPage = (
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const retrievePasswordPolicyStub = sandbox
-    .stub(AuthApi.organization.passwordPolicy, 'retrieve')
+    .stub(client.auth.organizations.passwordPolicy, 'retrieve')
     .callsFake(() =>
       !passwordPolicy
         ? Promise.reject(
@@ -233,7 +253,7 @@ export const mockOrganizationSettingsSecurityPage = (
     );
 
   const updatePasswordPolicyStub = sandbox
-    .stub(AuthApi.organization.passwordPolicy, 'update')
+    .stub(client.auth.organizations.passwordPolicy, 'update')
     .callsFake((updateParams) => {
       passwordPolicy = {
         ...(passwordPolicy as OrganizationPasswordPolicyDTO),
@@ -243,7 +263,7 @@ export const mockOrganizationSettingsSecurityPage = (
     });
 
   const createPasswordPolicyStub = sandbox
-    .stub(AuthApi.organization.passwordPolicy, 'create')
+    .stub(client.auth.organizations.passwordPolicy, 'create')
     .callsFake((createPasswordpolicyParams) => {
       const newPasswordPolicy = !passwordPolicy
         ? {
@@ -276,13 +296,13 @@ export const mockOrganizationSettingsMembersPage = (
   const users = members;
 
   const listMembersStub = sandbox
-    .stub(AuthApi.organization.members, 'list')
+    .stub(client.auth.organizations.members, 'list')
     .callsFake((args = {}) =>
       searchUsersMockImplementation(args.search, users)
     );
 
   const countMembersStub = sandbox
-    .stub(AuthApi.organization.members, 'count')
+    .stub(client.auth.organizations.members, 'count')
     .callsFake((args = {}) => countUsersMockImplementation(args.search, users));
 
   const authMocks = mockAuth(sandbox, sessionInfo);
@@ -313,14 +333,14 @@ export const mockOrganizationAuthPage = (
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const disableSsoSetupStub = sandbox
-    .stub(AuthApi.sso.setup, 'delete')
+    .stub(client.auth.sso.setups, 'delete')
     .callsFake(() => {
       actualSsoSetup = undefined;
       return Promise.resolve({ statusCode: 200, headers: new Headers() });
     });
 
   const retrieveSsoSetupStub = sandbox
-    .stub(AuthApi.sso.setup, 'get')
+    .stub(client.auth.sso.setups, 'retrieve')
     .callsFake(() => {
       if (!actualSsoSetup) {
         return Promise.reject(
@@ -335,7 +355,7 @@ export const mockOrganizationAuthPage = (
     });
 
   const createSsoSetupStub = sandbox
-    .stub(AuthApi.sso.setup, 'create')
+    .stub(client.auth.sso.setups, 'create')
     .callsFake((method, saml) => {
       actualSsoSetup = {
         method: method as SamlSsoMethod,
@@ -369,18 +389,18 @@ export const mockAcocuntSettingsAuthTokensPage = (
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const listAuthTokensStub = sandbox
-    .stub(AuthApi.sso.token, 'list')
+    .stub(client.auth.tokens, 'list')
     .callsFake(() => Promise.resolve(httpOkResponse(tokens)));
 
   const deleteAuthTokenStub = sandbox
-    .stub(AuthApi.sso.token, 'delete')
+    .stub(client.auth.tokens, 'delete')
     .callsFake((token) => {
       tokens = tokens.filter((t) => t.token !== token);
       return Promise.resolve(httpOkResponse(true));
     });
 
   const createAuthTokensStub = sandbox
-    .stub(AuthApi.sso.token, 'create')
+    .stub(client.auth.tokens, 'create')
     .callsFake(() => {
       const newAuthToken: AuthTokenDTO = {
         userId: sessionInfo.user.id,
@@ -425,19 +445,19 @@ export const mockAccountSettingsSecurityPage = (
   let setups = mfaSetups;
 
   const changePasswordStub = sandbox
-    .stub(AuthApi.password, 'change')
+    .stub(client.auth.password, 'change')
     .resolves({ statusCode: 200, headers: new Headers() });
 
   const listMfaSetupsStub = sandbox
-    .stub(AuthApi.mfa.setup, 'list')
+    .stub(client.auth.mfa.setup, 'list')
     .callsFake(() => Promise.resolve(httpOkResponse(setups)));
 
   const startMfaTotpSetupStub = sandbox
-    .stub(AuthApi.mfa.setup.totp, 'start')
+    .stub(client.auth.mfa.setup.totp, 'start')
     .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE }));
 
   const completeMfaSetupStub = sandbox
-    .stub(AuthApi.mfa.setup, 'complete')
+    .stub(client.auth.mfa.setup, 'complete')
     .callsFake((method) => {
       const newSetup: MfaSetupDTO = {
         method,
@@ -448,7 +468,7 @@ export const mockAccountSettingsSecurityPage = (
     });
 
   const disableMfaSetupStub = sandbox
-    .stub(AuthApi.mfa.setup, 'disable')
+    .stub(client.auth.mfa.setup, 'disable')
     .callsFake((method) => {
       setups = setups.filter((s) => s.method !== method);
       return Promise.resolve({ statusCode: 200, headers: new Headers() });
@@ -479,11 +499,11 @@ export const mockSessionPage = (
   const authMocks = mockAuth(sandbox, sessionInfo);
 
   const retrieveSessionStub = sandbox
-    .stub(SessionApi, 'getSession')
+    .stub(client.recording.sessions, 'retrieve')
     .callsFake((id) => retrieveSessionMockImplementation(id, sessions));
 
   const searchEventsStub = sandbox
-    .stub(SessionApi.events, 'search')
+    .stub(client.recording.events, 'search')
     .callsFake((_, args = {}) =>
       searchEventsMockImplementation(events, args.search)
     );
@@ -504,7 +524,7 @@ export const mockSessionsPage = (
   const sessionMocks = mockSessionPage(sandbox, { sessions, sessionInfo });
 
   const countSessionsStub = sandbox
-    .stub(SessionApi, 'count')
+    .stub(client.recording.sessions, 'count')
     .callsFake((args = {}) => {
       return Promise.resolve(
         httpOkResponse(countSessionsBy(sessions, args.search))
@@ -512,7 +532,7 @@ export const mockSessionsPage = (
     });
 
   const listSessionsStub = sandbox
-    .stub(SessionApi, 'getSessions')
+    .stub(client.recording.sessions, 'list')
     .callsFake((args = {}) => {
       return Promise.resolve(
         httpOkResponse(
@@ -521,8 +541,8 @@ export const mockSessionsPage = (
       );
     });
 
-  const getDistinctStub = sandbox
-    .stub(SessionApi, 'distinct')
+  const getDistinctSessionsStub = sandbox
+    .stub(client.recording.sessions, 'distinct')
     .callsFake((on) => {
       return getDistinctMockImplementation(on);
     });
@@ -531,14 +551,14 @@ export const mockSessionsPage = (
     ...sessionMocks,
     listSessionsStub,
     countSessionsStub,
-    getDistinctStub,
+    getDistinctSessionsStub,
   };
 };
 
 export const mockEmptySessionsPage = (sandbox: SinonSandbox) => {
   const mocks = mockSessionsPage(sandbox, { sessions: [] });
   const retrieveBoostrapScriptStub = sandbox
-    .stub(sdk, 'getBoostrapScript')
+    .stub(client.tracking, 'retrieveBoostrapScript')
     .resolves({
       data: BOOTSTRAP_SCRIPT,
       statusCode: 200,
@@ -550,11 +570,14 @@ export const mockEmptySessionsPage = (sandbox: SinonSandbox) => {
 
 export const mockIndexPage = (
   sandbox: SinonSandbox,
-  { sessions = REBROWSE_SESSIONS_DTOS }: { sessions?: SessionDTO[] } = {}
+  {
+    sessions = REBROWSE_SESSIONS_DTOS,
+    sessionInfo = REBROWSE_SESSION_INFO,
+  }: { sessions?: SessionDTO[]; sessionInfo?: SessionInfoDTO } = {}
 ) => {
-  const authMocks = mockAuth(sandbox);
+  const authMocks = mockAuth(sandbox, sessionInfo);
   const countSessionsStub = sandbox
-    .stub(SessionApi, 'count')
+    .stub(client.recording.sessions, 'count')
     .callsFake((args = {}) => {
       return Promise.resolve(
         httpOkResponse(countSessionsBy(sessions, args.search))
@@ -562,7 +585,7 @@ export const mockIndexPage = (
     });
 
   const countPageVisitsStub = sandbox
-    .stub(SessionApi.pageVisit, 'count')
+    .stub(client.recording.pageVisits, 'count')
     .callsFake((args = {}) => {
       return Promise.resolve(
         httpOkResponse(countSessionsBy(sessions, args.search as any)) as any
@@ -570,4 +593,152 @@ export const mockIndexPage = (
     });
 
   return { ...authMocks, countPageVisitsStub, countSessionsStub };
+};
+
+export const mockLoginPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    login = true,
+    ssoSetupByDomain = false,
+  }: {
+    sessionInfo?: SessionInfoDTO;
+    login?: boolean;
+    ssoSetupByDomain?: string | false;
+  } = {}
+) => {
+  const verificationPageMocks = mockVerificationPage(sandbox, { sessionInfo });
+
+  const loginStub = sandbox
+    .stub(client.auth.sso.sessions, 'login')
+    .callsFake(() => {
+      if (login) {
+        document.cookie = 'SessionId=123';
+      } else {
+        document.cookie = 'ChallengeId=123';
+      }
+      return Promise.resolve(httpOkResponse(login));
+    });
+
+  const retrieveSsoSetupByDomainStub = sandbox
+    .stub(client.auth.sso.setups, 'retrieveByDomain')
+    .resolves(httpOkResponse(ssoSetupByDomain));
+
+  return { ...verificationPageMocks, loginStub, retrieveSsoSetupByDomainStub };
+};
+
+export const mockVerificationPage = (
+  sandbox: SinonSandbox,
+  {
+    methods = ['totp'],
+    sessionInfo = REBROWSE_SESSION_INFO,
+  }: {
+    methods?: MfaMethod[];
+    sessionInfo?: SessionInfoDTO;
+  } = {}
+) => {
+  const indexPageMocks = mockIndexPage(sandbox, { sessionInfo });
+
+  const retrieveChallengeStub = sandbox
+    .stub(client.auth.mfa.challenge, 'retrieve')
+    .resolves(httpOkResponse(methods));
+
+  const completeChallengeStub = sandbox
+    .stub(client.auth.mfa.challenge, 'complete')
+    .callsFake(() => {
+      document.cookie = 'SessionId=123';
+      return Promise.resolve({ statusCode: 200, headers: new Headers() });
+    });
+
+  const retrieveUserByChallengeStub = sandbox
+    .stub(client.auth.mfa.challenge, 'retrieveCurrentUser')
+    .resolves(httpOkResponse(sessionInfo.user));
+
+  const startTotpMfaSetupStub = sandbox
+    .stub(client.auth.mfa.setup.totp, 'start')
+    .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE }));
+
+  const completeEnforcedMfaSetupStub = sandbox
+    .stub(client.auth.mfa.setup, 'completeEnforced')
+    .callsFake(() => {
+      document.cookie = 'SessionId=123';
+      return Promise.resolve(
+        httpOkResponse({
+          createdAt: new Date().toISOString(),
+          method: 'totp',
+        })
+      );
+    });
+
+  const sendChallengeSmsCodeStub = sandbox
+    .stub(client.auth.mfa.challenge, 'sendSmsCode')
+    .resolves(httpOkResponse({ validitySeconds: 60 }));
+
+  return {
+    ...indexPageMocks,
+    retrieveChallengeStub,
+    completeChallengeStub,
+    retrieveUserByChallengeStub,
+    startTotpMfaSetupStub,
+    completeEnforcedMfaSetupStub,
+    sendChallengeSmsCodeStub,
+  };
+};
+
+export const mockAcceptTeamInvitePage = (
+  sandbox: SinonSandbox,
+  {
+    teamInvite = ADMIN_TEAM_INVITE_DTO,
+    sessionInfo = REBROWSE_SESSION_INFO,
+    sessionId = '123',
+  }: {
+    teamInvite?: TeamInviteDTO;
+    sessionInfo?: SessionInfoDTO;
+    sessionId?: string;
+  } = {}
+) => {
+  const indexPageMocks = mockIndexPage(sandbox, { sessionInfo });
+
+  const acceptTeamInviteStub = sandbox
+    .stub(client.auth.organizations.teamInvite, 'accept')
+    .callsFake(() => {
+      document.cookie = `SessionId=${sessionId}`;
+      return Promise.resolve({ statusCode: 200, headers: new Headers() });
+    });
+
+  const retrieveTeamInviteStub = sandbox
+    .stub(client.auth.organizations.teamInvite, 'retrieve')
+    .resolves(httpOkResponse(teamInvite));
+
+  return { ...indexPageMocks, acceptTeamInviteStub, retrieveTeamInviteStub };
+};
+
+/* /password-reset */
+export const mockPasswordResetPage = (
+  sandbox: SinonSandbox,
+  {
+    exists = true,
+    sessionInfo = REBROWSE_SESSION_INFO,
+  }: { exists?: boolean; sessionInfo?: SessionInfoDTO } = {}
+) => {
+  const indexPageStubs = mockIndexPage(sandbox, { sessionInfo });
+
+  const resetExistsStub = sandbox
+    .stub(client.auth.password, 'resetExists')
+    .resolves(httpOkResponse(exists));
+
+  const passwordResetStub = sandbox
+    .stub(client.auth.password, 'reset')
+    .resolves({ statusCode: 200, headers: new Headers() });
+
+  return { ...indexPageStubs, resetExistsStub, passwordResetStub };
+};
+
+/* /password-forgot */
+export const mockPasswordForgotPage = (sandbox: SinonSandbox) => {
+  const passwordForgotStub = sandbox
+    .stub(client.auth.password, 'forgot')
+    .resolves();
+
+  return { passwordForgotStub };
 };

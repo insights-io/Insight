@@ -1,44 +1,61 @@
-import ky from 'ky-universal';
 import type {
   SsoMethod,
   SsoSetupDTO,
   SamlConfigurationDTO,
 } from '@rebrowse/types';
 
-import { withCredentials } from '../../../utils';
-import type { RequestOptions } from '../../../types';
-import { httpResponse, jsonDataResponse } from '../../../http';
+import type { ExtendedRequestOptions } from '../../../types';
+import { HttpClient, httpResponse, jsonDataResponse } from '../../../http';
 
-export const ssoSetupResource = (authApiBaseURL: string) => {
+export const ssoSetupResource = (
+  client: HttpClient,
+  authApiBaseUrl: string
+) => {
+  const resourceBaseUrl = (baseUrl: string) => {
+    return `${baseUrl}/v1/sso/setup`;
+  };
+
   return {
-    get: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+    retrieve: ({
+      baseUrl = authApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
       return jsonDataResponse<SsoSetupDTO>(
-        ky.get(`${baseURL}/v1/sso/setup`, withCredentials(rest))
+        client.get(resourceBaseUrl(baseUrl), requestOptions)
       );
     },
-    delete: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
-      return ky
-        .delete(`${baseURL}/v1/sso/setup`, withCredentials(rest))
+    delete: ({
+      baseUrl = authApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
+      return client
+        .delete(resourceBaseUrl(baseUrl), requestOptions)
         .then(httpResponse);
     },
     create: (
       method: SsoMethod,
       saml: SamlConfigurationDTO | undefined,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<SsoSetupDTO>(
-        ky.post(
-          `${baseURL}/v1/sso/setup`,
-          withCredentials({ json: { method, saml }, ...rest })
-        )
+        client.post(resourceBaseUrl(baseUrl), {
+          json: { method, saml },
+          ...requestOptions,
+        })
       );
     },
-    getByDomain: (
+    retrieveByDomain: (
       domain: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<false | string>(
-        ky.get(`${baseURL}/v1/sso/setup/${domain}`, rest)
+        client.get(`${resourceBaseUrl(baseUrl)}/${domain}`, requestOptions)
       );
     },
   };

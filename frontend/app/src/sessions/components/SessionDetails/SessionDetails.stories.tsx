@@ -1,10 +1,10 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
-import { SessionApi } from 'api/session';
 import { REBROWSE_SESSIONS, REBROWSE_EVENTS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 import { filterBrowserEvent } from '__tests__/mocks/filter';
 import { httpOkResponse } from '__tests__/utils/request';
+import { client } from 'sdk';
 
 import { SessionDetails } from './SessionDetails';
 
@@ -20,7 +20,7 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       searchEvents: sandbox
-        .stub(SessionApi.events, 'search')
+        .stub(client.recording.events, 'search')
         .callsFake((_sessionId, args = {}) => {
           return Promise.resolve(
             httpOkResponse(

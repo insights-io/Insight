@@ -1,4 +1,3 @@
-import ky from 'ky-universal';
 import type {
   MfaMethod,
   MfaTotpSetupStartDTO,
@@ -6,54 +5,56 @@ import type {
   CodeValidityDTO,
   MfaSetupDTO,
 } from '@rebrowse/types';
-import { withCredentials } from 'utils';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions, RequestOptions } from 'types';
 
-import { httpResponse, jsonDataResponse } from '../../../http';
+import { HttpClient, httpResponse, jsonDataResponse } from '../../../http';
 
-export const mfaSetupResource = (authApiBaseURL: string) => {
-  const resourceBaseURL = (apiBaseURL: string) => {
-    return `${apiBaseURL}/v1/mfa/setup`;
+export const mfaSetupResource = (client: HttpClient, authApiBaserl: string) => {
+  const resourceBaseURL = (baseUrl: string) => {
+    return `${baseUrl}/v1/mfa/setup`;
   };
 
   const mfaSetupStart = <T extends MfaSetupStartDTO>(
     method: MfaMethod,
-    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    { baseUrl = authApiBaserl, ...requestOptions }: ExtendedRequestOptions = {}
   ) => {
     return jsonDataResponse<T>(
-      ky.post(
-        `${resourceBaseURL(baseURL)}/${method}/start`,
-        withCredentials(rest)
-      )
+      client.post(`${resourceBaseURL(baseUrl)}/${method}/start`, requestOptions)
     );
   };
 
   const mfaChallengeComplete = (
     method: MfaMethod,
     code: number,
-    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {},
+    { baseUrl = authApiBaserl, ...requestOptions }: ExtendedRequestOptions = {},
     path = ''
   ) => {
     return jsonDataResponse<MfaSetupDTO>(
-      ky.post(
-        `${resourceBaseURL(baseURL)}/${method}/complete${path}`,
-        withCredentials({ json: { code }, ...rest })
-      )
+      client.post(`${resourceBaseURL(baseUrl)}/${method}/complete${path}`, {
+        json: { code },
+        ...requestOptions,
+      })
     );
   };
 
   return {
-    get: (
+    retrieve: (
       method: MfaMethod,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaserl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<MfaSetupDTO>(
-        ky.get(`${resourceBaseURL(baseURL)}/${method}`, withCredentials(rest))
+        client.get(`${resourceBaseURL(baseUrl)}/${method}`, requestOptions)
       );
     },
-    list: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+    list: ({
+      baseUrl = authApiBaserl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
       return jsonDataResponse<MfaSetupDTO[]>(
-        ky.get(resourceBaseURL(baseURL), withCredentials(rest))
+        client.get(resourceBaseURL(baseUrl), requestOptions)
       );
     },
 
@@ -61,13 +62,13 @@ export const mfaSetupResource = (authApiBaseURL: string) => {
       start: (options?: RequestOptions) =>
         mfaSetupStart<CodeValidityDTO>('sms', options),
       sendCode: ({
-        baseURL = authApiBaseURL,
-        ...rest
-      }: RequestOptions = {}) => {
+        baseUrl = authApiBaserl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}) => {
         return jsonDataResponse<CodeValidityDTO>(
-          ky.post(
-            `${resourceBaseURL(baseURL)}/sms/send_code`,
-            withCredentials(rest)
+          client.post(
+            `${resourceBaseURL(baseUrl)}/sms/send_code`,
+            requestOptions
           )
         );
       },
@@ -90,10 +91,13 @@ export const mfaSetupResource = (authApiBaseURL: string) => {
     },
     disable: (
       method: MfaMethod,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaserl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
-      return ky
-        .delete(`${resourceBaseURL(baseURL)}/${method}`, withCredentials(rest))
+      return client
+        .delete(`${resourceBaseURL(baseUrl)}/${method}`, requestOptions)
         .then(httpResponse);
     },
   };

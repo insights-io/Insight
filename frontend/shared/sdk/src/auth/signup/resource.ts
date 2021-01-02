@@ -1,36 +1,47 @@
-import ky from 'ky-universal';
 import type { SignUpRequestDTO } from '@rebrowse/types';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions } from 'types';
 
-import { httpResponse, jsonDataResponse } from '../../http';
+import { HttpClient, httpResponse, jsonDataResponse } from '../../http';
 
-export const signupResource = (authApiBaseURL: string) => {
-  const resourceBaseURL = (apiBaseURL: string) => {
-    return `${apiBaseURL}/v1/signup`;
-  };
+const resourceBaseURL = (apiBaseURL: string) => {
+  return `${apiBaseURL}/v1/signup`;
+};
 
+export const signupResource = (client: HttpClient, authApiBaseURL: string) => {
   return {
     create: (
       json: SignUpRequestDTO,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseURL,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
-      return ky
-        .post(resourceBaseURL(baseURL), { json, ...rest })
+      return client
+        .post(resourceBaseURL(baseUrl), { json, ...requestOptions })
         .then(httpResponse);
     },
     verify: (
       token: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseURL,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<boolean>(
-        ky.get(`${resourceBaseURL(baseURL)}/${token}/valid`, rest)
+        client.get(`${resourceBaseURL(baseUrl)}/${token}/valid`, requestOptions)
       );
     },
     complete: (
       token: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseURL,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
-      return ky.post(`${resourceBaseURL(baseURL)}/${token}/complete`, rest);
+      return client.post(
+        `${resourceBaseURL(baseUrl)}/${token}/complete`,
+        requestOptions
+      );
     },
   };
 };

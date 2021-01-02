@@ -1,8 +1,18 @@
 import type { DataResponse } from '@rebrowse/types';
-import type { Options } from 'ky';
+import type {
+  Input as KyInput,
+  Options as KyOptions,
+  ResponsePromise as KyResponsePromise,
+} from 'ky';
 
-export type RequestOptions = Options & {
-  baseURL?: string;
+export type { HttpClient } from '../http';
+
+export type Input = KyInput;
+export type RequestOptions = KyOptions;
+export type ResponsePromise = KyResponsePromise;
+
+export type ExtendedRequestOptions = RequestOptions & {
+  baseUrl?: string;
 };
 
 export type HttpResponseBase = {
@@ -12,10 +22,10 @@ export type HttpResponseBase = {
 
 export type HttpResponse<TObject> = DataResponse<TObject> & HttpResponseBase;
 
-export type ClientConfig =
-  | string
-  | {
-      authApiBaseURL: string;
-      sessionApiBaseURL: string;
-      billingApiBaseURL: string;
-    };
+export type ApiEndpoints = {
+  authApiBaseUrl: string;
+  sessionApiBaseUrl: string;
+  billingApiBaseUrl: string;
+};
+
+export type ApiEndpointsConfig = string | ApiEndpoints;

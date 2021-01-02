@@ -3,7 +3,6 @@ import { AuthPageLayout } from 'auth/components/PageLayout';
 import Head from 'next/head';
 import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
-import { AuthApi } from 'api/auth';
 import { useRouter } from 'next/router';
 import { FormError } from 'shared/components/FormError';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
@@ -12,6 +11,7 @@ import { TotpMfaInputMethod } from 'auth/components/TotpMfaInputMethod';
 import { SmsMfaInputMethod } from 'auth/components/SmsMfaInputMethod';
 import type { MfaMethod } from '@rebrowse/types';
 import { Button } from '@rebrowse/elements';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props = {
   methods: MfaMethod[];
@@ -43,8 +43,8 @@ export const VerificationPage = ({ methods }: Props) => {
     apiError,
   } = useCodeInput({
     submitAction: (data) => {
-      return AuthApi.mfa.challenge
-        .complete(activeMethod, data)
+      return client.auth.mfa.challenge
+        .complete(activeMethod, data, INCLUDE_CREDENTIALS)
         .then((_) => router.replace(relativeRedirect));
     },
     handleError: (errorDTO, setError) => {
@@ -102,7 +102,7 @@ export const VerificationPage = ({ methods }: Props) => {
                       error={codeError}
                       handleChange={handleChange}
                       code={code}
-                      sendCode={AuthApi.mfa.challenge.sendSmsCode}
+                      sendCode={client.auth.mfa.challenge.sendSmsCode}
                     />
                   </Tab>
                 );

@@ -1,8 +1,8 @@
 import React from 'react';
-import { GetStarted } from 'components/GetStarted';
+import { GetStartedPage } from 'signup/pages/GetStartedPage';
 
-const TryPage = () => {
-  return <GetStarted />;
+const GetStarted = () => {
+  return <GetStartedPage />;
 };
 
-export default TryPage;
+export default GetStarted;

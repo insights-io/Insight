@@ -10,9 +10,9 @@ import Document, {
 } from 'next/document';
 import { Provider as StyletronProvider } from 'styletron-react';
 import { styletron } from 'shared/styles/styletron';
-import ky from 'ky-universal';
 import { Server, Sheet } from 'styletron-engine-atomic';
 import { STYLETRON_HYDRATE_CLASSNAME } from '@rebrowse/elements';
+import { sdk } from 'api';
 
 type Props = {
   stylesheets: Sheet[];
@@ -30,8 +30,10 @@ class RebrowseDocument extends Document<Props> {
     });
 
     const stylesheets = (styletron as Server).getStylesheets() || [];
-    const bootstrapScriptUri = process.env.BOOTSTRAP_SCRIPT as string;
-    const bootstrapScript = await ky(bootstrapScriptUri).text();
+    const bootstrapScriptUrl = process.env.BOOTSTRAP_SCRIPT as string;
+    const bootstrapScript = await sdk.tracking
+      .retrieveBoostrapScript(bootstrapScriptUrl)
+      .then((httpResponse) => httpResponse.data);
 
     return {
       ...page,

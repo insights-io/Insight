@@ -1,5 +1,5 @@
 import type { OrganizationDTO, QueryParam, SearchBean } from '@rebrowse/types';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions } from 'types';
 
 export type TeamInviteQueryParams = {
   email?: QueryParam;
@@ -13,7 +13,7 @@ export type TeamInviteSearchBean<
 
 export type TeamInviteSearchRequestOptions<
   GroupBy extends (keyof TeamInviteQueryParams)[] = []
-> = Omit<RequestOptions, 'searchParams'> & {
+> = Omit<ExtendedRequestOptions, 'searchParams'> & {
   search?: TeamInviteSearchBean<GroupBy>;
 };
 

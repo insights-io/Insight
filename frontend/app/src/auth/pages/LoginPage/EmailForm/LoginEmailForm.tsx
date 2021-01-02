@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
 import { useForm } from 'react-hook-form';
-import { AuthApi } from 'api';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import {
   SpacedBetween,
@@ -21,6 +20,7 @@ import { FormError } from 'shared/components/FormError';
 import { useStyletron } from 'baseui';
 import { locationAssign } from 'shared/utils/window';
 import { VERIFICATION_PAGE } from 'shared/constants/routes';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 type LoginEmailFormData = {
   email: string;
@@ -45,8 +45,8 @@ export const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
     }
     setIsSubmitting(true);
 
-    AuthApi.sso.session
-      .login(formData.email, formData.password)
+    client.auth.sso.sessions
+      .login(formData.email, formData.password, INCLUDE_CREDENTIALS)
       .then(({ data: loggedIn }) => {
         replace(
           loggedIn === true

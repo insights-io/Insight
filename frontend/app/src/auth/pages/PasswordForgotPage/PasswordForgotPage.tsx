@@ -5,7 +5,6 @@ import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { useForm } from 'react-hook-form';
-import { AuthApi } from 'api/auth';
 import Link from 'next/link';
 import Head from 'next/head';
 import { FormError } from 'shared/components/FormError';
@@ -15,6 +14,7 @@ import { AuthPageLayout } from 'auth/components/PageLayout';
 import { Button, Flex, SpacedBetween, EmailInput } from '@rebrowse/elements';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { applyApiFormErrors } from 'shared/utils/form';
+import { client } from 'sdk';
 
 type FormData = {
   email: string;
@@ -33,7 +33,7 @@ export const PasswordForgotPage = () => {
     }
     setIsSubmitting(true);
 
-    AuthApi.password
+    client.auth.password
       .forgot(formData.email)
       .then(() => setCheckYourInbox(true))
       .catch(async (error) => {

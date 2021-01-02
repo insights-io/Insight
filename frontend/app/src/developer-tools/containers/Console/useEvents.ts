@@ -1,5 +1,5 @@
 import { TermCondition } from '@rebrowse/sdk';
-import { SessionApi } from 'api';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { useQuery } from 'shared/hooks/useQuery';
 
 export const cacheKey = (sessionId: string) => {
@@ -7,13 +7,14 @@ export const cacheKey = (sessionId: string) => {
 };
 
 const queryFn = (sessionId: string) => {
-  return SessionApi.events
+  return client.recording.events
     .search(sessionId, {
       // TODO: pagination
       search: {
         'event.e': [TermCondition.GTE(9), TermCondition.LTE(10)],
         limit: 1000,
       },
+      ...INCLUDE_CREDENTIALS,
     })
     .then((httpResponse) => httpResponse.data);
 };

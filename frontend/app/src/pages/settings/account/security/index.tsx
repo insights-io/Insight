@@ -9,8 +9,8 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api';
 import type { MfaSetupDTO } from '@rebrowse/types';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   mfaSetups: MfaSetupDTO[];
@@ -45,8 +45,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const mfaSetups = await AuthApi.mfa.setup
-      .list({ baseURL: process.env.AUTH_API_BASE_URL, headers })
+    const mfaSetups = await client.auth.mfa.setup
+      .list({ headers })
       .then((httpResponse) => httpResponse.data);
 
     return {

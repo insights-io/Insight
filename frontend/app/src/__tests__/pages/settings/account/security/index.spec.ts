@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ACCOUNT_SETTINGS_SECURITY_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { mockAccountSettingsSecurityPage } from '__tests__/mocks';
@@ -27,7 +28,6 @@ describe('/settings/account/security', () => {
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(listMfaSetupsStub, {
-        baseURL: 'http://localhost:8080',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -50,11 +50,15 @@ describe('/settings/account/security', () => {
       userEvent.click(screen.getByText('Save new password'));
 
       await screen.findByText('Password changed');
-      sandbox.assert.calledWithExactly(changePasswordStub, {
-        currentPassword,
-        newPassword,
-        confirmNewPassword: newPassword,
-      });
+      sandbox.assert.calledWithExactly(
+        changePasswordStub,
+        {
+          currentPassword,
+          newPassword,
+          confirmNewPassword: newPassword,
+        },
+        INCLUDE_CREDENTIALS
+      );
     });
   });
 
@@ -72,7 +76,6 @@ describe('/settings/account/security', () => {
         const { page } = await getPage({ route });
 
         sandbox.assert.calledWithExactly(listMfaSetupsStub, {
-          baseURL: 'http://localhost:8080',
           headers: {
             cookie: 'SessionId=123',
             'uber-trace-id': (match.string as unknown) as string,
@@ -102,7 +105,11 @@ describe('/settings/account/security', () => {
         await screen.findByText(
           'Authy / Google Authenticator multi-factor authentication disabled'
         );
-        sandbox.assert.calledWithExactly(disableMfaSetupStub, 'totp');
+        sandbox.assert.calledWithExactly(
+          disableMfaSetupStub,
+          'totp',
+          INCLUDE_CREDENTIALS
+        );
         expect(authyMfaToggle).not.toBeChecked();
 
         expect(
@@ -125,7 +132,6 @@ describe('/settings/account/security', () => {
         const { page } = await getPage({ route });
 
         sandbox.assert.calledWithExactly(listMfaSetupsStub, {
-          baseURL: 'http://localhost:8080',
           headers: {
             cookie: 'SessionId=123',
             'uber-trace-id': (match.string as unknown) as string,
@@ -149,7 +155,10 @@ describe('/settings/account/security', () => {
           screen.getByText('Setup multi-factor authentication')
         ).toBeInTheDocument();
 
-        sandbox.assert.calledWithExactly(startMfaTotpSetupStub);
+        sandbox.assert.calledWithExactly(
+          startMfaTotpSetupStub,
+          INCLUDE_CREDENTIALS
+        );
 
         screen
           .getAllByLabelText('Please enter your pin code')
@@ -162,7 +171,12 @@ describe('/settings/account/security', () => {
           'Authy / Google Authenticator multi-factor authentication enabled'
         );
         expect(authyMfaToggle).toBeChecked();
-        sandbox.assert.calledWithExactly(completeMfaSetupStub, 'totp', 111111);
+        sandbox.assert.calledWithExactly(
+          completeMfaSetupStub,
+          'totp',
+          111111,
+          INCLUDE_CREDENTIALS
+        );
       });
     });
   });

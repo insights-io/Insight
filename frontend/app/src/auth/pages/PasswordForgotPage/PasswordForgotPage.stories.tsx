@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
-import { AuthApi } from 'api';
 import type { Meta } from '@storybook/react';
+import { mockPasswordForgotPage as setupMocks } from '__tests__/mocks';
 
 import { PasswordForgotPage } from './PasswordForgotPage';
 
@@ -13,8 +13,4 @@ export default {
 export const Base = () => {
   return <PasswordForgotPage />;
 };
-Base.story = configureStory({
-  setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.password, 'forgot').resolves();
-  },
-});
+Base.story = configureStory({ setupMocks });

@@ -10,7 +10,7 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   authTokens: AuthTokenDTO[];
@@ -40,9 +40,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const authTokens = await AuthApi.sso.token
+    const authTokens = await client.auth.tokens
       .list({
-        baseURL: process.env.AUTH_API_BASE_URL,
         headers: {
           ...prepareCrossServiceHeaders(requestSpan),
           cookie: `SessionId=${authResponse.SessionId}`,

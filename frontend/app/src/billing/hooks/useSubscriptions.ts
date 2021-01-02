@@ -1,20 +1,18 @@
-import { BillingApi } from 'api';
 import { useMemo } from 'react';
 import { useQuery, QueryClient } from 'shared/hooks/useQuery';
 import { mapSubscription } from '@rebrowse/sdk';
 import type { SubscriptionDTO } from '@rebrowse/types';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 export const cacheKey = ['subscriptions', 'list'];
+const queryFn = () => {
+  return client.billing.subscriptions
+    .list({ search: { sortBy: ['-createdAt'] }, ...INCLUDE_CREDENTIALS })
+    .then((httpResponse) => httpResponse.data);
+};
 
 export const useSubscriptions = (initialData: SubscriptionDTO[]) => {
-  const { data, refetch } = useQuery(
-    cacheKey,
-    () =>
-      BillingApi.subscriptions
-        .list({ search: { sortBy: ['-createdAt'] } })
-        .then((httpResponse) => httpResponse.data),
-    { initialData }
-  );
+  const { data, refetch } = useQuery(cacheKey, queryFn, { initialData });
 
   const subscriptions = useMemo(() => {
     return (data || []).map(mapSubscription);

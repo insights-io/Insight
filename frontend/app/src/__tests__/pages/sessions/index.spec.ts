@@ -13,6 +13,7 @@ import { sessionDescription } from 'sessions/utils';
 import { TermCondition } from '@rebrowse/sdk';
 import { match } from 'sinon';
 import { renderPage } from '__tests__/utils';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -53,7 +54,6 @@ describe('/sessions', () => {
       );
 
       sandbox.assert.calledWithExactly(countSessionsStub, {
-        baseURL: 'http://localhost:8082',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -62,7 +62,6 @@ describe('/sessions', () => {
       });
 
       sandbox.assert.calledWithExactly(listSessionsStub, {
-        baseURL: 'http://localhost:8082',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -89,14 +88,13 @@ describe('/sessions', () => {
       const {
         listSessionsStub,
         countSessionsStub,
-        getDistinctStub,
+        getDistinctSessionsStub,
       } = mockSessionsPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(countSessionsStub, {
-        baseURL: 'http://localhost:8082',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -105,7 +103,6 @@ describe('/sessions', () => {
       });
 
       sandbox.assert.calledWithExactly(listSessionsStub, {
-        baseURL: 'http://localhost:8082',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -122,7 +119,10 @@ describe('/sessions', () => {
       userEvent.click(screen.getByText('Filter event by...'));
       userEvent.click(screen.getByText('City'));
 
-      sandbox.assert.calledWithExactly(getDistinctStub, 'location.city');
+      sandbox.assert.calledWithExactly(
+        getDistinctSessionsStub,
+        'location.city'
+      );
 
       /* Search by city */
       const boydton = 'Boydton';
@@ -139,9 +139,11 @@ describe('/sessions', () => {
             'location.city': TermCondition.EQ(boydton),
             sortBy: ['-createdAt'],
           },
+          ...INCLUDE_CREDENTIALS,
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
           search: { 'location.city': TermCondition.EQ(boydton) },
+          ...INCLUDE_CREDENTIALS,
         });
       });
 
@@ -153,7 +155,7 @@ describe('/sessions', () => {
       userEvent.click(screen.getByText('Filter event by...'));
       userEvent.click(screen.getByText('Country'));
       sandbox.assert.calledWithExactly(
-        getDistinctStub,
+        getDistinctSessionsStub,
         'location.country_name'
       );
 
@@ -172,12 +174,14 @@ describe('/sessions', () => {
             'location.country_name': TermCondition.EQ(slovenia),
             sortBy: ['-createdAt'],
           },
+          ...INCLUDE_CREDENTIALS,
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
           search: {
             'location.city': TermCondition.EQ(boydton),
             'location.country_name': TermCondition.EQ(slovenia),
           },
+          ...INCLUDE_CREDENTIALS,
         });
       });
 
@@ -189,9 +193,11 @@ describe('/sessions', () => {
       await waitFor(() => {
         sandbox.assert.calledWithExactly(listSessionsStub.lastCall, {
           search: { limit: 20, sortBy: ['-createdAt'] },
+          ...INCLUDE_CREDENTIALS,
         });
         sandbox.assert.calledWithExactly(countSessionsStub.lastCall, {
           search: {},
+          ...INCLUDE_CREDENTIALS,
         });
       });
     });
@@ -209,7 +215,6 @@ describe('/sessions', () => {
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(countSessionsStub, {
-        baseURL: 'http://localhost:8082',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -218,7 +223,6 @@ describe('/sessions', () => {
       });
 
       sandbox.assert.calledWithExactly(listSessionsStub, {
-        baseURL: 'http://localhost:8082',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -235,9 +239,11 @@ describe('/sessions', () => {
 
       await screen.findByText(REBROWSE_SESSIONS[0].id);
 
+      /* SSR */
       sandbox.assert.calledWithExactly(
         retrieveSessionStub,
-        REBROWSE_SESSIONS_DTOS[0].id
+        REBROWSE_SESSIONS_DTOS[0].id,
+        INCLUDE_CREDENTIALS
       );
     });
   });

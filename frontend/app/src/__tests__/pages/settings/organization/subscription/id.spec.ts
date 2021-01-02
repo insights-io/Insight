@@ -2,8 +2,8 @@ import { mockApiError } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BillingApi } from 'api';
 import { getPage } from 'next-page-tester';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { ACTIVE_BUSINESS_SUBSCRIPTION_DTO } from '__tests__/data/billing';
@@ -27,7 +27,7 @@ describe('/settings/organization/subscription/[id]', () => {
     } = mockOrganizationSettingsSubscriptionPage(sandbox);
 
     const retrieveSubscriptionStub = sandbox
-      .stub(BillingApi.subscriptions, 'get')
+      .stub(client.billing.subscriptions, 'retrieve')
       .rejects(
         mockApiError({
           statusCode: 404,
@@ -43,7 +43,6 @@ describe('/settings/organization/subscription/[id]', () => {
       retrieveSubscriptionStub,
       subscription.id,
       {
-        baseURL: 'http://localhost:8083',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -52,7 +51,6 @@ describe('/settings/organization/subscription/[id]', () => {
     );
 
     sandbox.assert.calledWithExactly(listSubscriptionsStub, {
-      baseURL: 'http://localhost:8083',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,
@@ -60,7 +58,6 @@ describe('/settings/organization/subscription/[id]', () => {
       search: { sortBy: ['-createdAt'] },
     });
     sandbox.assert.calledWithExactly(retrieveActivePlanStub, {
-      baseURL: 'http://localhost:8083',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,
@@ -92,7 +89,6 @@ describe('/settings/organization/subscription/[id]', () => {
       retrieveSubscriptionStub,
       subscription.id,
       {
-        baseURL: 'http://localhost:8083',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -100,7 +96,6 @@ describe('/settings/organization/subscription/[id]', () => {
       }
     );
     sandbox.assert.calledWithExactly(listInvoicesStub, subscription.id, {
-      baseURL: 'http://localhost:8083',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,
@@ -122,6 +117,10 @@ describe('/settings/organization/subscription/[id]', () => {
     await screen.findByText('Successfully canceled subscription');
     expect(screen.getByText('Status: Canceled')).toBeInTheDocument();
 
-    sandbox.assert.calledWithExactly(cancelSubscriptionStub, subscription.id);
+    sandbox.assert.calledWithExactly(
+      cancelSubscriptionStub,
+      subscription.id,
+      INCLUDE_CREDENTIALS
+    );
   });
 });

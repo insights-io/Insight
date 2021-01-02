@@ -1,12 +1,14 @@
 import { mapAuthToken } from '@rebrowse/sdk';
 import type { AuthTokenDTO } from '@rebrowse/types';
-import { AuthApi } from 'api';
 import { useMemo } from 'react';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['sso', 'token', 'list'];
-const queryFn = () =>
-  AuthApi.sso.token.list().then((httpResponse) => httpResponse.data);
+export const queryFn = () =>
+  client.auth.tokens
+    .list(INCLUDE_CREDENTIALS)
+    .then((httpResponse) => httpResponse.data);
 
 export const useAuthTokens = (initialData: AuthTokenDTO[]) => {
   const { data = initialData } = useQuery(cacheKey, queryFn, { initialData });
@@ -18,7 +20,7 @@ export const useAuthTokenMutations = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: create } = useMutation(
-    () => AuthApi.sso.token.create(),
+    () => client.auth.tokens.create(INCLUDE_CREDENTIALS),
     {
       onSuccess: (httpResponse) => {
         queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {
@@ -29,7 +31,7 @@ export const useAuthTokenMutations = () => {
   );
 
   const { mutateAsync: revoke } = useMutation(
-    (token: string) => AuthApi.sso.token.delete(token),
+    (token: string) => client.auth.tokens.delete(token, INCLUDE_CREDENTIALS),
     {
       onSuccess: (_result, token) => {
         queryClient.setQueryData<AuthTokenDTO[]>(cacheKey, (prev) => {

@@ -10,4 +10,5 @@ namespace: recording
 resources:
   - service.yaml
   - deployment.yaml
+  - hpa.yaml
   - ingress.yaml

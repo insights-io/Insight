@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ORGANIZATION_SETTINGS_SECURITY_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { mockOrganizationSettingsSecurityPage } from '__tests__/mocks';
@@ -23,7 +24,6 @@ describe('/settings/organization/security', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(retrievePasswordPolicyStub, {
-      baseURL: 'http://localhost:8080',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,
@@ -51,14 +51,18 @@ describe('/settings/organization/security', () => {
 
     await screen.findByText('Password policy updated');
 
-    sandbox.assert.calledWithExactly(createPasswordPolicyStub, {
-      minCharacters: 8,
-      preventPasswordReuse: true,
-      requireLowercaseCharacter: false,
-      requireNonAlphanumericCharacter: false,
-      requireNumber: false,
-      requireUppercaseCharacter: true,
-    });
+    sandbox.assert.calledWithExactly(
+      createPasswordPolicyStub,
+      {
+        minCharacters: 8,
+        preventPasswordReuse: true,
+        requireLowercaseCharacter: false,
+        requireNonAlphanumericCharacter: false,
+        requireNumber: false,
+        requireUppercaseCharacter: true,
+      },
+      INCLUDE_CREDENTIALS
+    );
 
     userEvent.click(
       screen.getByText(
@@ -75,13 +79,17 @@ describe('/settings/organization/security', () => {
 
     await screen.findByText('Password policy updated');
 
-    sandbox.assert.calledWithExactly(updatePasswordPolicyStub, {
-      minCharacters: 80,
-      preventPasswordReuse: true,
-      requireLowercaseCharacter: false,
-      requireNonAlphanumericCharacter: false,
-      requireNumber: false,
-      requireUppercaseCharacter: false,
-    });
+    sandbox.assert.calledWithExactly(
+      updatePasswordPolicyStub,
+      {
+        minCharacters: 80,
+        preventPasswordReuse: true,
+        requireLowercaseCharacter: false,
+        requireNonAlphanumericCharacter: false,
+        requireNumber: false,
+        requireUppercaseCharacter: false,
+      },
+      INCLUDE_CREDENTIALS
+    );
   });
 });

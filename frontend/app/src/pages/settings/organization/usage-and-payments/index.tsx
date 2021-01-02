@@ -9,8 +9,8 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { BillingApi } from 'api';
 import type { InvoiceDTO } from '@rebrowse/types';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   invoices: InvoiceDTO[];
@@ -45,8 +45,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const invoices = await BillingApi.invoices
-      .list({ baseURL: process.env.BILLING_API_BASE_URL, headers })
+    const invoices = await client.billing.invoices
+      .list({ headers })
       .then((httpResponse) => httpResponse.data);
 
     return {

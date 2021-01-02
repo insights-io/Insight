@@ -10,7 +10,7 @@ import type {
   OrganizationPasswordPolicyDTO,
   PasswordPolicy,
 } from '@rebrowse/types';
-import { useOrganizationPasswordPolicy } from 'shared/hooks/useOrganizationPasswordPolicy';
+import { usePasswordPolicy } from 'shared/hooks/usePasswordPolicy';
 import { REQUIRED_VALIDATION } from 'shared/constants/form-validation';
 import Divider from 'shared/components/Divider';
 import { toaster } from 'baseui/toast';
@@ -28,7 +28,7 @@ export const PasswordPolicyForm = ({ initialPasswordPolicy }: Props) => {
     passwordPolicy,
     updatePasswordPolicy,
     createPasswordPolicy,
-  } = useOrganizationPasswordPolicy(initialPasswordPolicy);
+  } = usePasswordPolicy(initialPasswordPolicy);
 
   const {
     register,

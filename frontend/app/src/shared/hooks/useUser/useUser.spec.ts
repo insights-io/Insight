@@ -1,14 +1,14 @@
 import { sandbox } from '@rebrowse/testing';
-import { AuthApi } from 'api';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { REBROWSE_ADMIN, REBROWSE_ADMIN_DTO } from '__tests__/data';
 import { httpOkResponse, renderHook } from '__tests__/utils';
 
 import { useUser } from './useUser';
 
 describe('useUser', () => {
-  test('Should work as expected', async () => {
+  test('Should correctly map user', async () => {
     const retrieveUserStub = sandbox
-      .stub(AuthApi.user, 'me')
+      .stub(client.auth.users, 'me')
       .resolves(httpOkResponse(REBROWSE_ADMIN_DTO));
 
     const { result, waitForNextUpdate } = renderHook(() =>
@@ -17,7 +17,7 @@ describe('useUser', () => {
     expect(result.current.user).toEqual(REBROWSE_ADMIN);
 
     await waitForNextUpdate();
-    sandbox.assert.calledWithExactly(retrieveUserStub);
+    sandbox.assert.calledWithExactly(retrieveUserStub, INCLUDE_CREDENTIALS);
     expect(result.current.user).toEqual(REBROWSE_ADMIN);
   });
 });

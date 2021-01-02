@@ -1,6 +1,5 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
-import { AuthApi } from 'api/auth';
 import { REBROWSE_ADMIN } from '__tests__/data/user';
 import {
   SMS_MFA_SETUP_DTO,
@@ -9,6 +8,7 @@ import {
 } from '__tests__/data/mfa';
 import type { Meta } from '@storybook/react';
 import { httpOkResponse } from '__tests__/utils/request';
+import { client } from 'sdk';
 
 import { AccountMfaPanel } from './AccountMfaPanel';
 
@@ -29,19 +29,19 @@ MfaEnabled.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       listSetups: sandbox
-        .stub(AuthApi.mfa.setup, 'list')
+        .stub(client.auth.mfa.setup, 'list')
         .resolves(httpOkResponse([TOTP_MFA_SETUP_DTO])),
 
       setupStart: sandbox
-        .stub(AuthApi.mfa.setup.totp, 'start')
+        .stub(client.auth.mfa.setup.totp, 'start')
         .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE })),
 
       setupComplete: sandbox
-        .stub(AuthApi.mfa.setup, 'complete')
+        .stub(client.auth.mfa.setup, 'complete')
         .resolves(httpOkResponse(TOTP_MFA_SETUP_DTO)),
 
       setupSendSmsCode: sandbox
-        .stub(AuthApi.mfa.setup.sms, 'sendCode')
+        .stub(client.auth.mfa.setup.sms, 'sendCode')
         .resolves(httpOkResponse({ validitySeconds: 60 })),
     };
   },

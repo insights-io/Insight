@@ -5,6 +5,9 @@ on:
       - '**/k8/**/*.yaml'
       - '.github/workflows/infrastructure:k8.yml'
 
+env:
+  CI: true
+
 jobs:
   helm-template:
     runs-on: ubuntu-latest

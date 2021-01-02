@@ -23,11 +23,11 @@ import {
   AUTH_TOKENS_SECTION,
   SIGN_OUT_SECTION,
 } from 'shared/constants/copy';
-import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { toaster } from 'baseui/toast';
 import * as zIndex from 'shared/constants/zIndex';
 import { OrganizationAvatar } from 'shared/components/OrganizationAvatar';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 import { BannerCard } from './BannerCard';
 import {
@@ -87,8 +87,8 @@ export const NavbarBanner = ({
           label: SIGN_OUT_SECTION,
           link: '#',
           onClick: () =>
-            AuthApi.sso.session
-              .logout()
+            client.auth.sso.sessions
+              .logout(INCLUDE_CREDENTIALS)
               .then(() => replace(LOGIN_PAGE))
               .catch(() =>
                 toaster.negative('Something went wrong. Please try again.', {})

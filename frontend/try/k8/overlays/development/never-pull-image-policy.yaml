@@ -2,11 +2,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: try
 spec:
   template:
     spec:
       containers:
-        - image: insightio/frontend-app
-          name: app
+        - image: insightio/frontend-try
+          name: try
           imagePullPolicy: Never

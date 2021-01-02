@@ -1,5 +1,5 @@
 import type { QueryParam, SearchBean } from '@rebrowse/types';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions } from 'types';
 
 export type EventSearchQueryParams = {
   'event.e'?: QueryParam;
@@ -11,6 +11,6 @@ export type EventSeachBean<
 
 export type EventSearchRequestOptions<
   GroupBy extends (keyof EventSearchQueryParams)[] = []
-> = Omit<RequestOptions, 'searchParams'> & {
+> = Omit<ExtendedRequestOptions, 'searchParams'> & {
   search?: EventSeachBean<GroupBy>;
 };

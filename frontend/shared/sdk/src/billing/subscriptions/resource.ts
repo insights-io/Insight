@@ -1,77 +1,81 @@
-import ky from 'ky-universal';
 import type {
   CreateSubscriptionDTO,
   SubscriptionDTO,
   CreateSubscriptionResponseDTO,
   PlanDTO,
 } from '@rebrowse/types';
+import type { ExtendedRequestOptions, HttpClient } from 'types';
 
-import type { RequestOptions } from '../../types';
-import { withCredentials, querystring } from '../../utils';
+import { querystring } from '../../utils';
 import { jsonDataResponse } from '../../http';
 
 import type { SubscriptionSearchRequestOptions } from './types';
 
-export const subscriptionResource = (billingApiBaseURL: string) => {
+export const subscriptionResource = (
+  client: HttpClient,
+  billingApiBaseUrl: string
+) => {
   return {
     create: (
       json: CreateSubscriptionDTO,
-      { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = billingApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<CreateSubscriptionResponseDTO>(
-        ky.post(`${baseURL}/v1/billing/subscriptions`, {
+        client.post(`${baseUrl}/v1/billing/subscriptions`, {
           json,
-          ...withCredentials(rest),
+          ...requestOptions,
         })
       );
     },
-
-    get: (
+    retrieve: (
       subscriptionId: string,
-      { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = billingApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<SubscriptionDTO>(
-        ky.get(
-          `${baseURL}/v1/billing/subscriptions/${subscriptionId}`,
-          withCredentials(rest)
+        client.get(
+          `${baseUrl}/v1/billing/subscriptions/${subscriptionId}`,
+          requestOptions
         )
       );
     },
-
     list: <GroupBy extends (keyof SubscriptionDTO)[]>({
-      baseURL = billingApiBaseURL,
+      baseUrl = billingApiBaseUrl,
       search,
-      ...rest
+      ...requestOptions
     }: SubscriptionSearchRequestOptions<GroupBy> = {}) => {
       return jsonDataResponse<SubscriptionDTO[]>(
-        ky.get(
-          `${baseURL}/v1/billing/subscriptions${querystring(search)}`,
-          withCredentials(rest)
+        client.get(
+          `${baseUrl}/v1/billing/subscriptions${querystring(search)}`,
+          requestOptions
         )
       );
     },
-
     cancel: (
       subscriptionId: string,
-      { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = billingApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<SubscriptionDTO>(
-        ky.patch(
-          `${baseURL}/v1/billing/subscriptions/${subscriptionId}/cancel`,
-          withCredentials(rest)
+        client.patch(
+          `${baseUrl}/v1/billing/subscriptions/${subscriptionId}/cancel`,
+          requestOptions
         )
       );
     },
-
-    getActivePlan: ({
-      baseURL = billingApiBaseURL,
-      ...rest
-    }: RequestOptions = {}) => {
+    retrieveActivePlan: ({
+      baseUrl = billingApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
       return jsonDataResponse<PlanDTO>(
-        ky.get(
-          `${baseURL}/v1/billing/subscriptions/plan`,
-          withCredentials(rest)
-        )
+        client.get(`${baseUrl}/v1/billing/subscriptions/plan`, requestOptions)
       );
     },
   };

@@ -6,7 +6,6 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { loadStripe, PaymentIntent, StripeError } from '@stripe/stripe-js';
-import { BillingApi } from 'api';
 import { Card } from 'baseui/card';
 import { Block } from 'baseui/block';
 import { SIZE } from 'baseui/button';
@@ -18,6 +17,7 @@ import type {
   SubscriptionPlan,
 } from '@rebrowse/types';
 import { Button } from '@rebrowse/elements';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 import { confirmCardPayment, createCardPaymentMethod } from './stripe';
 
@@ -73,8 +73,11 @@ const StripeChekoutForm = ({
       } else if (paymentMethod) {
         const plan: SubscriptionPlan = 'business';
 
-        await BillingApi.subscriptions
-          .create({ paymentMethodId: paymentMethod.id, plan })
+        await client.billing.subscriptions
+          .create(
+            { paymentMethodId: paymentMethod.id, plan },
+            INCLUDE_CREDENTIALS
+          )
           .then((httpResponse) => {
             if (httpResponse.data.plan) {
               onPlanUpgraded(httpResponse.data.plan);

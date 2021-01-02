@@ -12,12 +12,12 @@ import { SIZE } from 'baseui/button';
 import { Delete } from 'baseui/icon';
 import { PLACEMENT, StatefulTooltip } from 'baseui/tooltip';
 import { mapUser, UserSearchBean } from '@rebrowse/sdk';
-import { AuthApi } from 'api';
 import { useStyletron } from 'baseui';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { StyledSpinnerNext } from 'baseui/spinner';
 import type { SearchBean, User, UserDTO } from '@rebrowse/types';
 import { capitalize } from 'shared/utils/string';
+import { client } from 'sdk';
 
 type Props = {
   members: UserDTO[];
@@ -35,13 +35,13 @@ export const OrganizationMembers = ({
   const [_css, theme] = useStyletron();
 
   const listMembers = useCallback(async (search: SearchBean<UserDTO>) => {
-    return AuthApi.organization.members
+    return client.auth.organizations.members
       .list({ search: search as UserSearchBean })
       .then((httpResponse) => httpResponse.data);
   }, []);
 
   const countMembers = useCallback(async (search: SearchBean<UserDTO>) => {
-    return AuthApi.organization.members
+    return client.auth.organizations.members
       .count({ search: search as UserSearchBean })
       .then((httpResponse) => httpResponse.data.count);
   }, []);

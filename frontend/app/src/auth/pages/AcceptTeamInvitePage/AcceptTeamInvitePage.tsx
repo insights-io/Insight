@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { AuthPageLayout } from 'auth/components/PageLayout';
 import type {
   APIError,
-  TeamInvite,
   AcceptTeamInviteDTO,
   APIErrorDataResponse,
+  TeamInviteDTO,
 } from '@rebrowse/types';
 import { capitalize } from 'shared/utils/string';
 import { useForm } from 'react-hook-form';
@@ -16,12 +16,15 @@ import {
   REQUIRED_VALIDATION,
   PASSWORD_VALIDATION,
 } from 'shared/constants/form-validation';
-import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { applyApiFormErrors } from 'shared/utils/form';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
-type Props = TeamInvite;
+type Props = Pick<
+  TeamInviteDTO,
+  'token' | 'creator' | 'organizationId' | 'role'
+>;
 
 export const AcceptTeamInvitePage = ({
   token,
@@ -41,8 +44,8 @@ export const AcceptTeamInvitePage = ({
 
   const onSubmit = handleSubmit((values) => {
     setIsSubmitting(true);
-    AuthApi.organization.teamInvite
-      .accept(token, values)
+    client.auth.organizations.teamInvite
+      .accept(token, values, INCLUDE_CREDENTIALS)
       .then(() => router.replace(INDEX_PAGE))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();

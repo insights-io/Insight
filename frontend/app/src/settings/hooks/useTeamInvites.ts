@@ -1,25 +1,28 @@
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
-import { AuthApi } from 'api/auth';
 import { mapTeamInvite } from '@rebrowse/sdk';
 import type { TeamInviteCreateDTO, TeamInviteDTO } from '@rebrowse/types';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
-const CACHE_KEY = ['AuthApi', 'teamInvite', 'list'];
-const queryFn = () => AuthApi.organization.teamInvite.list();
+export const CACHE_KEY = ['AuthApi', 'teamInvite', 'list'];
+export const queryFn = () =>
+  client.auth.organizations.teamInvite.list(INCLUDE_CREDENTIALS);
 
-export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
+export const useTeamInvitesMutations = (initialData: TeamInviteDTO[]) => {
   const queryClient = useQueryClient();
-  const { data = initialData } = useQuery(CACHE_KEY, queryFn, {
-    initialData,
-  });
 
   const { mutateAsync: deleteTeamInvite } = useMutation(
     ({ token, email }: { token: string; email: string }) =>
-      AuthApi.organization.teamInvite.delete(token, email),
+      client.auth.organizations.teamInvite.delete(
+        token,
+        email,
+        INCLUDE_CREDENTIALS
+      ),
     {
       onSuccess: (_, { token }) => {
-        queryClient.setQueryData<TeamInviteDTO[]>(CACHE_KEY, (prev) =>
-          (prev || initialData).filter((i) => i.token !== token)
+        queryClient.setQueryData<TeamInviteDTO[] | undefined>(
+          CACHE_KEY,
+          (prev = initialData) => prev.filter((i) => i.token !== token)
         );
       },
     }
@@ -27,7 +30,7 @@ export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
 
   const { mutateAsync: createTeamInvite } = useMutation(
     (params: TeamInviteCreateDTO) =>
-      AuthApi.organization.teamInvite.create(params),
+      client.auth.organizations.teamInvite.create(params, INCLUDE_CREDENTIALS),
     {
       onSuccess: (httpResponse) => {
         queryClient.setQueryData<TeamInviteDTO[]>(CACHE_KEY, (prev) => [
@@ -38,9 +41,16 @@ export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
     }
   );
 
+  return { deleteTeamInvite, createTeamInvite };
+};
+
+// TODO: use this
+export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
+  const { data = initialData } = useQuery(CACHE_KEY, queryFn, { initialData });
+
   const invites = useMemo(() => {
     return data.map(mapTeamInvite);
   }, [data]);
 
-  return { invites, deleteTeamInvite, createTeamInvite };
+  return { invites };
 };

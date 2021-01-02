@@ -1,7 +1,6 @@
 import { sandbox } from '@rebrowse/testing';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthApi } from 'api';
 import {
   EMAIL_PLACEHOLDER,
   WORK_EMAIL_PLACEHOLDER,
@@ -9,10 +8,10 @@ import {
 import { getPage } from 'next-page-tester';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import * as windowUtils from 'shared/utils/window';
-import { mockIndexPage } from '__tests__/mocks';
-import { httpOkResponse } from '__tests__/utils/request';
+import { mockLoginPage } from '__tests__/mocks';
 import { match } from 'sinon';
 import { renderPage } from '__tests__/utils';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 describe('/login', () => {
   /* Data */
@@ -25,14 +24,7 @@ describe('/login', () => {
 
     test('As a user I can login using my email', async () => {
       /* Mocks */
-      mockIndexPage(sandbox);
-
-      const loginStub = sandbox
-        .stub(AuthApi.sso.session, 'login')
-        .callsFake(() => {
-          document.cookie = 'SessionId=123';
-          return Promise.resolve(httpOkResponse(true));
-        });
+      const { loginStub } = mockLoginPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
@@ -47,21 +39,19 @@ describe('/login', () => {
 
       userEvent.click(signInButton);
       await screen.findByText('Page Visits');
-      sandbox.assert.calledWithExactly(loginStub, email, password);
+      sandbox.assert.calledWithExactly(
+        loginStub,
+        email,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
 
     test('As a user I can login but get challenged by MFA', async () => {
       /* Mocks */
-      const retrieveChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'retrieve')
-        .resolves(httpOkResponse(['totp']));
-
-      const loginStub = sandbox
-        .stub(AuthApi.sso.session, 'login')
-        .callsFake(() => {
-          document.cookie = 'ChallengeId=123';
-          return Promise.resolve(httpOkResponse(false));
-        });
+      const { retrieveChallengeStub, loginStub } = mockLoginPage(sandbox, {
+        login: false,
+      });
 
       /* Server */
       const { page } = await getPage({ route });
@@ -80,22 +70,22 @@ describe('/login', () => {
       );
 
       sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
-        baseURL: 'http://localhost:8080',
-        headers: {
-          'uber-trace-id': (match.string as unknown) as string,
-        },
+        headers: { 'uber-trace-id': (match.string as unknown) as string },
       });
 
-      sandbox.assert.calledWithExactly(loginStub, email, password);
+      sandbox.assert.calledWithExactly(
+        loginStub,
+        email,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
   });
 
   describe('SSO login', () => {
     test('As a user I see an error message if domain is not registered for SSO', async () => {
       /* Mocks */
-      const retrieveSsoSetupByDomainStub = sandbox
-        .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves(httpOkResponse(false));
+      const { retrieveSsoSetupByDomainStub } = mockLoginPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
@@ -122,9 +112,10 @@ describe('/login', () => {
       const locationAsignStub = sandbox.stub(windowUtils, 'locationAssign');
 
       const ssoLocation = 'http://localhost:8080/sso/login';
-      const retrieveSsoSetupByDomainStub = sandbox
-        .stub(AuthApi.sso.setup, 'getByDomain')
-        .resolves(httpOkResponse(ssoLocation));
+
+      const { retrieveSsoSetupByDomainStub } = mockLoginPage(sandbox, {
+        ssoSetupByDomain: ssoLocation,
+      });
 
       /* Server */
       const { page } = await getPage({ route });
@@ -187,7 +178,7 @@ describe('/login', () => {
   test('As a user I should be able to start password reset flow from login page', async () => {
     /* Mocks */
     const passwordForgotStub = sandbox
-      .stub(AuthApi.password, 'forgot')
+      .stub(client.auth.password, 'forgot')
       .resolves();
 
     /* Server */

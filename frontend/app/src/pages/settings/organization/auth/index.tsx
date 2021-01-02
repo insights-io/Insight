@@ -9,8 +9,8 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api';
 import type { SsoSetupDTO } from '@rebrowse/types';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   maybeSsoSetup?: SsoSetupDTO;
@@ -40,9 +40,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    const maybeSsoSetup = await AuthApi.sso.setup
-      .get({
-        baseURL: process.env.AUTH_API_BASE_URL,
+    const maybeSsoSetup = await client.auth.sso.setups
+      .retrieve({
         headers: {
           ...prepareCrossServiceHeaders(requestSpan),
           cookie: `SessionId=${authResponse.SessionId}`,

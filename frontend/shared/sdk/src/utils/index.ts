@@ -1,11 +1,6 @@
 import { stringify } from 'querystring';
 
-import type { Options } from 'ky';
 import type { SearchBean } from '@rebrowse/types';
-
-export function withCredentials<T extends Options>(options: T): Options {
-  return { ...options, credentials: 'include' };
-}
 
 export const querystring = <
   P extends Record<string, unknown>,

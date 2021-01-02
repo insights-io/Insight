@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { EMAIL_PLACEHOLDER } from 'shared/constants/form-placeholders';
 import { ORGANIZATION_SETTINGS_MEMBER_INVITES_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
@@ -36,12 +37,10 @@ describe('/settings/organization/members/invites', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(listTeamInvitesStub, {
-      baseURL: 'http://localhost:8080',
       headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
       search: { limit: 20, sortBy: ['+createdAt'] },
     });
     sandbox.assert.calledWithExactly(countTeamInvitesStub, {
-      baseURL: 'http://localhost:8080',
       headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
     });
 
@@ -61,6 +60,7 @@ describe('/settings/organization/members/invites', () => {
 
     sandbox.assert.calledWithExactly(listTeamInvitesStub, {
       search: { limit: 20, sortBy: ['+createdAt'], query: randomQuery },
+      ...INCLUDE_CREDENTIALS,
     });
 
     userEvent.clear(searchInput);
@@ -69,6 +69,7 @@ describe('/settings/organization/members/invites', () => {
 
     sandbox.assert.calledWithExactly(listTeamInvitesStub, {
       search: { limit: 20, sortBy: ['+createdAt'], query: emailQuery },
+      ...INCLUDE_CREDENTIALS,
     });
   });
 
@@ -84,12 +85,10 @@ describe('/settings/organization/members/invites', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(listTeamInvitesStub, {
-      baseURL: 'http://localhost:8080',
       headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
       search: { limit: 20, sortBy: ['+createdAt'] },
     });
     sandbox.assert.calledWithExactly(countTeamInvitesStub, {
-      baseURL: 'http://localhost:8080',
       headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
     });
 
@@ -107,10 +106,14 @@ describe('/settings/organization/members/invites', () => {
 
     await screen.findByText('Member invited');
 
-    sandbox.assert.calledWithExactly(createTeamInviteStub, {
-      email: invitedUserEmail,
-      role: 'admin',
-    });
+    sandbox.assert.calledWithExactly(
+      createTeamInviteStub,
+      {
+        email: invitedUserEmail,
+        role: 'admin',
+      },
+      INCLUDE_CREDENTIALS
+    );
 
     expect(screen.getByText(invitedUserEmail)).toBeInTheDocument();
   });

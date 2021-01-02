@@ -13,13 +13,18 @@ import {
 } from 'shared/utils/date';
 import { useQuery } from 'shared/hooks/useQuery';
 import type { CountByFieldDataPoint } from 'insights/types';
+import type { RequestOptions } from '@rebrowse/sdk';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props<T extends string> = CardProps & {
   field: T;
   initialData: CountByFieldDataPoint<T>[];
   title: string;
   relativeTimeRange: RelativeTimeRange;
-  dataLoader: (createdAtGte: string) => Promise<CountByFieldDataPoint<T>[]>;
+  dataLoader: (
+    createdAtGte: string,
+    options: RequestOptions
+  ) => Promise<CountByFieldDataPoint<T>[]>;
 };
 
 const cacheKey = (field: string, relativeTimeRange: RelativeTimeRange) => {
@@ -36,7 +41,11 @@ export const PieChartBreakdown = <T extends string>({
 }: Props<T>) => {
   const { data = initialData } = useQuery(
     cacheKey(field, relativeTimeRange),
-    () => dataLoader(`gte:${timeRelative(relativeTimeRange).toISOString()}`),
+    () =>
+      dataLoader(
+        `gte:${timeRelative(relativeTimeRange).toISOString()}`,
+        INCLUDE_CREDENTIALS
+      ),
     { initialData }
   );
 

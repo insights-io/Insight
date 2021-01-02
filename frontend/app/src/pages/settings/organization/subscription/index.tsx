@@ -9,12 +9,12 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { BillingApi } from 'api';
 import type {
   OrganizationDTO,
   PlanDTO,
   SubscriptionDTO,
 } from '@rebrowse/types';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   organization: OrganizationDTO;
@@ -53,19 +53,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const activePlanPromise = BillingApi.subscriptions
-      .getActivePlan({
-        baseURL: process.env.BILLING_API_BASE_URL,
-        headers,
-      })
+    const activePlanPromise = client.billing.subscriptions
+      .retrieveActivePlan({ headers })
       .then((httpResponse) => httpResponse.data);
 
-    const subscriptionsPromise = BillingApi.subscriptions
-      .list({
-        baseURL: process.env.BILLING_API_BASE_URL,
-        search: { sortBy: ['-createdAt'] },
-        headers,
-      })
+    const subscriptionsPromise = client.billing.subscriptions
+      .list({ search: { sortBy: ['-createdAt'] }, headers })
       .then((httpResponse) => httpResponse.data);
 
     const [plan, subscriptions] = await Promise.all([

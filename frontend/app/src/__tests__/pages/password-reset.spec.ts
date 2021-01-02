@@ -1,12 +1,12 @@
 import { sandbox } from '@rebrowse/testing';
-import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
-import { mockIndexPage } from '__tests__/mocks';
+import { mockPasswordResetPage } from '__tests__/mocks';
 import { mockApiError } from '@rebrowse/storybook';
-import { httpOkResponse, renderPage } from '__tests__/utils';
+import { renderPage } from '__tests__/utils';
 import { match } from 'sinon';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 describe('/password-reset', () => {
   /* Data */
@@ -17,24 +17,15 @@ describe('/password-reset', () => {
   describe('With existing password reset request', () => {
     test('As a user I get logged in after resetting my passsword', async () => {
       /* Mocks */
-      const resetExistsStub = sandbox
-        .stub(AuthApi.password, 'resetExists')
-        .resolves(httpOkResponse(true));
-
-      const passwordResetStub = sandbox
-        .stub(AuthApi.password, 'reset')
-        .resolves({ statusCode: 200, headers: new Headers() });
-
-      mockIndexPage(sandbox);
+      const { resetExistsStub, passwordResetStub } = mockPasswordResetPage(
+        sandbox
+      );
 
       /* Server */
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(resetExistsStub, token, {
-        baseURL: 'http://localhost:8080',
-        headers: {
-          'uber-trace-id': (match.string as unknown) as string,
-        },
+        headers: { 'uber-trace-id': (match.string as unknown) as string },
       });
 
       /* Client */
@@ -50,16 +41,21 @@ describe('/password-reset', () => {
 
       document.cookie = 'SessionId=123';
       await screen.findByText('Page Visits');
-      sandbox.assert.calledWithExactly(passwordResetStub, token, password);
+      sandbox.assert.calledWithExactly(
+        passwordResetStub,
+        token,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
 
     test('As a user I can see error message if reset request fails', async () => {
       /* Mocks */
-      const resetExistsStub = sandbox
-        .stub(AuthApi.password, 'resetExists')
-        .resolves(httpOkResponse(true));
+      const { resetExistsStub, passwordResetStub } = mockPasswordResetPage(
+        sandbox
+      );
 
-      const passwordResetStub = sandbox.stub(AuthApi.password, 'reset').rejects(
+      passwordResetStub.rejects(
         mockApiError({
           statusCode: 400,
           reason: 'Bad Request',
@@ -72,10 +68,7 @@ describe('/password-reset', () => {
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(resetExistsStub, token, {
-        baseURL: 'http://localhost:8080',
-        headers: {
-          'uber-trace-id': (match.string as unknown) as string,
-        },
+        headers: { 'uber-trace-id': (match.string as unknown) as string },
       });
 
       /* Client */
@@ -92,25 +85,27 @@ describe('/password-reset', () => {
       await screen.findByText('Bad Request');
       await screen.findByText('Too Short');
 
-      sandbox.assert.calledWithExactly(passwordResetStub, token, password);
+      sandbox.assert.calledWithExactly(
+        passwordResetStub,
+        token,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
   });
 
   describe('With non existing password reset request', () => {
     test('As a user', async () => {
       /* Mocks */
-      const resetExistsStub = sandbox
-        .stub(AuthApi.password, 'resetExists')
-        .resolves(httpOkResponse(false));
+      const { resetExistsStub } = mockPasswordResetPage(sandbox, {
+        exists: false,
+      });
 
       /* Server */
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(resetExistsStub, token, {
-        baseURL: 'http://localhost:8080',
-        headers: {
-          'uber-trace-id': (match.string as unknown) as string,
-        },
+        headers: { 'uber-trace-id': (match.string as unknown) as string },
       });
 
       /* Client */

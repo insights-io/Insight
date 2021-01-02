@@ -1,29 +1,31 @@
-import ky from 'ky-universal';
 import type { BrowserEventDTO } from '@rebrowse/types';
-import { querystring, withCredentials } from 'utils';
+import { querystring } from 'utils';
 
-import { jsonDataResponse } from '../../http';
+import { HttpClient, jsonDataResponse } from '../../http';
 
 import type {
   EventSearchRequestOptions,
   EventSearchQueryParams,
 } from './types';
 
-export const createEventsClient = (sessionApiBaseUrl: string) => {
+export const eventsResource = (
+  client: HttpClient,
+  sessionApiBaseUrl: string
+) => {
   return {
     search: <GroupBy extends (keyof EventSearchQueryParams)[] = []>(
       sessionId: string,
       {
-        baseURL = sessionApiBaseUrl,
+        baseUrl = sessionApiBaseUrl,
         search,
-        ...rest
+        ...requestOptions
       }: EventSearchRequestOptions<GroupBy> = {}
     ) => {
       const query = decodeURIComponent(querystring(search));
       return jsonDataResponse<BrowserEventDTO[]>(
-        ky.get(
-          `${baseURL}/v1/sessions/${sessionId}/events/search${query}`,
-          withCredentials(rest)
+        client.get(
+          `${baseUrl}/v1/sessions/${sessionId}/events/search${query}`,
+          requestOptions
         )
       );
     },

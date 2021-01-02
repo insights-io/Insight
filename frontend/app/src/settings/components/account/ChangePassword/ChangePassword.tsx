@@ -7,12 +7,12 @@ import type {
   APIError,
   APIErrorDataResponse,
 } from '@rebrowse/types';
-import { AuthApi } from 'api/auth';
 import { FormError } from 'shared/components/FormError';
 import { toaster } from 'baseui/toast';
 import { Button, PasswordInput, Panel } from '@rebrowse/elements';
 import { SIZE } from 'baseui/input';
 import { applyApiFormErrors } from 'shared/utils/form';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 export const ChangePassword = () => {
   const {
@@ -31,8 +31,8 @@ export const ChangePassword = () => {
     }
     setIsSubmitting(true);
 
-    AuthApi.password
-      .change(formData)
+    client.auth.password
+      .change(formData, INCLUDE_CREDENTIALS)
       .then(() => {
         toaster.positive('Password changed', {});
         setFormError(undefined);

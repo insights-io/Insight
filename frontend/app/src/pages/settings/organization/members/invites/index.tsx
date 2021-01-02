@@ -8,9 +8,9 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api';
 import type { TeamInviteDTO } from '@rebrowse/types';
 import { OrganizationSettingsMemberInvitesPage } from 'settings/pages/organization/OrganizationSettingsMemberInvitesPage';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   teamInvites: TeamInviteDTO[];
@@ -48,16 +48,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const teamInvitesPromise = AuthApi.organization.teamInvite
-      .list({
-        baseURL: process.env.AUTH_API_BASE_URL,
-        search: { limit: 20, sortBy: ['+createdAt'] },
-        headers,
-      })
+    const teamInvitesPromise = client.auth.organizations.teamInvite
+      .list({ search: { limit: 20, sortBy: ['+createdAt'] }, headers })
       .then((httpResponse) => httpResponse.data);
 
-    const inviteCountPromise = AuthApi.organization.teamInvite
-      .count({ baseURL: process.env.AUTH_API_BASE_URL, headers })
+    const inviteCountPromise = client.auth.organizations.teamInvite
+      .count({ headers })
       .then((httpResponse) => httpResponse.data.count);
 
     const [teamInvites, inviteCount] = await Promise.all([

@@ -14,13 +14,17 @@ import type {
   CountByDateDataPoint,
   CountByFieldDataPoint,
 } from 'insights/types';
-import { TermCondition } from '@rebrowse/sdk';
+import { RequestOptions, TermCondition } from '@rebrowse/sdk';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props<T extends 'createdAt'> = {
   initialData: CountByFieldDataPoint<T>[];
   title: string;
   relativeTimeRange: RelativeTimeRange;
-  dataLoader: (createdAtGte: string) => Promise<CountByFieldDataPoint<T>[]>;
+  dataLoader: (
+    createdAtGte: string,
+    options?: RequestOptions
+  ) => Promise<CountByFieldDataPoint<T>[]>;
   field: T;
 };
 
@@ -41,7 +45,11 @@ export const LineChartBreakdown = <T extends 'createdAt'>({
 }: Props<T>) => {
   const { data: rawData = initialData } = useQuery(
     cacheKey(title, field, relativeTimeRange),
-    () => dataLoader(TermCondition.GTE(timeRelative(relativeTimeRange))),
+    () =>
+      dataLoader(
+        TermCondition.GTE(timeRelative(relativeTimeRange)),
+        INCLUDE_CREDENTIALS
+      ),
     { initialData }
   );
 

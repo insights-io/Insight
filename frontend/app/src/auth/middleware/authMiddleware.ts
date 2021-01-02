@@ -2,8 +2,6 @@ import type { OutgoingHttpHeaders } from 'http';
 
 import type { Span } from 'opentracing';
 import type { GetServerSidePropsContext, GetServerSideProps } from 'next';
-import nextCookie from 'next-cookies';
-import { AuthApi } from 'api';
 import type {
   UserDTO,
   DataResponse,
@@ -16,6 +14,8 @@ import {
   prepareCrossServiceHeaders,
 } from 'shared/utils/tracing';
 import { LOGIN_PAGE, VERIFICATION_PAGE } from 'shared/constants/routes';
+import { client } from 'sdk';
+import nextCookie from 'next-cookies';
 
 export type Authenticated = {
   organization: OrganizationDTO;
@@ -73,8 +73,7 @@ export const authenticated = async (
   span.setTag('SessionId', SessionId);
 
   try {
-    const responsePromise = AuthApi.sso.session.get(SessionId, {
-      baseURL: process.env.AUTH_API_BASE_URL,
+    const responsePromise = client.auth.sso.sessions.retrieve(SessionId, {
       headers: prepareCrossServiceHeaders(span),
     });
 

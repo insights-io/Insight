@@ -1,12 +1,12 @@
 import { sandbox } from '@rebrowse/testing';
 import { getInitialProps } from 'pages/_document';
 import { Server } from 'styletron-engine-atomic';
-import * as sdk from '@rebrowse/sdk';
 import { mockServerSideRequest } from '@rebrowse/next-testing';
 import * as tracerUtils from 'shared/utils/tracing';
 import type { Tracer } from 'opentracing';
 import { RenderPage, RenderPageResult } from 'next/dist/next-server/lib/utils';
 import { BOOTSTRAP_SCRIPT } from '__tests__/data/recording';
+import { client } from 'sdk';
 
 const initilEnvironment = process.env;
 
@@ -22,7 +22,7 @@ describe('pages/_document', () => {
       .resolves({ html: '<div>Hello world</div>' });
 
     const fetchBoostrapScriptStub = sandbox
-      .stub(sdk, 'getBoostrapScript')
+      .stub(client.tracking, 'retrieveBoostrapScript')
       .resolves({
         data: BOOTSTRAP_SCRIPT,
         statusCode: 200,
@@ -44,7 +44,7 @@ describe('pages/_document', () => {
     process.env.BOOTSTRAP_SCRIPT = 'fromEnv';
     const renderPage = sandbox.stub().resolves();
     sandbox
-      .stub(sdk, 'getBoostrapScript')
+      .stub(client.tracking, 'retrieveBoostrapScript')
       .resolves({ data: '', headers: new Headers(), statusCode: 200 });
 
     const tracer = { startSpan: sandbox.stub(), extract: sandbox.stub() };
@@ -76,7 +76,7 @@ describe('pages/_document', () => {
     process.env.BOOTSTRAP_SCRIPT = 'fromEnv';
     const renderPage = sandbox.stub().resolves();
     sandbox
-      .stub(sdk, 'getBoostrapScript')
+      .stub(client.tracking, 'retrieveBoostrapScript')
       .resolves({ data: '', statusCode: 200, headers: new Headers() });
 
     const tracer = { startSpan: sandbox.stub(), extract: sandbox.stub() };

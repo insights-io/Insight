@@ -8,9 +8,9 @@ import {
   startRequestSpan,
   prepareCrossServiceHeaders,
 } from 'shared/utils/tracing';
-import { SessionApi } from 'api';
 import type { SessionDTO } from '@rebrowse/types';
 import { SessionsPage } from 'sessions/pages/SessionsPage';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   sessions: SessionDTO[];
@@ -43,18 +43,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const sessionsPromise = SessionApi.getSessions({
-      baseURL: process.env.SESSION_API_BASE_URL,
-      search: { sortBy: ['-createdAt'], limit: 20, ...context.query },
-      headers,
-    }).then((httpResponse) => httpResponse.data);
+    const sessionsPromise = client.recording.sessions
+      .list({
+        search: { sortBy: ['-createdAt'], limit: 20, ...context.query },
+        headers,
+      })
+      .then((httpResponse) => httpResponse.data);
 
     // TODO: should probably limit time range
-    const sessionCountPromise = SessionApi.count({
-      baseURL: process.env.SESSION_API_BASE_URL,
-      headers,
-      search: context.query,
-    }).then((httpResponse) => httpResponse.data.count);
+    const sessionCountPromise = client.recording.sessions
+      .count({ headers, search: context.query })
+      .then((httpResponse) => httpResponse.data.count);
 
     const [sessions, sessionCount] = await Promise.all([
       sessionsPromise,

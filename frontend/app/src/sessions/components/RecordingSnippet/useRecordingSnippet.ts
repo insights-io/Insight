@@ -1,21 +1,24 @@
+import type { Input } from '@rebrowse/sdk';
+import { client } from 'sdk';
 import { useQuery } from 'shared/hooks/useQuery';
-import { getBoostrapScript } from '@rebrowse/sdk';
 
-const cacheKey = (snippetUri: string) => {
-  return ['recordingSnippet', snippetUri];
+const cacheKey = (bootstrapScriptUrl: Input) => {
+  return ['recordingSnippet', bootstrapScriptUrl];
 };
 
 export const useRecordingSnippet = (
-  snippetUri: string,
+  bootstrapScriptUrl: Input,
   organizationId: string
 ) => {
-  const { data } = useQuery(cacheKey(snippetUri), () =>
-    getBoostrapScript(snippetUri).then((httpResponse) =>
-      `<script>\n${httpResponse.data.trim()}\n</script>`.replace(
-        '<ORG>',
-        organizationId
+  const { data } = useQuery(cacheKey(bootstrapScriptUrl), () =>
+    client.tracking
+      .retrieveBoostrapScript(bootstrapScriptUrl)
+      .then((httpResponse) =>
+        `<script>\n${httpResponse.data.trim()}\n</script>`.replace(
+          '<ORG>',
+          organizationId
+        )
       )
-    )
   );
 
   return { data };

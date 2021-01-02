@@ -20,8 +20,8 @@ import {
   startRequestSpan,
   Span,
 } from 'shared/utils/tracing';
-import { getBoostrapScript } from '@rebrowse/sdk';
 import { STYLETRON_HYDRATE_CLASSNAME } from '@rebrowse/elements';
+import { client } from 'sdk';
 
 type Props = RenderPageResult & {
   stylesheets: Sheet[];
@@ -48,9 +48,10 @@ export const getInitialProps = async (
       : startRequestSpan(incomingTracedMessage, tags);
   }
 
-  const bootstrapScriptPromise = getBoostrapScript(bootstrapScriptUri).then(
-    (httpResponse) => httpResponse.data
-  );
+  const bootstrapScriptPromise = client.tracking
+    .retrieveBoostrapScript(bootstrapScriptUri)
+    .then((httpResponse) => httpResponse.data);
+
   const renderPagePromise = renderPage({
     enhanceApp: (App) => (props) => (
       <StyletronProvider value={styletron}>

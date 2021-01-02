@@ -3,12 +3,15 @@ import type { CodeValidityDTO } from '@rebrowse/types';
 import { Block } from 'baseui/block';
 import { toaster } from 'baseui/toast';
 import { Flex, CodeInput, FlexColumn, Button } from '@rebrowse/elements';
-import { HttpResponse } from '@rebrowse/sdk';
+import type { HttpResponse, RequestOptions } from '@rebrowse/sdk';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 import { MfaInputMethodProps } from '../types';
 
 type Props = MfaInputMethodProps & {
-  sendCode: () => Promise<HttpResponse<CodeValidityDTO>>;
+  sendCode: (
+    options?: RequestOptions
+  ) => Promise<HttpResponse<CodeValidityDTO>>;
 };
 
 export const SmsMfaInputMethod = ({
@@ -39,7 +42,7 @@ export const SmsMfaInputMethod = ({
 
     setIsSendingCode(true);
 
-    sendCode()
+    sendCode(INCLUDE_CREDENTIALS)
       .then((httpResponse) => {
         toaster.positive('Code sent', {});
         setValiditySeconds(httpResponse.data.validitySeconds);

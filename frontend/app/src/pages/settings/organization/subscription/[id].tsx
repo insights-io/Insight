@@ -9,9 +9,9 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { BillingApi } from 'api';
 import type { InvoiceDTO, SubscriptionDTO } from '@rebrowse/types';
 import { ORGANIZATION_SETTINGS_BILLING_SUBSCRIPTION_PAGE } from 'shared/constants/routes';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   subscription: SubscriptionDTO;
@@ -52,18 +52,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     };
 
     try {
-      const subscription = await BillingApi.subscriptions
-        .get(subscriptionId, {
-          baseURL: process.env.BILLING_API_BASE_URL,
-          headers,
-        })
+      const subscription = await client.billing.subscriptions
+        .retrieve(subscriptionId, { headers })
         .then((httpResponse) => httpResponse.data);
 
-      const invoices = await BillingApi.invoices
-        .listBySubscription(subscription.id, {
-          baseURL: process.env.BILLING_API_BASE_URL,
-          headers,
-        })
+      const invoices = await client.billing.invoices
+        .listBySubscription(subscription.id, { headers })
         .then((httpResponse) => httpResponse.data);
 
       return {
