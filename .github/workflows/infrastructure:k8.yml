@@ -36,9 +36,11 @@ jobs:
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: docker run -v $(pwd):/project zegl/kube-score:v1.10.0 score -o human rendered.yml > kube-score-results.txt || echo ""
+      - run: echo "PR_MESSAGE=$(cat kube-score-results.txt)" >> $GITHUB_ENV
       - name: Comment PR 💬
-        uses: machine-learning-apps/pr-comment@master
+        uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: kube-score-results.txt
+          msg: ${{ env.PR_MESSAGE }}
+          check_for_duplicate_msg: true
