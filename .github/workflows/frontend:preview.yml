@@ -93,9 +93,9 @@ jobs:
         name: Create GitHub deployment
         with:
           token: ${{ env.GITHUB_TOKEN }}
-          target_url: https://${{ env.PR_DEPLOYMENT_DOMAIN }}
-          ref: ${{ env.GITHUB_SHA_SHORT }}
+          ref: ${{ env.GITHUB_SHA }}
           environment: ${{ env.PR_DEPLOYMENT_DOMAIN }}
+          target_url: https://${{ env.PR_DEPLOYMENT_DOMAIN }}
           initial_status: success
 
   comment_previews:
