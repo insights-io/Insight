@@ -55,11 +55,22 @@ jobs:
           sed -i '180ires.removeHeader(\"connection\")\;' node_modules/http-proxy/lib/http-proxy/passes/web-incoming.js
       # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-blacklisted-headers
       # http-proxy lib is not configurable enough to allow nice removal of 'connection' header. We should extract what we need at some point.
-      - name: Serverless Deploy
-        working-directory: frontend/${{ matrix.target.name }}
+      - name: Configure PR deployment domain
         run: |
           PR_DEPLOYMENT_DOMAIN=${PR_DEPLOYMENT_DOMAIN//".homepage"/}
           echo "PR_DEPLOYMENT_DOMAIN=$PR_DEPLOYMENT_DOMAIN" >> $GITHUB_ENV
+        env:
+          PR_DEPLOYMENT_DOMAIN: pr-${{ github.event.number }}.${{ matrix.target.name }}.${{ secrets.DEV_DOMAIN_NAME }}
+      - uses: chrnorm/deployment-action@releases/v1
+        name: Create GitHub deployment
+        id: deployment
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          target_url: https://${{ env.PR_DEPLOYMENT_DOMAIN }}
+          environment: preview
+      - name: Serverless Deploy
+        working-directory: frontend/${{ matrix.target.name }}
+        run: |
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
@@ -76,7 +87,6 @@ jobs:
         env:
           NAME: ${{ matrix.target.name }}
           CERTIFICATE_ARN: ${{ secrets[matrix.target.cert_arn_lookup] }}
-          PR_DEPLOYMENT_DOMAIN: pr-${{ github.event.number }}.${{ matrix.target.name }}.${{ secrets.DEV_DOMAIN_NAME }}
       - name: Create AWS route53 DNS records
         run: |
           envsubst < frontend/shared/previews/route53-change-set.json > route53-change-set.json
@@ -85,6 +95,22 @@ jobs:
           ACTION: UPSERT
           NAME: ${{ env.PR_DEPLOYMENT_DOMAIN }}
           DNSName: ${{ env.DISTRIBUTION_DOMAIN }}
+      - name: Update deployment status (success)
+        if: success()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          target_url: https://${{ env.PR_DEPLOYMENT_DOMAIN }}
+          state: 'success'
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Update deployment status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          target_url: https://${{ env.PR_DEPLOYMENT_DOMAIN }}
+          state: 'failure'
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
 
   comment_previews:
     name: Comment preview 💬
