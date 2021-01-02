@@ -101,6 +101,22 @@ export const mockAuth = (
   };
 };
 
+export const mockOrganizationSettingsUsageAndPaymentsPage = (
+  sandbox: SinonSandbox,
+  {
+    sessionInfo = REBROWSE_SESSION_INFO,
+    invoices = [ACTIVE_BUSINESS_SUBSCRIPTION_PAID_INVOICE_DTO],
+  }: { sessionInfo?: SessionInfoDTO; invoices?: InvoiceDTO[] } = {}
+) => {
+  const authMocks = mockAuth(sandbox, sessionInfo);
+
+  const listInvoicesStub = sandbox
+    .stub(BillingApi.invoices, 'list')
+    .resolves(httpOkResponse(invoices));
+
+  return { ...authMocks, listInvoicesStub };
+};
+
 export const mockOrganizationSettingsMemberInvitesPage = (
   sandbox: SinonSandbox,
   {
