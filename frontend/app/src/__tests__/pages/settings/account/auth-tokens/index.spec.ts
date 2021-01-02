@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ACCOUNT_SETTINGS_AUTH_TOKENS_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { AUTH_TOKEN_DTO } from '__tests__/data/sso';
@@ -38,7 +39,7 @@ describe('/settings/account/auth-token', () => {
 
     await screen.findByText('Auth token successfully created');
 
-    sandbox.assert.calledWithExactly(createAuthTokensStub);
+    sandbox.assert.calledWithExactly(createAuthTokensStub, INCLUDE_CREDENTIALS);
   });
 
   test('As a user I can revoke auth token', async () => {
@@ -78,6 +79,10 @@ describe('/settings/account/auth-token', () => {
       screen.queryByText(AUTH_TOKEN_DTO.token)
     );
 
-    sandbox.assert.calledWithExactly(deleteAuthTokenStub, AUTH_TOKEN_DTO.token);
+    sandbox.assert.calledWithExactly(
+      deleteAuthTokenStub,
+      AUTH_TOKEN_DTO.token,
+      INCLUDE_CREDENTIALS
+    );
   });
 });

@@ -13,6 +13,7 @@ import { sessionDescription } from 'sessions/utils';
 import { TermCondition } from '@rebrowse/sdk';
 import { match } from 'sinon';
 import { renderPage } from '__tests__/utils';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 jest.mock('react-virtualized-auto-sizer', () => {
   return {
@@ -138,9 +139,11 @@ describe('/sessions', () => {
             'location.city': TermCondition.EQ(boydton),
             sortBy: ['-createdAt'],
           },
+          ...INCLUDE_CREDENTIALS,
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
           search: { 'location.city': TermCondition.EQ(boydton) },
+          ...INCLUDE_CREDENTIALS,
         });
       });
 
@@ -171,12 +174,14 @@ describe('/sessions', () => {
             'location.country_name': TermCondition.EQ(slovenia),
             sortBy: ['-createdAt'],
           },
+          ...INCLUDE_CREDENTIALS,
         });
         sandbox.assert.calledWithExactly(countSessionsStub, {
           search: {
             'location.city': TermCondition.EQ(boydton),
             'location.country_name': TermCondition.EQ(slovenia),
           },
+          ...INCLUDE_CREDENTIALS,
         });
       });
 
@@ -188,9 +193,11 @@ describe('/sessions', () => {
       await waitFor(() => {
         sandbox.assert.calledWithExactly(listSessionsStub.lastCall, {
           search: { limit: 20, sortBy: ['-createdAt'] },
+          ...INCLUDE_CREDENTIALS,
         });
         sandbox.assert.calledWithExactly(countSessionsStub.lastCall, {
           search: {},
+          ...INCLUDE_CREDENTIALS,
         });
       });
     });
@@ -232,6 +239,7 @@ describe('/sessions', () => {
 
       await screen.findByText(REBROWSE_SESSIONS[0].id);
 
+      /* SSR */
       sandbox.assert.calledWithExactly(
         retrieveSessionStub,
         REBROWSE_SESSIONS_DTOS[0].id

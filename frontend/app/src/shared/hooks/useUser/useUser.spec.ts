@@ -1,5 +1,5 @@
 import { sandbox } from '@rebrowse/testing';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { REBROWSE_ADMIN, REBROWSE_ADMIN_DTO } from '__tests__/data';
 import { httpOkResponse, renderHook } from '__tests__/utils';
 
@@ -17,7 +17,7 @@ describe('useUser', () => {
     expect(result.current.user).toEqual(REBROWSE_ADMIN);
 
     await waitForNextUpdate();
-    sandbox.assert.calledWithExactly(retrieveUserStub);
+    sandbox.assert.calledWithExactly(retrieveUserStub, INCLUDE_CREDENTIALS);
     expect(result.current.user).toEqual(REBROWSE_ADMIN);
   });
 });

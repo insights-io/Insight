@@ -4,6 +4,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
 import type { AutoSizerProps } from 'react-virtualized-auto-sizer';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { sessionDescription } from 'sessions/utils';
 import { SESSIONS_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
@@ -89,6 +90,7 @@ describe('/sessions/[id]', () => {
         'event.e': [TermCondition.GTE(9), TermCondition.LTE(10)],
         limit: 1000,
       },
+      ...INCLUDE_CREDENTIALS,
     });
 
     userEvent.click(screen.getByText('Network'));
@@ -100,6 +102,7 @@ describe('/sessions/[id]', () => {
 
     sandbox.assert.calledWithExactly(searchEventsStub, id, {
       search: { 'event.e': [TermCondition.EQ(11)], limit: 1000 },
+      ...INCLUDE_CREDENTIALS,
     });
   });
 

@@ -7,7 +7,9 @@ import { client } from 'sdk';
 
 const CACHE_KEY = ['AuthApi', 'user', 'me'];
 const queryFn = () =>
-  client.auth.users.me().then((httpResponse) => httpResponse.data);
+  client.auth.users
+    .me({ credentials: 'include' })
+    .then((httpResponse) => httpResponse.data);
 
 export const useUser = (initialData: UserDTO) => {
   const queryClient = useQueryClient();
@@ -16,7 +18,7 @@ export const useUser = (initialData: UserDTO) => {
   const { mutateAsync: updateUser } = useMutation(
     (payload: UpdateUserPayload) =>
       client.auth.users
-        .update(payload)
+        .update(payload, { credentials: 'include' })
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (updatedUser) => {
@@ -40,7 +42,7 @@ export const useUser = (initialData: UserDTO) => {
   const { mutateAsync: verifyPhoneNumber } = useMutation(
     (code: number) =>
       client.auth.users.phoneNumber
-        .verify(code)
+        .verify(code, { credentials: 'include' })
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (updatedUser) => {

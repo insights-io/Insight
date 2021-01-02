@@ -3,11 +3,11 @@ import type { ExtendedRequestOptions } from 'types';
 
 import { HttpClient, httpResponse, jsonDataResponse } from '../../http';
 
-export const signupResource = (client: HttpClient, authApiBaseURL: string) => {
-  const resourceBaseURL = (apiBaseURL: string) => {
-    return `${apiBaseURL}/v1/signup`;
-  };
+const resourceBaseURL = (apiBaseURL: string) => {
+  return `${apiBaseURL}/v1/signup`;
+};
 
+export const signupResource = (client: HttpClient, authApiBaseURL: string) => {
   return {
     create: (
       json: SignUpRequestDTO,

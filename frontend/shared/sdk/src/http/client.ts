@@ -1,7 +1,7 @@
 import ky from 'ky';
 import type { RequestOptions, Input } from 'types';
 
-export const createHttpClient = (defaultOptions: RequestOptions = {}) => {
+export const createRawHttpClient = (defaultOptions: RequestOptions = {}) => {
   const client = ky.extend(defaultOptions);
 
   return {
@@ -27,3 +27,20 @@ export const createHttpClient = (defaultOptions: RequestOptions = {}) => {
 };
 
 export type HttpClient = ReturnType<typeof createHttpClient>;
+
+export const Rebrowse = {
+  VERSION: 1,
+} as const;
+
+export const createHttpClient = ({
+  headers,
+  ...defaultOptions
+}: RequestOptions = {}) => {
+  return createRawHttpClient({
+    headers: {
+      'User-Agent': `Rebrowse/v1 JavascriptBinding/${Rebrowse.VERSION}`,
+      ...headers,
+    },
+    ...defaultOptions,
+  });
+};

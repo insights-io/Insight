@@ -6,7 +6,9 @@ import { client } from 'sdk';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'get'];
 const queryFn = () =>
-  client.auth.organizations.get().then((httpResponse) => httpResponse.data);
+  client.auth.organizations
+    .get({ credentials: 'include' })
+    .then((httpResponse) => httpResponse.data);
 
 export const useOrganization = (initialData: OrganizationDTO) => {
   const queryClient = useQueryClient();
@@ -17,7 +19,7 @@ export const useOrganization = (initialData: OrganizationDTO) => {
   const { mutateAsync: update } = useMutation(
     (updateParams: OrganizationUpdateParams) =>
       client.auth.organizations
-        .update(updateParams)
+        .update(updateParams, { credentials: 'include' })
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (organization) => {
@@ -29,7 +31,7 @@ export const useOrganization = (initialData: OrganizationDTO) => {
   const { mutateAsync: updateAvatar } = useMutation(
     (avatar: AvatarDTO) =>
       client.auth.organizations
-        .setupAvatar(avatar)
+        .setupAvatar(avatar, { credentials: 'include' })
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (organization) => {

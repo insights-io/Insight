@@ -5,13 +5,13 @@ import type {
   SsoSetupDTO,
 } from '@rebrowse/types';
 import { useMemo } from 'react';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'sso', 'setup', 'get'];
 const queryFn = () =>
   client.auth.sso.setups
-    .retrieve()
+    .retrieve(INCLUDE_CREDENTIALS)
     .then((httpResponse) => httpResponse.data)
     .catch((error) => {
       if ((error.response as Response).status === 404) {
@@ -25,7 +25,7 @@ export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
   const { data } = useQuery(CACHE_KEY, queryFn, { initialData });
 
   const { mutateAsync: deleteSsoSetup } = useMutation(
-    () => client.auth.sso.setups.delete(),
+    () => client.auth.sso.setups.delete(INCLUDE_CREDENTIALS),
     {
       onSuccess: () => {
         queryClient.setQueryData<SsoSetupDTO | undefined>(CACHE_KEY, undefined);
@@ -36,7 +36,7 @@ export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
   const { mutateAsync: createSsoSetup } = useMutation(
     ({ method, saml }: { method: SsoMethod; saml?: SamlConfigurationDTO }) =>
       client.auth.sso.setups
-        .create(method, saml)
+        .create(method, saml, INCLUDE_CREDENTIALS)
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (setup) => {

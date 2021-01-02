@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ACCOUNT_SETTINGS_SECURITY_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { mockAccountSettingsSecurityPage } from '__tests__/mocks';
@@ -100,7 +101,11 @@ describe('/settings/account/security', () => {
         await screen.findByText(
           'Authy / Google Authenticator multi-factor authentication disabled'
         );
-        sandbox.assert.calledWithExactly(disableMfaSetupStub, 'totp');
+        sandbox.assert.calledWithExactly(
+          disableMfaSetupStub,
+          'totp',
+          INCLUDE_CREDENTIALS
+        );
         expect(authyMfaToggle).not.toBeChecked();
 
         expect(
@@ -159,7 +164,12 @@ describe('/settings/account/security', () => {
           'Authy / Google Authenticator multi-factor authentication enabled'
         );
         expect(authyMfaToggle).toBeChecked();
-        sandbox.assert.calledWithExactly(completeMfaSetupStub, 'totp', 111111);
+        sandbox.assert.calledWithExactly(
+          completeMfaSetupStub,
+          'totp',
+          111111,
+          INCLUDE_CREDENTIALS
+        );
       });
     });
   });

@@ -1,19 +1,19 @@
 import { useQuery, useQueryClient } from 'shared/hooks/useQuery';
 import type { PlanDTO } from '@rebrowse/types';
 import { useCallback } from 'react';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 export const cacheKey = ['subscriptions', 'getActivePlan'];
+const queryFn = () => {
+  return client.billing.subscriptions
+    .retrieveActivePlan(INCLUDE_CREDENTIALS)
+    .then((httpResponse) => httpResponse.data);
+};
 
 export const useActivePlan = (initialData: PlanDTO) => {
-  const { data, refetch } = useQuery(
-    cacheKey,
-    () =>
-      client.billing.subscriptions
-        .retrieveActivePlan()
-        .then((httpResponse) => httpResponse.data),
-    { initialData: () => initialData }
-  );
+  const { data, refetch } = useQuery(cacheKey, queryFn, {
+    initialData: () => initialData,
+  });
 
   const activePlanCache = useActivePlanCache();
 

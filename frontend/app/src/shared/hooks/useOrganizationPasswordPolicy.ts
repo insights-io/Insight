@@ -12,7 +12,7 @@ const CACHE_KEY = ['AuthApi', 'organizations', 'passwordPolicy', 'retrieve'];
 
 const queryFn = () =>
   client.auth.organizations.passwordPolicy
-    .retrieve()
+    .retrieve({ credentials: 'include' })
     .then((httpResponse) => httpResponse.data)
     .catch((error) => {
       const response = error.response as Response;

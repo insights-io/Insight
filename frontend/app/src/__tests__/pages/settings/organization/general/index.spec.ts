@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ORGANIZATION_SETTINGS_GENERAL_PAGE } from 'shared/constants/routes';
 import { REBROWSE_ORGANIZATION } from '__tests__/data/organization';
 import { mockOrganizationSettingsGeneralPage } from '__tests__/mocks';
@@ -41,9 +42,11 @@ describe('/settings/organization/general', () => {
       `Successfully changed organization name from "${REBROWSE_ORGANIZATION.name}" to "${updatedName}"`
     );
 
-    sandbox.assert.calledWithExactly(updateOrganizationStub, {
-      name: updatedName,
-    });
+    sandbox.assert.calledWithExactly(
+      updateOrganizationStub,
+      { name: updatedName },
+      INCLUDE_CREDENTIALS
+    );
 
     const openMembershipToggle = screen
       .getByText(
@@ -60,8 +63,10 @@ describe('/settings/organization/general', () => {
     );
 
     expect(openMembershipToggle).toBeChecked();
-    sandbox.assert.calledWithExactly(updateOrganizationStub, {
-      openMembership: true,
-    });
+    sandbox.assert.calledWithExactly(
+      updateOrganizationStub,
+      { openMembership: true },
+      INCLUDE_CREDENTIALS
+    );
   });
 });

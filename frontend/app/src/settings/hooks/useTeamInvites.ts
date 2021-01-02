@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 import { mapTeamInvite } from '@rebrowse/sdk';
 import type { TeamInviteCreateDTO, TeamInviteDTO } from '@rebrowse/types';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 const CACHE_KEY = ['AuthApi', 'teamInvite', 'list'];
-const queryFn = () => client.auth.organizations.teamInvite.list();
+const queryFn = () =>
+  client.auth.organizations.teamInvite.list(INCLUDE_CREDENTIALS);
 
 export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
   const queryClient = useQueryClient();
@@ -15,7 +16,11 @@ export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
 
   const { mutateAsync: deleteTeamInvite } = useMutation(
     ({ token, email }: { token: string; email: string }) =>
-      client.auth.organizations.teamInvite.delete(token, email),
+      client.auth.organizations.teamInvite.delete(
+        token,
+        email,
+        INCLUDE_CREDENTIALS
+      ),
     {
       onSuccess: (_, { token }) => {
         queryClient.setQueryData<TeamInviteDTO[]>(CACHE_KEY, (prev) =>
@@ -27,7 +32,7 @@ export const useTeamInvites = (initialData: TeamInviteDTO[]) => {
 
   const { mutateAsync: createTeamInvite } = useMutation(
     (params: TeamInviteCreateDTO) =>
-      client.auth.organizations.teamInvite.create(params),
+      client.auth.organizations.teamInvite.create(params, INCLUDE_CREDENTIALS),
     {
       onSuccess: (httpResponse) => {
         queryClient.setQueryData<TeamInviteDTO[]>(CACHE_KEY, (prev) => [

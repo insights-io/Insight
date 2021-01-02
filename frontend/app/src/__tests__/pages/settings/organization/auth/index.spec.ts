@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ORGANIZATION_SETTINGS_AUTH_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { SSO_SAML_SETUP_DTO } from '__tests__/data';
@@ -50,7 +51,7 @@ describe('/settings/organization/auth', () => {
       expect(oktaToggle).not.toBeChecked();
     });
 
-    sandbox.assert.calledWithExactly(disableSsoSetupStub);
+    sandbox.assert.calledWithExactly(disableSsoSetupStub, INCLUDE_CREDENTIALS);
   });
 
   test('As a user I can enable new SSO setup', async () => {
@@ -91,6 +92,11 @@ describe('/settings/organization/auth', () => {
       expect(githubToggle).toBeChecked();
     });
 
-    sandbox.assert.calledWithExactly(createSsoSetupStub, 'github', undefined);
+    sandbox.assert.calledWithExactly(
+      createSsoSetupStub,
+      'github',
+      undefined,
+      INCLUDE_CREDENTIALS
+    );
   });
 });

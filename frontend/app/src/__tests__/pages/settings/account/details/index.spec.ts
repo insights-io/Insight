@@ -3,6 +3,7 @@ import { PhoneNumber } from '@rebrowse/types';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 import { ACCOUNT_SETTINGS_DETAILS_PAGE } from 'shared/constants/routes';
 import { capitalize } from 'shared/utils/string';
 import { REBROWSE_ADMIN_DTO } from '__tests__/data';
@@ -63,9 +64,11 @@ describe('/settings/account/details', () => {
       `Successfully changed user full name from "${fullName}" to "${updatedFullName}"`
     );
 
-    sandbox.assert.calledWithExactly(updateUserStub, {
-      fullName: updatedFullName,
-    });
+    sandbox.assert.calledWithExactly(
+      updateUserStub,
+      { fullName: updatedFullName },
+      INCLUDE_CREDENTIALS
+    );
   });
 
   test('As a user I can update my phone number', async () => {

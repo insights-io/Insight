@@ -1,5 +1,5 @@
 import { TermCondition } from '@rebrowse/sdk';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { useQuery } from 'shared/hooks/useQuery';
 
 export const cacheKey = (sessionId: string) => {
@@ -22,6 +22,7 @@ const queryFn = (sessionId: string) => {
         'event.e': [TermCondition.EQ(11)],
         limit: 1000,
       },
+      ...INCLUDE_CREDENTIALS,
     })
     .then((httpResponse) => httpResponse.data);
 };

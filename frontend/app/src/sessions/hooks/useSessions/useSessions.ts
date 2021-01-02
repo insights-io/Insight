@@ -127,14 +127,17 @@ export const useSessions = (
 
         const search = getSearchQuery(paramFilter);
         const countPromise = client.recording.sessions
-          .count({ search: getSearchQuery(paramFilter) })
+          .count({
+            search: getSearchQuery(paramFilter),
+            credentials: 'include',
+          })
           .then((httpResponse) => httpResponse.data.count);
 
         search.limit = 20;
         search.sortBy = ['-createdAt'];
 
         const sessionsPromise = client.recording.sessions
-          .list({ search })
+          .list({ search, credentials: 'include' })
           .then((httpResponse) => httpResponse.data.map(mapSession));
 
         Promise.all([countPromise, sessionsPromise]).then(

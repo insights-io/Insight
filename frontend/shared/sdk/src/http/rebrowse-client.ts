@@ -31,21 +31,11 @@ const getApiEndpoints = (
   };
 };
 
-export const Rebrowse = {
-  VERSION: 1,
-} as const;
-
 export const createRebrowseHttpClient = (
   apiEndpointsConfig: ApiEndpointsConfig,
-  { headers, ...defaultOptions }: RequestOptions = {}
+  defaultOptions: RequestOptions = {}
 ) => {
-  const client = createHttpClient({
-    headers: {
-      'User-Agent': `Rebrowse/v1 JavascriptBinding/${Rebrowse.VERSION}`,
-      ...headers,
-    },
-    ...defaultOptions,
-  });
+  const client = createHttpClient(defaultOptions);
 
   const {
     sessionApiBaseUrl,
@@ -104,7 +94,7 @@ export const createRebrowseHttpClient = (
   };
 };
 
-export const createRebrowseBrowserClient = (
+export const createRebrowseBrowserHttpClient = (
   apiEndpointsConfig: ApiEndpointsConfig,
   requestOptions: Omit<RequestOptions, 'credentials'> = {}
 ) => {
