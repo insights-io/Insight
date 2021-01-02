@@ -159,7 +159,8 @@ describe('/login/verification', () => {
       sandbox.assert.calledWithExactly(
         completeEnforcedMfaSetupStub,
         'totp',
-        Number(code)
+        Number(code),
+        INCLUDE_CREDENTIALS
       );
     });
   });

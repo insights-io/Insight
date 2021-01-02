@@ -17,7 +17,7 @@ import type {
   SubscriptionPlan,
 } from '@rebrowse/types';
 import { Button } from '@rebrowse/elements';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 import { confirmCardPayment, createCardPaymentMethod } from './stripe';
 
@@ -74,7 +74,10 @@ const StripeChekoutForm = ({
         const plan: SubscriptionPlan = 'business';
 
         await client.billing.subscriptions
-          .create({ paymentMethodId: paymentMethod.id, plan })
+          .create(
+            { paymentMethodId: paymentMethod.id, plan },
+            INCLUDE_CREDENTIALS
+          )
           .then((httpResponse) => {
             if (httpResponse.data.plan) {
               onPlanUpgraded(httpResponse.data.plan);

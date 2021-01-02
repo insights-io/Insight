@@ -8,7 +8,7 @@ import { TotpMfaSetupForm } from 'auth/components/TotpMfaSetupForm';
 import { useRouter } from 'next/router';
 import { SmsMfaSetupForm } from 'auth/components/SmsMfaSetupForm';
 import type { MfaMethod, UserDTO } from '@rebrowse/types';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props = {
   user: UserDTO;
@@ -44,7 +44,11 @@ export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
         <Tab title="Authy" key="totp">
           <TotpMfaSetupForm
             completeSetup={(code) =>
-              client.auth.mfa.setup.completeEnforced('totp', code)
+              client.auth.mfa.setup.completeEnforced(
+                'totp',
+                code,
+                INCLUDE_CREDENTIALS
+              )
             }
             onCompleted={onCompleted}
           />
@@ -53,7 +57,11 @@ export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
           <SmsMfaSetupForm
             phoneNumber={user.phoneNumber}
             completeSetup={(code) =>
-              client.auth.mfa.setup.completeEnforced('sms', code)
+              client.auth.mfa.setup.completeEnforced(
+                'sms',
+                code,
+                INCLUDE_CREDENTIALS
+              )
             }
             onCompleted={onCompleted}
           />

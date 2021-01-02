@@ -242,7 +242,8 @@ describe('/sessions', () => {
       /* SSR */
       sandbox.assert.calledWithExactly(
         retrieveSessionStub,
-        REBROWSE_SESSIONS_DTOS[0].id
+        REBROWSE_SESSIONS_DTOS[0].id,
+        INCLUDE_CREDENTIALS
       );
     });
   });
