@@ -12,7 +12,7 @@ import { AuthPageLayout } from 'auth/components/PageLayout';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { Button, Label, PasswordInput } from '@rebrowse/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props = {
   token: string;
@@ -41,7 +41,7 @@ export const PasswordResetPage = ({ token }: Props) => {
     setIsSubmitting(true);
 
     client.auth.password
-      .reset(token, formData.password)
+      .reset(token, formData.password, INCLUDE_CREDENTIALS)
       .then(() => router.replace(INDEX_PAGE))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();

@@ -11,7 +11,7 @@ import { TotpMfaInputMethod } from 'auth/components/TotpMfaInputMethod';
 import { SmsMfaInputMethod } from 'auth/components/SmsMfaInputMethod';
 import type { MfaMethod } from '@rebrowse/types';
 import { Button } from '@rebrowse/elements';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props = {
   methods: MfaMethod[];
@@ -44,7 +44,7 @@ export const VerificationPage = ({ methods }: Props) => {
   } = useCodeInput({
     submitAction: (data) => {
       return client.auth.mfa.challenge
-        .complete(activeMethod, data)
+        .complete(activeMethod, data, INCLUDE_CREDENTIALS)
         .then((_) => router.replace(relativeRedirect));
     },
     handleError: (errorDTO, setError) => {

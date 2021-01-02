@@ -93,6 +93,10 @@ describe('/settings/account/details', () => {
       `Successfully changed user phone number from "${phoneNumber.countryCode}${phoneNumber.digits}" to "${updatedPhoneNumber.countryCode}${updatedPhoneNumber.digits}"`
     );
 
-    sandbox.assert.calledWithExactly(updatePhoneNumberStub, updatedPhoneNumber);
+    sandbox.assert.calledWithExactly(
+      updatePhoneNumberStub,
+      updatedPhoneNumber,
+      INCLUDE_CREDENTIALS
+    );
   });
 });

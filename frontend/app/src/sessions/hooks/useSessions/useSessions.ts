@@ -13,7 +13,7 @@ import { UnreachableCaseError } from 'shared/utils/error';
 import { SessionSearchBean } from '@rebrowse/sdk/dist/sessions';
 import { DateRange } from 'sessions/components/SessionSearch/utils';
 import { SessionFilter } from 'sessions/components/SessionSearch/SessionFilters/utils';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 const EMPTY_FILTER: Filter = { filters: [] };
 
@@ -129,7 +129,7 @@ export const useSessions = (
         const countPromise = client.recording.sessions
           .count({
             search: getSearchQuery(paramFilter),
-            credentials: 'include',
+            ...INCLUDE_CREDENTIALS,
           })
           .then((httpResponse) => httpResponse.data.count);
 
@@ -137,7 +137,7 @@ export const useSessions = (
         search.sortBy = ['-createdAt'];
 
         const sessionsPromise = client.recording.sessions
-          .list({ search, credentials: 'include' })
+          .list({ search, ...INCLUDE_CREDENTIALS })
           .then((httpResponse) => httpResponse.data.map(mapSession));
 
         Promise.all([countPromise, sessionsPromise]).then(

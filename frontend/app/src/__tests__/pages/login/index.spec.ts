@@ -11,7 +11,7 @@ import * as windowUtils from 'shared/utils/window';
 import { mockLoginPage } from '__tests__/mocks';
 import { match } from 'sinon';
 import { renderPage } from '__tests__/utils';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 describe('/login', () => {
   /* Data */
@@ -39,7 +39,12 @@ describe('/login', () => {
 
       userEvent.click(signInButton);
       await screen.findByText('Page Visits');
-      sandbox.assert.calledWithExactly(loginStub, email, password);
+      sandbox.assert.calledWithExactly(
+        loginStub,
+        email,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
 
     test('As a user I can login but get challenged by MFA', async () => {
@@ -68,7 +73,12 @@ describe('/login', () => {
         headers: { 'uber-trace-id': (match.string as unknown) as string },
       });
 
-      sandbox.assert.calledWithExactly(loginStub, email, password);
+      sandbox.assert.calledWithExactly(
+        loginStub,
+        email,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
   });
 

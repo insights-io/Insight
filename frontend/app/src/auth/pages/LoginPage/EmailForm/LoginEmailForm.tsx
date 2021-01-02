@@ -20,7 +20,7 @@ import { FormError } from 'shared/components/FormError';
 import { useStyletron } from 'baseui';
 import { locationAssign } from 'shared/utils/window';
 import { VERIFICATION_PAGE } from 'shared/constants/routes';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 type LoginEmailFormData = {
   email: string;
@@ -46,7 +46,7 @@ export const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
     setIsSubmitting(true);
 
     client.auth.sso.sessions
-      .login(formData.email, formData.password)
+      .login(formData.email, formData.password, INCLUDE_CREDENTIALS)
       .then(({ data: loggedIn }) => {
         replace(
           loggedIn === true

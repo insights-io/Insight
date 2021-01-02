@@ -6,6 +6,7 @@ import { mockPasswordResetPage } from '__tests__/mocks';
 import { mockApiError } from '@rebrowse/storybook';
 import { renderPage } from '__tests__/utils';
 import { match } from 'sinon';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 describe('/password-reset', () => {
   /* Data */
@@ -40,7 +41,12 @@ describe('/password-reset', () => {
 
       document.cookie = 'SessionId=123';
       await screen.findByText('Page Visits');
-      sandbox.assert.calledWithExactly(passwordResetStub, token, password);
+      sandbox.assert.calledWithExactly(
+        passwordResetStub,
+        token,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
 
     test('As a user I can see error message if reset request fails', async () => {
@@ -79,7 +85,12 @@ describe('/password-reset', () => {
       await screen.findByText('Bad Request');
       await screen.findByText('Too Short');
 
-      sandbox.assert.calledWithExactly(passwordResetStub, token, password);
+      sandbox.assert.calledWithExactly(
+        passwordResetStub,
+        token,
+        password,
+        INCLUDE_CREDENTIALS
+      );
     });
   });
 

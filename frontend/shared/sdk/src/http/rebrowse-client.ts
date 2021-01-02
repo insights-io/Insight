@@ -93,13 +93,3 @@ export const createRebrowseHttpClient = (
     },
   };
 };
-
-export const createRebrowseBrowserHttpClient = (
-  apiEndpointsConfig: ApiEndpointsConfig,
-  requestOptions: Omit<RequestOptions, 'credentials'> = {}
-) => {
-  return createRebrowseHttpClient(apiEndpointsConfig, {
-    credentials: 'include',
-    ...requestOptions,
-  });
-};

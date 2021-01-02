@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { mockVerificationPage } from '__tests__/mocks';
 import { match } from 'sinon';
 import { renderPage } from '__tests__/utils';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 describe('/login/verification', () => {
   /* Data */
@@ -49,7 +49,8 @@ describe('/login/verification', () => {
       sandbox.assert.calledWithExactly(
         completeChallengeStub,
         'totp',
-        Number(code)
+        Number(code),
+        INCLUDE_CREDENTIALS
       );
 
       // Client side navigation to / page
@@ -88,7 +89,10 @@ describe('/login/verification', () => {
         'Your organization has enforced multi-factor authentication for all members.'
       );
 
-      sandbox.assert.calledWithExactly(startTotpMfaSetupStub);
+      sandbox.assert.calledWithExactly(
+        startTotpMfaSetupStub,
+        INCLUDE_CREDENTIALS
+      );
 
       const codeInput = container.querySelector(
         'input[aria-label="Please enter your pin code"]'

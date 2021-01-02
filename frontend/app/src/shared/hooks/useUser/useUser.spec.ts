@@ -6,7 +6,7 @@ import { httpOkResponse, renderHook } from '__tests__/utils';
 import { useUser } from './useUser';
 
 describe('useUser', () => {
-  test('Should work as expected', async () => {
+  test('Should correctly map user', async () => {
     const retrieveUserStub = sandbox
       .stub(client.auth.users, 'me')
       .resolves(httpOkResponse(REBROWSE_ADMIN_DTO));

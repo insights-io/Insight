@@ -11,7 +11,7 @@ import { FormError } from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';
 import type { HttpResponse } from '@rebrowse/sdk';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 export type Props = {
   completeSetup?: (code: number) => Promise<HttpResponse<MfaSetupDTO>>;
@@ -49,7 +49,7 @@ export const TotpMfaSetupForm = ({
   useEffect(() => {
     if (!qrImage) {
       client.auth.mfa.setup.totp
-        .start()
+        .start(INCLUDE_CREDENTIALS)
         .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
         .catch(async (error) => {
           const errorDTO: APIErrorDataResponse = await error.response.json();

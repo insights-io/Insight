@@ -4,8 +4,8 @@ import { mapTeamInvite } from '@rebrowse/sdk';
 import type { TeamInviteCreateDTO, TeamInviteDTO } from '@rebrowse/types';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
-const CACHE_KEY = ['AuthApi', 'teamInvite', 'list'];
-const queryFn = () =>
+export const CACHE_KEY = ['AuthApi', 'teamInvite', 'list'];
+export const queryFn = () =>
   client.auth.organizations.teamInvite.list(INCLUDE_CREDENTIALS);
 
 export const useTeamInvites = (initialData: TeamInviteDTO[]) => {

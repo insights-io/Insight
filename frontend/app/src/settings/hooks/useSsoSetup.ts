@@ -8,8 +8,8 @@ import { useMemo } from 'react';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
-const CACHE_KEY = ['AuthApi', 'sso', 'setup', 'get'];
-const queryFn = () =>
+export const CACHE_KEY = ['AuthApi', 'sso', 'setup', 'get'];
+export const queryFn = () =>
   client.auth.sso.setups
     .retrieve(INCLUDE_CREDENTIALS)
     .then((httpResponse) => httpResponse.data)

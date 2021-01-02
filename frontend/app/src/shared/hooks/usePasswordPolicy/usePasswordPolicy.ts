@@ -6,13 +6,13 @@ import type {
   PasswordPolicyUpdateParams,
 } from '@rebrowse/types';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'passwordPolicy', 'retrieve'];
 
 const queryFn = () =>
   client.auth.organizations.passwordPolicy
-    .retrieve({ credentials: 'include' })
+    .retrieve(INCLUDE_CREDENTIALS)
     .then((httpResponse) => httpResponse.data)
     .catch((error) => {
       const response = error.response as Response;
@@ -22,7 +22,7 @@ const queryFn = () =>
       throw error;
     });
 
-export const useOrganizationPasswordPolicy = (
+export const usePasswordPolicy = (
   initialData: OrganizationPasswordPolicyDTO | undefined
 ) => {
   const queryClient = useQueryClient();
@@ -31,7 +31,7 @@ export const useOrganizationPasswordPolicy = (
   const { mutateAsync: createPasswordPolicy } = useMutation(
     (params: PasswordPolicyCreateParams) =>
       client.auth.organizations.passwordPolicy
-        .create(params)
+        .create(params, INCLUDE_CREDENTIALS)
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (policy) => {
@@ -46,7 +46,7 @@ export const useOrganizationPasswordPolicy = (
   const { mutateAsync: updatePasswordPolicy } = useMutation(
     (params: PasswordPolicyUpdateParams) =>
       client.auth.organizations.passwordPolicy
-        .update(params)
+        .update(params, INCLUDE_CREDENTIALS)
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (policy) => {

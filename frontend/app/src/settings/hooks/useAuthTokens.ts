@@ -5,7 +5,7 @@ import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['sso', 'token', 'list'];
-const queryFn = () =>
+export const queryFn = () =>
   client.auth.tokens
     .list(INCLUDE_CREDENTIALS)
     .then((httpResponse) => httpResponse.data);

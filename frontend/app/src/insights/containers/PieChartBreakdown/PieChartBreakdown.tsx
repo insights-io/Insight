@@ -14,6 +14,7 @@ import {
 import { useQuery } from 'shared/hooks/useQuery';
 import type { CountByFieldDataPoint } from 'insights/types';
 import type { RequestOptions } from '@rebrowse/sdk';
+import { INCLUDE_CREDENTIALS } from 'sdk';
 
 type Props<T extends string> = CardProps & {
   field: T;
@@ -41,9 +42,10 @@ export const PieChartBreakdown = <T extends string>({
   const { data = initialData } = useQuery(
     cacheKey(field, relativeTimeRange),
     () =>
-      dataLoader(`gte:${timeRelative(relativeTimeRange).toISOString()}`, {
-        credentials: 'include',
-      }),
+      dataLoader(
+        `gte:${timeRelative(relativeTimeRange).toISOString()}`,
+        INCLUDE_CREDENTIALS
+      ),
     { initialData }
   );
 

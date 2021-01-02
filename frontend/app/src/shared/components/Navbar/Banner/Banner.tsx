@@ -27,7 +27,7 @@ import { useRouter } from 'next/router';
 import { toaster } from 'baseui/toast';
 import * as zIndex from 'shared/constants/zIndex';
 import { OrganizationAvatar } from 'shared/components/OrganizationAvatar';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 
 import { BannerCard } from './BannerCard';
 import {
@@ -88,7 +88,7 @@ export const NavbarBanner = ({
           link: '#',
           onClick: () =>
             client.auth.sso.sessions
-              .logout()
+              .logout(INCLUDE_CREDENTIALS)
               .then(() => replace(LOGIN_PAGE))
               .catch(() =>
                 toaster.negative('Something went wrong. Please try again.', {})

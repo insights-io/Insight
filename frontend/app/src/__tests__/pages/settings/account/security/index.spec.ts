@@ -151,7 +151,10 @@ describe('/settings/account/security', () => {
           screen.getByText('Setup multi-factor authentication')
         ).toBeInTheDocument();
 
-        sandbox.assert.calledWithExactly(startMfaTotpSetupStub);
+        sandbox.assert.calledWithExactly(
+          startMfaTotpSetupStub,
+          INCLUDE_CREDENTIALS
+        );
 
         screen
           .getAllByLabelText('Please enter your pin code')
