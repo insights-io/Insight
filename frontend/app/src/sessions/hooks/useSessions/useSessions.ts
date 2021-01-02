@@ -1,4 +1,3 @@
-import { SessionApi } from 'api/session';
 import {
   useMemo,
   useCallback,
@@ -14,6 +13,7 @@ import { UnreachableCaseError } from 'shared/utils/error';
 import { SessionSearchBean } from '@rebrowse/sdk/dist/sessions';
 import { DateRange } from 'sessions/components/SessionSearch/utils';
 import { SessionFilter } from 'sessions/components/SessionSearch/SessionFilters/utils';
+import { client } from 'sdk';
 
 const EMPTY_FILTER: Filter = { filters: [] };
 
@@ -126,16 +126,16 @@ export const useSessions = (
         dispatch({ type: actionTypes.SET_SESSIONS, sessions: [] });
 
         const search = getSearchQuery(paramFilter);
-        const countPromise = SessionApi.count({
-          search: getSearchQuery(paramFilter),
-        }).then((httpResponse) => httpResponse.data.count);
+        const countPromise = client.recording.sessions
+          .count({ search: getSearchQuery(paramFilter) })
+          .then((httpResponse) => httpResponse.data.count);
 
         search.limit = 20;
         search.sortBy = ['-createdAt'];
 
-        const sessionsPromise = SessionApi.getSessions({
-          search,
-        }).then((httpResponse) => httpResponse.data.map(mapSession));
+        const sessionsPromise = client.recording.sessions
+          .list({ search })
+          .then((httpResponse) => httpResponse.data.map(mapSession));
 
         Promise.all([countPromise, sessionsPromise]).then(
           ([nextCount, nextSessions]) => {
@@ -194,7 +194,8 @@ export const useSessions = (
         }
       }
 
-      SessionApi.getSessions({ search })
+      client.recording.sessions
+        .list({ search })
         .then((httpResponse) => httpResponse.data.map(mapSession))
         .then((newSessions) =>
           dispatch({

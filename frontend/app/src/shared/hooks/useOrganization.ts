@@ -1,12 +1,12 @@
 import { mapOrganization, OrganizationUpdateParams } from '@rebrowse/sdk';
-import { AuthApi } from 'api';
 import { useMemo } from 'react';
 import type { AvatarDTO, OrganizationDTO } from '@rebrowse/types';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
+import { client } from 'sdk';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'get'];
 const queryFn = () =>
-  AuthApi.organization.get().then((httpResponse) => httpResponse.data);
+  client.auth.organizations.get().then((httpResponse) => httpResponse.data);
 
 export const useOrganization = (initialData: OrganizationDTO) => {
   const queryClient = useQueryClient();
@@ -16,7 +16,7 @@ export const useOrganization = (initialData: OrganizationDTO) => {
 
   const { mutateAsync: update } = useMutation(
     (updateParams: OrganizationUpdateParams) =>
-      AuthApi.organization
+      client.auth.organizations
         .update(updateParams)
         .then((httpResponse) => httpResponse.data),
     {
@@ -28,7 +28,7 @@ export const useOrganization = (initialData: OrganizationDTO) => {
 
   const { mutateAsync: updateAvatar } = useMutation(
     (avatar: AvatarDTO) =>
-      AuthApi.organization
+      client.auth.organizations
         .setupAvatar(avatar)
         .then((httpResponse) => httpResponse.data),
     {

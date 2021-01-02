@@ -1,8 +1,8 @@
-import { BillingApi } from 'api';
 import type { SubscriptionDTO } from '@rebrowse/types';
 import { useCallback, useMemo } from 'react';
 import { mapSubscription } from '@rebrowse/sdk';
 import { useQuery, useQueryClient, useMutation } from 'shared/hooks/useQuery';
+import { client } from 'sdk';
 
 import { setSubscription as setSubscriptionInSubscriptions } from './useSubscriptions';
 
@@ -16,15 +16,15 @@ export const useSubscription = (initialData: SubscriptionDTO) => {
   const { data } = useQuery(
     cacheKey(initialData.id),
     () =>
-      BillingApi.subscriptions
-        .get(initialData.id)
+      client.billing.subscriptions
+        .retrieve(initialData.id)
         .then((httpResponse) => httpResponse.data),
     { initialData }
   );
 
   const { mutateAsync: cancelSubscription } = useMutation(
     () =>
-      BillingApi.subscriptions
+      client.billing.subscriptions
         .cancel(initialData.id)
         .then((httpResponse) => httpResponse.data),
     {

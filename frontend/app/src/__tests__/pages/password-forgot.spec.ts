@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { EMAIL_PLACEHOLDER } from 'shared/constants/form-placeholders';
 import { sandbox } from '@rebrowse/testing';
-import { AuthApi } from 'api';
 import { mockApiError } from '@rebrowse/storybook';
 import { PASSWORD_FORGOT_PAGE } from 'shared/constants/routes';
 import { renderPage } from '__tests__/utils';
+import { mockPasswordForgotPage } from '__tests__/mocks';
 
 describe('/password-forgot', () => {
   /* Data */
@@ -15,9 +15,7 @@ describe('/password-forgot', () => {
 
   test('As a user I can start password reset flow', async () => {
     /* Mocks */
-    const passwordForgotStub = sandbox
-      .stub(AuthApi.password, 'forgot')
-      .resolves();
+    const { passwordForgotStub } = mockPasswordForgotPage(sandbox);
 
     /* Sever */
     const { page } = await getPage({ route });
@@ -41,7 +39,8 @@ describe('/password-forgot', () => {
 
   test('As a user I see error if something went wrong', async () => {
     /* Mocks */
-    const passwordForgotStub = sandbox.stub(AuthApi.password, 'forgot').rejects(
+    const { passwordForgotStub } = mockPasswordForgotPage(sandbox);
+    passwordForgotStub.rejects(
       mockApiError({
         message: 'Bad Request',
         reason: 'Bad Request',

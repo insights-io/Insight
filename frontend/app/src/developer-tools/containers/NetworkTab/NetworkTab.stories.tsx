@@ -1,10 +1,10 @@
 import React from 'react';
 import { configureStory, fullHeightDecorator } from '@rebrowse/storybook';
-import { SessionApi } from 'api';
 import { FETCH_EVENTS } from '__tests__/data';
 import noop from 'lodash/noop';
 import type { Meta } from '@storybook/react';
 import { httpOkResponse } from '__tests__/utils/request';
+import { client } from 'sdk';
 
 import { NetworkTabContainer } from './NetworkTab';
 
@@ -21,7 +21,7 @@ export const Base = () => {
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox
-      .stub(SessionApi.events, 'search')
+      .stub(client.recording.events, 'search')
       .resolves(httpOkResponse([...Object.values(FETCH_EVENTS)]));
   },
 });
@@ -32,7 +32,7 @@ export const Loading = () => {
 Loading.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox
-      .stub(SessionApi.events, 'search')
+      .stub(client.recording.events, 'search')
       .callsFake(() => new Promise(noop));
   },
 });

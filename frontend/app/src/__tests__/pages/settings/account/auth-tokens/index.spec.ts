@@ -24,7 +24,6 @@ describe('/settings/account/auth-token', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(listAuthTokensStub, {
-      baseURL: 'http://localhost:8080',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,
@@ -54,7 +53,6 @@ describe('/settings/account/auth-token', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(listAuthTokensStub, {
-      baseURL: 'http://localhost:8080',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,

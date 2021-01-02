@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Button } from '@rebrowse/elements';
 import { useStyletron } from 'baseui';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'baseui/modal';
-import { AuthApi } from 'api';
 import { toaster } from 'baseui/toast';
 import { useRouter } from 'next/router';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SIZE } from 'baseui/button';
+import { client } from 'sdk';
 
 export const DeleteOrganization = () => {
   const router = useRouter();
@@ -18,10 +18,12 @@ export const DeleteOrganization = () => {
 
   const handleDelete = () => {
     setIsDeleting(true);
-    AuthApi.organization
+    client.auth.organizations
       .delete()
-      .then(() => router.replace(LOGIN_PAGE))
-      .then(() => toaster.positive('Organization deleted', {}))
+      .then(() => {
+        router.replace(LOGIN_PAGE);
+        toaster.positive('Organization deleted', {});
+      })
       .catch(() => {
         setIsDeleting(false);
         toaster.negative(

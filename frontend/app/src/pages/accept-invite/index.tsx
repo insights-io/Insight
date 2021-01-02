@@ -5,11 +5,10 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { AcceptTeamInviteInvalidPage } from 'auth/pages/AcceptTeamInviteInvalidPage';
 import { AcceptTeamInvitePage } from 'auth/pages/AcceptTeamInvitePage';
-import { mapTeamInvite } from '@rebrowse/sdk';
+import { client } from 'sdk';
 
 type Props = { invite: TeamInviteDTO } | { invite: null };
 
@@ -18,7 +17,7 @@ const AcceptInvite = ({ invite }: Props) => {
     return <AcceptTeamInviteInvalidPage expiresAt={invite?.expiresAt} />;
   }
 
-  return <AcceptTeamInvitePage {...mapTeamInvite(invite)} />;
+  return <AcceptTeamInvitePage {...invite} />;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -34,11 +33,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return { redirect: { destination: INDEX_PAGE, statusCode: 302 } };
     }
 
-    const invite = await AuthApi.organization.teamInvite
-      .retrieve(token, {
-        baseURL: process.env.AUTH_API_BASE_URL,
-        headers: prepareCrossServiceHeaders(requestSpan),
-      })
+    const invite = await client.auth.organizations.teamInvite
+      .retrieve(token, { headers: prepareCrossServiceHeaders(requestSpan) })
       .then((httpResponse) => httpResponse.data)
       .catch((error) => {
         const response = error.response as Response;

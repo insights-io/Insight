@@ -13,7 +13,7 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   organization: OrganizationDTO;
@@ -49,11 +49,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const passwordPolicy = await AuthApi.organization.passwordPolicy
-      .retrieve({
-        baseURL: process.env.AUTH_API_BASE_URL,
-        headers,
-      })
+    const passwordPolicy = await client.auth.organizations.passwordPolicy
+      .retrieve({ headers })
       .then((httpResponse) => httpResponse.data)
       .catch((error) => {
         const response = error.response as Response;

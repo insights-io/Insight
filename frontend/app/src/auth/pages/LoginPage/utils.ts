@@ -1,4 +1,4 @@
-import { authApiBaseURL } from 'api';
+import { apiEndpoints } from 'sdk';
 
 type OAuth2Integration = 'google' | 'github' | 'microsoft';
 
@@ -9,7 +9,9 @@ type OAuth2HrefBuilderParams = {
 export const createOAuth2IntegrationHrefBuilder = ({
   absoluteRedirect,
 }: OAuth2HrefBuilderParams) => (integration: OAuth2Integration) => {
-  return `${authApiBaseURL}/v1/sso/oauth2/${integration}/signin?redirect=${encodeURIComponent(
+  return `${
+    apiEndpoints.authApiBaseUrl
+  }/v1/sso/oauth2/${integration}/signin?redirect=${encodeURIComponent(
     absoluteRedirect
   )}`;
 };

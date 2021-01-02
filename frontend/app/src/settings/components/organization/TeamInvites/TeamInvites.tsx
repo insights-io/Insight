@@ -15,12 +15,12 @@ import {
 import { Avatar } from 'baseui/avatar';
 import { SIZE } from 'baseui/button';
 import { Delete, Plus } from 'baseui/icon';
-import { AuthApi } from 'api';
 import { useResourceSearch } from 'shared/hooks/useResourceSearch';
 import { mapTeamInvite, TeamInviteSearchBean } from '@rebrowse/sdk';
 import { useStyletron } from 'baseui';
 import { StyledSpinnerNext } from 'baseui/spinner';
 import { capitalize } from 'shared/utils/string';
+import { client } from 'sdk';
 
 import TeamInviteModal from '../TeamInviteModal';
 
@@ -39,7 +39,7 @@ export const TeamInvites = ({
 
   const listTeamInvites = useCallback(
     async (search: SearchBean<TeamInviteDTO>) => {
-      return AuthApi.organization.teamInvite
+      return client.auth.organizations.teamInvite
         .list({ search: search as TeamInviteSearchBean })
         .then((httpResponse) => httpResponse.data);
     },
@@ -48,7 +48,7 @@ export const TeamInvites = ({
 
   const countTeamInvites = useCallback(
     async (search: SearchBean<TeamInviteDTO>) => {
-      return AuthApi.organization.teamInvite
+      return client.auth.organizations.teamInvite
         .count({ search: search as TeamInviteSearchBean })
         .then((httpResponse) => httpResponse.data.count);
     },
@@ -74,10 +74,12 @@ export const TeamInvites = ({
   });
 
   const createTeamInvite = (data: TeamInviteCreateDTO) => {
-    return AuthApi.organization.teamInvite.create(data).then((httpResponse) => {
-      revalidate();
-      return httpResponse;
-    });
+    return client.auth.organizations.teamInvite
+      .create(data)
+      .then((httpResponse) => {
+        revalidate();
+        return httpResponse;
+      });
   };
 
   const invites = useMemo(() => items.map(mapTeamInvite), [items]);

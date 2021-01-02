@@ -21,7 +21,6 @@ describe('/settings/organization/usage-and-payments', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(listInvoicesStub, {
-      baseURL: 'http://localhost:8083',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,

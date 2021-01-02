@@ -2,13 +2,12 @@ import { mockApiError } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthApi } from 'api';
 import { getPage } from 'next-page-tester';
 import { ACCEPT_INVITE_PAGE } from 'shared/constants/routes';
 import { match } from 'sinon';
 import { ADMIN_TEAM_INVITE_DTO } from '__tests__/data';
-import { mockIndexPage } from '__tests__/mocks';
-import { httpOkResponse, renderPage } from '__tests__/utils';
+import { mockAcceptTeamInvitePage } from '__tests__/mocks';
+import { renderPage } from '__tests__/utils';
 
 describe('/accept-invite', () => {
   /* Data */
@@ -20,7 +19,7 @@ describe('/accept-invite', () => {
   test('As a user I get redirected to / if no token', async () => {
     /* Mocks */
     document.cookie = 'SessionId=123';
-    mockIndexPage(sandbox);
+    mockAcceptTeamInvitePage(sandbox);
 
     /* Server */
     const { page } = await getPage({ route: ACCEPT_INVITE_PAGE });
@@ -33,24 +32,21 @@ describe('/accept-invite', () => {
 
   test('As a user I get an error message if team invite does not exist', async () => {
     /* Mocks */
-    const retrieveTeamInviteStub = sandbox
-      .stub(AuthApi.organization.teamInvite, 'retrieve')
-      .rejects(
-        mockApiError({
-          statusCode: 404,
-          message: 'Not Found',
-          reason: 'Not Found',
-        })
-      );
+    const { retrieveTeamInviteStub } = mockAcceptTeamInvitePage(sandbox);
+
+    retrieveTeamInviteStub.rejects(
+      mockApiError({
+        statusCode: 404,
+        message: 'Not Found',
+        reason: 'Not Found',
+      })
+    );
 
     /* Server */
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(retrieveTeamInviteStub, token, {
-      baseURL: 'http://localhost:8080',
-      headers: {
-        'uber-trace-id': (match.string as unknown) as string,
-      },
+      headers: { 'uber-trace-id': (match.string as unknown) as string },
     });
 
     /* Client */
@@ -66,27 +62,16 @@ describe('/accept-invite', () => {
 
   test('As a user I can accept a team invite', async () => {
     /* Mocks */
-    mockIndexPage(sandbox);
-
-    const retrieveTeamInviteStub = sandbox
-      .stub(AuthApi.organization.teamInvite, 'retrieve')
-      .resolves(httpOkResponse(ADMIN_TEAM_INVITE_DTO));
-
-    const acceptTeamInviteStub = sandbox
-      .stub(AuthApi.organization.teamInvite, 'accept')
-      .callsFake(() => {
-        document.cookie = 'SessionId=123';
-        return Promise.resolve({ statusCode: 200, headers: new Headers() });
-      });
+    const {
+      retrieveTeamInviteStub,
+      acceptTeamInviteStub,
+    } = mockAcceptTeamInvitePage(sandbox);
 
     /* Server */
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(retrieveTeamInviteStub, token, {
-      baseURL: 'http://localhost:8080',
-      headers: {
-        'uber-trace-id': (match.string as unknown) as string,
-      },
+      headers: { 'uber-trace-id': (match.string as unknown) as string },
     });
 
     /* Client */

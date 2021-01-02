@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'test/utils';
+import { render } from '__tests__/utils';
 import { waitFor } from '@testing-library/react';
 import { sandbox } from '@rebrowse/testing';
 import userEvent from '@testing-library/user-event';

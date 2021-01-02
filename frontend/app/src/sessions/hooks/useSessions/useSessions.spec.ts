@@ -1,7 +1,7 @@
 import { TermCondition } from '@rebrowse/sdk';
 import { sandbox } from '@rebrowse/testing';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { SessionApi } from 'api';
+import { client } from 'sdk';
 import { REBROWSE_SESSIONS, REBROWSE_SESSIONS_DTOS } from '__tests__/data';
 import { httpOkResponse } from '__tests__/utils/request';
 
@@ -9,8 +9,8 @@ import { useSessions } from './useSessions';
 
 describe('useSessions', () => {
   it('Should correctly load more sessions', async () => {
-    const searchSessionsStub = sandbox
-      .stub(SessionApi, 'getSessions')
+    const listSessionsStub = sandbox
+      .stub(client.recording.sessions, 'list')
       .resolves(httpOkResponse(REBROWSE_SESSIONS_DTOS.slice(0, 1)));
 
     const from = new Date('04 Dec 1995 00:12:00 GMT');
@@ -29,7 +29,7 @@ describe('useSessions', () => {
       result.current.loadMoreItems(0, 0);
     });
 
-    sandbox.assert.calledWithExactly(searchSessionsStub, {
+    sandbox.assert.calledWithExactly(listSessionsStub, {
       search: {
         limit: 1,
         sortBy: ['-createdAt'],
@@ -46,7 +46,7 @@ describe('useSessions', () => {
       result.current.loadMoreItems(1, 1);
     });
 
-    sandbox.assert.calledWithExactly(searchSessionsStub, {
+    sandbox.assert.calledWithExactly(listSessionsStub, {
       search: {
         limit: 1,
         sortBy: ['-createdAt'],

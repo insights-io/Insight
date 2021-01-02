@@ -1,65 +1,75 @@
-import ky from 'ky-universal';
 import type { CodeValidityDTO, PhoneNumber, UserDTO } from '@rebrowse/types';
-import { withCredentials } from 'utils';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions } from 'types';
 
-import { jsonDataResponse } from '../../http';
+import { HttpClient, jsonDataResponse } from '../../http';
 
 import type { UpdateUserPayload } from './types';
 
-export const userResource = (authApiBaseURL: string) => {
+export const userResource = (client: HttpClient, authApiBaseURL: string) => {
   const update = (
     json: UpdateUserPayload,
-    { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+    { baseUrl = authApiBaseURL, ...requestOptions }: ExtendedRequestOptions = {}
   ) => {
     return jsonDataResponse<UserDTO>(
-      ky.patch(`${baseURL}/v1/user`, withCredentials({ json, ...rest }))
+      client.patch(`${baseUrl}/v1/user`, { json, ...requestOptions })
     );
   };
 
   return {
-    me: ({ baseURL = authApiBaseURL, ...rest }: RequestOptions = {}) => {
+    me: ({
+      baseUrl = authApiBaseURL,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
       return jsonDataResponse<UserDTO>(
-        ky.get(`${baseURL}/v1/user`, withCredentials(rest))
+        client.get(`${baseUrl}/v1/user`, requestOptions)
       );
     },
     update,
-    updatePhoneNumber: (
-      json: PhoneNumber | null | undefined,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
-    ) => {
-      if (!json || !json.countryCode || !json.digits) {
-        return update({ phoneNumber: null });
-      }
 
-      return jsonDataResponse<UserDTO>(
-        ky.patch(
-          `${baseURL}/v1/user/phone_number`,
-          withCredentials({ json, ...rest })
-        )
-      );
-    },
-    phoneNumberVerifySendCode: ({
-      baseURL = authApiBaseURL,
-      ...rest
-    }: RequestOptions = {}) => {
-      return jsonDataResponse<CodeValidityDTO>(
-        ky.post(
-          `${baseURL}/v1/user/phone_number/verify/send_code`,
-          withCredentials(rest)
-        )
-      );
-    },
-    phoneNumberVerify: (
-      code: number,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
-    ) => {
-      return jsonDataResponse<UserDTO>(
-        ky.patch(
-          `${baseURL}/v1/user/phone_number/verify`,
-          withCredentials({ json: { code }, ...rest })
-        )
-      );
+    phoneNumber: {
+      update: (
+        json: PhoneNumber | null | undefined,
+        {
+          baseUrl = authApiBaseURL,
+          ...requestOptions
+        }: ExtendedRequestOptions = {}
+      ) => {
+        if (!json || !json.countryCode || !json.digits) {
+          return update({ phoneNumber: null });
+        }
+
+        return jsonDataResponse<UserDTO>(
+          client.patch(`${baseUrl}/v1/user/phone_number`, {
+            json,
+            ...requestOptions,
+          })
+        );
+      },
+      verifySendCode: ({
+        baseUrl = authApiBaseURL,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}) => {
+        return jsonDataResponse<CodeValidityDTO>(
+          client.post(
+            `${baseUrl}/v1/user/phone_number/verify/send_code`,
+            requestOptions
+          )
+        );
+      },
+      verify: (
+        code: number,
+        {
+          baseUrl = authApiBaseURL,
+          ...requestOptions
+        }: ExtendedRequestOptions = {}
+      ) => {
+        return jsonDataResponse<UserDTO>(
+          client.patch(`${baseUrl}/v1/user/phone_number/verify`, {
+            json: { code },
+            ...requestOptions,
+          })
+        );
+      },
     },
   };
 };

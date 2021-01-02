@@ -5,9 +5,9 @@ import { H5, Paragraph3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
 import { SignUpForm } from 'components/SignUpForm';
 import { appBaseURL, helpBaseURL } from 'shared/config';
-import { AuthApi } from 'api/auth';
 import { Topbar } from 'components/Topbar';
 import { FlexColumn } from '@rebrowse/elements';
+import { sdk } from 'api';
 
 export const GetStarted = () => {
   const [_css, theme] = useStyletron();
@@ -44,7 +44,7 @@ export const GetStarted = () => {
             </Paragraph3>
           </Block>
 
-          <SignUpForm onSubmit={AuthApi.signup.create} />
+          <SignUpForm onSubmit={sdk.create} />
         </Block>
       </Block>
     </FlexColumn>

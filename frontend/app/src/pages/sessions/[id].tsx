@@ -8,10 +8,10 @@ import {
   prepareCrossServiceHeaders,
 } from 'shared/utils/tracing';
 import { SessionPage } from 'sessions/pages/SessionPage';
-import { SessionApi } from 'api';
 import type { SessionDTO } from '@rebrowse/types';
 import type { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { SESSIONS_PAGE } from 'shared/constants/routes';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   sessionId: string;
@@ -42,13 +42,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       return ({ props: {} } as unknown) as GetServerSidePropsResult<Props>;
     }
 
-    return SessionApi.getSession(sessionId, {
-      baseURL: process.env.SESSION_API_BASE_URL,
-      headers: {
-        ...prepareCrossServiceHeaders(requestSpan),
-        cookie: `SessionId=${authResponse.SessionId}`,
-      },
-    })
+    return client.recording.sessions
+      .retrieve(sessionId, {
+        headers: {
+          ...prepareCrossServiceHeaders(requestSpan),
+          cookie: `SessionId=${authResponse.SessionId}`,
+        },
+      })
       .then((httpResponse) => ({
         props: {
           sessionId,

@@ -1,54 +1,61 @@
-import ky from 'ky-universal';
 import type { MfaMethod, CodeValidityDTO, UserDTO } from '@rebrowse/types';
-import { withCredentials } from 'utils';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions } from 'types';
 
-import { httpResponse, jsonDataResponse } from '../../../http';
+import { HttpClient, httpResponse, jsonDataResponse } from '../../../http';
 
-export const mfaChallengeResource = (authApiBaseURL: string) => {
-  const resourceBaseURL = (apiBaseURL: string) => {
-    return `${apiBaseURL}/v1/mfa/challenge`;
+export const mfaChallengeResource = (
+  client: HttpClient,
+  authApiBaseUrl: string
+) => {
+  const resourceBaseURL = (baseUrl: string) => {
+    return `${baseUrl}/v1/mfa/challenge`;
   };
 
   return {
     complete: (
       method: MfaMethod,
       code: number,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
-      return ky
-        .post(
-          `${resourceBaseURL(baseURL)}/${method}/complete`,
-          withCredentials({ json: { code }, ...rest })
-        )
+      return client
+        .post(`${resourceBaseURL(baseUrl)}/${method}/complete`, {
+          json: { code },
+          ...requestOptions,
+        })
         .then(httpResponse);
     },
 
     sendSmsCode: ({
-      baseURL = authApiBaseURL,
-      ...rest
-    }: RequestOptions = {}) => {
+      baseUrl = authApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
       return jsonDataResponse<CodeValidityDTO>(
-        ky.post(
-          `${resourceBaseURL(baseURL)}/sms/send_code`,
-          withCredentials(rest)
-        )
+        client.post(`${resourceBaseURL(baseUrl)}/sms/send_code`, requestOptions)
       );
     },
-    retrieveUser: (
+    retrieveCurrentUser: (
       id: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<UserDTO>(
-        ky.get(`${resourceBaseURL(baseURL)}/${id}/user`, rest)
+        client.get(`${resourceBaseURL(baseUrl)}/${id}/user`, requestOptions)
       );
     },
     retrieve: (
       id: string,
-      { baseURL = authApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<MfaMethod[]>(
-        ky.get(`${resourceBaseURL(baseURL)}/${id}`, rest)
+        client.get(`${resourceBaseURL(baseUrl)}/${id}`, requestOptions)
       );
     },
   };

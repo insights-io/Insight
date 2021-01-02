@@ -1,46 +1,33 @@
 import { mockApiError } from '@rebrowse/storybook';
 import { sandbox } from '@rebrowse/testing';
-import { AuthApi } from 'api';
-import { REBROWSE_ADMIN_DTO } from '__tests__/data/user';
 import { getPage } from 'next-page-tester';
 import { VERIFICATION_PAGE } from 'shared/constants/routes';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mockIndexPage } from '__tests__/mocks';
-import { TOTP_MFA_SETUP_QR_IMAGE } from '__tests__/data/mfa';
-import { httpOkResponse } from '__tests__/utils/request';
+import { mockVerificationPage } from '__tests__/mocks';
 import { match } from 'sinon';
 import { renderPage } from '__tests__/utils';
+import { client } from 'sdk';
 
 describe('/login/verification', () => {
   /* Data */
   const route = VERIFICATION_PAGE;
+  const challengeId = '123';
 
   describe('With MFA setup', () => {
     test('As a user I can verify MFA using TOTP', async () => {
       /* Mocks */
-      document.cookie = 'ChallengeId=123';
-      mockIndexPage(sandbox);
-
-      const retrieveChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'retrieve')
-        .resolves(httpOkResponse(['totp']));
-
-      const completeChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'complete')
-        .callsFake(() => {
-          document.cookie = 'SessionId=123';
-          return Promise.resolve({ statusCode: 200, headers: new Headers() });
-        });
+      document.cookie = `ChallengeId=${challengeId}`;
+      const {
+        retrieveChallengeStub,
+        completeChallengeStub,
+      } = mockVerificationPage(sandbox);
 
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
-        baseURL: 'http://localhost:8080',
-        headers: {
-          'uber-trace-id': (match.string as unknown) as string,
-        },
+      sandbox.assert.calledWithExactly(retrieveChallengeStub, challengeId, {
+        headers: { 'uber-trace-id': (match.string as unknown) as string },
       });
 
       /* Client */
@@ -73,49 +60,26 @@ describe('/login/verification', () => {
   describe('With no setup', () => {
     test('As a user I can setup TOTP MFA on the spot if no existing setup', async () => {
       /* Mocks */
-      document.cookie = 'ChallengeId=123';
-      const retrieveChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'retrieve')
-        .resolves(httpOkResponse([]));
-
-      const retrieveUserByChallengeStub = sandbox
-        .stub(AuthApi.mfa.challenge, 'retrieveUser')
-        .resolves(httpOkResponse(REBROWSE_ADMIN_DTO));
-
-      const startTotpMfaSetupStub = sandbox
-        .stub(AuthApi.mfa.setup.totp, 'start')
-        .resolves(httpOkResponse({ qrImage: TOTP_MFA_SETUP_QR_IMAGE }));
-
-      const completeTotpMfaSetupStub = sandbox
-        .stub(AuthApi.mfa.setup, 'completeEnforced')
-        .callsFake(() => {
-          document.cookie = 'SessionId=123';
-          return Promise.resolve(
-            httpOkResponse({
-              createdAt: new Date().toISOString(),
-              method: 'totp',
-            })
-          );
-        });
-
-      mockIndexPage(sandbox);
+      document.cookie = `ChallengeId=${challengeId}`;
+      const {
+        retrieveChallengeStub,
+        retrieveUserByChallengeStub,
+        startTotpMfaSetupStub,
+        completeTotpMfaSetupStub,
+      } = mockVerificationPage(sandbox, { methods: [] });
 
       /* Server */
       const { page } = await getPage({ route });
 
-      sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
-        baseURL: 'http://localhost:8080',
-        headers: {
-          'uber-trace-id': (match.string as unknown) as string,
-        },
+      sandbox.assert.calledWithExactly(retrieveChallengeStub, challengeId, {
+        headers: { 'uber-trace-id': (match.string as unknown) as string },
       });
 
-      sandbox.assert.calledWithExactly(retrieveUserByChallengeStub, '123', {
-        baseURL: 'http://localhost:8080',
-        headers: {
-          'uber-trace-id': (match.string as unknown) as string,
-        },
-      });
+      sandbox.assert.calledWithExactly(
+        retrieveUserByChallengeStub,
+        challengeId,
+        { headers: { 'uber-trace-id': (match.string as unknown) as string } }
+      );
 
       /* Client */
       const { container } = renderPage(page);
@@ -158,9 +122,9 @@ describe('/login/verification', () => {
 
   test('As a user I get redirected to /login when no challenge found on backend', async () => {
     /* Mocks */
-    document.cookie = 'ChallengeId=123';
+    document.cookie = `ChallengeId=${challengeId}`;
     const retrieveChallengeStub = sandbox
-      .stub(AuthApi.mfa.challenge, 'retrieve')
+      .stub(client.auth.mfa.challenge, 'retrieve')
       .rejects(
         mockApiError({
           statusCode: 404,
@@ -172,11 +136,8 @@ describe('/login/verification', () => {
     /* Server */
     const { page } = await getPage({ route });
 
-    sandbox.assert.calledWithExactly(retrieveChallengeStub, '123', {
-      baseURL: 'http://localhost:8080',
-      headers: {
-        'uber-trace-id': (match.string as unknown) as string,
-      },
+    sandbox.assert.calledWithExactly(retrieveChallengeStub, challengeId, {
+      headers: { 'uber-trace-id': (match.string as unknown) as string },
     });
 
     /* Client */

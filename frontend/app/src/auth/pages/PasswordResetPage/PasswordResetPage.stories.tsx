@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory } from '@rebrowse/storybook';
-import { AuthApi } from 'api';
 import type { Meta } from '@storybook/react';
+import { mockPasswordResetPage as setupMocks } from '__tests__/mocks';
 
 import { PasswordResetPage } from './PasswordResetPage';
 
@@ -13,8 +13,4 @@ export default {
 export const Base = () => {
   return <PasswordResetPage token="1234" />;
 };
-Base.story = configureStory({
-  setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.password, 'reset').resolves();
-  },
-});
+Base.story = configureStory({ setupMocks });

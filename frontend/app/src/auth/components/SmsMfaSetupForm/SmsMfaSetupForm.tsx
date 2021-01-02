@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { AuthApi } from 'api';
 import { PhoneNumberSetForm } from 'auth/components/PhoneNumberSetForm';
 import { PhoneNumberVerifyForm } from 'auth/components/PhoneNumberVerifyForm';
 import type { PhoneNumber, MfaSetupDTO } from '@rebrowse/types';
 import type { HttpResponse } from '@rebrowse/sdk';
+import { client } from 'sdk';
 
 type Props = {
   phoneNumber: PhoneNumber | undefined;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 const completeSmsSetup = (code: number) =>
-  AuthApi.mfa.setup.complete('sms', code);
+  client.auth.mfa.setup.complete('sms', code);
 
 export const SmsMfaSetupForm = ({
   phoneNumber: initialPhoneNumber,
@@ -26,8 +26,8 @@ export const SmsMfaSetupForm = ({
       <PhoneNumberSetForm
         phoneNumber={phoneNumber}
         updatePhoneNumber={(newPhoneNumber) =>
-          AuthApi.user
-            .updatePhoneNumber(newPhoneNumber)
+          client.auth.users.phoneNumber
+            .update(newPhoneNumber)
             .then(({ data: user }) => {
               setPhoneNumber(user.phoneNumber);
               return user;
@@ -44,7 +44,7 @@ export const SmsMfaSetupForm = ({
           .then((httpResponse) => httpResponse.data)
           .then(onCompleted)
       }
-      sendCode={AuthApi.mfa.setup.sms.sendCode}
+      sendCode={client.auth.mfa.setup.sms.sendCode}
     />
   );
 };

@@ -4,14 +4,14 @@ import type {
   MfaMethod,
   MfaSetupDTO,
 } from '@rebrowse/types';
-import { AuthApi } from 'api';
 import { useCallback, useMemo } from 'react';
+import { client } from 'sdk';
 import { useQuery, useQueryClient, useMutation } from 'shared/hooks/useQuery';
 
 export const cacheKey = ['mfa', 'setup', 'list'];
 
 const queryFn = () =>
-  AuthApi.mfa.setup.list().then((httpResponse) => httpResponse.data);
+  client.auth.mfa.setup.list().then((httpResponse) => httpResponse.data);
 
 export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
   });
 
   const { mutateAsync: disableMethod } = useMutation(
-    (method: MfaMethod) => AuthApi.mfa.setup.disable(method),
+    (method: MfaMethod) => client.auth.mfa.setup.disable(method),
     {
       onSuccess: (_, method) => {
         queryClient.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {
@@ -34,7 +34,7 @@ export const useMfaSetups = (initialData: MfaSetupDTO[]) => {
 
   const { mutateAsync: completeSetup } = useMutation(
     ({ method, code }: { method: MfaMethod; code: number }) =>
-      AuthApi.mfa.setup.complete(method, code),
+      client.auth.mfa.setup.complete(method, code),
     {
       onSuccess: (httpResponse) => {
         queryClient.setQueryData<MfaSetupDTO[]>(cacheKey, (prev) => {

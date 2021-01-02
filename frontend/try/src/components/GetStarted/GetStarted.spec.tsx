@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'test/utils';
+import { render } from '__tests__/utils';
 import { appBaseURL, helpBaseURL } from 'shared/config';
 
 import { Base } from './GetStarted.stories';

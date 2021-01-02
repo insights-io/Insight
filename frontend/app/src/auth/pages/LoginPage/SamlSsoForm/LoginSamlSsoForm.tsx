@@ -1,13 +1,13 @@
-import { APIError, APIErrorDataResponse } from '@rebrowse/types';
-import { AuthApi } from 'api';
+import React, { useState, useMemo } from 'react';
+import type { APIError, APIErrorDataResponse } from '@rebrowse/types';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
 import { WORK_EMAIL_PLACEHOLDER } from 'shared/constants/form-placeholders';
 import { EMAIL_VALIDATION } from 'shared/constants/form-validation';
-import React, { useState, useMemo } from 'react';
 import { FormError } from 'shared/components/FormError';
 import { locationAssign } from 'shared/utils/window';
 import { Button, EmailInput } from '@rebrowse/elements';
+import { client } from 'sdk';
 
 import { ssoIntegrationHrefBuilder } from '../utils';
 
@@ -45,8 +45,8 @@ export const LoginSamlSsoForm = ({ absoluteRedirect }: Props) => {
     const domain = email.split('@')[1];
     setIsSubmitting(true);
 
-    AuthApi.sso.setup
-      .getByDomain(domain)
+    client.auth.sso.setups
+      .retrieveByDomain(domain)
       .then((dataRepsonse) => {
         setFormError(undefined);
         if (dataRepsonse.data === false) {

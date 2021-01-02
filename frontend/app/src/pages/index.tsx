@@ -57,22 +57,20 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     };
 
     const countSessionsByDatePromise = countSessionsByDate(createdAtGte, {
-      baseURL: process.env.SESSION_API_BASE_URL,
       headers,
     });
 
     const countSessionsByDeviceClassPromise = countSessionsByDeviceClass(
       createdAtGte,
-      { baseURL: process.env.SESSION_API_BASE_URL, headers }
+      { headers }
     );
 
     const countSessionsByLocationPromise = countSessionsByLocation(
       createdAtGte,
-      { baseURL: process.env.SESSION_API_BASE_URL, headers }
+      { headers }
     );
 
     const countPageVisitsByDatePromise = countPageVisitsByDate(createdAtGte, {
-      baseURL: process.env.SESSION_API_BASE_URL,
       headers,
     });
 

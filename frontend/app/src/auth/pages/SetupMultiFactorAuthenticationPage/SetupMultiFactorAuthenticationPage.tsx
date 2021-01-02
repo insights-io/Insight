@@ -5,10 +5,10 @@ import { Block } from 'baseui/block';
 import { Paragraph3 } from 'baseui/typography';
 import { FILL, Tab, Tabs } from 'baseui/tabs-motion';
 import { TotpMfaSetupForm } from 'auth/components/TotpMfaSetupForm';
-import { AuthApi } from 'api';
 import { useRouter } from 'next/router';
 import { SmsMfaSetupForm } from 'auth/components/SmsMfaSetupForm';
 import type { MfaMethod, UserDTO } from '@rebrowse/types';
+import { client } from 'sdk';
 
 type Props = {
   user: UserDTO;
@@ -44,7 +44,7 @@ export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
         <Tab title="Authy" key="totp">
           <TotpMfaSetupForm
             completeSetup={(code) =>
-              AuthApi.mfa.setup.completeEnforced('totp', code)
+              client.auth.mfa.setup.completeEnforced('totp', code)
             }
             onCompleted={onCompleted}
           />
@@ -53,7 +53,7 @@ export const SetupMultiFactorAuthenticationPage = ({ user }: Props) => {
           <SmsMfaSetupForm
             phoneNumber={user.phoneNumber}
             completeSetup={(code) =>
-              AuthApi.mfa.setup.completeEnforced('sms', code)
+              client.auth.mfa.setup.completeEnforced('sms', code)
             }
             onCompleted={onCompleted}
           />

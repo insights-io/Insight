@@ -1,16 +1,16 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import type { GetServerSideProps } from 'next';
-import nextCookie from 'next-cookies';
 import { VerificationPage } from 'auth/pages/VerificationPage';
 import {
   startRequestSpan,
   prepareCrossServiceHeaders,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api/auth';
 import type { MfaMethod, UserDTO } from '@rebrowse/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SetupMultiFactorAuthenticationPage } from 'auth/pages/SetupMultiFactorAuthenticationPage';
+import { client } from 'sdk';
+import nextCookie from 'next-cookies';
 
 type Props =
   | { methods: MfaMethod[]; user?: undefined }
@@ -45,24 +45,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     }
 
     const headers = prepareCrossServiceHeaders(requestSpan);
-
     try {
-      const methods = await AuthApi.mfa.challenge
-        .retrieve(ChallengeId, {
-          baseURL: process.env.AUTH_API_BASE_URL,
-          headers,
-        })
+      const methods = await client.auth.mfa.challenge
+        .retrieve(ChallengeId, { headers })
         .then((httpResponse) => httpResponse.data);
 
       if (methods.length > 0) {
         return { props: { methods } };
       }
 
-      const user = await AuthApi.mfa.challenge
-        .retrieveUser(ChallengeId, {
-          baseURL: process.env.AUTH_API_BASE_URL,
-          headers,
-        })
+      const user = await client.auth.mfa.challenge
+        .retrieveCurrentUser(ChallengeId, { headers })
         .then((httpResponse) => httpResponse.data);
 
       return { props: { user } };

@@ -24,7 +24,6 @@ describe('/settings/organization/auth', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(retrieveSsoSetupStub, {
-      baseURL: 'http://localhost:8080',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,
@@ -66,7 +65,6 @@ describe('/settings/organization/auth', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(retrieveSsoSetupStub, {
-      baseURL: 'http://localhost:8080',
       headers: {
         cookie: 'SessionId=123',
         'uber-trace-id': (match.string as unknown) as string,

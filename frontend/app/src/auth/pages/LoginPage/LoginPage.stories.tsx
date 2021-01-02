@@ -1,8 +1,8 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@rebrowse/storybook';
-import { AuthApi } from 'api/auth';
 import type { Meta } from '@storybook/react';
 import { httpOkResponse } from '__tests__/utils/request';
+import { client } from 'sdk';
 
 import { LoginPage } from './LoginPage';
 
@@ -16,7 +16,7 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso.session, 'login').callsFake(() => {
+    return sandbox.stub(client.auth.sso.sessions, 'login').callsFake(() => {
       return new Promise((resolve) =>
         setTimeout(() => resolve(httpOkResponse(true)), 10)
       );
@@ -29,7 +29,7 @@ export const InvalidPassword = () => {
 };
 InvalidPassword.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso.session, 'login').callsFake(() => {
+    return sandbox.stub(client.auth.sso.sessions, 'login').callsFake(() => {
       const error = mockApiError({
         statusCode: 400,
         reason: 'Bad Request',
@@ -48,7 +48,7 @@ export const WithSsoRedirect = () => {
 };
 WithSsoRedirect.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso.session, 'login').rejects(
+    return sandbox.stub(client.auth.sso.sessions, 'login').rejects(
       mockApiError({
         statusCode: 400,
         reason: 'Bad Request',

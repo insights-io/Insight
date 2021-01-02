@@ -1,6 +1,6 @@
 import type { SearchBean, SubscriptionDTO } from '@rebrowse/types';
 
-import type { RequestOptions } from '../../types';
+import type { ExtendedRequestOptions } from '../../types';
 
 export type SubscriptionSearchBean<
   GroupBy extends (keyof SubscriptionDTO)[]
@@ -8,6 +8,6 @@ export type SubscriptionSearchBean<
 
 export type SubscriptionSearchRequestOptions<
   GroupBy extends (keyof SubscriptionDTO)[]
-> = Omit<RequestOptions, 'searchParams'> & {
+> = Omit<ExtendedRequestOptions, 'searchParams'> & {
   search?: SubscriptionSearchBean<GroupBy>;
 };

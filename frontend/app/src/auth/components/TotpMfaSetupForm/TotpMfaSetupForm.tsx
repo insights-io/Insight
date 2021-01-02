@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { AuthApi } from 'api/auth';
 import { Block } from 'baseui/block';
 import { CodeInput, Button, Flex } from '@rebrowse/elements';
 import { useCodeInput } from 'shared/hooks/useCodeInput';
@@ -12,6 +11,7 @@ import { FormError } from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import { Paragraph3 } from 'baseui/typography';
 import type { HttpResponse } from '@rebrowse/sdk';
+import { client } from 'sdk';
 
 export type Props = {
   completeSetup?: (code: number) => Promise<HttpResponse<MfaSetupDTO>>;
@@ -19,7 +19,7 @@ export type Props = {
 };
 
 const completeTotpSetup = (code: number) =>
-  AuthApi.mfa.setup.complete('totp', code);
+  client.auth.mfa.setup.complete('totp', code);
 
 export const TotpMfaSetupForm = ({
   onCompleted,
@@ -48,7 +48,7 @@ export const TotpMfaSetupForm = ({
 
   useEffect(() => {
     if (!qrImage) {
-      AuthApi.mfa.setup.totp
+      client.auth.mfa.setup.totp
         .start()
         .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
         .catch(async (error) => {

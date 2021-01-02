@@ -1,8 +1,11 @@
-import ky from 'ky-universal';
+import type { RequestOptions, Input } from 'types';
 
-import { textResponse } from '../http';
-import type { RequestOptions } from '../types';
+import { textResponse, HttpClient } from '../http';
 
-export const getBoostrapScript = (url: string, options?: RequestOptions) => {
-  return textResponse(ky.get(url, options));
+export const trackingResource = (client: HttpClient) => {
+  return {
+    retrieveBoostrapScript: (url: Input, options?: RequestOptions) => {
+      return textResponse(client.get(url, options));
+    },
+  };
 };

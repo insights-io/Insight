@@ -1,5 +1,4 @@
 import { mapPasswordPolicy } from '@rebrowse/sdk';
-import { AuthApi } from 'api';
 import { useMemo } from 'react';
 import type {
   OrganizationPasswordPolicyDTO,
@@ -7,11 +6,12 @@ import type {
   PasswordPolicyUpdateParams,
 } from '@rebrowse/types';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
+import { client } from 'sdk';
 
 const CACHE_KEY = ['AuthApi', 'organizations', 'passwordPolicy', 'retrieve'];
 
 const queryFn = () =>
-  AuthApi.organization.passwordPolicy
+  client.auth.organizations.passwordPolicy
     .retrieve()
     .then((httpResponse) => httpResponse.data)
     .catch((error) => {
@@ -30,7 +30,7 @@ export const useOrganizationPasswordPolicy = (
 
   const { mutateAsync: createPasswordPolicy } = useMutation(
     (params: PasswordPolicyCreateParams) =>
-      AuthApi.organization.passwordPolicy
+      client.auth.organizations.passwordPolicy
         .create(params)
         .then((httpResponse) => httpResponse.data),
     {
@@ -45,7 +45,7 @@ export const useOrganizationPasswordPolicy = (
 
   const { mutateAsync: updatePasswordPolicy } = useMutation(
     (params: PasswordPolicyUpdateParams) =>
-      AuthApi.organization.passwordPolicy
+      client.auth.organizations.passwordPolicy
         .update(params)
         .then((httpResponse) => httpResponse.data),
     {

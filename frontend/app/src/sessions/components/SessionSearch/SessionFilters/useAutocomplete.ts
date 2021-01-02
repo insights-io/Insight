@@ -1,5 +1,5 @@
-import { SessionSearchQueryParams } from '@rebrowse/sdk';
-import { SessionApi } from 'api';
+import type { SessionSearchQueryParams } from '@rebrowse/sdk';
+import { client } from 'sdk';
 import { useQuery } from 'shared/hooks/useQuery';
 
 export const cacheKey = (on: keyof SessionSearchQueryParams | undefined) => {
@@ -9,7 +9,9 @@ export const cacheKey = (on: keyof SessionSearchQueryParams | undefined) => {
 const queryFn = (on: keyof SessionSearchQueryParams | undefined) => {
   return on === undefined
     ? []
-    : SessionApi.distinct(on).then((httpResponse) => httpResponse.data);
+    : client.recording.sessions
+        .distinct(on)
+        .then((httpResponse) => httpResponse.data);
 };
 
 export const useAutocomplete = (

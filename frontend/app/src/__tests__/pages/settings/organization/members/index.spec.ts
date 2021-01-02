@@ -25,12 +25,10 @@ describe('/settings/organization/members', () => {
     const { page } = await getPage({ route });
 
     sandbox.assert.calledWithExactly(listMembersStub, {
-      baseURL: 'http://localhost:8080',
       headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
       search: { limit: 20, sortBy: ['+createdAt'] },
     });
     sandbox.assert.calledWithExactly(countMembersStub, {
-      baseURL: 'http://localhost:8080',
       headers: { cookie: 'SessionId=123', 'uber-trace-id': match.string },
     });
 

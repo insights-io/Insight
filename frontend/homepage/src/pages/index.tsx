@@ -1,7 +1,7 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
-import { ssoResource } from 'api';
+import { sdk } from 'api';
 import { HomePage } from 'modules/home/pages/HomePage';
 
 type Props = {
@@ -17,11 +17,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   if (!SessionId) {
     return { props: { loggedIn: false } };
   }
-
-  const response = await ssoResource.get(SessionId, {
-    baseURL: process.env.AUTH_API_BASE_URL,
-  });
-
+  const response = await sdk.retrieve(SessionId);
   return { props: { loggedIn: response.status === 200 } };
 };
 

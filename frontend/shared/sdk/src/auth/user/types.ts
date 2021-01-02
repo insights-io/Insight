@@ -1,5 +1,5 @@
 import type { PhoneNumber, QueryParam, SearchBean } from '@rebrowse/types';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions } from 'types';
 
 export type UpdateUserPayload = {
   phoneNumber?: PhoneNumber | null;
@@ -19,6 +19,6 @@ export type UserSearchBean<
 
 export type UserSearchRequestOptions<
   GroupBy extends (keyof UserSearchQueryParams)[] = []
-> = Omit<RequestOptions, 'searchParams'> & {
+> = Omit<ExtendedRequestOptions, 'searchParams'> & {
   search?: UserSearchBean<GroupBy>;
 };

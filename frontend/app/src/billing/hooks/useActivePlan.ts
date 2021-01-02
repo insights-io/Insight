@@ -1,7 +1,7 @@
-import { BillingApi } from 'api';
 import { useQuery, useQueryClient } from 'shared/hooks/useQuery';
 import type { PlanDTO } from '@rebrowse/types';
 import { useCallback } from 'react';
+import { client } from 'sdk';
 
 export const cacheKey = ['subscriptions', 'getActivePlan'];
 
@@ -9,8 +9,8 @@ export const useActivePlan = (initialData: PlanDTO) => {
   const { data, refetch } = useQuery(
     cacheKey,
     () =>
-      BillingApi.subscriptions
-        .getActivePlan()
+      client.billing.subscriptions
+        .retrieveActivePlan()
         .then((httpResponse) => httpResponse.data),
     { initialData: () => initialData }
   );

@@ -27,7 +27,6 @@ describe('/settings/organization/subscription', () => {
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(listSubscriptionsStub, {
-        baseURL: 'http://localhost:8083',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -35,7 +34,6 @@ describe('/settings/organization/subscription', () => {
         search: { sortBy: ['-createdAt'] },
       });
       sandbox.assert.calledWithExactly(retrieveActivePlanStub, {
-        baseURL: 'http://localhost:8083',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -68,7 +66,6 @@ describe('/settings/organization/subscription', () => {
       const { page } = await getPage({ route });
 
       sandbox.assert.calledWithExactly(listSubscriptionsStub, {
-        baseURL: 'http://localhost:8083',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,
@@ -76,7 +73,6 @@ describe('/settings/organization/subscription', () => {
         search: { sortBy: ['-createdAt'] },
       });
       sandbox.assert.calledWithExactly(retrieveActivePlanStub, {
-        baseURL: 'http://localhost:8083',
         headers: {
           cookie: 'SessionId=123',
           'uber-trace-id': (match.string as unknown) as string,

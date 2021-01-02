@@ -6,13 +6,13 @@ import { Block } from 'baseui/block';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { APIError, APIErrorDataResponse } from '@rebrowse/types';
-import { AuthApi } from 'api/auth';
 import { FormError } from 'shared/components/FormError';
 import { PASSWORD_VALIDATION } from 'shared/constants/form-validation';
 import { AuthPageLayout } from 'auth/components/PageLayout';
 import { INDEX_PAGE } from 'shared/constants/routes';
 import { Button, Label, PasswordInput } from '@rebrowse/elements';
 import { applyApiFormErrors } from 'shared/utils/form';
+import { client } from 'sdk';
 
 type Props = {
   token: string;
@@ -40,7 +40,7 @@ export const PasswordResetPage = ({ token }: Props) => {
     }
     setIsSubmitting(true);
 
-    AuthApi.password
+    client.auth.password
       .reset(token, formData.password)
       .then(() => router.replace(INDEX_PAGE))
       .catch(async (error) => {

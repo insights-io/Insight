@@ -1,5 +1,5 @@
 import type { QueryParam, SearchBean } from '@rebrowse/types';
-import type { RequestOptions } from 'types';
+import type { ExtendedRequestOptions } from 'types';
 
 export type PageVisitSearchQueryParams = {
   createdAt?: QueryParam;
@@ -14,6 +14,6 @@ export type PageVisitSearchBean<
 
 export type PageVisitSearchRequestOptions<
   GroupBy extends (keyof PageVisitSearchQueryParams)[] = []
-> = Omit<RequestOptions, 'searchParams'> & {
+> = Omit<ExtendedRequestOptions, 'searchParams'> & {
   search?: PageVisitSearchBean<GroupBy>;
 };

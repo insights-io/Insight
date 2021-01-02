@@ -1,29 +1,35 @@
-import ky from 'ky-universal';
 import type { InvoiceDTO } from '@rebrowse/types';
-import type { RequestOptions } from 'types';
-import { withCredentials } from 'utils';
+import type { ExtendedRequestOptions, HttpClient } from 'types';
 
 import { jsonDataResponse } from '../../http';
 
-export const invoicesResource = (billingApiBaseURL: string) => {
+export const invoicesResource = (
+  client: HttpClient,
+  billingApiBaseURL: string
+) => {
   return {
     listBySubscription: (
       subscriptionId: string,
-      { baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}
+      {
+        baseUrl = billingApiBaseURL,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<InvoiceDTO[]>(
-        ky.get(
-          `${baseURL}/v1/billing/subscriptions/${subscriptionId}/invoices`,
-          withCredentials(rest)
+        client.get(
+          `${baseUrl}/v1/billing/subscriptions/${subscriptionId}/invoices`,
+          requestOptions
         )
       );
     },
-
-    list: ({ baseURL = billingApiBaseURL, ...rest }: RequestOptions = {}) => {
+    list: ({
+      baseUrl = billingApiBaseURL,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
       return jsonDataResponse<InvoiceDTO[]>(
-        ky.get(
-          `${baseURL}/v1/billing/subscriptions/invoices`,
-          withCredentials(rest)
+        client.get(
+          `${baseUrl}/v1/billing/subscriptions/invoices`,
+          requestOptions
         )
       );
     },

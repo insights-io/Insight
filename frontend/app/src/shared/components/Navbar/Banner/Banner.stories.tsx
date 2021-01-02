@@ -9,7 +9,7 @@ import {
 } from '__tests__/data';
 import type { Meta } from '@storybook/react';
 import { Theme } from 'baseui/theme';
-import { AuthApi } from 'api';
+import { client } from 'sdk';
 
 import { NavbarBanner } from './Banner';
 
@@ -53,7 +53,7 @@ export const Base = () => {
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso.session, 'logout').resolves();
+    return sandbox.stub(client.auth.sso.sessions, 'logout').resolves();
   },
 });
 
@@ -73,6 +73,6 @@ export const NamelessUserAndOrganization = () => {
 };
 NamelessUserAndOrganization.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(AuthApi.sso.session, 'logout').resolves();
+    return sandbox.stub(client.auth.sso.sessions, 'logout').resolves();
   },
 });

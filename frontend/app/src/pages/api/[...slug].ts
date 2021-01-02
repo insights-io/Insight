@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { nextProxy } from '@rebrowse/service-proxy';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

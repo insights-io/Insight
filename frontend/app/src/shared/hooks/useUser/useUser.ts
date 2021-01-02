@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
-import { AuthApi } from 'api/auth';
 import { mapUser } from '@rebrowse/sdk';
 import type { UpdateUserPayload } from '@rebrowse/sdk/dist/auth';
 import type { PhoneNumber, UserDTO } from '@rebrowse/types';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
+import { client } from 'sdk';
 
 const CACHE_KEY = ['AuthApi', 'user', 'me'];
 const queryFn = () =>
-  AuthApi.user.me().then((httpResponse) => httpResponse.data);
+  client.auth.users.me().then((httpResponse) => httpResponse.data);
 
 export const useUser = (initialData: UserDTO) => {
   const queryClient = useQueryClient();
@@ -15,7 +15,9 @@ export const useUser = (initialData: UserDTO) => {
 
   const { mutateAsync: updateUser } = useMutation(
     (payload: UpdateUserPayload) =>
-      AuthApi.user.update(payload).then((httpResponse) => httpResponse.data),
+      client.auth.users
+        .update(payload)
+        .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (updatedUser) => {
         queryClient.setQueryData<UserDTO>(CACHE_KEY, updatedUser);
@@ -25,8 +27,8 @@ export const useUser = (initialData: UserDTO) => {
 
   const { mutateAsync: updatePhoneNumber } = useMutation(
     (phoneNumber: PhoneNumber | undefined | null) =>
-      AuthApi.user
-        .updatePhoneNumber(phoneNumber)
+      client.auth.users.phoneNumber
+        .update(phoneNumber)
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (updatedUser) => {
@@ -37,8 +39,8 @@ export const useUser = (initialData: UserDTO) => {
 
   const { mutateAsync: verifyPhoneNumber } = useMutation(
     (code: number) =>
-      AuthApi.user
-        .phoneNumberVerify(code)
+      client.auth.users.phoneNumber
+        .verify(code)
         .then((httpResponse) => httpResponse.data),
     {
       onSuccess: (updatedUser) => {

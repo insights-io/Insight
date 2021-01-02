@@ -9,8 +9,8 @@ import {
   prepareCrossServiceHeaders,
   startRequestSpan,
 } from 'shared/utils/tracing';
-import { AuthApi } from 'api';
 import type { UserDTO } from '@rebrowse/types';
+import { client } from 'sdk';
 
 type Props = AuthenticatedServerSideProps & {
   members: UserDTO[];
@@ -49,16 +49,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       cookie: `SessionId=${authResponse.SessionId}`,
     };
 
-    const membersPromise = AuthApi.organization.members
-      .list({
-        baseURL: process.env.AUTH_API_BASE_URL,
-        search: { limit: 20, sortBy: ['+createdAt'] },
-        headers,
-      })
+    const membersPromise = client.auth.organizations.members
+      .list({ search: { limit: 20, sortBy: ['+createdAt'] }, headers })
       .then((httpResponse) => httpResponse.data);
 
-    const memberCountPromise = AuthApi.organization.members
-      .count({ baseURL: process.env.AUTH_API_BASE_URL, headers })
+    const memberCountPromise = client.auth.organizations.members
+      .count({ headers })
       .then((httpResponse) => httpResponse.data.count);
 
     const [members, memberCount] = await Promise.all([

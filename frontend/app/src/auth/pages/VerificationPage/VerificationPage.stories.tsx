@@ -4,9 +4,9 @@ import {
   configureStory,
   mockApiError,
 } from '@rebrowse/storybook';
-import { AuthApi } from 'api/auth';
 import { MFA_METHODS } from '__tests__/data';
 import type { Meta } from '@storybook/react';
+import { client } from 'sdk';
 
 import { VerificationPage } from './VerificationPage';
 
@@ -23,7 +23,7 @@ Base.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.mfa.challenge, 'complete')
+        .stub(client.auth.mfa.challenge, 'complete')
         .resolves({ statusCode: 200, headers: new Headers() }),
     };
   },
@@ -46,7 +46,7 @@ WithMissingChallengeIdError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.mfa.challenge, 'complete')
+        .stub(client.auth.mfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,
@@ -72,7 +72,7 @@ WithExpiredChallengeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.mfa.challenge, 'complete')
+        .stub(client.auth.mfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,
@@ -95,7 +95,7 @@ WithInvalidCodeError.story = configureStory({
   setupMocks: (sandbox) => {
     return {
       challengeComplete: sandbox
-        .stub(AuthApi.mfa.challenge, 'complete')
+        .stub(client.auth.mfa.challenge, 'complete')
         .callsFake(() => {
           const apiError = mockApiError({
             statusCode: 400,

@@ -4,14 +4,14 @@ import type {
   SsoMethod,
   SsoSetupDTO,
 } from '@rebrowse/types';
-import { AuthApi } from 'api';
 import { useMemo } from 'react';
+import { client } from 'sdk';
 import { useMutation, useQuery, useQueryClient } from 'shared/hooks/useQuery';
 
 const CACHE_KEY = ['AuthApi', 'sso', 'setup', 'get'];
 const queryFn = () =>
-  AuthApi.sso.setup
-    .get()
+  client.auth.sso.setups
+    .retrieve()
     .then((httpResponse) => httpResponse.data)
     .catch((error) => {
       if ((error.response as Response).status === 404) {
@@ -25,7 +25,7 @@ export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
   const { data } = useQuery(CACHE_KEY, queryFn, { initialData });
 
   const { mutateAsync: deleteSsoSetup } = useMutation(
-    () => AuthApi.sso.setup.delete(),
+    () => client.auth.sso.setups.delete(),
     {
       onSuccess: () => {
         queryClient.setQueryData<SsoSetupDTO | undefined>(CACHE_KEY, undefined);
@@ -35,7 +35,7 @@ export const useSsoSetup = (initialData: SsoSetupDTO | undefined) => {
 
   const { mutateAsync: createSsoSetup } = useMutation(
     ({ method, saml }: { method: SsoMethod; saml?: SamlConfigurationDTO }) =>
-      AuthApi.sso.setup
+      client.auth.sso.setups
         .create(method, saml)
         .then((httpResponse) => httpResponse.data),
     {
