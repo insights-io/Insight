@@ -2,7 +2,7 @@ import React from 'react';
 import { NextPageContext } from 'next';
 import { isServer } from 'shared/utils/next';
 import Router from 'next/router';
-import { ErrorPage } from 'modules/app/pages/ErrorPage';
+import { ErrorPage } from 'shared/pages/ErrorPage';
 
 type Props = {
   statusCode: number;
