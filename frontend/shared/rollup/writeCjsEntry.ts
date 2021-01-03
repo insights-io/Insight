@@ -4,14 +4,14 @@ import path from 'path';
 
 import fs from 'fs-extra';
 
-export const getNameFromMain = (main: string) => {
-  const split = main.split('/');
+export const getBasename = (value: string) => {
+  const split = value.split('/');
   const filename = split[split.length - 1];
   return filename.split('.')[0];
 };
 
 export const writeCjsEntryFile = (main: string, formatName = 'cjs') => {
-  const basename = getNameFromMain(main);
+  const basename = getBasename(main);
   const baseLine = `module.exports = require('./${basename}`;
 
   const contents = `

@@ -2,7 +2,7 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import nextCookie from 'next-cookies';
 import { sdk } from 'api';
-import { HomePage } from 'modules/home/pages/HomePage';
+import { HomePage } from 'landing/pages/HomePage';
 
 type Props = {
   loggedIn: boolean;
