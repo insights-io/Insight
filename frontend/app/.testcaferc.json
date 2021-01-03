@@ -1,5 +1,5 @@
 {
-  "selectorTimeout": 500,
+  "selectorTimeout": 1000,
   "quarantineMode": false,
   "skipJsErrors": true,
   "concurrency": 1,
