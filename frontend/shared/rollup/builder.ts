@@ -4,7 +4,7 @@
 import path from 'path';
 
 import { createRollupConfig, Options } from './createRollupConfig';
-import { writeCjsEntryFile, getNameFromMain } from './writeCjsEntry';
+import { writeCjsEntryFile, getBasename } from './writeCjsEntry';
 
 type Format = 'cjs' | 'esm' | 'umd';
 
@@ -43,9 +43,15 @@ const prepare = ({ name, formats, source, packageName }: Config) => {
 };
 
 export const bundle = () => {
-  const pkg = require(path.join(process.cwd(), 'package.json'));
-  const formats: Format[] = ['cjs'];
-  const name = getNameFromMain(pkg.main);
+  const pkgPath = path.join(process.cwd(), 'package.json');
+  const pkg = require(pkgPath);
+  const formats: Format[] = [];
+  const basename = pkg.main ? getBasename(pkg.main) : 'index';
+
+  if (pkg.main) {
+    formats.push('cjs');
+    writeCjsEntryFile(pkg.main);
+  }
 
   if (pkg.module || pkg['jsnext:main']) {
     formats.push('esm');
@@ -55,7 +61,14 @@ export const bundle = () => {
     formats.push('umd');
   }
 
-  writeCjsEntryFile(pkg.main);
+  if (formats.length === 0) {
+    throw new Error(`Could not extract formats from "${pkgPath}"`);
+  }
 
-  return prepare({ name, formats, source: pkg.source, packageName: pkg.name });
+  return prepare({
+    name: basename,
+    formats,
+    source: pkg.source,
+    packageName: pkg.name,
+  });
 };

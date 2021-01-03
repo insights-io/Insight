@@ -13,7 +13,7 @@ import {
   styletron,
   STYLETRON_HYDRATE_CLASSNAME,
 } from 'shared/styles/styletron';
-import { Server, Sheet } from 'styletron-engine-atomic';
+import type { Server, Sheet } from 'styletron-engine-atomic';
 
 type Props = {
   stylesheets: Sheet[];
