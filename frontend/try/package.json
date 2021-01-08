@@ -59,6 +59,6 @@
     "@types/react-dom": "17.0.0",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2",
-    "next-page-tester": "0.14.0"
+    "next-page-tester": "0.15.0"
   }
 }
