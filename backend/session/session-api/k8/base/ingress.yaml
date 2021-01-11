@@ -16,6 +16,13 @@ spec:
     - host: api.rebrowse.dev
       http:
         paths:
+          - path: /v1/pages
+            backend:
+              serviceName: session-api
+              servicePort: 80
+    - host: api.rebrowse.dev
+      http:
+        paths:
           - path: /v1/sessions
             backend:
               serviceName: session-api

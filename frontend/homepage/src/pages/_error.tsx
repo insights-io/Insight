@@ -3,10 +3,9 @@ import { NextPageContext } from 'next';
 import { isServer } from 'shared/utils/next';
 import Router from 'next/router';
 import { ErrorPage } from 'shared/pages/ErrorPage';
+import type { ErrorProps } from 'next/error';
 
-type Props = {
-  statusCode: number;
-};
+type Props = ErrorProps;
 
 const Error = ({ statusCode }: Props) => {
   return <ErrorPage statusCode={statusCode} />;
