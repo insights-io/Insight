@@ -23,7 +23,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 @Tag("integration")
 public class BeaconBeatResourceValidationTest {
 
-  private static final String BEACON_RESOURCE_BEAT_PATH = BeaconResource.PATH + "/beat";
+  private static final String BEACON_RESOURCE_BEAT_PATH = RecordingResource.PATH + "/beat";
 
   @ParameterizedTest
   @ValueSource(strings = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})

@@ -1,6 +1,5 @@
 import React from 'react';
 import { GetServerSideProps } from 'next';
-import nextCookie from 'next-cookies';
 import { sdk } from 'api';
 import { HomePage } from 'landing/pages/HomePage';
 
@@ -13,7 +12,7 @@ const Home = ({ loggedIn }: Props) => {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const { SessionId } = nextCookie(ctx);
+  const { SessionId } = ctx.req.cookies || {};
   if (!SessionId) {
     return { props: { loggedIn: false } };
   }

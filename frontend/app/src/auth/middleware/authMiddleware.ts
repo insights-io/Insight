@@ -15,7 +15,6 @@ import {
 } from 'shared/utils/tracing';
 import { LOGIN_PAGE, VERIFICATION_PAGE } from 'shared/constants/routes';
 import { client } from 'sdk';
-import nextCookie from 'next-cookies';
 
 export type Authenticated = {
   organization: OrganizationDTO;
@@ -27,8 +26,8 @@ export const authenticated = async (
   context: GetServerSidePropsContext,
   requestSpan: Span
 ): Promise<Authenticated | undefined> => {
-  const { SessionId, ChallengeId } = nextCookie(context);
-  const { url } = context.req;
+  const { url, cookies = {} } = context.req;
+  const { SessionId, ChallengeId } = cookies;
 
   const span = startSpan('authMiddleware.authenticated', {
     childOf: requestSpan,

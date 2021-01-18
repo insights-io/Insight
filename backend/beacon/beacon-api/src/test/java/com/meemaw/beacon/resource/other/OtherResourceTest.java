@@ -3,7 +3,7 @@ package com.meemaw.beacon.resource.other;
 import static com.meemaw.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.beacon.resource.v1.BeaconResource;
+import com.meemaw.beacon.resource.v1.RecordingResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.UUID;
 import org.junit.jupiter.api.Tag;
@@ -30,7 +30,7 @@ public class OtherResourceTest {
   public void get_path_should_throw__when_unsupported_method() {
     given()
         .when()
-        .get(BeaconResource.PATH + "/beat")
+        .get(RecordingResource.PATH + "/beat")
         .then()
         .statusCode(405)
         .body(

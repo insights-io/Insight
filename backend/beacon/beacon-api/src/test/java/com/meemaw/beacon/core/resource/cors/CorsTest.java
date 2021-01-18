@@ -2,7 +2,7 @@ package com.meemaw.beacon.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.meemaw.beacon.resource.v1.BeaconResource;
+import com.meemaw.beacon.resource.v1.RecordingResource;
 import com.meemaw.shared.SharedConstants;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
@@ -29,7 +29,7 @@ public class CorsTest {
                   .header("Origin", origin)
                   .header("Access-Control-Request-Method", method)
                   .when()
-                  .options(BeaconResource.PATH)
+                  .options(RecordingResource.PATH)
                   .then()
                   .statusCode(200)
                   .header("access-control-allow-origin", origin)

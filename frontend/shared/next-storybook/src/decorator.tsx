@@ -17,6 +17,7 @@ export const createNextDecorator = (Providers: AppProviders) => {
     skipIfNoParametersOrOptions: false,
     wrapper: (story, context, _settings: CustomWrapperSettings) => {
       const router: NextRouter = {
+        isReady: true,
         route: '/',
         pathname: '/',
         query: {},

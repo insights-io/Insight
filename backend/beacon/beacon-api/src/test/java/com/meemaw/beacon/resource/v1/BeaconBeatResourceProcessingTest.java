@@ -45,7 +45,7 @@ public class BeaconBeatResourceProcessingTest {
 
   // TODO: create new organization -- dont reuse
   private static final String ORGANIZATION_ID = SharedConstants.REBROWSE_ORGANIZATION_ID;
-  private static final String BEACON_RESOURCE_BEAT_PATH = BeaconResource.PATH + "/beat";
+  private static final String BEACON_RESOURCE_BEAT_PATH = RecordingResource.PATH + "/beat";
   private static List<UserEvent<?>> events;
   private static List<UserEvent<?>> unloadEvents;
 

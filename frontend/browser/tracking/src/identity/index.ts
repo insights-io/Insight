@@ -30,6 +30,7 @@ class Identity implements Connected {
     if (process.env.NODE_ENV !== 'production') {
       logger.debug('[initFromCookie]', { cookies, host, organizationId });
     }
+
     let maybeCookie = cookies[Identity.storageKey];
     if (!maybeCookie) {
       try {

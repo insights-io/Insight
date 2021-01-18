@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meemaw.beacon.model.Beacon;
 import com.meemaw.beacon.model.dto.BeaconDTO;
-import com.meemaw.beacon.service.BeaconService;
+import com.meemaw.beacon.service.RecordingService;
 import com.meemaw.shared.rest.response.Boom;
 import com.meemaw.shared.rest.status.MissingStatus;
 import java.util.Set;
@@ -19,16 +19,16 @@ import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BeaconResourceImpl implements BeaconResource {
+public class RecordingResourceImpl implements RecordingResource {
 
-  @Inject BeaconService beaconService;
+  @Inject RecordingService recordingService;
 
   @Inject ObjectMapper objectMapper;
 
   @Inject Validator validator;
 
   @Override
-  public CompletionStage<Response> beacon(
+  public CompletionStage<Response> beat(
       String organizationId, UUID sessionId, UUID deviceId, UUID pageVisitId, String payload) {
     BeaconDTO beaconDTO;
     try {
@@ -51,7 +51,7 @@ public class BeaconResourceImpl implements BeaconResource {
 
   private CompletionStage<Response> beacon(
       String organizationId, UUID sessionId, UUID deviceId, UUID pageVisitId, BeaconDTO beacon) {
-    return beaconService
+    return recordingService
         .process(organizationId, sessionId, deviceId, pageVisitId, Beacon.from(beacon))
         .thenApply(nothing -> Response.noContent().build());
   }
