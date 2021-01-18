@@ -72,15 +72,10 @@ const config = (env) => {
       }),
       terser({
         output: { comments: false },
-        compress: {
-          keep_infinity: true,
-          pure_getters: true,
-          passes: 10,
-        },
+        compress: { keep_infinity: true, pure_getters: true, passes: 10 },
         ecma: 5,
         warnings: true,
       }),
-
       gzipPlugin(),
     ],
     output: { file: output },

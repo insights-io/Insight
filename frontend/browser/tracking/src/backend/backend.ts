@@ -16,11 +16,11 @@ import { XHRTransport } from './transports/xhr';
 
 class Backend implements Connected {
   private readonly _context: Context;
-  private readonly _requestResponseTransport: RequestResponseTransport;
-  private readonly _maybeBeaconTransport: BaseTransport;
-  private readonly _pageVisitURL: string;
+  private readonly requestResponseTransport: RequestResponseTransport;
+  private readonly maybeBeaconTransport: BaseTransport;
+  private readonly pageVisitApiUrl: string;
 
-  private _beaconURL: string;
+  private beaconApiUrl: string;
 
   constructor(
     beaconApiBaseURL: string,
@@ -29,61 +29,63 @@ class Backend implements Connected {
     context: Context
   ) {
     this._context = context;
-    this._beaconURL = `${beaconApiBaseURL}/v1/beacon/beat?organizationId=${organizationId}`;
-    this._pageVisitURL = `${sessionApiBaseURL}/v1/pages`;
+    this.beaconApiUrl = `${beaconApiBaseURL}/v1/recording/beat?organizationId=${organizationId}`;
+    this.pageVisitApiUrl = `${sessionApiBaseURL}/v1/pages`;
 
     const globalObject = Context.getGlobalObject();
     if (FetchTranport.isSupported(globalObject)) {
-      this._requestResponseTransport = new FetchTranport();
+      this.requestResponseTransport = new FetchTranport();
       if (process.env.NODE_ENV !== 'production') {
         logger.debug('FetchTransport enabled');
       }
     } else {
-      this._requestResponseTransport = new XHRTransport();
+      this.requestResponseTransport = new XHRTransport();
       if (process.env.NODE_ENV !== 'production') {
         logger.debug('XHRTransport enabled');
       }
     }
 
     if (BeaconTransport.isSupported(globalObject)) {
-      this._maybeBeaconTransport = new BeaconTransport();
+      this.maybeBeaconTransport = new BeaconTransport();
       if (process.env.NODE_ENV !== 'production') {
         logger.debug('BeaconTransport enabled');
       }
     } else {
-      this._maybeBeaconTransport = this._requestResponseTransport;
+      this.maybeBeaconTransport = this.requestResponseTransport;
     }
   }
 
   public sendEvents = (e: BrowserEvent[]) => {
-    return this._sendEvents(this._requestResponseTransport, e);
+    return this._sendEvents(this.requestResponseTransport, e);
   };
 
   public sendBeacon = (e: BrowserEvent[]) => {
-    return this._sendEvents(this._maybeBeaconTransport, e);
+    return this._sendEvents(this.maybeBeaconTransport, e);
   };
 
   public connect = (identity: PageVisitSessionLink) => {
     const { sessionId, deviceId, pageVisitId } = identity;
-    this._beaconURL = `${this._beaconURL}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
+    this.beaconApiUrl = `${this.beaconApiUrl}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
   };
 
   // TODO: better error handling
   private _sendEvents = (transport: BaseTransport, e: BrowserEvent[]) => {
     const s = this._context.incrementAndGetSeq();
-    return transport.sendEvents(this._beaconURL, { e, s }).then((response) => {
-      if (response.status > 400 && response.status < 600) {
-        throw new Error(`Failed to create page status: ${response.status}`);
-      }
-      return response;
-    });
+    return transport
+      .sendEvents(this.beaconApiUrl, { e, s })
+      .then((response) => {
+        if (response.status > 400 && response.status < 600) {
+          throw new Error(`Failed to create page status: ${response.status}`);
+        }
+        return response;
+      });
   };
 
   // TODO: better error handling
   public page = (createParams: PageVisitCreateParams) => {
-    return this._requestResponseTransport
+    return this.requestResponseTransport
       .post<CreatePageResponse>(
-        this._pageVisitURL,
+        this.pageVisitApiUrl,
         JSON.stringify(createParams)
       )
       .then((response) => {

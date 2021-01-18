@@ -39,6 +39,7 @@ export const render = <Props, T, S extends StoryConfiguration<T>>(
     prefetch,
     events: { on: sandbox.stub(), off: sandbox.stub(), emit: sandbox.stub() },
     isFallback: false,
+    isReady: true,
   };
 
   const clientRouter = createRouter(pathname, query, asPath, {

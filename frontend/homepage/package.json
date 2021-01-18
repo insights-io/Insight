@@ -37,9 +37,8 @@
   },
   "dependencies": {
     "@rebrowse/sdk": "0.0.0-development",
-    "baseui": "9.106.3",
-    "next": "10.0.4",
-    "next-cookies": "2.0.3",
+    "baseui": "9.107.0",
+    "next": "10.0.5",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "styletron-engine-atomic": "1.4.6",
@@ -48,7 +47,7 @@
   "devDependencies": {
     "@rebrowse/next-testing": "0.0.0-development",
     "@rebrowse/next-storybook": "0.0.0-development",
-    "@next/bundle-analyzer": "10.0.4",
+    "@next/bundle-analyzer": "10.0.5",
     "@types/react": "17.0.0",
     "@types/react-dom": "17.0.0",
     "@types/styletron-engine-atomic": "1.1.0",

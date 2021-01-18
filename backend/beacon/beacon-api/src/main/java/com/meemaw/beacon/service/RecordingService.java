@@ -32,7 +32,7 @@ import org.slf4j.MDC;
 
 @ApplicationScoped
 @Slf4j
-public class BeaconService {
+public class RecordingService {
 
   @ConfigProperty(name = "session-api/mp-rest/url")
   String sessionApiBaseUrl;

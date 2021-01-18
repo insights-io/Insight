@@ -12,15 +12,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path(BeaconResource.PATH)
-public interface BeaconResource {
+@Path(RecordingResource.PATH)
+public interface RecordingResource {
 
-  String PATH = "/v1/beacon";
+  String PATH = "/v1/recording";
 
   @POST
   @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
   @Path("/beat")
-  CompletionStage<Response> beacon(
+  CompletionStage<Response> beat(
       @NotBlank(message = "Required")
           @Size(min = 6, max = 6, message = "Has to be " + 6 + " characters long")
           @QueryParam("organizationId")

@@ -10,7 +10,6 @@ import type { MfaMethod, UserDTO } from '@rebrowse/types';
 import { LOGIN_PAGE } from 'shared/constants/routes';
 import { SetupMultiFactorAuthenticationPage } from 'auth/pages/SetupMultiFactorAuthenticationPage';
 import { client } from 'sdk';
-import nextCookie from 'next-cookies';
 
 type Props =
   | { methods: MfaMethod[]; user?: undefined }
@@ -29,7 +28,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 ) => {
   const requestSpan = startRequestSpan(context.req);
   try {
-    const { ChallengeId } = nextCookie(context);
+    const { ChallengeId } = context.req.cookies || {};
     const relativeRedirect = (context.query.redirect || '/') as string;
 
     if (!ChallengeId) {

@@ -16,7 +16,7 @@ spec:
     - host: api.rebrowse.dev
       http:
         paths:
-          - path: /v1/beacon
+          - path: /v1/recording
             backend:
               serviceName: beacon-api
               servicePort: 80
