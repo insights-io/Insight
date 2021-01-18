@@ -14,6 +14,14 @@ import { BaseTransport, RequestResponseTransport } from './transports/base';
 import { FetchTranport } from './transports/fetch';
 import { XHRTransport } from './transports/xhr';
 
+export const beaconBeatBaseUrl = (beaconApiBaseUrl: string) => {
+  return `${beaconApiBaseUrl}/v1/recording/beat`;
+};
+
+export const pageVisitBaseUrl = (sessionApiBaseUrl: string) => {
+  return `${sessionApiBaseUrl}/v1/pages`;
+};
+
 class Backend implements Connected {
   private readonly _context: Context;
   private readonly requestResponseTransport: RequestResponseTransport;
@@ -23,14 +31,16 @@ class Backend implements Connected {
   private beaconApiUrl: string;
 
   constructor(
-    beaconApiBaseURL: string,
-    sessionApiBaseURL: string,
+    beaconApiBaseUrl: string,
+    sessionApiBaseUrl: string,
     organizationId: string,
     context: Context
   ) {
     this._context = context;
-    this.beaconApiUrl = `${beaconApiBaseURL}/v1/recording/beat?organizationId=${organizationId}`;
-    this.pageVisitApiUrl = `${sessionApiBaseURL}/v1/pages`;
+    this.pageVisitApiUrl = pageVisitBaseUrl(sessionApiBaseUrl);
+    this.beaconApiUrl = `${beaconBeatBaseUrl(
+      beaconApiBaseUrl
+    )}?organizationId=${organizationId}`;
 
     const globalObject = Context.getGlobalObject();
     if (FetchTranport.isSupported(globalObject)) {

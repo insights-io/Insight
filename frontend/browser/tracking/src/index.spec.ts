@@ -10,6 +10,8 @@ import Identity from 'identity';
 import type { RebrowseWindow } from 'types';
 import type { EventData } from 'event';
 
+import { beaconBeatBaseUrl, pageVisitBaseUrl } from './backend';
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface Window extends RebrowseWindow {}
@@ -84,7 +86,7 @@ describe('tracking script', () => {
       await setupPage(page);
 
       console.log('Waiting for session api response...');
-      const pageVisitUrl = `${sessionApiBaseUrl}/v1/pages`;
+      const pageVisitUrl = pageVisitBaseUrl(sessionApiBaseUrl);
       const pageResponse = await page.waitForResponse(
         (resp: Response) => resp.url() === pageVisitUrl
       );
@@ -100,7 +102,9 @@ describe('tracking script', () => {
         data: { sessionId, deviceId, pageVisitId },
       } = await parsePageResponse(pageResponse);
 
-      const beaconBeatUrl = `${beaconApiBaseUrl}/v1/beacon/beat?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
+      const beaconBeatUrl = `${beaconBeatBaseUrl(
+        beaconApiBaseUrl
+      )}?organizationId=${I_ORGANIZATION}&sessionId=${sessionId}&deviceId=${deviceId}&pageVisitId=${pageVisitId}`;
 
       const { cookie, localStorage } = await page.evaluate(() => {
         return {
