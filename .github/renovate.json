@@ -9,8 +9,32 @@
       "enabled": false
     },
     {
-      "groupName": "visx",
+      "groupName": "monorepo:jackson",
+      "managers": ["gradle"],
+      "packagePatterns": ["^com.fasterxml.jackson.core"]
+    },
+    {
+      "groupName": "monorepo:elastic",
+      "managers": ["gradle"],
+      "packagePatterns": ["^docker.elastic.co"]
+    },
+    {
+      "groupName": "monorepo:visx",
       "packagePatterns": ["^@visx/"]
+    },
+    {
+      "groupName": "monorepo:eslint",
+      "packageNames": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint",
+        "eslint-config-prettier",
+        "eslint-plugin-jest",
+        "eslint-plugin-prettier",
+        "eslint-plugin-react",
+        "eslint-plugin-react-hooks",
+        "eslint-plugin-testing-library"
+      ]
     }
   ]
 }
