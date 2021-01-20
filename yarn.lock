@@ -14096,18 +14096,6 @@ nested-error-stacks@^2.0.0, nested-error-stacks@^2.1.0:
   resolved "https://registry.yarnpkg.com/nested-error-stacks/-/nested-error-stacks-2.1.0.tgz#0fbdcf3e13fe4994781280524f8b96b0cdff9c61"
   integrity sha512-AO81vsIO1k1sM4Zrd6Hu7regmJN1NSiAja10gc4bX3F0wd+9rQmcuHQaHVQCYIEC8iFXnE+mavh23GOt7wBgug==
 
-next-page-tester@0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/next-page-tester/-/next-page-tester-0.15.0.tgz#a5de2ba6e6c3cde6e192a91a31752cd197a329ac"
-  integrity sha512-zgiqsFmvMDiZcN0PhefxIE4FdNIdkiQ0isR8jI8Or3+jKe3vugsKEOYY92LXQzbKkTJt9R2Gx4oMaNpBfgAODg==
-  dependencies:
-    "@types/express" "^4.17.8"
-    fast-glob "^3.2.4"
-    find-root "^1.1.0"
-    node-mocks-http "^1.9.0"
-    normalize-path "^3.0.0"
-    stealthy-require "^1.1.1"
-
 next-page-tester@0.17.0:
   version "0.17.0"
   resolved "https://registry.yarnpkg.com/next-page-tester/-/next-page-tester-0.17.0.tgz#8cb0b6e787eff9dad08faf9838dce952cd1e81d6"

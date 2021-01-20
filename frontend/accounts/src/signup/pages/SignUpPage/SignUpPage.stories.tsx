@@ -3,15 +3,15 @@ import { configureStory, mockApiError } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
 import { sdk } from 'api';
 
-import { GetStartedPage } from './GetStartedPage';
+import { SignUpPage } from './SignUpPage';
 
 export default {
-  title: 'signup/pages/GetStartedPage',
-  component: GetStartedPage,
+  title: 'signup/pages/SignUpPage',
+  component: SignUpPage,
 } as Meta;
 
 export const Base = () => {
-  return <GetStartedPage />;
+  return <SignUpPage />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
@@ -22,7 +22,7 @@ Base.story = configureStory({
 });
 
 export const WithError = () => {
-  return <GetStartedPage />;
+  return <SignUpPage />;
 };
 WithError.story = configureStory({
   setupMocks: (sandbox) => {

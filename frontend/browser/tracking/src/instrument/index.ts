@@ -25,8 +25,7 @@ export function insrumentXMLHttpRequest(
 ): XMLHttpRequest['send'] | undefined {
   const xhrproto = XMLHttpRequest.prototype;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error its okay
   monkeyPatch(xhrproto, 'open', (original) => {
     return function (
       this: WrappedXMLHttpRequest,

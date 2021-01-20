@@ -16,8 +16,7 @@ export const setupEnvironment = () => {
 
   // Mock IntersectionObserver (Link component relies on it)
   if (!global.IntersectionObserver) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error missing dom type
     global.IntersectionObserver = IntersectionObserver;
   }
 

@@ -1,8 +1,6 @@
 import React from 'react';
-import { SignupConfirmPage } from 'signup/pages/SignupConfirmPage';
+import { SignUpConfirmPage } from 'signup/pages/SignUpConfirmPage';
 
-const SignupConfirm = () => {
-  return <SignupConfirmPage />;
-};
-
-export default SignupConfirm;
+export default function SignUpConfirm() {
+  return <SignUpConfirmPage />;
+}

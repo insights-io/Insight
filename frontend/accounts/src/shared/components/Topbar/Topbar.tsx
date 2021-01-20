@@ -2,19 +2,18 @@ import React from 'react';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H6 } from 'baseui/typography';
-import { Button, SHAPE } from 'baseui/button';
 import {
   SpacedBetween,
   UnstyledLink,
   VerticalAligned,
+  Button,
 } from '@rebrowse/elements';
 
 type Props = {
-  appBaseURL: string;
   helpBaseURL: string;
 };
 
-export const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
+export const Topbar = ({ helpBaseURL }: Props) => {
   const [_css, theme] = useStyletron();
 
   return (
@@ -32,14 +31,13 @@ export const Topbar = ({ appBaseURL, helpBaseURL }: Props) => {
             href={helpBaseURL}
             $style={{ marginRight: theme.sizing.scale600 }}
           >
-            <Button shape={SHAPE.pill} size="compact" kind="minimal">
+            <Button
+              size="compact"
+              kind="minimal"
+              // @ts-expect-error wrong typing
+              tabIndex={-1}
+            >
               Help
-            </Button>
-          </UnstyledLink>
-
-          <UnstyledLink href={appBaseURL}>
-            <Button shape={SHAPE.pill} size="compact" kind="minimal">
-              Log in
             </Button>
           </UnstyledLink>
         </Block>

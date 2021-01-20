@@ -6,14 +6,12 @@ import { TracingConfig } from 'jaeger-client';
 import { MockTracer as OpentracingMockTracer, Tracer } from 'opentracing';
 
 class FixedMockTracer extends OpentracingMockTracer {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error cannot return never
   protected _inject(_span: unknown, _format: unknown, _carrier: unknown): void {
     return undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error cannot return never
   // eslint-disable-next-line lodash/prefer-constant
   protected _extract(_format: unknown, _carrier: unknown) {
     return null;

@@ -40,6 +40,8 @@ module.exports = {
     'no-use-before-define': ['off'],
     'no-shadow': ['off'],
 
+    'lodash/prefer-lodash-typecheck': ['off'],
+
     'import/no-unresolved': ['off'],
     'import/no-extraneous-dependencies': ['off'],
     'import/extensions': ['off'],

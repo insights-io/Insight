@@ -73,7 +73,10 @@ export const SignUpForm = ({
           name="fullName"
           placeholder="John Doe"
           required
-          inputRef={register({ required: 'Required' })}
+          ref={(ref) => {
+            register(ref, { required: 'Required' });
+            ref?.focus();
+          }}
           error={Boolean(errors.fullName)}
         />
       </FormControl>
@@ -90,7 +93,7 @@ export const SignUpForm = ({
         <Input
           placeholder="Example"
           name="company"
-          inputRef={register({ required: 'Required' })}
+          ref={register({ required: 'Required' })}
           error={Boolean(errors.company)}
         />
       </FormControl>
@@ -121,7 +124,7 @@ export const SignUpForm = ({
         <EmailInput
           placeholder="john.doe@gmail.com"
           required
-          inputRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
@@ -142,8 +145,7 @@ export const SignUpForm = ({
         error={errors.password?.message}
       >
         <PasswordInput
-          ref={register}
-          inputRef={register({
+          ref={register({
             required: 'Required',
             minLength: {
               value: minPasswordLength,
