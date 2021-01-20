@@ -1,16 +1,16 @@
-# Try
+# Accounts
 
-[![storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://try.storybook.rebrowse.dev/index.html)
+[![storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://accounts.storybook.rebrowse.dev/index.html)
 
-Try Rebrowse application.
+Rebrowse accounts application.
 
 ## Deployments
 
-Staging: https://try.rebrowse.dev/
+Staging: https://accounts.rebrowse.dev/
 
 ## Storybook
 
-You can find up to date Storybook [here](https://try.storybook.rebrowse.dev/index.html).
+You can find up to date Storybook [here](https://accounts.storybook.rebrowse.dev/index.html).
 
 ## Testing with locally build tracking script
 

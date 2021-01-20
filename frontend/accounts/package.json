@@ -1,8 +1,8 @@
 {
-  "name": "@rebrowse/try",
+  "name": "@rebrowse/accounts",
   "version": "0.0.0-development",
   "private": true,
-  "description": "Rebrowse try",
+  "description": "Rebrowse accounts application",
   "license": "MIT",
   "author": "Rebrowse Engineering",
   "homepage": "https://github.com/insights-io/insight#readme",
