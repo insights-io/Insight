@@ -1,7 +1,10 @@
+import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { getPage } from 'next-page-tester';
+import { client } from 'sdk';
 import { PASSWORD_FORGOT_ROUTE } from 'shared/constants/routes';
+import userEvent from '@testing-library/user-event';
+import type { Awaited } from 'shared/utils/types';
 
 describe('/password-forgot', () => {
   const setup = async () => {
@@ -53,6 +56,47 @@ describe('/password-forgot', () => {
       expect(document.activeElement).toEqual(rememberPasswordLink);
       userEvent.tab();
       expect(document.activeElement).toEqual(emailInput);
+    });
+  });
+
+  describe('As a user I can forget my password', () => {
+    const email = 'john.doe@gmail.com';
+
+    const passwordForgotFlow = async (
+      submitHandler: (setupResult: Awaited<ReturnType<typeof setup>>) => void
+    ) => {
+      const passwordForgotStub = sandbox
+        .stub(client.password, 'forgot')
+        .resolves();
+
+      const setupResult = await setup();
+      const { emailInput } = setupResult;
+
+      userEvent.type(emailInput, email);
+
+      submitHandler(setupResult);
+
+      await screen.findByRole('heading', { name: 'Check your inbox!' });
+      expect(
+        screen.getByRole('heading', {
+          name:
+            'If your email address is associated with an Rebrowse account, you will be receiving a password reset request shortly.',
+        })
+      ).toBeInTheDocument();
+
+      sandbox.assert.calledWithExactly(passwordForgotStub, email);
+    };
+
+    test('Using onClick', async () => {
+      await passwordForgotFlow(({ continueButton }) =>
+        userEvent.click(continueButton)
+      );
+    });
+
+    test('{enter} keypress', async () => {
+      await passwordForgotFlow(({ emailInput }) =>
+        userEvent.type(emailInput, '{enter}')
+      );
     });
   });
 });

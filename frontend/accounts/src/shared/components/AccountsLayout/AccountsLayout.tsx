@@ -48,7 +48,6 @@ const Header = React.forwardRef<HTMLHeadingElement, BlockProps>(
       <H1
         ref={ref}
         $style={{
-          marginBottom: theme.sizing.scale800,
           marginTop: 0,
           fontWeight: 700,
           fontSize: theme.typography.font950.fontSize,
@@ -67,8 +66,6 @@ const SubHeader = React.forwardRef<HTMLHeadingElement, BlockProps>(
       <H2
         ref={ref}
         color={theme.colors.primary400}
-        marginTop={theme.sizing.scale400}
-        marginBottom={theme.sizing.scale1000}
         $style={{
           fontSize: theme.typography.font450.fontSize,
           lineHeight: 'normal',

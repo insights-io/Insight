@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStory, mockApiError } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
-import { sdk } from 'api';
+import { client } from 'sdk';
 
 import { SignUpPage } from './SignUpPage';
 
@@ -16,7 +16,7 @@ export const Base = () => {
 Base.story = configureStory({
   setupMocks: (sandbox) => {
     return sandbox
-      .stub(sdk.signup, 'create')
+      .stub(client.signup, 'create')
       .resolves({ statusCode: 200, headers: new Headers() });
   },
 });
@@ -26,7 +26,7 @@ export const WithError = () => {
 };
 WithError.story = configureStory({
   setupMocks: (sandbox) => {
-    return sandbox.stub(sdk.signup, 'create').rejects(
+    return sandbox.stub(client.signup, 'create').rejects(
       mockApiError({
         statusCode: 400,
         reason: 'Bad Request',

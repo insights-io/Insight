@@ -1,4 +1,4 @@
-import { authApiBaseUrl } from 'api';
+import { authApiBaseUrl } from 'sdk';
 
 type OAuthIntegration = 'google' | 'github' | 'microsoft';
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { H1, Paragraph1, Paragraph3 } from 'baseui/typography';
+import { Paragraph3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
 import { SignUpForm } from 'signup/components/SignUpForm';
 import { Flex } from '@rebrowse/elements';
-import { sdk } from 'api';
+import { client } from 'sdk';
 import { seoTitle } from 'shared/utils/seo';
 import { AccountsLayout } from 'shared/components/AccountsLayout';
 import { StyledLink } from 'baseui/link';
@@ -23,14 +23,14 @@ export const SignUpPage = () => {
           </Head>
 
           <Block className={css({ textAlign: 'center' })}>
-            <AccountsLayout.Header>{TITLE}</AccountsLayout.Header>
+            <AccountsLayout.Header margin={0}>{TITLE}</AccountsLayout.Header>
             <AccountsLayout.SubHeader>
               You&apos;re minutes away from insights.
             </AccountsLayout.SubHeader>
           </Block>
 
           <Block marginTop={theme.sizing.scale1000}>
-            <SignUpForm onSubmit={sdk.signup.create} />
+            <SignUpForm onSubmit={client.signup.create} />
           </Block>
 
           <Flex justifyContent="center">

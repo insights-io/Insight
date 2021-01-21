@@ -10,6 +10,10 @@ import { LOGIN_HINT_QUERY, SIGNIN_ROUTE } from 'shared/constants/routes';
 import { EMAIL_VALIDATION } from 'shared/constants/form-validation';
 import { useForm } from 'react-hook-form';
 import { StyledLink } from 'baseui/link';
+import { client } from 'sdk';
+import { setFormErrors } from 'shared/utils/form';
+import { CheckYourInboxPage } from 'password/pages/CheckYourInboxPage';
+import type { APIErrorDataResponse } from '@rebrowse/types';
 
 type FormData = {
   email: string;
@@ -20,9 +24,29 @@ export type Props = Partial<FormData>;
 const TITLE = 'Forgot password?';
 
 export const PasswordForgotPage = (defaultValues: Props) => {
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, errors, watch } = useForm<FormData>({
-    defaultValues,
+  const { register, handleSubmit, errors, watch, setError } = useForm<FormData>(
+    { defaultValues, shouldFocusError: false }
+  );
+
+  if (resetEmailSent) {
+    return <CheckYourInboxPage />;
+  }
+
+  const onSubmit = handleSubmit((formData) => {
+    setIsSubmitting(true);
+
+    client.password
+      .forgot(formData.email)
+      .then(() => setResetEmailSent(true))
+      .catch(async (error) => {
+        const errorDTO: APIErrorDataResponse<
+          Record<string, string>
+        > = await error.response.json();
+        setFormErrors(setError, errorDTO.error.errors);
+      })
+      .finally(() => setIsSubmitting(false));
   });
 
   const email = watch('email');
@@ -30,21 +54,16 @@ export const PasswordForgotPage = (defaultValues: Props) => {
     ? `${SIGNIN_ROUTE}?${LOGIN_HINT_QUERY}=${email}`
     : SIGNIN_ROUTE;
 
-  const onSubmit = handleSubmit((_formData) => {
-    setIsSubmitting(true);
-  });
-
   return (
     <AccountsLayout>
-      {() => (
+      {({ theme }) => (
         <>
           <Head>
             <title>{seoTitle(TITLE)}</title>
           </Head>
 
           <AccountsLayout.Header>{TITLE}</AccountsLayout.Header>
-
-          <AccountsLayout.SubHeader>
+          <AccountsLayout.SubHeader marginBottom={theme.sizing.scale800}>
             Enter your email below and we&apos;ll send you a link to reset your
             password.
           </AccountsLayout.SubHeader>
