@@ -7,3 +7,4 @@ export * from './Panel';
 export * from './SpacedBetween';
 export * from './UnstyledLink';
 export * from './VerticalAligned';
+export * from './Divider';

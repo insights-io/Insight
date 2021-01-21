@@ -4,10 +4,11 @@ import { helpBaseURL } from 'shared/config';
 import userEvent from '@testing-library/user-event';
 import { sandbox } from '@rebrowse/testing';
 import { sdk } from 'api';
+import { SIGNUP_ROUTE } from 'shared/constants/routes';
 
 describe('/signup', () => {
   const setup = async () => {
-    const { render } = await getPage({ route: '/signup', useApp: false });
+    const { render } = await getPage({ route: SIGNUP_ROUTE, useApp: false });
     render();
 
     // TODO: SEO
@@ -39,7 +40,7 @@ describe('/signup', () => {
 
     // buttons
     const submitButton = screen.getByRole('button', { name: 'Get started' });
-    const showPasswordText = screen.getByRole('button', {
+    const showPasswordButton = screen.getByRole('button', {
       name: 'Show password text',
     });
 
@@ -56,14 +57,14 @@ describe('/signup', () => {
       phoneNumberInput,
       submitButton,
       countryInput,
-      showPasswordText,
+      showPasswordButton,
       logInLink,
       helpLink,
     };
   };
 
   describe('As a user I want the page to be accessible', () => {
-    test('Using tab button', async () => {
+    test('Navigation via tabbing', async () => {
       const {
         fullNameInput,
         companyInput,
@@ -72,7 +73,7 @@ describe('/signup', () => {
         passwordInput,
         submitButton,
         countryInput,
-        showPasswordText,
+        showPasswordButton,
         logInLink,
         helpLink,
       } = await setup();
@@ -89,7 +90,7 @@ describe('/signup', () => {
       userEvent.tab();
       expect(document.activeElement).toEqual(passwordInput);
       userEvent.tab();
-      expect(document.activeElement).toEqual(showPasswordText);
+      expect(document.activeElement).toEqual(showPasswordButton);
       userEvent.tab();
       expect(document.activeElement).toEqual(submitButton);
       userEvent.tab();

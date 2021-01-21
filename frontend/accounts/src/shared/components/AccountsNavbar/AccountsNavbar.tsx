@@ -1,5 +1,4 @@
 import React from 'react';
-import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';
 import { H6 } from 'baseui/typography';
 import {
@@ -8,19 +7,21 @@ import {
   VerticalAligned,
   Button,
 } from '@rebrowse/elements';
+import type { Theme } from 'baseui/theme';
+import type { StyleObject } from 'styletron-react';
 
 type Props = {
   helpBaseURL: string;
+  theme: Theme;
+  css: (arg: StyleObject) => string;
 };
 
-export const Topbar = ({ helpBaseURL }: Props) => {
-  const [_css, theme] = useStyletron();
-
+export const AccountsNavbar = ({ helpBaseURL, theme, css }: Props) => {
   return (
     <Block
       as="nav"
       padding={theme.sizing.scale600}
-      $style={{ borderBottom: `1px solid ${theme.colors.primary200}` }}
+      className={css({ borderBottom: `1px solid ${theme.colors.primary200}` })}
     >
       <SpacedBetween>
         <VerticalAligned>

@@ -1,5 +1,6 @@
 import React from 'react';
+import { SignInPage } from 'signin/pages/SignInPage';
 
-export default function GetStarted() {
-  return <div>TODO</div>;
+export default function SignIn(props: unknown) {
+  return <SignInPage />;
 }

@@ -1,8 +1,9 @@
 import { appBaseURL } from 'shared/config';
 import type { GetServerSideProps } from 'next';
 
-// eslint-disable-next-line lodash/prefer-constant
-const SignUpCompletedCallback = () => null;
+export default function SignUpCompletedCallback() {
+  return null;
+}
 
 export const getServerSideProps: GetServerSideProps = async () => {
   return {
@@ -12,5 +13,3 @@ export const getServerSideProps: GetServerSideProps = async () => {
     },
   };
 };
-
-export default SignUpCompletedCallback;

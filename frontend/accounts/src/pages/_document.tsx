@@ -80,8 +80,8 @@ class RebrowseDocument extends Document<Props> {
                 height: 100%;
                 margin: 0px;
               }
-              [data-baseweb="phone-input"] {
-                background-color: white !important;
+              *, *::before, *::after {
+                box-sizing: border-box;
               }
             `}
           </style>

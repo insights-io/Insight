@@ -2,12 +2,12 @@ import React from 'react';
 import Head from 'next/head';
 import { H6 } from 'baseui/typography';
 import { seoTitle } from 'shared/utils/seo';
-import { Layout } from 'shared/components/Layout';
+import { AccountsLayout } from 'shared/components/AccountsLayout';
 
 export const SignUpConfirmPage = () => {
   return (
-    <Layout>
-      {([css]) => (
+    <AccountsLayout>
+      {({ css }) => (
         <>
           <Head>
             <title>{seoTitle('Confirm your email address')}</title>
@@ -18,6 +18,6 @@ export const SignUpConfirmPage = () => {
           </H6>
         </>
       )}
-    </Layout>
+    </AccountsLayout>
   );
 };

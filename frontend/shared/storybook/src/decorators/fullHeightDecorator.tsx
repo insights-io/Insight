@@ -1,7 +1,10 @@
 import React from 'react';
 import { StoryFn, StoryContext } from '@storybook/addons';
 
-function fullHeightDecorator<T>(storyFn: StoryFn<T>, context: StoryContext) {
+export function fullHeightDecorator<T>(
+  storyFn: StoryFn<T>,
+  context: StoryContext
+) {
   return (
     <>
       <style
@@ -21,5 +24,3 @@ function fullHeightDecorator<T>(storyFn: StoryFn<T>, context: StoryContext) {
     </>
   );
 }
-
-export default fullHeightDecorator;
