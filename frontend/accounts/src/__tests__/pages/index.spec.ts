@@ -51,6 +51,33 @@ describe('/', () => {
     };
   };
 
+  test('As a user I can navigate between "Password forgot?" and login without using email', async () => {
+    const { emailInput, continueButton } = await setup();
+
+    const email = 'john.doe@gmail.com';
+    userEvent.type(emailInput, email);
+    userEvent.click(continueButton);
+    userEvent.click(await screen.findByRole('link', { name: 'Forgot?' }));
+
+    // password-forgot page
+    await screen.findByRole('heading', { name: 'Forgot password?' });
+    expect(
+      screen.getByRole('heading', {
+        name:
+          "Enter your email below and we'll send you a link to reset your password.",
+      })
+    ).toBeInTheDocument();
+
+    // input is prefilled
+    expect(screen.getByDisplayValue(email)).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('link', { name: 'Remember password?' }));
+
+    // index page
+    await screen.findByRole('heading', { name: 'Sign in to Rebrowse' });
+    expect(screen.getByDisplayValue(email)).toBeInTheDocument();
+  });
+
   describe('As a user I want the page to be accessible', () => {
     test('Navigation via tabbing', async () => {
       const {

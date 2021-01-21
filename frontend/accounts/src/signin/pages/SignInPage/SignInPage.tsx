@@ -19,15 +19,24 @@ import {
 import { H1 } from 'baseui/typography';
 import { SIZE } from 'baseui/button';
 import { StyledLink } from 'baseui/link';
-import { PASSWORD_FORGOT_ROUTE, SIGNUP_ROUTE } from 'shared/constants/routes';
+import {
+  LOGIN_HINT_QUERY,
+  PASSWORD_FORGOT_ROUTE,
+  SIGNUP_ROUTE,
+} from 'shared/constants/routes';
 import { useForm } from 'react-hook-form';
 import {
   EMAIL_VALIDATION,
   PASSWORD_VALIDATION,
 } from 'shared/constants/form-validation';
 import { UnreachableCaseError } from 'shared/utils/error';
+import type { Theme } from 'baseui/theme';
 
 import { createOAuth2IntegrationHrefBuilder } from './utils';
+
+export type Props = {
+  email?: string;
+};
 
 type FormData = {
   email: string;
@@ -36,7 +45,7 @@ type FormData = {
 
 type SignInStep = 0 | 1;
 
-export const SignInPage = () => {
+export const SignInPage = (defaultValues: Props) => {
   const { query } = useRouter();
   const relativeRedirect = (query.redirect || '/') as string;
   const absoluteRedirect = global.window
@@ -50,8 +59,9 @@ export const SignInPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<SignInStep>(0);
 
-  const { register, handleSubmit, errors } = useForm<FormData>({
+  const { register, handleSubmit, errors, watch } = useForm<FormData>({
     shouldFocusError: false,
+    defaultValues,
   });
 
   const onSubmit = handleSubmit((_formData) => {
@@ -71,6 +81,36 @@ export const SignInPage = () => {
     }
   });
 
+  const renderPasswordField = (theme: Theme) => {
+    const email = watch('email');
+    const passwordForgotRoute = `${PASSWORD_FORGOT_ROUTE}?${LOGIN_HINT_QUERY}=${email}`;
+
+    return (
+      <Block marginBottom={theme.sizing.scale1200}>
+        <FormControl
+          label={
+            <SpacedBetween>
+              <Label as="span">Password</Label>
+              <Link href={passwordForgotRoute}>
+                <StyledLink href={passwordForgotRoute}>Forgot?</StyledLink>
+              </Link>
+            </SpacedBetween>
+          }
+          error={errors.password?.message}
+        >
+          <PasswordInput
+            autoComplete="current-password"
+            error={Boolean(errors.password)}
+            ref={(e) => {
+              e?.focus();
+              register(e, PASSWORD_VALIDATION);
+            }}
+          />
+        </FormControl>
+      </Block>
+    );
+  };
+
   return (
     <AccountsLayout>
       {({ theme }) => (
@@ -78,17 +118,7 @@ export const SignInPage = () => {
           <Head>
             <title>{seoTitle('Sign in')}</title>
           </Head>
-
-          <H1
-            marginTop={0}
-            marginBottom={theme.sizing.scale1000}
-            $style={{
-              fontWeight: 700,
-              fontSize: theme.typography.font950.fontSize,
-            }}
-          >
-            Sign in to Rebrowse
-          </H1>
+          <AccountsLayout.Header>Sign in to Rebrowse</AccountsLayout.Header>
 
           <form noValidate onSubmit={onSubmit}>
             <Block>
@@ -108,32 +138,7 @@ export const SignInPage = () => {
               </FormControl>
             </Block>
 
-            {step > 0 && (
-              <Block marginBottom={theme.sizing.scale1200}>
-                <FormControl
-                  label={
-                    <SpacedBetween>
-                      <Label as="span">Password</Label>
-                      <Link href={PASSWORD_FORGOT_ROUTE}>
-                        <StyledLink href={PASSWORD_FORGOT_ROUTE}>
-                          Forgot?
-                        </StyledLink>
-                      </Link>
-                    </SpacedBetween>
-                  }
-                  error={errors.password?.message}
-                >
-                  <PasswordInput
-                    autoComplete="current-password"
-                    error={Boolean(errors.password)}
-                    ref={(e) => {
-                      e?.focus();
-                      register(e, PASSWORD_VALIDATION);
-                    }}
-                  />
-                </FormControl>
-              </Block>
-            )}
+            {step > 0 && renderPasswordField(theme)}
 
             <Button
               type="submit"

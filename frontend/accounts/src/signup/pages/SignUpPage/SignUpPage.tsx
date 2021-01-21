@@ -23,24 +23,10 @@ export const SignUpPage = () => {
           </Head>
 
           <Block className={css({ textAlign: 'center' })}>
-            <H1
-              marginBottom={theme.sizing.scale400}
-              marginTop={0}
-              $style={{
-                fontWeight: 700,
-                fontSize: theme.typography.font950.fontSize,
-              }}
-            >
-              {TITLE}
-            </H1>
-
-            <Paragraph1
-              as="h2"
-              color={theme.colors.primary400}
-              marginTop={theme.sizing.scale400}
-            >
+            <AccountsLayout.Header>{TITLE}</AccountsLayout.Header>
+            <AccountsLayout.SubHeader>
               You&apos;re minutes away from insights.
-            </Paragraph1>
+            </AccountsLayout.SubHeader>
           </Block>
 
           <Block marginTop={theme.sizing.scale1000}>

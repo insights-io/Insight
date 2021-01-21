@@ -1,11 +1,11 @@
 import React from 'react';
+import { PasswordForgotPage, Props } from 'password/pages/PasswordForgotPage';
 import type { GetServerSideProps } from 'next';
-import { getQueryParam } from 'shared/utils/query';
-import { SignInPage, Props } from 'signin/pages/SignInPage';
 import { LOGIN_HINT_QUERY } from 'shared/constants/routes';
+import { getQueryParam } from 'shared/utils/query';
 
-export default function SignIn({ email }: Props) {
-  return <SignInPage email={email} />;
+export default function PasswordForgot({ email }: Props) {
+  return <PasswordForgotPage email={email} />;
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {

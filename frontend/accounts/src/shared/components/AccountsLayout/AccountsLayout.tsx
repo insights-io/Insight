@@ -1,9 +1,10 @@
 import React from 'react';
 import { useStyletron } from 'baseui';
-import { Block } from 'baseui/block';
+import { Block, BlockProps } from 'baseui/block';
 import { FlexColumn, VerticalAligned } from '@rebrowse/elements';
 import type { Theme } from 'baseui/theme';
 import type { StyleObject } from 'styletron-react';
+import { H1, H2 } from 'baseui/typography';
 
 type Props = {
   children: (styletron: {
@@ -12,7 +13,7 @@ type Props = {
   }) => JSX.Element;
 };
 
-export const AccountsLayout = ({ children }: Props) => {
+const Layout = ({ children }: Props) => {
   const [css, theme] = useStyletron();
 
   return (
@@ -38,3 +39,47 @@ export const AccountsLayout = ({ children }: Props) => {
     </FlexColumn>
   );
 };
+
+const Header = React.forwardRef<HTMLHeadingElement, BlockProps>(
+  (props, ref) => {
+    // TODO: correctly pass $style object and get $theme from it
+    const [_css, theme] = useStyletron();
+    return (
+      <H1
+        ref={ref}
+        $style={{
+          marginBottom: theme.sizing.scale800,
+          marginTop: 0,
+          fontWeight: 700,
+          fontSize: theme.typography.font950.fontSize,
+        }}
+        {...props}
+      />
+    );
+  }
+);
+
+const SubHeader = React.forwardRef<HTMLHeadingElement, BlockProps>(
+  (props, ref) => {
+    // TODO: correctly pass $style object and get $theme from it
+    const [_css, theme] = useStyletron();
+    return (
+      <H2
+        ref={ref}
+        color={theme.colors.primary400}
+        marginTop={theme.sizing.scale400}
+        marginBottom={theme.sizing.scale1000}
+        $style={{
+          fontSize: theme.typography.font450.fontSize,
+          lineHeight: 'normal',
+        }}
+        {...props}
+      />
+    );
+  }
+);
+
+export const AccountsLayout = Object.assign(Layout, {
+  Header,
+  SubHeader,
+});
