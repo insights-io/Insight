@@ -47,10 +47,20 @@ export const setupEnvironment = () => {
   console.warn = (...args: unknown[]) => {
     const msg = args.join(' ');
 
+    // eslint-disable-next-line no-restricted-syntax
+    for (const pattern of [
+      // styletron-react warnings
+      /Failed to inject CSS: ".*". Perhaps this has invalid or un-prefixed properties?/,
+    ]) {
+      if (msg.match(pattern)) {
+        return;
+      }
+    }
+
     [
       'Mixing shorthand and longhand properties within the same style object is unsupported with atomic rendering',
     ].forEach((pattern) => {
-      if (String(msg).match(pattern)) {
+      if (msg.match(pattern)) {
         throw new Error(msg);
       }
     });

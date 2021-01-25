@@ -16,7 +16,9 @@ export const SignUpConfirmPage = () => {
             <title>{seoTitle(TITLE)}</title>
           </Head>
           <SpacedBetween marginBottom={theme.sizing.scale1000}>
-            <AccountsLayout.Header margin={0}>{TITLE}</AccountsLayout.Header>
+            <AccountsLayout.Header marginBottom={0} marginTop={0}>
+              {TITLE}
+            </AccountsLayout.Header>
             <VerticalAligned>
               <FaEnvelope size={64} />
             </VerticalAligned>

@@ -1,22 +1,14 @@
 import { screen } from '@testing-library/react';
-import { getPage } from 'next-page-tester';
-import { helpBaseURL } from 'shared/config';
 import userEvent from '@testing-library/user-event';
 import { sandbox } from '@rebrowse/testing';
-import { sdk } from 'api';
+import { client } from 'sdk';
 import { SIGNUP_ROUTE } from 'shared/constants/routes';
+import { getPage } from '__tests__/utils';
 
 describe('/signup', () => {
   const setup = async () => {
-    const { render } = await getPage({ route: SIGNUP_ROUTE, useApp: false });
+    const { render } = await getPage({ route: SIGNUP_ROUTE });
     render();
-
-    // TODO: SEO
-
-    // Topbar heading
-    expect(
-      screen.getByRole('heading', { name: 'Rebrowse' })
-    ).toBeInTheDocument();
 
     // Content headings
     expect(
@@ -46,8 +38,6 @@ describe('/signup', () => {
 
     // links
     const logInLink = screen.getByRole('link', { name: 'Log in' });
-    const helpLink = screen.getByRole('link', { name: 'Help' });
-    expect(helpLink).toHaveAttribute('href', helpBaseURL);
 
     return {
       fullNameInput,
@@ -59,7 +49,6 @@ describe('/signup', () => {
       countryInput,
       showPasswordButton,
       logInLink,
-      helpLink,
     };
   };
 
@@ -75,7 +64,6 @@ describe('/signup', () => {
         countryInput,
         showPasswordButton,
         logInLink,
-        helpLink,
       } = await setup();
 
       expect(document.activeElement).toEqual(fullNameInput);
@@ -98,8 +86,6 @@ describe('/signup', () => {
       userEvent.tab();
       expect(document.activeElement).toEqual(document.body);
       userEvent.tab();
-      expect(document.activeElement).toEqual(helpLink);
-      userEvent.tab();
       expect(document.activeElement).toEqual(fullNameInput);
     });
   });
@@ -114,7 +100,7 @@ describe('/signup', () => {
 
     test('By filling in all details', async () => {
       /* Mocks */
-      const signupCreateStub = sandbox.stub(sdk.signup, 'create').resolves();
+      const signupCreateStub = sandbox.stub(client.signup, 'create').resolves();
 
       /* Render */
       const {
@@ -149,7 +135,7 @@ describe('/signup', () => {
 
     test('By omitting my phone number', async () => {
       /* Mocks */
-      const signupCreateStub = sandbox.stub(sdk.signup, 'create').resolves();
+      const signupCreateStub = sandbox.stub(client.signup, 'create').resolves();
 
       /* Render */
       const {

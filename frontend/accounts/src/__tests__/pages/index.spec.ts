@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getPage } from 'next-page-tester';
 import { INDEX_ROUTE } from 'shared/constants/routes';
+import { getPage } from '__tests__/utils';
 
 describe('/', () => {
   const setup = async () => {
-    const { render } = await getPage({ route: INDEX_ROUTE, useApp: false });
+    const { render } = await getPage({ route: INDEX_ROUTE });
     render();
 
     // TODO: SEO

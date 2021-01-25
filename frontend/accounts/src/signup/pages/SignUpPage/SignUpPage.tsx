@@ -23,7 +23,9 @@ export const SignUpPage = () => {
           </Head>
 
           <Block className={css({ textAlign: 'center' })}>
-            <AccountsLayout.Header margin={0}>{TITLE}</AccountsLayout.Header>
+            <AccountsLayout.Header marginBottom={0} marginTop={0}>
+              {TITLE}
+            </AccountsLayout.Header>
             <AccountsLayout.SubHeader>
               You&apos;re minutes away from insights.
             </AccountsLayout.SubHeader>
@@ -35,7 +37,7 @@ export const SignUpPage = () => {
 
           <Flex justifyContent="center">
             <Paragraph3
-              margin={theme.sizing.scale400}
+              marginTop={theme.sizing.scale400}
               marginBottom={theme.sizing.scale600}
             >
               Already have an account?{' '}

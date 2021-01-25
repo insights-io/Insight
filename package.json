@@ -18,7 +18,8 @@
     "frontend:browser:tracking:build": "yarn workspace @rebrowse/browser-tracking build:with-deps",
     "frontend:homepage:build": "yarn workspace @rebrowse/homepage build",
     "frontend:app:build": "yarn workspace @rebrowse/app build",
-    "frontend:try:build": "yarn workspace @rebrowse/try build"
+    "frontend:try:build": "yarn workspace @rebrowse/try build",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "1.0.20",
@@ -71,7 +72,8 @@
     "rollup": "2.36.2",
     "rollup-plugin-terser": "7.0.2",
     "rollup-plugin-sourcemaps": "0.6.3",
-    "rollup-plugin-peer-deps-external": "2.2.4"
+    "rollup-plugin-peer-deps-external": "2.2.4",
+    "patch-package": "6.2.2"
   },
   "husky": {
     "hooks": {
