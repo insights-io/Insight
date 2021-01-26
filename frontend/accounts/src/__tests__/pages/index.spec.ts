@@ -8,8 +8,6 @@ describe('/', () => {
     const { render } = await getPage({ route: INDEX_ROUTE });
     render();
 
-    // TODO: SEO
-
     expect(
       screen.getByRole('heading', { name: 'Sign in to Rebrowse' })
     ).toBeInTheDocument();
