@@ -1,56 +1,91 @@
+import { parse } from 'querystring';
+
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { INDEX_ROUTE } from 'shared/constants/routes';
+import { authApiBaseUrl } from 'sdk';
+import { appBaseUrl } from 'shared/config';
+import {
+  INDEX_ROUTE,
+  REDIRECT_QUERY,
+  SIGNIN_ROUTE,
+} from 'shared/constants/routes';
 import { getPage } from '__tests__/utils';
+import { getQueryParam } from 'shared/utils/query';
 
-describe('/', () => {
-  const setup = async () => {
-    const { render } = await getPage({ route: INDEX_ROUTE });
-    render();
+const setup = async (route: string) => {
+  const url = new URL(route.startsWith('/') ? `https://domain${route}` : route);
 
-    expect(
-      screen.getByRole('heading', { name: 'Sign in to Rebrowse' })
-    ).toBeInTheDocument();
+  const { render } = await getPage({ route });
+  render();
 
-    // inputs
-    const emailInput = screen.getByPlaceholderText('john.doe@gmail.com');
+  expect(
+    screen.getByRole('heading', { name: 'Sign in to Rebrowse' })
+  ).toBeInTheDocument();
 
-    // buttons
-    const continueButton = screen.getByRole('button', { name: 'Continue' });
+  // inputs
+  const emailInput = screen.getByPlaceholderText('john.doe@gmail.com');
 
-    // links
-    const createFreeAcountLink = screen.getByRole('link', {
-      name: 'Create a free account',
-    });
-    const joinAnExistingTeamLink = screen.getByRole('link', {
-      name: 'Join an existing team',
-    });
+  // buttons
+  const continueButton = screen.getByRole('button', { name: 'Continue' });
 
-    expect(screen.getByText('Or')).toBeInTheDocument();
+  // links
+  const createFreeAcountLink = screen.getByRole('link', {
+    name: 'Create a free account',
+  });
+  const joinAnExistingTeamLink = screen.getByRole('link', {
+    name: 'Join an existing team',
+  });
 
-    const signInWithGoogle = screen.getByRole('link', {
-      name: /Sign in with Google/,
-    });
-    const signInWithGithub = screen.getByRole('link', {
-      name: 'Sign in with Github',
-    });
-    const signInWithMicrosoft = screen.getByRole('link', {
-      name: 'Sign in with Microsoft',
-    });
+  expect(screen.getByText('Or')).toBeInTheDocument();
 
-    return {
-      emailInput,
-      continueButton,
-      createFreeAcountLink,
-      joinAnExistingTeamLink,
-      signInWithGoogle,
-      signInWithGithub,
-      signInWithMicrosoft,
-    };
+  const redirect = encodeURIComponent(
+    getQueryParam(parse(url.search.replace('?', '')), REDIRECT_QUERY) ||
+      appBaseUrl
+  );
+
+  const signInWithGoogle = screen.getByRole('link', {
+    name: /Sign in with Google/,
+  });
+  expect(signInWithGoogle).toHaveAttribute(
+    'href',
+    `${authApiBaseUrl}/v1/sso/oauth2/google/signin?redirect=${redirect}`
+  );
+  const signInWithGithub = screen.getByRole('link', {
+    name: 'Sign in with Github',
+  });
+  expect(signInWithGithub).toHaveAttribute(
+    'href',
+    `${authApiBaseUrl}/v1/sso/oauth2/github/signin?${REDIRECT_QUERY}=${redirect}`
+  );
+  const signInWithMicrosoft = screen.getByRole('link', {
+    name: 'Sign in with Microsoft',
+  });
+  expect(signInWithMicrosoft).toHaveAttribute(
+    'href',
+    `${authApiBaseUrl}/v1/sso/oauth2/microsoft/signin?${REDIRECT_QUERY}=${redirect}`
+  );
+
+  return {
+    emailInput,
+    continueButton,
+    createFreeAcountLink,
+    joinAnExistingTeamLink,
+    signInWithGoogle,
+    signInWithGithub,
+    signInWithMicrosoft,
   };
+};
+
+describe.each([
+  [INDEX_ROUTE, undefined],
+  [INDEX_ROUTE, 'https://app.rebrowse.dev'],
+  [SIGNIN_ROUTE, undefined],
+  [SIGNIN_ROUTE, 'https://app.rebrowse.dev'],
+])('%s?redirect=%s', (pathname, redirect) => {
+  const route = redirect ? `${pathname}?redirect=${redirect}` : pathname;
 
   test('As a user I can navigate between "Password forgot?" and login without using email', async () => {
-    const { emailInput, continueButton } = await setup();
+    const { emailInput, continueButton } = await setup(route);
 
     const email = 'john.doe@gmail.com';
     userEvent.type(emailInput, email);
@@ -86,7 +121,7 @@ describe('/', () => {
         signInWithGoogle,
         signInWithGithub,
         signInWithMicrosoft,
-      } = await setup();
+      } = await setup(route);
 
       expect(document.activeElement).toEqual(emailInput);
       userEvent.tab();
@@ -110,7 +145,9 @@ describe('/', () => {
       userEvent.click(continueButton);
 
       const passwordInput = await screen.findByPlaceholderText('Password');
-      const passwordForgotLink = screen.getByRole('link', { name: 'Forgot?' });
+      const passwordForgotLink = screen.getByRole('link', {
+        name: 'Forgot?',
+      });
       const showPasswordButton = screen.getByRole('button', {
         name: 'Show password text',
       });

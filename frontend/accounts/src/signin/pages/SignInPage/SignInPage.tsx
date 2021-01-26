@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { AccountsLayout } from 'shared/components/AccountsLayout';
 import { seoTitle } from 'shared/utils/seo';
 import { FaGithub, FaMicrosoft } from 'react-icons/fa';
-import { useRouter } from 'next/router';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
 import Link from 'next/link';
@@ -16,7 +15,6 @@ import {
   UnstyledLink,
   PasswordInput,
 } from '@rebrowse/elements';
-import { H1 } from 'baseui/typography';
 import { SIZE } from 'baseui/button';
 import { StyledLink } from 'baseui/link';
 import {
@@ -36,6 +34,7 @@ import { createOAuth2IntegrationHrefBuilder } from './utils';
 
 export type Props = {
   email?: string;
+  redirect: string;
 };
 
 type FormData = {
@@ -45,15 +44,9 @@ type FormData = {
 
 type SignInStep = 0 | 1;
 
-export const SignInPage = (defaultValues: Props) => {
-  const { query } = useRouter();
-  const relativeRedirect = (query.redirect || '/') as string;
-  const absoluteRedirect = global.window
-    ? `${window.location.origin}${relativeRedirect}`
-    : relativeRedirect;
-
+export const SignInPage = ({ redirect, ...defaultValues }: Props) => {
   const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder({
-    absoluteRedirect,
+    redirect,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);

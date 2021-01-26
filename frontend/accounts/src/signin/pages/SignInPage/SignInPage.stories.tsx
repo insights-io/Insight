@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Meta } from '@storybook/react';
+import { appBaseUrl } from 'shared/config';
 
 import { SignInPage } from './SignInPage';
 
@@ -9,5 +10,5 @@ export default {
 } as Meta;
 
 export const Base = () => {
-  return <SignInPage />;
+  return <SignInPage redirect={appBaseUrl} />;
 };
