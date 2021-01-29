@@ -45,10 +45,6 @@ type FormData = {
 type SignInStep = 0 | 1;
 
 export const SignInPage = ({ redirect, ...defaultValues }: Props) => {
-  const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder({
-    redirect,
-  });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<SignInStep>(0);
 
@@ -72,6 +68,10 @@ export const SignInPage = ({ redirect, ...defaultValues }: Props) => {
       default:
         throw new UnreachableCaseError(step);
     }
+  });
+
+  const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder({
+    redirect,
   });
 
   const renderPasswordField = (theme: Theme) => {
