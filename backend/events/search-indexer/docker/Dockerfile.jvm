@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM gradle:6.7.1-jdk15 as build
+FROM --platform=$BUILDPLATFORM gradle:6.8.2-jdk15 as build
 
 COPY build.gradle lombok.config gradle.properties settings.gradle /backend/
 COPY shared/rest/ /backend/shared/rest/
