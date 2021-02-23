@@ -47,11 +47,11 @@ spec:
             successThreshold: 1
             failureThreshold: 10
           volumeMounts:
-            - name: try-config
-              mountPath: /usr/try/.env.production
+            - name: accounts-config
+              mountPath: /usr/accounts/.env.production
               subPath: .env.production
               readOnly: true
       volumes:
-        - name: try-config
+        - name: accounts-config
           configMap:
-            name: try-config
+            name: accounts-config
