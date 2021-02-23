@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { AccountsLayout } from 'shared/components/AccountsLayout';
 import { seoTitle } from 'shared/utils/seo';
-import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import { Block } from 'baseui/block';
 import { FormControl } from 'baseui/form-control';
 import Link from 'next/link';
@@ -12,25 +11,19 @@ import {
   Label,
   Divider,
   SpacedBetween,
-  UnstyledLink,
-  PasswordInput,
 } from '@rebrowse/elements';
 import { SIZE } from 'baseui/button';
 import { StyledLink } from 'baseui/link';
 import {
-  LOGIN_HINT_QUERY,
-  PASSWORD_FORGOT_ROUTE,
+  SIGNIN_PWD_CHALLENGE_ROUTE,
   SIGNUP_ROUTE,
 } from 'shared/constants/routes';
 import { useForm } from 'react-hook-form';
-import {
-  EMAIL_VALIDATION,
-  PASSWORD_VALIDATION,
-} from 'shared/constants/form-validation';
-import { UnreachableCaseError } from 'shared/utils/error';
-import type { Theme } from 'baseui/theme';
-
-import { createOAuth2IntegrationHrefBuilder } from './utils';
+import { EMAIL_VALIDATION } from 'shared/constants/form-validation';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
+import { useRouter } from 'next/router';
+import { SsoProviders } from 'signin/components/SsoProviders';
+import { locationAssign } from 'shared/utils/window';
 
 export type Props = {
   email?: string;
@@ -39,70 +32,30 @@ export type Props = {
 
 type FormData = {
   email: string;
-  password: string;
 };
 
-type SignInStep = 0 | 1;
-
 export const SignInPage = ({ redirect, ...defaultValues }: Props) => {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [step, setStep] = useState<SignInStep>(0);
 
-  const { register, handleSubmit, errors, watch } = useForm<FormData>({
+  const { register, handleSubmit, errors } = useForm<FormData>({
     shouldFocusError: false,
     defaultValues,
   });
 
-  const onSubmit = handleSubmit((_formData) => {
+  const onSubmit = handleSubmit((formData) => {
     setIsSubmitting(true);
-
-    switch (step) {
-      case 0:
-        setTimeout(() => {
-          setStep(1);
-          setIsSubmitting(false);
-        }, 500);
-        return;
-      case 1:
-        throw new Error('Not implemented');
-      default:
-        throw new UnreachableCaseError(step);
-    }
+    client.accounts
+      .chooseAccount({ ...formData, redirect }, INCLUDE_CREDENTIALS)
+      .then((response) => {
+        if (response.data.action === 'PWD_CHALLENGE') {
+          router.push(SIGNIN_PWD_CHALLENGE_ROUTE);
+        } else {
+          locationAssign(response.data.location);
+        }
+      })
+      .finally(() => setIsSubmitting(false));
   });
-
-  const oauth2IntegrationHrefBuilder = createOAuth2IntegrationHrefBuilder({
-    redirect,
-  });
-
-  const renderPasswordField = (theme: Theme) => {
-    const email = watch('email');
-    const passwordForgotRoute = `${PASSWORD_FORGOT_ROUTE}?${LOGIN_HINT_QUERY}=${email}`;
-
-    return (
-      <Block marginBottom={theme.sizing.scale1200}>
-        <FormControl
-          label={
-            <SpacedBetween>
-              <Label as="span">Password</Label>
-              <Link href={passwordForgotRoute}>
-                <StyledLink href={passwordForgotRoute}>Forgot?</StyledLink>
-              </Link>
-            </SpacedBetween>
-          }
-          error={errors.password?.message}
-        >
-          <PasswordInput
-            autoComplete="current-password"
-            error={Boolean(errors.password)}
-            ref={(e) => {
-              e?.focus();
-              register(e, PASSWORD_VALIDATION);
-            }}
-          />
-        </FormControl>
-      </Block>
-    );
-  };
 
   return (
     <AccountsLayout>
@@ -112,7 +65,6 @@ export const SignInPage = ({ redirect, ...defaultValues }: Props) => {
             <title>{seoTitle('Sign in')}</title>
           </Head>
           <AccountsLayout.Header>Sign in to Rebrowse</AccountsLayout.Header>
-
           <form noValidate onSubmit={onSubmit}>
             <Block>
               <FormControl
@@ -130,8 +82,6 @@ export const SignInPage = ({ redirect, ...defaultValues }: Props) => {
                 />
               </FormControl>
             </Block>
-
-            {step > 0 && renderPasswordField(theme)}
 
             <Button
               type="submit"
@@ -174,52 +124,7 @@ export const SignInPage = ({ redirect, ...defaultValues }: Props) => {
             <Divider.Line />
           </Divider>
 
-          <Block>
-            <UnstyledLink href={oauth2IntegrationHrefBuilder('google')}>
-              <Button
-                $style={{ width: '100%' }}
-                startEnhancer={
-                  <img
-                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwKSI+CjxwYXRoIGQ9Ik0xNS45OTk3IDguMTg0MTdDMTUuOTk5NyA3LjY0MDM1IDE1Ljk1NDcgNy4wOTM1OSAxNS44NTg4IDYuNTU4NTlIOC4xNjAxNlY5LjYzOTI1SDEyLjU2ODhDMTIuMzg1OCAxMC42MzI4IDExLjc5OCAxMS41MTE3IDEwLjkzNzMgMTIuMDcwM1YxNC4wNjkySDEzLjU2NzVDMTUuMTEyIDEyLjY3NTggMTUuOTk5NyAxMC42MTgxIDE1Ljk5OTcgOC4xODQxN1oiIGZpbGw9IiM0Mjg1RjQiLz4KPHBhdGggZD0iTTguMTYwMTggMTYuMDAwMkMxMC4zNjE1IDE2LjAwMDIgMTIuMjE3OSAxNS4yOTE4IDEzLjU3MDUgMTQuMDY4OUwxMC45NDAzIDEyLjA3QzEwLjIwODUgMTIuNTU4IDkuMjYzODMgMTIuODM0MyA4LjE2MzE3IDEyLjgzNDNDNi4wMzM4NCAxMi44MzQzIDQuMjI4NCAxMS40MjYzIDMuNTgwNjEgOS41MzMySDAuODY2NDU1VjExLjU5MzhDMi4yNTIwMiAxNC4yOTUzIDUuMDc0MTQgMTYuMDAwMiA4LjE2MDE4IDE2LjAwMDJaIiBmaWxsPSIjMzRBODUzIi8+CjxwYXRoIGQ9Ik0zLjU3NzY3IDkuNTMzOEMzLjIzNTc4IDguNTQwMjMgMy4yMzU3OCA3LjQ2NDM1IDMuNTc3NjcgNi40NzA3OFY0LjQxMDE2SDAuODY2NTJDLTAuMjkxMTE5IDYuNjcwNjcgLTAuMjkxMTE5IDkuMzMzOTEgMC44NjY1MiAxMS41OTQ0TDMuNTc3NjcgOS41MzM4WiIgZmlsbD0iI0ZCQkMwNCIvPgo8cGF0aCBkPSJNOC4xNjAxOCAzLjE2NjQ0QzkuMzIzODEgMy4xNDg4IDEwLjQ0ODUgMy41Nzc5OCAxMS4yOTEyIDQuMzY1NzhMMTMuNjIxNSAyLjA4MTc0QzEyLjE0NTkgMC43MjM2NyAxMC4xODc1IC0wLjAyMjk3NzMgOC4xNjAxOCAwLjAwMDUzOTExMUM1LjA3NDE0IDAuMDAwNTM5MTExIDIuMjUyMDIgMS43MDU0OCAwLjg2NjQ1NSA0LjQwOTg3TDMuNTc3NjEgNi40NzA1QzQuMjIyNDEgNC41NzQ0OSA2LjAzMDg0IDMuMTY2NDQgOC4xNjAxOCAzLjE2NjQ0WiIgZmlsbD0iI0VBNDMzNSIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwIj4KPHBhdGggZD0iTTAgMEgxNlYxNkgwVjBaIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="
-                    alt="Google Logo"
-                  />
-                }
-                kind="secondary"
-                // @ts-expect-error missing typings
-                tabIndex={-1}
-              >
-                Sign in with Google
-              </Button>
-            </UnstyledLink>
-          </Block>
-
-          <Block marginTop={theme.sizing.scale200}>
-            <UnstyledLink href={oauth2IntegrationHrefBuilder('github')}>
-              <Button
-                $style={{ width: '100%' }}
-                startEnhancer={<FaGithub />}
-                kind="secondary"
-                // @ts-expect-error missing typings
-                tabIndex={-1}
-              >
-                Sign in with Github
-              </Button>
-            </UnstyledLink>
-          </Block>
-
-          <Block marginTop={theme.sizing.scale200}>
-            <UnstyledLink href={oauth2IntegrationHrefBuilder('microsoft')}>
-              <Button
-                $style={{ width: '100%', marginBottom: theme.sizing.scale600 }}
-                startEnhancer={<FaMicrosoft />}
-                kind="secondary"
-                // @ts-expect-error missing typings
-                tabIndex={-1}
-              >
-                Sign in with Microsoft
-              </Button>
-            </UnstyledLink>
-          </Block>
+          <SsoProviders redirect={redirect} theme={theme} />
         </>
       )}
     </AccountsLayout>

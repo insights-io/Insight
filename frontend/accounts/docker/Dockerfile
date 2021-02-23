@@ -11,20 +11,20 @@ COPY package.json yarn.lock tsconfig.json lerna.json ./
 COPY frontend/shared/sdk/package.json ./frontend/shared/sdk/package.json
 COPY frontend/shared/service-proxy/package.json ./frontend/shared/service-proxy/package.json
 COPY frontend/shared/elements/package.json ./frontend/shared/elements/package.json
-COPY frontend/try/package.json ./frontend/try/package.json
+COPY frontend/accounts/package.json ./frontend/accounts/package.json
 
 RUN yarn install --production --frozen-lockfile --prefer-offline
 RUN cp -RL ./node_modules/ /tmp/node_modules/
 
 # Copy source files
-COPY frontend/try/ ./frontend/try/
+COPY frontend/accounts/ ./frontend/accounts/
 COPY frontend/shared/ ./frontend/shared/
 
 # Install all dependencies
 RUN yarn install --frozen-lockfile --prefer-offline
 
 # Build
-RUN yarn frontend:try:build
+RUN yarn frontend:accounts:build
 
 ### RUNNER ###
 FROM base
@@ -34,7 +34,7 @@ WORKDIR /usr/app
 # Copy runtime dependencies
 COPY --from=builder /tmp/node_modules/ ./node_modules/
 
-COPY --from=builder /src/frontend/try/.next ./.next
+COPY --from=builder /src/frontend/accounts/.next ./.next
 
 COPY --from=builder /src/frontend/shared/types/package.json ./node_modules/@rebrowse/types/package.json
 COPY --from=builder /src/frontend/shared/types/dist ./node_modules/@rebrowse/types/dist

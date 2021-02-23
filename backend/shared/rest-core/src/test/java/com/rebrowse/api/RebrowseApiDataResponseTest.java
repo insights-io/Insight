@@ -1,7 +1,7 @@
 package com.rebrowse.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.meemaw.test.matchers.SameJSON;
+import com.rebrowse.test.matchers.SameJSON;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import lombok.AccessLevel;

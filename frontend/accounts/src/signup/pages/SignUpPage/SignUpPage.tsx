@@ -1,19 +1,38 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { Paragraph3 } from 'baseui/typography';
 import { Block } from 'baseui/block';
-import { SignUpForm } from 'signup/components/SignUpForm';
+import { SignUpForm, SignUpFormValues } from 'signup/components/SignUpForm';
 import { Flex } from '@rebrowse/elements';
 import { client } from 'sdk';
 import { seoTitle } from 'shared/utils/seo';
 import { AccountsLayout } from 'shared/components/AccountsLayout';
 import { StyledLink } from 'baseui/link';
-import { SIGNIN_ROUTE } from 'shared/constants/routes';
+import {
+  LOGIN_HINT_QUERY,
+  REDIRECT_QUERY,
+  SIGNIN_ROUTE,
+} from 'shared/constants/routes';
 
 const TITLE = 'Start your free trial now.';
 
-export const SignUpPage = () => {
+type Props = {
+  redirect: string;
+  email?: string;
+};
+
+export const SignUpPage = ({ redirect, email }: Props) => {
+  let signInRoute = `${SIGNIN_ROUTE}?${REDIRECT_QUERY}=${redirect}`;
+  if (email) {
+    signInRoute = `${signInRoute}&${LOGIN_HINT_QUERY}=${email}`;
+  }
+
+  const onSubmit = useCallback(
+    (data: SignUpFormValues) => client.signup.create({ ...data, redirect }),
+    [redirect]
+  );
+
   return (
     <AccountsLayout>
       {({ css, theme }) => (
@@ -32,7 +51,7 @@ export const SignUpPage = () => {
           </Block>
 
           <Block marginTop={theme.sizing.scale1000}>
-            <SignUpForm onSubmit={client.signup.create} />
+            <SignUpForm onSubmit={onSubmit} email={email} redirect={redirect} />
           </Block>
 
           <Flex justifyContent="center">
@@ -41,8 +60,8 @@ export const SignUpPage = () => {
               marginBottom={theme.sizing.scale600}
             >
               Already have an account?{' '}
-              <Link href={SIGNIN_ROUTE}>
-                <StyledLink href={SIGNIN_ROUTE}>Log in</StyledLink>
+              <Link href={signInRoute}>
+                <StyledLink href={signInRoute}>Log in</StyledLink>
               </Link>
             </Paragraph3>
           </Flex>

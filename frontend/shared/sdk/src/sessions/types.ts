@@ -1,5 +1,6 @@
 import type { QueryParam, SearchBean } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
+
+import type { ExtendedRequestOptions } from '../types';
 
 export type SessionSearchQueryParams = {
   createdAt?: QueryParam;

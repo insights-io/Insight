@@ -3,7 +3,7 @@ package com.rebrowse.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.meemaw.test.matchers.SameJSON;
+import com.rebrowse.test.matchers.SameJSON;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.hamcrest.MatcherAssert;

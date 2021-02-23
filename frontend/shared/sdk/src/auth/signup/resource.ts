@@ -1,6 +1,6 @@
 import type { SignUpRequestDTO } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
 
+import type { ExtendedRequestOptions } from '../../types';
 import { HttpClient, httpResponse, jsonDataResponse } from '../../http';
 
 const resourceBaseURL = (apiBaseURL: string) => {

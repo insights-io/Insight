@@ -1,6 +1,6 @@
 import type { InvoiceDTO } from '@rebrowse/types';
-import type { ExtendedRequestOptions, HttpClient } from 'types';
 
+import type { ExtendedRequestOptions, HttpClient } from '../../types';
 import { jsonDataResponse } from '../../http';
 
 export const invoicesResource = (

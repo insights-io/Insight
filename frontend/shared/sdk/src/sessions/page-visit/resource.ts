@@ -1,6 +1,6 @@
 import type { GroupByResult } from '@rebrowse/types';
-import { querystring } from 'utils';
 
+import { querystring } from '../../utils';
 import { HttpClient, jsonDataResponse } from '../../http';
 
 import type {

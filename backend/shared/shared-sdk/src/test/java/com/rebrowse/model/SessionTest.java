@@ -1,6 +1,6 @@
 package com.rebrowse.model;
 
-import static com.meemaw.test.matchers.SameJSON.sameJson;
+import static com.rebrowse.test.matchers.SameJSON.sameJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

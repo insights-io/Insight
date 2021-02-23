@@ -1,5 +1,5 @@
 export { default as sandbox } from './sandbox';
 export * from './setup';
-export * from './cookie';
+export * from './cookies';
 export * from './getPage';
-export * from './data';
+export * from './fixtures';

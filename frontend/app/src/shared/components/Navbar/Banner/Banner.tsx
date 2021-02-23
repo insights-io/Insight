@@ -12,7 +12,6 @@ import {
   ACCOUNT_SETTINGS_DETAILS_PAGE,
   ORGANIZATION_SETTINGS_BILLING_USAGE_AND_PAYMENTS_PAGE,
   ORGANIZATION_SETTINGS_MEMBERS_PAGE,
-  LOGIN_PAGE,
   ORGANIZATION_SETTINGS_GENERAL_PAGE,
 } from 'shared/constants/routes';
 import {
@@ -23,11 +22,11 @@ import {
   AUTH_TOKENS_SECTION,
   SIGN_OUT_SECTION,
 } from 'shared/constants/copy';
-import { useRouter } from 'next/router';
 import { toaster } from 'baseui/toast';
 import * as zIndex from 'shared/constants/zIndex';
 import { OrganizationAvatar } from 'shared/components/OrganizationAvatar';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
+import { TRY_BASE_URL } from 'shared/config';
 
 import { BannerCard } from './BannerCard';
 import {
@@ -51,7 +50,6 @@ export const NavbarBanner = ({
   expanded,
   theme,
 }: Props) => {
-  const { replace } = useRouter();
   const [isHovered, callbackRef] = useHover();
   const borderRadius = useMemo(
     () => expandBorderRadius(theme.sizing.scale400),
@@ -89,14 +87,18 @@ export const NavbarBanner = ({
           onClick: () =>
             client.auth.sso.sessions
               .logout(INCLUDE_CREDENTIALS)
-              .then(() => replace(LOGIN_PAGE))
+              .then(() =>
+                window.location.assign(
+                  `${TRY_BASE_URL}?redirect=${window.location.href}`
+                )
+              )
               .catch(() =>
                 toaster.negative('Something went wrong. Please try again.', {})
               ),
         },
       ],
     };
-  }, [replace]);
+  }, []);
 
   return (
     <StatefulPopover

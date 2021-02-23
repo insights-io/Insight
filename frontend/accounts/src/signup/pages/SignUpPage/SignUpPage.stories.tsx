@@ -2,6 +2,7 @@ import React from 'react';
 import { configureStory, mockApiError } from '@rebrowse/storybook';
 import type { Meta } from '@storybook/react';
 import { client } from 'sdk';
+import { appBaseUrl } from 'shared/config';
 
 import { SignUpPage } from './SignUpPage';
 
@@ -11,7 +12,7 @@ export default {
 } as Meta;
 
 export const Base = () => {
-  return <SignUpPage />;
+  return <SignUpPage redirect={appBaseUrl} />;
 };
 Base.story = configureStory({
   setupMocks: (sandbox) => {
@@ -22,7 +23,7 @@ Base.story = configureStory({
 });
 
 export const WithError = () => {
-  return <SignUpPage />;
+  return <SignUpPage redirect={appBaseUrl} />;
 };
 WithError.story = configureStory({
   setupMocks: (sandbox) => {

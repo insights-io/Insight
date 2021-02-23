@@ -19,27 +19,27 @@ import {
   EmailInput,
 } from '@rebrowse/elements';
 
-type SignUpFormValues = SignUpRequestDTO;
+export type SignUpFormValues = Omit<SignUpRequestDTO, 'redirect'>;
 
 export type Props = {
-  onSubmit: (data: SignUpRequestDTO) => Promise<unknown>;
+  onSubmit: (data: SignUpFormValues) => Promise<unknown>;
   minPasswordLength?: number;
+  email?: string;
+  redirect: string;
 };
 
 export const SignUpForm = ({
   onSubmit: onSubmitProp,
   minPasswordLength = 8,
+  ...defaultValues
 }: Props) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<APIError | undefined>();
   const [_css, theme] = useStyletron();
-  const {
-    register,
-    handleSubmit,
-    errors,
-    control,
-  } = useForm<SignUpFormValues>();
+  const { register, handleSubmit, errors, control } = useForm<SignUpFormValues>(
+    { defaultValues }
+  );
 
   const onSubmit = handleSubmit((values) => {
     if (isSubmitting) {

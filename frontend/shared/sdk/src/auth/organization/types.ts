@@ -1,5 +1,6 @@
 import type { OrganizationDTO, QueryParam, SearchBean } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
+
+import type { ExtendedRequestOptions } from '../../types';
 
 export type TeamInviteQueryParams = {
   email?: QueryParam;

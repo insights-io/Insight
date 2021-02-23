@@ -10,7 +10,7 @@ import { LOGIN_HINT_QUERY, SIGNIN_ROUTE } from 'shared/constants/routes';
 import { EMAIL_VALIDATION } from 'shared/constants/form-validation';
 import { useForm } from 'react-hook-form';
 import { StyledLink } from 'baseui/link';
-import { client } from 'sdk';
+import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { setFormErrors } from 'shared/utils/form';
 import { CheckYourInboxPage } from 'password/pages/CheckYourInboxPage';
 import type { APIErrorDataResponse } from '@rebrowse/types';
@@ -38,7 +38,7 @@ export const PasswordForgotPage = (defaultValues: Props) => {
     setIsSubmitting(true);
 
     client.password
-      .forgot(formData.email)
+      .forgot(formData.email, INCLUDE_CREDENTIALS)
       .then(() => setResetEmailSent(true))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse<
