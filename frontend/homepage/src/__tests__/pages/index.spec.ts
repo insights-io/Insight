@@ -1,7 +1,7 @@
 import { sandbox } from '@rebrowse/testing';
 import { render, screen } from '@testing-library/react';
 import { getPage } from 'next-page-tester';
-import { APP_BASE_URL, TRY_BASE_URL } from 'shared/constants';
+import { APP_BASE_URL, ACCOUNTS_BASE_URL } from 'shared/constants';
 import { mockLandingPage } from '__tests__/mocks';
 
 describe('/', () => {
@@ -40,7 +40,7 @@ describe('/', () => {
 
     expect(screen.getByText('Get started').parentElement).toHaveAttribute(
       'href',
-      TRY_BASE_URL
+      ACCOUNTS_BASE_URL
     );
   });
 });

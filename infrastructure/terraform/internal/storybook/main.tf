@@ -1,5 +1,5 @@
 locals {
-  projects = ["app", "try", "elements", "homepage"]
+  projects = ["app", "accounts", "elements", "homepage"]
 }
 
 data "aws_route53_zone" "zone" {

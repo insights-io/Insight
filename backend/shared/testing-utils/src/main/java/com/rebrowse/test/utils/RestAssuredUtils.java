@@ -12,7 +12,6 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
-import java.util.Optional;
 import java.util.UUID;
 import javax.ws.rs.core.HttpHeaders;
 
@@ -103,7 +102,7 @@ public final class RestAssuredUtils {
                 SameJSON.sameJson(
                     "{\"error\":{\"statusCode\":401,\"reason\":\"Unauthorized\",\"message\":\"Unauthorized\"}}"));
 
-    if (Optional.ofNullable(value).orElse("").isEmpty()) {
+    if (value == null) {
       return validatableResponse;
     }
 

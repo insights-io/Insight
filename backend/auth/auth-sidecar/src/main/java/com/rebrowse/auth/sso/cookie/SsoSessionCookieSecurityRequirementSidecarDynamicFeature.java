@@ -1,6 +1,5 @@
 package com.rebrowse.auth.sso.cookie;
 
-import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.auth.user.model.AuthUser;
 import com.rebrowse.auth.user.model.UserRole;
 import com.rebrowse.auth.user.model.dto.PhoneNumberDTO;
@@ -10,7 +9,6 @@ import com.rebrowse.net.RequestOptions;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.Provider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -44,11 +42,6 @@ public class SsoSessionCookieSecurityRequirementSidecarDynamicFeature
                                 user.getPhoneNumber().getDigits())
                             : null,
                         user.isPhoneNumberVerified())));
-  }
-
-  @Override
-  protected NewCookie clearCookie(String domain) {
-    return SsoSession.clearCookie(domain);
   }
 
   private RequestOptions requestOptions(String sessionId) {

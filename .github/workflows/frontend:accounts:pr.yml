@@ -2,8 +2,8 @@
 on:
   pull_request:
     paths:
-      - '.github/workflows/frontend:try:pr.yml'
-      - 'frontend/try/**'
+      - '.github/workflows/frontend:accounts:pr.yml'
+      - 'frontend/accounts/**'
       - 'frontend/shared/**'
       - 'jest.config.ts'
       - 'lerna.json'
@@ -33,22 +33,22 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @rebrowse/try pretest
-          yarn workspace @rebrowse/try storybook:build
+          yarn workspace @rebrowse/accounts pretest
+          yarn workspace @rebrowse/accounts storybook:build
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_TRY_STORYBOOK }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_ACCOUNTS_STORYBOOK }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           DEST_DIR: ${{ env.GITHUB_HEAD_REF_SLUG }}
-          SOURCE_DIR: frontend/try/storybook-static
+          SOURCE_DIR: frontend/accounts/storybook-static
       - name: Comment PR 💬
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: '🚀 Storybook preview of frontend/try available at https://${{ secrets.TRY_STORYBOOK_DOMAIN_NAME }}/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
+          msg: '🚀 Storybook preview of frontend/accounts available at https://${{ secrets.ACCOUNTS_STORYBOOK_DOMAIN_NAME }}/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
           check_for_duplicate_msg: true

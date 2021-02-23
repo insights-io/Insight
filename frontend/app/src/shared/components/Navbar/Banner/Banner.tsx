@@ -26,7 +26,7 @@ import { toaster } from 'baseui/toast';
 import * as zIndex from 'shared/constants/zIndex';
 import { OrganizationAvatar } from 'shared/components/OrganizationAvatar';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
-import { TRY_BASE_URL } from 'shared/config';
+import { ACCOUNTS_BASE_URL } from 'shared/config';
 
 import { BannerCard } from './BannerCard';
 import {
@@ -89,7 +89,7 @@ export const NavbarBanner = ({
               .logout(INCLUDE_CREDENTIALS)
               .then(() =>
                 window.location.assign(
-                  `${TRY_BASE_URL}?redirect=${window.location.href}`
+                  `${ACCOUNTS_BASE_URL}?redirect=${window.location.href}`
                 )
               )
               .catch(() =>

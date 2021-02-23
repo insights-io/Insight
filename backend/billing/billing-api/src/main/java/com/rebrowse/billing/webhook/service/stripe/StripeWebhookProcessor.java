@@ -1,7 +1,5 @@
 package com.rebrowse.billing.webhook.service.stripe;
 
-import com.rebrowse.shared.logging.LoggingConstants;
-import com.rebrowse.shared.rest.response.Boom;
 import com.rebrowse.billing.customer.datasource.BillingCustomerDatasource;
 import com.rebrowse.billing.invoice.datasource.BillingInvoiceDatasource;
 import com.rebrowse.billing.invoice.model.BillingInvoice;
@@ -11,6 +9,8 @@ import com.rebrowse.billing.subscription.datasource.BillingSubscriptionDatasourc
 import com.rebrowse.billing.subscription.model.BillingSubscription;
 import com.rebrowse.billing.subscription.model.UpdateBillingSubscriptionParams;
 import com.rebrowse.billing.webhook.service.WebhookProcessor;
+import com.rebrowse.shared.logging.LoggingConstants;
+import com.rebrowse.shared.rest.response.Boom;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
@@ -51,18 +51,13 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
    */
   @Override
   public CompletionStage<Void> process(Event event) {
-    switch (event.getType()) {
-      case StripeWebhookEvents.INVOICE_FINALIZED:
-        return handleInvoiceFinalizedEvent(event);
-      case StripeWebhookEvents.INVOICE_PAID:
-        return handleInvoicePaidEvent(event);
-      case StripeWebhookEvents.SUBSCRIPTION_UPDATED:
-        return handleSubscriptionUpdated(event);
-      case StripeWebhookEvents.PAYMENT_INTENT_PAYMENT_FAILED:
-        return handlePaymentIntentPaymentFailed(event);
-      default:
-        return CompletableFuture.completedStage(null);
-    }
+      return switch (event.getType()) {
+          case StripeWebhookEvents.INVOICE_FINALIZED -> handleInvoiceFinalizedEvent(event);
+          case StripeWebhookEvents.INVOICE_PAID -> handleInvoicePaidEvent(event);
+          case StripeWebhookEvents.SUBSCRIPTION_UPDATED -> handleSubscriptionUpdated(event);
+          case StripeWebhookEvents.PAYMENT_INTENT_PAYMENT_FAILED -> handlePaymentIntentPaymentFailed(event);
+          default -> CompletableFuture.completedStage(null);
+      };
   }
 
   private CompletionStage<Void> handlePaymentIntentPaymentFailed(Event event) {

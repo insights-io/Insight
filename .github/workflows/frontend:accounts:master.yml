@@ -4,8 +4,8 @@ on:
     branches:
       - master
     paths:
-      - '.github/workflows/frontend:try:master.yml'
-      - 'frontend/try/**'
+      - '.github/workflows/frontend:accounts:master.yml'
+      - 'frontend/accounts/**'
       - 'frontend/shared/**'
       - 'jest.config.ts'
       - 'lerna.json'
@@ -36,15 +36,15 @@ jobs:
       - name: Install & build 🏗️
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @rebrowse/try pretest
-          yarn workspace @rebrowse/try storybook:build
+          yarn workspace @rebrowse/accounts pretest
+          yarn workspace @rebrowse/accounts storybook:build
         #  npx sb extract
       - uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --follow-symlinks --delete
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_TRY_STORYBOOK }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_ACCOUNTS_STORYBOOK }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: frontend/try/storybook-static
+          SOURCE_DIR: frontend/accounts/storybook-static

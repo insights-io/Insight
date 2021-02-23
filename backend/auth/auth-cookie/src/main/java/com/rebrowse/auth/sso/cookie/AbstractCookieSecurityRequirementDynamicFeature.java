@@ -76,9 +76,14 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
   @Override
   @Traced
   public void tryAuthenticate(ContainerRequestContext context) {
+
     Span span = tracer.activeSpan();
     Map<String, Cookie> cookies = context.getCookies();
     Cookie sessionCookie = cookies.get(cookieName);
+
+    System.out.println(cookieName);
+    System.out.println(sessionCookie);
+
     if (sessionCookie == null) {
       String message = String.format("[AUTH]: Missing %s cookie", cookieName);
       log.debug(message);
@@ -104,6 +109,7 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
 
     Optional<AuthUser> maybeUser = findSession(cookieValue).toCompletableFuture().join();
     if (maybeUser.isEmpty()) {
+      System.out.println("USER IS EMPTY!!");
       context.abortWith(
           Boom.unauthorized().responseBuilder().cookie(clearCookie(getDomain(context))).build());
       return;

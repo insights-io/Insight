@@ -4,7 +4,7 @@ import { useStyletron } from 'baseui';
 import { Button, SIZE } from 'baseui/button';
 import { useRouter } from 'next/router';
 import Divider from 'shared/components/Divider';
-import { TRY_BASE_URL } from 'shared/config';
+import { ACCOUNTS_BASE_URL } from 'shared/config';
 import { AuthPageLayout } from 'auth/components/PageLayout';
 import { FaGithub, FaMicrosoft } from 'react-icons/fa';
 import { SsoButton } from 'auth/components/SsoButton';
@@ -96,7 +96,7 @@ export const LoginPage = () => {
 
       <Flex flexWrap>
         <UnstyledLink
-          href={`${TRY_BASE_URL}?redirect=${encodeURIComponent(
+          href={`${ACCOUNTS_BASE_URL}?redirect=${encodeURIComponent(
             relativeRedirect
           )}`}
         >

@@ -52,18 +52,19 @@ public class AbstractApiTestContainer<SELF extends GenericContainer<SELF>>
             imageName,
             context.toAbsolutePath().toString());
     builder.redirectErrorStream(true);
-    Process process;
     try {
-      process = builder.start();
+      Process process = builder.start();
+      try (BufferedReader reader =
+          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 
-      BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-      String line;
-      while (true) {
-        line = reader.readLine();
-        if (line == null) {
-          break;
+        String line;
+        while (true) {
+          line = reader.readLine();
+          if (line == null) {
+            break;
+          }
+          System.out.println(line);
         }
-        System.out.println(line);
       }
 
       if (process.waitFor() > 0) {

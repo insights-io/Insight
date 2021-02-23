@@ -2,9 +2,9 @@
 on:
   pull_request:
     paths:
-      - '.github/workflows/frontend:try:pr:e2e.yml'
+      - '.github/workflows/frontend:accounts:pr:e2e.yml'
       - 'backend/**'
-      - 'frontend/try/**'
+      - 'frontend/accounts/**'
       - 'frontend/shared/**'
       - 'jest.config.ts'
       - 'lerna.json'
@@ -14,7 +14,7 @@ on:
 
 env:
   CI: true
-  ARTIFACTS_PATH: frontend/try/artifacts/
+  ARTIFACTS_PATH: frontend/accounts/artifacts/
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
   MAILER_MOCK: true
@@ -41,7 +41,7 @@ jobs:
       - name: install and unit test
         run: |
           yarn install --frozen-lockfile
-          yarn workspace @rebrowse/try test --coverage
+          yarn workspace @rebrowse/accounts test --coverage
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -69,29 +69,29 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: frontend/try | install
+      - name: frontend/accounts | install
         run: yarn install --frozen-lockfile
       - name: Cache .next/cache
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/frontend/try/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-      - name: frontend/try | build
+      - name: frontend/accounts | build
         run: |
           yarn workspace @rebrowse/testing build
-          yarn workspace @rebrowse/try build
-      - name: frontend/try | start
+          yarn workspace @rebrowse/accounts build
+      - name: frontend/accounts | start
         run: |
-          yarn workspace @rebrowse/try start -p 3002 2>&1 | tee $ARTIFACTS_PATH/serve.log &
+          yarn workspace @rebrowse/accounts start -p 3002 2>&1 | tee $ARTIFACTS_PATH/serve.log &
           node_modules/wait-on/bin/wait-on http-get://localhost:3002 --timeout 600000
           node_modules/wait-on/bin/wait-on http-get://localhost:8080/health/ready --timeout 600000
-      - name: frontend/try | test:e2e
+      - name: frontend/accounts | test:e2e
         run: |
           mkdir -p $ARTIFACTS_PATH/screenshots
           mkdir -p $ARTIFACTS_PATH/videos
-          xvfb-run --server-args="-screen 0 1280x720x24" yarn workspace @rebrowse/try test:e2e
+          xvfb-run --server-args="-screen 0 1280x720x24" yarn workspace @rebrowse/accounts test:e2e
       - uses: actions/upload-artifact@v2
         if: always()
         with:
           name: artifacts
-          path: frontend/try/artifacts
+          path: frontend/accounts/artifacts

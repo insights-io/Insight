@@ -35,7 +35,7 @@ module "accounts_previews_wildcard_certificate" {
 resource "github_actions_secret" "accounts_previews_wildcard_certificate_arn" {
   repository      = module.global_vars.monorepo_repository
   secret_name     = "AWS_ACCOUNTS_PREVIEW_CERTIFICATE_ARN"
-  plaintext_value = module.try_previews_wildcard_certificate.arn
+  plaintext_value = module.accounts_previews_wildcard_certificate.arn
 }
 
 data "aws_acm_certificate" "wildcard_certificate" {
