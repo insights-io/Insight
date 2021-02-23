@@ -22,6 +22,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -36,7 +37,7 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
 
   private final String cookieName;
   private final int cookieSize;
-  private final String identifier;
+  private final String loggingIdentifier;
   private final BiFunction<AuthPrincipal, String, AuthPrincipal> cookieProvider;
 
   @Context HttpServerRequest request;
@@ -45,11 +46,11 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
   public AbstractCookieSecurityRequirementDynamicFeature(
       String cookieName,
       int cookieSize,
-      String identifier,
+      String loggingIdentifier,
       BiFunction<AuthPrincipal, String, AuthPrincipal> cookieProvider) {
     this.cookieName = cookieName;
     this.cookieSize = cookieSize;
-    this.identifier = identifier;
+    this.loggingIdentifier = loggingIdentifier;
     this.cookieProvider = cookieProvider;
   }
 
@@ -73,16 +74,18 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
     return URIUtils.parseCookieDomain(serverBaseUri);
   }
 
+  private void abortWithUnauthorizedResponse(ContainerRequestContext context) {
+    Response response =
+        Boom.unauthorized().responseBuilder().cookie(clearCookie(getDomain(context))).build();
+    context.abortWith(response);
+  }
+
   @Override
   @Traced
   public void tryAuthenticate(ContainerRequestContext context) {
-
     Span span = tracer.activeSpan();
     Map<String, Cookie> cookies = context.getCookies();
     Cookie sessionCookie = cookies.get(cookieName);
-
-    System.out.println(cookieName);
-    System.out.println(sessionCookie);
 
     if (sessionCookie == null) {
       String message = String.format("[AUTH]: Missing %s cookie", cookieName);
@@ -92,8 +95,8 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
     }
 
     String cookieValue = sessionCookie.getValue();
-    span.setTag(identifier, cookieValue);
-    MDC.put(identifier, cookieValue);
+    span.setTag(loggingIdentifier, cookieValue);
+    MDC.put(loggingIdentifier, cookieValue);
 
     if (cookieValue.length() != cookieSize) {
       String message =
@@ -102,16 +105,16 @@ public abstract class AbstractCookieSecurityRequirementDynamicFeature
               cookieName, cookieSize, cookieValue.length());
       log.debug(message);
       span.log(message);
-      context.abortWith(
-          Boom.unauthorized().responseBuilder().cookie(clearCookie(getDomain(context))).build());
+      abortWithUnauthorizedResponse(context);
       return;
     }
 
     Optional<AuthUser> maybeUser = findSession(cookieValue).toCompletableFuture().join();
     if (maybeUser.isEmpty()) {
-      System.out.println("USER IS EMPTY!!");
-      context.abortWith(
-          Boom.unauthorized().responseBuilder().cookie(clearCookie(getDomain(context))).build());
+      String message = String.format("[AUTH]: Session not found for cookie=%s", cookieValue);
+      log.debug(message);
+      span.log(message);
+      abortWithUnauthorizedResponse(context);
       return;
     }
 
