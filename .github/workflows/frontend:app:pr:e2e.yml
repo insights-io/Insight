@@ -83,7 +83,7 @@ jobs:
           for file in *; do docker load < $file; done
       - uses: actions/setup-node@v2
         with:
-          node-version: '15.10'
+          node-version: '15.9.0'
       - name: Setup & wait for docker containers
         run: |
           mkdir -p $ARTIFACTS_PATH
