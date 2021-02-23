@@ -13,7 +13,7 @@ COPY frontend/shared/service-proxy/package.json ./frontend/shared/service-proxy/
 COPY frontend/shared/elements/package.json ./frontend/shared/elements/package.json
 COPY frontend/accounts/package.json ./frontend/accounts/package.json
 
-RUN yarn install --production --frozen-lockfile --prefer-offline
+RUN yarn install --production --frozen-lockfile --prefer-offline --ignore-scripts
 RUN cp -RL ./node_modules/ /tmp/node_modules/
 
 # Copy source files
