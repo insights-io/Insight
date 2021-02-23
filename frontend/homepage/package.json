@@ -32,7 +32,7 @@
     "prebuild": "yarn build:deps",
     "build:deps": "yarn build:deps:l1 && yarn build:deps:l2 && yarn build:deps:l3",
     "build:deps:l1": "yarn workspace @rebrowse/types build",
-    "build:deps:l2": "concurrently \"yarn workspace @rebrowse/service-proxy build\" \"yarn workspace @rebrowse/storybook build\" \"yarn workspace @rebrowse/testing build\" \"yarn workspace @rebrowse/sdk build\"",
+    "build:deps:l2": "concurrently \"yarn workspace @rebrowse/service-proxy build\" \"yarn workspace @rebrowse/storybook build\" \"yarn workspace @rebrowse/sdk build\"",
     "build:deps:l3": "concurrently \"yarn workspace @rebrowse/next-testing build\" \"yarn workspace @rebrowse/next-storybook build\""
   },
   "dependencies": {
