@@ -12,16 +12,16 @@ services:
     volumes:
       - ../../frontend/homepage/.env.development.docker:/usr/app/.env.production
 
-  try:
+  accounts:
     build:
       context: ../..
-      dockerfile: frontend/try/docker/Dockerfile
+      dockerfile: frontend/accounts/docker/Dockerfile
     ports:
       - '3002:3000'
     depends_on:
       - auth-api
     volumes:
-      - ../../frontend/app/.env.development:/usr/app/.env.production
+      - ../../frontend/accounts/.env.development:/usr/app/.env.production
 
   app:
     build:
