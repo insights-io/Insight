@@ -1,12 +1,12 @@
 package com.rebrowse.auth.sso.token.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
 import com.rebrowse.auth.sso.session.resource.v1.SsoSessionResource;
 import com.rebrowse.auth.sso.token.model.dto.AuthTokenDTO;
 import com.rebrowse.auth.user.model.dto.UserDTO;
 import com.rebrowse.shared.rest.response.ErrorDataResponse;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.DELETE;

@@ -1,7 +1,7 @@
 package com.rebrowse.shared.sql.rest.query;
 
-import com.rebrowse.shared.rest.query.TermFilterExpression;
 import com.rebrowse.api.query.QueryParam;
+import com.rebrowse.shared.rest.query.TermFilterExpression;
 import java.util.Map;
 import lombok.Value;
 import org.jooq.Condition;

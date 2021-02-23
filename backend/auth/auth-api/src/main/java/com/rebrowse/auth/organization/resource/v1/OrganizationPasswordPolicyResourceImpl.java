@@ -21,8 +21,7 @@ public class OrganizationPasswordPolicyResourceImpl implements OrganizationPassw
 
   @Inject ObjectMapper objectMapper;
   @Inject AuthPrincipal authPrincipal;
-  @Inject
-  OrganizationPasswordPolicyDatasource passwordPolicyDatasource;
+  @Inject OrganizationPasswordPolicyDatasource passwordPolicyDatasource;
   @Inject Validator validator;
 
   @Override

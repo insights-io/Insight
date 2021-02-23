@@ -4,12 +4,12 @@ import static com.rebrowse.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.rebrowse.test.utils.GlobalTestData;
 import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationPwdChallengeSession;
 import com.rebrowse.auth.accounts.model.challenge.PwdChallengeResponseDTO;
 import com.rebrowse.auth.utils.AbstractAuthApiQuarkusTest;
 import com.rebrowse.auth.utils.AuthApiTestUtils;
+import com.rebrowse.test.utils.GlobalTestData;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.net.URL;

@@ -18,8 +18,7 @@ import org.opensaml.core.xml.io.UnmarshallingException;
 @Tag("integration")
 public class EntityDescriptorTest {
 
-  @Inject
-  SamlParser samlParser;
+  @Inject SamlParser samlParser;
 
   @Test
   public void xml_parser__should_correctly_parse__when_okta_metadata()

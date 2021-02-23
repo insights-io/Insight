@@ -1,9 +1,9 @@
 package com.rebrowse.auth.sso.session.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.auth.user.model.dto.UserDataDTO;
 import com.rebrowse.shared.rest.response.ErrorDataResponse;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.NotBlank;

@@ -66,7 +66,8 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
 
     return transaction
         .execute(query)
-        .thenApply(pgRowSet -> pgRowSet.iterator().next().getUUID(SqlSignUpRequestTable.TOKEN.getName()));
+        .thenApply(
+            pgRowSet -> pgRowSet.iterator().next().getUUID(SqlSignUpRequestTable.TOKEN.getName()));
   }
 
   @Override
@@ -78,14 +79,23 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
   @Override
   @Traced
   public CompletionStage<Optional<SignUpRequest>> retrieve(UUID token, SqlTransaction transaction) {
-    Query query = sqlPool.getContext().selectFrom(SqlSignUpRequestTable.TABLE).where(SqlSignUpRequestTable.TOKEN.eq(token));
+    Query query =
+        sqlPool
+            .getContext()
+            .selectFrom(SqlSignUpRequestTable.TABLE)
+            .where(SqlSignUpRequestTable.TOKEN.eq(token));
     return transaction.execute(query).thenApply(this::findOne);
   }
 
   @Override
   @Traced
   public CompletionStage<Boolean> delete(UUID token, SqlTransaction transaction) {
-    Query query = sqlPool.getContext().deleteFrom(SqlSignUpRequestTable.TABLE).where(SqlSignUpRequestTable.TOKEN.eq(token)).returning(SqlSignUpRequestTable.TOKEN);
+    Query query =
+        sqlPool
+            .getContext()
+            .deleteFrom(SqlSignUpRequestTable.TABLE)
+            .where(SqlSignUpRequestTable.TOKEN.eq(token))
+            .returning(SqlSignUpRequestTable.TOKEN);
     return transaction.execute(query).thenApply(this::hasNext);
   }
 
@@ -93,13 +103,17 @@ public class SqlSignUpDatasource extends AbstractSqlDatasource<SignUpRequest>
   @Traced
   public CompletionStage<Boolean> retrieveIsEmailTaken(String email, SqlTransaction transaction) {
     Field<String> userEmail = SqlUserTable.tableField(SqlUserTable.EMAIL);
-    Field<String> signUpRequestEmail = SqlSignUpRequestTable.tableField(SqlSignUpRequestTable.EMAIL);
+    Field<String> signUpRequestEmail =
+        SqlSignUpRequestTable.tableField(SqlSignUpRequestTable.EMAIL);
 
     Query query =
         sqlPool
             .getContext()
             .selectCount()
-            .from(SqlUserTable.TABLE.fullOuterJoin(SqlSignUpRequestTable.TABLE).on(userEmail.eq(signUpRequestEmail)))
+            .from(
+                SqlUserTable.TABLE
+                    .fullOuterJoin(SqlSignUpRequestTable.TABLE)
+                    .on(userEmail.eq(signUpRequestEmail)))
             .where(userEmail.eq(email).or(signUpRequestEmail.eq(email)));
 
     return transaction

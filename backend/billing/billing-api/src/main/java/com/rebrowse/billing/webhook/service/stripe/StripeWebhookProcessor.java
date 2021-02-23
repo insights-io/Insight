@@ -51,13 +51,14 @@ public class StripeWebhookProcessor implements WebhookProcessor<Event> {
    */
   @Override
   public CompletionStage<Void> process(Event event) {
-      return switch (event.getType()) {
-          case StripeWebhookEvents.INVOICE_FINALIZED -> handleInvoiceFinalizedEvent(event);
-          case StripeWebhookEvents.INVOICE_PAID -> handleInvoicePaidEvent(event);
-          case StripeWebhookEvents.SUBSCRIPTION_UPDATED -> handleSubscriptionUpdated(event);
-          case StripeWebhookEvents.PAYMENT_INTENT_PAYMENT_FAILED -> handlePaymentIntentPaymentFailed(event);
-          default -> CompletableFuture.completedStage(null);
-      };
+    return switch (event.getType()) {
+      case StripeWebhookEvents.INVOICE_FINALIZED -> handleInvoiceFinalizedEvent(event);
+      case StripeWebhookEvents.INVOICE_PAID -> handleInvoicePaidEvent(event);
+      case StripeWebhookEvents.SUBSCRIPTION_UPDATED -> handleSubscriptionUpdated(event);
+      case StripeWebhookEvents.PAYMENT_INTENT_PAYMENT_FAILED -> handlePaymentIntentPaymentFailed(
+          event);
+      default -> CompletableFuture.completedStage(null);
+    };
   }
 
   private CompletionStage<Void> handlePaymentIntentPaymentFailed(Event event) {

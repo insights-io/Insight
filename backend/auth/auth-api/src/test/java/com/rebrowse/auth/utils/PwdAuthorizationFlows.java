@@ -5,13 +5,13 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.shared.rest.response.DataResponse;
-import com.rebrowse.test.utils.auth.AbstractTestFlow;
-import com.rebrowse.test.utils.auth.AuthorizationFlows;
 import com.rebrowse.auth.accounts.model.AuthorizationSuccessResponseDTO;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationPwdChallengeSession;
 import com.rebrowse.auth.password.resource.v1.AuthorizationPwdChallengeResource;
 import com.rebrowse.auth.sso.session.model.SsoSession;
+import com.rebrowse.shared.rest.response.DataResponse;
+import com.rebrowse.test.utils.auth.AbstractTestFlow;
+import com.rebrowse.test.utils.auth.AuthorizationFlows;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;

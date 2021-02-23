@@ -27,8 +27,7 @@ public class OrganizationService {
 
   @Inject UserDatasource userDatasource;
   @Inject OrganizationDatasource organizationDatasource;
-  @Inject
-  SsoSessionDatasource ssoSessionDatasource;
+  @Inject SsoSessionDatasource ssoSessionDatasource;
 
   public CompletionStage<JsonNode> memberCount(String organizationId, SearchDTO search) {
     return userDatasource.count(organizationId, search);

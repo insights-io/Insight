@@ -1,8 +1,6 @@
 package com.rebrowse.billing.utils;
 
 import com.google.gson.JsonObject;
-import com.rebrowse.test.testconainers.api.auth.AuthApiTestResource;
-import com.rebrowse.test.utils.auth.AbstractAuthApiProvidedQuarkusTest;
 import com.rebrowse.auth.organization.model.Organization;
 import com.rebrowse.auth.user.model.AuthUser;
 import com.rebrowse.auth.user.model.UserRole;
@@ -13,6 +11,8 @@ import com.rebrowse.billing.service.stripe.StripeBillingService;
 import com.rebrowse.billing.subscription.model.SubscriptionPlan;
 import com.rebrowse.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.rebrowse.model.user.User;
+import com.rebrowse.test.testconainers.api.auth.AuthApiTestResource;
+import com.rebrowse.test.utils.auth.AbstractAuthApiProvidedQuarkusTest;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentMethod;
 import com.stripe.net.ApiResource;

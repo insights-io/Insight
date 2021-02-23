@@ -1,5 +1,6 @@
 package com.rebrowse.auth.organization.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.organization.model.dto.TeamInviteAcceptDTO;
 import com.rebrowse.auth.organization.model.dto.TeamInviteCreateDTO;
 import com.rebrowse.auth.organization.model.dto.TeamInviteDTO;
@@ -7,7 +8,6 @@ import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
 import com.rebrowse.shared.rest.response.ErrorDataResponse;
 import com.rebrowse.shared.rest.response.IntegerDataResponse;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;

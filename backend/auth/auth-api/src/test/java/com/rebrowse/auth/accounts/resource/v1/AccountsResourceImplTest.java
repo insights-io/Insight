@@ -4,7 +4,6 @@ import static com.rebrowse.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.rebrowse.test.utils.GlobalTestData;
 import com.rebrowse.auth.sso.saml.client.SamlClient;
 import com.rebrowse.auth.utils.AbstractAuthApiQuarkusTest;
 import com.rebrowse.auth.utils.AuthApiTestData;
@@ -12,6 +11,7 @@ import com.rebrowse.auth.utils.AuthApiTestUtils;
 import com.rebrowse.auth.utils.MockedSamlClient;
 import com.rebrowse.model.auth.SamlConfiguration;
 import com.rebrowse.model.auth.SsoSetupCreateParams;
+import com.rebrowse.test.utils.GlobalTestData;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;

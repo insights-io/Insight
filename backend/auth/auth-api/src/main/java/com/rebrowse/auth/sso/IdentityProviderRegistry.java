@@ -15,14 +15,10 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class IdentityProviderRegistry {
 
-  @Inject
-  MicrosoftIdentityProvider microsoftService;
-  @Inject
-  GoogleIdentityProvider googleService;
-  @Inject
-  GithubIdentityProvider githubService;
-  @Inject
-  SamlService samlService;
+  @Inject MicrosoftIdentityProvider microsoftService;
+  @Inject GoogleIdentityProvider googleService;
+  @Inject GithubIdentityProvider githubService;
+  @Inject SamlService samlService;
 
   private Map<SsoMethod, AbstractIdentityProvider> services;
 

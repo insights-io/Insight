@@ -6,15 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rebrowse.api.query.QueryParam;
 import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.auth.utils.AbstractAuthApiQuarkusTest;
 import com.rebrowse.auth.utils.AuthApiTestUtils;
-import com.rebrowse.shared.rest.response.DataResponse;
-import com.rebrowse.api.query.QueryParam;
 import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserSearchParams;
+import com.rebrowse.shared.rest.response.DataResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.List;
 import java.util.UUID;

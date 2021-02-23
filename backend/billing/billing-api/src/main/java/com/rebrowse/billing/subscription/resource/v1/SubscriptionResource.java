@@ -1,6 +1,5 @@
 package com.rebrowse.billing.subscription.resource.v1;
 
-import com.rebrowse.shared.rest.response.ErrorDataResponse;
 import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
@@ -8,6 +7,7 @@ import com.rebrowse.billing.subscription.model.dto.CreateSubscriptionDTO;
 import com.rebrowse.billing.subscription.model.dto.CreateSubscriptionResponseDTO;
 import com.rebrowse.billing.subscription.model.dto.PlanDTO;
 import com.rebrowse.billing.subscription.model.dto.SubscriptionDTO;
+import com.rebrowse.shared.rest.response.ErrorDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

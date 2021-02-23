@@ -1,8 +1,5 @@
 package com.rebrowse.session.pages.service;
 
-import com.rebrowse.shared.logging.LoggingConstants;
-import com.rebrowse.shared.rest.response.Boom;
-import com.rebrowse.shared.rest.response.DataResponse;
 import com.rebrowse.auth.organization.model.Organization;
 import com.rebrowse.auth.organization.model.dto.OrganizationDTO;
 import com.rebrowse.auth.organization.resource.v1.OrganizationResource;
@@ -16,6 +13,9 @@ import com.rebrowse.session.pages.datasource.PageVisitDatasource;
 import com.rebrowse.session.sessions.datasource.SessionCountDatasource;
 import com.rebrowse.session.sessions.datasource.SessionDatasource;
 import com.rebrowse.session.useragent.service.UserAgentService;
+import com.rebrowse.shared.logging.LoggingConstants;
+import com.rebrowse.shared.rest.response.Boom;
+import com.rebrowse.shared.rest.response.DataResponse;
 import com.rebrowse.useragent.model.UserAgent;
 import java.util.Optional;
 import java.util.UUID;

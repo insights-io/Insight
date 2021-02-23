@@ -3,10 +3,10 @@ package com.rebrowse.billing.webhook.resource.v1.stripe;
 import static com.rebrowse.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
-import com.rebrowse.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.billing.subscription.resource.v1.SubscriptionResource;
 import com.rebrowse.billing.utils.AbstractStripeQuarkusTest;
 import com.rebrowse.billing.webhook.service.stripe.StripeWebhookTransformer;
+import com.rebrowse.test.testconainers.pg.PostgresTestResource;
 import com.stripe.model.Event;
 import com.stripe.net.ApiResource;
 import io.quarkus.test.common.QuarkusTestResource;

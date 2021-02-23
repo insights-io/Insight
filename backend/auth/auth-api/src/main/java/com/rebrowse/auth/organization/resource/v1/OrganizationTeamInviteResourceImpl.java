@@ -1,9 +1,5 @@
 package com.rebrowse.auth.organization.resource.v1;
 
-import com.rebrowse.shared.context.RequestUtils;
-import com.rebrowse.shared.rest.query.SearchDTO;
-import com.rebrowse.shared.rest.response.Boom;
-import com.rebrowse.shared.rest.response.DataResponse;
 import com.rebrowse.auth.accounts.model.request.AuthorizationRequest;
 import com.rebrowse.auth.accounts.model.response.AuthorizationResponse;
 import com.rebrowse.auth.organization.datasource.OrganizationTeamInviteTable;
@@ -13,6 +9,10 @@ import com.rebrowse.auth.organization.service.OrganizationTeamInviteService;
 import com.rebrowse.auth.sso.session.model.AuthPrincipal;
 import com.rebrowse.auth.sso.session.service.SsoService;
 import com.rebrowse.auth.user.model.AuthUser;
+import com.rebrowse.shared.context.RequestUtils;
+import com.rebrowse.shared.rest.query.SearchDTO;
+import com.rebrowse.shared.rest.response.Boom;
+import com.rebrowse.shared.rest.response.DataResponse;
 import io.vertx.core.http.HttpServerRequest;
 import java.net.URI;
 import java.util.UUID;

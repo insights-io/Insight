@@ -1,5 +1,6 @@
 package com.rebrowse.session.pages.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
 import com.rebrowse.session.model.PageVisitCreateParams;
@@ -7,7 +8,6 @@ import com.rebrowse.session.model.PageVisitDTO;
 import com.rebrowse.session.model.PageVisitSessionLink;
 import com.rebrowse.shared.rest.response.CountDataResponse;
 import com.rebrowse.shared.rest.response.ErrorDataResponse;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

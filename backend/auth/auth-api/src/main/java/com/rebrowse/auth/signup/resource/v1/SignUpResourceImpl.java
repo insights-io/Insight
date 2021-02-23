@@ -22,8 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SignUpResourceImpl implements SignUpResource {
 
   @Inject SignUpServiceImpl signUpService;
-  @Inject
-  SsoService ssoService;
+  @Inject SsoService ssoService;
 
   @Context HttpServerRequest request;
   @Context UriInfo info;

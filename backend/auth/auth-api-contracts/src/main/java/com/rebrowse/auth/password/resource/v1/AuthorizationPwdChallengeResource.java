@@ -1,10 +1,10 @@
 package com.rebrowse.auth.password.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationPwdChallengeSession;
 import com.rebrowse.auth.accounts.model.challenge.PwdChallengeResponseDTO;
 import com.rebrowse.auth.mfa.challenge.resource.v1.AuthorizationMfaChallengeResource;
 import com.rebrowse.shared.validation.Password;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -62,7 +62,8 @@ public interface AuthorizationPwdChallengeResource {
                     schema =
                         @Schema(
                             implementation =
-                                AuthorizationMfaChallengeResource.AuthorizationMfaChallengeResponseData.class),
+                                AuthorizationMfaChallengeResource
+                                    .AuthorizationMfaChallengeResponseData.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
             responseCode = "302",

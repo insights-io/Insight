@@ -16,7 +16,7 @@ import org.apache.kafka.common.TopicPartition;
 @Slf4j
 public class StandaloneKafkaConsumer<K, V>
     implements StandaloneConsumer<
-            ConsumerRecords<K, V>, Set<TopicPartition>, Map<TopicPartition, OffsetAndMetadata>> {
+        ConsumerRecords<K, V>, Set<TopicPartition>, Map<TopicPartition, OffsetAndMetadata>> {
 
   private final KafkaConsumer<K, V> consumer;
   private final StandaloneKafkaCommitCallback commitCallback;

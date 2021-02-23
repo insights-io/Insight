@@ -1,10 +1,5 @@
 package com.rebrowse.session.utils;
 
-import com.rebrowse.shared.context.RequestUtils;
-import com.rebrowse.shared.rest.query.AbstractQueryParser;
-import com.rebrowse.shared.sql.client.SqlPool;
-import com.rebrowse.test.testconainers.api.auth.AuthApiTestResource;
-import com.rebrowse.test.utils.auth.AbstractAuthApiProvidedQuarkusTest;
 import com.rebrowse.location.model.Located;
 import com.rebrowse.location.model.Location;
 import com.rebrowse.session.model.PageVisitCreateParams;
@@ -13,6 +8,11 @@ import com.rebrowse.session.pages.datasource.PageVisitDatasource;
 import com.rebrowse.session.pages.resource.v1.PageVisitResource;
 import com.rebrowse.session.sessions.datasource.SessionDatasource;
 import com.rebrowse.session.sessions.resource.v1.SessionResource;
+import com.rebrowse.shared.context.RequestUtils;
+import com.rebrowse.shared.rest.query.AbstractQueryParser;
+import com.rebrowse.shared.sql.client.SqlPool;
+import com.rebrowse.test.testconainers.api.auth.AuthApiTestResource;
+import com.rebrowse.test.utils.auth.AbstractAuthApiProvidedQuarkusTest;
 import com.rebrowse.useragent.model.DeviceClass;
 import com.rebrowse.useragent.model.HasUserAgent;
 import com.rebrowse.useragent.model.UserAgent;

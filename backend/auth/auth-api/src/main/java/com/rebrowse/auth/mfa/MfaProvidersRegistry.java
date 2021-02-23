@@ -11,10 +11,8 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class MfaProvidersRegistry {
 
-  @Inject
-  MfaSmsProvider smsProvider;
-  @Inject
-  MfaTotpProvider totpProvider;
+  @Inject MfaSmsProvider smsProvider;
+  @Inject MfaTotpProvider totpProvider;
 
   private Map<MfaMethod, MfaProvider<?>> providerMap;
 

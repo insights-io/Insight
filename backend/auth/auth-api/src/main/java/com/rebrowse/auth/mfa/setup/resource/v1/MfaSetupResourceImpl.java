@@ -21,8 +21,8 @@ public class MfaSetupResourceImpl implements MfaSetupResource {
 
   @Inject AuthPrincipal principal;
   @Inject MfaSetupService mfaSetupService;
-  @Inject
-  UserMfaDatasource userMfaDatasource;
+  @Inject UserMfaDatasource userMfaDatasource;
+
   @Context HttpServerRequest request;
   @Context UriInfo uriInfo;
 

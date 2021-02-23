@@ -19,8 +19,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 @Slf4j
 public class SsoSetupService {
 
-  @Inject
-  SsoSetupDatasource ssoSetupDatasource;
+  @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject SamlService samlService;
 
   @Traced

@@ -1,9 +1,5 @@
 package com.rebrowse.auth.password.service;
 
-import com.rebrowse.shared.SharedConstants;
-import com.rebrowse.shared.context.RequestUtils;
-import com.rebrowse.shared.rest.response.Boom;
-import com.rebrowse.shared.sql.client.SqlPool;
 import com.rebrowse.auth.accounts.model.request.AuthorizationRequest;
 import com.rebrowse.auth.accounts.model.response.AuthorizationResponse;
 import com.rebrowse.auth.core.MailingConstants;
@@ -18,6 +14,10 @@ import com.rebrowse.auth.sso.session.service.SsoService;
 import com.rebrowse.auth.user.datasource.UserDatasource;
 import com.rebrowse.auth.user.model.AuthUser;
 import com.rebrowse.auth.user.model.UserWithLoginInformation;
+import com.rebrowse.shared.SharedConstants;
+import com.rebrowse.shared.context.RequestUtils;
+import com.rebrowse.shared.rest.response.Boom;
+import com.rebrowse.shared.sql.client.SqlPool;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.qute.Template;

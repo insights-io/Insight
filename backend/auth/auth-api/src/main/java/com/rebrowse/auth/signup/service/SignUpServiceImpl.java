@@ -43,16 +43,11 @@ public class SignUpServiceImpl implements SignUpService {
 
   @Inject SqlPool sqlPool;
   @Inject ReactiveMailer mailer;
-  @Inject
-  SignUpDatasource signUpDatasource;
-  @Inject
-  PasswordDatasource passwordDatasource;
-  @Inject
-  UserDatasource userDatasource;
-  @Inject
-  PasswordService passwordService;
-  @Inject
-  OrganizationDatasource organizationDatasource;
+  @Inject SignUpDatasource signUpDatasource;
+  @Inject PasswordDatasource passwordDatasource;
+  @Inject UserDatasource userDatasource;
+  @Inject PasswordService passwordService;
+  @Inject OrganizationDatasource organizationDatasource;
 
   @ResourcePath("sign_up/complete_sign_up")
   Template completeSignUpTemplate;

@@ -1,15 +1,11 @@
 package com.rebrowse.test.utils.auth;
 
-import static com.rebrowse.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.shared.rest.response.DataResponse;
-import com.rebrowse.test.utils.GlobalTestData;
-import com.rebrowse.test.utils.RestAssuredUtils;
 import com.rebrowse.auth.accounts.model.ChooseAccountAction;
 import com.rebrowse.auth.accounts.model.ChooseAccountSsoRedirectResponseDTO;
 import com.rebrowse.auth.accounts.model.SsoAuthorizationSession;
@@ -19,7 +15,10 @@ import com.rebrowse.auth.password.resource.v1.AuthorizationPwdChallengeResource;
 import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.model.auth.ApiKey;
 import com.rebrowse.model.auth.UserData;
+import com.rebrowse.shared.rest.response.DataResponse;
 import com.rebrowse.test.matchers.SameJSON;
+import com.rebrowse.test.utils.GlobalTestData;
+import com.rebrowse.test.utils.RestAssuredUtils;
 import io.restassured.common.mapper.TypeRef;
 import java.net.URI;
 import javax.ws.rs.core.UriBuilder;

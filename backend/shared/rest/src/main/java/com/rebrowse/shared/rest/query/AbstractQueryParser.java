@@ -1,8 +1,8 @@
 package com.rebrowse.shared.rest.query;
 
 import com.google.common.base.CaseFormat;
-import com.rebrowse.shared.rest.exception.SearchParseException;
 import com.rebrowse.api.query.SortDirection;
+import com.rebrowse.shared.rest.exception.SearchParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

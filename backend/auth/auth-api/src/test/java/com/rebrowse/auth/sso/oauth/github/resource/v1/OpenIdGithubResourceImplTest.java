@@ -6,6 +6,7 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.zxing.NotFoundException;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.auth.accounts.model.SsoAuthorizationSession;
 import com.rebrowse.auth.sso.AbstractIdentityProvider;
 import com.rebrowse.auth.sso.AbstractSsoOAuthResourceTest;
@@ -15,10 +16,9 @@ import com.rebrowse.auth.sso.oauth.github.GithubIdentityProvider;
 import com.rebrowse.auth.sso.oauth.github.GithubOAuthClient;
 import com.rebrowse.auth.sso.oauth.github.model.GithubTokenResponse;
 import com.rebrowse.auth.sso.oauth.github.model.GithubUserInfoResponse;
+import com.rebrowse.model.user.User;
 import com.rebrowse.test.utils.GlobalTestData;
 import com.rebrowse.test.utils.RestAssuredUtils;
-import com.rebrowse.api.RebrowseApi;
-import com.rebrowse.model.user.User;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
@@ -37,10 +37,8 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
 
-  @Inject
-  GithubOAuthClient oauthClient;
-  @Inject
-  GithubIdentityProvider oauthService;
+  @Inject GithubOAuthClient oauthClient;
+  @Inject GithubIdentityProvider oauthService;
 
   @Override
   public URI signInUri() {

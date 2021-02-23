@@ -4,14 +4,14 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.shared.SharedConstants;
-import com.rebrowse.test.utils.EmailTestUtils;
-import com.rebrowse.test.utils.GlobalTestData;
-import com.rebrowse.test.utils.RestAssuredUtils;
 import com.rebrowse.auth.signup.model.dto.SignUpRequestDTO;
 import com.rebrowse.auth.signup.resource.v1.SignUpResource;
 import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.auth.user.model.dto.PhoneNumberDTO;
+import com.rebrowse.shared.SharedConstants;
+import com.rebrowse.test.utils.EmailTestUtils;
+import com.rebrowse.test.utils.GlobalTestData;
+import com.rebrowse.test.utils.RestAssuredUtils;
 import java.net.URI;
 import java.util.UUID;
 import java.util.function.Function;

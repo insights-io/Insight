@@ -1,9 +1,9 @@
 package com.rebrowse.auth.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import com.rebrowse.model.organization.Organization;
 import com.rebrowse.model.organization.OrganizationUpdateParams;
+import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import java.net.URI;
 
 public class OrganizationFlows extends AbstractTestFlow {

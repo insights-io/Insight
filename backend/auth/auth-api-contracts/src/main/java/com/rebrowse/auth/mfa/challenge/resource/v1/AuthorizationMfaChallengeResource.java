@@ -1,5 +1,6 @@
 package com.rebrowse.auth.mfa.challenge.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeResponseDTO;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeSession;
 import com.rebrowse.auth.accounts.model.challenge.MfaChallengeResponseDTO;
@@ -9,7 +10,6 @@ import com.rebrowse.auth.mfa.model.dto.MfaChallengeCompleteDTO;
 import com.rebrowse.auth.mfa.setup.resource.v1.MfaSetupResource;
 import com.rebrowse.auth.sso.MfaChallengeSessionCookieSecurityScheme;
 import com.rebrowse.shared.rest.response.ErrorDataResponse;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;

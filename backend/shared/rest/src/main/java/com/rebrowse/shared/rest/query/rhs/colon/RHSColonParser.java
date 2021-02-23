@@ -1,5 +1,8 @@
 package com.rebrowse.shared.rest.query.rhs.colon;
 
+import com.rebrowse.api.query.QueryParam;
+import com.rebrowse.api.query.SortDirection;
+import com.rebrowse.api.query.TermCondition;
 import com.rebrowse.shared.rest.exception.GroupBySearchParseException;
 import com.rebrowse.shared.rest.exception.SortBySearchParseException;
 import com.rebrowse.shared.rest.query.AbstractQueryParser;
@@ -9,9 +12,6 @@ import com.rebrowse.shared.rest.query.FilterExpression;
 import com.rebrowse.shared.rest.query.SearchDTO;
 import com.rebrowse.shared.rest.query.TermFilterExpression;
 import com.rebrowse.shared.rest.query.TimePrecision;
-import com.rebrowse.api.query.QueryParam;
-import com.rebrowse.api.query.SortDirection;
-import com.rebrowse.api.query.TermCondition;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;

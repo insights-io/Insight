@@ -1,8 +1,8 @@
 package com.rebrowse.shared.rest.mappers;
 
-import com.rebrowse.shared.rest.response.Boom;
 import com.rebrowse.api.RebrowseApiError;
 import com.rebrowse.exception.ApiException;
+import com.rebrowse.shared.rest.response.Boom;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;

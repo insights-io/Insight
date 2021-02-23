@@ -36,18 +36,15 @@ public class MfaAuthorizationChallengeService {
   public static final Map<String, String> INVALID_CODE_ERRORS = Map.of("code", "Invalid code");
 
   @Inject AuthorizationChallengeDatasource authorizationChallengeDatasource;
-  @Inject
-  UserDatasource userDatasource;
+  @Inject UserDatasource userDatasource;
   @Inject MfaSetupService mfaSetupService;
-  @Inject
-  UserMfaDatasource userMfaDatasource;
-  @Inject
-  SsoService ssoService;
+  @Inject UserMfaDatasource userMfaDatasource;
+  @Inject SsoService ssoService;
   @Inject MfaProvidersRegistry mfaProvidersRegistry;
   @Inject MfaSmsProvider smsProvider;
 
   public CompletionStage<AuthorizationResponse> createChallenge(
-          UUID userId, List<MfaMethod> methods, AuthorizationRequest authorizationRequest) {
+      UUID userId, List<MfaMethod> methods, AuthorizationRequest authorizationRequest) {
     String domain = authorizationRequest.getDomain();
     URI redirect = authorizationRequest.getRedirect();
     return authorizationChallengeDatasource

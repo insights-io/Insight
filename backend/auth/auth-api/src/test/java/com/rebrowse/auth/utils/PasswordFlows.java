@@ -4,11 +4,11 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rebrowse.auth.password.model.dto.PasswordForgotRequestDTO;
+import com.rebrowse.auth.password.resource.v1.PasswordResource;
 import com.rebrowse.shared.SharedConstants;
 import com.rebrowse.test.utils.GlobalTestData;
 import com.rebrowse.test.utils.auth.AbstractTestFlow;
-import com.rebrowse.auth.password.model.dto.PasswordForgotRequestDTO;
-import com.rebrowse.auth.password.resource.v1.PasswordResource;
 import io.restassured.response.Response;
 import io.vertx.core.http.HttpHeaders;
 import java.net.URI;

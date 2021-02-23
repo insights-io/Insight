@@ -4,14 +4,14 @@ import static com.rebrowse.test.matchers.SameJSON.sameJson;
 import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.shared.rest.response.DataResponse;
-import com.rebrowse.test.utils.GlobalTestData;
-import com.rebrowse.test.utils.RestAssuredUtils;
-import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import com.rebrowse.auth.accounts.model.SsoAuthorizationSession;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeResponseDTO;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeSession;
 import com.rebrowse.auth.sso.AbstractIdentityProvider;
+import com.rebrowse.shared.rest.response.DataResponse;
+import com.rebrowse.test.utils.GlobalTestData;
+import com.rebrowse.test.utils.RestAssuredUtils;
+import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.ValidatableResponse;
 import java.net.URI;

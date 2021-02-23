@@ -1,8 +1,8 @@
 package com.rebrowse.billing.payment.provider.stripe;
 
+import com.rebrowse.billing.payment.provider.PaymentProvider;
 import com.rebrowse.shared.rest.exception.BoomException;
 import com.rebrowse.shared.rest.response.Boom;
-import com.rebrowse.billing.payment.provider.PaymentProvider;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;

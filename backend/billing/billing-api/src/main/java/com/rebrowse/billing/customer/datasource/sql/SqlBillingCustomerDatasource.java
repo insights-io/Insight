@@ -7,10 +7,10 @@ import static com.rebrowse.billing.customer.datasource.sql.SqlBillingCustomerTab
 import static com.rebrowse.billing.customer.datasource.sql.SqlBillingCustomerTable.INTERNAL_ID;
 import static com.rebrowse.billing.customer.datasource.sql.SqlBillingCustomerTable.TABLE;
 
-import com.rebrowse.shared.sql.client.SqlPool;
-import com.rebrowse.shared.sql.client.SqlTransaction;
 import com.rebrowse.billing.customer.datasource.BillingCustomerDatasource;
 import com.rebrowse.billing.customer.model.BillingCustomer;
+import com.rebrowse.shared.sql.client.SqlPool;
+import com.rebrowse.shared.sql.client.SqlTransaction;
 import io.vertx.mutiny.sqlclient.Row;
 import io.vertx.mutiny.sqlclient.RowSet;
 import java.util.Optional;

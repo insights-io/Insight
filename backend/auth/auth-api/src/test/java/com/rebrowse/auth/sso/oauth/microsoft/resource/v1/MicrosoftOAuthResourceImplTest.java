@@ -6,6 +6,7 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.zxing.NotFoundException;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.auth.accounts.model.SsoAuthorizationSession;
 import com.rebrowse.auth.sso.AbstractIdentityProvider;
 import com.rebrowse.auth.sso.AbstractSsoOAuthResourceTest;
@@ -16,11 +17,10 @@ import com.rebrowse.auth.sso.oauth.microsoft.MicrosoftIdentityProvider;
 import com.rebrowse.auth.sso.oauth.microsoft.MicrosoftOAuthClient;
 import com.rebrowse.auth.sso.oauth.microsoft.model.MicrosoftTokenResponse;
 import com.rebrowse.auth.sso.oauth.microsoft.model.MicrosoftUserInfoResponse;
+import com.rebrowse.model.user.User;
+import com.rebrowse.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.test.utils.GlobalTestData;
 import com.rebrowse.test.utils.RestAssuredUtils;
-import com.rebrowse.test.testconainers.pg.PostgresTestResource;
-import com.rebrowse.api.RebrowseApi;
-import com.rebrowse.model.user.User;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -42,10 +42,8 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest {
 
-  @Inject
-  MicrosoftOAuthClient microsoftClient;
-  @Inject
-  MicrosoftIdentityProvider microsoftService;
+  @Inject MicrosoftOAuthClient microsoftClient;
+  @Inject MicrosoftIdentityProvider microsoftService;
 
   @Override
   public URI signInUri() {

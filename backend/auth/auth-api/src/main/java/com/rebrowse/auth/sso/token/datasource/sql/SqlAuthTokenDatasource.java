@@ -24,9 +24,20 @@ public class SqlAuthTokenDatasource implements AuthTokenDatasource {
 
   @Inject SqlPool sqlPool;
 
+  public static AuthTokenDTO mapAuthToken(Row row) {
+    return new AuthTokenDTO(
+        row.getString(SqlAuthTokenTable.TOKEN.getName()),
+        row.getUUID(SqlAuthTokenTable.USER_ID.getName()),
+        row.getOffsetDateTime(SqlAuthTokenTable.CREATED_AT.getName()));
+  }
+
   @Override
   public CompletionStage<List<AuthTokenDTO>> list(UUID userId) {
-    Query query = sqlPool.getContext().selectFrom(SqlAuthTokenTable.TABLE).where(SqlAuthTokenTable.USER_ID.eq(userId));
+    Query query =
+        sqlPool
+            .getContext()
+            .selectFrom(SqlAuthTokenTable.TABLE)
+            .where(SqlAuthTokenTable.USER_ID.eq(userId));
     return sqlPool.execute(query).thenApply(this::onAuthTokens);
   }
 
@@ -57,7 +68,10 @@ public class SqlAuthTokenDatasource implements AuthTokenDatasource {
 
   @Override
   public CompletionStage<Optional<AuthUser>> getTokenUser(String token) {
-    Table<?> joined = SqlAuthTokenTable.TABLE.leftJoin(SqlUserTable.TABLE).on(SqlUserTable.USER_TABLE_ID.eq(SqlAuthTokenTable.USER_ID));
+    Table<?> joined =
+        SqlAuthTokenTable.TABLE
+            .leftJoin(SqlUserTable.TABLE)
+            .on(SqlUserTable.USER_TABLE_ID.eq(SqlAuthTokenTable.USER_ID));
     Query query = sqlPool.getContext().selectFrom(joined).where(SqlAuthTokenTable.TOKEN.eq(token));
 
     return sqlPool
@@ -77,12 +91,5 @@ public class SqlAuthTokenDatasource implements AuthTokenDatasource {
       tokens.add(mapAuthToken(row));
     }
     return tokens;
-  }
-
-  public static AuthTokenDTO mapAuthToken(Row row) {
-    return new AuthTokenDTO(
-        row.getString(SqlAuthTokenTable.TOKEN.getName()),
-        row.getUUID(SqlAuthTokenTable.USER_ID.getName()),
-        row.getOffsetDateTime(SqlAuthTokenTable.CREATED_AT.getName()));
   }
 }

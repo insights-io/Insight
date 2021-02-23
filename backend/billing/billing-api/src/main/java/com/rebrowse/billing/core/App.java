@@ -1,9 +1,9 @@
 package com.rebrowse.billing.core;
 
-import com.rebrowse.shared.SharedConstants;
 import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
 import com.rebrowse.auth.sso.session.model.SsoSession;
+import com.rebrowse.shared.SharedConstants;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.HttpHeaders;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;

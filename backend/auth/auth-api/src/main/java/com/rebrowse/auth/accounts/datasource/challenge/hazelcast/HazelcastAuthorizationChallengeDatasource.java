@@ -2,11 +2,11 @@ package com.rebrowse.auth.accounts.datasource.challenge.hazelcast;
 
 import com.hazelcast.map.IMap;
 import com.rebrowse.auth.accounts.datasource.challenge.AuthorizationChallengeDatasource;
+import com.rebrowse.auth.accounts.model.challenge.AuthorizationChallenge;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationChallengeType;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationPwdChallengeSession;
 import com.rebrowse.auth.user.datasource.UserDatasource;
 import com.rebrowse.shared.hazelcast.cdi.HazelcastProvider;
-import com.rebrowse.auth.accounts.model.challenge.AuthorizationChallenge;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
@@ -19,8 +19,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class HazelcastAuthorizationChallengeDatasource implements AuthorizationChallengeDatasource {
 
   @Inject HazelcastProvider hazelcastProvider;
-  @Inject
-  UserDatasource userDatasource;
+  @Inject UserDatasource userDatasource;
 
   @ConfigProperty(name = "hazelcast.auth.accounts.challenge.datasource.map")
   String mapName;
@@ -33,8 +32,7 @@ public class HazelcastAuthorizationChallengeDatasource implements AuthorizationC
   }
 
   @Override
-  public CompletionStage<String> create(
-      AuthorizationChallenge challenge) {
+  public CompletionStage<String> create(AuthorizationChallenge challenge) {
     String id = AuthorizationPwdChallengeSession.newIdentifier();
     return store
         .setAsync(id, challenge, AuthorizationPwdChallengeSession.TTL, TimeUnit.SECONDS)
@@ -42,8 +40,8 @@ public class HazelcastAuthorizationChallengeDatasource implements AuthorizationC
   }
 
   @Override
-  public CompletionStage<Optional<AuthorizationChallenge>>
-      retrieve(String id, AuthorizationChallengeType type) {
+  public CompletionStage<Optional<AuthorizationChallenge>> retrieve(
+      String id, AuthorizationChallengeType type) {
     return store
         .getAsync(id)
         .thenApply(

@@ -28,8 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SsoSetupResourceImpl implements SsoSetupResource {
 
   @Inject Validator validator;
-  @Inject
-  SsoSetupDatasource ssoSetupDatasource;
+  @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject SsoSetupService ssoSetupService;
   @Inject AuthPrincipal authPrincipal;
 

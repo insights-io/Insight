@@ -20,8 +20,7 @@ public class UserPhoneCodeService {
   public static final int CODE_LENGTH = 6;
   private static final SecureRandom random = new SecureRandom();
 
-  @Inject
-  UserPhoneCodeDatasource userPhoneCodeDatasource;
+  @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
   @Inject SmsService smsService;
 
   public static int generateRandomDigits(int length) {
@@ -57,7 +56,8 @@ public class UserPhoneCodeService {
     return smsService.sendMessage(
         "+19704594909",
         phoneNumber.getNumber(),
-        String.format("[%s] Verification code: %d", SharedConstants.REBROWSE_ORGANIZATION_NAME, code));
+        String.format(
+            "[%s] Verification code: %d", SharedConstants.REBROWSE_ORGANIZATION_NAME, code));
   }
 
   public int newCode() {

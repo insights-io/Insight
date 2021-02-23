@@ -1,12 +1,12 @@
 package com.rebrowse.auth.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import com.rebrowse.auth.core.config.model.AppConfig;
 import com.rebrowse.auth.sso.oauth.OAuthResource;
 import com.rebrowse.auth.sso.oauth.github.resource.v1.GithubOAuthResource;
 import com.rebrowse.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
 import com.rebrowse.auth.sso.oauth.microsoft.resource.v1.MicrosoftOAuthResource;
+import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 

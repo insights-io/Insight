@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractMfaProvider<T> implements MfaProvider<T> {
 
-  @Inject
-  UserMfaDatasource userMfaDatasource;
+  @Inject UserMfaDatasource userMfaDatasource;
 
   public CompletionStage<Void> assertCanSetupMfa(UUID userId) {
     MfaMethod method = getMethod();

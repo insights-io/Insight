@@ -19,8 +19,7 @@ public class GoogleOAuthClient
   private static final String TOKEN_SERVER_URL = "https://oauth2.googleapis.com/token";
   private static final String TOKEN_INFO_SERVER_URL = "https://oauth2.googleapis.com/tokeninfo";
 
-  @Inject
-  AppConfig appConfig;
+  @Inject AppConfig appConfig;
 
   @Override
   protected CompletionStage<HttpResponse<Buffer>> requestUserInfo(GoogleTokenResponse token) {

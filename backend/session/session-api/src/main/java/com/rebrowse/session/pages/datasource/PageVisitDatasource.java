@@ -1,12 +1,12 @@
 package com.rebrowse.session.pages.datasource;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rebrowse.shared.rest.query.SearchDTO;
-import com.rebrowse.shared.sql.client.SqlTransaction;
 import com.rebrowse.location.model.Located;
 import com.rebrowse.session.model.PageVisitCreateParams;
 import com.rebrowse.session.model.PageVisitDTO;
 import com.rebrowse.session.model.PageVisitSessionLink;
+import com.rebrowse.shared.rest.query.SearchDTO;
+import com.rebrowse.shared.sql.client.SqlTransaction;
 import com.rebrowse.useragent.model.HasUserAgent;
 import java.util.Optional;
 import java.util.UUID;

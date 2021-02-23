@@ -19,8 +19,7 @@ public class PwdAuthorizationChallengeService {
 
   @Inject AuthorizationChallengeDatasource authorizationChallengeDatasource;
   @Inject PasswordService passwordService;
-  @Inject
-  SsoService ssoService;
+  @Inject SsoService ssoService;
 
   public CompletionStage<AuthorizationResponse> completeChallenge(
       String challengeId, String email, String password, URI serverBaseUri) {

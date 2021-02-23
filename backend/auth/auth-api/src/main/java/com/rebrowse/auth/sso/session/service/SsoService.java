@@ -39,8 +39,7 @@ import org.apache.commons.lang3.ArrayUtils;
 @ApplicationScoped
 public class SsoService {
 
-  @Inject
-  SsoSessionDatasource ssoSessionDatasource;
+  @Inject SsoSessionDatasource ssoSessionDatasource;
   @Inject OrganizationDatasource organizationDatasource;
   @Inject MfaAuthorizationChallengeService mfaAuthorizationChallengeService;
   @Inject SsoSetupDatasource ssoSetupDatasource;
@@ -90,12 +89,12 @@ public class SsoService {
   }
 
   public CompletionStage<AuthorizationResponse> authorize(
-          UserWithLoginInformation user, AuthorizationRequest request) {
+      UserWithLoginInformation user, AuthorizationRequest request) {
     return authorize(user.user(), user.getMfaMethods(), request);
   }
 
   public CompletionStage<AuthorizationResponse> authorize(
-          AuthUser user, List<MfaMethod> mfaMethods, AuthorizationRequest request) {
+      AuthUser user, List<MfaMethod> mfaMethods, AuthorizationRequest request) {
     if (mfaMethods.isEmpty()) {
       return organizationDatasource
           .retrieve(user.getOrganizationId())
@@ -166,7 +165,7 @@ public class SsoService {
   }
 
   public CompletionStage<AuthorizationResponse> authorizeSocialSso(
-          String email, String fullName, SsoMethod method, URI redirect, URI serverBaseUri) {
+      String email, String fullName, SsoMethod method, URI redirect, URI serverBaseUri) {
     AuthorizationRequest request = new AuthorizationRequest(email, redirect, serverBaseUri);
     return userDatasource
         .retrieveUserWithLoginInformation(email)

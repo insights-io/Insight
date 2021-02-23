@@ -1,10 +1,10 @@
 package com.rebrowse.session.sessions.datasource;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rebrowse.shared.rest.query.SearchDTO;
-import com.rebrowse.shared.sql.client.SqlTransaction;
 import com.rebrowse.location.model.Located;
 import com.rebrowse.session.model.SessionDTO;
+import com.rebrowse.shared.rest.query.SearchDTO;
+import com.rebrowse.shared.sql.client.SqlTransaction;
 import com.rebrowse.useragent.model.HasUserAgent;
 import java.util.Collection;
 import java.util.Optional;

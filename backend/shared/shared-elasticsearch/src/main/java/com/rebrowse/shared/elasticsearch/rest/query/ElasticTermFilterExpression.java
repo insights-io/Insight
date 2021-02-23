@@ -1,7 +1,7 @@
 package com.rebrowse.shared.elasticsearch.rest.query;
 
-import com.rebrowse.shared.rest.query.TermFilterExpression;
 import com.rebrowse.api.query.QueryParam;
+import com.rebrowse.shared.rest.query.TermFilterExpression;
 import java.util.Arrays;
 import lombok.Value;
 import org.apache.lucene.search.join.ScoreMode;

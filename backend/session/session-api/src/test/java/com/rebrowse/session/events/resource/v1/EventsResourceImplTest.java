@@ -11,6 +11,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rebrowse.api.query.TermCondition;
+import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.events.index.UserEventIndex;
 import com.rebrowse.events.model.incoming.AbstractBrowserEvent;
 import com.rebrowse.events.model.incoming.UserEvent;
@@ -21,8 +23,6 @@ import com.rebrowse.test.rest.data.EventTestData;
 import com.rebrowse.test.rest.mappers.JacksonMapper;
 import com.rebrowse.test.testconainers.elasticsearch.ElasticsearchTestResource;
 import com.rebrowse.test.utils.auth.AbstractAuthApiProvidedQuarkusTest;
-import com.rebrowse.api.query.TermCondition;
-import com.rebrowse.auth.sso.session.model.SsoSession;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Method;

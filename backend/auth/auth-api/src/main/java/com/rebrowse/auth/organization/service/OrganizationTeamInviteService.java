@@ -50,17 +50,12 @@ public class OrganizationTeamInviteService {
 
   @Inject ReactiveMailer mailer;
   @Inject SqlPool sqlPool;
-  @Inject
-  UserDatasource userDatasource;
-  @Inject
-  OrganizationDatasource organizationDatasource;
-  @Inject
-  OrganizationTeamInviteDatasource teamInviteDatasource;
-  @Inject
-  OrganizationPasswordPolicyDatasource organizationPasswordPolicyDatasource;
+  @Inject UserDatasource userDatasource;
+  @Inject OrganizationDatasource organizationDatasource;
+  @Inject OrganizationTeamInviteDatasource teamInviteDatasource;
+  @Inject OrganizationPasswordPolicyDatasource organizationPasswordPolicyDatasource;
   @Inject PasswordDatasource passwordDatasource;
-  @Inject
-  PasswordService passwordService;
+  @Inject PasswordService passwordService;
 
   @ResourcePath("organization/team_invite")
   Template teamInviteTemplate;

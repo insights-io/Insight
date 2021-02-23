@@ -40,13 +40,10 @@ import org.slf4j.MDC;
 @Slf4j
 public class SamlService extends AbstractIdentityProvider {
 
-  @Inject
-  SsoSetupDatasource ssoSetupDatasource;
-  @Inject
-  SsoService ssoService;
+  @Inject SsoSetupDatasource ssoSetupDatasource;
+  @Inject SsoService ssoService;
   @Inject SamlParser samlParser;
-  @Inject
-  SamlClient samlClient;
+  @Inject SamlClient samlClient;
 
   @Override
   public SsoMethod getMethod() {
@@ -185,7 +182,7 @@ public class SamlService extends AbstractIdentityProvider {
 
   @Override
   public CompletionStage<SsoAuthorizationRequest> getSsoAuthorizationRequest(
-          SsoSetupDTO ssoSetup, AuthorizationRequest request) {
+      SsoSetupDTO ssoSetup, AuthorizationRequest request) {
     URL metadataEndpoint = ssoSetup.getSaml().getMetadataEndpoint();
     String state = secureState(request.getRedirect().toString());
     URI location = buildAuthorizationURI(state, metadataEndpoint);

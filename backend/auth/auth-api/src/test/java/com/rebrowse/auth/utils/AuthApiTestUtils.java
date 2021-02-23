@@ -1,13 +1,13 @@
 package com.rebrowse.auth.utils;
 
 import com.google.zxing.NotFoundException;
+import com.rebrowse.api.RebrowseApi;
+import com.rebrowse.auth.mfa.totp.impl.QRCodeUtils;
+import com.rebrowse.auth.user.model.dto.PhoneNumberDTO;
 import com.rebrowse.shared.SharedConstants;
 import com.rebrowse.shared.sms.MockSmsbox;
 import com.rebrowse.shared.sms.SmsMessage;
 import com.rebrowse.test.utils.GlobalTestData;
-import com.rebrowse.api.RebrowseApi;
-import com.rebrowse.auth.mfa.totp.impl.QRCodeUtils;
-import com.rebrowse.auth.user.model.dto.PhoneNumberDTO;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;

@@ -28,10 +28,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Slf4j
 public class MfaTotpProvider extends AbstractMfaProvider<MfaTotpSetupStartDTO> {
 
-  @Inject
-  MfaTotpSetupDatasource mfaTotpSetupDatasource;
-  @Inject
-  UserMfaDatasource userMfaDatasource;
+  @Inject MfaTotpSetupDatasource mfaTotpSetupDatasource;
+  @Inject UserMfaDatasource userMfaDatasource;
   @Inject SqlPool sqlPool;
 
   @ConfigProperty(name = "authorization.issuer")

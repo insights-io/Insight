@@ -1,10 +1,10 @@
 package com.rebrowse.auth.user;
 
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.auth.user.model.AuthUser;
 import com.rebrowse.auth.user.model.UserRole;
 import com.rebrowse.auth.user.model.dto.UserDTO;
 import com.rebrowse.shared.SharedConstants;
-import com.rebrowse.api.RebrowseApi;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

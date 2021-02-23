@@ -5,6 +5,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.auth.accounts.model.SsoAuthorizationSession;
 import com.rebrowse.auth.core.EmailUtils;
 import com.rebrowse.auth.organization.datasource.OrganizationDatasource;
@@ -20,15 +21,14 @@ import com.rebrowse.auth.sso.setup.model.dto.SamlConfigurationDTO;
 import com.rebrowse.auth.utils.AuthApiTestData;
 import com.rebrowse.auth.utils.AuthApiTestUtils;
 import com.rebrowse.auth.utils.MockedSamlClient;
-import com.rebrowse.test.utils.GlobalTestData;
-import com.rebrowse.test.utils.RestAssuredUtils;
-import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.auth.SamlConfiguration;
 import com.rebrowse.model.auth.SsoSetupCreateParams;
 import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.OrganizationUpdateParams;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserRole;
+import com.rebrowse.test.utils.GlobalTestData;
+import com.rebrowse.test.utils.RestAssuredUtils;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import java.io.IOException;
@@ -47,8 +47,7 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class SamlResourceImplTest extends AbstractSsoResourceTest {
 
-  @Inject
-  SsoSetupDatasource ssoSetupDatasource;
+  @Inject SsoSetupDatasource ssoSetupDatasource;
   @Inject OrganizationDatasource organizationDatasource;
 
   @Test

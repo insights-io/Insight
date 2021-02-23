@@ -21,12 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccountsService {
 
-  @Inject
-  PwdAuthorizationChallengeService pwdAuthorizationChallengeService;
-  @Inject
-  SsoSetupDatasource ssoSetupDatasource;
-  @Inject
-  IdentityProviderRegistry identityProviderRegistry;
+  @Inject PwdAuthorizationChallengeService pwdAuthorizationChallengeService;
+  @Inject SsoSetupDatasource ssoSetupDatasource;
+  @Inject IdentityProviderRegistry identityProviderRegistry;
 
   @Context HttpServerRequest request;
   @Context UriInfo info;

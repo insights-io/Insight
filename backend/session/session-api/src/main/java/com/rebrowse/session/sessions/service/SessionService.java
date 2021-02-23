@@ -15,8 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SessionService {
 
-  @Inject
-  SessionDatasource sessionDatasource;
+  @Inject SessionDatasource sessionDatasource;
 
   public CompletionStage<Collection<SessionDTO>> listSessions(
       String organizationId, SearchDTO searchDTO) {

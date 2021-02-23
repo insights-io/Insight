@@ -2,8 +2,8 @@ package com.rebrowse.billing.core.resource.cors;
 
 import static io.restassured.RestAssured.given;
 
-import com.rebrowse.shared.SharedConstants;
 import com.rebrowse.billing.subscription.resource.v1.SubscriptionResource;
+import com.rebrowse.shared.SharedConstants;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;

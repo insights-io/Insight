@@ -1,7 +1,7 @@
 package com.rebrowse.auth.core;
 
-import com.rebrowse.shared.rest.response.Boom;
 import com.rebrowse.api.RebrowseApi;
+import com.rebrowse.shared.rest.response.Boom;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

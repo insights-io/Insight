@@ -1,7 +1,5 @@
 package com.rebrowse.auth.sso.bearer;
 
-import com.rebrowse.shared.context.RequestContextUtils;
-import com.rebrowse.shared.rest.response.Boom;
 import com.rebrowse.auth.sso.AbstractAuthDynamicFeature;
 import com.rebrowse.auth.sso.AuthScheme;
 import com.rebrowse.auth.sso.AuthSchemeResolver;
@@ -9,6 +7,8 @@ import com.rebrowse.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDy
 import com.rebrowse.auth.sso.session.model.PrincipalSecurityContext;
 import com.rebrowse.auth.user.UserRegistry;
 import com.rebrowse.auth.user.model.AuthUser;
+import com.rebrowse.shared.context.RequestContextUtils;
+import com.rebrowse.shared.rest.response.Boom;
 import io.opentracing.Span;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;

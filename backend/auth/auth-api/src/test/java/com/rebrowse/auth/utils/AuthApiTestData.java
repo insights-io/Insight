@@ -1,9 +1,9 @@
 package com.rebrowse.auth.utils;
 
-import com.rebrowse.shared.context.RequestUtils;
-import com.rebrowse.test.utils.GlobalTestData;
 import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.accounts.model.AuthorizationSuccessResponseDTO;
+import com.rebrowse.shared.context.RequestUtils;
+import com.rebrowse.test.utils.GlobalTestData;
 import java.net.URI;
 import java.net.URL;
 

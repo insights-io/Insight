@@ -1,9 +1,9 @@
 package com.rebrowse.auth.sso.saml.service;
 
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.auth.sso.saml.model.SamlCoreDataResponse;
 import com.rebrowse.auth.sso.saml.model.SamlMetadataEntityDescriptor;
 import com.rebrowse.shared.rest.response.Boom;
-import com.rebrowse.api.RebrowseApi;
 import io.quarkus.runtime.StartupEvent;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

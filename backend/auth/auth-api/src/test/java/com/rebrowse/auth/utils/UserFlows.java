@@ -4,12 +4,12 @@ import static io.restassured.RestAssured.given;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.shared.sms.MockSmsbox;
-import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import com.rebrowse.auth.mfa.model.dto.MfaChallengeCompleteDTO;
 import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.auth.user.resource.v1.UserResource;
 import com.rebrowse.model.user.User;
+import com.rebrowse.shared.sms.MockSmsbox;
+import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import java.net.URI;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;

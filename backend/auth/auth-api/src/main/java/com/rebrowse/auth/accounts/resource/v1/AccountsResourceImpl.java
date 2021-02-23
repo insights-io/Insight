@@ -17,8 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccountsResourceImpl implements AccountsResource {
 
-  @Inject
-  AccountsService accountsService;
+  @Inject AccountsService accountsService;
 
   @Context HttpServerRequest request;
   @Context UriInfo info;

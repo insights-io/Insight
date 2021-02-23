@@ -2,7 +2,6 @@ package com.rebrowse.events.model.incoming;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.rebrowse.events.model.shared.BrowserEventType;
 import com.rebrowse.events.model.shared.LogLevel;

@@ -29,7 +29,8 @@ public class SqlUserMfaDatasource extends AbstractSqlDatasource<MfaConfiguration
   @Inject SqlPool sqlPool;
 
   public static MfaConfiguration mapConfiguration(Row row) {
-    MfaMethod method = MfaMethod.fromString(row.getString(SqlMfaConfigurationTable.METHOD.getName()));
+    MfaMethod method =
+        MfaMethod.fromString(row.getString(SqlMfaConfigurationTable.METHOD.getName()));
     OffsetDateTime createdAt = row.getOffsetDateTime(SqlMfaConfigurationTable.CREATED_AT.getName());
     UUID userId = row.getUUID(SqlMfaConfigurationTable.USER_ID.getName());
 
@@ -49,7 +50,11 @@ public class SqlUserMfaDatasource extends AbstractSqlDatasource<MfaConfiguration
   @Override
   @Traced
   public CompletionStage<Collection<MfaConfiguration>> list(UUID userId) {
-    Query query = sqlPool.getContext().selectFrom(SqlMfaConfigurationTable.TABLE).where(SqlMfaConfigurationTable.USER_ID.eq(userId));
+    Query query =
+        sqlPool
+            .getContext()
+            .selectFrom(SqlMfaConfigurationTable.TABLE)
+            .where(SqlMfaConfigurationTable.USER_ID.eq(userId));
     return sqlPool.execute(query).thenApply(this::findMany);
   }
 
@@ -60,7 +65,10 @@ public class SqlUserMfaDatasource extends AbstractSqlDatasource<MfaConfiguration
         sqlPool
             .getContext()
             .selectFrom(SqlMfaConfigurationTable.TABLE)
-            .where(SqlMfaConfigurationTable.USER_ID.eq(userId).and(SqlMfaConfigurationTable.METHOD.eq(method.getKey())));
+            .where(
+                SqlMfaConfigurationTable.USER_ID
+                    .eq(userId)
+                    .and(SqlMfaConfigurationTable.METHOD.eq(method.getKey())));
 
     return sqlPool.execute(query).thenApply(this::findOne);
   }
@@ -72,7 +80,10 @@ public class SqlUserMfaDatasource extends AbstractSqlDatasource<MfaConfiguration
         sqlPool
             .getContext()
             .deleteFrom(SqlMfaConfigurationTable.TABLE)
-            .where(SqlMfaConfigurationTable.USER_ID.eq(userId).and(SqlMfaConfigurationTable.METHOD.eq(method.getKey())))
+            .where(
+                SqlMfaConfigurationTable.USER_ID
+                    .eq(userId)
+                    .and(SqlMfaConfigurationTable.METHOD.eq(method.getKey())))
             .returning(SqlMfaConfigurationTable.CREATED_AT);
     return sqlPool.execute(query).thenApply(rows -> rows.iterator().hasNext());
   }
@@ -94,7 +105,8 @@ public class SqlUserMfaDatasource extends AbstractSqlDatasource<MfaConfiguration
         .thenApply(rows -> rows.iterator().next())
         .thenApply(
             row -> {
-              OffsetDateTime createdAt = row.getOffsetDateTime(SqlMfaConfigurationTable.CREATED_AT.getName());
+              OffsetDateTime createdAt =
+                  row.getOffsetDateTime(SqlMfaConfigurationTable.CREATED_AT.getName());
               if (method.equals(MfaMethod.TOTP)) {
                 return new MfaConfigurationDTO(params.getString("secret"), createdAt, userId);
               }

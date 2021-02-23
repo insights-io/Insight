@@ -10,10 +10,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class SecurityRequirementDynamicFeature extends AbstractSecurityRequirementDynamicFeature {
 
-  @Inject
-  BearerTokenSecurityRequirementDynamicFeature bearerTokenAuthDynamicFeature;
-  @Inject
-  SsoSessionCookieSecurityRequirementDynamicFeature ssoSessionAuthDynamicFeature;
+  @Inject BearerTokenSecurityRequirementDynamicFeature bearerTokenAuthDynamicFeature;
+  @Inject SsoSessionCookieSecurityRequirementDynamicFeature ssoSessionAuthDynamicFeature;
 
   @Inject
   MfaChallengeSessionCookieSecurityRequirementDynamicFeature challengeSessionAuthDynamicFeature;

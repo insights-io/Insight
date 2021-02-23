@@ -13,8 +13,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 public class BearerTokenSecurityRequirementDynamicFeature
     extends AbstractBearerTokenSecurityRequirementAuthDynamicFeature {
 
-  @Inject
-  AuthTokenDatasource authTokenDatasource;
+  @Inject AuthTokenDatasource authTokenDatasource;
 
   @Override
   @Traced

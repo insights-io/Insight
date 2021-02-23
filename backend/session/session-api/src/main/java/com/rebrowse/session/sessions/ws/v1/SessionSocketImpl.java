@@ -17,8 +17,7 @@ public class SessionSocketImpl {
 
   public static final String PATH = "/v1/sessions";
 
-  @Inject
-  SessionSocketService sessionSocketService;
+  @Inject SessionSocketService sessionSocketService;
 
   @OnOpen
   public void onOpen(Session session) {

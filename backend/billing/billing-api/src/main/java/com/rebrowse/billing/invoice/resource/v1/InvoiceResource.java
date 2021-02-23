@@ -1,11 +1,11 @@
 package com.rebrowse.billing.invoice.resource.v1;
 
-import com.rebrowse.shared.rest.response.ErrorDataResponse;
 import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
 import com.rebrowse.billing.invoice.model.dto.InvoiceDTO;
 import com.rebrowse.billing.subscription.resource.v1.SubscriptionResource;
+import com.rebrowse.shared.rest.response.ErrorDataResponse;
 import java.util.concurrent.CompletionStage;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

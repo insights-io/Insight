@@ -50,20 +50,33 @@ public class SqlPasswordResetDatasource extends AbstractSqlDatasource<PasswordRe
   @Override
   @Traced
   public CompletionStage<Boolean> delete(UUID token, SqlTransaction transaction) {
-    Query query = sqlPool.getContext().delete(SqlPasswordResetRequestTable.TABLE).where(SqlPasswordResetRequestTable.TOKEN.eq(token));
+    Query query =
+        sqlPool
+            .getContext()
+            .delete(SqlPasswordResetRequestTable.TABLE)
+            .where(SqlPasswordResetRequestTable.TOKEN.eq(token));
     return transaction.execute(query).thenApply(pgRowSet -> true);
   }
 
   @Override
   public CompletionStage<Boolean> exists(UUID token) {
-    Query query = sqlPool.getContext().selectOne().from(SqlPasswordResetRequestTable.TABLE).where(SqlPasswordResetRequestTable.TOKEN.eq(token));
+    Query query =
+        sqlPool
+            .getContext()
+            .selectOne()
+            .from(SqlPasswordResetRequestTable.TABLE)
+            .where(SqlPasswordResetRequestTable.TOKEN.eq(token));
     return sqlPool.execute(query).thenApply(rows -> rows.iterator().hasNext());
   }
 
   @Override
   @Traced
   public CompletionStage<Optional<PasswordResetRequest>> retrieve(UUID token) {
-    Query query = sqlPool.getContext().selectFrom(SqlPasswordResetRequestTable.TABLE).where(SqlPasswordResetRequestTable.TOKEN.eq(token));
+    Query query =
+        sqlPool
+            .getContext()
+            .selectFrom(SqlPasswordResetRequestTable.TABLE)
+            .where(SqlPasswordResetRequestTable.TOKEN.eq(token));
     return sqlPool.execute(query).thenApply(this::findOne);
   }
 
@@ -128,7 +141,8 @@ public class SqlPasswordResetDatasource extends AbstractSqlDatasource<PasswordRe
             pgRowSet -> {
               Row row = pgRowSet.iterator().next();
               UUID token = row.getUUID(SqlPasswordResetRequestTable.TOKEN.getName());
-              OffsetDateTime createdAt = row.getOffsetDateTime(SqlPasswordResetRequestTable.CREATED_AT.getName());
+              OffsetDateTime createdAt =
+                  row.getOffsetDateTime(SqlPasswordResetRequestTable.CREATED_AT.getName());
               return new PasswordResetRequest(token, userId, email, redirect, createdAt);
             });
   }

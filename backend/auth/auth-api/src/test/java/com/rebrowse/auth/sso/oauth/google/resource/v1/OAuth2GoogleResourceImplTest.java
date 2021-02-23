@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.zxing.NotFoundException;
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.auth.accounts.model.SsoAuthorizationSession;
 import com.rebrowse.auth.core.EmailUtils;
 import com.rebrowse.auth.sso.AbstractIdentityProvider;
@@ -23,14 +24,13 @@ import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.auth.utils.AuthApiTestData;
 import com.rebrowse.auth.utils.AuthApiTestUtils;
 import com.rebrowse.auth.utils.MockedSamlClient;
-import com.rebrowse.test.utils.GlobalTestData;
-import com.rebrowse.test.utils.RestAssuredUtils;
-import com.rebrowse.test.testconainers.pg.PostgresTestResource;
-import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.model.auth.SamlConfiguration;
 import com.rebrowse.model.auth.SsoSetupCreateParams;
 import com.rebrowse.model.organization.OrganizationUpdateParams;
 import com.rebrowse.model.user.User;
+import com.rebrowse.test.testconainers.pg.PostgresTestResource;
+import com.rebrowse.test.utils.GlobalTestData;
+import com.rebrowse.test.utils.RestAssuredUtils;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -54,10 +54,8 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
 
-  @Inject
-  GoogleOAuthClient googleClient;
-  @Inject
-  GoogleIdentityProvider googleService;
+  @Inject GoogleOAuthClient googleClient;
+  @Inject GoogleIdentityProvider googleService;
 
   @Override
   public URI signInUri() {

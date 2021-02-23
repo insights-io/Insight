@@ -2,11 +2,11 @@ package com.rebrowse.auth.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import com.rebrowse.exception.ApiException;
 import com.rebrowse.model.auth.SsoMethod;
 import com.rebrowse.model.auth.SsoSetup;
 import com.rebrowse.model.auth.SsoSetupCreateParams;
+import com.rebrowse.test.utils.auth.AbstractTestFlow;
 import java.net.URI;
 import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.Assertions;

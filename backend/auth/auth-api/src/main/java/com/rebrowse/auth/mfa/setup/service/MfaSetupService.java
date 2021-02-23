@@ -18,8 +18,7 @@ import org.apache.commons.lang3.tuple.Pair;
 @Slf4j
 public class MfaSetupService {
 
-  @Inject
-  UserMfaDatasource userMfaDatasource;
+  @Inject UserMfaDatasource userMfaDatasource;
   @Inject MfaProvidersRegistry mfaProvidersRegistry;
 
   public CompletionStage<Boolean> mfaSetupDisable(UUID userId, MfaMethod method) {

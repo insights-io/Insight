@@ -1,7 +1,5 @@
 package com.rebrowse.session.sessions.datasource.sql;
 
-import static com.rebrowse.shared.sql.rest.query.SQLFilterExpression.jsonText;
-import static com.rebrowse.shared.sql.rest.query.SQLFilterExpression.jsonb;
 import static com.rebrowse.session.sessions.datasource.sql.SqlSessionTable.CREATED_AT;
 import static com.rebrowse.session.sessions.datasource.sql.SqlSessionTable.DEVICE_ID;
 import static com.rebrowse.session.sessions.datasource.sql.SqlSessionTable.FIELDS;
@@ -12,21 +10,23 @@ import static com.rebrowse.session.sessions.datasource.sql.SqlSessionTable.LOCAT
 import static com.rebrowse.session.sessions.datasource.sql.SqlSessionTable.ORGANIZATION_ID;
 import static com.rebrowse.session.sessions.datasource.sql.SqlSessionTable.TABLE;
 import static com.rebrowse.session.sessions.datasource.sql.SqlSessionTable.USER_AGENT;
+import static com.rebrowse.shared.sql.rest.query.SQLFilterExpression.jsonText;
+import static com.rebrowse.shared.sql.rest.query.SQLFilterExpression.jsonb;
 import static org.jooq.impl.DSL.condition;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rebrowse.location.model.Located;
+import com.rebrowse.location.model.LocationMapper;
+import com.rebrowse.session.model.SessionDTO;
+import com.rebrowse.session.sessions.datasource.SessionDatasource;
 import com.rebrowse.shared.rest.query.SearchDTO;
 import com.rebrowse.shared.sql.client.SqlPool;
 import com.rebrowse.shared.sql.client.SqlTransaction;
 import com.rebrowse.shared.sql.datasource.AbstractSqlDatasource;
 import com.rebrowse.shared.sql.rest.query.SQLGroupByQuery;
 import com.rebrowse.shared.sql.rest.query.SQLSearchDTO;
-import com.rebrowse.location.model.Located;
-import com.rebrowse.location.model.LocationMapper;
-import com.rebrowse.session.model.SessionDTO;
-import com.rebrowse.session.sessions.datasource.SessionDatasource;
 import com.rebrowse.useragent.model.HasUserAgent;
 import com.rebrowse.useragent.model.UserAgentMapper;
 import io.vertx.core.json.JsonObject;

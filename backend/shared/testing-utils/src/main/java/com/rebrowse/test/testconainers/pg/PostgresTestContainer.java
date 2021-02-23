@@ -5,10 +5,10 @@ import static org.jooq.impl.DSL.table;
 
 import com.rebrowse.shared.sql.SQLContext;
 import com.rebrowse.test.project.ProjectUtils;
-import com.rebrowse.test.utils.GlobalTestData;
 import com.rebrowse.test.testconainers.TestContainerApiDependency;
 import com.rebrowse.test.testconainers.api.AbstractApiTestContainer;
 import com.rebrowse.test.testconainers.api.Api;
+import com.rebrowse.test.utils.GlobalTestData;
 import io.vertx.mutiny.pgclient.PgPool;
 import io.vertx.mutiny.sqlclient.Tuple;
 import io.vertx.pgclient.PgConnectOptions;

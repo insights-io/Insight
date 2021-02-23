@@ -23,8 +23,7 @@ public class MicrosoftOAuthClient
       "https://login.microsoftonline.com/common/oauth2/v2.0/token";
   private static final String USER_INFO_SERVER_URL = "https://graph.microsoft.com/oidc/userinfo";
 
-  @Inject
-  AppConfig appConfig;
+  @Inject AppConfig appConfig;
 
   @Override
   public Class<MicrosoftTokenResponse> getTokenClazz() {

@@ -1,5 +1,6 @@
 package com.rebrowse.auth.sso;
 
+import com.rebrowse.api.RebrowseApi;
 import com.rebrowse.auth.accounts.model.request.AuthorizationRequest;
 import com.rebrowse.auth.accounts.model.request.SsoAuthorizationRequest;
 import com.rebrowse.auth.accounts.model.response.AuthorizationResponse;
@@ -8,7 +9,6 @@ import com.rebrowse.auth.sso.session.model.SsoSession;
 import com.rebrowse.auth.sso.setup.model.SsoMethod;
 import com.rebrowse.auth.sso.setup.model.dto.SsoSetupDTO;
 import com.rebrowse.shared.rest.response.Boom;
-import com.rebrowse.api.RebrowseApi;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.security.SecureRandom;
@@ -70,10 +70,6 @@ public abstract class AbstractIdentityProvider {
     return UriBuilder.fromUri(serverBaseUri).path(getCallbackPath()).build();
   }
 
-  public URI getSignInEndpoint(URI serverBaseUri) {
-    return UriBuilder.fromUri(serverBaseUri).path(getSignInPath()).build();
-  }
-
   public String getSignInPath() {
     return String.join("/", getResourcePath(), OAuthResource.SIGNIN_PATH);
   }
@@ -82,7 +78,7 @@ public abstract class AbstractIdentityProvider {
       String state, URI serverRedirectUri, @Nullable String loginHint);
 
   public CompletionStage<AuthorizationResponse> getSsoAuthorizationRedirectResponse(
-          SsoSetupDTO ssoSetup, AuthorizationRequest request) {
+      SsoSetupDTO ssoSetup, AuthorizationRequest request) {
     return getSsoAuthorizationRequest(ssoSetup, request).thenApply(v -> v);
   }
 

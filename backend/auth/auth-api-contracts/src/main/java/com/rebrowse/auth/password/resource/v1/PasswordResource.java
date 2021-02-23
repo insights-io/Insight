@@ -1,5 +1,6 @@
 package com.rebrowse.auth.password.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.password.model.dto.PasswordChangeRequestDTO;
 import com.rebrowse.auth.password.model.dto.PasswordForgotRequestDTO;
 import com.rebrowse.auth.password.model.dto.PasswordResetRequestDTO;
@@ -7,7 +8,6 @@ import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
 import com.rebrowse.shared.rest.response.BooleanDataResponse;
 import com.rebrowse.shared.rest.response.ErrorDataResponse;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

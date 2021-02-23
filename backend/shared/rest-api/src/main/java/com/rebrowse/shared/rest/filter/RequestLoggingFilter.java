@@ -36,8 +36,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   private static final String LOG_START_TIME_PROPERTY = "X-Start-Time";
   private static final long REQUEST_LATENCY_LOG_LIMIT_MS = 1000;
 
-  @Inject
-  MetricsService metricsService;
+  @Inject MetricsService metricsService;
   @Inject Tracer tracer;
   @Context UriInfo info;
   @Context HttpServerRequest request;

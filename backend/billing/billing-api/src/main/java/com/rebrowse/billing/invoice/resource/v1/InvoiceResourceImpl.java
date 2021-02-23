@@ -1,8 +1,8 @@
 package com.rebrowse.billing.invoice.resource.v1;
 
-import com.rebrowse.shared.rest.response.DataResponse;
 import com.rebrowse.auth.sso.session.model.AuthPrincipal;
 import com.rebrowse.billing.invoice.service.InvoiceService;
+import com.rebrowse.shared.rest.response.DataResponse;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;

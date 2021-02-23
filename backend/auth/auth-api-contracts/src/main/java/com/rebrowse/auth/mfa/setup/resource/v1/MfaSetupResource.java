@@ -1,5 +1,6 @@
 package com.rebrowse.auth.mfa.setup.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
 import com.rebrowse.auth.mfa.MfaMethod;
 import com.rebrowse.auth.mfa.dto.MfaChallengeCodeDetailsDTO;
 import com.rebrowse.auth.mfa.model.dto.MfaChallengeCompleteDTO;
@@ -8,7 +9,6 @@ import com.rebrowse.auth.mfa.totp.model.dto.MfaTotpSetupStartDTO;
 import com.rebrowse.auth.sso.BearerTokenSecurityScheme;
 import com.rebrowse.auth.sso.SsoSessionCookieSecurityScheme;
 import com.rebrowse.shared.rest.response.ErrorDataResponse;
-import com.rebrowse.api.RebrowseApiDataResponse;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import javax.validation.Valid;

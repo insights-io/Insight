@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.rebrowse.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.auth.user.model.AuthUser;
 import com.rebrowse.billing.customer.datasource.BillingCustomerDatasource;
 import com.rebrowse.billing.customer.model.BillingCustomer;
@@ -19,6 +18,7 @@ import com.rebrowse.billing.subscription.model.dto.CreateSubscriptionResponseDTO
 import com.rebrowse.billing.subscription.model.dto.PlanDTO;
 import com.rebrowse.billing.utils.AbstractStripeQuarkusTest;
 import com.rebrowse.billing.webhook.service.WebhookProcessor;
+import com.rebrowse.test.testconainers.pg.PostgresTestResource;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentMethod;

@@ -1,13 +1,13 @@
 package com.rebrowse.auth.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rebrowse.auth.core.config.model.AppConfig;
+import com.rebrowse.net.RequestOptions;
 import com.rebrowse.shared.sms.MockSmsbox;
 import com.rebrowse.test.testconainers.pg.PostgresTestResource;
 import com.rebrowse.test.utils.EmailTestUtils;
 import com.rebrowse.test.utils.auth.AuthorizationFlows;
 import com.rebrowse.test.utils.auth.SignUpFlows;
-import com.rebrowse.auth.core.config.model.AppConfig;
-import com.rebrowse.net.RequestOptions;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;

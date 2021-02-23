@@ -1,11 +1,11 @@
 package com.rebrowse.session.location.service.impl;
 
-import com.rebrowse.shared.ip.IpUtils;
 import com.rebrowse.location.model.Located;
 import com.rebrowse.location.model.Location;
 import com.rebrowse.session.location.resource.LocationLookupResource;
 import com.rebrowse.session.location.resource.WhatIsMyIpResource;
 import com.rebrowse.session.location.service.LocationService;
+import com.rebrowse.shared.ip.IpUtils;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;

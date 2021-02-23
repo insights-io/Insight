@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.rebrowse.events.model.Recorded;
-import com.rebrowse.events.model.shared.BrowserEventType;
 import com.rebrowse.events.model.incoming.AbstractBrowserEvent;
+import com.rebrowse.events.model.shared.BrowserEventType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -31,7 +31,9 @@ import lombok.EqualsAndHashCode;
   @Type(value = BrowserLogEventDTO.class, name = BrowserEventType.LOG_KEY),
   @Type(value = BrowserErrorEventDTO.class, name = BrowserEventType.ERROR_KEY),
   @Type(value = BrowserXhrEventDTO.class, name = BrowserEventType.XHR_KEY),
-  @Type(value = BrowserResourcePerformanceEventDTO.class, name = BrowserEventType.RESOURCE_PERFORMANCE_KEY),
+  @Type(
+      value = BrowserResourcePerformanceEventDTO.class,
+      name = BrowserEventType.RESOURCE_PERFORMANCE_KEY),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data

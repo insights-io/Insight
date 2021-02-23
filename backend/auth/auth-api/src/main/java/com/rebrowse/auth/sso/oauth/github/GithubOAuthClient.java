@@ -23,8 +23,7 @@ public class GithubOAuthClient
   private static final String TOKEN_SERVER_URL = "https://github.com/login/oauth/access_token";
   private static final String TOKEN_INFO_SERVER_URL = "https://api.github.com/user";
 
-  @Inject
-  AppConfig appConfig;
+  @Inject AppConfig appConfig;
 
   @Override
   protected CompletionStage<HttpResponse<Buffer>> requestCodeExchange(

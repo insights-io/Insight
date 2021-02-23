@@ -30,15 +30,11 @@ import org.eclipse.microprofile.opentracing.Traced;
 @Slf4j
 public class MfaSmsProvider extends AbstractMfaProvider<MfaChallengeCodeDetailsDTO> {
 
-  @Inject
-  UserPhoneCodeDatasource userPhoneCodeDatasource;
-  @Inject
-  UserMfaDatasource userMfaDatasource;
+  @Inject UserPhoneCodeDatasource userPhoneCodeDatasource;
+  @Inject UserMfaDatasource userMfaDatasource;
   @Inject SqlPool sqlPool;
-  @Inject
-  UserPhoneCodeService userPhoneCodeService;
-  @Inject
-  UserService userService;
+  @Inject UserPhoneCodeService userPhoneCodeService;
+  @Inject UserService userService;
 
   // TODO: should be 3 separate caches
   public static String verifyCodeKey(AuthPrincipal principal) {

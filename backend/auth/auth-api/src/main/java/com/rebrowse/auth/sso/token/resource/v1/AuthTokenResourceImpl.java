@@ -16,8 +16,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 @Slf4j
 public class AuthTokenResourceImpl implements AuthTokenResource {
 
-  @Inject
-  AuthTokenDatasource authTokenDatasource;
+  @Inject AuthTokenDatasource authTokenDatasource;
   @Inject AuthPrincipal authPrincipal;
 
   @Override
