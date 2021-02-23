@@ -2,12 +2,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: try
+  name: accounts
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: try
+      app: accounts
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -16,13 +16,13 @@ spec:
   template:
     metadata:
       labels:
-        app: try
+        app: accounts
         team: frontend
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - image: insightio/frontend-try
-          name: try
+        - image: insightio/frontend-accounts
+          name: accounts
           ports:
             - containerPort: 3000
               name: http

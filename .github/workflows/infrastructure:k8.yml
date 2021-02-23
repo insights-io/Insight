@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: karancode/kustomize-github-action@v1.2.0
         with:
-          kustomize_version: '3.2.0'
+          kustomize_version: '3.5.4'
           kustomize_comment: true
           kustomize_output_file: rendered.yml
           enable_alpha_plugins: true

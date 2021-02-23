@@ -2,7 +2,7 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: try
+  name: accounts
 spec:
   maxReplicas: 1
   minReplicas: 1
@@ -10,6 +10,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: try
+  name: accounts
 spec:
   replicas: 1
