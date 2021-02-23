@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: try
+  name: accounts
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     nginx.ingress.kubernetes.io/ssl-redirect: 'false'
@@ -10,19 +10,19 @@ metadata:
 spec:
   tls:
     - hosts:
-        - try.rebrowse.dev
-        - www.try.rebrowse.dev
-      secretName: try-rebrowse-dev-tls
+        - accounts.rebrowse.dev
+        - www.accounts.rebrowse.dev
+      secretName: accounts-rebrowse-dev-tls
   rules:
-    - host: try.rebrowse.dev
+    - host: accounts.rebrowse.dev
       http:
         paths:
           - backend:
-              serviceName: try
+              serviceName: accounts
               servicePort: 80
-    - host: www.try.rebrowse.dev
+    - host: www.accounts.rebrowse.dev
       http:
         paths:
           - backend:
-              serviceName: try
+              serviceName: accounts
               servicePort: 80

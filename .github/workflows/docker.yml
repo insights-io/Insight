@@ -39,10 +39,10 @@ jobs:
           sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/app/.env.production
           sed -i 's,http://localhost:8082,https://api.rebrowse.dev,g' frontend/app/.env.production
           sed -i 's,http://localhost:8083,https://api.rebrowse.dev,g' frontend/app/.env.production
-          sed -i 's,http://localhost:3002,https://try.rebrowse.dev,g' frontend/app/.env.production
-          sed -i 's,http://localhost:3000,https://app.rebrowse.dev,g' frontend/try/.env.production
-          sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/try/.env.production
-          sed -i 's,http://localhost:3002,https://try.rebrowse.dev,g' frontend/homepage/.env.production
+          sed -i 's,http://localhost:3002,https://accounts.rebrowse.dev,g' frontend/app/.env.production
+          sed -i 's,http://localhost:3000,https://app.rebrowse.dev,g' frontend/accounts/.env.production
+          sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/accounts/.env.production
+          sed -i 's,http://localhost:3002,https://accounts.rebrowse.dev,g' frontend/homepage/.env.production
           sed -i 's,http://localhost:3000,https://app.rebrowse.dev,g' frontend/homepage/.env.production
           sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/homepage/.env.production
       - name: Build

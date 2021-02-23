@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/frontend:preview.yml'
       - 'frontend/app/**'
-      - 'frontend/try/**'
+      - 'frontend/accounts/**'
       - 'frontend/homepage/**'
       - 'frontend/shared/**'
       - 'jest.config.ts'
@@ -36,7 +36,10 @@ jobs:
         target:
           [
             { name: 'app', cert_arn_lookup: 'AWS_APP_PREVIEW_CERTIFICATE_ARN' },
-            { name: 'try', cert_arn_lookup: 'AWS_TRY_PREVIEW_CERTIFICATE_ARN' },
+            {
+              name: 'accounts',
+              cert_arn_lookup: 'AWS_ACCOUNTS_PREVIEW_CERTIFICATE_ARN',
+            },
             {
               name: 'homepage',
               cert_arn_lookup: 'AWS_HOMEPAGE_PREVIEW_CERTIFICATE_ARN',
@@ -67,7 +70,7 @@ jobs:
           aws s3 sync s3://$PREVIEWS_BUCKET_NAME/$PR_NAME/$NAME/.serverless .serverless --delete
           envsubst < ../shared/previews/serverless.yml > serverless.yml
           echo "PROXY=staging" >> .env.production
-          sed -i 's,http://localhost:3002,https://pr-${{ github.event.number }}.try.${{ secrets.DEV_DOMAIN_NAME }},g' .env.production
+          sed -i 's,http://localhost:3002,https://pr-${{ github.event.number }}.accounts.${{ secrets.DEV_DOMAIN_NAME }},g' .env.production
           sed -i 's,http://localhost:3000,https://pr-${{ github.event.number }}.app.${{ secrets.DEV_DOMAIN_NAME }},g' .env.production
           sed -i 's,http://localhost:3001,https://pr-${{ github.event.number }}.${{ secrets.DEV_DOMAIN_NAME }},g' .env.production
           npx serverless
@@ -112,7 +115,7 @@ jobs:
             Available previews:
             - homepage: https://pr-${{ github.event.number }}.${{ secrets.DEV_DOMAIN_NAME }} 🚀
             - app: https://pr-${{ github.event.number }}.app.${{ secrets.DEV_DOMAIN_NAME }} 🚀
-            - try: https://pr-${{ github.event.number }}.try.${{ secrets.DEV_DOMAIN_NAME }} 🚀
+            - accounts: https://pr-${{ github.event.number }}.accounts.${{ secrets.DEV_DOMAIN_NAME }} 🚀
 
   cleanup_preview:
     name: Cleanup preview 💣
@@ -121,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: ['app', 'try', 'homepage']
+        target: ['app', 'accounts', 'homepage']
 
     steps:
       - uses: actions/checkout@v2

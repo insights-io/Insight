@@ -6,6 +6,6 @@ metadata:
 data:
   .env.production: |
     NEXT_PUBLIC_APP_BASE_URL=https://app.rebrowse.dev
-    NEXT_PUBLIC_TRY_BASE_URL=https://try.rebrowse.dev
+    NEXT_PUBLIC_ACCOUNTS_BASE_URL=https://accounts.rebrowse.dev
     NEXT_PUBLIC_REBROWSE_API_BASE_URL=https://api.rebrowse.dev
     AUTH_API_BASE_URL=http://auth-api

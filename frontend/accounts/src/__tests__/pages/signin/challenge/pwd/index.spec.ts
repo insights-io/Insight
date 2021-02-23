@@ -14,7 +14,7 @@ describe('/signin/challenge/pwd', () => {
   const email = 'john.doe@gmail.com';
   const password = 'password1234!';
 
-  test('As a user I can sucessfully complete pwd challenge', async () => {
+  test('As a user I can successfully complete pwd challenge', async () => {
     const locationAssignStub = sandbox.stub(windowUtils, 'locationAssign');
     const completePwdChallengeStub = SignInPwdChallengeTestSetup.completePwdChellengeSuccess();
     const {
