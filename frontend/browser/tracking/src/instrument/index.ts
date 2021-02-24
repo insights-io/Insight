@@ -2,7 +2,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable func-names */
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable lodash/prefer-lodash-typecheck */
 /* eslint-disable no-console */
 import { Enqueue } from 'types';
 import { EventType, LogLevel } from '@rebrowse/types';

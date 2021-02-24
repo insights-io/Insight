@@ -22,7 +22,8 @@
     "prettier": "prettier -l 'src/**/*'"
   },
   "devDependencies": {
-    "@rebrowse/types": "0.0.0-development"
+    "@rebrowse/types": "0.0.0-development",
+    "@rebrowse/sdk": "0.0.0-development"
   },
   "peerDependencies": {}
 }
