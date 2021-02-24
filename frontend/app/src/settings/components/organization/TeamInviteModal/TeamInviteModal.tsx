@@ -90,9 +90,9 @@ const TeamInviteModal = ({ createTeamInvite, children }: Props) => {
               error={errors.email?.message}
             >
               <EmailInput
-                placeholder={EMAIL_PLACEHOLDER}
                 required
-                inputRef={register(EMAIL_VALIDATION)}
+                placeholder={EMAIL_PLACEHOLDER}
+                ref={register(EMAIL_VALIDATION)}
                 error={Boolean(errors.email)}
               />
             </FormControl>

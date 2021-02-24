@@ -60,8 +60,7 @@ export const ChangePassword = () => {
               name="currentPassword"
               autoComplete="current-password"
               placeholder="Current password"
-              ref={register}
-              inputRef={register(PASSWORD_VALIDATION)}
+              ref={register(PASSWORD_VALIDATION)}
               error={Boolean(errors.currentPassword)}
               size={SIZE.compact}
             />
@@ -74,8 +73,7 @@ export const ChangePassword = () => {
               autoComplete="new-password"
               placeholder="New password"
               size={SIZE.compact}
-              ref={register}
-              inputRef={register({
+              ref={register({
                 ...PASSWORD_VALIDATION,
                 validate: (value) => {
                   return value === watch('currentPassword')
@@ -94,8 +92,7 @@ export const ChangePassword = () => {
               autoComplete="new-password"
               placeholder="Confirm new password"
               size={SIZE.compact}
-              ref={register}
-              inputRef={register({
+              ref={register({
                 ...PASSWORD_VALIDATION,
                 validate: (value) => {
                   return value !== watch('newPassword')
