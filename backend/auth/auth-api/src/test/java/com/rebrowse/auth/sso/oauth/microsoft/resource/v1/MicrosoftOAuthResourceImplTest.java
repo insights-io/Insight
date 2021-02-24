@@ -198,14 +198,14 @@ public class MicrosoftOAuthResourceImplTest extends AbstractSsoOAuthResourceTest
   }
 
   @Test
-  public void microsoft_oauth2callback__should_set_session_id___when_succeed_with_fresh_sign_up()
+  public void microsoft_oauth2callback__should_bypass_mfa_challenge__when_totp_setup()
       throws IOException, NotFoundException {
     String sessionId = signUpFlows().signUpAndLoginWithRandomCredentials();
     User user = authorizationFlows().retrieveUserData(sessionId).getUser();
     mfaSetupFlows().setupTotpSuccess(user, sessionId);
     QuarkusMock.installMockForInstance(
         new MockedMicrosoftOAuthClient(user.getEmail()), microsoftClient);
-    oauthFlows().totpMfaChallenge(microsoftCallbackURI);
+    oauthFlows().callbackAuthorization(microsoftCallbackURI);
   }
 
   private static class MockedMicrosoftOAuthClient extends MicrosoftOAuthClient {

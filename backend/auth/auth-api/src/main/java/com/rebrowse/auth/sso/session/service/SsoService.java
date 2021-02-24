@@ -4,7 +4,6 @@ import com.rebrowse.auth.accounts.model.AuthorizationSuccessResponseDTO;
 import com.rebrowse.auth.accounts.model.request.AuthorizationRequest;
 import com.rebrowse.auth.accounts.model.response.AuthorizationMfaChallengeSuccessResponse;
 import com.rebrowse.auth.accounts.model.response.AuthorizationResponse;
-import com.rebrowse.auth.accounts.model.response.AuthorizationType;
 import com.rebrowse.auth.accounts.model.response.DirectAuthorizationRedirectResponse;
 import com.rebrowse.auth.core.EmailUtils;
 import com.rebrowse.auth.mfa.MfaMethod;
@@ -100,48 +99,18 @@ public class SsoService {
                 authorizationRequest.getRedirect(), authorizationRequest.getDomain(), sessionId));
   }
 
-  public CompletionStage<AuthorizationResponse> tryAuthorizeNewUserRedirectResponse(
+  public CompletionStage<AuthorizationResponse> authorizeOrMfaChallengeNewUser(
       AuthUser user, AuthorizationRequest request) {
-    return tryAuthorizeNewUser(user, request, AuthorizationType.SERVER);
+    return authorizeOrMfaChallenge(user, Collections.emptyList(), request);
   }
 
-  private CompletionStage<AuthorizationResponse> tryAuthorizeRedirectResponse(
+  public CompletionStage<AuthorizationResponse> authorizeOrMfaChallenge(
       UserWithLoginInformation user, AuthorizationRequest request) {
-    return tryAuthorize(user, request, AuthorizationType.SERVER);
+    return authorizeOrMfaChallenge(user.user(), user.getMfaMethods(), request);
   }
 
-  public CompletionStage<AuthorizationResponse> tryAuthorizeNewUserDataResponse(
-      AuthUser user, AuthorizationRequest request) {
-    return tryAuthorize(user, Collections.emptyList(), request, AuthorizationType.CLIENT);
-  }
-
-  public CompletionStage<AuthorizationResponse> tryAuthorizeDataResponse(
-      AuthUser user, List<MfaMethod> methods, AuthorizationRequest request) {
-    return tryAuthorize(user, methods, request, AuthorizationType.CLIENT);
-  }
-
-  public CompletionStage<AuthorizationResponse> tryAuthorizeDataResponse(
-      UserWithLoginInformation user, AuthorizationRequest request) {
-    return tryAuthorize(user.user(), user.getMfaMethods(), request, AuthorizationType.CLIENT);
-  }
-
-  private CompletionStage<AuthorizationResponse> tryAuthorizeNewUser(
-      AuthUser user, AuthorizationRequest request, AuthorizationType authorizationType) {
-    return tryAuthorize(user, Collections.emptyList(), request, authorizationType);
-  }
-
-  private CompletionStage<AuthorizationResponse> tryAuthorize(
-      UserWithLoginInformation user,
-      AuthorizationRequest request,
-      AuthorizationType authorizationType) {
-    return tryAuthorize(user.user(), user.getMfaMethods(), request, authorizationType);
-  }
-
-  private CompletionStage<AuthorizationResponse> tryAuthorize(
-      AuthUser user,
-      List<MfaMethod> mfaMethods,
-      AuthorizationRequest request,
-      AuthorizationType authorizationType) {
+  public CompletionStage<AuthorizationResponse> authorizeOrMfaChallenge(
+      AuthUser user, List<MfaMethod> mfaMethods, AuthorizationRequest request) {
     if (mfaMethods.isEmpty()) {
       return organizationDatasource
           .retrieve(user.getOrganizationId())
@@ -152,17 +121,14 @@ public class SsoService {
 
                 if (organization.isEnforceMultiFactorAuthentication()) {
                   return mfaAuthorizationChallengeService.createChallenge(
-                      user.getId(), mfaMethods, request, authorizationType);
+                      user.getId(), mfaMethods, request);
                 }
 
-                return authorizationType.equals(AuthorizationType.CLIENT)
-                    ? this.authorizationDataResponse(user, request)
-                    : this.authorizationRedirectResponse(user, request);
+                return this.authorizationDataResponse(user, request);
               });
     }
 
-    return mfaAuthorizationChallengeService.createChallenge(
-        user.getId(), mfaMethods, request, authorizationType);
+    return mfaAuthorizationChallengeService.createChallenge(user.getId(), mfaMethods, request);
   }
 
   public CompletionStage<Optional<SsoUser>> logout(String sessionId) {
@@ -207,11 +173,11 @@ public class SsoService {
               if (maybeUser.isEmpty()) {
                 return signUpService
                     .ssoSignUpNewMember(email, fullName, organizationId)
-                    .thenCompose(user -> tryAuthorizeNewUserRedirectResponse(user, request));
+                    .thenCompose(user -> authorizationRedirectResponse(user, request));
               }
 
-              UserWithLoginInformation user = maybeUser.get();
-              return tryAuthorizeRedirectResponse(user, request);
+              AuthUser user = maybeUser.get().user();
+              return authorizationRedirectResponse(user, request);
             });
   }
 
@@ -234,13 +200,13 @@ public class SsoService {
         .thenCompose(
             maybeSsoSetup -> {
               if (maybeSsoSetup.isEmpty()) {
-                return tryAuthorizeRedirectResponse(user, request);
+                return authorizationRedirectResponse(user.user(), request);
               }
 
               SsoSetupDTO ssoSetup = maybeSsoSetup.get();
               SsoMethod expectedMethod = ssoSetup.getMethod();
               if (expectedMethod.equals(method)) {
-                return tryAuthorizeRedirectResponse(user, request);
+                return authorizationRedirectResponse(user.user(), request);
               }
 
               return identityProviderRegistry
@@ -290,8 +256,7 @@ public class SsoService {
                         if (expectedMethod.equals(method)) {
                           return signUpService
                               .ssoSignUpNewMember(email, fullName, organizationId)
-                              .thenCompose(
-                                  user -> tryAuthorizeNewUserRedirectResponse(user, request));
+                              .thenCompose(user -> authorizationRedirectResponse(user, request));
                         }
 
                         return identityProviderRegistry

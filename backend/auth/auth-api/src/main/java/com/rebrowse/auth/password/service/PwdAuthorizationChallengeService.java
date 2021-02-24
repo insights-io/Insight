@@ -44,7 +44,7 @@ public class PwdAuthorizationChallengeService {
                   .thenCompose(
                       user -> {
                         authorizationChallengeDatasource.delete(challengeId);
-                        return ssoService.tryAuthorizeDataResponse(user, authorizationRequest);
+                        return ssoService.authorizeOrMfaChallenge(user, authorizationRequest);
                       });
             });
   }

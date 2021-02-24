@@ -6,9 +6,7 @@ import com.rebrowse.auth.accounts.model.challenge.AuthorizationChallengeType;
 import com.rebrowse.auth.accounts.model.challenge.MfaChallengeResponseDTO;
 import com.rebrowse.auth.accounts.model.request.AuthorizationRequest;
 import com.rebrowse.auth.accounts.model.response.AuthorizationMfaChallengeDataResponse;
-import com.rebrowse.auth.accounts.model.response.AuthorizationMfaChallengeRedirectResponse;
 import com.rebrowse.auth.accounts.model.response.AuthorizationResponse;
-import com.rebrowse.auth.accounts.model.response.AuthorizationType;
 import com.rebrowse.auth.mfa.ChallengeSessionExpiredException;
 import com.rebrowse.auth.mfa.MfaChallengeValidatationException;
 import com.rebrowse.auth.mfa.MfaMethod;
@@ -31,7 +29,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
 
 @ApplicationScoped
 public class MfaAuthorizationChallengeService {
@@ -46,27 +43,15 @@ public class MfaAuthorizationChallengeService {
   @Inject MfaProvidersRegistry mfaProvidersRegistry;
   @Inject MfaSmsProvider smsProvider;
 
-  private URI buildMfaChallengeLocation(URI referer) {
-    return UriBuilder.fromUri(referer).path("signin").path("challenge").path("mfa").build();
-  }
-
   public CompletionStage<AuthorizationResponse> createChallenge(
-      UUID userId,
-      List<MfaMethod> methods,
-      AuthorizationRequest request,
-      AuthorizationType authorizationType) {
+      UUID userId, List<MfaMethod> methods, AuthorizationRequest request) {
     String domain = request.getDomain();
     URI redirect = request.getRedirect();
 
     return authorizationChallengeDatasource
         .create(AuthorizationChallenge.mfa(userId.toString(), redirect))
         .thenApply(
-            challengeId ->
-                authorizationType.equals(AuthorizationType.CLIENT)
-                    ? new AuthorizationMfaChallengeDataResponse(challengeId, domain, methods)
-                    : new AuthorizationMfaChallengeRedirectResponse(
-                        // TODO: should go back to referer
-                        buildMfaChallengeLocation(redirect), domain, challengeId));
+            challengeId -> new AuthorizationMfaChallengeDataResponse(challengeId, domain, methods));
   }
 
   public CompletionStage<Optional<MfaChallengeResponseDTO>> retrieveChallenge(String challengeId) {

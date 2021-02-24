@@ -207,13 +207,13 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
   }
 
   @Test
-  public void google_oauth2callback__should_mfa_challenge__when_totp_setup()
+  public void google_oauth2callback__should_bypass_mfa_challenge__when_totp_setup()
       throws IOException, NotFoundException {
     String sessionId = signUpFlows().signUpAndLoginWithRandomCredentials();
     User user = authorizationFlows().retrieveUserData(sessionId).getUser();
     mfaSetupFlows().setupTotpSuccess(user, sessionId);
     QuarkusMock.installMockForInstance(new MockedGoogleOAuthClient(user.getEmail()), googleClient);
-    oauthFlows().totpMfaChallenge(googleCallbackURI);
+    oauthFlows().callbackAuthorization(googleCallbackURI);
   }
 
   @Test

@@ -168,13 +168,13 @@ public class OpenIdGithubResourceImplTest extends AbstractSsoOAuthResourceTest {
   }
 
   @Test
-  public void github_oauth2callback__should_mfa_challenge__when_totp_setup()
+  public void github_oauth2callback__should_bypass_mfa_challenge__when_totp_setup()
       throws IOException, NotFoundException {
     String sessionId = signUpFlows().signUpAndLoginWithRandomCredentials();
     User user = authorizationFlows().retrieveUserData(sessionId).getUser();
     mfaSetupFlows().setupTotpSuccess(user, sessionId);
     QuarkusMock.installMockForInstance(new MockedGithubOAuthClient(user.getEmail()), oauthClient);
-    oauthFlows().totpMfaChallenge(githubCallbackURI);
+    oauthFlows().callbackAuthorization(githubCallbackURI);
   }
 
   private static class MockedGithubOAuthClient extends GithubOAuthClient {
