@@ -88,7 +88,7 @@ export const PasswordForgotPage = () => {
                 <EmailInput
                   placeholder={EMAIL_PLACEHOLDER}
                   required
-                  inputRef={register(EMAIL_VALIDATION)}
+                  ref={register(EMAIL_VALIDATION)}
                   error={Boolean(errors.email)}
                 />
               </FormControl>

@@ -98,8 +98,7 @@ export const LoginEmailForm = ({ replace, relativeRedirect }: Props) => {
           error={errors.password?.message}
         >
           <PasswordInput
-            ref={register}
-            inputRef={register(PASSWORD_VALIDATION)}
+            ref={register(PASSWORD_VALIDATION)}
             error={Boolean(errors.password)}
           />
         </FormControl>

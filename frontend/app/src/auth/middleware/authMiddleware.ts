@@ -2,12 +2,7 @@ import type { OutgoingHttpHeaders } from 'http';
 
 import type { Span } from 'opentracing';
 import type { GetServerSidePropsContext, GetServerSideProps } from 'next';
-import type {
-  UserDTO,
-  DataResponse,
-  SessionInfoDTO,
-  OrganizationDTO,
-} from '@rebrowse/types';
+import type { UserDTO, OrganizationDTO } from '@rebrowse/types';
 import {
   startSpan,
   startRequestSpan,
@@ -78,7 +73,7 @@ export const authenticated = async (
 
     const response = await responsePromise;
 
-    if (response.status === 204) {
+    if (response.statusCode === 404) {
       span.log({ message: 'Session expired' });
       const setCookie = response.headers.get('set-cookie');
       if (ChallengeId) {
@@ -93,7 +88,7 @@ export const authenticated = async (
 
     const {
       data: { organization, user },
-    } = await responsePromise.json<DataResponse<SessionInfoDTO>>();
+    } = response;
 
     span.setTag('user.id', user.id);
     span.setTag('organization.id', organization.id);

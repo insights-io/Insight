@@ -1,6 +1,5 @@
-import { sandbox } from '@rebrowse/testing';
+import { sandbox, getPage } from '@rebrowse/testing';
 import { render, screen } from '@testing-library/react';
-import { getPage } from 'next-page-tester';
 import { APP_BASE_URL, ACCOUNTS_BASE_URL } from 'shared/constants';
 import { mockLandingPage } from '__tests__/mocks';
 
@@ -12,10 +11,7 @@ describe('/', () => {
   test('As a user I should be able to navigate directly to app when logged in', async () => {
     document.cookie = `SessionId=${sessionId}`;
     const { retrieveSsoSessionStub } = mockLandingPage(sandbox);
-
-    /* Server */
-    const { page } = await getPage({ route, useApp: false });
-
+    const { page } = await getPage({ route });
     sandbox.assert.calledWithExactly(retrieveSsoSessionStub, sessionId);
 
     /* Client */
@@ -29,13 +25,9 @@ describe('/', () => {
 
   test('As a user I should be able to get started when not logged in', async () => {
     const { retrieveSsoSessionStub } = mockLandingPage(sandbox);
-
-    /* Server */
-    const { page } = await getPage({ route, useApp: false });
-
+    const { page } = await getPage({ route });
     sandbox.assert.notCalled(retrieveSsoSessionStub);
 
-    /* Client */
     render(page);
 
     expect(screen.getByText('Get started').parentElement).toHaveAttribute(

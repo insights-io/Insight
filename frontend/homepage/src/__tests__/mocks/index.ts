@@ -1,13 +1,17 @@
-import { sdk } from 'api';
+import { REBROWSE_ADMIN_DTO } from '@rebrowse/testing';
+import { client } from 'sdk';
 import { SinonSandbox } from 'sinon';
 
-export const mockLandingPage = (
-  sandbox: SinonSandbox,
-  { loggedIn = true }: { loggedIn?: boolean } = {}
-) => {
+export const mockLandingPage = (sandbox: SinonSandbox) => {
   const retrieveSsoSessionStub = sandbox
-    .stub(sdk, 'retrieve')
-    .resolves({ status: loggedIn ? 200 : 204 } as Response);
+    .stub(client, 'retrieve')
+    .callsFake(() => {
+      return Promise.resolve({
+        data: { user: REBROWSE_ADMIN_DTO, organization: {} as any },
+        statusCode: 200,
+        headers: new Headers(),
+      });
+    });
 
   return { retrieveSsoSessionStub };
 };

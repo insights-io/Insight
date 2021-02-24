@@ -37,9 +37,11 @@ export const ssoSessionResource = (
         ...requestOptions
       }: ExtendedRequestOptions = {}
     ) => {
-      return client.get(
-        `${resourceBaseURL(baseUrl)}/session/${id}/userdata`,
-        requestOptions
+      return jsonDataResponse<SessionInfoDTO>(
+        client.get(
+          `${resourceBaseURL(baseUrl)}/session/${id}/userdata`,
+          requestOptions
+        )
       );
     },
     current: ({

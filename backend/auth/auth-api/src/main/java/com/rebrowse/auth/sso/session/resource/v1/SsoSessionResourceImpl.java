@@ -69,7 +69,10 @@ public class SsoSessionResourceImpl implements SsoSessionResource {
             maybeUser -> {
               if (maybeUser.isEmpty()) {
                 return CompletableFuture.completedStage(
-                    Response.noContent().cookie(SsoSession.clearCookie(cookieDomain)).build());
+                    Boom.notFound()
+                        .responseBuilder()
+                        .cookie(SsoSession.clearCookie(cookieDomain))
+                        .build());
               }
 
               AuthUser user = maybeUser.get();
