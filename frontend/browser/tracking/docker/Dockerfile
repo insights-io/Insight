@@ -1,4 +1,4 @@
-FROM node:14-alpine as build
+FROM node:15.9.0-alpine as build
 
 WORKDIR /src
 
@@ -13,7 +13,7 @@ COPY frontend/shared/types/ /src/frontend/shared/types/
 RUN yarn workspace @rebrowse/types build
 RUN yarn workspace @rebrowse/browser-tracking build
 
-FROM node:14-alpine
+FROM node:15.9.0-alpine
 
 WORKDIR /usr/app
 
