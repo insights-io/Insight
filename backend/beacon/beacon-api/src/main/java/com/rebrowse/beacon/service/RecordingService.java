@@ -11,6 +11,7 @@ import com.rebrowse.net.RequestOptions;
 import com.rebrowse.shared.logging.LoggingConstants;
 import com.rebrowse.shared.rest.response.Boom;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.reactive.messaging.annotations.Broadcast;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
@@ -40,11 +41,13 @@ public class RecordingService {
   @Inject
   @Channel(EventsStream.ALL)
   @OnOverflow(Strategy.UNBOUNDED_BUFFER)
+  @Broadcast
   Emitter<UserEvent<?>> eventsEmitter;
 
   @Inject
   @Channel(EventsStream.UNLOAD)
   @OnOverflow(Strategy.UNBOUNDED_BUFFER)
+  @Broadcast
   Emitter<UserEvent<?>> unloadEventsEmitter;
 
   @Traced
