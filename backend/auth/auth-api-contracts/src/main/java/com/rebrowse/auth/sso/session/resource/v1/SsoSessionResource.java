@@ -23,10 +23,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path(SsoSessionResource.PATH)
-@RegisterRestClient(configKey = "auth-api")
 public interface SsoSessionResource {
 
   String PATH = "/v1/sso";
@@ -126,7 +124,7 @@ public interface SsoSessionResource {
                     schema = @Schema(implementation = UserDataDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
-            responseCode = "204",
+            responseCode = "404",
             description = "Not found",
             headers = {@Header(name = "Set-Cookie", description = "Session not found")}),
         @APIResponse(
@@ -155,7 +153,7 @@ public interface SsoSessionResource {
                     schema = @Schema(implementation = UserDataDataResponse.class),
                     mediaType = MediaType.APPLICATION_JSON)),
         @APIResponse(
-            responseCode = "204",
+            responseCode = "404",
             description = "Not found",
             headers = {@Header(name = "Set-Cookie", description = "Clear SessionId cookie")}),
         @APIResponse(

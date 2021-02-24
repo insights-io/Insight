@@ -212,7 +212,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiQuarkusTest {
         .cookie(SsoSession.COOKIE_NAME, firstSessionId)
         .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
-        .statusCode(204)
+        .statusCode(404)
         .cookie(SsoSession.COOKIE_NAME, "");
 
     // second session id is deleted
@@ -231,7 +231,7 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiQuarkusTest {
         .cookie(SsoSession.COOKIE_NAME, secondSessionId)
         .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
-        .statusCode(204)
+        .statusCode(404)
         .cookie(SsoSession.COOKIE_NAME, "");
   }
 
@@ -248,17 +248,17 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiQuarkusTest {
   }
 
   @Test
-  public void session_should_clear_session_cookie_when_missing_sessionId() {
+  public void get_session_userdata__should_clear_session_cookie__when_random_session_id() {
     given()
         .when()
-        .get(SsoSessionResource.PATH + "/session/random/userdata")
+        .get(SsoSessionResource.PATH + "/session/" + UUID.randomUUID() + " /userdata")
         .then()
-        .statusCode(204)
+        .statusCode(404)
         .cookie(SsoSession.COOKIE_NAME, "");
   }
 
   @Test
-  public void me_should_fail_when_missing_sessionId_cookie() {
+  public void get_current_session_userdata__should_fail__when_missing_session_id() {
     given()
         .when()
         .get(SsoSessionResource.PATH + "/session/userdata")
@@ -270,13 +270,13 @@ public class SsoSessionResourceImplTest extends AbstractAuthApiQuarkusTest {
   }
 
   @Test
-  public void me_should_clear_session_cookie_when_missing_sessionId() {
+  public void get_current_session_userdata__should_clear_session_cookie__when_random_session_id() {
     given()
         .when()
-        .cookie(SsoSession.COOKIE_NAME, "random")
+        .cookie(SsoSession.COOKIE_NAME, UUID.randomUUID())
         .get(SsoSessionResource.PATH + "/session/userdata")
         .then()
-        .statusCode(204)
+        .statusCode(404)
         .cookie(SsoSession.COOKIE_NAME, "");
   }
 
