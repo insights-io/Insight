@@ -30,7 +30,7 @@
     "prettier:fix": "prettier -l 'src/**/*' --write",
     "storybook": "start-storybook",
     "storybook:build": "build-storybook",
-    "pretest": "yarn workspace @rebrowse/types build && concurrently \"yarn workspace @rebrowse/storybook build\""
+    "pretest": "yarn workspace @rebrowse/types build && concurrently \"yarn workspace @rebrowse/storybook build\" \"yarn workspace @rebrowse/sdk build\""
   },
   "dependencies": {},
   "devDependencies": {
