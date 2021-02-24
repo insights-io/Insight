@@ -41,8 +41,8 @@ jobs:
         with:
           java-version: 15
       - run: cd backend && ./gradlew  ${{ matrix.api.namespace }}:${{ matrix.api.name }}:quarkusDev &
-      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/openapi)" != "200" ]]; do sleep 2; done'
-      - run: curl http://localhost:${{ matrix.api.port }}/openapi --output ${{ matrix.api.name }}-openapi.yml
+      - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:${{ matrix.api.port }}/q/openapi)" != "200" ]]; do sleep 2; done'
+      - run: curl http://localhost:${{ matrix.api.port }}/q/openapi --output ${{ matrix.api.name }}-openapi.yml
       - run: npx openapi-to-postmanv2 -s ${{ matrix.api.name }}-openapi.yml -o ${{ matrix.api.name }}-postman.json -p
       - uses: actions/upload-artifact@v2
         with:
