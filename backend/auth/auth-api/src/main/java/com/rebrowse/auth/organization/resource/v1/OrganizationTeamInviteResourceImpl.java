@@ -98,7 +98,7 @@ public class OrganizationTeamInviteResourceImpl implements OrganizationTeamInvit
                   new AuthorizationRequest(user.getEmail(), redirect, serverBaseUri);
 
               return ssoService
-                  .authorizeNewUser(user, request)
+                  .tryAuthorizeNewUserDataResponse(user, request)
                   .thenApply(AuthorizationResponse::response);
             });
   }

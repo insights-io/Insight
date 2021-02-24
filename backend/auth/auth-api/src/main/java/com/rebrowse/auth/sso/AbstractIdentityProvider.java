@@ -70,10 +70,6 @@ public abstract class AbstractIdentityProvider {
     return UriBuilder.fromUri(serverBaseUri).path(getCallbackPath()).build();
   }
 
-  public String getSignInPath() {
-    return String.join("/", getResourcePath(), OAuthResource.SIGNIN_PATH);
-  }
-
   public abstract URI buildAuthorizationUri(
       String state, URI serverRedirectUri, @Nullable String loginHint);
 

@@ -1,25 +1,24 @@
 package com.rebrowse.auth.accounts.model.response;
 
-import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeResponseDTO;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeSession;
-import com.rebrowse.auth.mfa.MfaMethod;
-import com.rebrowse.shared.rest.response.DataResponse;
-import java.util.List;
+import java.net.URI;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import lombok.Value;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Value
-public class AuthorizationMfaChallengeResponse implements AuthorizationResponse {
+public class AuthorizationMfaChallengeRedirectResponse implements AuthorizationResponse {
 
+  URI redirect;
   String challengeId;
   String domain;
-  List<MfaMethod> methods;
 
   @Override
   public Response response(NewCookie... cookies) {
-    return DataResponse.okBuilder(new AuthorizationMfaChallengeResponseDTO(challengeId, methods))
+    return Response.status(302)
+        .header(HttpHeaders.LOCATION, redirect)
         .cookie(
             ArrayUtils.add(cookies, AuthorizationMfaChallengeSession.cookie(challengeId, domain)))
         .build();

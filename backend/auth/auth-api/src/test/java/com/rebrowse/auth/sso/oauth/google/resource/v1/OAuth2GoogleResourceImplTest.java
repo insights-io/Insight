@@ -200,10 +200,8 @@ public class OAuth2GoogleResourceImplTest extends AbstractSsoOAuthResourceTest {
         .cookie(SsoAuthorizationSession.COOKIE_NAME, state)
         .get(googleCallbackURI)
         .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":{\"location\":\"http://localhost:3000/test\",\"action\":\"SUCCESS\"}}"))
+        .statusCode(302)
+        .header(HttpHeaders.LOCATION, GlobalTestData.LOCALHOST_REDIRECT)
         .cookie(SsoSession.COOKIE_NAME)
         .cookie(SsoAuthorizationSession.COOKIE_NAME, "");
   }

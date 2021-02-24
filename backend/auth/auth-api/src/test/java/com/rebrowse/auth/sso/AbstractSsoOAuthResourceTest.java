@@ -20,6 +20,7 @@ import com.rebrowse.test.utils.RestAssuredUtils;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.UUID;
+import javax.ws.rs.core.HttpHeaders;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTest {
@@ -118,7 +119,7 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
   }
 
   @Test
-  public void oauth2callback__should_throw__when_sso_organization_no_open_membership()
+  public void oauth2callback__should_work__when_sso_organization_no_open_membership()
       throws JsonProcessingException {
     String sessionId = signUpFlows().signUpAndLoginWithRandomCredentials();
     String domain =
@@ -139,10 +140,9 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
         .cookie(SsoAuthorizationSession.COOKIE_NAME, state)
         .get(callbackUri())
         .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":{\"location\":\"http://localhost:3000/test\",\"action\":\"SUCCESS\"}}"))
+        .statusCode(302)
+        .header(HttpHeaders.LOCATION, GlobalTestData.LOCALHOST_REDIRECT)
+        .cookie(SsoSession.COOKIE_NAME)
         .cookie(SsoAuthorizationSession.COOKIE_NAME, "");
   }
 
@@ -180,10 +180,8 @@ public abstract class AbstractSsoOAuthResourceTest extends AbstractSsoResourceTe
               .cookie(SsoAuthorizationSession.COOKIE_NAME, state)
               .get(callbackUri())
               .then()
-              .statusCode(200)
-              .body(
-                  sameJson(
-                      "{\"data\":{\"location\":\"http://localhost:3000/test\",\"action\":\"SUCCESS\"}}"))
+              .statusCode(302)
+              .header(HttpHeaders.LOCATION, GlobalTestData.LOCALHOST_REDIRECT)
               .cookie(SsoSession.COOKIE_NAME)
               .cookie(SsoAuthorizationSession.COOKIE_NAME, "")
               .extract()

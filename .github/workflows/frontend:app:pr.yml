@@ -51,6 +51,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '15.9.0'
       - uses: rlespinasse/github-slug-action@v2.x
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path

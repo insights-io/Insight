@@ -4,6 +4,7 @@ import com.rebrowse.auth.accounts.model.AuthorizationSuccessResponseDTO;
 import com.rebrowse.auth.accounts.model.request.AuthorizationRequest;
 import com.rebrowse.auth.accounts.model.response.AuthorizationMfaChallengeSuccessResponse;
 import com.rebrowse.auth.accounts.model.response.AuthorizationResponse;
+import com.rebrowse.auth.accounts.model.response.AuthorizationType;
 import com.rebrowse.auth.accounts.model.response.DirectAuthorizationRedirectResponse;
 import com.rebrowse.auth.core.EmailUtils;
 import com.rebrowse.auth.mfa.MfaMethod;
@@ -34,6 +35,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.ArrayUtils;
 
 @ApplicationScoped
@@ -61,7 +64,21 @@ public class SsoService {
                 authorizationRequest.getRedirect(), authorizationRequest.getDomain(), sessionId));
   }
 
-  public CompletionStage<AuthorizationResponse> authorizationSuccessResponse(
+  private CompletionStage<AuthorizationResponse> authorizationRedirectResponse(
+      AuthUser user, AuthorizationRequest request) {
+    return authorizeSuccess(
+        user,
+        (sessionId) ->
+            (extraCookies) ->
+                Response.status(302)
+                    .header(HttpHeaders.LOCATION, request.getRedirect())
+                    .cookie(
+                        ArrayUtils.add(
+                            extraCookies, SsoSession.cookie(sessionId, request.getDomain())))
+                    .build());
+  }
+
+  private CompletionStage<AuthorizationResponse> authorizationDataResponse(
       AuthUser user, AuthorizationRequest request) {
     return authorizeSuccess(
         user,
@@ -83,18 +100,48 @@ public class SsoService {
                 authorizationRequest.getRedirect(), authorizationRequest.getDomain(), sessionId));
   }
 
-  public CompletionStage<AuthorizationResponse> authorizeNewUser(
+  public CompletionStage<AuthorizationResponse> tryAuthorizeNewUserRedirectResponse(
       AuthUser user, AuthorizationRequest request) {
-    return authorize(user, Collections.emptyList(), request);
+    return tryAuthorizeNewUser(user, request, AuthorizationType.SERVER);
   }
 
-  public CompletionStage<AuthorizationResponse> authorize(
+  private CompletionStage<AuthorizationResponse> tryAuthorizeRedirectResponse(
       UserWithLoginInformation user, AuthorizationRequest request) {
-    return authorize(user.user(), user.getMfaMethods(), request);
+    return tryAuthorize(user, request, AuthorizationType.SERVER);
   }
 
-  public CompletionStage<AuthorizationResponse> authorize(
-      AuthUser user, List<MfaMethod> mfaMethods, AuthorizationRequest request) {
+  public CompletionStage<AuthorizationResponse> tryAuthorizeNewUserDataResponse(
+      AuthUser user, AuthorizationRequest request) {
+    return tryAuthorize(user, Collections.emptyList(), request, AuthorizationType.CLIENT);
+  }
+
+  public CompletionStage<AuthorizationResponse> tryAuthorizeDataResponse(
+      AuthUser user, List<MfaMethod> methods, AuthorizationRequest request) {
+    return tryAuthorize(user, methods, request, AuthorizationType.CLIENT);
+  }
+
+  public CompletionStage<AuthorizationResponse> tryAuthorizeDataResponse(
+      UserWithLoginInformation user, AuthorizationRequest request) {
+    return tryAuthorize(user.user(), user.getMfaMethods(), request, AuthorizationType.CLIENT);
+  }
+
+  private CompletionStage<AuthorizationResponse> tryAuthorizeNewUser(
+      AuthUser user, AuthorizationRequest request, AuthorizationType authorizationType) {
+    return tryAuthorize(user, Collections.emptyList(), request, authorizationType);
+  }
+
+  private CompletionStage<AuthorizationResponse> tryAuthorize(
+      UserWithLoginInformation user,
+      AuthorizationRequest request,
+      AuthorizationType authorizationType) {
+    return tryAuthorize(user.user(), user.getMfaMethods(), request, authorizationType);
+  }
+
+  private CompletionStage<AuthorizationResponse> tryAuthorize(
+      AuthUser user,
+      List<MfaMethod> mfaMethods,
+      AuthorizationRequest request,
+      AuthorizationType authorizationType) {
     if (mfaMethods.isEmpty()) {
       return organizationDatasource
           .retrieve(user.getOrganizationId())
@@ -105,14 +152,17 @@ public class SsoService {
 
                 if (organization.isEnforceMultiFactorAuthentication()) {
                   return mfaAuthorizationChallengeService.createChallenge(
-                      user.getId(), mfaMethods, request);
+                      user.getId(), mfaMethods, request, authorizationType);
                 }
 
-                return authorizationSuccessResponse(user, request);
+                return authorizationType.equals(AuthorizationType.CLIENT)
+                    ? this.authorizationDataResponse(user, request)
+                    : this.authorizationRedirectResponse(user, request);
               });
     }
 
-    return mfaAuthorizationChallengeService.createChallenge(user.getId(), mfaMethods, request);
+    return mfaAuthorizationChallengeService.createChallenge(
+        user.getId(), mfaMethods, request, authorizationType);
   }
 
   public CompletionStage<Optional<SsoUser>> logout(String sessionId) {
@@ -157,10 +207,11 @@ public class SsoService {
               if (maybeUser.isEmpty()) {
                 return signUpService
                     .ssoSignUpNewMember(email, fullName, organizationId)
-                    .thenCompose(user -> authorizeNewUser(user, request));
+                    .thenCompose(user -> tryAuthorizeNewUserRedirectResponse(user, request));
               }
+
               UserWithLoginInformation user = maybeUser.get();
-              return authorize(user, request);
+              return tryAuthorizeRedirectResponse(user, request);
             });
   }
 
@@ -183,13 +234,13 @@ public class SsoService {
         .thenCompose(
             maybeSsoSetup -> {
               if (maybeSsoSetup.isEmpty()) {
-                return authorize(user, request);
+                return tryAuthorizeRedirectResponse(user, request);
               }
 
               SsoSetupDTO ssoSetup = maybeSsoSetup.get();
               SsoMethod expectedMethod = ssoSetup.getMethod();
               if (expectedMethod.equals(method)) {
-                return authorize(user, request);
+                return tryAuthorizeRedirectResponse(user, request);
               }
 
               return identityProviderRegistry
@@ -203,13 +254,10 @@ public class SsoService {
     String email = request.getEmail();
     String emailDomain = EmailUtils.getDomain(request.getEmail());
 
-    System.out.println("NEW SOCIAL LOGIN: " + email);
-
     if (!EmailUtils.isBusinessDomain(emailDomain)) {
-      System.out.println("NOT BUSINESS DOMAIN!");
       return signUpService
           .ssoSignUp(email, fullName)
-          .thenCompose(user -> authorizeNewUser(user, request));
+          .thenCompose(user -> authorizationRedirectResponse(user, request));
     }
 
     return ssoSetupDatasource
@@ -217,10 +265,9 @@ public class SsoService {
         .thenCompose(
             maybeSsoSetup -> {
               if (maybeSsoSetup.isEmpty()) {
-                System.out.println("NO SSO SETUP FOUND!");
                 return signUpService
                     .ssoSignUp(email, fullName)
-                    .thenCompose(user -> authorizeNewUser(user, request));
+                    .thenCompose(user -> authorizationRedirectResponse(user, request));
               }
 
               SsoSetupDTO ssoSetup = maybeSsoSetup.get();
@@ -237,15 +284,14 @@ public class SsoService {
                         if (!organization.isOpenMembership()) {
                           return signUpService
                               .ssoSignUp(email, fullName)
-                              .thenCompose(user -> authorizeNewUser(user, request));
+                              .thenCompose(user -> authorizationRedirectResponse(user, request));
                         }
-
-                        System.out.println("NO OPEN MEMBERSHIP!");
 
                         if (expectedMethod.equals(method)) {
                           return signUpService
                               .ssoSignUpNewMember(email, fullName, organizationId)
-                              .thenCompose(user -> authorizeNewUser(user, request));
+                              .thenCompose(
+                                  user -> tryAuthorizeNewUserRedirectResponse(user, request));
                         }
 
                         return identityProviderRegistry

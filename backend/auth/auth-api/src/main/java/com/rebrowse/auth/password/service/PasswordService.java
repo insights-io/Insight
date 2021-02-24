@@ -96,7 +96,7 @@ public class PasswordService {
                                             RequestUtils.sneakyUri(request.getRedirect()),
                                             serverBaseUri);
 
-                                    return ssoService.authorize(
+                                    return ssoService.tryAuthorizeDataResponse(
                                         user, methods, authorizationRequest);
                                   }));
             });

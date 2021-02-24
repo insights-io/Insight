@@ -7,6 +7,7 @@ import com.rebrowse.auth.sso.oauth.google.resource.v1.GoogleOAuthResource;
 import com.rebrowse.auth.sso.oauth.microsoft.resource.v1.MicrosoftOAuthResource;
 import com.rebrowse.auth.sso.saml.resource.v1.SamlResource;
 import com.rebrowse.auth.utils.AbstractAuthApiQuarkusTest;
+import com.rebrowse.auth.utils.AuthApiTestUtils;
 import io.quarkus.test.common.http.TestHTTPResource;
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +15,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.UUID;
 import javax.inject.Inject;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -52,7 +52,7 @@ public abstract class AbstractSsoResourceTest extends AbstractAuthApiQuarkusTest
 
   protected Pair<String, String> samlResponseForRandomDomain()
       throws IOException, URISyntaxException {
-    String email = String.format("%s@%s.com", UUID.randomUUID(), UUID.randomUUID());
+    String email = AuthApiTestUtils.randomBusinessEmail();
     String samlResponse = readFileAsString("/sso/saml/response/okta_matej_snuderls_eu.xml");
     samlResponse = samlResponse.replaceAll("matej\\.snuderl@snuderls\\.eu", email);
     return Pair.of(email, Base64.getEncoder().encodeToString(samlResponse.getBytes()));

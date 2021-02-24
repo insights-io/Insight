@@ -23,7 +23,6 @@ import com.rebrowse.auth.utils.AuthApiTestUtils;
 import com.rebrowse.auth.utils.MockedSamlClient;
 import com.rebrowse.model.auth.SamlConfiguration;
 import com.rebrowse.model.auth.SsoSetupCreateParams;
-import com.rebrowse.model.auth.UserData;
 import com.rebrowse.model.organization.OrganizationUpdateParams;
 import com.rebrowse.model.user.User;
 import com.rebrowse.model.user.UserRole;
@@ -38,6 +37,7 @@ import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Tag;
@@ -324,10 +324,8 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
         .cookie(SsoAuthorizationSession.COOKIE_NAME, state)
         .post(samlCallbackURI)
         .then()
-        .statusCode(200)
-        .body(
-            sameJson(
-                "{\"data\":{\"location\":\"http://localhost:3000/test\",\"action\":\"SUCCESS\"}}"))
+        .statusCode(302)
+        .header(HttpHeaders.LOCATION, GlobalTestData.LOCALHOST_REDIRECT)
         .cookie(SsoSession.COOKIE_NAME)
         .cookie(SsoAuthorizationSession.COOKIE_NAME, "");
 
@@ -346,20 +344,14 @@ public class SamlResourceImplTest extends AbstractSsoResourceTest {
             .cookie(SsoAuthorizationSession.COOKIE_NAME, state)
             .post(samlCallbackURI)
             .then()
-            .statusCode(200)
-            .body(
-                sameJson(
-                    "{\"data\":{\"location\":\"http://localhost:3000/test\",\"action\":\"SUCCESS\"}}"))
+            .statusCode(302)
+            .header(HttpHeaders.LOCATION, GlobalTestData.LOCALHOST_REDIRECT)
             .cookie(SsoAuthorizationSession.COOKIE_NAME, "")
             .extract()
             .detailedCookie(SsoSession.COOKIE_NAME)
             .getValue();
 
-    User newUser =
-        UserData.retrieve(sdkRequest().sessionId(newSessionId).build())
-            .toCompletableFuture()
-            .join()
-            .getUser();
+    User newUser = authorizationFlows().retrieveUserData(newSessionId).getUser();
 
     assertEquals(newUser.getFullName(), "Blaz Snuderl");
     assertEquals(newUser.getOrganizationId(), organizationId);
