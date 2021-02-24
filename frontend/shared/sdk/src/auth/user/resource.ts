@@ -1,6 +1,6 @@
 import type { CodeValidityDTO, PhoneNumber, UserDTO } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
 
+import type { ExtendedRequestOptions } from '../../types';
 import { HttpClient, jsonDataResponse } from '../../http';
 
 import type { UpdateUserPayload } from './types';

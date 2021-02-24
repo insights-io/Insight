@@ -40,7 +40,7 @@ jobs:
             billing-api-postgres-migrations,
             search-indexer,
             app,
-            try,
+            accounts,
             browser-tracking,
             browser-bootstrap,
           ]
@@ -83,12 +83,12 @@ jobs:
           for file in *; do docker load < $file; done
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: '15.9.0'
       - name: Setup & wait for docker containers
         run: |
           mkdir -p $ARTIFACTS_PATH
           export STRIPE_WEBHOOK_SECRET=$(docker run --rm stripe/stripe-cli:latest listen --print-secret --api-key="$STRIPE_SECRET_KEY")
-          docker-compose -f backend/local-test-services/docker-compose.yml up app try browser-bootstrap browser-tracking search-indexer beacon-api auth-api session-api billing-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
+          docker-compose -f backend/local-test-services/docker-compose.yml up app accounts browser-bootstrap browser-tracking search-indexer beacon-api auth-api session-api billing-api 2>&1 | tee $ARTIFACTS_PATH/docker.log &
           yarn install --frozen-lockfile
           yarn workspace @rebrowse/types build
           node_modules/wait-on/bin/wait-on http-get://localhost:8080/health http-get://localhost:8081/health http-get://localhost:8082/health http-get://localhost:8083/health http-get://localhost:3000 http-get://localhost:3002 http-get://localhost:5000 http-get://localhost:5001 --timeout 600000

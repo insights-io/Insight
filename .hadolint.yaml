@@ -1,0 +1,3 @@
+ignored:
+  - DL3029 # Do not use --platform flag with FROM
+

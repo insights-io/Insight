@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { Meta } from '@storybook/react';
+import { useCodeInput } from 'hooks';
+import { action } from '@storybook/addon-actions';
 
 import { CodeInput } from './CodeInput';
 
@@ -8,16 +10,27 @@ export default {
   component: CodeInput,
 } as Meta;
 
-const useCodeInput = () => {
-  const [code, handleChange] = useState(['', '', '', '']);
-  return {
-    code,
-    handleChange,
-    error: undefined,
-    label: 'Label',
-  };
+const useCodeInputStory = () => {
+  return useCodeInput({
+    handleError: action('handleError'),
+    submitAction: async () => action('submitAction')(),
+  });
 };
 
-export const FourCharacters = () => {
-  return <CodeInput {...useCodeInput()} />;
+export const Base = () => {
+  return <CodeInput {...useCodeInputStory()} />;
+};
+
+export const WithLabel = () => {
+  return <CodeInput {...useCodeInputStory()} label="SMS code" />;
+};
+
+export const WithError = () => {
+  return (
+    <CodeInput
+      {...useCodeInputStory()}
+      label="SMS code"
+      error="Something went wrong"
+    />
+  );
 };

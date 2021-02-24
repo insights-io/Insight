@@ -1,4 +1,4 @@
-FROM node:14-alpine as build
+FROM node:15.9.0-alpine as build
 
 WORKDIR /src
 
@@ -10,7 +10,7 @@ COPY frontend/browser/bootstrap/ /src/frontend/browser/bootstrap/
 
 RUN yarn workspace @rebrowse/browser-bootstrap build
 
-FROM node:14-alpine
+FROM node:15.9.0-alpine
 
 WORKDIR /usr/app
 

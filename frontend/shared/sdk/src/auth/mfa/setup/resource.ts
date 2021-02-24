@@ -5,8 +5,8 @@ import type {
   CodeValidityDTO,
   MfaSetupDTO,
 } from '@rebrowse/types';
-import type { ExtendedRequestOptions, RequestOptions } from 'types';
 
+import type { ExtendedRequestOptions, RequestOptions } from '../../../types';
 import { HttpClient, httpResponse, jsonDataResponse } from '../../../http';
 
 export const mfaSetupResource = (client: HttpClient, authApiBaserl: string) => {

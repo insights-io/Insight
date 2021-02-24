@@ -78,7 +78,7 @@ export const AcceptTeamInvitePage = ({
               name="fullName"
               placeholder="Full name"
               required
-              inputRef={register(REQUIRED_VALIDATION)}
+              ref={register(REQUIRED_VALIDATION)}
               error={Boolean(errors.fullName)}
             />
           </FormControl>
@@ -91,8 +91,7 @@ export const AcceptTeamInvitePage = ({
             error={errors.password?.message}
           >
             <PasswordInput
-              ref={register}
-              inputRef={register(PASSWORD_VALIDATION)}
+              ref={register(PASSWORD_VALIDATION)}
               error={Boolean(errors.password)}
             />
           </FormControl>

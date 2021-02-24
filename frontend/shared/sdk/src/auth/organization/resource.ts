@@ -10,13 +10,13 @@ import type {
   AcceptTeamInviteDTO,
   GroupByResult,
 } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
-import { querystring } from 'utils';
+
 import type {
   UserSearchQueryParams,
   UserSearchRequestOptions,
-} from 'auth/user/types';
-
+} from '../../auth/user/types';
+import { querystring } from '../../utils';
+import type { ExtendedRequestOptions } from '../../types';
 import { HttpClient, httpResponse, jsonDataResponse } from '../../http';
 
 import type {

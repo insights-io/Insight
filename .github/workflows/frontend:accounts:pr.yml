@@ -1,0 +1,58 @@
+---
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/frontend:accounts:pr.yml'
+      - 'frontend/accounts/**'
+      - 'frontend/shared/**'
+      - 'jest.config.ts'
+      - 'lerna.json'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'yarn.lock'
+
+env:
+  CI: true
+
+jobs:
+  pr-deploy-storybook:
+    name: Deploy storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '15.9.0'
+      - uses: rlespinasse/github-slug-action@v2.x
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install & build 🏗️
+        run: |
+          yarn install --frozen-lockfile
+          yarn workspace @rebrowse/accounts pretest
+          yarn workspace @rebrowse/accounts storybook:build
+      - uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_ACCOUNTS_STORYBOOK }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          DEST_DIR: ${{ env.GITHUB_HEAD_REF_SLUG }}
+          SOURCE_DIR: frontend/accounts/storybook-static
+      - name: Comment PR 💬
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: '🚀 Storybook preview of frontend/accounts available at https://${{ secrets.ACCOUNTS_STORYBOOK_DOMAIN_NAME }}/${{ env.GITHUB_HEAD_REF_SLUG }}/index.html! 🚀'
+          check_for_duplicate_msg: true

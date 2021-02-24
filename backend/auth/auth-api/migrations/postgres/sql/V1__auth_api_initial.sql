@@ -87,6 +87,7 @@ CREATE TABLE auth.password_reset_request
     token      UUID        NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
     email      TEXT REFERENCES auth.user (email) ON DELETE CASCADE,
     user_id    UUID REFERENCES auth.user (id) ON DELETE CASCADE,
+    redirect   TEXT        NOT NULL,
     created_at TIMESTAMPTZ NOT NULL        DEFAULT now(),
 
     PRIMARY KEY (token, email, created_at),
@@ -101,7 +102,7 @@ CREATE TABLE auth.sign_up_request
     full_name       TEXT        NOT NULL,
     company         TEXT        NOT NULL,
     phone_number    JSONB,
-    referrer        TEXT,
+    redirect        TEXT        NOT NULL,
     created_at      TIMESTAMPTZ NOT NULL        DEFAULT now(),
 
     PRIMARY KEY (token, email),

@@ -1,5 +1,6 @@
 import ky from 'ky';
-import type { RequestOptions, Input } from 'types';
+
+import type { RequestOptions, Input } from '../types';
 
 export const createRawHttpClient = (defaultOptions: RequestOptions = {}) => {
   const client = ky.extend(defaultOptions);

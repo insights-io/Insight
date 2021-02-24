@@ -12,16 +12,16 @@ services:
     volumes:
       - ../../frontend/homepage/.env.development.docker:/usr/app/.env.production
 
-  try:
+  accounts:
     build:
       context: ../..
-      dockerfile: frontend/try/docker/Dockerfile
+      dockerfile: frontend/accounts/docker/Dockerfile
     ports:
       - '3002:3000'
     depends_on:
       - auth-api
     volumes:
-      - ../../frontend/app/.env.development:/usr/app/.env.production
+      - ../../frontend/accounts/.env.development:/usr/app/.env.production
 
   app:
     build:
@@ -211,7 +211,7 @@ services:
 
   # Elk
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
     ports:
       - '9200:9200'
       - '9300:9300'
@@ -219,7 +219,7 @@ services:
       ES_JAVA_OPTS: '-Xms512m -Xmx512m'
       discovery.type: single-node
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.10.0
+    image: docker.elastic.co/kibana/kibana:7.11.1
     ports:
       - '5601:5601'
     depends_on:

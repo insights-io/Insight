@@ -29,7 +29,7 @@ configurations.runtimeClasspath {
 
 jar {
     manifest {
-        attributes "Main-Class": "com.meemaw.events.search.indexer.SearchIndexerRunner"
+        attributes "Main-Class": "com.rebrowse.events.search.indexer.SearchIndexerRunner"
         // https://stackoverflow.com/questions/53049346/is-log4j2-compatible-with-java-11
         attributes "Multi-Release": true
     }

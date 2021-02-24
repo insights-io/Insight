@@ -41,6 +41,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Reclaim Disk Space
+        run: scripts/ci/ci-prerequisites.sh
       - name: Cache Gradle Home files
         uses: actions/cache@v2
         continue-on-error: true
@@ -52,7 +54,6 @@ jobs:
           java-version: 15
       - name: Run tests (${{matrix.gradle_args}}) 🚀
         working-directory: backend
-        timeout-minutes: 15
         run: |
           ./gradlew --no-daemon --continue jacocoTestReport --scan ${{matrix.gradle_args}}
         env:

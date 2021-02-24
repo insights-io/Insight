@@ -1,6 +1,6 @@
 import type { MfaMethod, CodeValidityDTO, UserDTO } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
 
+import type { ExtendedRequestOptions } from '../../../types';
 import { HttpClient, httpResponse, jsonDataResponse } from '../../../http';
 
 export const mfaChallengeResource = (

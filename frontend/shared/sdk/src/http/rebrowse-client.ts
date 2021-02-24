@@ -1,6 +1,4 @@
-import type { ApiEndpointsConfig, ApiEndpoints, RequestOptions } from 'types';
-import { subscriptionResource, invoicesResource } from 'billing';
-import { eventsResource, pageVisitResource, sessionsResource } from 'sessions';
+import { trackingResource } from '../tracking';
 import {
   ssoSetupResource,
   authTokensResource,
@@ -11,15 +9,25 @@ import {
   organizationsResource,
   mfaChallengeResource,
   mfaSetupResource,
-} from 'auth';
-import { trackingResource } from 'tracking';
+  accountsResource,
+} from '../auth';
+import type {
+  ApiEndpointsConfig,
+  ApiEndpoints,
+  RequestOptions,
+} from '../types';
+import { subscriptionResource, invoicesResource } from '../billing';
+import {
+  eventsResource,
+  pageVisitResource,
+  sessionsResource,
+} from '../sessions';
 
 import { createHttpClient } from './client';
 
 const getApiEndpoints = (
   apiEndpointsConfig: ApiEndpointsConfig
 ): ApiEndpoints => {
-  // eslint-disable-next-line lodash/prefer-lodash-typecheck
   if (typeof apiEndpointsConfig !== 'string') {
     return apiEndpointsConfig;
   }
@@ -55,6 +63,7 @@ export const createRebrowseHttpClient = (
   const invoices = invoicesResource(client, billingApiBaseUrl);
 
   /* AuthApi resources */
+  const accounts = accountsResource(client, authApiBaseUrl);
   const ssoSetups = ssoSetupResource(client, authApiBaseUrl);
   const ssoSessions = ssoSessionResource(client, authApiBaseUrl);
   const authTokens = authTokensResource(client, authApiBaseUrl);
@@ -77,6 +86,7 @@ export const createRebrowseHttpClient = (
       invoices,
     },
     auth: {
+      accounts,
       signup,
       password,
       users,

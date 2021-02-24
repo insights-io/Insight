@@ -6,8 +6,8 @@ locals {
     "www.api.${module.project_vars.domain}",
     "app.${module.project_vars.domain}",
     "www.app.${module.project_vars.domain}",
-    "try.${module.project_vars.domain}",
-    "www.try.${module.project_vars.domain}"
+    "accounts.${module.project_vars.domain}",
+    "www.accounts.${module.project_vars.domain}"
   ]
 }
 

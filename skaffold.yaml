@@ -19,10 +19,10 @@ build:
       context: .
       docker:
         dockerfile: frontend/app/docker/Dockerfile
-    - image: insightio/frontend-try
+    - image: insightio/frontend-accounts
       context: .
       docker:
-        dockerfile: frontend/try/docker/Dockerfile
+        dockerfile: frontend/accounts/docker/Dockerfile
     - image: insightio/session-api
       context: backend
       custom:

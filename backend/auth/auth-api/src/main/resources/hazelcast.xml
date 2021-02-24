@@ -6,7 +6,7 @@
     <serialization>
         <data-serializable-factories>
             <data-serializable-factory factory-id="20000">
-                com.meemaw.auth.sso.session.model.SsoDataSerializableFactory
+                com.rebrowse.auth.sso.session.model.SsoDataSerializableFactory
             </data-serializable-factory>
         </data-serializable-factories>
     </serialization>

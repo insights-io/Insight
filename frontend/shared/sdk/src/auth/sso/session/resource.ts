@@ -1,6 +1,6 @@
 import type { LoginResponseDTO, SessionInfoDTO } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
 
+import type { ExtendedRequestOptions } from '../../../types';
 import { HttpClient, httpResponse, jsonDataResponse } from '../../../http';
 
 export const ssoSessionResource = (
@@ -37,9 +37,11 @@ export const ssoSessionResource = (
         ...requestOptions
       }: ExtendedRequestOptions = {}
     ) => {
-      return client.get(
-        `${resourceBaseURL(baseUrl)}/session/${id}/userdata`,
-        requestOptions
+      return jsonDataResponse<SessionInfoDTO>(
+        client.get(
+          `${resourceBaseURL(baseUrl)}/session/${id}/userdata`,
+          requestOptions
+        )
       );
     },
     current: ({

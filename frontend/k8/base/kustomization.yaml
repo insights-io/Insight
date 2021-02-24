@@ -4,5 +4,5 @@ kind: Kustomization
 
 bases:
   - ../../app/k8/base
-  - ../../try/k8/base
+  - ../../accounts/k8/base
   - ../../homepage/k8/base

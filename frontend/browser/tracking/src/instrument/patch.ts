@@ -1,4 +1,3 @@
-/* eslint-disable lodash/prefer-lodash-typecheck */
 export function monkeyPatch<T, K extends keyof T>(
   source: T,
   field: K,

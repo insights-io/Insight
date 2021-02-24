@@ -5,7 +5,7 @@ import { Block } from 'baseui/block';
 import { Button, SHAPE } from 'baseui/button';
 import { H6 } from 'baseui/typography';
 import UnstyledA from 'shared/components/UnstyledA';
-import { APP_BASE_URL, TRY_BASE_URL } from 'shared/constants';
+import { APP_BASE_URL, ACCOUNTS_BASE_URL } from 'shared/constants';
 
 type Props = {
   loggedIn: boolean;
@@ -13,7 +13,7 @@ type Props = {
 
 export const HomePage = ({ loggedIn }: Props) => {
   const [_css, theme] = useStyletron();
-  const href = loggedIn ? APP_BASE_URL : TRY_BASE_URL;
+  const href = loggedIn ? APP_BASE_URL : ACCOUNTS_BASE_URL;
 
   return (
     <>

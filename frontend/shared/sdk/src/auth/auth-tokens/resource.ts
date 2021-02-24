@@ -1,6 +1,6 @@
 import type { AuthTokenDTO } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
 
+import type { ExtendedRequestOptions } from '../../types';
 import { HttpClient, jsonDataResponse } from '../../http';
 
 export const authTokensResource = (

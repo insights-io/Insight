@@ -1,4 +1,3 @@
-/* eslint-disable lodash/prefer-lodash-typecheck */
 import React, { forwardRef } from 'react';
 import { Select, SelectProps, STATE_CHANGE_TYPE } from 'baseui/select';
 

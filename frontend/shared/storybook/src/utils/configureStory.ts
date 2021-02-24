@@ -1,4 +1,4 @@
-import mockDecorator from '../decorators/mockDecorator';
+import { mockDecorator } from '../decorators/mockDecorator';
 
 import { StoryConfiguration } from './types';
 

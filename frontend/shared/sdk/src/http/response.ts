@@ -1,5 +1,6 @@
 import type { DataResponse } from '@rebrowse/types';
-import type { HttpResponse, ResponsePromise } from 'types';
+
+import type { HttpResponse, ResponsePromise } from '../types';
 
 export const httpResponse = ({ status: statusCode, headers }: Response) => {
   return { statusCode, headers };

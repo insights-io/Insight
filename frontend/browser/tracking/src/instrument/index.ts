@@ -2,7 +2,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable func-names */
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable lodash/prefer-lodash-typecheck */
 /* eslint-disable no-console */
 import { Enqueue } from 'types';
 import { EventType, LogLevel } from '@rebrowse/types';
@@ -25,8 +24,7 @@ export function insrumentXMLHttpRequest(
 ): XMLHttpRequest['send'] | undefined {
   const xhrproto = XMLHttpRequest.prototype;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error its okay
   monkeyPatch(xhrproto, 'open', (original) => {
     return function (
       this: WrappedXMLHttpRequest,

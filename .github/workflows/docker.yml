@@ -16,7 +16,7 @@ jobs:
         run: scripts/ci/ci-prerequisites.sh
       - uses: imranismail/setup-kustomize@v1
         with:
-          kustomize-version: '3.8.6'
+          kustomize-version: '3.10.0'
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -39,10 +39,10 @@ jobs:
           sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/app/.env.production
           sed -i 's,http://localhost:8082,https://api.rebrowse.dev,g' frontend/app/.env.production
           sed -i 's,http://localhost:8083,https://api.rebrowse.dev,g' frontend/app/.env.production
-          sed -i 's,http://localhost:3002,https://try.rebrowse.dev,g' frontend/app/.env.production
-          sed -i 's,http://localhost:3000,https://app.rebrowse.dev,g' frontend/try/.env.production
-          sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/try/.env.production
-          sed -i 's,http://localhost:3002,https://try.rebrowse.dev,g' frontend/homepage/.env.production
+          sed -i 's,http://localhost:3002,https://accounts.rebrowse.dev,g' frontend/app/.env.production
+          sed -i 's,http://localhost:3000,https://app.rebrowse.dev,g' frontend/accounts/.env.production
+          sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/accounts/.env.production
+          sed -i 's,http://localhost:3002,https://accounts.rebrowse.dev,g' frontend/homepage/.env.production
           sed -i 's,http://localhost:3000,https://app.rebrowse.dev,g' frontend/homepage/.env.production
           sed -i 's,http://localhost:8080,https://api.rebrowse.dev,g' frontend/homepage/.env.production
       - name: Build

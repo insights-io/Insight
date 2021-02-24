@@ -3,7 +3,6 @@ package com.rebrowse.model.auth;
 import com.rebrowse.net.ApiResource;
 import com.rebrowse.net.RequestMethod;
 import com.rebrowse.net.RequestOptions;
-import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletionStage;
 import lombok.AccessLevel;
@@ -17,7 +16,7 @@ public class SsoSetup {
   String organizationId;
   String domain;
   SsoMethod method;
-  URL configurationEndpoint;
+  SamlConfiguration saml;
   OffsetDateTime createdAt;
 
   public static CompletionStage<SsoSetup> create(SsoSetupCreateParams params) {

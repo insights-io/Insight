@@ -19,7 +19,6 @@ export const querystring = <
 };
 
 const rhsTermCondition = (key: string) => <T>(value: T): string => {
-  // eslint-disable-next-line lodash/prefer-lodash-typecheck
   if (value instanceof Date) {
     return `${key}:${value.toISOString()}`;
   }

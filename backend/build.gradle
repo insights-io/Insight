@@ -19,7 +19,7 @@ allprojects {
         mavenCentral()
     }
 
-    group "org.meemaw"
+    group "org.rebrowse"
     version "1.0"
 }
 

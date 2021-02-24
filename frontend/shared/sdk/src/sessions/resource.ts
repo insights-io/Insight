@@ -1,7 +1,7 @@
 import type { SessionDTO, GroupByResult } from '@rebrowse/types';
-import type { ExtendedRequestOptions } from 'types';
-import { querystring } from 'utils';
 
+import type { ExtendedRequestOptions } from '../types';
+import { querystring } from '../utils';
 import { HttpClient, jsonDataResponse } from '../http';
 
 import type {

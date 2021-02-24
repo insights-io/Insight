@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: accounts
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - accounts.rebrowse.dev
+        - www.accounts.rebrowse.dev
+      secretName: accounts-rebrowse-dev-tls
+  rules:
+    - host: accounts.rebrowse.dev
+      http:
+        paths:
+          - backend:
+              serviceName: accounts
+              servicePort: 80
+    - host: www.accounts.rebrowse.dev
+      http:
+        paths:
+          - backend:
+              serviceName: accounts
+              servicePort: 80

@@ -3,6 +3,7 @@ import { makeDecorator, WrapperSettings } from '@storybook/addons';
 import { action } from '@storybook/addon-actions';
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
 import { NextRouter, createRouter } from 'next/router';
+import { NEXT_DATA } from 'next/dist/next-server/lib/utils';
 
 const NEXT_DECORATOR_PARAMETER_NAME = 'next__decorator';
 
@@ -10,7 +11,17 @@ type AppProviders = React.ComponentType<{ children: JSX.Element }>;
 
 type CustomWrapperSettings = WrapperSettings;
 
+declare global {
+  interface Window {
+    /* prod */
+    __NEXT_DATA__: NEXT_DATA;
+  }
+}
+
 export const createNextDecorator = (Providers: AppProviders) => {
+  // eslint-disable-next-line no-underscore-dangle
+  global.window.__NEXT_DATA__ = {} as NEXT_DATA;
+
   return makeDecorator({
     name: 'nextDecorator',
     parameterName: NEXT_DECORATOR_PARAMETER_NAME,

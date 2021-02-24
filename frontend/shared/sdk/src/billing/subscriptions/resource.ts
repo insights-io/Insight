@@ -4,8 +4,8 @@ import type {
   CreateSubscriptionResponseDTO,
   PlanDTO,
 } from '@rebrowse/types';
-import type { ExtendedRequestOptions, HttpClient } from 'types';
 
+import type { ExtendedRequestOptions, HttpClient } from '../../types';
 import { querystring } from '../../utils';
 import { jsonDataResponse } from '../../http';
 

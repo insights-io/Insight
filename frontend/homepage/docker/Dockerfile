@@ -1,5 +1,5 @@
 ### BASE ###
-FROM node:15-alpine as base
+FROM node:15.9.0-alpine as base
 
 WORKDIR /src
 
@@ -12,7 +12,7 @@ COPY frontend/shared/sdk/package.json ./frontend/shared/sdk/package.json
 COPY frontend/shared/service-proxy/package.json ./frontend/shared/service-proxy/package.json
 COPY frontend/homepage/package.json ./frontend/homepage/package.json
 
-RUN yarn install --production --frozen-lockfile --prefer-offline
+RUN yarn install --production --frozen-lockfile --prefer-offline --ignore-scripts
 RUN cp -RL ./node_modules/ /tmp/node_modules/
 
 # Copy source files

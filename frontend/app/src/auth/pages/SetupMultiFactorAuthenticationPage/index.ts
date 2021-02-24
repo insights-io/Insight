@@ -1,1 +1,0 @@
-export { SetupMultiFactorAuthenticationPage } from './SetupMultiFactorAuthenticationPage';
