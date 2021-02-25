@@ -4,7 +4,6 @@ import {
   trackingResource as createTrackingResource,
   passwordResource as createPasswordResource,
   accountsResource as createAccountsResource,
-  mfaChallengeResource as createMfaChallengeResource,
   mfaSetupResource as createMfaSetupResource,
   userResource as createUserResource,
   RequestOptions,
@@ -22,7 +21,6 @@ export const client = {
   password: createPasswordResource(httpClient, authApiBaseUrl),
   accounts: createAccountsResource(httpClient, authApiBaseUrl),
   mfa: {
-    challenge: createMfaChallengeResource(httpClient, authApiBaseUrl),
     setup: createMfaSetupResource(httpClient, authApiBaseUrl),
   },
 };

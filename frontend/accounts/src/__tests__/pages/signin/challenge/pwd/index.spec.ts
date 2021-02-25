@@ -7,6 +7,7 @@ import { INCLUDE_CREDENTIALS } from 'sdk';
 
 import * as PasswordForgotPageTestSetup from '../../../password-forgot/PasswordForgotPageTestSetup';
 import * as SignInTestSetup from '../../SignInPageSetup';
+import * as SignInMfaChallengeTestSetup from '../mfa/SignInMfaChallengeTestSetup';
 
 import * as SignInPwdChallengeTestSetup from './SignInPwdChallengeTestSetup';
 
@@ -14,7 +15,32 @@ describe('/signin/challenge/pwd', () => {
   const email = 'john.doe@gmail.com';
   const password = 'password1234!';
 
-  test('As a user I can successfully complete pwd challenge', async () => {
+  test('As a user I can succesffuly complete pwd challenge & get challanged with MFA', async () => {
+    const {
+      challengeId,
+      completePwdChallengeStub,
+      retrieveMfaChallengeStub,
+    } = SignInPwdChallengeTestSetup.completePwdChellengeMfa();
+
+    const {
+      passwordInput,
+      continueButton,
+    } = await SignInPwdChallengeTestSetup.setup({ email });
+
+    userEvent.type(passwordInput, password);
+    userEvent.click(continueButton);
+    await SignInMfaChallengeTestSetup.findElements();
+
+    sandbox.assert.calledWithExactly(
+      completePwdChallengeStub,
+      { email, password },
+      INCLUDE_CREDENTIALS
+    );
+
+    sandbox.assert.calledWithExactly(retrieveMfaChallengeStub, challengeId);
+  });
+
+  test('As a user I can successfully complete pwd challenge & get redirected back to the app', async () => {
     const locationAssignStub = sandbox.stub(windowUtils, 'locationAssign');
     const completePwdChallengeStub = SignInPwdChallengeTestSetup.completePwdChellengeSuccess();
     const {

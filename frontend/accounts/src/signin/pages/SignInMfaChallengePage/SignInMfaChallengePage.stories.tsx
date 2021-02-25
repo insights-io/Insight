@@ -7,7 +7,7 @@ import { SinonSandbox } from 'sinon';
 import { SignInMfaChallengePage } from './SignInMfaChallengePage';
 
 const sendSmsCodeMock = (sandbox: SinonSandbox) => {
-  return sandbox.stub(client.mfa.challenge, 'sendSmsCode').resolves({
+  return sandbox.stub(client.accounts, 'sendSmsCode').resolves({
     data: { validitySeconds: 60 },
     headers: new Headers(),
     statusCode: 200,

@@ -7,7 +7,6 @@ import {
   signupResource,
   passwordResource,
   organizationsResource,
-  mfaChallengeResource,
   mfaSetupResource,
   accountsResource,
 } from '../auth';
@@ -71,7 +70,6 @@ export const createRebrowseHttpClient = (
   const signup = signupResource(client, authApiBaseUrl);
   const password = passwordResource(client, authApiBaseUrl);
   const organizations = organizationsResource(client, authApiBaseUrl);
-  const mfaChallenge = mfaChallengeResource(client, authApiBaseUrl);
   const mfaSetup = mfaSetupResource(client, authApiBaseUrl);
 
   return {
@@ -92,7 +90,6 @@ export const createRebrowseHttpClient = (
       users,
       organizations,
       mfa: {
-        challenge: mfaChallenge,
         setup: mfaSetup,
       },
       sso: {

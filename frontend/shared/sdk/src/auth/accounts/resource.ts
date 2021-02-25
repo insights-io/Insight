@@ -1,3 +1,5 @@
+import type { CodeValidityDTO } from '@rebrowse/types';
+
 import { querystring } from '../../utils';
 import type { ExtendedRequestOptions } from '../../types';
 import { HttpClient, jsonDataResponse } from '../../http';
@@ -9,6 +11,8 @@ import type {
   PwdChallengeResponseDTO,
   MfaChallengeResponseDTO,
   ChooseAccountResponse,
+  CompleteMfaAuthorizationChallengeParams,
+  CompleteMfaAuthorizationChallengeResponse,
 } from './types';
 
 export const accountsResource = (
@@ -83,6 +87,31 @@ export const accountsResource = (
           body,
           ...requestOptions,
         })
+      );
+    },
+    completeMfaChallenge: (
+      { code }: CompleteMfaAuthorizationChallengeParams,
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
+    ) => {
+      return jsonDataResponse<CompleteMfaAuthorizationChallengeResponse>(
+        client.post(`${authorizationChallengeBaseUrl(baseUrl)}/mfa`, {
+          json: { code },
+          ...requestOptions,
+        })
+      );
+    },
+    sendSmsCode: ({
+      baseUrl = authApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
+      return jsonDataResponse<CodeValidityDTO>(
+        client.post(
+          `${authorizationChallengeBaseUrl(baseUrl)}/mfa/sms/send_code`,
+          requestOptions
+        )
       );
     },
   };

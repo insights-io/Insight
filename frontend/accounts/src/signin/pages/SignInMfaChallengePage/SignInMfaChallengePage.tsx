@@ -9,6 +9,7 @@ import type { MfaInputProps } from 'signin/types';
 import dynamic from 'next/dynamic';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { FormError } from 'shared/components/FormError';
+import { locationAssign } from 'shared/utils/window';
 
 const TotpMfaInput = dynamic<MfaInputProps>(() =>
   import('signin/components/TotpMfaInput').then((module) => module.TotpMfaInput)
@@ -49,14 +50,12 @@ export const SignInMfaChallengePage = ({ methods }: Props) => {
     apiError,
   } = useCodeInput({
     submitAction: (data) => {
-      return client.mfa.challenge
-        .complete(activeMethod, data, INCLUDE_CREDENTIALS)
-        .then((_) => {
-          console.log('TODO');
-        });
+      return client.accounts
+        .completeMfaChallenge({ code: data }, INCLUDE_CREDENTIALS)
+        .then((response) => locationAssign(response.data.location));
     },
     handleError: (error, setError) => {
-      console.log(error, setError);
+      setError(error.error);
     },
   });
 
@@ -107,7 +106,7 @@ export const SignInMfaChallengePage = ({ methods }: Props) => {
                       error={codeError}
                       handleChange={handleChange}
                       code={code}
-                      sendCode={client.mfa.challenge.sendSmsCode}
+                      sendCode={client.accounts.sendSmsCode}
                     />
                   </Tab>
                 );

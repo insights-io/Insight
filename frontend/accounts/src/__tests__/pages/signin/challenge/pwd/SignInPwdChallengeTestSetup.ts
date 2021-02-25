@@ -4,11 +4,13 @@ import {
   PWD_CHALLENGE_SESSION_ID,
   SESSION_ID,
   SIGNIN_PWD_CHALLENGE_ROUTE,
+  MFA_CHALLENGE_SESSION_ID,
 } from 'shared/constants/routes';
 import { appBaseUrl } from 'shared/config';
 import { v4 as uuid } from 'uuid';
-import { sandbox } from '@rebrowse/testing';
+import { deleteCookie, sandbox } from '@rebrowse/testing';
 import { client } from 'sdk';
+import { MfaMethod } from '@rebrowse/types';
 
 import * as SignInPageSetup from '../../SignInPageSetup';
 
@@ -86,4 +88,34 @@ export const completePwdChellengeSuccess = ({
       data: { action: 'SUCCESS', location },
     });
   });
+};
+
+export const completePwdChellengeMfa = ({
+  challengeId = uuid(),
+  methods = ['sms', 'totp'],
+}: {
+  challengeId?: string;
+  methods?: MfaMethod[];
+} = {}) => {
+  const retrieveMfaChallengeStub = sandbox
+    .stub(client.accounts, 'retrieveMfaChallenge')
+    .resolves({
+      data: { methods },
+      statusCode: 200,
+      headers: new Headers(),
+    });
+
+  const completePwdChallengeStub = sandbox
+    .stub(client.accounts, 'completePwdChallenge')
+    .callsFake(() => {
+      document.cookie = `${MFA_CHALLENGE_SESSION_ID}=${challengeId}`;
+      deleteCookie(PWD_CHALLENGE_SESSION_ID);
+      return Promise.resolve({
+        statusCode: 200,
+        headers: new Headers(),
+        data: { action: 'MFA_CHALLENGE', challengeId, methods },
+      });
+    });
+
+  return { challengeId, retrieveMfaChallengeStub, completePwdChallengeStub };
 };

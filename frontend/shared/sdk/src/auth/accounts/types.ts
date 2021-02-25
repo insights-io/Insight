@@ -25,6 +25,10 @@ export type CompletePwdAuthorizationChallengeParams = {
   password: string;
 };
 
+export type CompleteMfaAuthorizationChallengeParams = {
+  code: number;
+};
+
 export type AuthorizationSuccessResponse = LocationActionResponse<'SUCCESS'>;
 
 export type PwdAuthorizationMfaChallengeResponse = {
@@ -36,6 +40,8 @@ export type PwdAuthorizationMfaChallengeResponse = {
 export type CompletePwdAuthorizationChallengeResponse =
   | PwdAuthorizationMfaChallengeResponse
   | AuthorizationSuccessResponse;
+
+export type CompleteMfaAuthorizationChallengeResponse = AuthorizationSuccessResponse;
 
 export type LocationResponseDTO = {
   location: string;
