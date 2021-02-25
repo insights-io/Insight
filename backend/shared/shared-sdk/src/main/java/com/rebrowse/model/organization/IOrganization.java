@@ -1,20 +1,13 @@
-package com.rebrowse.auth.organization.model;
+package com.rebrowse.model.organization;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rebrowse.api.date.DateUtils;
-import com.rebrowse.auth.organization.model.dto.AvatarSetupDTO;
-import com.rebrowse.auth.user.model.UserRole;
+import com.rebrowse.model.user.UserRole;
 import java.time.OffsetDateTime;
-import org.apache.commons.lang3.RandomStringUtils;
 
-public interface Organization {
+public interface IOrganization {
 
-  int ID_LENGTH = 6;
   int BILLING_PERIOD_DURATION_DAYS = 30;
-
-  static String identifier() {
-    return RandomStringUtils.randomAlphanumeric(ID_LENGTH);
-  }
 
   String getId();
 
@@ -26,9 +19,11 @@ public interface Organization {
 
   UserRole getDefaultRole();
 
-  AvatarSetupDTO getAvatar();
+  AvatarType getAvatar();
 
   OffsetDateTime getCreatedAt();
+
+  OffsetDateTime getUpdatedAt();
 
   @JsonIgnore
   default OffsetDateTime getStartOfCurrentBillingPeriod() {

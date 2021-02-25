@@ -225,7 +225,7 @@ public class AuthorizationMfaChallengeResourceImplTest extends AbstractAuthApiQu
         .statusCode(422)
         .body(
             sameJson(
-                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"code\":\"Cannot deserialize value of type `java.lang.Integer` from String \\\"random\\\": not a valid Integer value\"}}}"));
+                "{\"error\":{\"statusCode\":422,\"reason\":\"Unprocessable Entity\",\"message\":\"Unprocessable Entity\",\"errors\":{\"code\":\"Cannot deserialize value of type `int` from String \\\"random\\\": not a valid `int` value\"}}}"));
 
     given()
         .when()

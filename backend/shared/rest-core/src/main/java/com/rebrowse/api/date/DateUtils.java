@@ -1,4 +1,4 @@
-package com.rebrowse.shared.date;
+package com.rebrowse.api.date;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;

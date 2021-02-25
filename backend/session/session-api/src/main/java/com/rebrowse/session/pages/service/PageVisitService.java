@@ -1,10 +1,8 @@
 package com.rebrowse.session.pages.service;
 
-import com.rebrowse.auth.organization.model.Organization;
-import com.rebrowse.auth.organization.model.dto.OrganizationDTO;
-import com.rebrowse.auth.organization.resource.v1.OrganizationResource;
-import com.rebrowse.auth.sso.bearer.AbstractBearerTokenSecurityRequirementAuthDynamicFeature;
 import com.rebrowse.location.model.Located;
+import com.rebrowse.model.organization.Organization;
+import com.rebrowse.net.RequestOptions;
 import com.rebrowse.session.location.service.LocationService;
 import com.rebrowse.session.model.PageVisitCreateParams;
 import com.rebrowse.session.model.PageVisitDTO;
@@ -15,20 +13,16 @@ import com.rebrowse.session.sessions.datasource.SessionDatasource;
 import com.rebrowse.session.useragent.service.UserAgentService;
 import com.rebrowse.shared.logging.LoggingConstants;
 import com.rebrowse.shared.rest.response.Boom;
-import com.rebrowse.shared.rest.response.DataResponse;
 import com.rebrowse.useragent.model.UserAgent;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.opentracing.Traced;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.MDC;
 
 @ApplicationScoped
@@ -40,10 +34,16 @@ public class PageVisitService {
   @Inject SessionDatasource sessionDatasource;
   @Inject PageVisitDatasource pageVisitDatasource;
   @Inject SessionCountDatasource sessionCountDatasource;
-  @Inject @RestClient OrganizationResource organizationResource;
 
   @ConfigProperty(name = "authorization.s2s.api.key")
   String s2sApiKey;
+
+  @ConfigProperty(name = "auth-api/mp-rest/url")
+  String authApiBaseUrl;
+
+  private RequestOptions authApiRequestOptions() {
+    return new RequestOptions.Builder().apiKey(s2sApiKey).apiBaseUrl(authApiBaseUrl).build();
+  }
 
   /**
    * Create a new page visit. This method is called as a first action of the tracking script to link
@@ -67,41 +67,26 @@ public class PageVisitService {
   public CompletionStage<PageVisitSessionLink> create(
       PageVisitCreateParams pageVisit, String userAgentString, String ipAddress) {
     UserAgent userAgent = userAgentService.parse(userAgentString);
+    String organizationId = pageVisit.getOrganizationId();
+    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
+
     if (userAgent.isRobot() || userAgent.isHacker()) {
       log.debug(
-          "[SESSION]: Create page visit attempt by robot ip={} userAgent={}",
+          "[SESSION]: Create page visit attempt by deviceClass={} ip={} userAgentString={}",
           ipAddress,
+          userAgent.getDeviceClass(),
           userAgentString);
       throw Boom.badRequest().message("You're a robot").exception();
     }
 
-    String organizationId = pageVisit.getOrganizationId();
     UUID pageVisitId = UUID.randomUUID();
     UUID deviceId = Optional.ofNullable(pageVisit.getDeviceId()).orElseGet(UUID::randomUUID);
     MDC.put(LoggingConstants.PAGE_VISIT_ID, pageVisitId.toString());
     MDC.put(LoggingConstants.DEVICE_ID, deviceId.toString());
-    MDC.put(LoggingConstants.ORGANIZATION_ID, organizationId);
 
-    // TODO: use SDK
-    String authorization =
-        AbstractBearerTokenSecurityRequirementAuthDynamicFeature.header(s2sApiKey);
-    return organizationResource
-        .retrieve(organizationId, authorization)
+    return Organization.retrieve(organizationId, authApiRequestOptions())
         .thenCompose(
-            response -> {
-              int status = response.getStatus();
-              DataResponse<OrganizationDTO> dataResponse =
-                  response.readEntity(new GenericType<>() {});
-
-              if (status != Response.Status.OK.getStatusCode()) {
-                log.error(
-                    "[SESSION]: Something went wrong while fetching organization organizationId={} response={}",
-                    organizationId,
-                    dataResponse);
-                throw dataResponse.getError().exception();
-              }
-
-              Organization organization = dataResponse.getData();
+            organization -> {
               if (!deviceId.equals(pageVisit.getDeviceId())) {
                 log.debug(
                     "[SESSION]: Unrecognized device -- starting a new session organizationId={}",
@@ -123,7 +108,8 @@ public class PageVisitService {
                         }
                         UUID sessionId = maybeSessionId.get();
                         MDC.put(LoggingConstants.SESSION_ID, sessionId.toString());
-                        log.info(
+
+                        log.debug(
                             "[SESSION]: Linking page visit to an existing session pageVisitId={} sessionId={} organizationId={}",
                             pageVisitId,
                             sessionId,

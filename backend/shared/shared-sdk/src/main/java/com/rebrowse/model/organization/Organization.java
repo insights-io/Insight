@@ -16,7 +16,7 @@ import lombok.Value;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-public class Organization {
+public class Organization implements IOrganization {
 
   String id;
   String name;

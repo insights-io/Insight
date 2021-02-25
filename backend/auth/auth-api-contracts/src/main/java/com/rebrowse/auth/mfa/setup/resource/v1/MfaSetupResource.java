@@ -36,7 +36,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public interface MfaSetupResource {
 
   String PATH = "/v1/mfa/setup";
-  String TAG = "Multi-factor authentication setup";
+  String TAG = "MFA Authorization setup";
 
   @GET
   @Tag(name = TAG)
