@@ -15,6 +15,7 @@ jobs:
   openapi-generate:
     name: Generate OpenAPI specifications
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         api:

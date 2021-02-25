@@ -12,7 +12,9 @@ env:
 
 jobs:
   find_gradle_jobs:
+    name: Find Gradle Jobs
     runs-on: ubuntu-latest
+
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -35,6 +37,8 @@ jobs:
   test:
     needs: find_gradle_jobs
     runs-on: ubuntu-latest
+    name: Run Backend Tests
+
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.find_gradle_jobs.outputs.matrix) }}
