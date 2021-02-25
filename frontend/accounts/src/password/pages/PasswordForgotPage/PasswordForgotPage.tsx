@@ -19,11 +19,13 @@ type FormData = {
   email: string;
 };
 
-export type Props = Partial<FormData>;
+export type Props = Partial<FormData> & {
+  redirect: string;
+};
 
 const TITLE = 'Forgot password?';
 
-export const PasswordForgotPage = (defaultValues: Props) => {
+export const PasswordForgotPage = ({ redirect, ...defaultValues }: Props) => {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register, handleSubmit, errors, watch, setError } = useForm<FormData>(
@@ -38,7 +40,7 @@ export const PasswordForgotPage = (defaultValues: Props) => {
     setIsSubmitting(true);
 
     client.password
-      .forgot(formData.email, INCLUDE_CREDENTIALS)
+      .forgot({ ...formData, redirect }, INCLUDE_CREDENTIALS)
       .then(() => setResetEmailSent(true))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse<

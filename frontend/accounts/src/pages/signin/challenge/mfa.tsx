@@ -7,14 +7,23 @@ import {
   SIGNIN_ROUTE,
 } from 'shared/constants/routes';
 import { client } from 'sdk';
-import type { MfaMethod } from '@rebrowse/types';
 import { SignInMfaChallengePage } from 'signin/pages/SignInMfaChallengePage';
+import { SignInMfaChallengeEnforcedPage } from 'signin/pages/SignInMfaChallengeEnforcedPage';
+import type { MfaMethod } from '@rebrowse/types';
 
-type Props = {
-  methods: MfaMethod[];
-};
+type Props = { methods: MfaMethod[] };
 
 export default function SignInMfaChallenge({ methods }: Props) {
+  if (methods.length === 0) {
+    return (
+      <SignInMfaChallengeEnforcedPage
+        // TODO: properly implement
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        user={{ phoneNumber: undefined } as any}
+      />
+    );
+  }
+
   return <SignInMfaChallengePage methods={methods} />;
 }
 
@@ -42,8 +51,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   }
 
   try {
-    const { data } = await client.accounts.retrieveMfaChallenge(mfaChallengeId);
-    return { props: data };
+    const {
+      data: { methods },
+    } = await client.accounts.retrieveMfaChallenge(mfaChallengeId);
+
+    return { props: { methods } };
   } catch (error) {
     const response = error.response as Response;
     if (response.status === 404) {
