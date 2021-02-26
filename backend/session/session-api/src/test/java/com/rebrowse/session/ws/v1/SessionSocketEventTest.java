@@ -25,7 +25,7 @@ public class SessionSocketEventTest extends AbstractSessionSocketTest {
 
   @Inject
   @Channel(EventsStream.UNLOAD)
-  Emitter<AbstractBrowserEvent> emitter;
+  Emitter<AbstractBrowserEvent<?>> emitter;
 
   @Inject ObjectMapper objectMapper;
 
@@ -37,7 +37,7 @@ public class SessionSocketEventTest extends AbstractSessionSocketTest {
 
       // unload event
       String unloadEventPayload = "{\"t\": 1234, \"e\": \"1\", \"a\": [\"http://localhost:8080\"]}";
-      AbstractBrowserEvent unloadEvent =
+      AbstractBrowserEvent<?> unloadEvent =
           objectMapper.readValue(unloadEventPayload, AbstractBrowserEvent.class);
       emitter.send(unloadEvent);
       assertEquals("PAGE END", MESSAGES.poll(10, TimeUnit.SECONDS));

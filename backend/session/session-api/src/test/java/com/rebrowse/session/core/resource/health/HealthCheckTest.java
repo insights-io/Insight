@@ -20,7 +20,7 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"SmallRye Reactive Messaging - liveness check\",\"status\":\"UP\",\"data\":{\"events\":\"[OK]\"}},{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"SmallRye Reactive Messaging - readiness check\",\"status\":\"UP\",\"data\":{\"events\":\"[OK]\"}},{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"SmallRye Reactive Messaging - liveness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\"}},{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"},{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"SmallRye Reactive Messaging - readiness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\"}},{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
   }
 
   @Test
@@ -32,7 +32,7 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"SmallRye Reactive Messaging - liveness check\",\"status\":\"UP\",\"data\":{\"events\":\"[OK]\"}},{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"SmallRye Reactive Messaging - liveness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\"}},{\"name\":\"LivenessHealthCheck\",\"status\":\"UP\"}]}"));
   }
 
   @Test
@@ -44,6 +44,6 @@ public class HealthCheckTest {
         .statusCode(200)
         .body(
             sameJson(
-                "{\"status\":\"UP\",\"checks\":[{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"SmallRye Reactive Messaging - readiness check\",\"status\":\"UP\",\"data\":{\"events\":\"[OK]\"}},{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
+                "{\"status\":\"UP\",\"checks\":[{\"name\":\"ReadinessHealthCheck\",\"status\":\"UP\"},{\"name\":\"SmallRye Reactive Messaging - readiness check\",\"status\":\"UP\",\"data\":{\"events-unload\":\"[OK]\"}},{\"name\":\"Reactive PostgreSQL connections health check\",\"status\":\"UP\",\"data\":{\"<default>\":\"up\"}}]}"));
   }
 }
