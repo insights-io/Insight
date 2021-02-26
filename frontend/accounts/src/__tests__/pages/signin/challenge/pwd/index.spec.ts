@@ -17,7 +17,7 @@ describe('/signin/challenge/pwd', () => {
   const email = 'john.doe@gmail.com';
   const password = 'password1234!';
 
-  test('As a user I can succesffuly complete pwd challenge & get challanged with MFA', async () => {
+  test('As a user I can succesffuly complete pwd challenge & get challenged with MFA', async () => {
     const {
       challengeId,
       completePwdChallengeStub,
