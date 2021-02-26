@@ -9,22 +9,16 @@ import {
 import { client } from 'sdk';
 import { SignInMfaChallengePage } from 'signin/pages/SignInMfaChallengePage';
 import { SignInMfaChallengeEnforcedPage } from 'signin/pages/SignInMfaChallengeEnforcedPage';
-import type { MfaMethod } from '@rebrowse/types';
+import { mapUser, MfaChallengeResponseDTO } from '@rebrowse/sdk';
 
-type Props = { methods: MfaMethod[] };
+type Props = MfaChallengeResponseDTO;
 
-export default function SignInMfaChallenge({ methods }: Props) {
+export default function SignInMfaChallenge({ methods, user: userDto }: Props) {
+  const user = mapUser(userDto);
   if (methods.length === 0) {
-    return (
-      <SignInMfaChallengeEnforcedPage
-        // TODO: properly implement
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        user={{ phoneNumber: undefined } as any}
-      />
-    );
+    return <SignInMfaChallengeEnforcedPage user={user} />;
   }
-
-  return <SignInMfaChallengePage methods={methods} />;
+  return <SignInMfaChallengePage methods={methods} user={user} />;
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -51,11 +45,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   }
 
   try {
-    const {
-      data: { methods },
-    } = await client.accounts.retrieveMfaChallenge(mfaChallengeId);
+    const { data } = await client.accounts.retrieveMfaChallenge(mfaChallengeId);
 
-    return { props: { methods } };
+    return { props: data };
   } catch (error) {
     const response = error.response as Response;
     if (response.status === 404) {

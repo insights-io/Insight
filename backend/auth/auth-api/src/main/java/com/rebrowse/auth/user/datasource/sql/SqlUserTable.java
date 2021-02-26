@@ -53,6 +53,15 @@ public final class SqlUserTable {
   public static final List<Field<?>> TABLE_FIELDS =
       FIELDS.stream().map(SqlUserTable::tableField).collect(Collectors.toList());
 
+  public static final List<Field<?>> WITH_MFA_METHODS_FIELDS =
+      Stream.concat(
+              TABLE_FIELDS.stream(),
+              Stream.of(
+                  SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.PARAMS),
+                  SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.METHOD),
+                  SqlMfaConfigurationTable.tableAliasField(SqlMfaConfigurationTable.CREATED_AT)))
+          .collect(Collectors.toUnmodifiableList());
+
   public static final List<Field<?>> WITH_LOGIN_INFORMATION_FIELDS =
       Stream.concat(
               TABLE_FIELDS.stream(),

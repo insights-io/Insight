@@ -3,3 +3,4 @@ export * from './setup';
 export * from './cookies';
 export * from './getPage';
 export * from './fixtures';
+export * from './input';

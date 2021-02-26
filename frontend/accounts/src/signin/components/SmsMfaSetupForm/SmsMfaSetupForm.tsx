@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import type { PhoneNumber, MfaSetupDTO } from '@rebrowse/types';
-import type { HttpResponse } from '@rebrowse/sdk';
+import type { PhoneNumber } from '@rebrowse/types';
+import type { AuthorizationSuccessResponse, HttpResponse } from '@rebrowse/sdk';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { PhoneNumberVerifyForm } from 'signin/components/PhoneNumberVerifyForm';
 import { PhoneNumberSetForm } from 'signin/components/PhoneNumberSetForm';
 
 type Props = {
   phoneNumber: PhoneNumber | undefined;
-  completeSetup: (code: number) => Promise<HttpResponse<MfaSetupDTO>>;
-  onCompleted?: (value: MfaSetupDTO) => void;
+  completeSetup: (
+    code: number
+  ) => Promise<HttpResponse<AuthorizationSuccessResponse>>;
+  onCompleted?: (value: AuthorizationSuccessResponse) => void;
 };
 
 export const SmsMfaSetupForm = ({
@@ -36,12 +38,12 @@ export const SmsMfaSetupForm = ({
 
   return (
     <PhoneNumberVerifyForm
+      sendCode={client.accounts.sendSmsCode}
       verify={(code) =>
         completeSetup(code)
           .then((httpResponse) => httpResponse.data)
           .then(onCompleted)
       }
-      sendCode={client.mfa.setup.sms.sendCode}
     />
   );
 };

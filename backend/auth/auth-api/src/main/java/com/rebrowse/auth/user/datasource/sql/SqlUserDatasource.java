@@ -48,6 +48,7 @@ import java.util.concurrent.CompletionStage;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.jooq.Field;
 import org.jooq.Query;
@@ -61,7 +62,7 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
   @Inject ObjectMapper objectMapper;
   @Inject SqlPool sqlPool;
 
-  public static AuthUser mapUser(Row row) {
+  public static UserDTO mapUser(Row row) {
     JsonObject phoneNumber = (JsonObject) row.getValue(PHONE_NUMBER.getName());
     return new UserDTO(
         row.getUUID(ID.getName()),
@@ -132,6 +133,23 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
   @Override
   public CompletionStage<Optional<AuthUser>> retrieve(String email, SqlTransaction transaction) {
     return transaction.execute(findUserByEmail(email)).thenApply(this::findOne);
+  }
+
+  @Override
+  public CompletionStage<Optional<Pair<UserDTO, List<MfaMethod>>>> retrieveUserWithMfaMethods(
+      UUID userId) {
+    Query query =
+        sqlPool
+            .getContext()
+            .select(SqlUserTable.WITH_MFA_METHODS_FIELDS)
+            .from(
+                SqlUserTable.TABLE
+                    .leftJoin(SqlMfaConfigurationTable.TABLE_ALIAS)
+                    .on(USER_TABLE_ID.eq(SqlMfaConfigurationTable.TABLE_ALIAS_USER_ID)))
+            .where(ID.eq(userId))
+            .limit(MfaMethod.NUM_METHODS);
+
+    return sqlPool.execute(query).thenApply(this::userWithMfaMethods);
   }
 
   private Query findUserByEmail(String email) {
@@ -208,6 +226,22 @@ public class SqlUserDatasource extends AbstractSqlDatasource<AuthUser> implement
             .limit(MfaMethod.NUM_METHODS);
 
     return sqlPool.execute(query).thenApply(this::userWithLoginInformationFromRowSet);
+  }
+
+  private Optional<Pair<UserDTO, List<MfaMethod>>> userWithMfaMethods(RowSet<Row> rows) {
+    if (!rows.iterator().hasNext()) {
+      return Optional.empty();
+    }
+    Row firstRow = rows.iterator().next();
+    UserDTO user = SqlUserDatasource.mapUser(firstRow);
+
+    List<MfaMethod> mfaMethods = new ArrayList<>(rows.size());
+    for (Row row : rows) {
+      Optional.ofNullable(row.getString(SqlMfaConfigurationTable.METHOD.getName()))
+          .ifPresent(method -> mfaMethods.add(MfaMethod.fromString(method)));
+    }
+
+    return Optional.of(Pair.of(user, mfaMethods));
   }
 
   private Optional<UserWithLoginInformation> userWithLoginInformationFromRowSet(RowSet<Row> rows) {

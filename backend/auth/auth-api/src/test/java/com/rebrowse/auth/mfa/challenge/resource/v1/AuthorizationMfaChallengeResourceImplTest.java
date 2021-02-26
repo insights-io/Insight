@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.zxing.NotFoundException;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeResponseDTO;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationMfaChallengeSession;
+import com.rebrowse.auth.accounts.model.challenge.MfaChallengeResponseDTO;
 import com.rebrowse.auth.mfa.MfaMethod;
 import com.rebrowse.auth.mfa.model.dto.MfaSetupDTO;
 import com.rebrowse.auth.mfa.setup.resource.v1.MfaSetupResource;
@@ -80,12 +81,19 @@ public class AuthorizationMfaChallengeResourceImplTest extends AbstractAuthApiQu
             .completePwdChallengeToMfa(email, password, pwdChallengeId)
             .getChallengeId();
 
-    given()
-        .when()
-        .get(AuthorizationMfaChallengeResource.PATH + "/" + mfaChallengeId)
-        .then()
-        .statusCode(200)
-        .body(sameJson("{\"data\":{\"methods\":[]}}"));
+    DataResponse<MfaChallengeResponseDTO> dataResponse =
+        given()
+            .when()
+            .get(AuthorizationMfaChallengeResource.PATH + "/" + mfaChallengeId)
+            .then()
+            .statusCode(200)
+            .extract()
+            .as(new TypeRef<>() {});
+
+    assertEquals(Collections.emptyList(), dataResponse.getData().getMethods());
+    assertEquals(
+        authorizationFlows().retrieveUserData(sessionId).getUser().getId(),
+        dataResponse.getData().getUser().getId());
   }
 
   @Test

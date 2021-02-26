@@ -21,9 +21,7 @@ export const PhoneNumberVerifyForm = <T,>({ verify, sendCode }: Props<T>) => {
     handleSubmit,
     apiError,
   } = useCodeInput({
-    submitAction: (paramCode) => {
-      return verify(paramCode);
-    },
+    submitAction: verify,
     handleError: (error, setError) => {
       setError(error.error);
     },
@@ -51,7 +49,7 @@ export const PhoneNumberVerifyForm = <T,>({ verify, sendCode }: Props<T>) => {
           isLoading={isSubmitting}
           $style={{ width: '100%' }}
         >
-          Submit
+          Continue
         </Button>
       </Block>
 

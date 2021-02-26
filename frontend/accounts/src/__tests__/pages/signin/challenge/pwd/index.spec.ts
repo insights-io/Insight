@@ -7,9 +7,11 @@ import { INCLUDE_CREDENTIALS } from 'sdk';
 
 import * as PasswordForgotPageTestSetup from '../../../password-forgot/PasswordForgotPageTestSetup';
 import * as SignInTestSetup from '../../SignInPageSetup';
-import * as SignInMfaChallengeTestSetup from '../mfa/SignInMfaChallengeTestSetup';
+import signInMfaChallengeTestPage from '../mfa/SignInMfaChallengeTestPage';
 
-import * as SignInPwdChallengeTestSetup from './SignInPwdChallengeTestSetup';
+import signInPwdChallengeTestSetup, {
+  SignInPwdChallangeTestPage,
+} from './SignInPwdChallengeTestPage';
 
 describe('/signin/challenge/pwd', () => {
   const email = 'john.doe@gmail.com';
@@ -20,16 +22,16 @@ describe('/signin/challenge/pwd', () => {
       challengeId,
       completePwdChallengeStub,
       retrieveMfaChallengeStub,
-    } = SignInPwdChallengeTestSetup.completePwdChellengeMfa();
+    } = SignInPwdChallangeTestPage.completePwdChallengeMfa();
 
     const {
       passwordInput,
       continueButton,
-    } = await SignInPwdChallengeTestSetup.setup({ email });
+    } = await signInPwdChallengeTestSetup.setup({ email });
 
     userEvent.type(passwordInput, password);
     userEvent.click(continueButton);
-    await SignInMfaChallengeTestSetup.findElements();
+    await signInMfaChallengeTestPage.findElements();
 
     sandbox.assert.calledWithExactly(
       completePwdChallengeStub,
@@ -42,11 +44,11 @@ describe('/signin/challenge/pwd', () => {
 
   test('As a user I can successfully complete pwd challenge & get redirected back to the app', async () => {
     const locationAssignStub = sandbox.stub(windowUtils, 'locationAssign');
-    const completePwdChallengeStub = SignInPwdChallengeTestSetup.completePwdChellengeSuccess();
+    const completePwdChallengeStub = SignInPwdChallangeTestPage.completePwdChallengeSuccess();
     const {
       passwordInput,
       continueButton,
-    } = await SignInPwdChallengeTestSetup.setup({ email });
+    } = await signInPwdChallengeTestSetup.setup({ email });
     userEvent.type(passwordInput, password);
     userEvent.click(continueButton);
     await waitFor(() => {
@@ -60,7 +62,7 @@ describe('/signin/challenge/pwd', () => {
   });
 
   test('As a user I can sign in with different account by navigating back to /signin page', async () => {
-    const { accountSelector } = await SignInPwdChallengeTestSetup.setup({
+    const { accountSelector } = await signInPwdChallengeTestSetup.setup({
       email,
     });
     userEvent.click(accountSelector);
@@ -68,7 +70,7 @@ describe('/signin/challenge/pwd', () => {
   });
 
   test('As a user I should be able to navigate back and forth to password forgot page', async () => {
-    const { forgotPasswordLink } = await SignInPwdChallengeTestSetup.setup({
+    const { forgotPasswordLink } = await signInPwdChallengeTestSetup.setup({
       email,
     });
     userEvent.click(forgotPasswordLink);
@@ -78,7 +80,7 @@ describe('/signin/challenge/pwd', () => {
     } = await PasswordForgotPageTestSetup.findElements();
     expect(emailInput).toHaveValue(email);
     userEvent.click(rememberPasswordLink);
-    await SignInPwdChallengeTestSetup.findElements(email);
+    await signInPwdChallengeTestSetup.findElements(email);
   });
 
   describe('As a user I want the page to be accessible', () => {
@@ -94,7 +96,7 @@ describe('/signin/challenge/pwd', () => {
         signInWithMicrosoft,
         accountSelector,
         forgotPasswordLink,
-      } = await SignInPwdChallengeTestSetup.setup({ email });
+      } = await signInPwdChallengeTestSetup.setup({ email });
 
       expect(document.activeElement).toEqual(passwordInput);
       userEvent.tab();

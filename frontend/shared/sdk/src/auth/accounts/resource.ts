@@ -1,4 +1,4 @@
-import type { CodeValidityDTO } from '@rebrowse/types';
+import type { CodeValidityDTO, MfaTotpSetupStartDTO } from '@rebrowse/types';
 
 import { querystring } from '../../utils';
 import type { ExtendedRequestOptions } from '../../types';
@@ -90,17 +90,44 @@ export const accountsResource = (
       );
     },
     completeMfaChallenge: (
-      { code }: CompleteMfaAuthorizationChallengeParams,
+      { code, method }: CompleteMfaAuthorizationChallengeParams,
       {
         baseUrl = authApiBaseUrl,
         ...requestOptions
       }: ExtendedRequestOptions = {}
     ) => {
       return jsonDataResponse<CompleteMfaAuthorizationChallengeResponse>(
-        client.post(`${authorizationChallengeBaseUrl(baseUrl)}/mfa`, {
+        client.post(`${authorizationChallengeBaseUrl(baseUrl)}/mfa/${method}`, {
           json: { code },
           ...requestOptions,
         })
+      );
+    },
+    completeEnforcedMfaChallenge: (
+      { code, method }: CompleteMfaAuthorizationChallengeParams,
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
+    ) => {
+      return jsonDataResponse<CompleteMfaAuthorizationChallengeResponse>(
+        client.post(
+          `${authorizationChallengeBaseUrl(
+            baseUrl
+          )}/mfa/${method}/complete-enforced`,
+          { json: { code }, ...requestOptions }
+        )
+      );
+    },
+    startTotpSetup: ({
+      baseUrl = authApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
+      return jsonDataResponse<MfaTotpSetupStartDTO>(
+        client.post(
+          `${authorizationChallengeBaseUrl(baseUrl)}/mfa/totp/setup`,
+          requestOptions
+        )
       );
     },
     sendSmsCode: ({

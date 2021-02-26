@@ -4,7 +4,7 @@ import { seoTitle } from 'shared/utils/seo';
 import { AccountsLayout } from 'shared/components/AccountsLayout';
 import { Button, useCodeInput } from '@rebrowse/elements';
 import { Tabs, Tab, FILL } from 'baseui/tabs-motion';
-import { MfaMethod } from '@rebrowse/types';
+import type { MfaMethod, User } from '@rebrowse/types';
 import type { MfaInputProps } from 'signin/types';
 import dynamic from 'next/dynamic';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
@@ -34,10 +34,11 @@ const MFA_METHOD_MAPPINGS: Record<
 };
 
 type Props = {
+  user: User;
   methods: MfaMethod[];
 };
 
-export const SignInMfaChallengePage = ({ methods }: Props) => {
+export const SignInMfaChallengePage = ({ methods, user: _user }: Props) => {
   const [activeMethod, setActiveMethod] = useState(methods[0]);
 
   const {
@@ -51,7 +52,10 @@ export const SignInMfaChallengePage = ({ methods }: Props) => {
   } = useCodeInput({
     submitAction: (data) => {
       return client.accounts
-        .completeMfaChallenge({ code: data }, INCLUDE_CREDENTIALS)
+        .completeMfaChallenge(
+          { code: data, method: activeMethod },
+          INCLUDE_CREDENTIALS
+        )
         .then((response) => locationAssign(response.data.location));
     },
     handleError: (error, setError) => {

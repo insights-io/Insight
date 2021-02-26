@@ -18,12 +18,16 @@ export const REBROWSE_ADMIN_DTO: UserDTO = {
   phoneNumberVerified: true,
 };
 
-export const REBROWSE_ADMIN_NO_PHONE_NUMBER: User = mapUser({
+export const REBROWSE_ADMIN_NO_PHONE_NUMBER_DTO: UserDTO = {
   ...REBROWSE_ADMIN_DTO,
   id: '7c071176-d186-40ac-aaf8-ac9779ab047c',
   phoneNumber: undefined,
   phoneNumberVerified: false,
-});
+};
+
+export const REBROWSE_ADMIN_NO_PHONE_NUMBER: User = mapUser(
+  REBROWSE_ADMIN_NO_PHONE_NUMBER_DTO
+);
 
 export const NAMELESS_ADMIN_DTO: UserDTO = {
   ...REBROWSE_ADMIN_DTO,

@@ -5,7 +5,6 @@ import com.rebrowse.auth.accounts.datasource.challenge.AuthorizationChallengeDat
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationChallenge;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationChallengeType;
 import com.rebrowse.auth.accounts.model.challenge.AuthorizationPwdChallengeSession;
-import com.rebrowse.auth.user.datasource.UserDatasource;
 import com.rebrowse.shared.hazelcast.cdi.HazelcastProvider;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -19,7 +18,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class HazelcastAuthorizationChallengeDatasource implements AuthorizationChallengeDatasource {
 
   @Inject HazelcastProvider hazelcastProvider;
-  @Inject UserDatasource userDatasource;
 
   @ConfigProperty(name = "hazelcast.auth.accounts.challenge.datasource.map")
   String mapName;

@@ -1,4 +1,4 @@
-import { MfaMethod } from '@rebrowse/types';
+import type { MfaMethod, UserDTO } from '@rebrowse/types';
 
 export type ChooseAccountParams = {
   email: string;
@@ -26,6 +26,7 @@ export type CompletePwdAuthorizationChallengeParams = {
 };
 
 export type CompleteMfaAuthorizationChallengeParams = {
+  method: MfaMethod;
   code: number;
 };
 
@@ -54,4 +55,5 @@ export type PwdChallengeResponseDTO = {
 
 export type MfaChallengeResponseDTO = {
   methods: MfaMethod[];
+  user: UserDTO;
 };

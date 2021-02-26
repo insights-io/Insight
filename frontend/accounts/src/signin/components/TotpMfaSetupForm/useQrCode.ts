@@ -7,8 +7,8 @@ export const useQrImage = () => {
   const [qrImageError, setQrImageError] = useState<APIError>();
 
   useEffect(() => {
-    client.mfa.setup.totp
-      .start(INCLUDE_CREDENTIALS)
+    client.accounts
+      .startTotpSetup(INCLUDE_CREDENTIALS)
       .then((dataResponse) => setQrImage(dataResponse.data.qrImage))
       .catch(async (error) => {
         const errorDTO: APIErrorDataResponse = await error.response.json();
