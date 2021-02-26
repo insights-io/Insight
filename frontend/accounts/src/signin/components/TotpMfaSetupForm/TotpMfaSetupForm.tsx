@@ -1,7 +1,6 @@
 import React from 'react';
 import { Block } from 'baseui/block';
 import { CodeInput, Button, Flex, useCodeInput } from '@rebrowse/elements';
-import type { MfaSetupDTO } from '@rebrowse/types';
 import { FormError } from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
 import type { AuthorizationSuccessResponse, HttpResponse } from '@rebrowse/sdk';
