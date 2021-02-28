@@ -1,20 +1,22 @@
 import React from 'react';
 import { Block } from 'baseui/block';
 import { CodeInput, Button, Flex, useCodeInput } from '@rebrowse/elements';
-import type { MfaSetupDTO } from '@rebrowse/types';
 import { FormError } from 'shared/components/FormError';
 import { Skeleton } from 'baseui/skeleton';
-import type { HttpResponse } from '@rebrowse/sdk';
+import type { AuthorizationSuccessResponse, HttpResponse } from '@rebrowse/sdk';
 
 import { useQrImage } from './useQrCode';
 
 export type Props = {
-  completeSetup: (code: number) => Promise<HttpResponse<MfaSetupDTO>>;
-  onCompleted?: (value: MfaSetupDTO) => void;
+  completeSetup: (
+    code: number
+  ) => Promise<HttpResponse<AuthorizationSuccessResponse>>;
+  onCompleted?: (value: AuthorizationSuccessResponse) => void;
 };
 
 export const TotpMfaSetupForm = ({ onCompleted, completeSetup }: Props) => {
   const { qrImageError, qrImage } = useQrImage();
+
   const {
     handleChange,
     handleSubmit,

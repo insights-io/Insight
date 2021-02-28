@@ -3,7 +3,11 @@ import type { ChangePasswordDTO } from '@rebrowse/types';
 import type { ExtendedRequestOptions } from '../../types';
 import { HttpClient, httpResponse, jsonDataResponse } from '../../http';
 
-import type { PasswordResetParams, PasswordResetResponse } from './types';
+import type {
+  PasswordResetParams,
+  PasswordResetResponse,
+  PasswordForgotParams,
+} from './types';
 
 export const passwordResource = (
   client: HttpClient,
@@ -12,9 +16,10 @@ export const passwordResource = (
   const resourceBaseURL = (apiBaseURL: string) => {
     return `${apiBaseURL}/v1/password`;
   };
+
   return {
     forgot: (
-      email: string,
+      json: PasswordForgotParams,
       {
         baseUrl = authApiBaseUrl,
         ...requestOptions
@@ -22,7 +27,7 @@ export const passwordResource = (
     ) => {
       return client
         .post(`${resourceBaseURL(baseUrl)}/forgot`, {
-          json: { email },
+          json,
           ...requestOptions,
         })
         .then(httpResponse);

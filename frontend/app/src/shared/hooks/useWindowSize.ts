@@ -1,7 +1,6 @@
 import { useState, useCallback, useLayoutEffect } from 'react';
 
 const useWindowSize = () => {
-  // eslint-disable-next-line lodash/prefer-lodash-typecheck
   const isClient = typeof window === 'object';
 
   const getSize = useCallback(() => {

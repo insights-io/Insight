@@ -63,9 +63,12 @@ public class MfaAuthorizationChallengeService {
                 return CompletableFuture.completedStage(Optional.empty());
               }
               UUID userId = UUID.fromString(maybeChallenge.get().getValue());
-              return userMfaDatasource
-                  .listMethods(userId)
-                  .thenApply(methods -> Optional.of(new MfaChallengeResponseDTO(methods)));
+              return userDatasource
+                  .retrieveUserWithMfaMethods(userId)
+                  .thenApply(
+                      maybeData ->
+                          maybeData.map(
+                              v -> new MfaChallengeResponseDTO(v.getLeft(), v.getRight())));
             });
   }
 

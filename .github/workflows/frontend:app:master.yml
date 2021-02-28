@@ -18,7 +18,7 @@ env:
 
 jobs:
   deploy_storybook:
-    name: Deploy Storybook
+    name: Deploy App Storybook
     runs-on: ubuntu-latest
 
     steps:

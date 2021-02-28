@@ -4,7 +4,6 @@ import com.rebrowse.auth.mfa.MfaMethod;
 import com.rebrowse.auth.user.model.dto.PhoneNumberDTO;
 import com.rebrowse.auth.user.model.dto.UserDTO;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.Value;
@@ -35,20 +34,5 @@ public class UserWithLoginInformation {
         updatedAt,
         (PhoneNumberDTO) phoneNumber,
         phoneNumberVerified);
-  }
-
-  public static UserWithLoginInformation fresh(AuthUser user) {
-    return new UserWithLoginInformation(
-        user.getId(),
-        user.getEmail(),
-        user.getFullName(),
-        user.getRole(),
-        user.getOrganizationId(),
-        user.getCreatedAt(),
-        user.getUpdatedAt(),
-        user.getPhoneNumber(),
-        user.isPhoneNumberVerified(),
-        null,
-        Collections.emptyList());
   }
 }

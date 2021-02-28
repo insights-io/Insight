@@ -7,3 +7,7 @@ export const clearAllCookies = () => {
     });
   }
 };
+
+export function deleteCookie(name: string) {
+  document.cookie = `${name}=;expiresAt=${new Date().toUTCString()};path=/`;
+}

@@ -1,4 +1,4 @@
-import { MfaMethod } from '@rebrowse/types';
+import type { MfaMethod, UserDTO } from '@rebrowse/types';
 
 export type ChooseAccountParams = {
   email: string;
@@ -25,6 +25,11 @@ export type CompletePwdAuthorizationChallengeParams = {
   password: string;
 };
 
+export type CompleteMfaAuthorizationChallengeParams = {
+  method: MfaMethod;
+  code: number;
+};
+
 export type AuthorizationSuccessResponse = LocationActionResponse<'SUCCESS'>;
 
 export type PwdAuthorizationMfaChallengeResponse = {
@@ -37,6 +42,8 @@ export type CompletePwdAuthorizationChallengeResponse =
   | PwdAuthorizationMfaChallengeResponse
   | AuthorizationSuccessResponse;
 
+export type CompleteMfaAuthorizationChallengeResponse = AuthorizationSuccessResponse;
+
 export type LocationResponseDTO = {
   location: string;
 };
@@ -48,4 +55,5 @@ export type PwdChallengeResponseDTO = {
 
 export type MfaChallengeResponseDTO = {
   methods: MfaMethod[];
+  user: UserDTO;
 };

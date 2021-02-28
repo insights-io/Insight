@@ -8,7 +8,9 @@ import { appBaseUrl } from 'shared/config';
 import * as windowUtils from 'shared/utils/window';
 import { MfaMethod } from '@rebrowse/types';
 
-import * as SignInMfaChallengeTestSetup from '../signin/challenge/mfa/SignInMfaChallengeTestSetup';
+import signInMfaChallengeTestPage, {
+  SignInMfaChallengeTestPage,
+} from '../signin/challenge/mfa/SignInMfaChallengeTestPage';
 import * as SignInPageSetup from '../signin/SignInPageSetup';
 
 import * as PasswordResetPageTestSetup from './PasswordResetPageTestSetup';
@@ -51,8 +53,8 @@ describe('/password-reset', () => {
         const passwordResetStub = PasswordResetPageTestSetup.passwordResetMfaFlow(
           { methods, challengeId }
         );
-        const retrieveMfaChallengeStub = SignInMfaChallengeTestSetup.retrieveMfaChallengeStub(
-          methods
+        const retrieveMfaChallengeStub = SignInMfaChallengeTestPage.retrieveMfaChallengeStub(
+          { methods }
         );
 
         const {
@@ -64,7 +66,7 @@ describe('/password-reset', () => {
         userEvent.type(passwordInput, password);
         userEvent.click(continueButton);
 
-        await SignInMfaChallengeTestSetup.findElements();
+        await signInMfaChallengeTestPage.findElements();
         sandbox.assert.calledWithExactly(
           passwordResetStub,
           { token, password },

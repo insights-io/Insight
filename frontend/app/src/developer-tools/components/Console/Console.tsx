@@ -1,4 +1,3 @@
-/* eslint-disable lodash/prefer-lodash-typecheck */
 import React, { useState, useMemo } from 'react';
 import { useStyletron } from 'baseui';
 import { Block } from 'baseui/block';

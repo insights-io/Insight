@@ -2,6 +2,7 @@ import { sandbox } from '@rebrowse/testing';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { INCLUDE_CREDENTIALS } from 'sdk';
+import { appBaseUrl } from 'shared/config';
 import type { Awaited } from 'shared/utils/types';
 
 import * as PasswordForgotPageTestSetup from './PasswordForgotPageTestSetup';
@@ -55,7 +56,7 @@ describe('/password-forgot', () => {
 
       sandbox.assert.calledWithExactly(
         passwordForgotStub,
-        email,
+        { email, redirect: appBaseUrl },
         INCLUDE_CREDENTIALS
       );
     };

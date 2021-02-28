@@ -19,7 +19,7 @@ public class UserAgentServiceTest {
   public void user_agent_service__should_correctly_pause_ua__when_amazon_kindle_4() {
     assertEquals(
         new UserAgent(
-            "Linux Desktop", "Unknown", DeviceClass.DESKTOP, "Linux", "ARMv7l", "Kindle", "3.0"),
+            "Amazon Kindle", "Amazon", DeviceClass.E_READER, "FireOS", "??", "Kindle", "3.0"),
         userAgentService.parse(
             "Mozilla/5.0 (X11; U; Linux armv7l like Android; en-us) AppleWebKit/531.2+ (KHTML, like Gecko) Version/5.0 Safari/533.2+ Kindle/3.0+"));
   }

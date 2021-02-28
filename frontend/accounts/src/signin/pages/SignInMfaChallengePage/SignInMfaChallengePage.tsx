@@ -4,11 +4,12 @@ import { seoTitle } from 'shared/utils/seo';
 import { AccountsLayout } from 'shared/components/AccountsLayout';
 import { Button, useCodeInput } from '@rebrowse/elements';
 import { Tabs, Tab, FILL } from 'baseui/tabs-motion';
-import { MfaMethod } from '@rebrowse/types';
+import type { MfaMethod, User } from '@rebrowse/types';
 import type { MfaInputProps } from 'signin/types';
 import dynamic from 'next/dynamic';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { FormError } from 'shared/components/FormError';
+import { locationAssign } from 'shared/utils/window';
 
 const TotpMfaInput = dynamic<MfaInputProps>(() =>
   import('signin/components/TotpMfaInput').then((module) => module.TotpMfaInput)
@@ -33,10 +34,11 @@ const MFA_METHOD_MAPPINGS: Record<
 };
 
 type Props = {
+  user: User;
   methods: MfaMethod[];
 };
 
-export const SignInMfaChallengePage = ({ methods }: Props) => {
+export const SignInMfaChallengePage = ({ methods, user: _user }: Props) => {
   const [activeMethod, setActiveMethod] = useState(methods[0]);
 
   const {
@@ -49,14 +51,15 @@ export const SignInMfaChallengePage = ({ methods }: Props) => {
     apiError,
   } = useCodeInput({
     submitAction: (data) => {
-      return client.mfa.challenge
-        .complete(activeMethod, data, INCLUDE_CREDENTIALS)
-        .then((_) => {
-          console.log('TODO');
-        });
+      return client.accounts
+        .completeMfaChallenge(
+          { code: data, method: activeMethod },
+          INCLUDE_CREDENTIALS
+        )
+        .then((response) => locationAssign(response.data.location));
     },
     handleError: (error, setError) => {
-      console.log(error, setError);
+      setError(error.error);
     },
   });
 
@@ -107,7 +110,7 @@ export const SignInMfaChallengePage = ({ methods }: Props) => {
                       error={codeError}
                       handleChange={handleChange}
                       code={code}
-                      sendCode={client.mfa.challenge.sendSmsCode}
+                      sendCode={client.accounts.sendSmsCode}
                     />
                   </Tab>
                 );

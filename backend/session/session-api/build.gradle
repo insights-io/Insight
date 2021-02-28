@@ -6,7 +6,7 @@ dependencies {
     implementation "io.quarkus:quarkus-undertow-websockets"
     implementation "io.quarkus:quarkus-reactive-pg-client"
     implementation "io.quarkus:quarkus-rest-client-jackson"
-    implementation "nl.basjes.parse.useragent:yauaa:5.21"
+    implementation "nl.basjes.parse.useragent:yauaa:5.22"
     implementation project(":events:events-model")
     implementation project(":auth:auth-sidecar")
     implementation project(":auth:auth-api-contracts")
@@ -14,6 +14,7 @@ dependencies {
     implementation project(":session:session-api-contracts")
     implementation project(":shared:shared-elasticsearch")
     implementation project(":shared:shared-sql")
+    implementation project(":shared:shared-sdk")
 
     testImplementation project(':shared:testing-utils')
     testImplementation project(':shared:testing-data')

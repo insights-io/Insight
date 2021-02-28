@@ -8,6 +8,11 @@ export type PasswordResetParams = {
   password: string;
 };
 
+export type PasswordForgotParams = {
+  email: string;
+  redirect: string;
+};
+
 export type PasswordResetResponse =
   | AuthorizationSuccessResponse
   | PwdAuthorizationMfaChallengeResponse;

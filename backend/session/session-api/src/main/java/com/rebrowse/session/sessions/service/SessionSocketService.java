@@ -2,6 +2,7 @@ package com.rebrowse.session.sessions.service;
 
 import com.rebrowse.events.model.incoming.BrowserUnloadEvent;
 import com.rebrowse.events.stream.EventsStream;
+import io.smallrye.reactive.messaging.annotations.Merge;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,6 +57,7 @@ public class SessionSocketService {
   }
 
   @Incoming(EventsStream.UNLOAD)
+  @Merge
   public void process(BrowserUnloadEvent event) {
     log.info("Notifying sockets about page end {}", event);
     sessions.values().forEach(session -> sendText(session, "PAGE END"));

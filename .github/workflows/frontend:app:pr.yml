@@ -16,7 +16,7 @@ env:
 
 jobs:
   unit_tests:
-    name: Unit test
+    name: Run App Unit Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -46,7 +46,7 @@ jobs:
           flags: frontend
 
   deploy_storybook:
-    name: Deploy Storybook
+    name: Deploy App Storybook
     runs-on: ubuntu-latest
 
     steps:

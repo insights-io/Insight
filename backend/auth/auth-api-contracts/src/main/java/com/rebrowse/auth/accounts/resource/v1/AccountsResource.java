@@ -1,5 +1,9 @@
 package com.rebrowse.auth.accounts.resource.v1;
 
+import com.rebrowse.api.RebrowseApiDataResponse;
+import com.rebrowse.auth.accounts.model.ChooseAccountSsoRedirectResponseDTO;
+import com.rebrowse.auth.accounts.model.challenge.ChooseAccountPwdChallengeResponseDTO;
+import com.rebrowse.shared.rest.response.ErrorDataResponse;
 import java.net.URL;
 import java.util.concurrent.CompletionStage;
 import javax.validation.constraints.Email;
@@ -14,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -34,14 +39,30 @@ public interface AccountsResource {
   @APIResponses(
       value = {
         @APIResponse(
-            responseCode = "204",
-            description = "Success",
+            responseCode = "200",
+            name = "Success",
+            content =
+                @Content(
+                    schema =
+                        @Schema(
+                            oneOf = {
+                              ChooseAccountPwdChallengeDataResponse.class,
+                              ChooseAccountSsoRedirectDataResponse.class
+                            })),
             headers = {
               @Header(
                   name = "Set-Cookie",
-                  description = "Set AuthorizationPwdChallengeSessionId cookie",
-                  schema = @Schema(implementation = String.class))
+                  description = "Set challenge/SSO cookie",
+                  schema = @Schema(implementation = String.class)),
             }),
+        @APIResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ErrorDataResponse.class),
+                    mediaType = MediaType.APPLICATION_JSON,
+                    example = ErrorDataResponse.SERVER_ERROR_EXAMPLE)),
       })
   CompletionStage<Response> choose(
       @Parameter(
@@ -62,4 +83,10 @@ public interface AccountsResource {
           @QueryParam("redirect")
           @NotNull(message = "Required")
           URL redirect);
+
+  class ChooseAccountPwdChallengeDataResponse
+      extends RebrowseApiDataResponse<ChooseAccountPwdChallengeResponseDTO> {}
+
+  class ChooseAccountSsoRedirectDataResponse
+      extends RebrowseApiDataResponse<ChooseAccountSsoRedirectResponseDTO> {}
 }

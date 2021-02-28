@@ -4,7 +4,6 @@ module.exports = {
   reportUnusedDisableDirectives: true,
   plugins: [
     'react',
-    'prettier',
     'jest',
     'react-hooks',
     'import',
@@ -16,8 +15,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'airbnb',
-    'prettier',
-    'prettier/react',
+    'plugin:prettier/recommended',
     'plugin:jest/recommended',
     'plugin:lodash/recommended',
     'plugin:testing-library/react',
@@ -31,7 +29,6 @@ module.exports = {
     es6: true,
   },
   rules: {
-    'arrow-body-style': ['off'],
     'no-plusplus': ['off'],
     'react/prop-types': ['off'],
     'react/jsx-props-no-spreading': ['off'],

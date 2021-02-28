@@ -7,6 +7,7 @@ import { Tabs, Tab, FILL } from 'baseui/tabs-motion';
 import { TotpMfaSetupForm } from 'signin/components/TotpMfaSetupForm';
 import { client, INCLUDE_CREDENTIALS } from 'sdk';
 import { SmsMfaSetupForm } from 'signin/components/SmsMfaSetupForm';
+import { locationAssign } from 'shared/utils/window';
 
 type Props = {
   user: User;
@@ -16,11 +17,17 @@ export const SignInMfaChallengeEnforcedPage = ({ user }: Props) => {
   const [activeMethod, setActiveMethod] = useState<MfaMethod>('totp');
 
   const completeSmsSetup = useCallback((code: number) => {
-    return client.mfa.setup.completeEnforced('sms', code, INCLUDE_CREDENTIALS);
+    return client.accounts.completeEnforcedMfaChallenge(
+      { code, method: 'sms' },
+      INCLUDE_CREDENTIALS
+    );
   }, []);
 
   const completeTotpSetup = useCallback((code: number) => {
-    return client.mfa.setup.completeEnforced('totp', code, INCLUDE_CREDENTIALS);
+    return client.accounts.completeEnforcedMfaChallenge(
+      { code, method: 'totp' },
+      INCLUDE_CREDENTIALS
+    );
   }, []);
 
   return (
@@ -54,7 +61,10 @@ export const SignInMfaChallengeEnforcedPage = ({ user }: Props) => {
                 },
               }}
             >
-              <TotpMfaSetupForm completeSetup={completeTotpSetup} />
+              <TotpMfaSetupForm
+                completeSetup={completeTotpSetup}
+                onCompleted={(d) => locationAssign(d.location)}
+              />
             </Tab>
 
             <Tab
@@ -70,6 +80,7 @@ export const SignInMfaChallengeEnforcedPage = ({ user }: Props) => {
               <SmsMfaSetupForm
                 phoneNumber={user.phoneNumber}
                 completeSetup={completeSmsSetup}
+                onCompleted={(d) => locationAssign(d.location)}
               />
             </Tab>
           </Tabs>

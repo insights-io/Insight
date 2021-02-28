@@ -7,15 +7,18 @@ import {
   SIGNIN_ROUTE,
 } from 'shared/constants/routes';
 import { client } from 'sdk';
-import type { MfaMethod } from '@rebrowse/types';
 import { SignInMfaChallengePage } from 'signin/pages/SignInMfaChallengePage';
+import { SignInMfaChallengeEnforcedPage } from 'signin/pages/SignInMfaChallengeEnforcedPage';
+import { mapUser, MfaChallengeResponseDTO } from '@rebrowse/sdk';
 
-type Props = {
-  methods: MfaMethod[];
-};
+type Props = MfaChallengeResponseDTO;
 
-export default function SignInMfaChallenge({ methods }: Props) {
-  return <SignInMfaChallengePage methods={methods} />;
+export default function SignInMfaChallenge({ methods, user: userDto }: Props) {
+  const user = mapUser(userDto);
+  if (methods.length === 0) {
+    return <SignInMfaChallengeEnforcedPage user={user} />;
+  }
+  return <SignInMfaChallengePage methods={methods} user={user} />;
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -43,6 +46,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   try {
     const { data } = await client.accounts.retrieveMfaChallenge(mfaChallengeId);
+
     return { props: data };
   } catch (error) {
     const response = error.response as Response;

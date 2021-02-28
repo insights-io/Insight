@@ -1,3 +1,5 @@
+import type { CodeValidityDTO, MfaTotpSetupStartDTO } from '@rebrowse/types';
+
 import { querystring } from '../../utils';
 import type { ExtendedRequestOptions } from '../../types';
 import { HttpClient, jsonDataResponse } from '../../http';
@@ -9,6 +11,8 @@ import type {
   PwdChallengeResponseDTO,
   MfaChallengeResponseDTO,
   ChooseAccountResponse,
+  CompleteMfaAuthorizationChallengeParams,
+  CompleteMfaAuthorizationChallengeResponse,
 } from './types';
 
 export const accountsResource = (
@@ -83,6 +87,58 @@ export const accountsResource = (
           body,
           ...requestOptions,
         })
+      );
+    },
+    completeMfaChallenge: (
+      { code, method }: CompleteMfaAuthorizationChallengeParams,
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
+    ) => {
+      return jsonDataResponse<CompleteMfaAuthorizationChallengeResponse>(
+        client.post(`${authorizationChallengeBaseUrl(baseUrl)}/mfa/${method}`, {
+          json: { code },
+          ...requestOptions,
+        })
+      );
+    },
+    completeEnforcedMfaChallenge: (
+      { code, method }: CompleteMfaAuthorizationChallengeParams,
+      {
+        baseUrl = authApiBaseUrl,
+        ...requestOptions
+      }: ExtendedRequestOptions = {}
+    ) => {
+      return jsonDataResponse<CompleteMfaAuthorizationChallengeResponse>(
+        client.post(
+          `${authorizationChallengeBaseUrl(
+            baseUrl
+          )}/mfa/${method}/complete-enforced`,
+          { json: { code }, ...requestOptions }
+        )
+      );
+    },
+    startTotpSetup: ({
+      baseUrl = authApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
+      return jsonDataResponse<MfaTotpSetupStartDTO>(
+        client.post(
+          `${authorizationChallengeBaseUrl(baseUrl)}/mfa/totp/setup`,
+          requestOptions
+        )
+      );
+    },
+    sendSmsCode: ({
+      baseUrl = authApiBaseUrl,
+      ...requestOptions
+    }: ExtendedRequestOptions = {}) => {
+      return jsonDataResponse<CodeValidityDTO>(
+        client.post(
+          `${authorizationChallengeBaseUrl(baseUrl)}/mfa/sms/send_code`,
+          requestOptions
+        )
       );
     },
   };

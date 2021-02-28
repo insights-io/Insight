@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { waitFor } from '@testing-library/react';
 import * as windowUtils from 'shared/utils/window';
 
-import * as SignInPwdChallengeTestSetup from './challenge/pwd/SignInPwdChallengeTestSetup';
+import signInPwdChallengeTestSetup from './challenge/pwd/SignInPwdChallengeTestPage';
 import * as SignInPageSetup from './SignInPageSetup';
 
 const email = 'john.doe@gmail.com';
@@ -25,7 +25,7 @@ describe('/signin', () => {
 
     userEvent.type(emailInput, email);
     userEvent.click(continueButton);
-    await SignInPwdChallengeTestSetup.findElements(email);
+    await signInPwdChallengeTestSetup.findElements(email);
     sandbox.assert.calledWithExactly(retrieveChallengeStub, challengeId);
     sandbox.assert.calledWithExactly(
       chooseAccountStub,
