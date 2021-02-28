@@ -23,6 +23,10 @@
       "packagePatterns": ["^@visx/"]
     },
     {
+      "groupName": "monorepo:testcontainers",
+      "packagePatterns": ["^org.testcontainers"]
+    },
+    {
       "groupName": "monorepo:eslint",
       "packageNames": [
         "@typescript-eslint/eslint-plugin",
