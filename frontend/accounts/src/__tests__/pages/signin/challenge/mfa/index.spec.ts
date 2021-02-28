@@ -256,7 +256,7 @@ describe('/signin/challenge/mfa', () => {
 
       sandbox.assert.calledWithExactly(
         updatePhoneNumberStub,
-        { countryCode: '+1', digits },
+        { countryCode: '+386', digits },
         INCLUDE_CREDENTIALS
       );
 
