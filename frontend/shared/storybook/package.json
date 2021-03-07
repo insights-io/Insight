@@ -41,6 +41,6 @@
   },
   "peerDependencies": {
     "react": "17.0.1",
-    "sinon": "9.2.3"
+    "sinon": "9.2.4"
   }
 }
