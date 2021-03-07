@@ -29,7 +29,7 @@
     "@testing-library/testcafe": "4.3.1",
     "@testing-library/user-event": "12.7.4",
     "@types/jest": "26.0.20",
-    "@types/sinon": "9.0.10",
+    "@types/sinon": "9.0.11",
     "@types/fs-extra": "9.0.7",
     "@types/rollup-plugin-sourcemaps": "0.4.2",
     "@types/rollup-plugin-peer-deps-external": "2.2.0",
