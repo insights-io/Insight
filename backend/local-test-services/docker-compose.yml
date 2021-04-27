@@ -219,7 +219,7 @@ services:
       ES_JAVA_OPTS: '-Xms512m -Xmx512m'
       discovery.type: single-node
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.11.1
+    image: docker.elastic.co/kibana/kibana:7.12.1
     ports:
       - '5601:5601'
     depends_on:
