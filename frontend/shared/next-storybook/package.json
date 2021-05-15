@@ -31,7 +31,7 @@
     "@storybook/addons": "6.1.20",
     "@storybook/addon-actions": "6.1.20",
     "@rebrowse/storybook": "0.0.0-development",
-    "@testing-library/react": "11.2.3",
+    "@testing-library/react": "11.2.7",
     "next": "10.0.5",
     "react": "17.0.1"
   }
