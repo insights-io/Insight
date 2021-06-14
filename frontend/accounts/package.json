@@ -44,7 +44,7 @@
     "next": "10.0.5",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-hook-form": "6.14.2",
+    "react-hook-form": "6.15.8",
     "react-icons": "4.1.0",
     "styletron-engine-atomic": "1.4.6",
     "styletron-react": "5.2.7",
