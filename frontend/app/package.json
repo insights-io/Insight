@@ -81,7 +81,7 @@
     "@rebrowse/next-testing": "0.0.0-development",
     "@rebrowse/types": "0.0.0-development",
     "@next/bundle-analyzer": "10.0.5",
-    "@types/d3-array": "2.8.0",
+    "@types/d3-array": "2.12.3",
     "@types/d3-scale-chromatic": "2.0.0",
     "@types/jaeger-client": "3.15.4",
     "@types/react": "17.0.0",
