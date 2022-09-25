@@ -85,7 +85,7 @@
     "@types/d3-scale-chromatic": "2.0.0",
     "@types/jaeger-client": "3.15.4",
     "@types/react": "17.0.0",
-    "@types/react-dom": "17.0.0",
+    "@types/react-dom": "17.0.17",
     "@types/uuid": "8.3.0",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2",
