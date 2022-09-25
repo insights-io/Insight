@@ -48,7 +48,7 @@
     "@rebrowse/next-testing": "0.0.0-development",
     "@rebrowse/next-storybook": "0.0.0-development",
     "@next/bundle-analyzer": "10.0.5",
-    "@types/react": "17.0.0",
+    "@types/react": "17.0.50",
     "@types/react-dom": "17.0.0",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2",
