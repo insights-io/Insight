@@ -67,7 +67,7 @@
     "sinon": "9.2.4",
     "testcafe": "1.9.4",
     "ts-jest": "26.5.2",
-    "typescript": "4.1.5",
+    "typescript": "4.9.5",
     "wait-on": "5.2.1",
     "ts-node": "9.1.1",
     "rollup": "2.40.0",
@@ -82,6 +82,6 @@
     }
   },
   "resolutions": {
-    "typescript": "4.1.5"
+    "typescript": "4.9.5"
   }
 }
