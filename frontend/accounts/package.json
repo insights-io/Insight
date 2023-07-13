@@ -41,7 +41,7 @@
     "@rebrowse/sdk": "0.0.0-development",
     "@rebrowse/elements": "0.0.0-development",
     "baseui": "9.107.0",
-    "next": "10.0.5",
+    "next": "12.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-hook-form": "6.14.2",
