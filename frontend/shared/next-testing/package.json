@@ -32,7 +32,7 @@
     "@rebrowse/testing": "0.0.0-development",
     "@rebrowse/storybook": "0.0.0-development",
     "@testing-library/react": "11.2.3",
-    "next": "10.0.5",
+    "next": "11.1.3",
     "react": "17.0.1"
   }
 }
