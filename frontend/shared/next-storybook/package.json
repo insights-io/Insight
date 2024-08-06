@@ -32,7 +32,7 @@
     "@storybook/addon-actions": "6.1.20",
     "@rebrowse/storybook": "0.0.0-development",
     "@testing-library/react": "11.2.3",
-    "next": "10.0.5",
+    "next": "12.1.0",
     "react": "17.0.1"
   }
 }
