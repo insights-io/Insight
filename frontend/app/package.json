@@ -55,7 +55,7 @@
     "baseui": "9.107.0",
     "date-fns": "2.16.1",
     "jaeger-client": "3.18.1",
-    "next": "10.0.5",
+    "next": "12.1.0",
     "next-pwa": "5.0.4",
     "react": "17.0.1",
     "react-image-crop": "8.6.6",
