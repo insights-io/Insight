@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "next": "10.0.5",
-    "@types/http-proxy": "1.17.4",
+    "@types/http-proxy": "1.17.15",
     "http-proxy": "1.18.1"
   },
   "peerDependencies": {
