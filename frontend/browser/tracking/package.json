@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@rebrowse/types": "0.0.0-development",
-    "playwright": "1.7.1",
+    "playwright": "1.48.1",
     "rollup-plugin-gzip": "2.5.0"
   }
 }
