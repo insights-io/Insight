@@ -62,7 +62,7 @@
     "@types/uuid": "8.3.0",
     "@types/styletron-engine-atomic": "1.1.0",
     "@types/styletron-react": "5.0.2",
-    "uuid": "8.3.2",
+    "uuid": "11.1.1",
     "next-page-tester": "0.19.0",
     "@types/nprogress": "0.2.0"
   }
